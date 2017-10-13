@@ -1,0 +1,30 @@
+{
+  "name": "admin-semantic",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": {
+    "url": "https://github.com/elevenyellow/admin-semantic.git",
+    "type": "git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^1.0.2"
+  },
+  "devDependencies": {
+    "concurrently": "^3.1.0"
+  },
+  "scripts": {
+    "admin":
+      "cd admin && meteor npm install && REDIS_URL='redis://localhost:6379' meteor run -p 3000 --settings=../.deploy/admin/local/settings.json",
+    "worker":
+      "cd worker && meteor npm install && MONGO_URL='mongodb://localhost:3001/meteor' REDIS_URL='redis://localhost:6379' meteor run -p 3002 --settings=../.deploy/worker/local/settings.json",
+    "admintest":
+      "cd admin && meteor npm install && REDIS_URL='redis://localhost:6379' meteor test -p 3100 --driver-package=practicalmeteor:mocha --settings=../.deploy/admin/local/settings.json",
+    "adminshell": "cd admin && meteor shell",
+    "workershell": "cd worker && meteor shell",
+    "start":
+      "concurrently --kill-others --prefix-colors 'green,magenta' --names 'admin,app' --prefix '[{name}]' 'npm run admin' 'npm run app'",
+    "testadmin":
+      "cd webserver && meteor test --driver-package=practicalmeteor:mocha --settings=../deploy/webserver/development/settings.json --port=3002"
+  }
+}

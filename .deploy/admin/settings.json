@@ -1,0 +1,53 @@
+{
+  "public": {
+    "deployMode": "production",
+    "domain": "admin.domain.com",
+    "appName": "Semantic Admin",
+    "appEmail": "dale@candela.com",
+    "ga": {
+      "account": ""
+    }
+  },
+  "galaxy.meteor.com": {
+    "env": {
+      "MONGO_URL": "mongodb://xxx",
+      "REDIS_URL": "redis://xxx",
+      "NODE_OPTIONS": "--max_old_space_size=2096"
+    }
+  },
+
+  "appType": "admin",
+  "signUpCodes": {
+    "staff": "xxx",
+    "users": "xxx"
+  },
+  "proxies": {
+    "myprivateproxy": {
+      "api_key": "67ab4268utvc7p10k2cajdfev3p373lv",
+      "devPackageId": "xxx"
+    },
+    "accountsPerProxy": 4
+  },
+  "email": {
+    "mail": {
+      "host": "smtp.gmail.com",
+      "port": 587,
+      "username": "support@xxx.co",
+      "password": "xxx",
+      "admins": ["xxx@xxx.com"]
+    },
+    "sendgrid": {
+      "apiKey":
+        "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"
+    },
+    "mailChimp": {
+      "apiKey": "5f0ea423714bd5eb5c73346ae5820e80-us10",
+      "listId": "4f4aa4b4d3"
+    },
+    "admins": ["xxx@xxx.com"],
+    "staff": ["xxx@xxx.com"]
+  },
+  "jobsConcurrency": {
+    "xxx": 1
+  }
+}
