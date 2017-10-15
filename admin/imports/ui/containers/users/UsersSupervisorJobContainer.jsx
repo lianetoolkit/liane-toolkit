@@ -1,6 +1,6 @@
 import { Meteor } from "meteor/meteor";
 import { createContainer } from "meteor/react-meteor-data";
-import { Jobs } from "/imports/api/jobs/jobs.coffee";
+import { Jobs } from "/imports/api/jobs/jobs.js";
 import UserSupervisorJob from "/imports/ui/components/users/detail/UserSupervisorJob.jsx";
 
 export default createContainer(({ userId }) => {

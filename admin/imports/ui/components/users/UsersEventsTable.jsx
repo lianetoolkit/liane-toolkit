@@ -2,7 +2,7 @@ import React from "react";
 import SmartTable from "/imports/ui/components/utils/tables/SmartTable.jsx";
 import UsersLink from "/imports/ui/components/users/UsersLink.jsx";
 import { booleanToIcon, getLabelForRole } from "/imports/ui/utils/utils.jsx";
-import { UsersEvents } from "/imports/api/users/usersEvents.coffee";
+import { UsersEvents } from "/imports/api/users/usersEvents.js";
 
 export default class UsersEventsTable extends React.Component {
   constructor(props) {

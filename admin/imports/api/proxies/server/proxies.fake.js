@@ -1,4 +1,4 @@
-import { Proxies } from "../proxies.coffee";
+import { Proxies } from "../proxies.js";
 
 // Testing part.
 const faker = require("faker");

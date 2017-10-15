@@ -42,9 +42,6 @@ export default class AdminBar extends React.Component {
           <Icon link name="content" onClick={toggleSideBar} size="large" />
         </Menu.Item>
         <Menu.Menu position="right">
-          <Menu.Item name="add-account" onClick={this._addServiceAccountModal}>
-            <Icon name="add user" /> Add Account
-          </Menu.Item>
           <Dropdown
             item
             text={currentUser ? currentUser.emails[0].address : ""}

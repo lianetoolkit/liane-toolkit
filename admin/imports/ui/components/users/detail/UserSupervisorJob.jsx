@@ -1,5 +1,5 @@
 import React from "react";
-import Jobs from "/imports/api/jobs/jobs.coffee";
+import Jobs from "/imports/api/jobs/jobs.js";
 import { Button, Segment, Divider, Header } from "semantic-ui-react";
 import { booleanToIcon } from "/imports/ui/utils/utils.jsx";
 

@@ -4,8 +4,8 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 
-import { Proxies } from "../proxies.coffee";
-import { ProxiesPackages } from "../proxiesPackages.coffee";
+import { Proxies } from "../proxies.js";
+import { ProxiesPackages } from "../proxiesPackages.js";
 
 import "/imports/startup/server/globals.coffee";
 import "/imports/startup/both/globals.coffee";

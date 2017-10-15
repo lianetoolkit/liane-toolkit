@@ -13,6 +13,10 @@ import AuthPageResetPassword from "/imports/ui/pages/accounts/AuthPageResetPassw
 import DashboardPageContainer from "/imports/ui/containers/admin/DashboardPageContainer.jsx";
 import UsersPageContainer from "/imports/ui/containers/users/UsersPageContainer.jsx";
 
+import JobsPage from "/imports/ui/pages/jobs/JobsPage.jsx";
+import ProxiesPage from "/imports/ui/pages/proxies/ProxiesPage.jsx";
+import UsersEventsPage from "/imports/ui/pages/users/UsersEventsPage.jsx";
+
 import NotFoundPage from "../../ui/pages/NotFoundPage.jsx";
 
 const APP_NAME = Meteor.settings.public.appName;
@@ -161,7 +165,7 @@ adminRoutes.route("/proxies", {
   action: function() {
     _addTitle(`${APP_NAME} | Proxies`);
     return mount(AdminContainer, {
-      content: { component: AdminProxiesPage }
+      content: { component: ProxiesPage }
     });
   }
 });

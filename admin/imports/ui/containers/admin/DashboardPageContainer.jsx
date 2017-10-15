@@ -2,7 +2,7 @@ import { Meteor } from "meteor/meteor";
 import { createContainer } from "meteor/react-meteor-data";
 import DashboardPage from "/imports/ui/pages/DashboardPage.jsx";
 
-const cards = ["users", "serviceAccounts", "proxies", "subscriptions"];
+const cards = ["users", "proxies"];
 
 export default createContainer(({ currentUser }) => {
   console.log("AdminDashboardPageContainer init", { currentUser });
@@ -19,11 +19,7 @@ export default createContainer(({ currentUser }) => {
     search
   });
 
-  const loading =
-    !counterUsers.ready() &&
-    !counterAccounts.ready() &&
-    !counterSubscriptions.ready() &&
-    !counterProxies.ready();
+  const loading = !counterUsers.ready() && !counterProxies.ready();
 
   const counters = [];
   _.each(cards, card => {

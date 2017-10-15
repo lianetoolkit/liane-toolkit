@@ -53,6 +53,7 @@ less@2.7.11-rc.7
 livedata@1.0.18
 localstorage@1.2.0-rc.7
 logging@1.1.18
+mdg:validated-method@1.1.0
 mdg:validation-error@0.2.0
 meteor@1.8.0-rc.7
 meteor-base@1.2.0-rc.7

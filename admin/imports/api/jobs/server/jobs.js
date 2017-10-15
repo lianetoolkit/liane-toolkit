@@ -1,23 +1,10 @@
 import { UsersJobs } from "/imports/api/users/server/usersJobs.js";
-import { ServiceAccountsJobs } from "/imports/api/serviceAccounts/server/serviceAccountsJobs.js";
-import { ConversionsJobs } from "/imports/api/conversions/server/conversionsJobs.js";
-import { PromotionsJobs } from "/imports/api/promotions/server/promotionsJobs.js";
-import { SubscriptionsJobs } from "/imports/api/subscriptions/server/subscriptionsJobs.js";
-import { CommentsJobs } from "/imports/api/comments/server/commentsJobs.js";
 import { EmailsJobs } from "/imports/api/emails/server/emailsJobs.js";
 import { Jobs } from "../jobs.js";
 import { JobsHelpers } from "./jobsHelpers.js";
 
 // init jobs pool for workers
-JobsPool.jobs = _.extend(
-  UsersJobs,
-  ServiceAccountsJobs,
-  ConversionsJobs,
-  PromotionsJobs,
-  SubscriptionsJobs,
-  EmailsJobs,
-  CommentsJobs
-);
+JobsPool.jobs = _.extend(UsersJobs, EmailsJobs);
 // logger.debug JobsPool.jobs
 
 // logger.debug "jobs.js: initializing JobsPool", {JobsPool}

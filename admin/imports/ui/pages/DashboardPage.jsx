@@ -21,7 +21,7 @@ export default class DashboardPage extends React.Component {
   }
 
   render() {
-    const { loading, currentUser } = this.props;
+    const { loading, counters, currentUser } = this.props;
     return (
       <div>
         <PageHeader title="Home" />
@@ -31,7 +31,23 @@ export default class DashboardPage extends React.Component {
           ) : (
             <Grid>
               <Grid.Row>
-                <Grid.Column>Dashboard</Grid.Column>
+                <Grid.Column>
+                  <Header as="h3">Counters</Header>
+                  <Card.Group>
+                    {counters.map(counter => (
+                      <Card
+                        key={counter.name}
+                        href={FlowRouter.path(`Admin.${counter.name}`)}
+                      >
+                        <Statistic
+                          size="small"
+                          value={counter.count.toString()}
+                          label={counter.name}
+                        />
+                      </Card>
+                    ))}
+                  </Card.Group>
+                </Grid.Column>
               </Grid.Row>
             </Grid>
           )}
