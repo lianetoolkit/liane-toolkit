@@ -2,6 +2,7 @@ import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
+import SelectFacebookAccount from "/imports/ui/components/facebook/SelectFacebookAccount.jsx";
 
 import { Form, Grid, Button, Header } from "semantic-ui-react";
 
@@ -25,7 +26,7 @@ export default class CampaignsPage extends React.Component {
             <Grid>
               <Grid.Row>
                 <Grid.Column>
-                  <Header as="h1">{campaign.name}</Header>
+                  <SelectFacebookAccount campaignId={campaign._id} />
                 </Grid.Column>
               </Grid.Row>
             </Grid>

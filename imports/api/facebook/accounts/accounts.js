@@ -7,10 +7,6 @@ FacebookAccounts.schema = new SimpleSchema({
     type: String,
     index: true
   },
-  accessToken: {
-    type: String,
-    optional: true
-  },
   name: {
     type: String
   },
@@ -33,4 +29,4 @@ FacebookAccounts.schema = new SimpleSchema({
 
 FacebookAccounts.attachSchema(FacebookAccounts.schema);
 
-exports.Campaigns = FacebookAccounts;
+exports.FacebookAccounts = FacebookAccounts;

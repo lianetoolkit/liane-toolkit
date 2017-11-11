@@ -46,8 +46,8 @@ Meteor.users.helpers({
   getEmail() {
     return this.emails[0].address;
   },
-  isFbLogged() {
-    return !!this.services.facebook;
+  getAccessToken() {
+    return this.services.facebook.accessToken;
   }
 });
 

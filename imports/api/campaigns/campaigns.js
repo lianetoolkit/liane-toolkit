@@ -12,6 +12,15 @@ Campaigns.usersSchema = new SimpleSchema({
   }
 });
 
+Campaigns.accountsSchema = new SimpleSchema({
+  facebookId: {
+    type: String
+  },
+  accessToken: {
+    type: String
+  }
+});
+
 Campaigns.schema = new SimpleSchema({
   users: {
     type: Array
@@ -29,12 +38,12 @@ Campaigns.schema = new SimpleSchema({
     type: String,
     optional: true
   },
-  facebookAccountsIds: {
+  accounts: {
     type: Array,
     optional: true
   },
-  "facebookAccountsIds.$": {
-    type: String
+  "accounts.$": {
+    type: Campaigns.accountsSchema
   },
 
   createdAt: {
