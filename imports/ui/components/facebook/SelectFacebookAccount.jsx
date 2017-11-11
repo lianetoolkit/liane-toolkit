@@ -4,20 +4,25 @@ import { Accounts } from "meteor/accounts-base";
 import i18n from "meteor/universe:i18n";
 import PropTypes from "prop-types";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
-import { Image, List } from "semantic-ui-react";
+import { List } from "semantic-ui-react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 
 class FacebookAccount extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isLoading: false
+    };
     this._handleSelect = this._handleSelect.bind(this);
   }
   _handleSelect(e) {
     const { account, campaignId } = this.props;
+    this.setState({ isLoading: true });
     Meteor.call(
       "campaigns.addSelfAccount",
       { campaignId, account },
       (error, data) => {
+        this.setState({ isLoading: false });
         if (error) {
           Alerts.error(error);
         } else {
@@ -28,10 +33,17 @@ class FacebookAccount extends React.Component {
   }
   render() {
     const { account } = this.props;
+    const { isLoading } = this.state;
     return (
-      <List.Item onClick={this._handleSelect}>
-        <List.Header>{account.name}</List.Header>
-        {account.category}
+      <List.Item onClick={this._handleSelect} disabled={isLoading}>
+        <List.Icon
+          name={isLoading ? "spinner" : "facebook square"}
+          loading={isLoading}
+        />
+        <List.Content>
+          <List.Header>{account.name}</List.Header>
+          {account.category}
+        </List.Content>
       </List.Item>
     );
   }
