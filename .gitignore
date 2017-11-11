@@ -1,3 +1,2 @@
-admin/node_modules/
-app/node_modules/
-node_modules/s
+node_modules/
+.deploy/
