@@ -2,9 +2,19 @@ import SimpleSchema from "simpl-schema";
 
 const Campaigns = new Mongo.Collection("campaigns");
 
-Campaigns.schema = new SimpleSchema({
+Campaings.usersSchema = new SimpleSchema({
   userId: {
-    type: String,
+    type: String
+  },
+  role:{
+    type: String
+    allowedValues: ["owner", "manager"]
+  }
+})
+
+Campaigns.schema = new SimpleSchema({
+  users: {
+    type: [Campaings.usersSchema],
     index: true
   },
   contextId: {
@@ -17,14 +27,10 @@ Campaigns.schema = new SimpleSchema({
     type: String,
     optional: true
   },
-  description: {
-    type: String,
-    optional: true
-  },
-  allowedUsers: {
+  facebookAccountsIds: {
     type: [String],
-    optional: true
-  },
+    optional:true
+  }
   createdAt: {
     type: Date,
     autoValue() {
