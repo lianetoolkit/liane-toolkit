@@ -11,7 +11,9 @@ import AuthPageRecoveryPassword from "/imports/ui/pages/accounts/AuthPageRecover
 import AuthPageResetPassword from "/imports/ui/pages/accounts/AuthPageResetPassword.jsx";
 
 import DashboardPageContainer from "/imports/ui/containers/app/DashboardPageContainer.jsx";
-import AddCampaignPage from "/imports/ui/pages/campaigns/AddCampaignPage.jsx";
+import AddCampaignPageContainer from "/imports/ui/containers/campaigns/AddCampaignPageContainer.jsx";
+import AddContextsPageContainer from "/imports/ui/containers/contexts/AddContextsPageContainer.jsx";
+import CampaignsPageContainer from "/imports/ui/containers/campaigns/CampaignsPageContainer.jsx";
 
 import JobsPage from "/imports/ui/pages/jobs/JobsPage.jsx";
 
@@ -108,17 +110,29 @@ appRoutes.route("/add-campaign", {
   action: function() {
     _addTitle(`${APP_NAME} | Add Campaign`);
     return mount(AppContainer, {
-      content: { component: AddCampaignPage }
+      content: { component: AddCampaignPageContainer }
+    });
+  }
+});
+appRoutes.route("/campaign/:_id", {
+  name: "App.campaignDetail",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Campaign`);
+    return mount(AppContainer, {
+      content: {
+        component: CampaignsPageContainer,
+        props: { campaignId: params._id }
+      }
     });
   }
 });
 
-appRoutes.route("/users", {
-  name: "App.users",
+appRoutes.route("/add-context", {
+  name: "App.addContext",
   action: function() {
-    _addTitle(`${APP_NAME} | Users`);
+    _addTitle(`${APP_NAME} | Add Context`);
     return mount(AppContainer, {
-      content: { component: UsersPageContainer }
+      content: { component: AddContextsPageContainer }
     });
   }
 });

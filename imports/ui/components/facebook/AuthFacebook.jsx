@@ -14,7 +14,15 @@ export default class AuthFacebook extends React.Component {
     event.preventDefault();
     Meteor.linkWithFacebook(
       {
-        requestPermissions: ["user_friends", "public_profile", "email"]
+        requestPermissions: [
+          "user_friends",
+          "public_profile",
+          "email",
+          "manage_pages",
+          "pages_show_list",
+          "ads_management",
+          "ads_read"
+        ]
       },
       err => {
         if (err) {

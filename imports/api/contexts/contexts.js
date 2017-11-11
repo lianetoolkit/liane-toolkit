@@ -4,16 +4,18 @@ const Contexts = new Mongo.Collection("contexts");
 
 Contexts.schema = new SimpleSchema({
   name: {
-    type: String,
-    index: true
+    type: String
   },
   mainGeolocationId: {
     type: String,
     optional: true
   },
   geolocations: {
-    type: [String],
+    type: Array,
     optional: true
+  },
+  "geolocations.$": {
+    type: String
   },
   createdAt: {
     type: Date,
@@ -31,4 +33,4 @@ Contexts.schema = new SimpleSchema({
 
 Contexts.attachSchema(Contexts.schema);
 
-exports.Campaigns = Contexts;
+exports.Contexts = Contexts;

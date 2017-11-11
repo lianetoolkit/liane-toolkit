@@ -2,10 +2,18 @@ import SimpleSchema from "simpl-schema";
 
 const Geolocations = new Mongo.Collection("geolocations");
 
+Geolocations.centerSchema = new SimpleSchema({
+  lnt: {
+    type: String
+  },
+  lat: {
+    type: String
+  }
+});
+
 Geolocations.schema = new SimpleSchema({
   name: {
-    type: String,
-    index: true
+    type: String
   },
   facebookId: {
     type: String
@@ -14,7 +22,8 @@ Geolocations.schema = new SimpleSchema({
     type: String
   },
   center: {
-    type: Geolocations.centerSchema
+    type: String,
+    optional: true
   },
   polygon: {
     type: Object,

@@ -22,8 +22,6 @@ alanning:roles
 dburles:collection-helpers
 vsivsi:job-collection
 tmeasday:publish-counts
-aldeed:schema-index
-aldeed:collection2-core
 themeteorchef:bert
 universe:i18n
 kadira:dochead
@@ -39,3 +37,4 @@ mdg:validated-method
 service-configuration
 accounts-facebook
 bozhao:link-accounts
+aldeed:collection2-core
