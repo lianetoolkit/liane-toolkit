@@ -61,13 +61,7 @@ export const JobsHelpers = {
   cleanIdleJobs() {
     logger.debug("Jobs.cleanIdleJobs: called");
 
-    const jobsTypesToRestart = [
-      "serviceAccounts.updateData",
-      "conversions.update",
-      "conversions.calculate",
-      "serviceAccounts.setup",
-      "serviceAccounts.login"
-    ];
+    const jobsTypesToRestart = ["accounts.fetchEntries"];
 
     const jobsToRestart = Jobs.find(
       {
