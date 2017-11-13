@@ -96,32 +96,26 @@ export default class App extends React.Component {
             <ModalManager />
             <ConfirmManager />
             <Container>
-              <Grid>
-                <Grid.Row>
-                  <Grid.Column>
-                    {loading ? (
-                      <Loading />
-                    ) : (
-                      <ReactCSSTransitionGroup
-                        transitionName="fade"
-                        transitionEnterTimeout={200}
-                        transitionLeaveTimeout={200}
-                      >
-                        {currentUser ? (
-                          <div>
-                            <this.props.content.component
-                              {...this.props.content.props}
-                              currentUser={currentUser}
-                            />
-                          </div>
-                        ) : (
-                          ""
-                        )}
-                      </ReactCSSTransitionGroup>
-                    )}
-                  </Grid.Column>
-                </Grid.Row>
-              </Grid>
+              {loading ? (
+                <Loading />
+              ) : (
+                <ReactCSSTransitionGroup
+                  transitionName="fade"
+                  transitionEnterTimeout={200}
+                  transitionLeaveTimeout={200}
+                >
+                  {currentUser ? (
+                    <div>
+                      <this.props.content.component
+                        {...this.props.content.props}
+                        currentUser={currentUser}
+                      />
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </ReactCSSTransitionGroup>
+              )}
             </Container>
             <AppFooter styles={footerStyles} />
           </div>

@@ -5,7 +5,8 @@ const FacebookAccounts = new Mongo.Collection("facebook_accounts");
 FacebookAccounts.schema = new SimpleSchema({
   facebookId: {
     type: String,
-    index: true
+    index: true,
+    unique: true
   },
   name: {
     type: String

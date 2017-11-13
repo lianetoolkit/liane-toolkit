@@ -4,7 +4,8 @@ const Campaigns = new Mongo.Collection("campaigns");
 
 Campaigns.usersSchema = new SimpleSchema({
   userId: {
-    type: String
+    type: String,
+    index: 1
   },
   role: {
     type: String,

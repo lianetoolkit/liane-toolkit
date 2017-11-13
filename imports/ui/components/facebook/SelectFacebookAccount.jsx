@@ -4,8 +4,9 @@ import { Accounts } from "meteor/accounts-base";
 import i18n from "meteor/universe:i18n";
 import PropTypes from "prop-types";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
-import { List } from "semantic-ui-react";
+import { List, Header } from "semantic-ui-react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
+import _ from "underscore";
 
 class FacebookAccount extends React.Component {
   constructor(props) {
@@ -53,34 +54,60 @@ export default class SelectFacebookAccount extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      accounts: []
+      accounts: [],
+      loading: true
     };
   }
   componentDidMount() {
+    const { selectedAccountsIds } = this.props;
+    console.log("selectedAccountsIds", selectedAccountsIds);
     Meteor.call("facebook.accounts.getUserAccounts", (error, data) => {
       if (error) {
         Alerts.error(error);
       } else {
-        this.setState({ accounts: data.result });
+        const accounts = this._filterAccounts(selectedAccountsIds, data.result);
+
+        this.setState({ accounts: accounts, loading: false });
       }
     });
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.selectedAccountsIds != this.props.selectedAccountsIds) {
+      const accounts = this._filterAccounts(
+        nextProps.selectedAccountsIds,
+        this.state.accounts
+      );
+      this.setState({ accounts: accounts });
+    }
+  }
+  _filterAccounts(selectedAccountsIds, availableAccounts) {
+    const accounts = [];
+    _.each(availableAccounts, account => {
+      if (!_.contains(selectedAccountsIds, account.id)) {
+        accounts.push(account);
+      }
+    });
+    return accounts;
   }
 
   render() {
     const { campaignId } = this.props;
-    const { accounts } = this.state;
+    const { accounts, loading } = this.state;
     return (
       <div>
-        {accounts.length ? (
-          <List selection verticalAlign="middle">
-            {accounts.map(account => (
-              <FacebookAccount
-                key={account.id}
-                account={account}
-                campaignId={campaignId}
-              />
-            ))}
-          </List>
+        {!loading ? (
+          <div>
+            {accounts.length ? <Header as="h3">Available Accounts</Header> : ""}
+            <List selection verticalAlign="middle">
+              {accounts.map(account => (
+                <FacebookAccount
+                  key={account.id}
+                  account={account}
+                  campaignId={campaignId}
+                />
+              ))}
+            </List>
+          </div>
         ) : (
           <Loading />
         )}

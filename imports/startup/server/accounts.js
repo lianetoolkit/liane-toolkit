@@ -7,7 +7,7 @@ Accounts.emailTemplates.from = `${Meteor.settings.public.appName} <${Meteor
 
 // http://docs.meteor.com/api/accounts-multi.html#AccountsCommon-config
 Accounts.config({
-  sendVerificationEmail: true
+  sendVerificationEmail: false
 });
 
 Accounts.onCreateUser(function(options, user) {
