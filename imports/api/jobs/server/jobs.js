@@ -1,9 +1,9 @@
-import { FacebookAccountsJobs } from "/imports/api/facebook/accounts/server/accountsJobs.js";
+import { EntriesJobs } from "/imports/api/facebook/entries/server/entriesJobs.js";
 import { Jobs } from "../jobs.js";
 import { JobsHelpers } from "./jobsHelpers.js";
 
 // init jobs pool for workers
-JobsPool.jobs = _.extend(FacebookAccountsJobs);
+JobsPool.jobs = _.extend(EntriesJobs);
 // logger.debug JobsPool.jobs
 
 // logger.debug "jobs.js: initializing JobsPool", {JobsPool}

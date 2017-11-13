@@ -1,15 +1,11 @@
 import { Promise } from "meteor/promise";
 import { Facebook, FacebookApiException } from "fb";
-import { Entries } from "/imports/api/facebook/entries/entries.js";
-import _ from "underscore";
 
 const options = {
   client_id: Meteor.settings.facebook.clientId,
   client_secret: Meteor.settings.facebook.clientSecret
 };
 _fb = new Facebook(options);
-
-_fetchFacebookPageData = ({ url }) => {};
 
 const FacebookAccountsHelpers = {
   getUserAccounts({ userId }) {
@@ -48,50 +44,6 @@ const FacebookAccountsHelpers = {
       )
     );
     return { result: response.access_token };
-  },
-
-  getAccountEntries({ facebookId, accessToken }) {
-    check(facebookId, String);
-    check(accessToken, String);
-
-    logger.debug("FacebookAccountsHelpers.getAccountEntries called", {
-      facebookId
-    });
-
-    _fb.setAccessToken(accessToken);
-    const response = Promise.await(
-      _fb.api("me/feed", {
-        fields: [
-          "object_id",
-          "parent_id",
-          "message",
-          "link",
-          "type",
-          "created_time",
-          "updated_time"
-        ],
-        limit: 100
-      })
-    );
-    logger.debug("FacebookAccountsHelpers.getAccountEntries response", {
-      response
-    });
-
-    if (response.data.length) {
-      let bulk = Entries.rawCollection().initializeUnorderedBulkOp();
-
-      for (const entry of response.data) {
-        entry.facebookAccountId = facebookId;
-        bulk.insert(entry);
-      }
-
-      bulk.execute(function(e, result) {
-        // do something with result
-        console.info("result", result);
-      });
-    }
-
-    return;
   }
 };
 
