@@ -28,6 +28,16 @@ const FacebookAccountsHelpers = {
     );
 
     return { result: response.accounts.data };
+  },
+  exchangeFBToken({ token }) {
+    check(token, String);
+    const response = Promise.await(
+      _fb.api('oauth/access_token', Object.assign({
+        grant_type: 'fb_exchange_token',
+        fb_exchange_token: token
+      }, options))
+    );
+    return { result: response.access_token };
   }
 };
 

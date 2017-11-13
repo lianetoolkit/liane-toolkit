@@ -1,5 +1,6 @@
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
+import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 
 const CampaignsHelpers = {
   addAccountToCampaign({ campaignId, account }) {
@@ -11,9 +12,11 @@ const CampaignsHelpers = {
       account
     });
 
+    const token = FacebookAccountsHelpers.exchangeFBToken({token: account.access_token});
+
     const updateObj = {
       facebookId: account.id,
-      accessToken: account.access_token
+      accessToken: token.result
     };
 
     Campaigns.update(
