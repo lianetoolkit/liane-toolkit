@@ -29,6 +29,9 @@ export default class AuthFacebook extends React.Component {
           console.log(err);
         } else {
           console.log("success");
+          Meteor.call('users.exchangeFBToken', (err, data) => {
+            console.log('exchanged', data);
+          });
         }
       }
     );
