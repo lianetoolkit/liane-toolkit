@@ -39,14 +39,15 @@ const CommentsHelpers = {
       const bulk = Comments.rawCollection().initializeUnorderedBulkOp();
       const commentedPeople = [];
       for (const comment of data) {
-        commentedPeople.push(comment.from);
+        if (comment.from) {
+          commentedPeople.push(comment.from);
+        }
         delete comment.from;
         bulk.insert(comment);
       }
 
       bulk.execute((e, result) => {
         // do something with result
-        console.info("result", result.nInserted);
         if (commentedPeople.length) {
           const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
           for (const people of commentedPeople) {
@@ -55,9 +56,7 @@ const CommentsHelpers = {
               .upsert()
               .update({ $set: { name: people.name } });
           }
-          peopleBulk.execute(function(e, result) {
-            console.info("result", result.nInserted);
-          });
+          peopleBulk.execute(function(e, result) {});
         }
       });
     };
