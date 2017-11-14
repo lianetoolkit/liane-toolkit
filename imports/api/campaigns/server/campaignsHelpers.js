@@ -39,7 +39,8 @@ const CampaignsHelpers = {
       jobType: "entries.fetchByAccount",
       jobData: {
         facebookId: account.id,
-        accessToken: token.result
+        accessToken: token.result,
+        campaignId: campaignId
       }
     });
     return;

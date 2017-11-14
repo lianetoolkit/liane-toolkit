@@ -126,6 +126,18 @@ appRoutes.route("/campaign/:_id", {
     });
   }
 });
+appRoutes.route("/campaign/:_id/account/:facebookId", {
+  name: "App.campaignDetail.account",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Campaign`);
+    return mount(AppContainer, {
+      content: {
+        component: CampaignsPageContainer,
+        props: { campaignId: params._id, facebookId: params.facebookId }
+      }
+    });
+  }
+});
 
 appRoutes.route("/add-context", {
   name: "App.addContext",

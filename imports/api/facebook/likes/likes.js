@@ -11,7 +11,8 @@ Likes.schema = new SimpleSchema({
     type: String
   },
   entryId: {
-    type: String
+    type: String,
+    index: true
   },
   facebookAccountId: {
     type: String

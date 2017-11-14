@@ -18,9 +18,9 @@ export default createContainer(props => {
         facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
       }).fetch()
     : [];
-  console.log(accounts);
   return {
     loading,
+    facebookId: props.facebookId || null,
     campaign,
     accounts
   };

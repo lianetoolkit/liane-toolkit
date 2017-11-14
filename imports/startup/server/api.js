@@ -10,6 +10,8 @@ import "/imports/api/contexts/server/contextsPublications.js";
 import "/imports/api/campaigns/server/campaignsMethods.js";
 import "/imports/api/campaigns/server/campaignsPublications.js";
 
+import "/imports/api/facebook/people/server/peoplePublications.js";
+
 // facebook
 import "/imports/api/facebook/accounts/server/accountsMethods.js";
 

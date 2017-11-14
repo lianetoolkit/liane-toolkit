@@ -61,7 +61,7 @@ export const JobsHelpers = {
   cleanIdleJobs() {
     logger.debug("Jobs.cleanIdleJobs: called");
 
-    const jobsTypesToRestart = ["accounts.fetchEntries"];
+    const jobsTypesToRestart = ["entries.fetchByAccount"];
 
     const jobsToRestart = Jobs.find(
       {
@@ -76,16 +76,17 @@ export const JobsHelpers = {
         }
       }
     ).fetch();
+    if (jobsToRestart) {
+      const jobsToRestartIds = _.pluck(jobsToRestart, "_id");
 
-    const jobsToRestartIds = _.pluck(jobsToRestart, "_id");
-
-    if (jobsToRestartIds.length) {
-      logger.info("Jobs.cleanIdleJobs: restarting this jobs", {
-        jobsToRestartIds
-      });
+      if (jobsToRestartIds.length) {
+        logger.info("Jobs.cleanIdleJobs: restarting this jobs", {
+          jobsToRestartIds
+        });
+      }
+      Jobs.cancelJobs(jobsToRestartIds); // need to cancel before restart
+      Jobs.restartJobs(jobsToRestartIds);
     }
-    Jobs.cancelJobs(jobsToRestartIds); // need to cancel before restart
-    Jobs.restartJobs(jobsToRestartIds);
 
     const jobsToRemove = Jobs.find(
       {
@@ -100,15 +101,16 @@ export const JobsHelpers = {
         }
       }
     ).fetch();
+    if (jobsToRemove) {
+      const jobsToRemoveIds = _.pluck(jobsToRemove, "_id");
 
-    const jobsToRemoveIds = _.pluck(jobsToRemove, "_id");
-
-    if (jobsToRemoveIds.length) {
-      logger.info("Jobs.cleanIdleJobs: removing this jobs", {
-        jobsToRemoveIds
-      });
+      if (jobsToRemoveIds.length) {
+        logger.info("Jobs.cleanIdleJobs: removing this jobs", {
+          jobsToRemoveIds
+        });
+      }
+      Jobs.cancelJobs(jobsToRemoveIds); // need to cancel before remove
+      return Jobs.removeJobs(jobsToRemoveIds);
     }
-    Jobs.cancelJobs(jobsToRemoveIds); // need to cancel before remove
-    return Jobs.removeJobs(jobsToRemoveIds);
   }
 };

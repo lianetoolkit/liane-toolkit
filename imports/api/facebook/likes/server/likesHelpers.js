@@ -18,7 +18,8 @@ _fetchFacebookPageData = ({ url }) => {
 };
 
 const LikesHelpers = {
-  getEntryLikes({ facebookAccountId, entryId, accessToken }) {
+  getEntryLikes({ campaignId, facebookAccountId, entryId, accessToken }) {
+    check(campaignId, String);
     check(facebookAccountId, String);
     check(entryId, String);
     check(accessToken, String);
@@ -42,25 +43,38 @@ const LikesHelpers = {
       for (const like of data) {
         likedPeople.push({ id: like.id, name: like.name });
         like.facebookAccountId = facebookAccountId;
-        like.personId = like.id;
-        like.entryId = entryId;
+        const personId = like.id;
         delete like.id;
-        bulk.insert(like);
+        bulk
+          .find({ personId: personId, entryId: entryId })
+          .upsert()
+          .update({
+            $set: like
+          });
       }
 
-      bulk.execute((e, result) => {
-        // do something with result
-        if (likedPeople.length) {
-          const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
-          for (const people of likedPeople) {
-            peopleBulk
-              .find({ _id: people.id })
-              .upsert()
-              .update({ $set: { name: people.name } });
+      bulk.execute(
+        Meteor.bindEnvironment((e, result) => {
+          // do something with result
+          if (likedPeople.length) {
+            const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
+            for (const people of likedPeople) {
+              const likesCount = Likes.find({
+                personId: people.id,
+                facebookAccountId: facebookAccountId
+              }).count();
+              peopleBulk
+                .find({ _id: people.id, campaignId: campaignId })
+                .upsert()
+                .update({
+                  $set: { name: people.name, likesCount: likesCount },
+                  $addToSet: { facebookAccounts: facebookAccountId }
+                });
+            }
+            peopleBulk.execute(function(e, result) {});
           }
-          peopleBulk.execute(function(e, result) {});
-        }
-      });
+        })
+      );
     };
 
     if (response.data.length) {

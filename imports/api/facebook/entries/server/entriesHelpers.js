@@ -21,7 +21,8 @@ _fetchFacebookPageData = ({ url }) => {
 };
 
 const EntriesHelpers = {
-  getAccountEntries({ facebookId, accessToken }) {
+  getAccountEntries({ campaignId, facebookId, accessToken }) {
+    check(campaignId, String);
     check(facebookId, String);
     check(accessToken, String);
 
@@ -58,7 +59,8 @@ const EntriesHelpers = {
           jobData: {
             facebookAccountId: entry.facebookAccountId,
             accessToken: accessToken,
-            entryId: entry._id
+            entryId: entry._id,
+            campaignId: campaignId
           }
         });
       }
@@ -83,7 +85,13 @@ const EntriesHelpers = {
 
     return;
   },
-  getEntryInteractions({ facebookAccountId, entryId, accessToken }) {
+  getEntryInteractions({
+    campaignId,
+    facebookAccountId,
+    entryId,
+    accessToken
+  }) {
+    check(campaignId, String);
     check(facebookAccountId, String);
     check(entryId, String);
     check(accessToken, String);
@@ -94,9 +102,15 @@ const EntriesHelpers = {
     CommentsHelpers.getEntryComments({
       facebookAccountId,
       entryId,
-      accessToken
+      accessToken,
+      campaignId
     });
-    LikesHelpers.getEntryLikes({ facebookAccountId, entryId, accessToken });
+    LikesHelpers.getEntryLikes({
+      facebookAccountId,
+      entryId,
+      accessToken,
+      campaignId
+    });
   }
 };
 

@@ -19,7 +19,8 @@ _fetchFacebookPageData = ({ url }) => {
 };
 
 const CommentsHelpers = {
-  getEntryComments({ facebookAccountId, entryId, accessToken }) {
+  getEntryComments({ campaignId, facebookAccountId, entryId, accessToken }) {
+    check(campaignId, String);
     check(facebookAccountId, String);
     check(entryId, String);
     check(accessToken, String);
@@ -42,23 +43,42 @@ const CommentsHelpers = {
         if (comment.from) {
           commentedPeople.push(comment.from);
         }
+        comment.personId = comment.from.id;
+        comment.name = comment.from.name;
+        comment.facebookAccountId = facebookAccountId;
+        const commentId = comment.id;
+        delete comment.id;
         delete comment.from;
-        bulk.insert(comment);
+        bulk
+          .find({ _id: commentId })
+          .upsert()
+          .update({
+            $set: comment
+          });
       }
 
-      bulk.execute((e, result) => {
-        // do something with result
-        if (commentedPeople.length) {
-          const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
-          for (const people of commentedPeople) {
-            peopleBulk
-              .find({ _id: people.id })
-              .upsert()
-              .update({ $set: { name: people.name } });
+      bulk.execute(
+        Meteor.bindEnvironment((e, result) => {
+          // do something with result
+          if (commentedPeople.length) {
+            const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
+            for (const people of commentedPeople) {
+              const commentsCount = Comments.find({
+                personId: people.id,
+                facebookAccountId: facebookAccountId
+              }).count();
+              peopleBulk
+                .find({ _id: people.id, campaignId: campaignId })
+                .upsert()
+                .update({
+                  $set: { name: people.name, commentsCount: commentsCount },
+                  $addToSet: { facebookAccounts: facebookAccountId }
+                });
+            }
+            peopleBulk.execute((e, result) => {});
           }
-          peopleBulk.execute(function(e, result) {});
-        }
-      });
+        })
+      );
     };
 
     if (response.data.length) {

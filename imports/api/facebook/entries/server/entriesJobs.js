@@ -6,11 +6,13 @@ const EntriesJobs = {
       logger.debug("entries.fetchByAccount job: called");
       check(job && job.data && job.data.facebookId, String);
       check(job && job.data && job.data.accessToken, String);
+      check(job && job.data && job.data.campaignId, String);
 
       const facebookId = job.data.facebookId;
       const accessToken = job.data.accessToken;
+      const campaignId = job.data.campaignId;
 
-      EntriesHelpers.getAccountEntries({ facebookId, accessToken });
+      EntriesHelpers.getAccountEntries({ campaignId, facebookId, accessToken });
 
       job.done();
       return job.remove();
@@ -44,11 +46,13 @@ const EntriesJobs = {
       const facebookAccountId = job.data.facebookAccountId;
       const accessToken = job.data.accessToken;
       const entryId = job.data.entryId;
+      const campaignId = job.data.campaignId;
 
       EntriesHelpers.getEntryInteractions({
         facebookAccountId,
         accessToken,
-        entryId
+        entryId,
+        campaignId
       });
 
       job.done();

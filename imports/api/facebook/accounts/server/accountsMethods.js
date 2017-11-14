@@ -1,6 +1,8 @@
 import SimpleSchema from "simpl-schema";
 import { FacebookAccountsHelpers } from "./accountsHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
+import { Likes } from "/imports/api/facebook/likes/likes.js";
+import { Comments } from "/imports/api/facebook/comments/comments.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 
 export const getUserAccounts = new ValidatedMethod({
@@ -16,5 +18,52 @@ export const getUserAccounts = new ValidatedMethod({
     response = FacebookAccountsHelpers.getUserAccounts({ userId });
 
     return response;
+  }
+});
+
+export const getAccountLikes = new ValidatedMethod({
+  name: "facebook.account.likes",
+  validate: new SimpleSchema({
+    facebookAccountId: {
+      type: String
+    }
+  }).validator(),
+  run({ facebookAccountId }) {
+    logger.debug("facebook.account.likes", { facebookAccountId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    likes = Likes.aggregate([
+      { $match: { facebookAccountId: facebookAccountId } },
+      { $group: { _id: "$name", counter: { $sum: 1 } } }
+    ]);
+    console.log(likes);
+    return likes;
+  }
+});
+export const getAccountComments = new ValidatedMethod({
+  name: "facebook.account.comments",
+  validate: new SimpleSchema({
+    facebookAccountId: {
+      type: String
+    }
+  }).validator(),
+  run({ facebookAccountId }) {
+    logger.debug("facebook.account.comments", { facebookAccountId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    comments = Comments.aggregate([
+      { $match: { facebookAccountId: facebookAccountId } },
+      { $group: { _id: "$name", counter: { $sum: 1 } } }
+    ]);
+    console.log(comments);
+    return comments;
   }
 });
