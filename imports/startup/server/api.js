@@ -21,4 +21,7 @@ import "/imports/api/jobs/server/jobsPublications.js";
 if (Meteor.settings.public.deployMode == "local") {
   import "/imports/api/campaigns/server/campaignsHelpers.js";
   import "/imports/api/facebook/accounts/server/accountsHelpers.js";
+  import "/imports/api/facebook/entries/server/entriesHelpers.js";
+  import "/imports/api/facebook/likes/server/likesHelpers.js";
+  import "/imports/api/facebook/comments/server/commentsHelpers.js";
 }

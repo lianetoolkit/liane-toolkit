@@ -3,12 +3,13 @@ import SimpleSchema from "simpl-schema";
 const Entries = new Mongo.Collection("entries");
 
 Entries.schema = new SimpleSchema({
+  _id: {
+    type: String,
+    label: "Facebook Id"
+  },
   facebookAccountId: {
     type: String,
     index: true
-  },
-  id: {
-    type: String
   },
   type: {
     type: String

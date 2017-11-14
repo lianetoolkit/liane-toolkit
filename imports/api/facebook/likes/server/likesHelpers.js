@@ -1,6 +1,6 @@
 import { Promise } from "meteor/promise";
 import { Facebook, FacebookApiException } from "fb";
-import { Entries } from "/imports/api/facebook/entries/entries.js";
+import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { HTTP } from "meteor/http";
 
 const options = {
@@ -16,39 +16,34 @@ _fetchFacebookPageData = ({ url }) => {
   return response;
 };
 
-const EntriesHelpers = {
-  getAccountEntries({ facebookId, accessToken }) {
-    check(facebookId, String);
+const LikesHelpers = {
+  getEntryLikes({ facebookAccountId, entryId, accessToken }) {
+    check(facebookAccountId, String);
+    check(entryId, String);
     check(accessToken, String);
 
-    logger.debug("FacebookAccountsHelpers.getAccountEntries called", {
-      facebookId
+    logger.debug("LikesHelpers.getEntryLikes called", {
+      entryId
     });
 
     _fb.setAccessToken(accessToken);
     const response = Promise.await(
-      _fb.api("me/feed", {
-        fields: [
-          "object_id",
-          "parent_id",
-          "message",
-          "link",
-          "type",
-          "created_time",
-          "updated_time"
-        ],
-        limit: 100
+      _fb.api(`${entryId}/likes`, {
+        limit: 2000
       })
     );
 
-    const _insertBulk = ({ data }) => {
-      const bulk = Entries.rawCollection().initializeUnorderedBulkOp();
+    logger.debug("LikesHelpers.getEntryLikes response", { response });
 
-      for (const entry of data) {
-        entry.facebookAccountId = facebookId;
-        entry._id = entry.id;
-        delete entry.id;
-        bulk.insert(entry);
+    const _insertBulk = ({ data }) => {
+      const bulk = Likes.rawCollection().initializeUnorderedBulkOp();
+
+      for (const like of data) {
+        like.facebookAccountId = facebookAccountId;
+        like.personId = like.id;
+        like.entryId = entryId;
+        delete like.id;
+        bulk.insert(like);
       }
 
       bulk.execute(function(e, result) {
@@ -73,4 +68,4 @@ const EntriesHelpers = {
   }
 };
 
-exports.EntriesHelpers = EntriesHelpers;
+exports.LikesHelpers = LikesHelpers;
