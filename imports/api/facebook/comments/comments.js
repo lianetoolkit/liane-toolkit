@@ -3,10 +3,6 @@ import SimpleSchema from "simpl-schema";
 const Comments = new Mongo.Collection("comments");
 
 Comments.schema = new SimpleSchema({
-  _id: {
-    type: String,
-    label: "Facebook id"
-  },
   personId: {
     type: String,
     index: true
@@ -19,6 +15,9 @@ Comments.schema = new SimpleSchema({
   },
   facebookAccountId: {
     type: String
+  },
+  created_time: {
+    type: Date
   }
 });
 

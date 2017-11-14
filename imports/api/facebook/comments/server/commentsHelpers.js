@@ -1,7 +1,9 @@
 import { Promise } from "meteor/promise";
 import { Facebook, FacebookApiException } from "fb";
-import { Likes } from "/imports/api/facebook/likes/likes.js";
+import { Comments } from "/imports/api/facebook/comments/comments.js";
+import { People } from "/imports/api/facebook/people/people.js";
 import { HTTP } from "meteor/http";
+import _ from "underscore";
 
 const options = {
   client_id: Meteor.settings.facebook.clientId,
@@ -35,19 +37,28 @@ const CommentsHelpers = {
 
     const _insertBulk = ({ data }) => {
       const bulk = Comments.rawCollection().initializeUnorderedBulkOp();
-
+      const commentedPeople = [];
       for (const comment of data) {
-        comment._id = comment.id;
-        comment.facebookAccountId = facebookAccountId;
-        comment.personId = like.id;
-        comment.entryId = entryId;
-        delete comment.id;
+        commentedPeople.push(comment.from);
+        delete comment.from;
         bulk.insert(comment);
       }
 
-      bulk.execute(function(e, result) {
+      bulk.execute((e, result) => {
         // do something with result
         console.info("result", result.nInserted);
+        if (commentedPeople.length) {
+          const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
+          for (const people of commentedPeople) {
+            peopleBulk
+              .find({ _id: people.id })
+              .upsert()
+              .update({ $set: { name: people.name } });
+          }
+          peopleBulk.execute(function(e, result) {
+            console.info("result", result.nInserted);
+          });
+        }
       });
     };
 

@@ -1,6 +1,7 @@
 import { Promise } from "meteor/promise";
 import { Facebook, FacebookApiException } from "fb";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
+import { People } from "/imports/api/facebook/people/people.js";
 import { HTTP } from "meteor/http";
 
 const options = {
@@ -37,8 +38,9 @@ const LikesHelpers = {
 
     const _insertBulk = ({ data }) => {
       const bulk = Likes.rawCollection().initializeUnorderedBulkOp();
-
+      const likedPeople = [];
       for (const like of data) {
+        likedPeople.push(data);
         like.facebookAccountId = facebookAccountId;
         like.personId = like.id;
         like.entryId = entryId;
@@ -46,9 +48,21 @@ const LikesHelpers = {
         bulk.insert(like);
       }
 
-      bulk.execute(function(e, result) {
+      bulk.execute((e, result) => {
         // do something with result
         console.info("result", result.nInserted);
+        if (likedPeople.length) {
+          const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
+          for (const people of likedPeople) {
+            peopleBulk
+              .find({ _id: people.id })
+              .upsert()
+              .update({ $set: { name: people.name } });
+          }
+          peopleBulk.execute(function(e, result) {
+            console.info("result", result.nInserted);
+          });
+        }
       });
     };
 

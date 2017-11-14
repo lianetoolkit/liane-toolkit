@@ -1,6 +1,10 @@
 import { Promise } from "meteor/promise";
 import { Facebook, FacebookApiException } from "fb";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
+import { CommentsHelpers } from "/imports/api/facebook/comments/server/commentsHelpers.js";
+import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
+import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
+
 import { HTTP } from "meteor/http";
 
 const options = {
@@ -21,7 +25,7 @@ const EntriesHelpers = {
     check(facebookId, String);
     check(accessToken, String);
 
-    logger.debug("FacebookAccountsHelpers.getAccountEntries called", {
+    logger.debug("EntriesHelpers.getAccountEntries called", {
       facebookId
     });
 
@@ -49,6 +53,14 @@ const EntriesHelpers = {
         entry._id = entry.id;
         delete entry.id;
         bulk.insert(entry);
+        JobsHelpers.addJob({
+          jobType: "entries.fetchInteractions",
+          jobData: {
+            facebookAccountId: entry.facebookAccountId,
+            accessToken: accessToken,
+            entryId: entry._id
+          }
+        });
       }
 
       bulk.execute(function(e, result) {
@@ -70,6 +82,21 @@ const EntriesHelpers = {
     }
 
     return;
+  },
+  getEntryInteractions({ facebookAccountId, entryId, accessToken }) {
+    check(facebookAccountId, String);
+    check(entryId, String);
+    check(accessToken, String);
+
+    logger.debug("EntriesHelpers.getEntryInteractions called", {
+      entryId
+    });
+    CommentsHelpers.getEntryComments({
+      facebookAccountId,
+      entryId,
+      accessToken
+    });
+    LikesHelpers.getEntryLikes({ facebookAccountId, entryId, accessToken });
   }
 };
 
