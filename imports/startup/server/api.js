@@ -1,5 +1,5 @@
 // users
-// import "/imports/api/users/server/usersMethods.js";
+import "/imports/api/users/server/usersMethods.js";
 import "/imports/api/users/server/usersPublications.js";
 
 // contexts
