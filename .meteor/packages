@@ -27,7 +27,7 @@ universe:i18n
 kadira:dochead
 meteorhacks:unblock
 semantic:ui
-http@1.2.12
+http
 meteorhacks:subs-manager
 check
 react-meteor-data

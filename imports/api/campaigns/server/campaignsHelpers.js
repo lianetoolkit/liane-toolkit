@@ -1,6 +1,7 @@
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
+import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 
 const CampaignsHelpers = {
   addAccountToCampaign({ campaignId, account }) {
@@ -12,7 +13,9 @@ const CampaignsHelpers = {
       account
     });
 
-    const token = FacebookAccountsHelpers.exchangeFBToken({token: account.access_token});
+    const token = FacebookAccountsHelpers.exchangeFBToken({
+      token: account.access_token
+    });
 
     const updateObj = {
       facebookId: account.id,
@@ -32,6 +35,13 @@ const CampaignsHelpers = {
     };
 
     FacebookAccounts.upsert({ facebookId: account.id }, upsertObj);
+    JobsHelpers.addJob({
+      jobType: "entries.fetchByAccount",
+      jobData: {
+        facebookId: account.id,
+        accessToken: token.result
+      }
+    });
     return;
   }
 };
