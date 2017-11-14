@@ -40,7 +40,7 @@ const LikesHelpers = {
       const bulk = Likes.rawCollection().initializeUnorderedBulkOp();
       const likedPeople = [];
       for (const like of data) {
-        likedPeople.push(data);
+        likedPeople.push({ id: like.id, name: like.name });
         like.facebookAccountId = facebookAccountId;
         like.personId = like.id;
         like.entryId = entryId;
@@ -50,7 +50,6 @@ const LikesHelpers = {
 
       bulk.execute((e, result) => {
         // do something with result
-        console.info("result", result.nInserted);
         if (likedPeople.length) {
           const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
           for (const people of likedPeople) {
@@ -59,9 +58,7 @@ const LikesHelpers = {
               .upsert()
               .update({ $set: { name: people.name } });
           }
-          peopleBulk.execute(function(e, result) {
-            console.info("result", result.nInserted);
-          });
+          peopleBulk.execute(function(e, result) {});
         }
       });
     };
