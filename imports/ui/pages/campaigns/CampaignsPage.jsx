@@ -30,6 +30,9 @@ export default class CampaignsPage extends React.Component {
       <div>
         <PageHeader
           title={`Campaign: ${campaign ? campaign.name : ""}`}
+          titleTo={FlowRouter.path("App.campaignDetail", {
+            _id: campaign ? campaign._id : ""
+          })}
           subTitle={facebookId ? facebookId : ""}
         />
         <section className="content">

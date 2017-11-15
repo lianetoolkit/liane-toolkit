@@ -25,6 +25,7 @@ if (Geolocations.find().count() == 0) {
     ("total": locations.length)
   );
 }
+
 const geolocations = Geolocations.find().fetch();
 if (Contexts.find().count() == 0) {
   const insertContext = {

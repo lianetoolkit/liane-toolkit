@@ -4,7 +4,7 @@ import { Facebook, FacebookApiException } from "fb";
 import _ from "underscore";
 
 const options = {
-  version: 'v2.11',
+  version: "v2.11",
   client_id: Meteor.settings.facebook.clientId,
   client_secret: Meteor.settings.facebook.clientSecret,
   admin: Meteor.settings.facebook.admin,
@@ -17,12 +17,11 @@ const route = `act_${options.adAccount}/reachestimate`;
 
 const FacebookAudiencesHelpers = {
   fetchAudience({ facebookAccountId, spec }) {
-
     check(facebookAccountId, String);
     check(spec, Object);
 
     const admin = Meteor.users.findOne({
-      'services.facebook.id': options.admin
+      "services.facebook.id": options.admin
     });
 
     if (!admin) {
@@ -32,7 +31,7 @@ const FacebookAudiencesHelpers = {
 
     const account = FacebookAccounts.findOne(facebookAccountId);
 
-    if(!account) {
+    if (!account) {
       return { error: "Account not found." };
     }
 
@@ -43,7 +42,7 @@ const FacebookAudiencesHelpers = {
       countries: ["BR"]
     };
 
-    const fetch = function (spec) {
+    const fetch = function(spec) {
       return Promise.await(
         _fb.api(route, {
           targeting_spec: spec,
@@ -54,10 +53,10 @@ const FacebookAudiencesHelpers = {
 
     let result = {};
 
-    result['estimate'] = fetch(spec);
-    result['total'] = fetch(_.omit(spec, 'interests'));
-    result['location_estimate'] = fetch(_.omit(spec, 'connections'));
-    result['location_total'] = fetch(_.omit(spec, 'interests', 'connections'));
+    result["estimate"] = fetch(spec);
+    result["total"] = fetch(_.omit(spec, "interests"));
+    result["location_estimate"] = fetch(_.omit(spec, "connections"));
+    result["location_total"] = fetch(_.omit(spec, "interests", "connections"));
 
     return { result };
   }

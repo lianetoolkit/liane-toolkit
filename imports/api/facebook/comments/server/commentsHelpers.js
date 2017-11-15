@@ -42,19 +42,19 @@ const CommentsHelpers = {
       for (const comment of data) {
         if (comment.from) {
           commentedPeople.push(comment.from);
+          comment.personId = comment.from.id;
+          comment.name = comment.from.name;
+          comment.facebookAccountId = facebookAccountId;
+          const commentId = comment.id;
+          delete comment.id;
+          delete comment.from;
+          bulk
+            .find({ _id: commentId })
+            .upsert()
+            .update({
+              $set: comment
+            });
         }
-        comment.personId = comment.from.id;
-        comment.name = comment.from.name;
-        comment.facebookAccountId = facebookAccountId;
-        const commentId = comment.id;
-        delete comment.id;
-        delete comment.from;
-        bulk
-          .find({ _id: commentId })
-          .upsert()
-          .update({
-            $set: comment
-          });
       }
 
       bulk.execute(

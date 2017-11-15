@@ -8,33 +8,31 @@ export default class PageHeader extends React.Component {
   }
 
   render() {
-    const { title, subTitle } = this.props;
+    const { title, titleTo, subTitle } = this.props;
     return (
       <section className="content-header">
         <Breadcrumb>
           <Breadcrumb.Section href="/">Dashboard</Breadcrumb.Section>
           <Breadcrumb.Divider icon="right angle" />
           <Breadcrumb.Section>
-            {subTitle
-              ? <a href={`/${title.toLowerCase()}`}>
-                  {title}
-                </a>
-              : <span>
-                  {title}
-                </span>}
+            {subTitle ? (
+              <a href={titleTo ? titleTo : `/${title.toLowerCase()}`}>
+                {title}
+              </a>
+            ) : (
+              <span>{title}</span>
+            )}
           </Breadcrumb.Section>
-          {subTitle
-            ? <span>
-                <Breadcrumb.Divider icon="right angle" />
-                <Breadcrumb.Section active>
-                  {subTitle}
-                </Breadcrumb.Section>
-              </span>
-            : ""}
+          {subTitle ? (
+            <span>
+              <Breadcrumb.Divider icon="right angle" />
+              <Breadcrumb.Section active>{subTitle}</Breadcrumb.Section>
+            </span>
+          ) : (
+            ""
+          )}
         </Breadcrumb>
-        <Header as="h1">
-          {subTitle ? subTitle : title}
-        </Header>
+        <Header as="h1">{subTitle ? subTitle : title}</Header>
         <Divider />
       </section>
     );
@@ -44,5 +42,6 @@ export default class PageHeader extends React.Component {
 PageHeader.propTypes = {
   // current meteor user
   title: PropTypes.string,
-  subTitle: PropTypes.string
+  subTitle: PropTypes.string,
+  titleTo: PropTypes.string
 };
