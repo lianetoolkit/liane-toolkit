@@ -67,9 +67,7 @@ const FacebookAudiencesHelpers = {
     for (const location of context.geolocations) {
       const geoLoc = Geolocations.findOne(location);
       spec["geo_locations"] = {};
-      spec.geo_locations[geoLoc.facebookType] = [
-        { name: geoLoc.name, key: geoLoc.facebookKey }
-      ];
+      spec.geo_locations[geoLoc.facebookType] = [{ key: geoLoc.facebookKey }];
 
       response = FacebookAudiencesHelpers.fetchAudienceByLocation({
         facebookAccountId,
