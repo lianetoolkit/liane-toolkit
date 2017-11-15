@@ -13,6 +13,7 @@ import AuthPageResetPassword from "/imports/ui/pages/accounts/AuthPageResetPassw
 import DashboardPageContainer from "/imports/ui/containers/app/DashboardPageContainer.jsx";
 import AddCampaignPageContainer from "/imports/ui/containers/campaigns/AddCampaignPageContainer.jsx";
 import AddContextsPageContainer from "/imports/ui/containers/contexts/AddContextsPageContainer.jsx";
+import AddAudienceCategoriesPageContainer from "/imports/ui/containers/audiences/AddAudienceCategoriesPageContainer.jsx";
 import CampaignsPageContainer from "/imports/ui/containers/campaigns/CampaignsPageContainer.jsx";
 
 import JobsPage from "/imports/ui/pages/jobs/JobsPage.jsx";
@@ -145,6 +146,16 @@ appRoutes.route("/add-context", {
     _addTitle(`${APP_NAME} | Add Context`);
     return mount(AppContainer, {
       content: { component: AddContextsPageContainer }
+    });
+  }
+});
+
+appRoutes.route("/add-audience-category", {
+  name: "App.addAudienceCategory",
+  action: function() {
+    _addTitle(`${APP_NAME} | Add Audience Category`);
+    return mount(AppContainer, {
+      content: { component: AddAudienceCategoriesPageContainer }
     });
   }
 });

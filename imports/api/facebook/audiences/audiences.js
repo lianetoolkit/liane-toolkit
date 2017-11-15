@@ -22,8 +22,8 @@ FacebookAudiences.schema = new SimpleSchema({
   location_total: {
     type: Number
   },
-  spec: {
-    type: Object
+  audienceCategoryId: {
+    type: String
   },
   createdAt: {
     type: Date,
