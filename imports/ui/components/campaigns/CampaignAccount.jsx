@@ -1,5 +1,14 @@
 import React, { Component } from "react";
-import { Header, Container, Button, Divider } from "semantic-ui-react";
+import {
+  Header,
+  Container,
+  Button,
+  Divider,
+  Segment,
+  Tab,
+  Menu,
+  Label
+} from "semantic-ui-react";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import AccountPeopleContainer from "/imports/ui/containers/people/AccountPeopleContainer.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
@@ -30,7 +39,20 @@ export default class CampaignAccount extends React.Component {
   render() {
     const { facebookId } = this.props;
     const account = FacebookAccounts.findOne({ facebookId });
-
+    const panes = [
+      {
+        menuItem: { key: "people", icon: "users", content: "People" },
+        render: () => (
+          <Tab.Pane>
+            <AccountPeopleContainer facebookId={facebookId} />
+          </Tab.Pane>
+        )
+      },
+      {
+        menuItem: <Menu.Item key="audience">Audience</Menu.Item>,
+        render: () => <Tab.Pane>Audience</Tab.Pane>
+      }
+    ];
     return (
       <Container>
         <Header as="h3" floated="left">
@@ -40,8 +62,7 @@ export default class CampaignAccount extends React.Component {
           Update
         </Button>
         <Divider hidden section />
-
-        <AccountPeopleContainer facebookId={facebookId} />
+        <Tab panes={panes} />
       </Container>
     );
   }

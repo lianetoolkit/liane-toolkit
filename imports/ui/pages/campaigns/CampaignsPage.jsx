@@ -28,7 +28,10 @@ export default class CampaignsPage extends React.Component {
     const { facebookId } = this.state;
     return (
       <div>
-        <PageHeader title={`Campaign: ${campaign ? campaign.name : ""}`} />
+        <PageHeader
+          title={`Campaign: ${campaign ? campaign.name : ""}`}
+          subTitle={facebookId ? facebookId : ""}
+        />
         <section className="content">
           {loading ? (
             <Loading />

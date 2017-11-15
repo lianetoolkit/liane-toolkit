@@ -64,7 +64,7 @@ const LikesHelpers = {
                 facebookAccountId: facebookAccountId
               }).count();
               peopleBulk
-                .find({ _id: people.id, campaignId: campaignId })
+                .find({ facebookId: people.id, campaignId: campaignId })
                 .upsert()
                 .update({
                   $set: { name: people.name, likesCount: likesCount },

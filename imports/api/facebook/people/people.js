@@ -3,9 +3,8 @@ import SimpleSchema from "simpl-schema";
 const People = new Mongo.Collection("people");
 
 People.schema = new SimpleSchema({
-  _id: {
-    type: String,
-    label: "facebookId"
+  facebookId: {
+    type: String
   },
   name: {
     type: String

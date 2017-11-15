@@ -11,7 +11,7 @@ Meteor.publish("people.byAccount", function({ facebookAccountId }) {
       },
       {
         fields: {
-          _id: 1,
+          facebookId: 1,
           name: 1,
           likesCount: 1,
           facebookAccounts: 1,

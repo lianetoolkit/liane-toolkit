@@ -25,9 +25,9 @@ export default class AccountPeople extends React.Component {
           <Table.Body>
             {people.map((person, index) => {
               return (
-                <Table.Row key={person._id}>
+                <Table.Row key={index}>
                   <Table.Cell>{person.name}</Table.Cell>
-                  <Table.Cell>{person._id}</Table.Cell>
+                  <Table.Cell>{person.facebookId}</Table.Cell>
                   <Table.Cell>{person.likesCount}</Table.Cell>
                   <Table.Cell>{person.commentsCount}</Table.Cell>
                   <Table.Cell />
