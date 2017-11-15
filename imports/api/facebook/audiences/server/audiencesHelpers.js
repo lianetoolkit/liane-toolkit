@@ -4,6 +4,7 @@ import { Facebook, FacebookApiException } from "fb";
 import _ from "underscore";
 
 const options = {
+  version: 'v2.11',
   client_id: Meteor.settings.facebook.clientId,
   client_secret: Meteor.settings.facebook.clientSecret,
   admin: Meteor.settings.facebook.admin,
@@ -15,12 +16,10 @@ _fb = new Facebook(options);
 const route = `act_${options.adAccount}/reachestimate`;
 
 const FacebookAudiencesHelpers = {
-  fetchAudience({ accountId, spec }) {
+  fetchAudience({ facebookAccountId, spec }) {
 
-    check(accountId, String);
+    check(facebookAccountId, String);
     check(spec, Object);
-
-    logger.info("FacebookAudiencesHelpers.getUserAccounts: called", { userId });
 
     const admin = Meteor.users.findOne({
       'services.facebook.id': options.admin
@@ -31,7 +30,7 @@ const FacebookAudiencesHelpers = {
     }
     const accessToken = admin.services.facebook.accessToken;
 
-    const account = FacebookAccounts.findOne(accountId);
+    const account = FacebookAccounts.findOne(facebookAccountId);
 
     if(!account) {
       return { error: "Account not found." };
@@ -43,7 +42,6 @@ const FacebookAudiencesHelpers = {
     spec["geo_locations"] = {
       countries: ["BR"]
     };
-
 
     const fetch = function (spec) {
       return Promise.await(
