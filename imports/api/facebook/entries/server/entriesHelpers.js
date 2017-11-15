@@ -53,7 +53,12 @@ const EntriesHelpers = {
         entry.facebookAccountId = facebookId;
         entry._id = entry.id;
         delete entry.id;
-        bulk.insert(entry);
+        bulk
+          .find({ _id: entry._id })
+          .upsert()
+          .update({
+            $set: entry
+          });
         JobsHelpers.addJob({
           jobType: "entries.fetchInteractions",
           jobData: {
