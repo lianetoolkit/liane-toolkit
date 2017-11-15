@@ -1,9 +1,10 @@
 import { EntriesJobs } from "/imports/api/facebook/entries/server/entriesJobs.js";
+import { AudiencesJobs } from "/imports/api/facebook/audiences/server/audiencesJobs.js";
 import { Jobs } from "../jobs.js";
 import { JobsHelpers } from "./jobsHelpers.js";
 
 // init jobs pool for workers
-JobsPool.jobs = _.extend(EntriesJobs);
+JobsPool.jobs = _.extend(EntriesJobs, AudiencesJobs);
 // logger.debug JobsPool.jobs
 
 // logger.debug "jobs.js: initializing JobsPool", {JobsPool}

@@ -6,12 +6,14 @@ import _ from "underscore";
 const locations = [
   {
     name: "São Paulo, Brazil",
-    facebookId: "112047398814697",
+    facebookKey: "112047398814697",
+    facebookType: "cities",
     geoId: "08"
   },
   {
     name: "Rio de Janeiro",
-    facebookId: "108154142551615",
+    facebookKey: "108154142551615",
+    facebookType: "cities",
     geoId: "09"
   }
 ];

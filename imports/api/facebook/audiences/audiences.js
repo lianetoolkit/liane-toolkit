@@ -7,8 +7,13 @@ FacebookAudiences.schema = new SimpleSchema({
     type: String,
     index: true
   },
-  title: {
-    type: String
+  geoLocationId: {
+    type: String,
+    index: true
+  },
+  audienceCategoryId: {
+    type: String,
+    index: true
   },
   estimate: {
     type: Number
@@ -22,8 +27,10 @@ FacebookAudiences.schema = new SimpleSchema({
   location_total: {
     type: Number
   },
-  audienceCategoryId: {
-    type: String
+  fetch_date: {
+    type: String,
+    label: "YYYY-MM-DD",
+    index: 1
   },
   createdAt: {
     type: Date,
