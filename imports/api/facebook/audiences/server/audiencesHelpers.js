@@ -75,15 +75,14 @@ const FacebookAudiencesHelpers = {
       });
 
       if (response) {
-        const data = response.result;
-        data.audienceCategoryId = audienceCategoryId;
         FacebookAudiences.upsert(
           {
             facebookAccountId: facebookAccountId,
+            audienceCategoryId: audienceCategoryId,
             fetch_date: moment().format("YYYY-MM-DD"),
             geoLocationId: geoLoc._id
           },
-          { $set: data }
+          { $set: response.result }
         );
         logger.debug("fetchContextAudiences result", { response });
       }

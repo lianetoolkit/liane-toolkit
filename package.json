@@ -1,8 +1,10 @@
 {
   "name": "liane",
+  "description": "An Electoral Toolkit for Political Campaigns",
   "private": false,
   "scripts": {
-    "start": "meteor npm install && meteor run -p 3000 --settings=./.deploy/local/settings.json"
+    "start":
+      "meteor npm install && meteor run -p 3000 --settings=./.deploy/local/settings.json"
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
@@ -30,9 +32,7 @@
   "postcss": {
     "plugins": {
       "autoprefixer": {
-        "browsers": [
-          "last 2 versions"
-        ]
+        "browsers": ["last 2 versions"]
       }
     }
   }

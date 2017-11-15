@@ -91,34 +91,37 @@ export default class App extends React.Component {
             <Loader>Loading</Loader>
           </Dimmer>
         ) : (
-          <div id="main">
-            <AppBar currentUser={currentUser} logout={this.logout} />
-            <ModalManager />
-            <ConfirmManager />
-            <Container>
-              {loading ? (
-                <Loading />
-              ) : (
-                <ReactCSSTransitionGroup
-                  transitionName="fade"
-                  transitionEnterTimeout={200}
-                  transitionLeaveTimeout={200}
-                >
-                  {currentUser ? (
-                    <div>
-                      <this.props.content.component
-                        {...this.props.content.props}
-                        currentUser={currentUser}
-                      />
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                </ReactCSSTransitionGroup>
-              )}
-            </Container>
+          <Container fluid id="app-container">
+            <div id="main">
+              <AppBar currentUser={currentUser} logout={this.logout} />
+              <ModalManager />
+              <ConfirmManager />
+              <Container>
+                {loading ? (
+                  <Loading />
+                ) : (
+                  <ReactCSSTransitionGroup
+                    transitionName="fade"
+                    transitionEnterTimeout={200}
+                    transitionLeaveTimeout={200}
+                  >
+                    {currentUser ? (
+                      <div>
+                        <this.props.content.component
+                          {...this.props.content.props}
+                          currentUser={currentUser}
+                        />
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </ReactCSSTransitionGroup>
+                )}
+              </Container>
+            </div>
+
             <AppFooter styles={footerStyles} />
-          </div>
+          </Container>
         )}
       </div>
     );

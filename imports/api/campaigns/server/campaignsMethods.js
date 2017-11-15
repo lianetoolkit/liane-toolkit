@@ -80,12 +80,17 @@ export const updateAccount = new ValidatedMethod({
     },
     facebookId: {
       type: String
+    },
+    action: {
+      type: String,
+      allowedValues: ["people", "audience"]
     }
   }).validator(),
-  run({ campaignId, facebookId }) {
+  run({ campaignId, facebookId, action }) {
     logger.debug("campaigns.updateAccount called", {
       campaignId,
-      facebookId
+      facebookId,
+      action
     });
 
     const userId = Meteor.userId();
@@ -104,19 +109,21 @@ export const updateAccount = new ValidatedMethod({
     }
 
     const account = _.findWhere(campaign.accounts, { facebookId: facebookId });
-
-    JobsHelpers.addJob({
-      jobType: "entries.fetchByAccount",
-      jobData: {
-        facebookId: facebookId,
-        accessToken: account.accessToken,
-        campaignId: campaignId
-      }
-    });
-
-    AudienceCategoriesHelpers.fetchAudienceCategoriesByAccount({
-      facebookAccountId: facebookId
-    });
+    if (action == "people") {
+      JobsHelpers.addJob({
+        jobType: "entries.fetchByAccount",
+        jobData: {
+          facebookId: facebookId,
+          accessToken: account.accessToken,
+          campaignId: campaignId
+        }
+      });
+    }
+    if (action == "audience") {
+      AudienceCategoriesHelpers.fetchAudienceCategoriesByAccount({
+        facebookAccountId: facebookId
+      });
+    }
 
     return;
   }

@@ -1,26 +1,36 @@
 import { People } from "../people.js";
-import { Likes } from "/imports/api/facebook/likes/likes.js";
-import { Comments } from "/imports/api/facebook/comments/comments.js";
 
-Meteor.publish("people.byAccount", function({ facebookAccountId }) {
+Meteor.publish("people.byAccount", function({
+  search,
+  limit,
+  orderBy,
+  fields
+}) {
+  this.unblock();
+  // Meteor._sleepForMs 2000
   const currentUser = this.userId;
   if (currentUser) {
-    return People.find(
-      {
-        facebookAccounts: { $in: [facebookAccountId] }
-      },
-      {
-        fields: {
-          facebookId: 1,
-          name: 1,
-          likesCount: 1,
-          facebookAccounts: 1,
-          commentsCount: 1
-        }
-      },
-      { sort: { likesCount: -1 } }
-    );
+    const options = {
+      sort: {},
+      limit: Math.min(limit, 1000),
+      fields
+    };
+    options["sort"][orderBy.field] = orderBy.ordering;
+    return People.find(search, options);
   } else {
-    return this.ready();
+    this.stop();
+    return;
+  }
+});
+
+Meteor.publish("people.byAccount.counter", function({ search }) {
+  this.unblock();
+  const currentUser = this.userId;
+  if (currentUser) {
+    Counts.publish(this, "people.byAccount.counter", People.find(search));
+    return;
+  } else {
+    this.stop();
+    return;
   }
 });
