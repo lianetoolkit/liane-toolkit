@@ -83,8 +83,16 @@ This project uses **Job Collection** (https://github.com/vsivsi/meteor-job-colle
 
 ## Internationalization
 
-This project uses **universe:i18n** (https://github.com/vazco/meteor-universe-i18n) for internationaliztion. You can find and edit translations at `/i18n/en.i18n.json`
+This project uses **universe:i18n** (https://github.com/vazco/meteor-universe-i18n) for internationalization. You can find and edit translations at `/i18n/en.i18n.json`
 
 ## Tests
 
-TODO
+This projects uses **Mocha**(https://github.com/mochajs/mocha) js framework, **Faker** and **Meteor Factory**(https://github.com/versolearning/meteor-factory/).
+
+You can find tests inside server folders `../server/campaigns.tests.js` and fake models `../server/campaigns.fake.js`.
+To run tests you use:
+~~~shell
+npm run test
+~~~
+
+It will run at http://localhost:3100
