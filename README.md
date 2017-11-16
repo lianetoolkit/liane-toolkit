@@ -5,7 +5,7 @@ Liane uses Meteor framework, Reactjs library and Facebook API to provide differe
 
 > This project is under development.
 
-##TOC
+**Table of Contents**
 
 * [Getting Started](#getting-started)
 * [Routes Definition](#routes-definition)
