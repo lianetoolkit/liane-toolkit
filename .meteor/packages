@@ -41,3 +41,7 @@ aldeed:collection2-core
 aldeed:schema-index
 reywood:publish-composite
 meteorhacks:aggregate
+dburles:factory
+xolvio:cleaner
+practicalmeteor:chai
+practicalmeteor:mocha
