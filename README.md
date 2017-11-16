@@ -1,1 +1,77 @@
 # liane-toolkit
+Liane toolkit is an Electoral Toolkit for Political Campaigns. We belive we can democratize the network analysis intelligence.
+
+Liane uses Meteor framework, Reactjs library and Facebook API to provide different tools to candidates.
+
+> This project is under development.
+
+##TOC
+
+* [Getting Started](#getting-started)
+* [Routes Definition](#routes-definition)
+* [Application Structure](#application-structure)
+* [On startup](#on-startup)
+
+## Getting Started
+
+Install **Meteor** (https://guide.meteor.com) full-stack framework.
+~~~shell
+curl https://install.meteor.com/ | sh
+~~~
+
+Clone this repository.
+~~~shell
+git clone https://github.com/Garbolino/liane-toolkit
+~~~
+
+Create a file at `.deploy/local/` and name it `settings.json`. You can find an example at `.deploy/settings.example.json`
+
+Add your Facebook API settings.
+
+Then you can run your project.
+
+~~~js
+npm start
+~~~
+
+## Routes Definition
+
+This project uses **FlowRouter** (https://github.com/kadirahq/flow-router) for routes definition. You can find and modify routes at `/imports/startup/client/routes.js`
+
+## Application Structure
+
+This projects follows Meteor guide recommendations for application struture.
+~~~js
+imports/
+  startup/
+    client/
+      index.js                 # import client startup through a single index entry point
+      routes.js                # set up all routes in the app
+    server/
+      fixtures.js              # fill the DB with example data on startup
+      index.js                 # import server startup through a single index entry point
+  api/
+    campaigns/                     # a unit of domain logic
+      server/
+        campaignsHelpers.js
+        campaignsPublications.js        # all campaigns-related publications
+        campaignsMethods.js  # tests for the list publications
+      campaigns.js                 # definition of the Lists collection
+  ui/
+    components/                # all reusable components in the application
+    containers/                 # can be split by domain if there are many
+    layouts/                   # wrapper components for behaviour and visuals
+    pages/                     # entry points for rendering used by the router
+client/
+  main.js                      # client entry point, imports all client code
+server/
+  main.js
+~~~
+
+## On startup
+
+You can find the access code for signing up at `.deploy/local/settings.json`, by default is 'XXX'. You can customize as you like.
+
+At `/imports/startup/server/fixtures.js` by default on start up the system adds some examples of Contexts, Geolocations and Categories. You can also customize as you like.
+
+
