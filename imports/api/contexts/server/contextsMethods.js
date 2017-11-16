@@ -8,9 +8,15 @@ export const contextsCreate = new ValidatedMethod({
   validate: new SimpleSchema({
     name: {
       type: String
+    },
+    geolocations: {
+      type: Array
+    },
+    "geolocations.$": {
+      type: String
     }
   }).validator(),
-  run({ name }) {
+  run({ name, geolocations }) {
     logger.debug("contexts.create called", { name });
 
     const userId = Meteor.userId();
@@ -22,7 +28,7 @@ export const contextsCreate = new ValidatedMethod({
       throw new Meteor.Error(403, "Access denied");
     }
 
-    const insertDoc = { name };
+    const insertDoc = { name, geolocations };
     Contexts.insert(insertDoc);
     return;
   }

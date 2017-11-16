@@ -36,7 +36,6 @@ export default class AudienceGeoLocationChart extends React.Component {
       dataEstimate.values.push(audience.estimate);
       dataTotal.values.push(audience.total);
     });
-    console.log(data);
     return data;
   }
 

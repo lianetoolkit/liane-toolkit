@@ -19,7 +19,7 @@ export default createContainer(props => {
           geoLocationId: props.geoLocationId,
           audienceCategoryId: props.audienceCategoryId
         },
-        { sortBy: { createdAt: -1 } }
+        { sortBy: { createdAt: 1 } }
       ).fetch()
     : [];
   return {

@@ -27,6 +27,16 @@ export default class AppBar extends React.Component {
       return currentUser.emails[0].address;
     }
   }
+  _getAdminItems() {
+    const { currentUser } = this.props;
+    if (Roles.userIsInRole(currentUser, ["admin", "staff"])) {
+      return (
+        <Dropdown.Item as="a" href={FlowRouter.path("App.addContext")}>
+          <Icon name="plus" /> Add Context
+        </Dropdown.Item>
+      );
+    }
+  }
   render() {
     const { loading, currentUser, logout } = this.props;
 
@@ -46,6 +56,7 @@ export default class AppBar extends React.Component {
               text={currentUser ? this._getUserInfo(currentUser) : ""}
             >
               <Dropdown.Menu>
+                {this._getAdminItems()}
                 <Dropdown.Item onClick={logout}>
                   <Icon name="sign out" /> Logout
                 </Dropdown.Item>

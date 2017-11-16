@@ -18,6 +18,8 @@ import "/imports/api/facebook/audiences/server/audiencesPublications.js";
 
 import "/imports/api/audienceCategories/server/audienceCategoriesPublications.js";
 
+//geolocations
+import "/imports/api/geolocations/server/geolocationsPublications.js";
 // facebook
 import "/imports/api/facebook/accounts/server/accountsMethods.js";
 

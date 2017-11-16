@@ -1,16 +1,16 @@
 import { Meteor } from "meteor/meteor";
 import { createContainer } from "meteor/react-meteor-data";
-import { Contexts } from "/imports/api/contexts/contexts.js";
+import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import AddContextsPage from "/imports/ui/pages/contexts/AddContextsPage.jsx";
 
 export default createContainer(() => {
-  const contextsHandle = Meteor.subscribe("contexts.all");
-  const loading = !contextsHandle.ready();
+  const subsHandle = Meteor.subscribe("geolocations.all");
+  const loading = !subsHandle.ready();
 
-  const contexts = contextsHandle.ready() ? Contexts.find().fetch() : [];
+  const geolocations = subsHandle.ready() ? Geolocations.find().fetch() : [];
 
   return {
     loading,
-    contexts
+    geolocations
   };
 }, AddContextsPage);
