@@ -26,6 +26,9 @@ export default class CampaignsPage extends React.Component {
   render() {
     const { loading, campaign, accounts } = this.props;
     const { facebookId } = this.state;
+    const facebookAccount = !loading
+      ? _.findWhere(accounts, { facebookId: facebookId })
+      : null;
     return (
       <div>
         <PageHeader
@@ -33,7 +36,7 @@ export default class CampaignsPage extends React.Component {
           titleTo={FlowRouter.path("App.campaignDetail", {
             _id: campaign ? campaign._id : ""
           })}
-          subTitle={facebookId ? facebookId : ""}
+          subTitle={!loading && facebookId ? facebookAccount.name : ""}
         />
         <section className="content">
           {loading ? (
@@ -41,7 +44,10 @@ export default class CampaignsPage extends React.Component {
           ) : (
             <div>
               {facebookId ? (
-                <CampaignAccount facebookId={facebookId} />
+                <CampaignAccount
+                  facebookId={facebookId}
+                  contextId={campaign.contextId}
+                />
               ) : (
                 <Grid>
                   <Grid.Row>

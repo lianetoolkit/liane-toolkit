@@ -6,7 +6,6 @@ import CampaignsPage from "/imports/ui/pages/campaigns/CampaignsPage.jsx";
 import _ from "underscore";
 
 export default createContainer(props => {
-  console.log(props);
   const subsHandle = Meteor.subscribe("campaigns.detail", {
     campaignId: props.campaignId
   });

@@ -1,5 +1,8 @@
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
+import { Contexts } from "/imports/api/contexts/contexts.js";
+import { Geolocations } from "/imports/api/geolocations/geolocations.js";
+
 import _ from "underscore";
 
 Meteor.publish("campaigns.byUser", function() {
@@ -42,6 +45,22 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
               facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
             });
           }
+        },
+        {
+          find: function(campaign) {
+            return Contexts.find({
+              _id: campaign.contextId
+            });
+          },
+          children: [
+            {
+              find: function(context) {
+                return Geolocations.find({
+                  _id: { $in: context.geolocations }
+                });
+              }
+            }
+          ]
         }
       ]
     };

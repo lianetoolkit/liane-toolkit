@@ -10,6 +10,7 @@ import {
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import PeopleTable from "/imports/ui/components/people/PeopleTable.jsx";
 import AudiencesTable from "/imports/ui/components/audiences/AudiencesTable.jsx";
+import AudiencesChartsContainer from "/imports/ui/containers/audiences/AudiencesChartsContainer.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import moment from "moment";
 
@@ -37,7 +38,7 @@ export default class CampaignAccount extends React.Component {
   }
 
   render() {
-    const { facebookId } = this.props;
+    const { facebookId, contextId } = this.props;
     const account = FacebookAccounts.findOne({ facebookId });
     const panes = [
       {
@@ -74,6 +75,10 @@ export default class CampaignAccount extends React.Component {
                 Update
               </Button>
             </Segment>
+            <AudiencesChartsContainer
+              facebookAccountId={facebookId}
+              contextId={contextId}
+            />
             <AudiencesTable
               selector={{ facebookAccountId: facebookId }}
               hideHeader={true}
@@ -84,8 +89,6 @@ export default class CampaignAccount extends React.Component {
     ];
     return (
       <Container>
-        <Header as="h3">{account.name}</Header>
-        <Divider hidden section />
         <Tab menu={{ pointing: true }} panes={panes} />
       </Container>
     );

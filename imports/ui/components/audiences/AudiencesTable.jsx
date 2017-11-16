@@ -42,6 +42,10 @@ export default class AudiencesTable extends React.Component {
             }
           },
           {
+            label: "fetch_date",
+            data: "fetch_date"
+          },
+          {
             label: "estimate",
             data: "estimate"
           },

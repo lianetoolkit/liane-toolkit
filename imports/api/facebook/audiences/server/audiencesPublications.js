@@ -2,6 +2,26 @@ import { FacebookAudiences } from "../audiences.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 
+Meteor.publish("audiences.byCategory.byGeolocation", function({
+  facebookAccountId,
+  geoLocationId,
+  audienceCategoryId
+}) {
+  const currentUser = this.userId;
+  if (currentUser) {
+    return FacebookAudiences.find(
+      {
+        facebookAccountId: facebookAccountId,
+        geoLocationId: geoLocationId,
+        audienceCategoryId: audienceCategoryId
+      },
+      { sort: { createdAt: -1 } }
+    );
+  } else {
+    return this.ready();
+  }
+});
+
 Meteor.publishComposite("audiences.byAccount", function({
   search,
   limit,
