@@ -10,6 +10,7 @@ import {
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import PeopleTable from "/imports/ui/components/people/PeopleTable.jsx";
 import AudiencesTable from "/imports/ui/components/audiences/AudiencesTable.jsx";
+import AudiencesIndexTable from "/imports/ui/components/audiences/AudiencesIndexTable.jsx";
 import AudiencesChartsContainer from "/imports/ui/containers/audiences/AudiencesChartsContainer.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import moment from "moment";
@@ -79,7 +80,7 @@ export default class CampaignAccount extends React.Component {
               facebookAccountId={facebookId}
               contextId={contextId}
             />
-            <AudiencesTable
+            <AudiencesIndexTable
               selector={{ facebookAccountId: facebookId }}
               hideHeader={true}
             />
