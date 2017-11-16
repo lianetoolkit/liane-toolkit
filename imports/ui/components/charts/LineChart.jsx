@@ -1,6 +1,9 @@
 import React from "react";
 import { lightenDarkenColor } from "/imports/ui/utils/utils.jsx";
 import { Line } from "react-chartjs-2";
+import _ from "underscore";
+
+const colors = ["orange", "green", "blue", "yellow"];
 
 export default class LineChart extends React.Component {
   constructor(props) {
@@ -17,21 +20,21 @@ export default class LineChart extends React.Component {
   _getData() {
     const { data, labels, color } = this.props;
     const baseColor = color ? color : "#EF4C4C";
-
-    const set0 = {
-      data: data,
-      fill: true,
-      lineTension: 0.4,
-      borderColor: baseColor,
-      backgroundColor: lightenDarkenColor(baseColor, 40)
-    };
-
     const lineChartData = {
       labels: labels,
       datasets: []
     };
+    _.each(data, (dataSet, index) => {
+      let set = {
+        data: dataSet.values,
+        fill: false,
+        label: dataSet.title,
+        lineTension: 0.4,
+        borderColor: colors[index]
+      };
+      lineChartData.datasets.push(set);
+    });
 
-    lineChartData.datasets.push(set0);
     return lineChartData;
   }
 

@@ -19,10 +19,24 @@ export default class AudienceGeoLocationChart extends React.Component {
   }
   _getData() {
     const { audiences } = this.props;
-    const data = [];
+
+    const dataLocationEstimate = { title: "location estimate", values: [] };
+    const dataLocationTotal = { title: "location total", values: [] };
+    const dataEstimate = { title: "estimate", values: [] };
+    const dataTotal = { title: "total", values: [] };
+    const data = [
+      dataLocationEstimate,
+      dataLocationTotal,
+      dataEstimate,
+      dataTotal
+    ];
     _.each(audiences, audience => {
-      data.push(audience.location_estimate);
+      dataLocationEstimate.values.push(audience.location_estimate);
+      dataLocationTotal.values.push(audience.location_total);
+      dataEstimate.values.push(audience.estimate);
+      dataTotal.values.push(audience.total);
     });
+    console.log(data);
     return data;
   }
 
