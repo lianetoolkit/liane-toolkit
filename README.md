@@ -11,6 +11,9 @@ Liane uses Meteor framework, Reactjs library and Facebook API to provide differe
 * [Routes Definition](#routes-definition)
 * [Application Structure](#application-structure)
 * [On startup](#on-startup)
+* [Cron Jobs](#cron-jobs)
+* [Internationalization](#internationalization)
+* [Tests](#tests)
 
 ## Getting Started
 
@@ -74,4 +77,14 @@ You can find the access code for signing up at `.deploy/local/settings.json`, by
 
 At `/imports/startup/server/fixtures.js` by default on start up the system adds some examples of Contexts, Geolocations and Categories. You can also customize as you like.
 
+## Cron jobs
 
+This project uses **Job Collection** (https://github.com/vsivsi/meteor-job-collection/) as job manager. It allows to add schedule jobs for repeating tasks along the campaign.
+
+## Internationalization
+
+This project uses **universe:i18n** (https://github.com/vazco/meteor-universe-i18n) for internationaliztion. You can find and edit translations at `/i18n/en.i18n.json`
+
+## Tests
+
+TODO
