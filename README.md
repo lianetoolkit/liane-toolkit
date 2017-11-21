@@ -24,7 +24,7 @@ curl https://install.meteor.com/ | sh
 
 Clone this repository.
 ~~~shell
-git clone https://github.com/Garbolino/liane-toolkit
+git clone https://github.com/lianetoolkit/liane-toolkit
 ~~~
 
 Create a file at `.deploy/local/` and name it `settings.json`. You can find an example at `.deploy/settings.example.json`
