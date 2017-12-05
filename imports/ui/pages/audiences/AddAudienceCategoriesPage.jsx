@@ -56,7 +56,8 @@ export default class AddAudienceCategoriesPage extends React.Component {
                       onChange={this._handleChange}
                     />
                     <AudiencesTargetingSpecForm
-                      targetingSpec={targetingSpec}
+                      name="targetingSpec"
+                      value={targetingSpec}
                       onChange={this._handleChange}
                     />
                     <Button>Send</Button>

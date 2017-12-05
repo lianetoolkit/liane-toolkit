@@ -21,20 +21,21 @@ export default class AudiencesTargetingSpecForm extends React.Component {
         interests: []
       }
     };
-    this._getTypeInput = this._getTypeInput.bind(this);
     this._handleChange = this._handleChange.bind(this);
+    this._newSpecLine = this._newSpecLine.bind(this);
+    this._getTypeInput = this._getTypeInput.bind(this);
     this._availableKeys = Object.keys(availableTypes);
   }
   componentDidMount() {
     this.setState({
-      fields: Object.assign(this.state.fields, this.props.targetingSpec)
+      fields: Object.assign(this.state.fields, this.props.value)
     });
   }
   componentDidUpdate(prevProps, prevState) {
     const { fields } = this.state;
     if (JSON.stringify(prevState.fields) != JSON.stringify(fields)) {
       this.props.onChange(null, {
-        name: "targetingSpec",
+        name: this.props.name,
         value: fields
       });
     }
