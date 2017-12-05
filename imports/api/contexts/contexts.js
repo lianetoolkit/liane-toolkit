@@ -17,6 +17,13 @@ Contexts.schema = new SimpleSchema({
   "geolocations.$": {
     type: String
   },
+  audienceCategories: {
+    type: Array,
+    optional: true
+  },
+  "audienceCategories.$": {
+    type: String
+  },
   createdAt: {
     type: Date,
     autoValue() {

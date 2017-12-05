@@ -1,51 +1,57 @@
 import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
-import { Form, Statistic, Grid, Button } from "semantic-ui-react";
+import { Form, Grid, Button } from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
-
-import _ from "underscore";
 
 export default class AddContextPage extends React.Component {
   constructor(props) {
     super(props);
     console.log("AddContextPage init", { props });
     this.state = {
-      name: "",
-      locations: [],
+      fields: {
+        name: "",
+        geolocations: [],
+        audienceCategories: []
+      },
       isLoading: false
     };
     this._handleSubmit = this._handleSubmit.bind(this);
     this._handleChange = this._handleChange.bind(this);
   }
-  _handleChange = (e, { name, value }) => this.setState({ [name]: value });
-
+  _handleChange = (e, { name, value }) =>
+    this.setState({
+      fields: Object.assign({}, this.state.fields, { [name]: value })
+    });
   _handleSubmit(e) {
-    const { name, locations } = this.state;
-    const geolocations = locations;
-    if (name && locations.length) {
-      this.setState({ isLoading: true });
-      Meteor.call("contexts.create", { name, geolocations }, (error, data) => {
-        this.setState({ isLoading: false });
-        if (error) {
-          Alerts.error(error);
-        } else {
-          Alerts.success("Context was created successfully");
-        }
-      });
-    }
+    const { fields } = this.state;
+    this.setState({ isLoading: true });
+    Meteor.call("contexts.create", fields, (error, data) => {
+      this.setState({ isLoading: false });
+      if (error) {
+        Alerts.error(error);
+      } else {
+        Alerts.success("Context was created successfully");
+      }
+    });
   }
-  _handleSelectChange = (e, { value }) => this.setState({ locations: value });
-
   render() {
-    const { loading, currentUser, geolocations } = this.props;
-    const { name, locations, isLoading } = this.state;
-    const options = [];
-    _.each(geolocations, geoLocation => {
-      options.push({
-        key: geoLocation._id,
-        text: geoLocation.name,
-        value: geoLocation._id
+    const { loading, currentUser, available } = this.props;
+    const { fields, isLoading } = this.state;
+    const geolocationOptions = [];
+    available.geolocations.forEach(geolocation => {
+      geolocationOptions.push({
+        key: geolocation._id,
+        text: geolocation.name,
+        value: geolocation._id
+      });
+    });
+    const audienceCategoryOptions = [];
+    available.audienceCategories.forEach(audienceCategory => {
+      audienceCategoryOptions.push({
+        key: audienceCategory._id,
+        text: audienceCategory.title,
+        value: audienceCategory._id
       });
     });
     return (
@@ -64,17 +70,29 @@ export default class AddContextPage extends React.Component {
                       placeholder="Context name"
                       name="name"
                       onChange={this._handleChange}
-                      value={name}
+                      value={fields.name}
                     />
                     <Form.Dropdown
-                      options={options}
-                      placeholder="Choose Locations"
+                      options={geolocationOptions}
+                      placeholder="Choose locations"
+                      name="geolocations"
                       search
                       selection
                       fluid
                       multiple
-                      value={locations}
-                      onChange={this._handleSelectChange}
+                      value={fields.geolocations}
+                      onChange={this._handleChange}
+                    />
+                    <Form.Dropdown
+                      options={audienceCategoryOptions}
+                      placeholder="Choose audience categories"
+                      name="audienceCategories"
+                      search
+                      selection
+                      fluid
+                      multiple
+                      value={fields.audienceCategories}
+                      onChange={this._handleChange}
                     />
                     <Button type="submit">Submit</Button>
                   </Form>

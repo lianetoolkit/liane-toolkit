@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Meteor } from "meteor/meteor";
 import PropTypes from "prop-types";
 import { isFbLogged } from "/imports/ui/utils/utils.jsx";
+import { Alerts } from "/imports/ui/utils/Alerts.js";
 
 import { Menu, Dropdown, Container, Icon } from "semantic-ui-react";
 
@@ -16,7 +17,7 @@ export default class AppBar extends React.Component {
     if (currentUser && isFbLogged(currentUser)) {
       FlowRouter.go("App.addCampaign");
     } else {
-      Alert.danger("You need to login with facebook first");
+      Alerts.error("You need to login with facebook first");
       return;
     }
   }
@@ -27,14 +28,26 @@ export default class AppBar extends React.Component {
       return currentUser.emails[0].address;
     }
   }
-  _getAdminItems() {
+  _getAdminMenu() {
     const { currentUser } = this.props;
     if (Roles.userIsInRole(currentUser, ["admin", "staff"])) {
       return (
-        <Dropdown.Item as="a" href={FlowRouter.path("App.addContext")}>
-          <Icon name="plus" /> Add Context
-        </Dropdown.Item>
+        <Dropdown item simple text="Admin">
+          <Dropdown.Menu>
+            <Dropdown.Item as="a" href={FlowRouter.path("App.addContext")}>
+              <Icon name="plus" /> Add Context
+            </Dropdown.Item>
+            <Dropdown.Item
+              as="a"
+              href={FlowRouter.path("App.addAudienceCategory")}
+            >
+              <Icon name="plus" /> Add Audience Category
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       );
+    } else {
+      return null;
     }
   }
   render() {
@@ -43,7 +56,7 @@ export default class AppBar extends React.Component {
     return (
       <Menu fixed="top" id="appBar" size="large" inverted>
         <Container>
-          <Menu.Item as="a" header>
+          <Menu.Item as="a" href={FlowRouter.path("App.dashboard")} header>
             {Meteor.settings.public.appName}
           </Menu.Item>
           <Menu.Menu position="right">
@@ -56,12 +69,12 @@ export default class AppBar extends React.Component {
               text={currentUser ? this._getUserInfo(currentUser) : ""}
             >
               <Dropdown.Menu>
-                {this._getAdminItems()}
                 <Dropdown.Item onClick={logout}>
                   <Icon name="sign out" /> Logout
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
+            {this._getAdminMenu()}
           </Menu.Menu>
         </Container>
       </Menu>

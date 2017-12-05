@@ -11,6 +11,9 @@ export default class AudiencesIndexTable extends React.Component {
   }
 
   getRatio (audience) {
+    if(audience.total < 100) {
+      return 'Not enough data';
+    }
     const local = audience.estimate/audience.total;
     const location = audience.location_estimate/audience.location_total;
     const ratio = local/location;
@@ -64,19 +67,19 @@ export default class AudiencesIndexTable extends React.Component {
             }
           },
           {
-            label: "estimate",
+            label: "LPI",
             data: "estimate"
           },
           {
-            label: "total",
+            label: "LP",
             data: "total"
           },
           {
-            label: "Location estimate",
+            label: "LI",
             data: "location_estimate"
           },
           {
-            label: "location_total",
+            label: "L",
             data: "location_total"
           }
         ]}

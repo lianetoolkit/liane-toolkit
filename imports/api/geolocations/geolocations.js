@@ -15,6 +15,10 @@ Geolocations.schema = new SimpleSchema({
   name: {
     type: String
   },
+  parentId: {
+    type: String,
+    optional: true
+  },
   facebookKey: {
     type: String
   },

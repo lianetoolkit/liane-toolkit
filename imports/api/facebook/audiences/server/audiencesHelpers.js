@@ -16,7 +16,7 @@ const options = {
   adAccount: Meteor.settings.facebook.adAccount
 };
 
-_fb = new Facebook(options);
+const _fb = new Facebook(options);
 
 const route = `act_${options.adAccount}/reachestimate`;
 
@@ -43,6 +43,22 @@ const FacebookAudiencesHelpers = {
       });
     }
   },
+  _getRegionFacebookType({
+    type
+  }) {
+    switch(type) {
+      case 'region': {
+        return 'regions';
+      }
+      case 'country': {
+        return 'countries';
+      }
+      case 'cities' :
+      case 'city': {
+        return 'cities';
+      }
+    }
+  },
   fetchContextAudiences({
     facebookAccountId,
     contextId,
@@ -67,7 +83,7 @@ const FacebookAudiencesHelpers = {
     for (const location of context.geolocations) {
       const geoLoc = Geolocations.findOne(location);
       spec["geo_locations"] = {};
-      spec.geo_locations[geoLoc.facebookType] = [{ key: geoLoc.facebookKey }];
+      spec.geo_locations[FacebookAudiencesHelpers._getRegionFacebookType({type: geoLoc.facebookType})] = [{ key: geoLoc.facebookKey }];
 
       response = FacebookAudiencesHelpers.fetchAudienceByLocation({
         facebookAccountId,

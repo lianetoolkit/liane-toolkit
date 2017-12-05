@@ -14,9 +14,15 @@ export const contextsCreate = new ValidatedMethod({
     },
     "geolocations.$": {
       type: String
+    },
+    audienceCategories: {
+      type: Array
+    },
+    "audienceCategories.$": {
+      type: String
     }
   }).validator(),
-  run({ name, geolocations }) {
+  run({ name, geolocations, audienceCategories }) {
     logger.debug("contexts.create called", { name });
 
     const userId = Meteor.userId();
@@ -28,7 +34,7 @@ export const contextsCreate = new ValidatedMethod({
       throw new Meteor.Error(403, "Access denied");
     }
 
-    const insertDoc = { name, geolocations };
+    const insertDoc = { name, geolocations, audienceCategories };
     Contexts.insert(insertDoc);
     return;
   }

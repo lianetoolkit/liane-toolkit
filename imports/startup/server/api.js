@@ -8,18 +8,21 @@ import "/imports/api/contexts/server/contextsPublications.js";
 
 // audience categories
 import "/imports/api/audienceCategories/server/audienceCategoriesMethods.js";
+import "/imports/api/audienceCategories/server/audienceCategoriesPublications.js";
 
 // campaigns
 import "/imports/api/campaigns/server/campaignsMethods.js";
 import "/imports/api/campaigns/server/campaignsPublications.js";
 
+// people
 import "/imports/api/facebook/people/server/peoplePublications.js";
+
+// audiences
 import "/imports/api/facebook/audiences/server/audiencesPublications.js";
 
-import "/imports/api/audienceCategories/server/audienceCategoriesPublications.js";
-
-//geolocations
+// geolocations
 import "/imports/api/geolocations/server/geolocationsPublications.js";
+
 // facebook
 import "/imports/api/facebook/accounts/server/accountsMethods.js";
 
