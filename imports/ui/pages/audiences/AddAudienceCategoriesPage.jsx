@@ -3,19 +3,38 @@ import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import AudiencesTargetingSpecForm from "/imports/ui/components/audiences/AudiencesTargetingSpecForm.jsx";
 import { Form, Grid, Button, Select, Dropdown } from "semantic-ui-react";
+import { Alerts } from "/imports/ui/utils/Alerts.js";
 
 export default class AddAudienceCategoriesPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      title: "",
-      targetingSpec: {}
+      fields: {
+        title: "",
+        spec: {
+          interests: []
+        }
+      }
     };
     this._handleChange = this._handleChange.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
   }
-  _handleChange = (e, { name, value }) => this.setState({ [name]: value });
-  _handleSubmit() {}
+  _handleChange = (e, { name, value }) =>
+    this.setState({
+      fields: Object.assign({}, this.state.fields, { [name]: value })
+    });
+  _handleSubmit(e) {
+    const { fields } = this.state;
+    this.setState({ isLoading: true });
+    Meteor.call("facebook.audienceCategories.create", fields, (error, data) => {
+      this.setState({ isLoading: false });
+      if (error) {
+        Alerts.error(error);
+      } else {
+        Alerts.success("Audience category was created successfully");
+      }
+    });
+  }
   getCategory(id) {
     // this.service.get(id).then(data => {
     //   this.setState({
@@ -37,7 +56,7 @@ export default class AddAudienceCategoriesPage extends React.Component {
   }
   render() {
     const { loading, currentUser } = this.props;
-    const { title, targetingSpec } = this.state;
+    const { fields } = this.state;
     return (
       <div>
         <PageHeader title="Add Audience Category" />
@@ -50,14 +69,15 @@ export default class AddAudienceCategoriesPage extends React.Component {
                 <Grid.Column>
                   <Form onSubmit={this._handleSubmit}>
                     <Form.Input
+                      size="big"
                       placeholder="Title"
                       name="title"
-                      value={title}
+                      value={fields.title}
                       onChange={this._handleChange}
                     />
                     <AudiencesTargetingSpecForm
-                      name="targetingSpec"
-                      value={targetingSpec}
+                      name="spec"
+                      value={fields.spec}
                       onChange={this._handleChange}
                     />
                     <Button>Send</Button>

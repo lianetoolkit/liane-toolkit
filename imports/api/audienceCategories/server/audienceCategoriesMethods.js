@@ -14,15 +14,9 @@ export const createAudienceCategory = new ValidatedMethod({
     spec: {
       type: Object,
       blackbox: true
-    },
-    contextIds: {
-      type: Array
-    },
-    "contextIds.$": {
-      type: String
     }
   }).validator(),
-  run({ title, spec, contexts }) {
+  run({ title, spec }) {
     logger.debug("audienceCategories.create called", { title });
 
     const userId = Meteor.userId();
@@ -34,7 +28,7 @@ export const createAudienceCategory = new ValidatedMethod({
       throw new Meteor.Error(403, "Access denied");
     }
 
-    const insertDoc = { title, spec, contextIds };
+    const insertDoc = { title, spec };
     AudienceCategories.insert(insertDoc);
     return;
   }
@@ -65,6 +59,39 @@ export const searchAdInterests = new ValidatedMethod({
       type: "adinterest",
       accessToken: user.services.facebook.accessToken,
       q
+    });
+  }
+});
+
+export const searchAdInterestSuggestions = new ValidatedMethod({
+  name: "facebook.audienceCategories.searchAdInterestSuggestions",
+  validate: new SimpleSchema({
+    interest_list: {
+      type: Array
+    },
+    "interest_list.$": {
+      type: String
+    }
+  }).validator(),
+  run({ interest_list }) {
+    logger.debug("audienceCategories.searchAdInterestSuggestions called", {
+      interest_list
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    if (!Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(403, "Access denied");
+    }
+
+    const user = Meteor.users.findOne(userId);
+
+    return AudienceCategoriesHelpers.getInterestSuggestions({
+      accessToken: user.services.facebook.accessToken,
+      interest_list
     });
   }
 });

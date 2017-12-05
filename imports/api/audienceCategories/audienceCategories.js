@@ -10,12 +10,6 @@ AudienceCategories.schema = new SimpleSchema({
     type: Object,
     blackbox: true
   },
-  contextIds: {
-    type: Array
-  },
-  "contextIds.$": {
-    type: String
-  },
   createdAt: {
     type: Date,
     autoValue() {
