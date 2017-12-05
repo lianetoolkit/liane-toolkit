@@ -1,5 +1,3 @@
-import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
-import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { Facebook, FacebookApiException } from "fb";
 
 const options = {
@@ -11,24 +9,6 @@ const options = {
 const _fb = new Facebook(options);
 
 const AudienceCategoriesHelpers = {
-  fetchAudienceCategoriesByAccount({ facebookAccountId }) {
-    check(facebookAccountId, String);
-
-    logger.debug("AudienceCategoriesHelpers.fetchAudienceCategoriesByAccount", {
-      facebookAccountId
-    });
-
-    categories = AudienceCategories.find().fetch();
-    for (const cat of categories) {
-      JobsHelpers.addJob({
-        jobType: "audiences.fetchByAudienceCategory",
-        jobData: {
-          facebookAccountId: facebookAccountId,
-          audienceCategoryId: cat._id
-        }
-      });
-    }
-  },
   facebookSearch({ accessToken, type, q }) {
     _fb.setAccessToken(accessToken);
 

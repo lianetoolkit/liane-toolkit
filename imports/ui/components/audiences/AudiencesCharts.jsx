@@ -12,22 +12,22 @@ import {
 export default class AudiencesCharts extends React.Component {
   constructor(props) {
     super(props);
-    // console.log("UsersTable init", { props });
   }
   render() {
     const {
       loading,
-      audiencesCategories,
+      audienceCategories,
       context,
       facebookAccountId
     } = this.props;
+    console.log(audienceCategories);
     return (
       <div>
         {loading ? (
           ""
         ) : (
           <div>
-            {audiencesCategories.map(category => {
+            {audienceCategories.map(category => {
               return (
                 <Segment basic key={category._id}>
                   <Header as="h4" dividing>

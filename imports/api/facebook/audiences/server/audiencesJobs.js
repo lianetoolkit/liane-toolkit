@@ -1,22 +1,32 @@
 const { FacebookAudiencesHelpers } = require("./audiencesHelpers.js");
 
 const AudiencesJobs = {
-  "audiences.fetchByAudienceCategory": {
+  "audiences.fetchAudienceByCategory": {
     run({ job }) {
-      logger.debug("entries.fetchByAccount job: called");
+      logger.debug("audiences.fetchAudienceByCategory job: called");
       check(job && job.data && job.data.facebookAccountId, String);
       check(job && job.data && job.data.audienceCategoryId, String);
 
+      const contextId = job.data.contextId;
       const facebookAccountId = job.data.facebookAccountId;
       const audienceCategoryId = job.data.audienceCategoryId;
 
-      FacebookAudiencesHelpers.fetchAudienceCategory({
-        facebookAccountId,
-        audienceCategoryId
-      });
-
-      job.done();
-      return job.remove();
+      let errored = false;
+      try {
+        FacebookAudiencesHelpers.fetchAudienceByCategory({
+          contextId,
+          facebookAccountId,
+          audienceCategoryId
+        });
+      } catch (err) {
+        errored = true;
+        return job.fail();
+      } finally {
+        if(!errored) {
+          job.done();
+          return job.remove();
+        }
+      }
     },
 
     workerOptions: {
@@ -27,9 +37,9 @@ const AudiencesJobs = {
     jobOptions() {
       const options = {
         retry: {
-          retries: 1,
-          wait: 1 * 60 * 1000
-        } // 5 minutes
+          retries: 3,
+          wait: 1 * 60 * 1000 * 5
+        }
         // repeat: {
         //   schedule: "0 0/1 * * * *"
         // }

@@ -1,7 +1,7 @@
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
-import { AudienceCategoriesHelpers } from "/imports/api/audienceCategories/server/audienceCategoriesHelpers.js";
+import { FacebookAudiencesHelpers } from "/imports/api/facebook/audiences/server/audiencesHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 
 const CampaignsHelpers = {
@@ -44,7 +44,8 @@ const CampaignsHelpers = {
         campaignId: campaignId
       }
     });
-    AudienceCategoriesHelpers.fetchAudienceCategoriesByAccount({
+    FacebookAudiencesHelpers.fetchAudienceByAccount({
+      campaignId,
       facebookAccountId: account.id
     });
     return;

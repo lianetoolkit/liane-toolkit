@@ -10,7 +10,6 @@ import _ from "underscore";
 export default class AudienceGeoLocationChart extends React.Component {
   constructor(props) {
     super(props);
-    // console.log("UsersTable init", { props });
   }
   _getLabels() {
     const { audiences } = this.props;

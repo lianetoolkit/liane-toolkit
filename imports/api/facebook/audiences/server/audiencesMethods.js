@@ -30,8 +30,6 @@ export const fetchAudience = new ValidatedMethod({
 
     const response = FacebookAccountsHelpers.fetchAudience({ facebookAccountId, spec: category.spec });
 
-    console.log(response);
-
     audienceId = FacebookAudiences.insert({
       title,
       spec,

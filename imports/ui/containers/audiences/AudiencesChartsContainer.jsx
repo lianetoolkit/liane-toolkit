@@ -10,15 +10,15 @@ export default createContainer(props => {
   });
   const loading = !subsHandle.ready();
 
-  const audiencesCategories = subsHandle.ready()
+  const context = Contexts.findOne(props.contextId);
+  const audienceCategories = subsHandle.ready()
     ? AudienceCategories.find({
-        contextIds: { $in: [props.contextId] }
+        _id: { $in: context.audienceCategories }
       }).fetch()
     : [];
-  const context = Contexts.findOne(props.contextId);
   return {
     loading,
-    audiencesCategories,
+    audienceCategories,
     context
   };
 }, AudiencesCharts);

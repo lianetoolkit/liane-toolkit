@@ -1,9 +1,11 @@
 import { Promise } from "meteor/promise";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
+import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
+import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { Facebook, FacebookApiException } from "fb";
 import _ from "underscore";
 import moment from "moment";
@@ -21,11 +23,37 @@ const _fb = new Facebook(options);
 const route = `act_${options.adAccount}/reachestimate`;
 
 const FacebookAudiencesHelpers = {
-  fetchAudienceCategory({ facebookAccountId, audienceCategoryId }) {
+  fetchAudienceByAccount({ campaignId, facebookAccountId }) {
+    check(facebookAccountId, String);
+
+    logger.debug("AudienceCategoriesHelpers.fetchAudienceCategoriesByAccount", {
+      campaignId,
+      facebookAccountId
+    });
+
+    const campaign = Campaigns.findOne(campaignId);
+    const context = Contexts.findOne(campaign.contextId);
+    const categories = AudienceCategories.find({
+      _id: { $in: context.audienceCategories }
+    }).fetch();
+
+    for (const cat of categories) {
+      JobsHelpers.addJob({
+        jobType: "audiences.fetchAudienceByCategory",
+        jobData: {
+          contextId: context._id,
+          facebookAccountId: facebookAccountId,
+          audienceCategoryId: cat._id
+        }
+      });
+    }
+  },
+  fetchAudienceByCategory({ contextId, facebookAccountId, audienceCategoryId }) {
+    check(contextId, String);
     check(facebookAccountId, String);
     check(audienceCategoryId, String);
 
-    logger.debug("FacebookAudiencesHelpers.fetchAudienceCategory", {
+    logger.debug("FacebookAudiencesHelpers.fetchAudienceByCategory", {
       facebookAccountId,
       audienceCategoryId
     });
@@ -34,28 +62,25 @@ const FacebookAudiencesHelpers = {
 
     const spec = audienceCategory.spec;
 
-    for (const contextId of audienceCategory.contextIds) {
-      FacebookAudiencesHelpers.fetchContextAudiences({
-        contextId,
-        facebookAccountId,
-        audienceCategoryId,
-        spec
-      });
-    }
+    FacebookAudiencesHelpers.fetchContextAudiences({
+      contextId,
+      facebookAccountId,
+      audienceCategoryId,
+      spec
+    });
+
   },
-  _getRegionFacebookType({
-    type
-  }) {
-    switch(type) {
-      case 'region': {
-        return 'regions';
+  _getRegionFacebookType({ type }) {
+    switch (type) {
+      case "region": {
+        return "regions";
       }
-      case 'country': {
-        return 'countries';
+      case "country": {
+        return "countries";
       }
-      case 'cities' :
-      case 'city': {
-        return 'cities';
+      case "cities":
+      case "city": {
+        return "cities";
       }
     }
   },
@@ -83,7 +108,11 @@ const FacebookAudiencesHelpers = {
     for (const location of context.geolocations) {
       const geoLoc = Geolocations.findOne(location);
       spec["geo_locations"] = {};
-      spec.geo_locations[FacebookAudiencesHelpers._getRegionFacebookType({type: geoLoc.facebookType})] = [{ key: geoLoc.facebookKey }];
+      spec.geo_locations[
+        FacebookAudiencesHelpers._getRegionFacebookType({
+          type: geoLoc.facebookType
+        })
+      ] = [{ key: geoLoc.facebookKey }];
 
       response = FacebookAudiencesHelpers.fetchAudienceByLocation({
         facebookAccountId,

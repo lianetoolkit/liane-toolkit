@@ -1,7 +1,7 @@
 import SimpleSchema from "simpl-schema";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { CampaignsHelpers } from "./campaignsHelpers.js";
-import { AudienceCategoriesHelpers } from "/imports/api/audienceCategories/server/audienceCategoriesHelpers.js";
+import { FacebookAudiencesHelpers } from "/imports/api/facebook/audiences/server/audiencesHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
@@ -120,7 +120,8 @@ export const updateAccount = new ValidatedMethod({
       });
     }
     if (action == "audience") {
-      AudienceCategoriesHelpers.fetchAudienceCategoriesByAccount({
+      FacebookAudiencesHelpers.fetchAudienceByAccount({
+        campaignId: campaign._id,
         facebookAccountId: facebookId
       });
     }

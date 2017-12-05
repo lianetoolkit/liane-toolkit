@@ -3,7 +3,7 @@ import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import _ from "underscore";
 
-const locations = [
+const geolocations = [
   {
     name: "São Paulo",
     facebookKey: "460",
@@ -31,56 +31,40 @@ const locations = [
 ];
 
 if (Geolocations.find().count() == 0) {
-  for (const location of locations) {
+  for (const location of geolocations) {
     Geolocations.insert(location);
   }
   logger.debug(
-    "fixtures. audiences locations added:",
-    ("total": locations.length)
+    "fixtures. audiences geolocations added:",
+    ("total": geolocations.length)
   );
 }
 
-const geolocations = Geolocations.find().fetch();
-if (Contexts.find().count() == 0) {
-  const insertContext = {
-    name: "sao paolo 2018",
-    geolocations: _.pluck(geolocations, "_id")
-  };
-  Contexts.insert(insertContext);
-  logger.debug("fixtures. created first context");
-}
-
-const context = Contexts.findOne();
-const audiences = [
+const audienceCategories = [
   {
     title: "Anarchism",
-    spec: { interests: ["6003029947985"] },
-    contextIds: [context._id]
+    spec: { interests: [{ id: "6003029947985", name: "Anarchism" }] }
   },
   {
     title: "Environmentalism",
-    spec: { interests: ["6003970975896"] },
-    contextIds: [context._id]
+    spec: { interests: [{ id: "6003970975896", name: "Environmentalism" }] }
   },
   {
     title: "Security",
-    spec: { interests: ["6003345669874"] },
-    contextIds: [context._id]
+    spec: { interests: [{ id: "6003345669874", name: "Security" }] }
   },
   {
     title: "Politics and social issues",
-    spec: { interests: ["6011515350975"] },
-    contextIds: [context._id]
+    spec: { interests: [{ id: "6011515350975", name: "Politics and social issues" }] }
   },
   {
     title: "Public transport",
-    spec: { interests: ["6003387449393"] },
-    contextIds: [context._id]
+    spec: { interests: [{ id: "6003387449393", name: "Public transport" }] }
   }
 ];
 
 if (AudienceCategories.find().count() == 0) {
-  for (const category of audiences) {
+  for (const category of audienceCategories) {
     AudienceCategories.insert(category);
   }
   logger.debug(
@@ -88,3 +72,15 @@ if (AudienceCategories.find().count() == 0) {
     ("total": audiences.length)
   );
 }
+
+if (Contexts.find().count() == 0) {
+  const insertContext = {
+    name: "São Paulo 2018",
+    geolocations: _.pluck(Geolocations.find().fetch(), "_id"),
+    audienceCategories: _.pluck(AudienceCategories.find().fetch(), "_id")
+  };
+  Contexts.insert(insertContext);
+  logger.debug("fixtures. created first context");
+}
+
+const context = Contexts.findOne();
