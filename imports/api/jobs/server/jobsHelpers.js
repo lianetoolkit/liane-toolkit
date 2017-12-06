@@ -26,7 +26,8 @@ export const JobsHelpers = {
       }
       if (jobOptions.repeat != null) {
         newJob.repeat({
-          schedule: Jobs.later.parse.cron(jobOptions.repeat.schedule, true),
+          wait: jobOptions.repeat.wait,
+          schedule: jobOptions.repeat.schedule ? Jobs.later.parse.cron(jobOptions.repeat.schedule, true) : undefined,
           until: jobOptions.repeat.until || Jobs.foreverDate
         });
       }

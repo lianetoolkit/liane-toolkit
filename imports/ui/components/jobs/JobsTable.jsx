@@ -17,24 +17,19 @@ export default class JobsTable extends React.Component {
         title="Jobs"
         orderBy={{ field: "created", ordering: -1 }}
         columns={[
+          { label: "Type", data: "type" },
           { label: "ID", data: "_id" },
-          { label: "runId", data: "runId" },
-          { label: "type", data: "type" },
+          { label: "Status", data: "status", searchable: true },
           {
-            label: "userId",
-            data: "data.userId",
-            searchable: true
+            label: "Attempts",
+            data: "retried"
           },
           {
-            label: "serviceAccountId",
-            data: "data.serviceAccountId",
-            searchable: true
+            label: "Maximum Attempts",
+            data: "repeatRetries"
           },
-          { label: "status", data: "status", searchable: true },
-          { label: "retried", data: "retried" },
-          { label: "repeatRetries", data: "repeatRetries" },
-          { label: "updated", data: "updated", orderable: true },
-          { label: "after", data: "after" }
+          { label: "Updated", data: "updated", orderable: true },
+          { label: "Ready to run", data: "after" }
         ]}
       />
     );

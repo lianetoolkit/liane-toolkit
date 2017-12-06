@@ -145,7 +145,6 @@ export default class AudiencesTargetingSpecForm extends React.Component {
   _searchInterestSuggestions() {
     const { interests } = this.state.fields;
     const interest_list = interests.map(interest => JSON.parse(interest).name);
-    console.log(interest_list);
     Meteor.call(
       "facebook.audienceCategories.searchAdInterestSuggestions",
       { interest_list },
@@ -165,7 +164,6 @@ export default class AudiencesTargetingSpecForm extends React.Component {
     return () => {
       const { fields, availableInterests } = this.state;
       const option = availableInterests[interest.id];
-      console.log(option);
       this.setState({
         fields: Object.assign({}, fields, {
           interests: [...fields.interests, option.value]

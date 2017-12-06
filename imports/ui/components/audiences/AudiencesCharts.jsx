@@ -20,7 +20,6 @@ export default class AudiencesCharts extends React.Component {
       context,
       facebookAccountId
     } = this.props;
-    console.log(audienceCategories);
     return (
       <div>
         {loading ? (

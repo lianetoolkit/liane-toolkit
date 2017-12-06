@@ -5,6 +5,7 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
+import { Jobs } from "/imports/api/jobs/jobs";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { Facebook, FacebookApiException } from "fb";
 import _ from "underscore";
@@ -23,32 +24,55 @@ const _fb = new Facebook(options);
 const route = `act_${options.adAccount}/reachestimate`;
 
 const FacebookAudiencesHelpers = {
-  fetchAudienceByAccount({ campaignId, facebookAccountId }) {
+  async updateAccountAudience({ campaignId, facebookAccountId }) {
     check(facebookAccountId, String);
 
-    logger.debug("AudienceCategoriesHelpers.fetchAudienceCategoriesByAccount", {
+    logger.debug("AudienceCategoriesHelpers.updateAccountAudience", {
       campaignId,
       facebookAccountId
     });
 
     const campaign = Campaigns.findOne(campaignId);
     const context = Contexts.findOne(campaign.contextId);
-    const categories = AudienceCategories.find({
+    const audienceCategories = AudienceCategories.find({
       _id: { $in: context.audienceCategories }
     }).fetch();
 
-    for (const cat of categories) {
-      JobsHelpers.addJob({
-        jobType: "audiences.fetchAudienceByCategory",
-        jobData: {
+    let jobIds = [];
+    for (const audienceCategory of audienceCategories) {
+      jobIds = jobIds.concat(
+        FacebookAudiencesHelpers.fetchAudienceByCategory({
           contextId: context._id,
-          facebookAccountId: facebookAccountId,
-          audienceCategoryId: cat._id
+          audienceCategoryId: audienceCategory._id,
+          facebookAccountId
+        })
+      );
+    }
+
+    logger.debug("AudienceCategoriesHelpers.updateAccountAudience jobIds", {
+      jobIds
+    });
+
+    return await new Promise(resolve => {
+      let completionMap = {};
+      Jobs.find({
+        _id: { $in: jobIds }
+      }).observe({
+        removed: function(job) {
+          completionMap[job._id] = true;
+          if(Object.keys(completionMap).length == jobIds.length) {
+            resolve();
+          }
         }
       });
-    }
+    });
+
   },
-  fetchAudienceByCategory({ contextId, facebookAccountId, audienceCategoryId }) {
+  fetchAudienceByCategory({
+    contextId,
+    facebookAccountId,
+    audienceCategoryId
+  }) {
     check(contextId, String);
     check(facebookAccountId, String);
     check(audienceCategoryId, String);
@@ -62,13 +86,14 @@ const FacebookAudiencesHelpers = {
 
     const spec = audienceCategory.spec;
 
-    FacebookAudiencesHelpers.fetchContextAudiences({
+    const jobIds = FacebookAudiencesHelpers.fetchContextAudiences({
       contextId,
       facebookAccountId,
       audienceCategoryId,
       spec
     });
 
+    return jobIds;
   },
   _getRegionFacebookType({ type }) {
     switch (type) {
@@ -105,42 +130,41 @@ const FacebookAudiencesHelpers = {
     if (!context) {
       return { error: "Context does not exists" };
     }
-    for (const location of context.geolocations) {
-      const geoLoc = Geolocations.findOne(location);
+
+    let jobIds = [];
+    for (const geolocationId of context.geolocations) {
+      const geolocation = Geolocations.findOne(geolocationId);
       spec["geo_locations"] = {};
       spec.geo_locations[
         FacebookAudiencesHelpers._getRegionFacebookType({
-          type: geoLoc.facebookType
+          type: geolocation.facebookType
         })
-      ] = [{ key: geoLoc.facebookKey }];
+      ] = [{ key: geolocation.facebookKey }];
 
-      response = FacebookAudiencesHelpers.fetchAudienceByLocation({
-        facebookAccountId,
-        spec
+      const jobId = JobsHelpers.addJob({
+        jobType: "audiences.fetchAndCreateSpecAudience",
+        jobData: {
+          facebookAccountId,
+          geolocationId,
+          audienceCategoryId,
+          spec
+        }
       });
 
-      if (response) {
-        FacebookAudiences.upsert(
-          {
-            facebookAccountId: facebookAccountId,
-            audienceCategoryId: audienceCategoryId,
-            fetch_date: moment().format("YYYY-MM-DD"),
-            geoLocationId: geoLoc._id
-          },
-          { $set: response.result }
-        );
-        logger.debug("fetchContextAudiences result", { response });
-      }
+      jobIds.push(jobId);
     }
+    return jobIds;
   },
-  fetchAudienceByLocation({ facebookAccountId, spec }) {
+  async fetchAndCreateSpecAudience({
+    facebookAccountId,
+    geolocationId,
+    audienceCategoryId,
+    spec
+  }) {
     check(facebookAccountId, String);
+    check(geolocationId, String);
+    check(audienceCategoryId, String);
     check(spec, Object);
-
-    logger.debug("FacebookAudiencesHelpers.fetchAudienceByLocation", {
-      facebookAccountId,
-      spec
-    });
 
     const admin = Meteor.users.findOne({
       "services.facebook.id": options.admin
@@ -154,25 +178,44 @@ const FacebookAudiencesHelpers = {
 
     spec["connections"] = [facebookAccountId];
 
-    const fetch = function(spec) {
-      return Promise.await(
-        _fb.api(route, {
+    const sleep = ms =>
+      new Promise(resolve => {
+        setTimeout(resolve, ms);
+      });
+
+    const fetch = async function(spec) {
+      try {
+        let res = await _fb.api(route, {
           targeting_spec: spec,
           access_token: accessToken
-        })
-      ).data.users;
+        });
+        return res.data.users;
+      } catch (error) {
+        throw new Meteor.Error(error);
+      }
     };
 
     let result = {};
 
-    result["estimate"] = fetch(spec);
-    result["total"] = fetch(_.omit(spec, "interests"));
-    result["location_estimate"] = fetch(_.omit(spec, "connections"));
-    result["location_total"] = fetch(_.omit(spec, "interests", "connections"));
+    result["estimate"] = await fetch(spec);
+    await sleep(2000);
+    result["total"] = await fetch(_.omit(spec, "interests"));
+    await sleep(2000);
+    result["location_estimate"] = await fetch(_.omit(spec, "connections"));
+    await sleep(2000);
+    result["location_total"] = await fetch(
+      _.omit(spec, "interests", "connections")
+    );
 
-    logger.debug("fetchAudienceByLocation result", { result });
-
-    return { result };
+    return FacebookAudiences.upsert(
+      {
+        facebookAccountId: facebookAccountId,
+        audienceCategoryId: audienceCategoryId,
+        fetch_date: moment().format("YYYY-MM-DD"),
+        geoLocationId: geolocationId
+      },
+      { $set: result }
+    );
   }
 };
 

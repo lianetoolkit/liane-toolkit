@@ -120,9 +120,12 @@ export const updateAccount = new ValidatedMethod({
       });
     }
     if (action == "audience") {
-      FacebookAudiencesHelpers.fetchAudienceByAccount({
-        campaignId: campaign._id,
-        facebookAccountId: facebookId
+      JobsHelpers.addJob({
+        jobType: "audiences.updateAccountAudience",
+        jobData: {
+          campaignId: campaign._id,
+          facebookAccountId: facebookId
+        }
       });
     }
 

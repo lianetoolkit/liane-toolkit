@@ -44,9 +44,12 @@ const CampaignsHelpers = {
         campaignId: campaignId
       }
     });
-    FacebookAudiencesHelpers.fetchAudienceByAccount({
-      campaignId,
-      facebookAccountId: account.id
+    JobsHelpers.addJob({
+      jobType: "audiences.updateAccountAudience",
+      jobData: {
+        campaignId,
+        facebookAccountId: account.id
+      }
     });
     return;
   }

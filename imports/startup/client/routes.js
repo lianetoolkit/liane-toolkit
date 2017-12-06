@@ -159,3 +159,13 @@ appRoutes.route("/add-audience-category", {
     });
   }
 });
+
+appRoutes.route("/admin/jobs", {
+  name: "App.admin.jobs",
+  action: function() {
+    _addTitle(`${APP_NAME} | Jobs`);
+    return mount(AppContainer, {
+      content: { component: JobsPage }
+    });
+  }
+});
