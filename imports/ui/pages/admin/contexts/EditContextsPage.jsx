@@ -4,39 +4,86 @@ import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Form, Grid, Button } from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 
-export default class AddContextPage extends React.Component {
+const initialFields = {
+  name: "",
+  mainGeolocationId: "",
+  geolocations: [],
+  audienceCategories: []
+};
+
+export default class EditContextsPage extends React.Component {
   constructor(props) {
     super(props);
-    console.log("AddContextPage init", { props });
+    console.log("EditContextsPage init", { props });
     this.state = {
-      fields: {
-        name: "",
-        geolocations: [],
-        audienceCategories: []
-      },
+      fields: Object.assign({}, initialFields),
       isLoading: false
     };
     this._handleSubmit = this._handleSubmit.bind(this);
     this._handleChange = this._handleChange.bind(this);
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.context) {
+      console.log(nextProps.context);
+      if (nextProps.context._id) {
+        const { fields } = this.state;
+        const {
+          _id,
+          name,
+          mainGeolocationId,
+          geolocations,
+          audienceCategories
+        } = nextProps.context;
+        this.setState({
+          fields: {
+            ...fields,
+            _id,
+            name,
+            mainGeolocationId,
+            geolocations,
+            audienceCategories
+          }
+        });
+      } else {
+        this.setState({
+          fields: Object.assign({}, initialFields)
+        });
+      }
+    }
   }
   _handleChange = (e, { name, value }) =>
     this.setState({
       fields: Object.assign({}, this.state.fields, { [name]: value })
     });
   _handleSubmit(e) {
+    const { contextId } = this.props;
     const { fields } = this.state;
     this.setState({ isLoading: true });
-    Meteor.call("contexts.create", fields, (error, data) => {
-      this.setState({ isLoading: false });
-      if (error) {
-        Alerts.error(error);
-      } else {
-        Alerts.success("Context was created successfully");
-      }
-    });
+    if (contextId) {
+      Meteor.call("contexts.update", fields, error => {
+        this.setState({ isLoading: false });
+        if (error) {
+          Alerts.error(error);
+        } else {
+          Alerts.success("Context was updated successfully");
+        }
+      });
+    } else {
+      Meteor.call("contexts.create", fields, (error, contextId) => {
+        this.setState({ isLoading: false });
+        if (error) {
+          Alerts.error(error);
+        } else {
+          Alerts.success("Context was created successfully");
+          FlowRouter.withReplaceState(function() {
+            FlowRouter.setParams({ contextId });
+          });
+        }
+      });
+    }
   }
   render() {
-    const { loading, currentUser, available } = this.props;
+    const { contextId, context, loading, currentUser, available } = this.props;
     const { fields, isLoading } = this.state;
     const geolocationOptions = [];
     available.geolocations.forEach(geolocation => {
@@ -56,7 +103,13 @@ export default class AddContextPage extends React.Component {
     });
     return (
       <div>
-        <PageHeader title="Add Context" />
+        <PageHeader
+          title="Contexts"
+          titleTo={FlowRouter.path("App.admin.contexts")}
+          subTitle={
+            contextId && context ? `Editing ${context.name}` : "Add Context"
+          }
+        />
         <section className="content">
           {loading ? (
             <Loading />
@@ -71,6 +124,16 @@ export default class AddContextPage extends React.Component {
                       name="name"
                       onChange={this._handleChange}
                       value={fields.name}
+                    />
+                    <Form.Dropdown
+                      options={geolocationOptions}
+                      placeholder="Choose main geolocation"
+                      name="mainGeolocationId"
+                      search
+                      selection
+                      fluid
+                      value={fields.mainGeolocationId}
+                      onChange={this._handleChange}
                     />
                     <Form.Dropdown
                       options={geolocationOptions}

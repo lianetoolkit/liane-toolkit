@@ -34,8 +34,8 @@ export default class AppBar extends React.Component {
       return (
         <Dropdown item simple text="Admin">
           <Dropdown.Menu>
-            <Dropdown.Item as="a" href={FlowRouter.path("App.addContext")}>
-              <Icon name="plus" /> Add Context
+            <Dropdown.Item as="a" href={FlowRouter.path("App.admin.contexts")}>
+              <Icon name="circle" /> Manage Contexts
             </Dropdown.Item>
             <Dropdown.Item
               as="a"

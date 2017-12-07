@@ -12,11 +12,13 @@ import AuthPageResetPassword from "/imports/ui/pages/accounts/AuthPageResetPassw
 
 import DashboardPageContainer from "/imports/ui/containers/app/DashboardPageContainer.jsx";
 import AddCampaignPageContainer from "/imports/ui/containers/campaigns/AddCampaignPageContainer.jsx";
-import AddContextsPageContainer from "/imports/ui/containers/contexts/AddContextsPageContainer.jsx";
 import AddAudienceCategoriesPageContainer from "/imports/ui/containers/audiences/AddAudienceCategoriesPageContainer.jsx";
 import CampaignsPageContainer from "/imports/ui/containers/campaigns/CampaignsPageContainer.jsx";
 
+/* Admin */
 import JobsPage from "/imports/ui/pages/jobs/JobsPage.jsx";
+import ContextsPageContainer from "/imports/ui/containers/contexts/ContextsPageContainer.jsx";
+import EditContextsPageContainer from "/imports/ui/containers/contexts/EditContextsPageContainer.jsx";
 
 import NotFoundPage from "../../ui/pages/NotFoundPage.jsx";
 
@@ -140,16 +142,6 @@ appRoutes.route("/campaign/:_id/account/:facebookId", {
   }
 });
 
-appRoutes.route("/add-context", {
-  name: "App.addContext",
-  action: function() {
-    _addTitle(`${APP_NAME} | Add Context`);
-    return mount(AppContainer, {
-      content: { component: AddContextsPageContainer }
-    });
-  }
-});
-
 appRoutes.route("/add-audience-category", {
   name: "App.addAudienceCategory",
   action: function() {
@@ -166,6 +158,29 @@ appRoutes.route("/admin/jobs", {
     _addTitle(`${APP_NAME} | Jobs`);
     return mount(AppContainer, {
       content: { component: JobsPage }
+    });
+  }
+});
+
+appRoutes.route("/admin/contexts", {
+  name: "App.admin.contexts",
+  action: function() {
+    _addTitle(`${APP_NAME} | Contexts`);
+    return mount(AppContainer, {
+      content: { component: ContextsPageContainer }
+    });
+  }
+});
+
+appRoutes.route("/admin/contexts/edit/:contextId?", {
+  name: "App.admin.contexts.edit",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Contexts`);
+    return mount(AppContainer, {
+      content: {
+        component: EditContextsPageContainer,
+        props: { contextId: params.contextId }
+      }
     });
   }
 });

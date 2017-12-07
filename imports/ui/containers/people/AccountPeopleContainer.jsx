@@ -15,7 +15,6 @@ export default createContainer(props => {
         { sort: { likesCount: -1 } }
       ).fetch()
     : [];
-  console.log(people);
 
   return {
     loading,
