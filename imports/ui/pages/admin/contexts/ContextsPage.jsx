@@ -6,6 +6,7 @@ import {
   Grid,
   Segment,
   Table,
+  Icon,
   Button,
   Dropdown,
   Divider
@@ -39,6 +40,7 @@ export default class ContextsPage extends React.Component {
                       href={FlowRouter.path("App.admin.contexts.edit")}
                       floated="right"
                     >
+                      <Icon name="plus" />
                       New context
                     </Button>
                   </Segment>
