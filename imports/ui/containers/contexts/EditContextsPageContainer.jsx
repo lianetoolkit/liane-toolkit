@@ -10,14 +10,15 @@ export default createContainer(props => {
     contextId: props.contextId
   });
   const geolocationsHandle = Meteor.subscribe("geolocations.all");
-  const audienceCategoriesHandle = Meteor.subscribe("audiences.categories.all");
+  const audienceCategoriesHandle = Meteor.subscribe("audienceCategories.all");
 
   const loading =
     !contextHandle.ready() &&
     !geolocationsHandle.ready() &&
     !audienceCategoriesHandle.ready();
 
-  const context = (contextHandle.ready() && props.contextId) ? Contexts.findOne() : null;
+  const context =
+    contextHandle.ready() && props.contextId ? Contexts.findOne() : null;
 
   const geolocations = geolocationsHandle.ready()
     ? Geolocations.find().fetch()

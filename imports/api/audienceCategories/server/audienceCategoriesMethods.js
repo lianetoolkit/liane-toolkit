@@ -5,17 +5,24 @@ import { Facebook, FacebookApiException } from "fb";
 import { AudienceCategoriesHelpers } from "./audienceCategoriesHelpers.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 
+const schemaConfig = {
+  title: {
+    type: String
+  },
+  spec: {
+    type: Object,
+    blackbox: true
+  }
+};
+
+const validateCreate = new SimpleSchema(schemaConfig).validator();
+const validateUpdate = new SimpleSchema(
+  Object.assign({ _id: { type: String } }, schemaConfig)
+).validator();
+
 export const createAudienceCategory = new ValidatedMethod({
-  name: "facebook.audienceCategories.create",
-  validate: new SimpleSchema({
-    title: {
-      type: String
-    },
-    spec: {
-      type: Object,
-      blackbox: true
-    }
-  }).validator(),
+  name: "audienceCategories.create",
+  validate: validateCreate,
   run({ title, spec }) {
     logger.debug("audienceCategories.create called", { title });
 
@@ -29,13 +36,34 @@ export const createAudienceCategory = new ValidatedMethod({
     }
 
     const insertDoc = { title, spec };
-    AudienceCategories.insert(insertDoc);
+    return AudienceCategories.insert(insertDoc);
+  }
+});
+
+export const updateAudienceCategory = new ValidatedMethod({
+  name: "audienceCategories.update",
+  validate: validateUpdate,
+  run({ _id, title, spec }) {
+    logger.debug("audienceCategories.update called", { title });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    if (!Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(403, "Access denied");
+    }
+
+    const insertDoc = { _id, title, spec };
+
+    AudienceCategories.upsert({ _id }, { $set: insertDoc });
     return;
   }
 });
 
 export const searchAdInterests = new ValidatedMethod({
-  name: "facebook.audienceCategories.searchAdInterests",
+  name: "audienceCategories.searchAdInterests",
   validate: new SimpleSchema({
     q: {
       type: String
@@ -64,7 +92,7 @@ export const searchAdInterests = new ValidatedMethod({
 });
 
 export const searchAdInterestSuggestions = new ValidatedMethod({
-  name: "facebook.audienceCategories.searchAdInterestSuggestions",
+  name: "audienceCategories.searchAdInterestSuggestions",
   validate: new SimpleSchema({
     interest_list: {
       type: Array

@@ -12,13 +12,16 @@ import AuthPageResetPassword from "/imports/ui/pages/accounts/AuthPageResetPassw
 
 import DashboardPageContainer from "/imports/ui/containers/app/DashboardPageContainer.jsx";
 import AddCampaignPageContainer from "/imports/ui/containers/campaigns/AddCampaignPageContainer.jsx";
-import AddAudienceCategoriesPageContainer from "/imports/ui/containers/audiences/AddAudienceCategoriesPageContainer.jsx";
 import CampaignsPageContainer from "/imports/ui/containers/campaigns/CampaignsPageContainer.jsx";
 
 /* Admin */
 import JobsPage from "/imports/ui/pages/jobs/JobsPage.jsx";
+
 import ContextsPageContainer from "/imports/ui/containers/contexts/ContextsPageContainer.jsx";
 import EditContextsPageContainer from "/imports/ui/containers/contexts/EditContextsPageContainer.jsx";
+
+import AudienceCategoriesPageContainer from "/imports/ui/containers/audiences/AudienceCategoriesPageContainer.jsx";
+import EditAudienceCategoriesPageContainer from "/imports/ui/containers/audiences/EditAudienceCategoriesPageContainer.jsx";
 
 import NotFoundPage from "../../ui/pages/NotFoundPage.jsx";
 
@@ -142,16 +145,6 @@ appRoutes.route("/campaign/:_id/account/:facebookId", {
   }
 });
 
-appRoutes.route("/add-audience-category", {
-  name: "App.addAudienceCategory",
-  action: function() {
-    _addTitle(`${APP_NAME} | Add Audience Category`);
-    return mount(AppContainer, {
-      content: { component: AddAudienceCategoriesPageContainer }
-    });
-  }
-});
-
 appRoutes.route("/admin/jobs", {
   name: "App.admin.jobs",
   action: function() {
@@ -180,6 +173,29 @@ appRoutes.route("/admin/contexts/edit/:contextId?", {
       content: {
         component: EditContextsPageContainer,
         props: { contextId: params.contextId }
+      }
+    });
+  }
+});
+
+appRoutes.route("/admin/audience-categories", {
+  name: "App.admin.audienceCategories",
+  action: function() {
+    _addTitle(`${APP_NAME} | Audience Categories`);
+    return mount(AppContainer, {
+      content: { component: AudienceCategoriesPageContainer }
+    });
+  }
+});
+
+appRoutes.route("/admin/audience-categories/edit/:audienceCategoryId?", {
+  name: "App.admin.audienceCategories.edit",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Audience Categories`);
+    return mount(AppContainer, {
+      content: {
+        component: EditAudienceCategoriesPageContainer,
+        props: { audienceCategoryId: params.audienceCategoryId }
       }
     });
   }

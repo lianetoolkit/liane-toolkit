@@ -1,6 +1,7 @@
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
+import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
 
 Meteor.publish("contexts.all", function() {
   const currentUser = this.userId;
@@ -47,6 +48,13 @@ Meteor.publishComposite("admin.contexts", function() {
           find: function(context) {
             return Geolocations.find({
               _id: context.mainGeolocationId
+            });
+          }
+        },
+        {
+          find: function(context) {
+            return AudienceCategories.find({
+              _id: { $in: context.audienceCategories }
             });
           }
         }

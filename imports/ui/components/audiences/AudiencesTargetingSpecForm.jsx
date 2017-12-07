@@ -130,7 +130,7 @@ export default class AudiencesTargetingSpecForm extends React.Component {
   _searchInterests = _.debounce((ev, data) => {
     if (data.searchQuery) {
       Meteor.call(
-        "facebook.audienceCategories.searchAdInterests",
+        "audienceCategories.searchAdInterests",
         { q: data.searchQuery },
         (error, res) => {
           if (error) {
@@ -146,7 +146,7 @@ export default class AudiencesTargetingSpecForm extends React.Component {
     const { interests } = this.state.fields;
     const interest_list = interests.map(interest => JSON.parse(interest).name);
     Meteor.call(
-      "facebook.audienceCategories.searchAdInterestSuggestions",
+      "audienceCategories.searchAdInterestSuggestions",
       { interest_list },
       (error, res) => {
         if (error) {

@@ -2,15 +2,7 @@ import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 
-import {
-  Grid,
-  Segment,
-  Table,
-  Icon,
-  Button,
-  Dropdown,
-  Divider
-} from "semantic-ui-react";
+import { Grid, Segment, Table, Icon, Button } from "semantic-ui-react";
 
 import moment from "moment";
 
@@ -49,6 +41,7 @@ export default class ContextsPage extends React.Component {
                       <Table.Row>
                         <Table.HeaderCell>Name</Table.HeaderCell>
                         <Table.HeaderCell>Locations</Table.HeaderCell>
+                        <Table.HeaderCell>Audience Categories</Table.HeaderCell>
                         <Table.HeaderCell>Campaigns</Table.HeaderCell>
                         <Table.HeaderCell>Actions</Table.HeaderCell>
                       </Table.Row>
@@ -63,6 +56,15 @@ export default class ContextsPage extends React.Component {
                               : ""}
                             {context.geolocations.length
                               ? ` +${context.geolocations.length} location(s)`
+                              : ""}
+                          </Table.Cell>
+                          <Table.Cell>
+                            {context.audienceCategories
+                              ? context.audienceCategories
+                                  .map(
+                                    audienceCategory => audienceCategory.title
+                                  )
+                                  .join(", ")
                               : ""}
                           </Table.Cell>
                           <Table.Cell>

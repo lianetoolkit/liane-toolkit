@@ -29,7 +29,7 @@ const validateUpdate = new SimpleSchema(
   Object.assign({ _id: { type: String } }, schemaConfig)
 ).validator();
 
-export const contextsCreate = new ValidatedMethod({
+export const createContext = new ValidatedMethod({
   name: "contexts.create",
   validate: validateCreate,
   run({ name, geolocations, audienceCategories }) {
@@ -49,7 +49,7 @@ export const contextsCreate = new ValidatedMethod({
   }
 });
 
-export const contextsUpdate = new ValidatedMethod({
+export const updateContext = new ValidatedMethod({
   name: "contexts.update",
   validate: validateUpdate,
   run({ _id, name, mainGeolocationId, geolocations, audienceCategories }) {

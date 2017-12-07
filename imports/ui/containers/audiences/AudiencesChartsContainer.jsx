@@ -5,7 +5,7 @@ import { Contexts } from "/imports/api/contexts/contexts.js";
 import AudiencesCharts from "/imports/ui/components/audiences/AudiencesCharts.jsx";
 
 export default createContainer(props => {
-  const subsHandle = Meteor.subscribe("audiences.categories.byContext", {
+  const subsHandle = Meteor.subscribe("audienceCategories.byContext", {
     contextId: props.contextId
   });
   const loading = !subsHandle.ready();

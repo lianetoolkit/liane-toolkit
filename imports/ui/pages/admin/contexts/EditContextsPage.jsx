@@ -24,7 +24,6 @@ export default class EditContextsPage extends React.Component {
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.context) {
-      console.log(nextProps.context);
       if (nextProps.context._id) {
         const { fields } = this.state;
         const {
@@ -107,7 +106,7 @@ export default class EditContextsPage extends React.Component {
           title="Contexts"
           titleTo={FlowRouter.path("App.admin.contexts")}
           subTitle={
-            contextId && context ? `Editing ${context.name}` : "Add Context"
+            contextId && context ? `Editing ${context.name}` : "New Context"
           }
         />
         <section className="content">

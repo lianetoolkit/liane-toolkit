@@ -1,17 +1,28 @@
 import { Contexts } from "/imports/api/contexts/contexts";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories";
 
-Meteor.publish("audiences.categories.all", function() {
+Meteor.publish("audienceCategories.all", function() {
   const currentUser = this.userId;
-  if (currentUser) {
+  if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
     return AudienceCategories.find({});
   } else {
     return this.ready();
   }
 });
 
-Meteor.publish("audiences.categories.byContext", function({ contextId }) {
-  logger.debug("audiences.categories.byContext pub", { contextId });
+Meteor.publish("audienceCategories.detail", function({ audienceCategoryId }) {
+  const currentUser = this.userId;
+  if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
+    return AudienceCategories.find({
+      _id: audienceCategoryId
+    });
+  } else {
+    return this.ready();
+  }
+});
+
+Meteor.publish("audienceCategories.byContext", function({ contextId }) {
+  logger.debug("audienceCategories.byContext pub", { contextId });
   const currentUser = this.userId;
   if (currentUser) {
     const context = Contexts.findOne(contextId);
