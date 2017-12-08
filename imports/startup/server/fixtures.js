@@ -16,7 +16,7 @@ const geolocations = [
   {
     name: "Rio de Janeiro",
     facebook: {
-      name: "Rio de Janeiro"
+      name: "Rio de Janeiro",
       key: 454,
       type: "region"
     },
