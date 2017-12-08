@@ -21,6 +21,7 @@ import "/imports/api/facebook/people/server/peoplePublications.js";
 import "/imports/api/facebook/audiences/server/audiencesPublications.js";
 
 // geolocations
+import "/imports/api/geolocations/server/geolocationsMethods.js";
 import "/imports/api/geolocations/server/geolocationsPublications.js";
 
 // facebook
@@ -33,6 +34,7 @@ import "/imports/api/jobs/server/jobsPublications.js";
 
 if (Meteor.settings.public.deployMode == "local") {
   import "/imports/api/campaigns/server/campaignsHelpers.js";
+  import "/imports/api/geolocations/server/geolocationsHelpers.js";
   import "/imports/api/facebook/accounts/server/accountsHelpers.js";
   import "/imports/api/facebook/audiences/server/audiencesHelpers.js";
   import "/imports/api/facebook/entries/server/entriesHelpers.js";

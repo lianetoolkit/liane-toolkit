@@ -23,6 +23,9 @@ import EditContextsPageContainer from "/imports/ui/containers/contexts/EditConte
 import AudienceCategoriesPageContainer from "/imports/ui/containers/audiences/AudienceCategoriesPageContainer.jsx";
 import EditAudienceCategoriesPageContainer from "/imports/ui/containers/audiences/EditAudienceCategoriesPageContainer.jsx";
 
+import GeolocationsPageContainer from "/imports/ui/containers/geolocations/GeolocationsPageContainer.jsx";
+import EditGeolocationsPageContainer from "/imports/ui/containers/geolocations/EditGeolocationsPageContainer.jsx";
+
 import NotFoundPage from "../../ui/pages/NotFoundPage.jsx";
 
 const APP_NAME = Meteor.settings.public.appName;
@@ -114,7 +117,7 @@ appRoutes.route("/", {
 appRoutes.route("/add-campaign", {
   name: "App.addCampaign",
   action: function() {
-    _addTitle(`${APP_NAME} | Add Campaign`);
+    _addTitle(`${APP_NAME} | New Campaign`);
     return mount(AppContainer, {
       content: { component: AddCampaignPageContainer }
     });
@@ -196,6 +199,31 @@ appRoutes.route("/admin/audience-categories/edit/:audienceCategoryId?", {
       content: {
         component: EditAudienceCategoriesPageContainer,
         props: { audienceCategoryId: params.audienceCategoryId }
+      }
+    });
+  }
+});
+
+appRoutes.route("/admin/geolocations", {
+  name: "App.admin.geolocations",
+  action: function() {
+    _addTitle(`${APP_NAME} | Geolocations`);
+    return mount(AppContainer, {
+      content: {
+        component: GeolocationsPageContainer
+      }
+    });
+  }
+});
+
+appRoutes.route("/admin/geolocations/edit/:geolocationId?", {
+  name: "App.admin.geolocations.edit",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Geolocations`);
+    return mount(AppContainer, {
+      content: {
+        component: EditGeolocationsPageContainer,
+        props: { geolocationId: params.geolocationId }
       }
     });
   }

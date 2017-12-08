@@ -8,3 +8,14 @@ Meteor.publish("geolocations.all", function() {
     return this.ready();
   }
 });
+
+Meteor.publish("geolocations.detail", function({ geolocationId }) {
+  const currentUser = this.userId;
+  if (currentUser) {
+    return Geolocations.find({
+      _id: geolocationId
+    });
+  } else {
+    return this.ready();
+  }
+});

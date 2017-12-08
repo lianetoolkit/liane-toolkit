@@ -58,7 +58,7 @@ export default class AddCampaignPage extends React.Component {
     const { contexts, name, description, context, isLoading } = this.state;
     return (
       <div>
-        <PageHeader title="Add Campaign" />
+        <PageHeader title="New Campaign" />
         <section className="content">
           {loading ? (
             <Loading />

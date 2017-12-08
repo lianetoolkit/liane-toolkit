@@ -4,7 +4,7 @@
       "logout": "Logout",
       "login": "Sign In",
       "join": "Join",
-      "addCampaign": "Add Campaign"
+      "newCampaign": "New Campaign"
     },
     "authFacebook": {
       "login": "Login with Facebook"

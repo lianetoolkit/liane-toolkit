@@ -37,7 +37,10 @@ export default class AppBar extends React.Component {
             <Dropdown.Item as="a" href={FlowRouter.path("App.admin.jobs")}>
               <Icon name="tasks" /> Backend Jobs
             </Dropdown.Item>
-            <Dropdown.Item>
+            <Dropdown.Item
+              as="a"
+              href={FlowRouter.path("App.admin.geolocations")}
+            >
               <Icon name="world" /> Geolocations
             </Dropdown.Item>
             <Dropdown.Item as="a" href={FlowRouter.path("App.admin.contexts")}>
@@ -60,15 +63,16 @@ export default class AppBar extends React.Component {
     const { loading, currentUser, logout } = this.props;
 
     return (
-      <Menu fixed="top" id="appBar" size="large" inverted>
+      <Menu fixed="top" pointing id="appBar" size="large" inverted>
         <Container>
           <Menu.Item as="a" href={FlowRouter.path("App.dashboard")} header>
             {Meteor.settings.public.appName}
           </Menu.Item>
           <Menu.Menu position="right">
             <Menu.Item name="signup" onClick={this._handleItemClick}>
-              <Icon name="plus" /> {i18n.__("components.userMenu.addCampaign")}
+              <Icon name="plus" /> {i18n.__("components.userMenu.newCampaign")}
             </Menu.Item>
+            {this._getAdminMenu()}
             <Dropdown
               item
               simple
@@ -80,7 +84,6 @@ export default class AppBar extends React.Component {
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-            {this._getAdminMenu()}
           </Menu.Menu>
         </Container>
       </Menu>

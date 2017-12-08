@@ -72,15 +72,6 @@ export default class EditAudienceCategoriesPage extends React.Component {
       });
     }
   }
-  componentWillReceivesProps(nextProps) {
-    if (nextProps.id !== this.props.id) {
-      if (nextProps.id) {
-        this.getCategory(nextProps.id);
-      } else {
-        this.setState(Object.assign({}, initialCategory));
-      }
-    }
-  }
   render() {
     const {
       audienceCategoryId,

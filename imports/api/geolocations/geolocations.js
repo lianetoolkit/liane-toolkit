@@ -19,14 +19,13 @@ Geolocations.schema = new SimpleSchema({
     type: String,
     optional: true
   },
-  facebookKey: {
-    type: String
-  },
-  facebookType: {
-    type: String
+  facebook: {
+    type: Object,
+    blackbox: true
   },
   geoId: {
-    type: String
+    type: String,
+    optional: true
   },
   center: {
     type: String,
