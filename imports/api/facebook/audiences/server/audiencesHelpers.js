@@ -137,9 +137,9 @@ const FacebookAudiencesHelpers = {
       spec["geo_locations"] = {};
       spec.geo_locations[
         FacebookAudiencesHelpers._getRegionFacebookType({
-          type: geolocation.facebookType
+          type: geolocation.facebook.type
         })
-      ] = [{ key: geolocation.facebookKey }];
+      ] = [{ key: geolocation.facebook.key }];
 
       const jobId = JobsHelpers.addJob({
         jobType: "audiences.fetchAndCreateSpecAudience",
