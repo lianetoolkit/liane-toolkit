@@ -6,26 +6,38 @@ import _ from "underscore";
 const geolocations = [
   {
     name: "São Paulo",
-    facebookKey: "460",
-    facebookType: "region",
+    facebook: {
+      name: "São Paulo",
+      key: 460,
+      type: "region"
+    },
     geoId: "08"
   },
   {
     name: "Rio de Janeiro",
-    facebookKey: "454",
-    facebookType: "region",
+    facebook: {
+      name: "Rio de Janeiro"
+      key: 454,
+      type: "region"
+    },
     geoId: "09"
   },
   {
     name: "São Paulo",
-    facebookKey: "269969",
-    facebookType: "cities",
+    facebook: {
+      name: "São Paulo",
+      key: "269969",
+      type: "city"
+    },
     geoId: "08001"
   },
   {
     name: "Rio de Janeiro",
-    facebookKey: "267027",
-    facebookType: "cities",
+    facebook: {
+      name: "Rio de Janeiro",
+      key: "267027",
+      type: "city"
+    },
     geoId: "09001"
   }
 ];
