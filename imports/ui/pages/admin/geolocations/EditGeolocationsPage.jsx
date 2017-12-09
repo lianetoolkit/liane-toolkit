@@ -1,6 +1,8 @@
 import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
+import SelectGeolocationFacebook from "/imports/ui/components/geolocations/SelectGeolocationFacebook.jsx";
+import SelectGeolocationNominatim from "/imports/ui/components/geolocations/SelectGeolocationNominatim.jsx";
 import {
   Form,
   Grid,
@@ -14,7 +16,8 @@ import { Alerts } from "/imports/ui/utils/Alerts.js";
 
 const initialFields = {
   name: "",
-  facebook: ""
+  facebook: "",
+  osm: ""
 };
 
 export default class EditGeolocationsPage extends React.Component {
@@ -26,21 +29,20 @@ export default class EditGeolocationsPage extends React.Component {
     };
     this._handleChange = this._handleChange.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
+    this._handleRemove = this._handleRemove.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.geolocation) {
       if (nextProps.geolocation._id) {
         const { fields } = this.state;
-        this._updateAvailableFBGeolocations(nextProps.geolocation.facebook);
-        const { _id, name, facebook } = this._parseIncoming(
-          nextProps.geolocation
-        );
+        const { _id, name, facebook, osm } = nextProps.geolocation;
         this.setState({
           fields: {
             ...fields,
             _id,
             name,
-            facebook
+            facebook,
+            osm
           }
         });
       } else {
@@ -50,101 +52,9 @@ export default class EditGeolocationsPage extends React.Component {
       }
     }
   }
-  _parseOutgoing(fields) {
-    let outgoing = {};
-    for (const key in fields) {
-      switch (key) {
-        case "facebook": {
-          outgoing[key] = JSON.parse(fields[key]);
-          break;
-        }
-        default: {
-          outgoing[key] = fields[key];
-        }
-      }
-    }
-    return outgoing;
+  componentDidUpdate() {
+    console.log(this.state.fields);
   }
-  _parseIncoming(fields) {
-    let incoming = {};
-    for (const key in fields) {
-      switch (key) {
-        case "facebook": {
-          incoming[key] = JSON.stringify(fields[key]);
-          break;
-        }
-        default: {
-          incoming[key] = fields[key];
-        }
-      }
-    }
-    return incoming;
-  }
-  _getFBGeolocationContent(geolocation) {
-    let description = `Type: ${geolocation.type}`;
-    if (geolocation.region) {
-      description += ` Region: ${geolocation.region}`;
-    }
-    if (geolocation.country_code) {
-      description += ` Country code: ${geolocation.country_code}`;
-    }
-    return (
-      <div>
-        <Header content={geolocation.name} subheader={`${geolocation.type}`} />
-        <List horizontal>
-          {geolocation.region ? (
-            <List.Item>{geolocation.region}</List.Item>
-          ) : (
-            ""
-          )}
-          {geolocation.country_name ? (
-            <List.Item>{geolocation.country_name}</List.Item>
-          ) : (
-            ""
-          )}
-        </List>
-      </div>
-    );
-  }
-  _updateAvailableFBGeolocations(data = []) {
-    if (!Array.isArray(data)) {
-      data = [data];
-    }
-    if (data.length) {
-      let geolocations = {};
-      data.forEach(geolocation => {
-        let str = JSON.stringify(geolocation);
-        geolocations[geolocation.key] = {
-          key: geolocation.key,
-          value: str,
-          text: geolocation.name,
-          content: this._getFBGeolocationContent(geolocation)
-        };
-      });
-      this.setState({
-        availableGeolocations: Object.assign(
-          {},
-          this.state.availableGeolocations,
-          geolocations
-        )
-      });
-    }
-  }
-  _searchFBGeolocations = _.debounce((ev, data) => {
-    if (data.searchQuery) {
-      Meteor.call(
-        "geolocations.searchAdGeolocations",
-        { q: data.searchQuery },
-        (error, res) => {
-          if (error) {
-            console.log(error);
-          } else {
-            this._updateAvailableFBGeolocations(res.data);
-          }
-        }
-      );
-    }
-  }, 200);
   _handleChange = (e, { name, value }) =>
     this.setState({
       fields: Object.assign({}, this.state.fields, { [name]: value })
@@ -152,10 +62,9 @@ export default class EditGeolocationsPage extends React.Component {
   _handleSubmit(e) {
     const { geolocationId } = this.props;
     const { fields } = this.state;
-    const data = this._parseOutgoing(fields);
     this.setState({ isLoading: true });
     if (geolocationId) {
-      Meteor.call("geolocations.update", data, error => {
+      Meteor.call("geolocations.update", fields, error => {
         this.setState({ isLoading: false });
         if (error) {
           Alerts.error(error);
@@ -164,7 +73,7 @@ export default class EditGeolocationsPage extends React.Component {
         }
       });
     } else {
-      Meteor.call("geolocations.create", data, (error, geolocationId) => {
+      Meteor.call("geolocations.create", fields, (error, geolocationId) => {
         this.setState({ isLoading: false });
         if (error) {
           Alerts.error(error);
@@ -177,10 +86,25 @@ export default class EditGeolocationsPage extends React.Component {
       });
     }
   }
+  _handleRemove(e) {
+    e.preventDefault();
+    const { geolocationId } = this.props;
+    this.setState({ isLoading: true });
+    if (geolocationId) {
+      Meteor.call("geolocations.remove", { geolocationId }, error => {
+        this.setState({ isLoading: false });
+        if (error) {
+          Alerts.error(error);
+        } else {
+          Alerts.success("Geolocation was removed successfully");
+          FlowRouter.go("App.admin.geolocations");
+        }
+      });
+    }
+  }
   render() {
     const { geolocation, geolocationId, loading, currentUser } = this.props;
-    const { fields, availableGeolocations } = this.state;
-    const geolocationOptions = Object.values(availableGeolocations);
+    const { fields } = this.state;
     return (
       <div>
         <PageHeader
@@ -207,17 +131,27 @@ export default class EditGeolocationsPage extends React.Component {
                       value={fields.name}
                       onChange={this._handleChange}
                     />
-                    <Form.Dropdown
-                      options={geolocationOptions}
-                      placeholder="Search a Facebook Geolocation"
-                      name="facebook"
-                      search
-                      selection
-                      fluid
-                      value={fields.facebook}
-                      onSearchChange={this._searchFBGeolocations}
-                      onChange={this._handleChange}
-                    />
+                    <Form.Field>
+                      <SelectGeolocationFacebook
+                        name="facebook"
+                        value={fields.facebook}
+                        onChange={this._handleChange}
+                      />
+                    </Form.Field>
+                    <Form.Field>
+                      <SelectGeolocationNominatim
+                        name="osm"
+                        value={fields.osm}
+                        onChange={this._handleChange}
+                      />
+                    </Form.Field>
+                    {geolocationId ? (
+                      <Button onClick={this._handleRemove} danger>
+                        Remove geolocation
+                      </Button>
+                    ) : (
+                      ""
+                    )}
                     <Button>Send</Button>
                   </Form>
                 </Grid.Column>

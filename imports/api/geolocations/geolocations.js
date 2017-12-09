@@ -2,15 +2,6 @@ import SimpleSchema from "simpl-schema";
 
 const Geolocations = new Mongo.Collection("geolocations");
 
-Geolocations.centerSchema = new SimpleSchema({
-  lnt: {
-    type: String
-  },
-  lat: {
-    type: String
-  }
-});
-
 Geolocations.schema = new SimpleSchema({
   name: {
     type: String
@@ -23,15 +14,23 @@ Geolocations.schema = new SimpleSchema({
     type: Object,
     blackbox: true
   },
+  osm: {
+    type: Object,
+    blackbox: true,
+    optional: true
+  },
   geoId: {
     type: String,
     optional: true
   },
   center: {
-    type: String,
+    type: Array,
     optional: true
   },
-  polygon: {
+  "center.$": {
+    type: Number
+  },
+  geojson: {
     type: Object,
     optional: true,
     blackbox: true

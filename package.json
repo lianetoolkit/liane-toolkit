@@ -7,6 +7,7 @@
     "test": "meteor npm install && meteor test -p 3100 --driver-package=practicalmeteor:mocha --settings=./.deploy/local/settings.json"
   },
   "dependencies": {
+    "axios": "^0.17.1",
     "babel-runtime": "^6.26.0",
     "bcrypt": "^1.0.3",
     "chart.js": "^2.7.0",
