@@ -59,17 +59,21 @@ export default class EditAudienceCategoriesPage extends React.Component {
         }
       });
     } else {
-      Meteor.call("audienceCategories.create", fields, (error, audienceCategoryId) => {
-        this.setState({ isLoading: false });
-        if (error) {
-          Alerts.error(error);
-        } else {
-          Alerts.success("Audience category was created successfully");
-          FlowRouter.withReplaceState(function() {
-            FlowRouter.setParams({ audienceCategoryId });
-          });
+      Meteor.call(
+        "audienceCategories.create",
+        fields,
+        (error, audienceCategoryId) => {
+          this.setState({ isLoading: false });
+          if (error) {
+            Alerts.error(error);
+          } else {
+            Alerts.success("Audience category was created successfully");
+            FlowRouter.withReplaceState(function() {
+              FlowRouter.setParams({ audienceCategoryId });
+            });
+          }
         }
-      });
+      );
     }
   }
   render() {
@@ -86,8 +90,8 @@ export default class EditAudienceCategoriesPage extends React.Component {
           title="Audience Categories"
           titleTo={FlowRouter.path("App.admin.audienceCategories")}
           subTitle={
-            audienceCategoryId && audienceCategory
-              ? `Editing ${audienceCategory.title}`
+            audienceCategoryId
+              ? `Editing ${audienceCategory ? audienceCategory.title : ""}`
               : "New Audience Category"
           }
         />

@@ -46,7 +46,6 @@ export const createGeolocation = new ValidatedMethod({
     }
 
     const insertDoc = GeolocationsHelpers.parse({
-      _id,
       name,
       facebook,
       osm

@@ -106,7 +106,7 @@ export default class EditContextsPage extends React.Component {
           title="Contexts"
           titleTo={FlowRouter.path("App.admin.contexts")}
           subTitle={
-            contextId && context ? `Editing ${context.name}` : "New Context"
+            contextId ? `Editing ${context ? context.name : ""}` : "New Context"
           }
         />
         <section className="content">

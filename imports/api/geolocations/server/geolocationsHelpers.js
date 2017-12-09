@@ -68,6 +68,7 @@ const GeolocationsHelpers = {
     }
     if (geolocation.osm.geojson) {
       geolocation.geojson = geolocation.osm.geojson;
+      delete geolocation.osm.geojson;
     }
     return geolocation;
   }

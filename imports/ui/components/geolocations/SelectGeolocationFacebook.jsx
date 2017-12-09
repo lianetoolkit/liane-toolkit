@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Grid,
-  Button,
-  Table,
-  Dropdown,
-  Message,
-  Header,
-  List
-} from "semantic-ui-react";
+import { Form, Header, List } from "semantic-ui-react";
 
 export default class SelectGeolocationFacebook extends React.Component {
   static defaultProps = {
@@ -114,7 +106,7 @@ export default class SelectGeolocationFacebook extends React.Component {
     const { value, availableGeolocations } = this.state;
     const geolocationOptions = Object.values(availableGeolocations);
     return (
-      <Dropdown
+      <Form.Dropdown
         options={geolocationOptions}
         placeholder="Search a Facebook geolocation"
         name="geolocation"

@@ -3,15 +3,7 @@ import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import SelectGeolocationFacebook from "/imports/ui/components/geolocations/SelectGeolocationFacebook.jsx";
 import SelectGeolocationNominatim from "/imports/ui/components/geolocations/SelectGeolocationNominatim.jsx";
-import {
-  Form,
-  Grid,
-  Button,
-  Select,
-  Dropdown,
-  Header,
-  List
-} from "semantic-ui-react";
+import { Form, Grid, Button, Icon } from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 
 const initialFields = {
@@ -24,6 +16,7 @@ export default class EditGeolocationsPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isLoading: false,
       availableGeolocations: {},
       fields: Object.assign({}, initialFields)
     };
@@ -104,15 +97,15 @@ export default class EditGeolocationsPage extends React.Component {
   }
   render() {
     const { geolocation, geolocationId, loading, currentUser } = this.props;
-    const { fields } = this.state;
+    const { fields, isLoading } = this.state;
     return (
       <div>
         <PageHeader
           title="Geolocations"
           titleTo={FlowRouter.path("App.admin.geolocations")}
           subTitle={
-            geolocation && geolocationId
-              ? `Editing ${geolocation.name}`
+            geolocationId
+              ? `Editing ${geolocation ? geolocation.name : ""}`
               : "New Geolocation"
           }
         />
@@ -128,6 +121,7 @@ export default class EditGeolocationsPage extends React.Component {
                       size="big"
                       placeholder="Name"
                       name="name"
+                      loading={isLoading}
                       value={fields.name}
                       onChange={this._handleChange}
                     />
@@ -146,13 +140,17 @@ export default class EditGeolocationsPage extends React.Component {
                       />
                     </Form.Field>
                     {geolocationId ? (
-                      <Button onClick={this._handleRemove} danger>
+                      <Button onClick={this._handleRemove} negative>
+                        <Icon name="trash" />
                         Remove geolocation
                       </Button>
                     ) : (
                       ""
                     )}
-                    <Button>Send</Button>
+                    <Button primary>
+                      <Icon name="save" />
+                      Save
+                    </Button>
                   </Form>
                 </Grid.Column>
               </Grid.Row>
