@@ -36,8 +36,11 @@ Meteor.users.schema = new SimpleSchema({
     type: Date
   },
   roles: {
-    type: [String],
-    optional: true,
+    type: Array,
+    optional: true
+  },
+  "roles.$": {
+    type: String,
     allowedValues: ["admin", "staff"]
   }
 });

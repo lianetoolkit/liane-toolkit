@@ -30,7 +30,7 @@ export default class AppBar extends React.Component {
   }
   _getAdminMenu() {
     const { currentUser } = this.props;
-    if (Roles.userIsInRole(currentUser, ["admin", "staff"])) {
+    if (Roles.userIsInRole(currentUser, ["admin"])) {
       return (
         <Dropdown item simple text="Admin">
           <Dropdown.Menu>
