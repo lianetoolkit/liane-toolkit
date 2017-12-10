@@ -60,13 +60,12 @@ const FacebookAudiencesHelpers = {
       }).observe({
         removed: function(job) {
           completionMap[job._id] = true;
-          if(Object.keys(completionMap).length == jobIds.length) {
+          if (Object.keys(completionMap).length == jobIds.length) {
             resolve();
           }
         }
       });
     });
-
   },
   fetchAudienceByCategory({
     contextId,
@@ -84,7 +83,10 @@ const FacebookAudiencesHelpers = {
 
     const audienceCategory = AudienceCategories.findOne(audienceCategoryId);
 
-    const spec = audienceCategory.spec;
+    let spec = audienceCategory.spec;
+
+    if (spec.interests)
+      spec.interests = spec.interests.map(interest => interest.id);
 
     const jobIds = FacebookAudiencesHelpers.fetchContextAudiences({
       contextId,
@@ -135,12 +137,12 @@ const FacebookAudiencesHelpers = {
     for (const geolocationId of context.geolocations) {
       const geolocation = Geolocations.findOne(geolocationId);
       spec["geo_locations"] = {};
-      if(geolocation.facebook) {
-        spec.geo_locations[
-          FacebookAudiencesHelpers._getRegionFacebookType({
-            type: geolocation.facebook.type
-          })
-        ] = [{ key: geolocation.facebook.key }];
+      if (geolocation.facebook) {
+        const type = this._getRegionFacebookType({
+          type: geolocation.facebook.type
+        });
+        const key = geolocation.facebook.key;
+        spec.geo_locations[type] = type == "countries" ? [key] : [{ key: key }];
       }
 
       const jobId = JobsHelpers.addJob({

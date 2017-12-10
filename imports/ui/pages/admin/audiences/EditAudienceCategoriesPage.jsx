@@ -1,8 +1,9 @@
 import React from "react";
+import PropTypes from "prop-types";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import AudiencesTargetingSpecForm from "/imports/ui/components/audiences/AudiencesTargetingSpecForm.jsx";
-import { Form, Grid, Button, Select, Dropdown } from "semantic-ui-react";
+import { Form, Grid, Button, Icon } from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 
 const initialFields = {
@@ -20,6 +21,7 @@ export default class EditAudienceCategoriesPage extends React.Component {
     };
     this._handleChange = this._handleChange.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
+    this._handleRemove = this._handleRemove.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.audienceCategory) {
@@ -76,6 +78,31 @@ export default class EditAudienceCategoriesPage extends React.Component {
       );
     }
   }
+  _handleRemove(e) {
+    e.preventDefault();
+    this.context.confirmStore.show({
+      callback: () => {
+        const { audienceCategoryId } = this.props;
+        this.setState({ isLoading: true });
+        if (audienceCategoryId) {
+          Meteor.call(
+            "audienceCategories.remove",
+            { audienceCategoryId },
+            error => {
+              this.setState({ isLoading: false });
+              if (error) {
+                Alerts.error(error);
+              } else {
+                Alerts.success("Audience category was removed successfully");
+                this.context.confirmStore.hide();
+                FlowRouter.go("App.admin.audienceCategories");
+              }
+            }
+          );
+        }
+      }
+    });
+  }
   render() {
     const {
       audienceCategoryId,
@@ -115,7 +142,18 @@ export default class EditAudienceCategoriesPage extends React.Component {
                       value={fields.spec}
                       onChange={this._handleChange}
                     />
-                    <Button>Send</Button>
+                    {audienceCategoryId ? (
+                      <Button onClick={this._handleRemove} negative>
+                        <Icon name="trash" />
+                        Remove audience category
+                      </Button>
+                    ) : (
+                      ""
+                    )}
+                    <Button primary>
+                      <Icon name="save" />
+                      Save
+                    </Button>
                   </Form>
                 </Grid.Column>
               </Grid.Row>
@@ -126,3 +164,7 @@ export default class EditAudienceCategoriesPage extends React.Component {
     );
   }
 }
+
+EditAudienceCategoriesPage.contextTypes = {
+  confirmStore: PropTypes.object
+};

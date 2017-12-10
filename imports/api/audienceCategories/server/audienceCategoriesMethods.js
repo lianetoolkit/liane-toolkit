@@ -62,6 +62,29 @@ export const updateAudienceCategory = new ValidatedMethod({
   }
 });
 
+export const removeAudienceCategory = new ValidatedMethod({
+  name: "audienceCategories.remove",
+  validate: new SimpleSchema({
+    audienceCategoryId: {
+      type: String
+    }
+  }).validator(),
+  run({ audienceCategoryId }) {
+    logger.debug("audienceCategories.remove called", { audienceCategoryId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    if (!Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(403, "Access denied");
+    }
+
+    return AudienceCategories.remove(audienceCategoryId);
+  }
+});
+
 export const searchAdInterests = new ValidatedMethod({
   name: "audienceCategories.searchAdInterests",
   validate: new SimpleSchema({
