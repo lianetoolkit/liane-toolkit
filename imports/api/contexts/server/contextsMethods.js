@@ -76,3 +76,26 @@ export const updateContext = new ValidatedMethod({
     return true;
   }
 });
+
+export const removeContext = new ValidatedMethod({
+  name: "contexts.remove",
+  validate: new SimpleSchema({
+    contextId: {
+      type: String
+    }
+  }).validator(),
+  run({ contextId }) {
+    logger.debug("contexts.remove called", { contextId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    if (!Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(403, "Access denied");
+    }
+
+    return Contexts.remove(contextId);
+  }
+});

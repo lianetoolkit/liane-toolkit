@@ -1,7 +1,8 @@
 import React from "react";
+import PropTypes from "prop-types";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
-import { Form, Grid, Button } from "semantic-ui-react";
+import { Form, Grid, Button, Icon } from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 
 const initialFields = {
@@ -21,6 +22,7 @@ export default class EditContextsPage extends React.Component {
     };
     this._handleSubmit = this._handleSubmit.bind(this);
     this._handleChange = this._handleChange.bind(this);
+    this._handleRemove = this._handleRemove.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.context) {
@@ -80,6 +82,27 @@ export default class EditContextsPage extends React.Component {
         }
       });
     }
+  }
+  _handleRemove(e) {
+    e.preventDefault();
+    this.context.confirmStore.show({
+      callback: () => {
+        const { contextId } = this.props;
+        this.setState({ isLoading: true });
+        if (contextId) {
+          Meteor.call("contexts.remove", { contextId }, error => {
+            this.setState({ isLoading: false });
+            if (error) {
+              Alerts.error(error);
+            } else {
+              Alerts.success("Context was removed successfully");
+              this.context.confirmStore.hide();
+              FlowRouter.go("App.admin.contexts");
+            }
+          });
+        }
+      }
+    });
   }
   render() {
     const { contextId, context, loading, currentUser, available } = this.props;
@@ -156,7 +179,18 @@ export default class EditContextsPage extends React.Component {
                       value={fields.audienceCategories}
                       onChange={this._handleChange}
                     />
-                    <Button type="submit">Submit</Button>
+                    {contextId ? (
+                      <Button onClick={this._handleRemove} negative>
+                        <Icon name="trash" />
+                        Remove context
+                      </Button>
+                    ) : (
+                      ""
+                    )}
+                    <Button primary>
+                      <Icon name="save" />
+                      Save
+                    </Button>
                   </Form>
                 </Grid.Column>
               </Grid.Row>
@@ -167,3 +201,7 @@ export default class EditContextsPage extends React.Component {
     );
   }
 }
+
+EditContextsPage.contextTypes = {
+  confirmStore: PropTypes.object
+};

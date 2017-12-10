@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import SelectGeolocationFacebook from "/imports/ui/components/geolocations/SelectGeolocationFacebook.jsx";
@@ -81,19 +82,24 @@ export default class EditGeolocationsPage extends React.Component {
   }
   _handleRemove(e) {
     e.preventDefault();
-    const { geolocationId } = this.props;
-    this.setState({ isLoading: true });
-    if (geolocationId) {
-      Meteor.call("geolocations.remove", { geolocationId }, error => {
-        this.setState({ isLoading: false });
-        if (error) {
-          Alerts.error(error);
-        } else {
-          Alerts.success("Geolocation was removed successfully");
-          FlowRouter.go("App.admin.geolocations");
+    this.context.confirmStore.show({
+      callback: () => {
+        const { geolocationId } = this.props;
+        this.setState({ isLoading: true });
+        if (geolocationId) {
+          Meteor.call("geolocations.remove", { geolocationId }, error => {
+            this.setState({ isLoading: false });
+            if (error) {
+              Alerts.error(error);
+            } else {
+              Alerts.success("Geolocation was removed successfully");
+              this.context.confirmStore.hide();
+              FlowRouter.go("App.admin.geolocations");
+            }
+          });
         }
-      });
-    }
+      }
+    });
   }
   render() {
     const { geolocation, geolocationId, loading, currentUser } = this.props;
@@ -161,3 +167,7 @@ export default class EditGeolocationsPage extends React.Component {
     );
   }
 }
+
+EditGeolocationsPage.contextTypes = {
+  confirmStore: PropTypes.object
+};
