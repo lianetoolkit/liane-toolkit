@@ -17,7 +17,13 @@ Liane uses Meteor framework, Reactjs library and Facebook API to provide differe
 
 ## Getting Started
 
-Install **Meteor** (https://guide.meteor.com) full-stack framework.
+
+### Dependencies
+
+ - [Meteor](https://guide.meteor.com)
+ - [Redis](https://redis.io/)
+
+Install **Meteor** full-stack framework.
 ~~~shell
 curl https://install.meteor.com/ | sh
 ~~~
@@ -29,7 +35,9 @@ git clone https://github.com/lianetoolkit/liane-toolkit
 
 Create a file at `.deploy/local/` and name it `settings.json`. You can find an example at `.deploy/settings.example.json`
 
-Add your Facebook API settings.
+Add your Facebook API and change any other necessary settings.
+
+Make sure your **Redis** server is running.
 
 Then you can run your project.
 
@@ -44,7 +52,8 @@ This project uses **FlowRouter** (https://github.com/kadirahq/flow-router) for r
 ## Application Structure
 
 This projects follows Meteor guide recommendations for application struture.
-~~~js
+
+~~~
 imports/
   startup/
     client/

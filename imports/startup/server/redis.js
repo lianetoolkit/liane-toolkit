@@ -7,7 +7,7 @@ client.setSync = Meteor.wrapAsync(client.set);
 client.getSync = Meteor.wrapAsync(client.get);
 
 client.on("error", error => {
-  console.log("Redis Error", error);
+  throw new Meteor.Error("redis-error", "Could not connect to redis server.")
 });
 
 client.on("connect", () => {
