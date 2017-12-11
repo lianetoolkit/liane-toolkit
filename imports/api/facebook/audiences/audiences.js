@@ -3,11 +3,15 @@ import SimpleSchema from "simpl-schema";
 const FacebookAudiences = new Mongo.Collection("facebook_audiences");
 
 FacebookAudiences.schema = new SimpleSchema({
+  campaignId: {
+    type: String,
+    index: true
+  },
   facebookAccountId: {
     type: String,
     index: true
   },
-  geoLocationId: {
+  geolocationId: {
     type: String,
     index: true
   },

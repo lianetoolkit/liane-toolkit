@@ -45,6 +45,7 @@ const FacebookAudiencesHelpers = {
       jobIds = jobIds.concat(
         FacebookAudiencesHelpers.fetchAudienceByCategory({
           contextId: context._id,
+          campaignId: campaign._id,
           audienceCategoryId: audienceCategory._id,
           facebookAccountId
         })
@@ -71,14 +72,18 @@ const FacebookAudiencesHelpers = {
   },
   fetchAudienceByCategory({
     contextId,
+    campaignId,
     facebookAccountId,
     audienceCategoryId
   }) {
     check(contextId, String);
+    check(campaignId, String);
     check(facebookAccountId, String);
     check(audienceCategoryId, String);
 
     logger.debug("FacebookAudiencesHelpers.fetchAudienceByCategory", {
+      contextId,
+      campaignId,
       facebookAccountId,
       audienceCategoryId
     });
@@ -92,6 +97,7 @@ const FacebookAudiencesHelpers = {
 
     const jobIds = FacebookAudiencesHelpers.fetchContextAudiences({
       contextId,
+      campaignId,
       facebookAccountId,
       audienceCategoryId,
       spec
@@ -114,19 +120,23 @@ const FacebookAudiencesHelpers = {
     }
   },
   fetchContextAudiences({
-    facebookAccountId,
     contextId,
+    campaignId,
+    facebookAccountId,
     audienceCategoryId,
     spec
   }) {
+    check(contextId, String);
+    check(campaignId, String);
     check(facebookAccountId, String);
     check(audienceCategoryId, String);
-    check(contextId, String);
     check(spec, Object);
 
     logger.debug("FacebookAudiencesHelpers.fetchContextAudiences", {
-      facebookAccountId,
       contextId,
+      campaignId,
+      facebookAccountId,
+      audienceCategoryId,
       spec
     });
 
@@ -150,6 +160,7 @@ const FacebookAudiencesHelpers = {
       const jobId = JobsHelpers.addJob({
         jobType: "audiences.fetchAndCreateSpecAudience",
         jobData: {
+          campaignId,
           facebookAccountId,
           geolocationId,
           audienceCategoryId,
@@ -162,11 +173,13 @@ const FacebookAudiencesHelpers = {
     return jobIds;
   },
   async fetchAndCreateSpecAudience({
+    campaignId,
     facebookAccountId,
     geolocationId,
     audienceCategoryId,
     spec
   }) {
+    check(campaignId, String);
     check(facebookAccountId, String);
     check(geolocationId, String);
     check(audienceCategoryId, String);
@@ -197,14 +210,14 @@ const FacebookAudiencesHelpers = {
       const redisKey = `audiences:fetch:${hash}`;
       try {
         let data = redisClient.getSync(redisKey);
-        if(data) {
+        if (data) {
           return data;
         } else {
           let res = await _fb.api(route, {
             targeting_spec: spec,
             access_token: accessToken
           });
-          redisClient.setSync(redisKey, res.data.users, 'EX', 12 * 60 * 60);
+          redisClient.setSync(redisKey, res.data.users, "EX", 12 * 60 * 60);
           await sleep(2000);
           return redisClient.getSync(redisKey);
         }
@@ -224,10 +237,11 @@ const FacebookAudiencesHelpers = {
 
     return FacebookAudiences.upsert(
       {
+        campaignId: campaignId,
         facebookAccountId: facebookAccountId,
         audienceCategoryId: audienceCategoryId,
         fetch_date: moment().format("YYYY-MM-DD"),
-        geoLocationId: geolocationId
+        geolocationId: geolocationId
       },
       { $set: result }
     );

@@ -39,7 +39,7 @@ export default class CampaignAccount extends React.Component {
   }
 
   render() {
-    const { facebookId, contextId } = this.props;
+    const { campaignId, facebookId, contextId } = this.props;
     const account = FacebookAccounts.findOne({ facebookId });
     const panes = [
       {
@@ -56,7 +56,10 @@ export default class CampaignAccount extends React.Component {
               </Button>
             </Segment>
             <PeopleTable
-              selector={{ facebookAccounts: { $in: [facebookId] } }}
+              selector={{
+                facebookAccounts: { $in: [facebookId] },
+                campaignId: campaignId
+              }}
               hideHeader={true}
             />
           </Tab.Pane>
@@ -77,11 +80,15 @@ export default class CampaignAccount extends React.Component {
               </Button>
             </Segment>
             <AudiencesChartsContainer
-              facebookAccountId={facebookId}
+              campaignId={campaignId}
               contextId={contextId}
+              facebookAccountId={facebookId}
             />
             <AudiencesIndexTable
-              selector={{ facebookAccountId: facebookId }}
+              selector={{
+                facebookAccountId: facebookId,
+                campaignId: campaignId
+              }}
               hideHeader={true}
             />
           </Tab.Pane>

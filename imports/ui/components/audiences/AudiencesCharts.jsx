@@ -18,6 +18,7 @@ export default class AudiencesCharts extends React.Component {
       loading,
       audienceCategories,
       context,
+      campaignId,
       facebookAccountId
     } = this.props;
     return (
@@ -32,11 +33,12 @@ export default class AudiencesCharts extends React.Component {
                   <Header as="h4" dividing>
                     {category.title}
                   </Header>
-                  {context.geolocations.map((geoLocationId, index) => {
+                  {context.geolocations.map((geolocationId, index) => {
                     return (
                       <AudienceGeoLocationChartContainer
                         key={index}
-                        geoLocationId={geoLocationId}
+                        campaignId={campaignId}
+                        geolocationId={geolocationId}
                         audienceCategoryId={category._id}
                         facebookAccountId={facebookAccountId}
                       />

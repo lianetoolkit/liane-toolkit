@@ -39,8 +39,8 @@ export default class AudienceGeoLocationChart extends React.Component {
   }
 
   render() {
-    const { loading, geoLocationId, audiences } = this.props;
-    const geoLocation = Geolocations.findOne(geoLocationId);
+    const { loading, geolocationId, audiences } = this.props;
+    const geoLocation = Geolocations.findOne(geolocationId);
     return (
       <div>
         <Header as="h5">{geoLocation.name}</Header>

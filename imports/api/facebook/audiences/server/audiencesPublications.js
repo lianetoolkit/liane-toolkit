@@ -3,16 +3,18 @@ import { AudienceCategories } from "/imports/api/audienceCategories/audienceCate
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 
 Meteor.publish("audiences.byCategory.byGeolocation", function({
+  campaignId,
   facebookAccountId,
-  geoLocationId,
+  geolocationId,
   audienceCategoryId
 }) {
   const currentUser = this.userId;
   if (currentUser) {
     return FacebookAudiences.find(
       {
+        campaignId: campaignId,
         facebookAccountId: facebookAccountId,
-        geoLocationId: geoLocationId,
+        geolocationId: geolocationId,
         audienceCategoryId: audienceCategoryId
       },
       { sort: { createdAt: -1 } }
@@ -58,7 +60,7 @@ Meteor.publishComposite("audiences.byAccount", function({
           find: function(fbAudience) {
             return Geolocations.find(
               {
-                _id: fbAudience.geoLocationId
+                _id: fbAudience.geolocationId
               },
               { fields: { name: 1 } }
             );

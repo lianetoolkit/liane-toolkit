@@ -5,8 +5,9 @@ import AudienceGeoLocationChart from "/imports/ui/components/audiences/AudienceG
 
 export default createContainer(props => {
   const subsHandle = Meteor.subscribe("audiences.byCategory.byGeolocation", {
+    campaignId: props.campaignId,
     facebookAccountId: props.facebookAccountId,
-    geoLocationId: props.geoLocationId,
+    geolocationId: props.geolocationId,
     audienceCategoryId: props.audienceCategoryId
   });
 
@@ -15,8 +16,9 @@ export default createContainer(props => {
   const audiences = subsHandle.ready()
     ? FacebookAudiences.find(
         {
+          campaignId: props.campaignId,
           facebookAccountId: props.facebookAccountId,
-          geoLocationId: props.geoLocationId,
+          geolocationId: props.geolocationId,
           audienceCategoryId: props.audienceCategoryId
         },
         { sortBy: { createdAt: 1 } }

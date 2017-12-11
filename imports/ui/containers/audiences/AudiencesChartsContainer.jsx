@@ -6,6 +6,7 @@ import AudiencesCharts from "/imports/ui/components/audiences/AudiencesCharts.js
 
 export default createContainer(props => {
   const subsHandle = Meteor.subscribe("audienceCategories.byContext", {
+    campaignId: props.campaignId,
     contextId: props.contextId
   });
   const loading = !subsHandle.ready();

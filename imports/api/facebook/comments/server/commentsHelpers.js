@@ -9,9 +9,10 @@ const options = {
   client_id: Meteor.settings.facebook.clientId,
   client_secret: Meteor.settings.facebook.clientSecret
 };
-_fb = new Facebook(options);
 
-_fetchFacebookPageData = ({ url }) => {
+const _fb = new Facebook(options);
+
+const _fetchFacebookPageData = ({ url }) => {
   check(url, String);
 
   response = HTTP.get(url);

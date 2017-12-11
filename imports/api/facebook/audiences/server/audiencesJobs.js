@@ -41,7 +41,6 @@ const AudiencesJobs = {
           retries: 3,
           wait: 5 * 60 * 1000
         },
-        delay: 1000,
         repeat: {
           wait: 24 * 60 * 60 * 1000
           // schedule: "0 0 12 * * *"
@@ -52,11 +51,13 @@ const AudiencesJobs = {
   },
   "audiences.fetchAndCreateSpecAudience": {
     run({ job }) {
+      check(job && job.data && job.data.campaignId, String);
       check(job && job.data && job.data.facebookAccountId, String);
       check(job && job.data && job.data.geolocationId, String);
       check(job && job.data && job.data.audienceCategoryId, String);
       check(job && job.data && job.data.spec, Object);
 
+      const campaignId = job.data.campaignId;
       const facebookAccountId = job.data.facebookAccountId;
       const geolocationId = job.data.geolocationId;
       const audienceCategoryId = job.data.audienceCategoryId;
@@ -66,6 +67,7 @@ const AudiencesJobs = {
       try {
         Promise.await(
           FacebookAudiencesHelpers.fetchAndCreateSpecAudience({
+            campaignId,
             facebookAccountId,
             geolocationId,
             audienceCategoryId,

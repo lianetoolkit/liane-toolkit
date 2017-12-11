@@ -45,6 +45,7 @@ export default class CampaignsPage extends React.Component {
             <div>
               {facebookId ? (
                 <CampaignAccount
+                  campaignId={campaign._id}
                   facebookId={facebookId}
                   contextId={campaign.contextId}
                 />

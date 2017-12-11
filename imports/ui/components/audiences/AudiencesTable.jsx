@@ -33,10 +33,10 @@ export default class AudiencesTable extends React.Component {
           },
           {
             label: "Location",
-            data: "geoLocationId",
+            data: "geolocationId",
             render: fbAudience => {
               const geoLocation = Geolocations.findOne(
-                fbAudience.geoLocationId
+                fbAudience.geolocationId
               );
               return <b>{geoLocation.name}</b>;
             }
