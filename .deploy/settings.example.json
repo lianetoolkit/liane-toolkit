@@ -3,12 +3,7 @@
     "deployMode": "local",
     "domain": "localhost:3000",
     "appName": "Liane",
-    "appEmail": "xx@xxx.com"
-  },
-  "appType": "app",
-  "signUpCodes": {
-    "staff": "xxx",
-    "users": "xxx"
+    "appEmail": "contact@example.com"
   },
   "facebook": {
     "clientId": "<YOUR APP ID>",
@@ -24,13 +19,10 @@
     "mail": {
       "host": "smtp.gmail.com",
       "port": 587,
-      "username": "xxx@xxx.co",
-      "password": "xxx",
-      "admins": ["xxx@xxx.com"]
+      "username": "contact@example.com",
+      "password": "x",
+      "admins": ["contact@example.com"]
     },
-    "admins": ["xxx@xxx.com"]
-  },
-  "jobsConcurrency": {
-    "xxx": 1
+    "admins": ["contact@example.com"]
   }
 }

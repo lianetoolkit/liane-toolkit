@@ -3,7 +3,7 @@ const UsersUtils = {
     check(userId, String);
     check(role, String);
 
-    if (Roles.userIsInRole(userId, ["admin", "staff"])) {
+    if (Roles.userIsInRole(userId, ["admin"])) {
       Roles.addUsersToRoles(userId, role);
       return;
     }

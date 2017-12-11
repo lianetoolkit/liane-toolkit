@@ -12,14 +12,6 @@ Accounts.config({
 });
 
 Accounts.onCreateUser(function(options, user) {
-  const { code } = options.profile;
-  if (code == null) {
-    throw new Meteor.Error("Accounts.onCreateUser", "You need to a code");
-  }
-
-  if (code !== Meteor.settings.signUpCodes.staff) {
-    throw new Meteor.Error("Accounts.onCreateUser", "Sorry, the code is wrong");
-  }
 
   const userProperties = { profile: {} };
 

@@ -1,13 +1,17 @@
-# liane-toolkit
-Liane toolkit is an Electoral Toolkit for Political Campaigns. We belive we can democratize the network analysis intelligence.
+# Liane
+
+## An Electoral Toolkit for Activist Campaigns
 
 Liane uses Meteor framework, Reactjs library and Facebook API to provide different tools to candidates.
 
 > This project is under development.
 
+---
+
 **Table of Contents**
 
 * [Getting Started](#getting-started)
+  * [Dependencies](#dependencies)
 * [Routes Definition](#routes-definition)
 * [Application Structure](#application-structure)
 * [On startup](#on-startup)
@@ -16,7 +20,6 @@ Liane uses Meteor framework, Reactjs library and Facebook API to provide differe
 * [Tests](#tests)
 
 ## Getting Started
-
 
 ### Dependencies
 
@@ -47,7 +50,7 @@ npm start
 
 ## Routes Definition
 
-This project uses **FlowRouter** (https://github.com/kadirahq/flow-router) for routes definition. You can find and modify routes at `/imports/startup/client/routes.js`
+This project uses **[FlowRouter](https://github.com/kadirahq/flow-router)** for routes definition. You can find and modify routes at `/imports/startup/client/routes.js`
 
 ## Application Structure
 
@@ -82,24 +85,23 @@ server/
 
 ## On startup
 
-You can find the access code for signing up at `.deploy/local/settings.json`, by default is 'XXX'. You can customize as you like.
-
 At `/imports/startup/server/fixtures.js` by default on start up the system adds some examples of Contexts, Geolocations and Categories. You can also customize as you like.
 
 ## Cron jobs
 
-This project uses **Job Collection** (https://github.com/vsivsi/meteor-job-collection/) as job manager. It allows to add schedule jobs for repeating tasks along the campaign.
+This project uses **[Job Collection](https://github.com/vsivsi/meteor-job-collection/)** as job manager. It allows to add schedule jobs for repeating tasks along the campaign.
 
 ## Internationalization
 
-This project uses **universe:i18n** (https://github.com/vazco/meteor-universe-i18n) for internationalization. You can find and edit translations at `/i18n/en.i18n.json`
+This project uses **[universe:i18n](https://github.com/vazco/meteor-universe-i18n)** for internationalization. You can find and edit translations at `/i18n/en.i18n.json`
 
 ## Tests
 
-This projects uses **Mocha**(https://github.com/mochajs/mocha) js framework, **Faker** and **Meteor Factory**(https://github.com/versolearning/meteor-factory/).
+This projects uses **[Mocha](https://github.com/mochajs/mocha)** framework, **Faker** and **Meteor [Factory](https://github.com/versolearning/meteor-factory/)**.
 
 You can find tests inside server folders `../server/campaigns.tests.js` and fake models `../server/campaigns.fake.js`.
 To run tests you use:
+
 ~~~shell
 npm run test
 ~~~

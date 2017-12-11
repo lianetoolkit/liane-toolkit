@@ -22,7 +22,6 @@ export default class JoinPage extends React.Component {
     super(props);
     this.state = {
       errors: {},
-      code: "",
       email: "",
       terms: true,
       loading: false,
@@ -39,7 +38,7 @@ export default class JoinPage extends React.Component {
 
   _onSubmit(event) {
     event.preventDefault();
-    const { email, password, confirm, code, terms } = this.state;
+    const { email, password, confirm, terms } = this.state;
 
     const errors = {};
 
@@ -58,21 +57,16 @@ export default class JoinPage extends React.Component {
     if (confirm !== password) {
       errors.confirm = i18n.__("pages.authPageJoin.passwordConfirm");
     }
-    if (!code) {
-      errors.code = i18n.__("pages.authPageJoin.invalidCode");
-    }
 
     this.setState({ errors });
     if (Object.keys(errors).length) {
       return;
     }
     this.setState({ loading: true });
-    const profile = { code: code };
     Accounts.createUser(
       {
         email,
-        password,
-        profile
+        password
       },
       err => {
         if (err) {
@@ -133,21 +127,12 @@ export default class JoinPage extends React.Component {
             value={this.state.confirm}
             placeholder="Password again"
           />
-          <Form.Input
-            icon="privacy"
-            iconPosition="left"
-            placeholder="Code"
-            type="password"
-            name="code"
-            onChange={this._handleChange}
-            value={this.state.code}
-          />
           <Button fluid primary onClick={this._onSubmit}>
             {i18n.__("pages.authPageJoin.joinNow")}
           </Button>
           <Divider />
           <div className="signIn-help">
-            {i18n.__("pages.authPageJoin.haveAccount")} {" "}
+            {i18n.__("pages.authPageJoin.haveAccount")}{" "}
             <a href={this.pathFor("Accounts.signin")}>
               {i18n.__("pages.authPageSignIn.signIn")}
             </a>

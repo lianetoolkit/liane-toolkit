@@ -16,6 +16,7 @@ export default class DashboardPage extends React.Component {
 
   render() {
     const { loading, currentUser } = this.props;
+    console.log(this.props);
     return (
       <div>
         <PageHeader title="Dashboard" />
