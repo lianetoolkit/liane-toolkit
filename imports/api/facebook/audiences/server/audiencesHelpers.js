@@ -58,9 +58,10 @@ const FacebookAudiencesHelpers = {
 
     return await new Promise(resolve => {
       let completionMap = {};
-      Jobs.find({
+      const query = Jobs.find({
         _id: { $in: jobIds }
-      }).observe({
+      });
+      query.observe({
         removed: function(job) {
           completionMap[job._id] = true;
           if (Object.keys(completionMap).length == jobIds.length) {
@@ -68,6 +69,10 @@ const FacebookAudiencesHelpers = {
           }
         }
       });
+      const jobs = query.fetch();
+      if(!jobs.length) {
+        resolve();
+      }
     });
   },
   fetchAudienceByCategory({

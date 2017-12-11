@@ -9,7 +9,14 @@ export const JobsHelpers = {
     check(jobData, Object);
     logger.debug("JobsHelpers.addJob: called", { jobType }, { jobData });
 
-    if (!JobsUtils.isJobDuplicated({ jobType, jobData })) {
+    const jobInCollectionId = JobsUtils.getJobInCollectionId({
+      jobType,
+      jobData
+    });
+
+    if (jobInCollectionId) {
+      return jobInCollectionId;
+    } else {
       const newJob = new Job(Jobs, jobType, jobData);
       const jobOptions = JobsPool.jobs[jobType].jobOptions({ jobData });
       logger.debug("JobsHelpers.addJob", { jobOptions });
@@ -27,14 +34,15 @@ export const JobsHelpers = {
       if (jobOptions.repeat != null) {
         newJob.repeat({
           wait: jobOptions.repeat.wait,
-          schedule: jobOptions.repeat.schedule ? Jobs.later.parse.cron(jobOptions.repeat.schedule, true) : undefined,
+          schedule: jobOptions.repeat.schedule
+            ? Jobs.later.parse.cron(jobOptions.repeat.schedule, true)
+            : undefined,
           until: jobOptions.repeat.until || Jobs.foreverDate
         });
       }
       const jobId = newJob.save();
       return jobId;
     }
-    return false;
   },
 
   removeJob({ jobType, jobData }) {
@@ -62,13 +70,13 @@ export const JobsHelpers = {
   cleanIdleJobs() {
     logger.debug("Jobs.cleanIdleJobs: called");
 
-    const jobsTypesToRestart = ["entries.fetchByAccount"];
+    const jobsTypesToRemove = [];
 
     const jobsToRestart = Jobs.find(
       {
         status: "running",
         type: {
-          $in: jobsTypesToRestart
+          $nin: jobsTypesToRemove
         }
       },
       {
@@ -93,7 +101,7 @@ export const JobsHelpers = {
       {
         status: "running",
         type: {
-          $nin: jobsTypesToRestart
+          $in: jobsTypesToRemove
         }
       },
       {

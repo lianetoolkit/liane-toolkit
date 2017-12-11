@@ -7,12 +7,12 @@ export default createContainer(props => {
   const subsHandle = Meteor.subscribe("geolocations.detail", {
     geolocationId: props.geolocationId
   });
+
   const loading = !subsHandle.ready();
 
-  const geolocation =
-    subsHandle.ready() && props.geolocationId
-      ? Geolocations.findOne()
-      : null;
+  const geolocation = subsHandle.ready() && props.geolocationId
+    ? Geolocations.findOne(props.geolocationId)
+    : null;
 
   return {
     loading,

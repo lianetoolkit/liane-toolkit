@@ -13,8 +13,8 @@ JobsPool.jobs = _.extend(EntriesJobs, AudiencesJobs);
 let _runJob;
 Meteor.startup(function() {
   Jobs.startJobServer();
+  return JobsHelpers.cleanIdleJobs();
   if (Meteor.settings.public.deployMode != "local") {
-    return JobsHelpers.cleanIdleJobs();
   }
 });
 

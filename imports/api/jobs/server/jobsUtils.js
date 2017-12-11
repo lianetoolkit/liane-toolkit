@@ -2,7 +2,7 @@ const { Jobs } = require("../jobs.js");
 import flatten from "flat";
 
 export const JobsUtils = {
-  isJobDuplicated({ jobType, jobData }) {
+  getJobInCollectionId({ jobType, jobData }) {
     check(jobType, String);
     check(jobData, Object);
 
@@ -15,11 +15,10 @@ export const JobsUtils = {
       $nin: ["cancelled", "failed", "completed"]
     };
 
-    // logger.debug {flattenedDuplicateJobQuery}
     const jobsInCollection = Jobs.find(flattenedDuplicateJobQuery).fetch();
 
     if (jobsInCollection.length > 0) {
-      return true;
+      return jobsInCollection[0]._id;
     } else {
       return false;
     }
