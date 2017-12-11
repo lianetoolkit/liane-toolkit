@@ -8,6 +8,8 @@ import { AudienceCategories } from "/imports/api/audienceCategories/audienceCate
 import { Jobs } from "/imports/api/jobs/jobs";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { Facebook, FacebookApiException } from "fb";
+import redisClient from "/imports/startup/server/redis";
+import crypto from "crypto";
 import _ from "underscore";
 import moment from "moment";
 
@@ -188,12 +190,24 @@ const FacebookAudiencesHelpers = {
       });
 
     const fetch = async function(spec) {
+      const hash = crypto
+        .createHash("sha1")
+        .update(JSON.stringify(spec))
+        .digest("hex");
+      const redisKey = `audiences:fetch:${hash}`;
       try {
-        let res = await _fb.api(route, {
-          targeting_spec: spec,
-          access_token: accessToken
-        });
-        return res.data.users;
+        let data = redisClient.getSync(redisKey);
+        if(data) {
+          return data;
+        } else {
+          let res = await _fb.api(route, {
+            targeting_spec: spec,
+            access_token: accessToken
+          });
+          redisClient.setSync(redisKey, res.data.users, 'EX', 12 * 60 * 60);
+          await sleep(2000);
+          return redisClient.getSync(redisKey);
+        }
       } catch (error) {
         throw new Meteor.Error(error);
       }
@@ -202,11 +216,8 @@ const FacebookAudiencesHelpers = {
     let result = {};
 
     result["estimate"] = await fetch(spec);
-    await sleep(2000);
     result["total"] = await fetch(_.omit(spec, "interests"));
-    await sleep(2000);
     result["location_estimate"] = await fetch(_.omit(spec, "connections"));
-    await sleep(2000);
     result["location_total"] = await fetch(
       _.omit(spec, "interests", "connections")
     );

@@ -55,9 +55,16 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
           children: [
             {
               find: function(context) {
-                return Geolocations.find({
-                  _id: { $in: context.geolocations }
-                });
+                return Geolocations.find(
+                  {
+                    _id: { $in: context.geolocations }
+                  },
+                  {
+                    fields: {
+                      name: 1
+                    }
+                  }
+                );
               }
             }
           ]

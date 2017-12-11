@@ -22,6 +22,7 @@
     "react-dom": "^15.6.1",
     "react-mounter": "^1.2.0",
     "react-spinner": "^0.2.7",
+    "redis": "^2.8.0",
     "semantic-ui-react": "^0.74.2",
     "simpl-schema": "^0.4.1",
     "underscore": "^1.8.3",

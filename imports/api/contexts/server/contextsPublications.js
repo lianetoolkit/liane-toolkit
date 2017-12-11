@@ -46,9 +46,16 @@ Meteor.publishComposite("admin.contexts", function() {
         },
         {
           find: function(context) {
-            return Geolocations.find({
-              _id: context.mainGeolocationId
-            });
+            return Geolocations.find(
+              {
+                _id: context.mainGeolocationId
+              },
+              {
+                fields: {
+                  name: 1
+                }
+              }
+            );
           }
         },
         {

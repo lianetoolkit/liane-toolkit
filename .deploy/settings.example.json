@@ -16,6 +16,10 @@
     "admin": "<YOUR ADMIN ID>",
     "adAccount": "<YOUR ADS APP ID>"
   },
+  "redis": {
+    "host": "0.0.0.0",
+    "port": "6379"
+  },
   "email": {
     "mail": {
       "host": "smtp.gmail.com",

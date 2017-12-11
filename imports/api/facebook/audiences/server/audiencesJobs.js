@@ -91,8 +91,7 @@ const AudiencesJobs = {
         retry: {
           retries: 5,
           wait: 5 * 60 * 1000
-        },
-        delay: 2000
+        }
       };
       return options;
     }
