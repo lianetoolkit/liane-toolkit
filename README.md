@@ -2,7 +2,7 @@
 
 ## An Electoral Toolkit for Activist Campaigns
 
-Liane uses Meteor framework, Reactjs library and Facebook API to provide different tools to candidates.
+Liane is a free software using [Meteor](https://meteor.com), [MongoDB](https://www.mongodb.com/), [React](https://reactjs.org/), [Redis](https://redis.io/) and the [Facebook API](https://developers.facebook.com/docs).
 
 > This project is under development.
 
@@ -97,10 +97,10 @@ This project uses **[universe:i18n](https://github.com/vazco/meteor-universe-i18
 
 ## Tests
 
-This projects uses **[Mocha](https://github.com/mochajs/mocha)** framework, **Faker** and **Meteor [Factory](https://github.com/versolearning/meteor-factory/)**.
+This projects uses **[Mocha](https://github.com/mochajs/mocha)** framework, **[Faker](https://github.com/Marak/Faker.js)** and **[Meteor Factory](https://github.com/versolearning/meteor-factory/)** for tests.
 
 You can find tests inside server folders `../server/campaigns.tests.js` and fake models `../server/campaigns.fake.js`.
-To run tests you use:
+To run the tests:
 
 ~~~shell
 npm run test
