@@ -67,6 +67,20 @@ export default class AudiencesIndexTable extends React.Component {
             }
           },
           {
+            label: "Percentage",
+            data: "percentage",
+            render: fbAudience => {
+              return <strong>{((fbAudience.estimate/fbAudience.total)*100).toFixed(2)}%</strong>
+            }
+          },
+          {
+            label: "Location Percentage",
+            data: "location_percentage",
+            render: fbAudience => {
+              return <strong>{((fbAudience.location_estimate/fbAudience.location_total)*100).toFixed(2)}%</strong>
+            }
+          },
+          {
             label: "LPI",
             data: "estimate"
           },
