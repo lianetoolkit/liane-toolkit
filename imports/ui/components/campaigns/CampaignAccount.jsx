@@ -9,6 +9,7 @@ import {
 } from "semantic-ui-react";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import PeopleTable from "/imports/ui/components/people/PeopleTable.jsx";
+import EntriesTable from "/imports/ui/components/entries/EntriesTable.jsx";
 import AudiencesTable from "/imports/ui/components/audiences/AudiencesTable.jsx";
 import AudiencesIndexTable from "/imports/ui/components/audiences/AudiencesIndexTable.jsx";
 import AudiencesChartsContainer from "/imports/ui/containers/audiences/AudiencesChartsContainer.jsx";
@@ -60,7 +61,27 @@ export default class CampaignAccount extends React.Component {
                 facebookAccounts: { $in: [facebookId] },
                 campaignId: campaignId
               }}
-              hideHeader={true}
+            />
+          </Tab.Pane>
+        )
+      },
+      {
+        menuItem: { key: "entries", icon: "browser", content: "Entries" },
+        render: () => (
+          <Tab.Pane attached={false}>
+            <Segment basic clearing>
+              <Button
+                onClick={this._onClickUpdate}
+                floated="right"
+                name="people"
+              >
+                Update
+              </Button>
+            </Segment>
+            <EntriesTable
+              selector={{
+                facebookAccountId: facebookId
+              }}
             />
           </Tab.Pane>
         )
@@ -79,11 +100,11 @@ export default class CampaignAccount extends React.Component {
                 Update
               </Button>
             </Segment>
-            <AudiencesChartsContainer
+            {/* <AudiencesChartsContainer
               campaignId={campaignId}
               contextId={contextId}
               facebookAccountId={facebookId}
-            />
+            /> */}
             <AudiencesIndexTable
               selector={{
                 facebookAccountId: facebookId,

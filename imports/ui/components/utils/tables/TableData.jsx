@@ -178,7 +178,7 @@ export default class TableData extends Component {
           <div>
             {!hideHeader ? (
               <div>
-                <Menu borderless stackable>
+                <Menu pointing secondary stackable>
                   <Menu.Item header>
                     {title}{" "}
                     <Label size="mini" circular>
@@ -205,7 +205,6 @@ export default class TableData extends Component {
             ) : (
               ""
             )}
-
             <div style={{ overflow: "auto" }}>
               <Table>
                 <Table.Header>
