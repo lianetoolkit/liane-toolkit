@@ -85,7 +85,7 @@ export const JobsHelpers = {
         }
       }
     ).fetch();
-    if (jobsToRestart) {
+    if (jobsToRestart && jobsToRestart.length) {
       const jobsToRestartIds = _.pluck(jobsToRestart, "_id");
 
       if (jobsToRestartIds.length) {
