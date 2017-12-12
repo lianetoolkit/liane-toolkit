@@ -200,6 +200,8 @@ const FacebookAudiencesHelpers = {
 
     const accessToken = admin.services.facebook.accessToken;
 
+    const fetchDate = moment().format("YYYY-MM-DD");
+
     spec["connections"] = [facebookAccountId];
 
     const sleep = ms =>
@@ -210,9 +212,9 @@ const FacebookAudiencesHelpers = {
     const fetch = async function(spec) {
       const hash = crypto
         .createHash("sha1")
-        .update(JSON.stringify(spec))
+        .update(JSON.stringify(spec) + fetchDate)
         .digest("hex");
-      const redisKey = `audiences:fetch:${hash}`;
+      const redisKey = `audiences::fetch::${hash}`;
       try {
         let data = redisClient.getSync(redisKey);
         if (data) {
@@ -222,7 +224,7 @@ const FacebookAudiencesHelpers = {
             targeting_spec: spec,
             access_token: accessToken
           });
-          redisClient.setSync(redisKey, res.data.users, "EX", 12 * 60 * 60);
+          redisClient.setSync(redisKey, res.data.users, "EX", 24 * 60 * 60);
           await sleep(2000);
           return redisClient.getSync(redisKey);
         }
@@ -245,7 +247,7 @@ const FacebookAudiencesHelpers = {
         campaignId: campaignId,
         facebookAccountId: facebookAccountId,
         audienceCategoryId: audienceCategoryId,
-        fetch_date: moment().format("YYYY-MM-DD"),
+        fetch_date: fetchDate,
         geolocationId: geolocationId
       },
       { $set: result }
