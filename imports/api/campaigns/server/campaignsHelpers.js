@@ -39,9 +39,9 @@ const CampaignsHelpers = {
     JobsHelpers.addJob({
       jobType: "entries.fetchByAccount",
       jobData: {
+        campaignId,
         facebookId: account.id,
         accessToken: token.result,
-        campaignId: campaignId
       }
     });
     JobsHelpers.addJob({
