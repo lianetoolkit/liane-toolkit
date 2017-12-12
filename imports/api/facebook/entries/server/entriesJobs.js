@@ -28,10 +28,10 @@ const EntriesJobs = {
         retry: {
           retries: 1,
           wait: 5 * 60 * 1000
-        } // 5 minutes
-        // repeat: {
-        //   schedule: "0 0/1 * * * *"
-        // }
+        },
+        repeat: {
+          wait: 2 * 60 * 60 * 1000
+        }
       };
       return options;
     }
