@@ -110,7 +110,7 @@ export const JobsHelpers = {
         }
       }
     ).fetch();
-    if (jobsToRemove) {
+    if (jobsToRemove && jobsToRemove.length) {
       const jobsToRemoveIds = _.pluck(jobsToRemove, "_id");
 
       if (jobsToRemoveIds.length) {
