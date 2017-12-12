@@ -30,11 +30,23 @@ Entries.schema = new SimpleSchema({
     type: String,
     optional: true
   },
-  updated_time: {
+  updatedTime: {
     type: Date
   },
-  created_time: {
+  createdTime: {
     type: Date
+  },
+  counts: {
+    type: Object,
+  },
+  "counts.likes": {
+    type: Number
+  },
+  "counts.comments": {
+    type: Number
+  },
+  "counts.shares": {
+    type: Number
   }
 });
 

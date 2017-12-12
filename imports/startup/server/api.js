@@ -14,6 +14,9 @@ import "/imports/api/audienceCategories/server/audienceCategoriesPublications.js
 import "/imports/api/campaigns/server/campaignsMethods.js";
 import "/imports/api/campaigns/server/campaignsPublications.js";
 
+// entries
+import "/imports/api/facebook/entries/server/entriesPublications.js";
+
 // people
 import "/imports/api/facebook/people/server/peoplePublications.js";
 

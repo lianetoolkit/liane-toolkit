@@ -31,8 +31,8 @@ const LikesHelpers = {
 
     _fb.setAccessToken(accessToken);
     const response = Promise.await(
-      _fb.api(`${entryId}/likes`, {
-        limit: 2000
+      _fb.api(`${entryId}/reactions`, {
+        limit: 1000
       })
     );
 
@@ -47,16 +47,19 @@ const LikesHelpers = {
         const personId = like.id;
         delete like.id;
         bulk
-          .find({ personId: personId, entryId: entryId })
+          .find({ personId, entryId })
           .upsert()
           .update({
+            $setOnInsert: {
+              personId,
+              entryId
+            },
             $set: like
           });
       }
 
       bulk.execute(
         Meteor.bindEnvironment((e, result) => {
-          // do something with result
           if (likedPeople.length) {
             const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
             for (const people of likedPeople) {

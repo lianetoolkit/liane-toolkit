@@ -43,12 +43,14 @@ const EntriesJobs = {
       check(job && job.data && job.data.entryId, String);
       check(job && job.data && job.data.accessToken, String);
 
+      const interactionTypes = job.data.interactionTypes;
       const facebookAccountId = job.data.facebookAccountId;
       const accessToken = job.data.accessToken;
       const entryId = job.data.entryId;
       const campaignId = job.data.campaignId;
 
       EntriesHelpers.getEntryInteractions({
+        interactionTypes,
         facebookAccountId,
         accessToken,
         entryId,
@@ -64,12 +66,12 @@ const EntriesJobs = {
       pollInterval: 2500
     },
 
-    jobOptions() {
+    jobOptions({ jobData }) {
       const options = {
         retry: {
           retries: 1,
-          wait: 1 * 60 * 1000
-        } // 5 minutes
+          wait: 5 * 60 * 1000
+        }
         // repeat: {
         //   schedule: "0 0/1 * * * *"
         // }

@@ -33,7 +33,7 @@ const CommentsHelpers = {
     _fb.setAccessToken(accessToken);
     const response = Promise.await(
       _fb.api(`${entryId}/comments`, {
-        limit: 2000
+        limit: 1000
       })
     );
 
@@ -60,7 +60,6 @@ const CommentsHelpers = {
 
       bulk.execute(
         Meteor.bindEnvironment((e, result) => {
-          // do something with result
           if (commentedPeople.length) {
             const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
             for (const people of commentedPeople) {
