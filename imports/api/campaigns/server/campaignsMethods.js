@@ -111,7 +111,7 @@ export const updateAccount = new ValidatedMethod({
     const account = _.findWhere(campaign.accounts, { facebookId: facebookId });
     if (action == "people") {
       JobsHelpers.addJob({
-        jobType: "entries.fetchByAccount",
+        jobType: "entries.updateAccountEntries",
         jobData: {
           facebookId: facebookId,
           accessToken: account.accessToken,

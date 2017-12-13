@@ -3,6 +3,7 @@ import { Facebook, FacebookApiException } from "fb";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { HTTP } from "meteor/http";
+import { Random } from "meteor/random";
 
 const options = {
   client_id: Meteor.settings.facebook.clientId,
@@ -51,6 +52,7 @@ const LikesHelpers = {
           .upsert()
           .update({
             $setOnInsert: {
+              _id: Random.id(),
               personId,
               entryId
             },
@@ -71,6 +73,7 @@ const LikesHelpers = {
                 .find({ facebookId: people.id, campaignId: campaignId })
                 .upsert()
                 .update({
+                  $setOnInsert: { _id: Random.id() },
                   $set: { name: people.name, likesCount: likesCount },
                   $addToSet: { facebookAccounts: facebookAccountId }
                 });

@@ -37,7 +37,7 @@ const CampaignsHelpers = {
 
     FacebookAccounts.upsert({ facebookId: account.id }, upsertObj);
     JobsHelpers.addJob({
-      jobType: "entries.fetchByAccount",
+      jobType: "entries.updateAccountEntries",
       jobData: {
         campaignId,
         facebookId: account.id,

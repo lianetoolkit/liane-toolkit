@@ -23,7 +23,7 @@ _fetchFacebookPageData = ({ url }) => {
 };
 
 const EntriesHelpers = {
-  getAccountEntries({ campaignId, facebookId, accessToken }) {
+  updateAccountEntries({ campaignId, facebookId, accessToken }) {
     check(campaignId, String);
     check(facebookId, String);
     check(accessToken, String);
@@ -35,7 +35,7 @@ const EntriesHelpers = {
 
     const accountPath = isCampaignAccount ? "me" : facebookId;
 
-    logger.debug("EntriesHelpers.getAccountEntries called", {
+    logger.debug("EntriesHelpers.updateAccountEntries called", {
       facebookId
     });
 
@@ -105,7 +105,7 @@ const EntriesHelpers = {
         );
         if (updateInteractions.length) {
           JobsHelpers.addJob({
-            jobType: "entries.fetchInteractions",
+            jobType: "entries.updateEntryInteractions",
             jobData: {
               interactionTypes: updateInteractions,
               facebookAccountId: facebookId,
@@ -157,7 +157,7 @@ const EntriesHelpers = {
 
     return;
   },
-  getEntryInteractions({
+  updateEntryInteractions({
     interactionTypes,
     campaignId,
     facebookAccountId,
@@ -171,7 +171,7 @@ const EntriesHelpers = {
 
     interactionTypes = interactionTypes || ["comments", "likes"];
 
-    logger.debug("EntriesHelpers.getEntryInteractions called", {
+    logger.debug("EntriesHelpers.updateEntryInteractions called", {
       interactionTypes,
       entryId
     });

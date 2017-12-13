@@ -1,9 +1,9 @@
 const { EntriesHelpers } = require("./entriesHelpers.js");
 
 const EntriesJobs = {
-  "entries.fetchByAccount": {
+  "entries.updateAccountEntries": {
     run({ job }) {
-      logger.debug("entries.fetchByAccount job: called");
+      logger.debug("entries.updateAccountEntries job: called");
       check(job && job.data && job.data.facebookId, String);
       check(job && job.data && job.data.accessToken, String);
       check(job && job.data && job.data.campaignId, String);
@@ -12,7 +12,7 @@ const EntriesJobs = {
       const accessToken = job.data.accessToken;
       const campaignId = job.data.campaignId;
 
-      EntriesHelpers.getAccountEntries({ campaignId, facebookId, accessToken });
+      EntriesHelpers.updateAccountEntries({ campaignId, facebookId, accessToken });
 
       job.done();
       return job.remove();
@@ -36,9 +36,9 @@ const EntriesJobs = {
       return options;
     }
   },
-  "entries.fetchInteractions": {
+  "entries.updateEntryInteractions": {
     run({ job }) {
-      logger.debug("entries.fetchInteractions job: called");
+      logger.debug("entries.updateEntryInteractions job: called");
       check(job && job.data && job.data.facebookAccountId, String);
       check(job && job.data && job.data.entryId, String);
       check(job && job.data && job.data.accessToken, String);
@@ -49,7 +49,7 @@ const EntriesJobs = {
       const entryId = job.data.entryId;
       const campaignId = job.data.campaignId;
 
-      EntriesHelpers.getEntryInteractions({
+      EntriesHelpers.updateEntryInteractions({
         interactionTypes,
         facebookAccountId,
         accessToken,
@@ -62,19 +62,16 @@ const EntriesJobs = {
     },
 
     workerOptions: {
-      concurrency: 2,
+      concurrency: 4,
       pollInterval: 2500
     },
 
     jobOptions({ jobData }) {
       const options = {
         retry: {
-          retries: 1,
+          retries: 4,
           wait: 5 * 60 * 1000
         }
-        // repeat: {
-        //   schedule: "0 0/1 * * * *"
-        // }
       };
       return options;
     }

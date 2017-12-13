@@ -42,7 +42,7 @@ const AudiencesJobs = {
           wait: 5 * 60 * 1000
         },
         repeat: {
-          wait: 24 * 60 * 60 * 1000
+          wait: 2 * 60 * 60 * 1000
           // schedule: "0 0 12 * * *"
         }
       };

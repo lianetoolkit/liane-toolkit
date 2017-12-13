@@ -12,7 +12,8 @@ FacebookAccounts.schema = new SimpleSchema({
     type: String
   },
   category: {
-    type: String
+    type: String,
+    optional: true
   },
   createdAt: {
     type: Date,

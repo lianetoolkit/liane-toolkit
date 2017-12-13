@@ -3,6 +3,7 @@ import { Facebook, FacebookApiException } from "fb";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { HTTP } from "meteor/http";
+import { Random } from "meteor/random";
 import _ from "underscore";
 
 const options = {
@@ -62,16 +63,17 @@ const CommentsHelpers = {
         Meteor.bindEnvironment((e, result) => {
           if (commentedPeople.length) {
             const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
-            for (const people of commentedPeople) {
+            for (const person of commentedPeople) {
               const commentsCount = Comments.find({
-                personId: people.id,
+                personId: person.id,
                 facebookAccountId: facebookAccountId
               }).count();
               peopleBulk
-                .find({ facebookId: people.id, campaignId: campaignId })
+                .find({ facebookId: person.id, campaignId: campaignId })
                 .upsert()
                 .update({
-                  $set: { name: people.name, commentsCount: commentsCount },
+                  $setOnInsert: { _id: Random.id() },
+                  $set: { name: person.name, commentsCount: commentsCount },
                   $addToSet: { facebookAccounts: facebookAccountId }
                 });
             }

@@ -29,6 +29,11 @@ People.schema = new SimpleSchema({
     type: Number,
     defaultValue: 0,
     optional: true
+  },
+  campaignMeta: {
+    type: Object,
+    blackbox: true,
+    optional: true
   }
 });
 
