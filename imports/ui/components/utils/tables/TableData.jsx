@@ -75,15 +75,26 @@ export default class TableData extends Component {
     if (_.isUndefined(column.orderable)) {
       return;
     }
-    let color = "#444";
-    let iconClass = "sort-amount-desc";
+    let color = "#bbb";
+    let iconClass = "sort";
     if (column.data == this.props.orderBy.field) {
-      color = "#666";
+      color = "#222";
       if (this.props.orderBy.ordering == -1) {
-        iconClass = "sort";
+        iconClass = "sort descending";
+      } else {
+        iconClass = "sort ascending";
       }
     }
-    return <Icon name="sort" />;
+    const setOrder = () => {
+      this.handleOrderBy(column.data);
+    };
+    return (
+      <Icon
+        name={iconClass}
+        onClick={setOrder}
+        style={{ cursor: "pointer", color }}
+      />
+    );
   }
 
   _renderColumn = (column, obj) => {
@@ -100,15 +111,17 @@ export default class TableData extends Component {
     const { activeFilters, filters } = this.props;
     return (
       <div style={{ overflow: "auto" }}>
-        {filters.map(group => {
+        {filters.map((group, i) => {
           return (
             <div
               style={{ float: "left", margin: "5px 20px 5px 0" }}
-              key={`group-${group.title}`}
+              key={`group-${i}`}
             >
-              <Label size="tiny" style={{ marginRight: 5 }}>
-                {group.title}
-              </Label>
+              {group.title ? (
+                <Label size="tiny" style={{ marginRight: 5 }}>
+                  {group.title}
+                </Label>
+              ) : null}
               <Button.Group basic compact size="mini">
                 {group.items.map(filter => {
                   const active = !_.isUndefined(
@@ -123,7 +136,9 @@ export default class TableData extends Component {
                         this.props.toggleFilter(filter);
                       }}
                     >
-                      {filter.name}
+                      {filter.render
+                        ? filter.render(filter, active)
+                        : filter.name}
                     </Button>
                   );
                 })}
@@ -187,6 +202,9 @@ export default class TableData extends Component {
                   </Menu.Item>
 
                   <Menu.Menu position="right">
+                    {filters.length ? (
+                      <Menu.Item>{this._renderFilters()}</Menu.Item>
+                    ) : null}
                     <Menu.Item>
                       <SearchBox
                         autoFocus={true}
@@ -196,11 +214,6 @@ export default class TableData extends Component {
                     </Menu.Item>
                   </Menu.Menu>
                 </Menu>
-                {filters.length ? (
-                  <Segment>{this._renderFilters()}</Segment>
-                ) : (
-                  ""
-                )}
               </div>
             ) : (
               ""
@@ -216,7 +229,6 @@ export default class TableData extends Component {
                     ))}
                   </Table.Row>
                 </Table.Header>
-
                 <Table.Body>
                   {data.map((obj, index) => (
                     <Table.Row key={`row-${index}`}>
@@ -244,9 +256,7 @@ export default class TableData extends Component {
                       </Table.HeaderCell>
                     </Table.Row>
                   </Table.Footer>
-                ) : (
-                  ""
-                )}
+                ) : null}
               </Table>
             </div>
           </div>

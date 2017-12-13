@@ -40,21 +40,24 @@ export default class PeopleTable extends React.Component {
           },
           {
             label: "Shares",
-            data: "counts",
+            orderable: true,
+            data: "counts.shares",
             render: entry => {
               return entry.counts.shares;
             }
           },
           {
             label: "Likes",
-            data: "counts",
+            orderable: true,
+            data: "counts.likes",
             render: entry => {
               return entry.counts.likes;
             }
           },
           {
             label: "Comments",
-            data: "counts",
+            orderable: true,
+            data: "counts.comments",
             render: entry => {
               return entry.counts.comments;
             }
