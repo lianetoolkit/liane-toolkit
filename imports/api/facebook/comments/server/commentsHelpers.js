@@ -15,8 +15,12 @@ const _fb = new Facebook(options);
 
 const _fetchFacebookPageData = ({ url }) => {
   check(url, String);
-
-  response = HTTP.get(url);
+  let response;
+  try {
+    response = HTTP.get(url);
+  } catch (error) {
+    throw new Meteor.Error(error);
+  }
   return response;
 };
 
@@ -32,11 +36,16 @@ const CommentsHelpers = {
     });
 
     _fb.setAccessToken(accessToken);
-    const response = Promise.await(
-      _fb.api(`${entryId}/comments`, {
-        limit: 1000
-      })
-    );
+    let response;
+    try {
+      response = Promise.await(
+        _fb.api(`${entryId}/comments`, {
+          limit: 1000
+        })
+      );
+    } catch (error) {
+      throw new Meteor.Error(error);
+    }
 
     const _insertBulk = ({ data }) => {
       const bulk = Comments.rawCollection().initializeUnorderedBulkOp();

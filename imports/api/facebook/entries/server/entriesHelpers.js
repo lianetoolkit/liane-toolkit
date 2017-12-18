@@ -16,22 +16,29 @@ _fb = new Facebook(options);
 
 _fetchFacebookPageData = ({ url }) => {
   check(url, String);
-
-  response = HTTP.get(url);
-  // console.log(response.headers);
+  let response;
+  try {
+    response = HTTP.get(url);
+  } catch (error) {
+    throw new Meteor.Error(error);
+  }
   return response;
 };
 
 const EntriesHelpers = {
   updateAccountEntries({ campaignId, facebookId, accessToken }) {
-    check(campaignId, String);
     check(facebookId, String);
     check(accessToken, String);
 
-    const campaign = Campaigns.findOne(campaignId);
-    const isCampaignAccount = !!campaign.accounts.find(
-      account => account.facebookId == facebookId
-    );
+    let campaign;
+    let isCampaignAccount = false;
+
+    if (campaignId) {
+      campaign = Campaigns.findOne(campaignId);
+      isCampaignAccount = !!campaign.accounts.find(
+        account => account.facebookId == facebookId
+      );
+    }
 
     const accountPath = isCampaignAccount ? "me" : facebookId;
 
@@ -40,23 +47,28 @@ const EntriesHelpers = {
     });
 
     _fb.setAccessToken(accessToken);
-    const response = Promise.await(
-      _fb.api(`${accountPath}/posts`, {
-        fields: [
-          "object_id",
-          "parent_id",
-          "message",
-          "link",
-          "type",
-          "created_time",
-          "updated_time",
-          "shares",
-          "comments.limit(1).summary(true)",
-          "likes.limit(1).summary(true)"
-        ],
-        limit: 100
-      })
-    );
+    let response;
+    try {
+      response = Promise.await(
+        _fb.api(`${accountPath}/posts`, {
+          fields: [
+            "object_id",
+            "parent_id",
+            "message",
+            "link",
+            "type",
+            "created_time",
+            "updated_time",
+            "shares",
+            "comments.limit(1).summary(true)",
+            "likes.limit(1).summary(true)"
+          ],
+          limit: 100
+        })
+      );
+    } catch (error) {
+      throw new Meteor.Error(error);
+    }
 
     const _getUpdateObj = ({ entry }) => {
       return {

@@ -6,16 +6,25 @@ const EntriesJobs = {
       logger.debug("entries.updateAccountEntries job: called");
       check(job && job.data && job.data.facebookId, String);
       check(job && job.data && job.data.accessToken, String);
-      check(job && job.data && job.data.campaignId, String);
-
+      const campaignId = job.data.campaignId;
       const facebookId = job.data.facebookId;
       const accessToken = job.data.accessToken;
-      const campaignId = job.data.campaignId;
-
-      EntriesHelpers.updateAccountEntries({ campaignId, facebookId, accessToken });
-
-      job.done();
-      return job.remove();
+      let errored = false;
+      try {
+        EntriesHelpers.updateAccountEntries({
+          campaignId,
+          facebookId,
+          accessToken
+        });
+      } catch (error) {
+        errored = true;
+        return job.fail(error.message);
+      } finally {
+        if (!errored) {
+          job.done();
+          return job.remove();
+        }
+      }
     },
 
     workerOptions: {
@@ -49,16 +58,24 @@ const EntriesJobs = {
       const entryId = job.data.entryId;
       const campaignId = job.data.campaignId;
 
-      EntriesHelpers.updateEntryInteractions({
-        interactionTypes,
-        facebookAccountId,
-        accessToken,
-        entryId,
-        campaignId
-      });
-
-      job.done();
-      return job.remove();
+      let errored = false;
+      try {
+        EntriesHelpers.updateEntryInteractions({
+          interactionTypes,
+          facebookAccountId,
+          accessToken,
+          entryId,
+          campaignId
+        });
+      } catch (error) {
+        errored = true;
+        job.fail(error.message);
+      } finally {
+        if (!errored) {
+          job.done();
+          return job.remove();
+        }
+      }
     },
 
     workerOptions: {
