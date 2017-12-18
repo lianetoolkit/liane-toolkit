@@ -14,8 +14,12 @@ const _fb = new Facebook(options);
 
 const _fetchFacebookPageData = ({ url }) => {
   check(url, String);
-
-  response = HTTP.get(url);
+  let response;
+  try {
+    response = HTTP.get(url);
+  } catch (error) {
+    throw new Meteor.Error(error);
+  }
   return response;
 };
 
@@ -31,11 +35,16 @@ const LikesHelpers = {
     });
 
     _fb.setAccessToken(accessToken);
-    const response = Promise.await(
-      _fb.api(`${entryId}/reactions`, {
-        limit: 1000
-      })
-    );
+    let response;
+    try {
+      response = Promise.await(
+        _fb.api(`${entryId}/reactions`, {
+          limit: 1000
+        })
+      );
+    } catch (error) {
+      throw new Meteor.Error(error);
+    }
 
     logger.debug("LikesHelpers.getEntryLikes response", { response });
 
