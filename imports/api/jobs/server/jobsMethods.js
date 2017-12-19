@@ -174,7 +174,7 @@ Meteor.methods({
   },
 
   "jobs.rerunJob"({ jobId }) {
-    check(jobIds, [String]);
+    check(jobId, String);
     logger.debug("jobs.rerunJob called", { jobId });
 
     const userId = Meteor.userId();
@@ -182,6 +182,58 @@ Meteor.methods({
       const job = Jobs.getJob(jobId);
       if (job) {
         job.rerun({ wait: 15000 });
+      }
+    } else {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+    return true;
+  },
+
+  "jobs.ready"({ jobId }) {
+    check(jobId, String);
+    logger.debug("jobs.ready called", { jobId });
+
+    const userId = Meteor.userId();
+    if (userId && Roles.userIsInRole(userId, ["admin"])) {
+      const job = Jobs.getJob(jobId);
+      if (job) {
+        job.ready({ time: Jobs.foreverDate });
+      }
+    } else {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+    return true;
+  },
+
+  "jobs.cancel"({ jobId }) {
+    check(jobId, String);
+    logger.debug("jobs.cancel called", { jobId });
+
+    const userId = Meteor.userId();
+    if (userId && Roles.userIsInRole(userId, ["admin"])) {
+      const job = Jobs.getJob(jobId);
+      if (job) {
+        job.cancel();
+      }
+    } else {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+    return true;
+  },
+
+  "jobs.restart"({ jobId }) {
+    check(jobId, String);
+    logger.debug("jobs.restart called", { jobId });
+
+    const userId = Meteor.userId();
+    if (userId && Roles.userIsInRole(userId, ["admin"])) {
+      const job = Jobs.getJob(jobId);
+      if (job) {
+        console.log(job);
+        if(job.status == 'running') {
+          job.cancel();
+        }
+        job.restart();
       }
     } else {
       throw new Meteor.Error(401, "You are not allowed to do this action");

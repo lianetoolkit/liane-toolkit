@@ -4,8 +4,9 @@ import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
 import SelectFacebookAccount from "/imports/ui/components/facebook/SelectFacebookAccount.jsx";
 import CampaignAccount from "/imports/ui/components/campaigns/CampaignAccount.jsx";
+import JobsList from "/imports/ui/components/jobs/JobsList.jsx";
 
-import { Grid, Header, List } from "semantic-ui-react";
+import { Grid, Header, List, Button } from "semantic-ui-react";
 
 import moment from "moment";
 
@@ -24,7 +25,8 @@ export default class CampaignsPage extends React.Component {
   }
 
   render() {
-    const { loading, campaign, accounts } = this.props;
+    const { loading, campaign, jobs, accounts, accountLists } = this.props;
+    console.log(jobs);
     const { facebookId } = this.state;
     const facebookAccount = !loading
       ? _.findWhere(accounts, { facebookId: facebookId })
@@ -51,7 +53,7 @@ export default class CampaignsPage extends React.Component {
                 />
               ) : (
                 <Grid>
-                  <Grid.Row>
+                  <Grid.Row columns={3}>
                     <Grid.Column>
                       <Header as="h3">Campaign Accounts</Header>
                       {accounts.length ? (
@@ -82,16 +84,27 @@ export default class CampaignsPage extends React.Component {
                         "You do not have associated accounts for this campaign"
                       )}
                     </Grid.Column>
-                  </Grid.Row>
-
-                  <Grid.Row>
                     <Grid.Column>
                       <SelectFacebookAccount
                         campaignId={campaign._id}
                         selectedAccountsIds={_.pluck(accounts, "facebookId")}
                       />
                     </Grid.Column>
+                    <Grid.Column>
+                      <Header as="h3">Monitoring Lists</Header>
+                      <Button primary content="Create new list" />
+                    </Grid.Column>
                   </Grid.Row>
+                  {jobs.length ? (
+                    <Grid.Row>
+                      <Grid.Column>
+                        <Grid.Row>
+                          <Header as="h3">Jobs</Header>
+                          <JobsList jobs={jobs} />
+                        </Grid.Row>
+                      </Grid.Column>
+                    </Grid.Row>
+                  ) : null}
                 </Grid>
               )}
             </div>

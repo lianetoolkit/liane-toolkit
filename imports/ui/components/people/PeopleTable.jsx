@@ -19,6 +19,7 @@ export default class PeopleTable extends React.Component {
         filters={[
           {
             title: "Flags",
+            icon: true,
             items: [
               {
                 name: "Influencers",

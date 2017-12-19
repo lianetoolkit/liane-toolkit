@@ -130,6 +130,7 @@ export default class TableData extends Component {
                   return (
                     <Button
                       toggle
+                      icon={group.icon}
                       active={active ? true : false}
                       key={filter.name}
                       onClick={() => {

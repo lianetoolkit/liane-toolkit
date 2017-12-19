@@ -11,14 +11,18 @@ Meteor.publish("admin.jobs.counter", function({ search }) {
 
 Meteor.publish("admin.jobs", function({ search, limit, orderBy, fields }) {
   this.unblock();
+  search = search || {};
+  limit = limit || 10;
   const currentUser = this.userId;
   if (Roles.userIsInRole(currentUser, ["admin"])) {
     const options = {
       sort: {},
-      limit: Math.min(limit, 1000),
-      fields
+      limit: Math.min(limit, 1000)
     };
-    options["sort"][orderBy.field] = orderBy.ordering;
+    if(fields) {
+      options.fields = fields;
+    }
+    if (orderBy) options["sort"][orderBy.field] = orderBy.ordering;
     return Jobs.find(search, options);
   } else {
     this.stop();
