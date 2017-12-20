@@ -57,9 +57,10 @@ export default class CampaignAccount extends React.Component {
               </Button>
             </Segment>
             <PeopleTable
+              facebookAccount={facebookId}
               selector={{
-                facebookAccounts: { $in: [facebookId] },
-                campaignId: campaignId
+                campaignId,
+                facebookAccounts: { $in: [facebookId] }
               }}
             />
           </Tab.Pane>

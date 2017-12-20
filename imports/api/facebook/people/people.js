@@ -4,7 +4,8 @@ const People = new Mongo.Collection("people");
 
 People.schema = new SimpleSchema({
   facebookId: {
-    type: String
+    type: String,
+    index: 1
   },
   name: {
     type: String
@@ -13,24 +14,19 @@ People.schema = new SimpleSchema({
     type: String,
     index: 1
   },
+  campaignMeta: {
+    type: Object,
+    blackbox: true,
+    optional: true
+  },
   facebookAccounts: {
     type: Array,
-    index: 1
+    optional: true
   },
   "facebookAccounts.$": {
     type: String
   },
-  likesCount: {
-    type: Number,
-    optional: true,
-    defaultValue: 0
-  },
-  commentsCount: {
-    type: Number,
-    defaultValue: 0,
-    optional: true
-  },
-  campaignMeta: {
+  counts: {
     type: Object,
     blackbox: true,
     optional: true

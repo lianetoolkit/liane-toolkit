@@ -229,7 +229,6 @@ Meteor.methods({
     if (userId && Roles.userIsInRole(userId, ["admin"])) {
       const job = Jobs.getJob(jobId);
       if (job) {
-        console.log(job);
         if(job.status == 'running') {
           job.cancel();
         }

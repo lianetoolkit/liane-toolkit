@@ -4,7 +4,11 @@ import { _ } from "meteor/underscore";
 import i18n from "meteor/universe:i18n";
 import { createContainer } from "meteor/react-meteor-data";
 import TableData from "./TableData.jsx";
-import { prepareSubscriptionFields, prepareSearch } from "./Utils";
+import {
+  prepareSubscriptionFields,
+  normalizeFields,
+  prepareSearch
+} from "./Utils";
 
 const CollectionSubs = new SubsManager();
 
@@ -19,7 +23,9 @@ export default createContainer(props => {
     publication,
     extraFields,
     searchableFields,
-    activeFilters
+    activeFilters,
+    transform,
+    transformCollections
   } = props;
   // console.log("TableDataContainer called");
   let { search } = props;
@@ -51,6 +57,8 @@ export default createContainer(props => {
     }
   }
 
+  fields = normalizeFields(fields);
+
   const options = {
     limit: limit ? limit : defaultLimit,
     orderBy: orderBy ? orderBy : { field: "createdAt", ordering: -1 },
@@ -65,13 +73,18 @@ export default createContainer(props => {
   const count = Counts.get(`${publication}.counter`);
   const subsHandle = CollectionSubs.subscribe(publication, options);
 
-  const findOptions = { sort: {}, limit: options.limit };
+  const findOptions = { sort: {}, limit: options.limit, transform };
   findOptions["sort"][options.orderBy.field] = options.orderBy.ordering;
   findOptions["fields"] = fields;
 
   // console.log("TableDataContainer", { search, findOptions });
 
   const data = collection.find(search, findOptions).fetch();
+
+  let transformData = [];
+  for (const transformCollection of transformCollections) {
+    transformData.push(transformCollection.find().fetch());
+  }
 
   const loading = !countReady || (count > 0 && data.length == 0);
   const hasMore = data.length < count;

@@ -46,7 +46,6 @@ Campaigns.schema = new SimpleSchema({
   "accounts.$": {
     type: Campaigns.accountsSchema
   },
-
   createdAt: {
     type: Date,
     autoValue() {

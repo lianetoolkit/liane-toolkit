@@ -20,7 +20,7 @@ export default createContainer(() => {
       }).fetch()[0];
       context.audienceCategories = AudienceCategories.find({
         _id: { $in: context.audienceCategories }
-      });
+      }).fetch();
       return context;
     }
   };
@@ -28,19 +28,17 @@ export default createContainer(() => {
   const contexts = contextsHandle.ready()
     ? Contexts.find({}, options).fetch()
     : [];
-  const campaigns = contextsHandle.ready() ? Campaigns.find().fetch() : [];
-  const mainGeolocations = contextsHandle.ready()
-    ? Geolocations.find().fetch()
-    : [];
+
   const audienceCategories = contextsHandle.ready()
     ? AudienceCategories.find().fetch()
     : [];
 
+  const geolocations = contextsHandle.ready()
+    ? Geolocations.find().fetch()
+    : [];
+
   return {
     loading,
-    contexts,
-    campaigns,
-    mainGeolocations,
-    audienceCategories
+    contexts
   };
 }, ContextsPage);

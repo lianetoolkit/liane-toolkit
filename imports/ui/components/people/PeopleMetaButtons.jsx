@@ -10,7 +10,7 @@ export default class PeopleMetaButtons extends React.Component {
   _handleClick(key) {
     let { person } = this.props;
     person.campaignMeta = person.campaignMeta || {};
-    const personId = typeof person._id == 'string' ? person._id : person._id._str;
+    const personId = person.personId || person._id;
     return ev => {
       const data = {
         personId,

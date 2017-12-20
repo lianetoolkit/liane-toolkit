@@ -32,7 +32,7 @@ export default class JobsList extends React.Component {
       case "running":
         return "cancel";
       case "waiting":
-        return "play";
+      case "failed":
       case "cancelled":
         return "play";
       default:
@@ -45,6 +45,7 @@ export default class JobsList extends React.Component {
         return "cancel";
       case "waiting":
         return "ready";
+      case "failed":
       case "cancelled":
         return "restart";
       default:

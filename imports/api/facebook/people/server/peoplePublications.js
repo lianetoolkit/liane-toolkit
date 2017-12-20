@@ -7,7 +7,6 @@ Meteor.publish("people.byAccount", function({
   fields
 }) {
   this.unblock();
-  // Meteor._sleepForMs 2000
   const currentUser = this.userId;
   if (currentUser) {
     const options = {

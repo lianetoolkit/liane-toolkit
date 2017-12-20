@@ -24,6 +24,51 @@ const _fetchFacebookPageData = ({ url }) => {
 };
 
 const LikesHelpers = {
+  getReactionTypes() {
+    return ["NONE", "LIKE", "LOVE", "WOW", "HAHA", "SAD", "ANGRY", "THANKFUL"];
+  },
+  updatePeopleLikesCount({ campaignId, facebookAccountId, likedPeople }) {
+    check(campaignId, String);
+    check(facebookAccountId, String);
+    check(likedPeople, Array);
+
+    if (likedPeople.length) {
+      const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
+      for (const likedPerson of likedPeople) {
+        const likesCount = Likes.find({
+          personId: likedPerson.id,
+          facebookAccountId: facebookAccountId
+        }).count();
+        let reactionsCount = {};
+        const reactionTypes = this.getReactionTypes();
+        for (const reactionType of reactionTypes) {
+          reactionsCount[reactionType.toLowerCase()] = Likes.find({
+            personId: likedPerson.id,
+            facebookAccountId: facebookAccountId,
+            type: reactionType
+          }).count();
+        }
+        let set = {};
+        set["name"] = likedPerson.name;
+        set[`counts.${facebookAccountId}.likes`] = likesCount;
+        set[`counts.${facebookAccountId}.reactions`] = reactionsCount;
+        peopleBulk
+          .find({
+            campaignId,
+            facebookId: likedPerson.id
+          })
+          .upsert()
+          .update({
+            $setOnInsert: { _id: Random.id() },
+            $set: set,
+            $addToSet: {
+              facebookAccounts: facebookAccountId
+            }
+          });
+      }
+      peopleBulk.execute();
+    }
+  },
   getEntryLikes({ campaignId, facebookAccountId, entryId, accessToken }) {
     check(campaignId, String);
     check(facebookAccountId, String);
@@ -68,27 +113,13 @@ const LikesHelpers = {
             $set: like
           });
       }
-
       bulk.execute(
         Meteor.bindEnvironment((e, result) => {
-          if (likedPeople.length) {
-            const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
-            for (const people of likedPeople) {
-              const likesCount = Likes.find({
-                personId: people.id,
-                facebookAccountId: facebookAccountId
-              }).count();
-              peopleBulk
-                .find({ facebookId: people.id, campaignId: campaignId })
-                .upsert()
-                .update({
-                  $setOnInsert: { _id: Random.id() },
-                  $set: { name: people.name, likesCount: likesCount },
-                  $addToSet: { facebookAccounts: facebookAccountId }
-                });
-            }
-            peopleBulk.execute(function(e, result) {});
-          }
+          this.updatePeopleLikesCount({
+            campaignId,
+            facebookAccountId,
+            likedPeople
+          });
         })
       );
     };

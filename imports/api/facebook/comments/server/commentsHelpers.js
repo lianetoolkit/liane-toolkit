@@ -25,6 +25,44 @@ const _fetchFacebookPageData = ({ url }) => {
 };
 
 const CommentsHelpers = {
+  updatePeopleCommentsCount({
+    campaignId,
+    facebookAccountId,
+    commentedPeople
+  }) {
+    check(campaignId, String);
+    check(facebookAccountId, String);
+    check(commentedPeople, Array);
+
+    if (commentedPeople.length) {
+      const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
+      for (const commentedPerson of commentedPeople) {
+        const commentsCount = Comments.find({
+          personId: commentedPerson.id,
+          facebookAccountId: facebookAccountId
+        }).count();
+        let set = {};
+        set["name"] = commentedPerson.name;
+        set[
+          `counts.${facebookAccountId}.comments`
+        ] = commentsCount;
+        peopleBulk
+          .find({
+            campaignId,
+            facebookId: commentedPerson.id
+          })
+          .upsert()
+          .update({
+            $setOnInsert: { _id: Random.id() },
+            $set: set,
+            $addToSet: {
+              facebookAccounts: facebookAccountId
+            }
+          });
+      }
+      peopleBulk.execute();
+    }
+  },
   getEntryComments({ campaignId, facebookAccountId, entryId, accessToken }) {
     check(campaignId, String);
     check(facebookAccountId, String);
@@ -70,24 +108,11 @@ const CommentsHelpers = {
 
       bulk.execute(
         Meteor.bindEnvironment((e, result) => {
-          if (commentedPeople.length) {
-            const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
-            for (const person of commentedPeople) {
-              const commentsCount = Comments.find({
-                personId: person.id,
-                facebookAccountId: facebookAccountId
-              }).count();
-              peopleBulk
-                .find({ facebookId: person.id, campaignId: campaignId })
-                .upsert()
-                .update({
-                  $setOnInsert: { _id: Random.id() },
-                  $set: { name: person.name, commentsCount: commentsCount },
-                  $addToSet: { facebookAccounts: facebookAccountId }
-                });
-            }
-            peopleBulk.execute((e, result) => {});
-          }
+          this.updatePeopleCommentsCount({
+            campaignId,
+            facebookAccountId,
+            commentedPeople
+          });
         })
       );
     };

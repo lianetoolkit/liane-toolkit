@@ -28,8 +28,11 @@ import "/imports/api/facebook/audiences/server/audiencesPublications.js";
 import "/imports/api/geolocations/server/geolocationsMethods.js";
 import "/imports/api/geolocations/server/geolocationsPublications.js";
 
-// facebook
+// facebook accounts
 import "/imports/api/facebook/accounts/server/accountsMethods.js";
+
+// account lists
+import "/imports/api/facebook/accountLists/server/accountListsMethods.js";
 
 // jobs
 import "/imports/api/jobs/server/jobs.js";

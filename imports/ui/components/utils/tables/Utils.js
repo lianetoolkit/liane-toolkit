@@ -59,3 +59,31 @@ export function prepareSubscriptionFields(columns, selector) {
   }
   return fields;
 }
+
+export function normalizeFields(fields) {
+  const fieldsArr = Object.keys(fields);
+  let normalized = [];
+  for (const field of fieldsArr) {
+    const fieldKeys = field.split(".");
+    if (fieldKeys.length == 1) {
+      normalized.push(field);
+    } else {
+      const keyCount = fieldKeys.length;
+      let hasParent = false;
+      for (let i = 1; i < keyCount; i++) {
+        const test = fieldKeys.slice(0, i).join(".");
+        if (fieldsArr.indexOf(test) !== -1) {
+          hasParent = true;
+        }
+      }
+      if(!hasParent) {
+        normalized.push(field);
+      }
+    }
+  }
+  let fieldsObj = {};
+  for (const field of normalized) {
+    fieldsObj[field] = 1;
+  }
+  return fieldsObj;
+}

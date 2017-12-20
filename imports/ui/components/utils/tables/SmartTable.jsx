@@ -51,7 +51,9 @@ export default class SmartTable extends Component {
       showLoadMore,
       searchableFields,
       hideHeader,
-      filters
+      filters,
+      transform,
+      transformCollections
     } = this.props;
     // console.log({ selector });
     return (
@@ -61,6 +63,8 @@ export default class SmartTable extends Component {
         collection={collection}
         selector={selector || {}}
         filters={filters || []}
+        transform={transform || null}
+        transformCollections={transformCollections || []}
         activeFilters={this.state.activeFilters}
         toggleFilter={this.toggleFilter}
         extraFields={extraFields || []}

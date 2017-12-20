@@ -97,17 +97,24 @@ const EntriesHelpers = {
       for (const entry of data) {
         const currentEntry = Entries.findOne(entry.id);
         const updateObj = _getUpdateObj({ entry });
+        const vals = updateObj.$set;
         let updateInteractions = [];
         if (currentEntry) {
-          const vals = updateObj.$set;
-          if (currentEntry.counts.comments !== vals.counts.comments) {
+          if (
+            vals.counts.comments &&
+            currentEntry.counts.comments !== vals.counts.comments
+          ) {
             updateInteractions.push("comments");
           }
-          if (currentEntry.counts.likes !== vals.counts.likes) {
+          if (
+            vals.counts.likes &&
+            currentEntry.counts.likes !== vals.counts.likes
+          ) {
             updateInteractions.push("likes");
           }
         } else {
-          updateInteractions = ["comments", "likes"];
+          if (vals.counts.likes) updateInteractions.push("likes");
+          if (vals.counts.comments) updateInteractions.push("comments");
         }
         Entries.upsert(
           {
