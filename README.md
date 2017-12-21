@@ -46,6 +46,8 @@ In addition to your app credentials, you must also fill an [ad account ID](https
 
 This is mandatory so the app can perform Facebook's [`/reachestimate`](https://developers.facebook.com/docs/marketing-api/reference/ad-account/reachestimate/) requests. **This is a temporary fix until we figure out the proper way to authorize reach estimate requests on Facebook.**
 
+On your Facebook App dashboard you must add the app domain and URL on the Dashboard settings and OAuth setup. Default is `http://localhost:3000`.
+
 ### Start the app
 
 Make sure your **Redis** server is running and run your project.
@@ -53,6 +55,8 @@ Make sure your **Redis** server is running and run your project.
 ~~~js
 npm start
 ~~~
+
+Once the app install all of its dependencies, it will be running at `http://localhost:3000`. The first user created is automatically set with the admin role.
 
 ## Routes Definition
 
