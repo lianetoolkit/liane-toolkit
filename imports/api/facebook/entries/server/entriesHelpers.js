@@ -26,7 +26,24 @@ _fetchFacebookPageData = ({ url }) => {
 };
 
 const EntriesHelpers = {
+  updatePeopleCountByEntry({ campaignId, facebookId, entryId }) {
+    check(campaignId, String);
+    check(facebookId, String);
+    check(entryId, String);
+
+    LikesHelpers.updatePeopleLikesCountByEntry({
+      campaignId,
+      facebookAccountId: facebookId,
+      entryId
+    });
+    CommentsHelpers.updatePeopleCommentsCountByEntry({
+      campaignId,
+      facebookAccountId: facebookId,
+      entryId
+    });
+  },
   updateAccountEntries({ campaignId, facebookId, accessToken }) {
+    check(campaignId, String);
     check(facebookId, String);
     check(accessToken, String);
 
@@ -105,12 +122,28 @@ const EntriesHelpers = {
             currentEntry.counts.comments !== vals.counts.comments
           ) {
             updateInteractions.push("comments");
+          } else {
+            // Update count when interaction update is not scheduled
+            // TODO Convert to jobs
+            CommentsHelpers.updatePeopleCommentsCountByEntry({
+              campaignId,
+              facebookAccountId: facebookId,
+              entryId: entry.id
+            });
           }
           if (
             vals.counts.likes &&
             currentEntry.counts.likes !== vals.counts.likes
           ) {
             updateInteractions.push("likes");
+          } else {
+            // Update count when interaction update is not scheduled
+            // TODO Convert to jobs
+            LikesHelpers.updatePeopleLikesCountByEntry({
+              campaignId,
+              facebookAccountId: facebookId,
+              entryId: entry.id
+            });
           }
         } else {
           if (vals.counts.likes) updateInteractions.push("likes");

@@ -23,14 +23,54 @@ const _fetchFacebookPageData = ({ url }) => {
   return response;
 };
 
+const rawLikes = Likes.rawCollection();
+rawLikes.distinctAsync = Meteor.wrapAsync(rawLikes.distinct);
+
 const LikesHelpers = {
   getReactionTypes() {
     return ["NONE", "LIKE", "LOVE", "WOW", "HAHA", "SAD", "ANGRY", "THANKFUL"];
   },
+  updatePeopleLikesCountByEntry({ campaignId, facebookAccountId, entryId }) {
+    check(campaignId, String);
+    check(facebookAccountId, String);
+    check(entryId, String);
+
+    const likedPeople = Likes.find({
+      facebookAccountId,
+      entryId
+    }).map(like => {
+      return {
+        id: like.personId,
+        name: like.name
+      };
+    });
+
+    if (likedPeople.length) {
+      this.updatePeopleLikesCount({
+        campaignId,
+        facebookAccountId,
+        likedPeople
+      });
+    }
+  },
   updatePeopleLikesCount({ campaignId, facebookAccountId, likedPeople }) {
     check(campaignId, String);
     check(facebookAccountId, String);
-    check(likedPeople, Array);
+
+    // Fetch distinct people from Likes collection if not provided
+    // TODO Distinct is not the proper method, use mongo aggregation instead
+    // if (!likedPeople) {
+    //   likedPeople = rawLikes
+    //     .distinctAsync("personId", {
+    //       facebookAccountId
+    //     })
+    //     .map(like => {
+    //       return {
+    //         id: like.personId,
+    //         name: like.name
+    //       };
+    //     });
+    // }
 
     if (likedPeople.length) {
       const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();

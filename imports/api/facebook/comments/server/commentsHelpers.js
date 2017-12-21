@@ -13,6 +13,10 @@ const options = {
 
 const _fb = new Facebook(options);
 
+const rawComments = Comments.rawCollection();
+rawComments.distinctAsync = Meteor.wrapAsync(rawComments.distinct);
+rawComments.aggregateAsync = Meteor.wrapAsync(rawComments.aggregate);
+
 const _fetchFacebookPageData = ({ url }) => {
   check(url, String);
   let response;
@@ -25,6 +29,29 @@ const _fetchFacebookPageData = ({ url }) => {
 };
 
 const CommentsHelpers = {
+  updatePeopleCommentsCountByEntry({ campaignId, facebookAccountId, entryId }) {
+    check(campaignId, String);
+    check(facebookAccountId, String);
+    check(entryId, String);
+
+    const commentedPeople = Comments.find({
+      facebookAccountId,
+      entryId
+    }).map(comment => {
+      return {
+        id: comment.personId,
+        name: comment.name
+      };
+    });
+
+    if (commentedPeople.length) {
+      this.updatePeopleCommentsCount({
+        campaignId,
+        facebookAccountId,
+        commentedPeople
+      });
+    }
+  },
   updatePeopleCommentsCount({
     campaignId,
     facebookAccountId,
@@ -32,7 +59,21 @@ const CommentsHelpers = {
   }) {
     check(campaignId, String);
     check(facebookAccountId, String);
-    check(commentedPeople, Array);
+
+    // Fetch distinct people from Comments collection if not provided
+    // TODO Distinct is not the proper method, use mongo aggregation instead
+    // if (!commentedPeople) {
+    //   commentedPeople = rawComments
+    //     .distinctAsync("personId", {
+    //       facebookAccountId
+    //     })
+    //     .map(comment => {
+    //       return {
+    //         id: comment.personId,
+    //         name: comment.name
+    //       };
+    //     });
+    // }
 
     if (commentedPeople.length) {
       const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
@@ -43,9 +84,7 @@ const CommentsHelpers = {
         }).count();
         let set = {};
         set["name"] = commentedPerson.name;
-        set[
-          `counts.${facebookAccountId}.comments`
-        ] = commentsCount;
+        set[`counts.${facebookAccountId}.comments`] = commentsCount;
         peopleBulk
           .find({
             campaignId,
@@ -78,6 +117,15 @@ const CommentsHelpers = {
     try {
       response = Promise.await(
         _fb.api(`${entryId}/comments`, {
+          fields: [
+            "id",
+            "from",
+            "message",
+            "message_tags",
+            "comment_count",
+            "like_count",
+            "created_time"
+          ],
           limit: 1000
         })
       );
@@ -93,6 +141,7 @@ const CommentsHelpers = {
           commentedPeople.push(comment.from);
           comment.personId = comment.from.id;
           comment.name = comment.from.name;
+          comment.entryId = entryId;
           comment.facebookAccountId = facebookAccountId;
           const commentId = comment.id;
           delete comment.id;
