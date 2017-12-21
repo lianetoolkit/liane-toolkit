@@ -1,9 +1,9 @@
 version: '2'
 services:
   app:
-    image: aparabolica/liane:latest
+    image: aparabolica/liane-toolkit:latest
     # Comment-out below to pull image from docker hub
-    # build: .
+    build: .
     links:
       - mongo
       - redis

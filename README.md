@@ -36,13 +36,19 @@ Clone this repository.
 git clone https://github.com/lianetoolkit/liane-toolkit
 ~~~
 
+### Configuration
+
 Create a file at `.deploy/local/` and name it `settings.json`. You can find an example at `.deploy/settings.example.json`
 
-Add your Facebook API and change any other necessary settings.
+#### Facebook configuration
 
-Make sure your **Redis** server is running.
+In addition to your app credentials, you must also fill an [ad account ID](https://www.facebook.com/business/help/1492627900875762) (`adAccount`) connected to your Facebook app and your [profile ID](https://findmyfbid.com) (`admin`), which must be authorized to manage the ad account.
 
-Then you can run your project.
+This is mandatory so the app can perform Facebook's [`/reachestimate`](https://developers.facebook.com/docs/marketing-api/reference/ad-account/reachestimate/) requests. **This is a temporary fix until we figure out the proper way to authorize reach estimate requests on Facebook.**
+
+### Start the app
+
+Make sure your **Redis** server is running and run your project.
 
 ~~~js
 npm start
@@ -85,7 +91,7 @@ server/
 
 ## On startup
 
-At `/imports/startup/server/fixtures.js` by default on start up the system adds some examples of Contexts, Geolocations and Categories. You can also customize as you like.
+At `/imports/startup/server/fixtures.js` by default on start up the system adds some examples of Contexts, Geolocations and Audience Categories. You can also customize as you like.
 
 ## Cron jobs
 
