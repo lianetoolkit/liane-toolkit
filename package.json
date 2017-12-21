@@ -9,7 +9,6 @@
   "dependencies": {
     "axios": "^0.17.1",
     "babel-runtime": "^6.26.0",
-    "bcrypt": "^1.0.3",
     "chart.js": "^2.7.0",
     "faker": "^4.1.0",
     "fb": "^2.0.0",

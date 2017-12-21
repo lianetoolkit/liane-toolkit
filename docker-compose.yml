@@ -1,0 +1,55 @@
+version: '2'
+services:
+  app:
+    image: aparabolica/liane:latest
+    # Comment-out below to pull image from docker hub
+    # build: .
+    links:
+      - mongo
+      - redis
+    ports:
+    - 3000:3000
+    environment:
+      NODE_ENV: production
+      ROOT_URL: http://example.com
+      MONGO_URL: mongodb://mongo:27017/meteor
+      STARTUP_DELAY: 5
+      METEOR_SETTINGS: |-
+        {
+          "public": {
+            "deployMode": "production",
+            "domain": "example.com",
+            "appName": "Liane",
+            "appEmail": "contact@example.com"
+          },
+          "facebook": {
+            "clientId": "<YOUR APP ID>",
+            "clientSecret": "<YOUR APP SECRET>",
+            "admin": "<YOUR ADMIN ID>",
+            "adAccount": "<YOUR ADS APP ID>"
+          },
+          "redis": {
+            "host": "redis",
+            "port": "6379"
+          },
+          "email": {
+            "mail": {
+              "host": "smtp.gmail.com",
+              "port": 587,
+              "username": "contact@example.com",
+              "password": "x",
+              "admins": ["contact@example.com"]
+            },
+            "admins": ["contact@example.com"]
+          }
+        }
+  mongo:
+    image: mongo
+    volumes:
+    - ./.data/database:/data/db
+    ports:
+    - 27018:27017
+  redis:
+    image: redis
+    volumes:
+    - ./.data/redis:/data
