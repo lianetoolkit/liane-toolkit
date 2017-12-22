@@ -8,7 +8,12 @@ Comments.schema = new SimpleSchema({
     index: true
   },
   entryId: {
-    type: String
+    type: String,
+    index: true
+  },
+  facebookAccountId: {
+    type: String,
+    index: true
   },
   message: {
     type: String
@@ -17,9 +22,6 @@ Comments.schema = new SimpleSchema({
     type: Object,
     blackbox: true,
     optional: true
-  },
-  facebookAccountId: {
-    type: String
   },
   created_time: {
     type: Date

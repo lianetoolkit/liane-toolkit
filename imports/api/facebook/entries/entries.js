@@ -5,10 +5,12 @@ const Entries = new Mongo.Collection("entries");
 Entries.schema = new SimpleSchema({
   _id: {
     type: String,
-    label: "Facebook Id"
+    label: "Facebook Id",
+    index: true
   },
   facebookAccountId: {
     type: String,
+    index: true,
     index: true
   },
   type: {
@@ -20,11 +22,13 @@ Entries.schema = new SimpleSchema({
   },
   objectId: {
     type: String,
-    optional: true
+    optional: true,
+    index: true
   },
   parentId: {
     type: String,
-    optional: true
+    optional: true,
+    index: true
   },
   link: {
     type: String,
