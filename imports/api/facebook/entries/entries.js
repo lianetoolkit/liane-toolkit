@@ -6,7 +6,8 @@ Entries.schema = new SimpleSchema({
   _id: {
     type: String,
     label: "Facebook Id",
-    index: true
+    index: true,
+    unique: true
   },
   facebookAccountId: {
     type: String,
