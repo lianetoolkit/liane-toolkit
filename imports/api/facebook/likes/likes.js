@@ -4,7 +4,8 @@ const Likes = new Mongo.Collection("likes");
 
 Likes.schema = new SimpleSchema({
   facebookAccountId: {
-    type: String
+    type: String,
+    index: true
   },
   entryId: {
     type: String,
@@ -19,7 +20,8 @@ Likes.schema = new SimpleSchema({
   },
   type: {
     type: String,
-    optional: true
+    optional: true,
+    index: true
   }
 });
 
