@@ -56,24 +56,27 @@ const FacebookAudiencesHelpers = {
       jobIds
     });
 
-    return await new Promise(resolve => {
-      let completionMap = {};
-      const query = Jobs.find({
-        _id: { $in: jobIds }
-      });
-      query.observe({
-        removed: function(job) {
-          completionMap[job._id] = true;
-          if (Object.keys(completionMap).length == jobIds.length) {
-            resolve();
-          }
-        }
-      });
-      const jobs = query.fetch();
-      if(!jobs.length) {
-        resolve();
-      }
-    });
+    return;
+
+    // Wait jobs to finish
+    // return await new Promise(resolve => {
+    //   let completionMap = {};
+    //   const query = Jobs.find({
+    //     _id: { $in: jobIds }
+    //   });
+    //   query.observe({
+    //     removed: function(job) {
+    //       completionMap[job._id] = true;
+    //       if (Object.keys(completionMap).length == jobIds.length) {
+    //         resolve();
+    //       }
+    //     }
+    //   });
+    //   const jobs = query.fetch();
+    //   if(!jobs.length) {
+    //     resolve();
+    //   }
+    // });
   },
   fetchAudienceByCategory({
     contextId,
