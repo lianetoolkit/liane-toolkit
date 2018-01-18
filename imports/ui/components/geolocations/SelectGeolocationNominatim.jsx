@@ -13,7 +13,6 @@ export default class SelectGeolocationNominatim extends React.Component {
     };
   }
   componentDidMount() {
-    console.log(this.props);
     if (this.props.value) {
       this._updateAvailableGeolocations(this.props.value);
       this.setState({
@@ -22,7 +21,6 @@ export default class SelectGeolocationNominatim extends React.Component {
     }
   }
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
     if (this.props.value !== nextProps.value) {
       this.setState({
         value: JSON.stringify(nextProps.value)

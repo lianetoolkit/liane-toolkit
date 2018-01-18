@@ -13,27 +13,33 @@ export default class SelectGeolocationFacebook extends React.Component {
     };
   }
   componentDidMount() {
-    console.log(this.props);
     if (this.props.value) {
       this._updateAvailableGeolocations(this.props.value);
       this.setState({
-        value: JSON.stringify(this.props.value)
+        value: this._parseValueInput(this.props.value)
       });
     }
   }
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
     if (this.props.value !== nextProps.value) {
       this.setState({
-        value: JSON.stringify(nextProps.value)
+        value: this._parseValueInput(nextProps.value)
       });
     }
+  }
+  _parseValueInput(value) {
+    if (!value) return "";
+    if (!Array.isArray(value)) value = [value];
+    return value.map(item => JSON.stringify(item));
+  }
+  _parseValueOutput(value) {
+    return value.map(item => JSON.parse(item));
   }
   componentDidUpdate(prevProps, prevState) {
     const { value } = this.state;
     const { name, onChange } = this.props;
     if (JSON.stringify(prevState.value) != JSON.stringify(value)) {
-      onChange(null, { name, value: JSON.parse(value) });
+      onChange(null, { name, value: this._parseValueOutput(value) });
     }
   }
   _getContent(geolocation) {
@@ -103,13 +109,18 @@ export default class SelectGeolocationFacebook extends React.Component {
   }
   _handleChange = (e, { name, value }) => this.setState({ value });
   render() {
-    const { value, availableGeolocations } = this.state;
+    let { value } = this.state;
+    const { availableGeolocations } = this.state;
+    if (value && !Array.isArray(value)) {
+      value = [value];
+    }
     const geolocationOptions = Object.values(availableGeolocations);
     return (
       <Form.Dropdown
         options={geolocationOptions}
         placeholder="Search a Facebook geolocation"
         name="geolocation"
+        multiple
         search
         selection
         fluid

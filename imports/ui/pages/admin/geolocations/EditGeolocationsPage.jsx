@@ -4,11 +4,14 @@ import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import SelectGeolocationFacebook from "/imports/ui/components/geolocations/SelectGeolocationFacebook.jsx";
 import SelectGeolocationNominatim from "/imports/ui/components/geolocations/SelectGeolocationNominatim.jsx";
-import { Form, Grid, Button, Icon } from "semantic-ui-react";
+import SelectGeolocationCoordinates from "/imports/ui/components/geolocations/SelectGeolocationCoordinates.jsx";
+import { Form, Grid, Button, Icon, Radio } from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
+import _ from "underscore";
 
 const initialFields = {
   name: "",
+  type: "location",
   facebook: "",
   osm: ""
 };
@@ -29,15 +32,16 @@ export default class EditGeolocationsPage extends React.Component {
     if (nextProps.geolocation) {
       if (nextProps.geolocation._id) {
         const { fields } = this.state;
-        const { _id, name, facebook, osm } = nextProps.geolocation;
+        const {
+          _id,
+          type,
+          name,
+          facebook,
+          osm,
+          center
+        } = nextProps.geolocation;
         this.setState({
-          fields: {
-            ...fields,
-            _id,
-            name,
-            facebook,
-            osm
-          }
+          fields: Object.assign({}, initialFields, nextProps.geolocation)
         });
       } else {
         this.setState({
@@ -46,9 +50,7 @@ export default class EditGeolocationsPage extends React.Component {
       }
     }
   }
-  componentDidUpdate() {
-    console.log(this.state.fields);
-  }
+  componentDidUpdate() {}
   _handleChange = (e, { name, value }) =>
     this.setState({
       fields: Object.assign({}, this.state.fields, { [name]: value })
@@ -56,9 +58,21 @@ export default class EditGeolocationsPage extends React.Component {
   _handleSubmit(e) {
     const { geolocationId } = this.props;
     const { fields } = this.state;
+    let data = {
+      _id: geolocationId,
+      name: fields.name,
+      type: fields.type
+    };
+    if (data.type == "center") {
+      data.center = fields.center;
+    } else if (data.type == "location") {
+      data.facebook = fields.facebook;
+      data.osm = fields.osm;
+    }
+    data = _.pick(data, _.identity);
     this.setState({ isLoading: true });
     if (geolocationId) {
-      Meteor.call("geolocations.update", fields, error => {
+      Meteor.call("geolocations.update", data, error => {
         this.setState({ isLoading: false });
         if (error) {
           Alerts.error(error);
@@ -67,7 +81,7 @@ export default class EditGeolocationsPage extends React.Component {
         }
       });
     } else {
-      Meteor.call("geolocations.create", fields, (error, geolocationId) => {
+      Meteor.call("geolocations.create", data, (error, geolocationId) => {
         this.setState({ isLoading: false });
         if (error) {
           Alerts.error(error);
@@ -132,19 +146,49 @@ export default class EditGeolocationsPage extends React.Component {
                       onChange={this._handleChange}
                     />
                     <Form.Field>
-                      <SelectGeolocationFacebook
-                        name="facebook"
-                        value={fields.facebook}
+                      Select the type:{" "}
+                      <Radio
+                        checked={fields.type == "location"}
                         onChange={this._handleChange}
+                        name="type"
+                        value="location"
+                        label="Location"
+                      />{" "}
+                      <Radio
+                        checked={fields.type == "center"}
+                        onChange={this._handleChange}
+                        name="type"
+                        value="center"
+                        label="Center with radius"
                       />
                     </Form.Field>
-                    <Form.Field>
-                      <SelectGeolocationNominatim
-                        name="osm"
-                        value={fields.osm}
-                        onChange={this._handleChange}
-                      />
-                    </Form.Field>
+                    {fields.type == "location" ? (
+                      <div>
+                        <Form.Field>
+                          <SelectGeolocationFacebook
+                            name="facebook"
+                            value={fields.facebook}
+                            onChange={this._handleChange}
+                          />
+                        </Form.Field>
+                        <Form.Field>
+                          <SelectGeolocationNominatim
+                            name="osm"
+                            value={fields.osm}
+                            onChange={this._handleChange}
+                          />
+                        </Form.Field>
+                      </div>
+                    ) : null}
+                    {fields.type == "center" ? (
+                      <Form.Field>
+                        <SelectGeolocationCoordinates
+                          name="center"
+                          value={fields.center}
+                          onChange={this._handleChange}
+                        />
+                      </Form.Field>
+                    ) : null}
                     {geolocationId ? (
                       <Button onClick={this._handleRemove} negative>
                         <Icon name="trash" />

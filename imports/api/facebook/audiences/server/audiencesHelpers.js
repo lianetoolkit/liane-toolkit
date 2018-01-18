@@ -127,6 +127,35 @@ const FacebookAudiencesHelpers = {
       }
     }
   },
+  _buildFacebookLocations({ locations }) {
+    if (!Array.isArray(locations)) {
+      locations = [locations];
+    }
+    let geolocations = {};
+    locations.forEach(location => {
+      const type = this._getRegionFacebookType({ type: location.type });
+      const key = location.key;
+      if (!geolocations[type]) geolocations[type] = [];
+      if (type == "countries") {
+        geolocations[type].push(key);
+      } else {
+        geolocations[type].push({ key });
+      }
+    });
+    return geolocations;
+  },
+  _buildFacebookCustomLocations({ center }) {
+    return {
+      custom_locations: [
+        {
+          latitude: center.center[0],
+          longitude: center.center[1],
+          radius: center.radius,
+          distance_unit: "kilometer"
+        }
+      ]
+    };
+  },
   fetchContextAudiences({
     contextId,
     campaignId,
@@ -156,13 +185,17 @@ const FacebookAudiencesHelpers = {
     let jobIds = [];
     for (const geolocationId of context.geolocations) {
       const geolocation = Geolocations.findOne(geolocationId);
-      spec["geo_locations"] = {};
-      if (geolocation.facebook) {
-        const type = this._getRegionFacebookType({
-          type: geolocation.facebook.type
+      if (
+        (!geolocation.type || geolocation.type == "location") &&
+        geolocation.facebook
+      ) {
+        spec["geo_locations"] = this._buildFacebookLocations({
+          locations: geolocation.facebook
         });
-        const key = geolocation.facebook.key;
-        spec.geo_locations[type] = type == "countries" ? [key] : [{ key: key }];
+      } else if (geolocation.type == "center") {
+        spec["geo_locations"] = this._buildFacebookCustomLocations({
+          center: geolocation.center
+        });
       }
 
       const jobId = JobsHelpers.addJob({
@@ -228,7 +261,7 @@ const FacebookAudiencesHelpers = {
             access_token: accessToken
           });
           redisClient.setSync(redisKey, res.data.users, "EX", 24 * 60 * 60);
-          await sleep(2000);
+          await sleep(5000);
           return redisClient.getSync(redisKey);
         }
       } catch (error) {

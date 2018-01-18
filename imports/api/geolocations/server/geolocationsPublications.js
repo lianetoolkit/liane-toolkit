@@ -26,8 +26,10 @@ Meteor.publish("geolocations.detail", function({ geolocationId }) {
       {
         fields: {
           name: 1,
+          type: 1,
           facebook: 1,
-          osm: 1
+          osm: 1,
+          center: 1
         }
       }
     );

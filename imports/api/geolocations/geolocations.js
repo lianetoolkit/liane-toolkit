@@ -6,11 +6,19 @@ Geolocations.schema = new SimpleSchema({
   name: {
     type: String
   },
+  type: {
+    type: String,
+    allowedValues: ["location", "center"]
+  },
   parentId: {
     type: String,
     optional: true
   },
   facebook: {
+    type: Array,
+    optional: true
+  },
+  "facebook.$": {
     type: Object,
     blackbox: true
   },
@@ -24,11 +32,9 @@ Geolocations.schema = new SimpleSchema({
     optional: true
   },
   center: {
-    type: Array,
+    type: Object,
+    blackbox: true,
     optional: true
-  },
-  "center.$": {
-    type: Number
   },
   geojson: {
     type: Object,

@@ -66,7 +66,7 @@ const GeolocationsHelpers = {
     if (geolocation.osm && geolocation.osm.lat) {
       geolocation.center = [geolocation.osm.lat, geolocation.osm.lon];
     }
-    if (geolocation.osm.geojson) {
+    if (geolocation.osm && geolocation.osm.geojson) {
       geolocation.geojson = geolocation.osm.geojson;
       delete geolocation.osm.geojson;
     }
