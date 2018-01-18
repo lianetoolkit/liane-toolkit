@@ -47,6 +47,8 @@ export default class SelectGeolocationCoordinates extends React.Component {
           label="Radius in kilometers (between 1 and 80)"
           name="radius"
           type="number"
+          min="1"
+          max="80"
           value={radius}
           onChange={this._handleChange}
         />
