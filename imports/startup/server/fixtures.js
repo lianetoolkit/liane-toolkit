@@ -6,38 +6,50 @@ import _ from "underscore";
 const geolocations = [
   {
     name: "São Paulo",
-    facebook: {
-      name: "São Paulo",
-      key: 460,
-      type: "region"
-    },
+    type: "location",
+    facebook: [
+      {
+        name: "São Paulo",
+        key: 460,
+        type: "region"
+      }
+    ],
     geoId: "08"
   },
   {
     name: "Rio de Janeiro",
-    facebook: {
-      name: "Rio de Janeiro",
-      key: 454,
-      type: "region"
-    },
+    type: "location",
+    facebook: [
+      {
+        name: "Rio de Janeiro",
+        key: 454,
+        type: "region"
+      }
+    ],
     geoId: "09"
   },
   {
     name: "São Paulo",
-    facebook: {
-      name: "São Paulo",
-      key: "269969",
-      type: "city"
-    },
+    type: "location",
+    facebook: [
+      {
+        name: "São Paulo",
+        key: "269969",
+        type: "city"
+      }
+    ],
     geoId: "08001"
   },
   {
     name: "Rio de Janeiro",
-    facebook: {
-      name: "Rio de Janeiro",
-      key: "267027",
-      type: "city"
-    },
+    type: "location",
+    facebook: [
+      {
+        name: "Rio de Janeiro",
+        key: "267027",
+        type: "city"
+      }
+    ],
     geoId: "09001"
   }
 ];
@@ -67,7 +79,9 @@ const audienceCategories = [
   },
   {
     title: "Politics and social issues",
-    spec: { interests: [{ id: "6011515350975", name: "Politics and social issues" }] }
+    spec: {
+      interests: [{ id: "6011515350975", name: "Politics and social issues" }]
+    }
   },
   {
     title: "Public transport",
