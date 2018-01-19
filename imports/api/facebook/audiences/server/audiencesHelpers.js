@@ -220,6 +220,14 @@ const FacebookAudiencesHelpers = {
     audienceCategoryId,
     spec
   }) {
+    logger.debug("FacebookAudiencesHelpers.fetchAndCreateSpecAudience", {
+      campaignId,
+      facebookAccountId,
+      geolocationId,
+      audienceCategoryId,
+      spec
+    });
+
     check(campaignId, String);
     check(facebookAccountId, String);
     check(geolocationId, String);
@@ -231,7 +239,7 @@ const FacebookAudiencesHelpers = {
     });
 
     if (!admin) {
-      return { error: "Admin does not exist." };
+      throw new Meteor.Error("Admin does not exist");
     }
 
     const accessToken = admin.services.facebook.accessToken;
