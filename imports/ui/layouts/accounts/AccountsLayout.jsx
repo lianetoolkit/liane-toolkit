@@ -32,14 +32,16 @@ export default class AccountsLayout extends React.Component {
     }
   }
 
-  componentWillMount() {
-    document.body.className = "login";
-  }
-
   render() {
     const { user, connected, children, location } = this.props;
     return (
-      <Grid className="middle center aligned">
+      <Grid
+        className="middle center aligned"
+        style={{
+          "max-width": "500px",
+          margin: "5% auto"
+        }}
+      >
         <Grid.Column>
           <Header as="h1" color="red" className="siteFont" size="huge">
             {Meteor.settings.public.appName}

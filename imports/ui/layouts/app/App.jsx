@@ -3,7 +3,9 @@ import { Meteor } from "meteor/meteor";
 import PropTypes from "prop-types";
 import ReactCSSTransitionGroup from "react-addons-css-transition-group";
 
-import AppBar from "/imports/ui/components/app/AppBar.jsx";
+import AppContainer from "/imports/ui/components/app/AppContainer.jsx";
+import AppHeader from "/imports/ui/components/app/AppHeader.jsx";
+import AppContent from "/imports/ui/components/app/AppContent.jsx";
 import AppFooter from "/imports/ui/components/app/AppFooter.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 
@@ -80,10 +82,16 @@ export default class App extends React.Component {
   render() {
     // console.log("app render", { state: this.state });
     const { showConnectionIssue } = this.state;
-    const { currentUser, connected, loading, children, location } = this.props;
+    const {
+      campaigns,
+      currentUser,
+      connected,
+      loading,
+      children,
+      location,
+      content
+    } = this.props;
 
-    const mainStyles = {};
-    const footerStyles = {};
     return (
       <div style={{ height: "100%" }}>
         {!currentUser ? (
@@ -91,37 +99,34 @@ export default class App extends React.Component {
             <Loader>Loading</Loader>
           </Dimmer>
         ) : (
-          <Container fluid id="app-container">
-            <div id="main">
-              <AppBar currentUser={currentUser} logout={this.logout} />
-              <ModalManager />
-              <ConfirmManager />
-              <Container>
-                {loading ? (
-                  <Loading />
-                ) : (
-                  <ReactCSSTransitionGroup
-                    transitionName="fade"
-                    transitionEnterTimeout={200}
-                    transitionLeaveTimeout={200}
-                  >
-                    {currentUser ? (
-                      <div>
-                        <this.props.content.component
-                          {...this.props.content.props}
-                          currentUser={currentUser}
-                        />
-                      </div>
-                    ) : (
-                      ""
-                    )}
-                  </ReactCSSTransitionGroup>
-                )}
-              </Container>
-            </div>
-
-            <AppFooter styles={footerStyles} />
-          </Container>
+          <AppContainer id="main">
+            <AppHeader currentUser={currentUser} campaigns={campaigns} logout={this.logout} />
+            {/* <AppBar currentUser={currentUser} logout={this.logout} /> */}
+            <ModalManager />
+            <ConfirmManager />
+            <AppContent>
+              {loading ? (
+                <Loading />
+              ) : (
+                <ReactCSSTransitionGroup
+                  transitionName="fade"
+                  transitionEnterTimeout={200}
+                  transitionLeaveTimeout={200}
+                >
+                  {currentUser ? (
+                    <div>
+                      <content.component
+                        {...content.props}
+                        currentUser={currentUser}
+                      />
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </ReactCSSTransitionGroup>
+              )}
+            </AppContent>
+          </AppContainer>
         )}
       </div>
     );

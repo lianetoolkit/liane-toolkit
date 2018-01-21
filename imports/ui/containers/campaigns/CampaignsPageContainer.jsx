@@ -21,7 +21,9 @@ export default createContainer(props => {
   });
   const loading = !subsHandle.ready();
 
-  const campaign = subsHandle.ready() ? Campaigns.findOne() : null;
+  const campaign = subsHandle.ready()
+    ? Campaigns.findOne(props.campaignId)
+    : null;
   const accounts = campaign
     ? FacebookAccounts.find({
         facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }

@@ -4,8 +4,9 @@ import AccountsLayout from "/imports/ui/layouts/accounts/AccountsLayout.jsx";
 import { FlowRouter } from "meteor/kadira:flow-router";
 
 export default createContainer(({ content }) => {
+  const user = Meteor.user();
   return {
-    user: Meteor.user(),
+    user,
     connected: Meteor.status().connected,
     isLoggedIn: Meteor.userId() !== null,
     content: content,

@@ -4,7 +4,6 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import CampaignsList from "/imports/ui/components/campaigns/CampaignsList.jsx";
 
 export default createContainer(props => {
-  console.log(props);
   const subsHandle = Meteor.subscribe("campaigns.byUser");
   const loading = !subsHandle.ready();
 
