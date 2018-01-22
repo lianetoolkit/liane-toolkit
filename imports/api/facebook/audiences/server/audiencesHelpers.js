@@ -17,14 +17,10 @@ import moment from "moment";
 const options = {
   version: "v2.11",
   client_id: Meteor.settings.facebook.clientId,
-  client_secret: Meteor.settings.facebook.clientSecret,
-  admin: Meteor.settings.facebook.admin,
-  adAccount: Meteor.settings.facebook.adAccount
+  client_secret: Meteor.settings.facebook.clientSecret
 };
 
 const _fb = new Facebook(options);
-
-const route = `act_${options.adAccount}/reachestimate`;
 
 const FacebookAudiencesHelpers = {
   async updateAccountAudience({ campaignId, facebookAccountId }) {

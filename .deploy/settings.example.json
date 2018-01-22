@@ -7,9 +7,7 @@
   },
   "facebook": {
     "clientId": "<YOUR APP ID>",
-    "clientSecret": "<YOUR APP SECRET>",
-    "admin": "<YOUR ADMIN ID>",
-    "adAccount": "<YOUR ADS APP ID>"
+    "clientSecret": "<YOUR APP SECRET>"
   },
   "redis": {
     "host": "0.0.0.0",

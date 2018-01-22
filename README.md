@@ -42,11 +42,7 @@ Create a file at `.deploy/local/` and name it `settings.json`. You can find an e
 
 #### Facebook configuration
 
-In addition to your app credentials, you must also fill an [ad account ID](https://www.facebook.com/business/help/1492627900875762) (`adAccount`) connected to your Facebook app and your [profile ID](https://findmyfbid.com) (`admin`), which must be authorized to manage the ad account.
-
-This is mandatory so the app can perform Facebook's [`/reachestimate`](https://developers.facebook.com/docs/marketing-api/reference/ad-account/reachestimate/) requests. **This is a temporary fix until we figure out the proper way to authorize reach estimate requests on Facebook.**
-
-On your Facebook App dashboard you must add the app domain and URL on the Dashboard settings and OAuth setup. Default is `http://localhost:3000`.
+Paste your client id and secret and on your Facebook App dashboard you must add the app domain and URL on the Dashboard settings and OAuth setup. Default is `http://localhost:3000`.
 
 ### Start the app
 
