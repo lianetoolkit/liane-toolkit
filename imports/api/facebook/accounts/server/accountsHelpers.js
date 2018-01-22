@@ -24,7 +24,7 @@ const FacebookAccountsHelpers = {
     const accessToken = user.services.facebook.accessToken;
     _fb.setAccessToken(accessToken);
     const response = Promise.await(
-      _fb.api("me/", { fields: ["id", "accounts"] })
+      _fb.api("me", { fields: ["id", "accounts"] })
     );
 
     return { result: response.accounts.data };

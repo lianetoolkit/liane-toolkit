@@ -43,6 +43,10 @@ Campaigns.schema = new SimpleSchema({
     type: Array,
     optional: true
   },
+  adAccountId: {
+    type: String,
+    optional: true
+  },
   "accounts.$": {
     type: Campaigns.accountsSchema
   },

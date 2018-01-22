@@ -52,12 +52,16 @@ const AudiencesJobs = {
   "audiences.fetchAndCreateSpecAudience": {
     run({ job }) {
       check(job && job.data && job.data.campaignId, String);
+      check(job && job.data && job.data.adAccountId, String);
+      check(job && job.data && job.data.tokens, Array);
       check(job && job.data && job.data.facebookAccountId, String);
       check(job && job.data && job.data.geolocationId, String);
       check(job && job.data && job.data.audienceCategoryId, String);
       check(job && job.data && job.data.spec, Object);
 
       const campaignId = job.data.campaignId;
+      const adAccountId = job.data.adAccountId;
+      const tokens = job.data.tokens;
       const facebookAccountId = job.data.facebookAccountId;
       const geolocationId = job.data.geolocationId;
       const audienceCategoryId = job.data.audienceCategoryId;
@@ -68,6 +72,8 @@ const AudiencesJobs = {
         Promise.await(
           FacebookAudiencesHelpers.fetchAndCreateSpecAudience({
             campaignId,
+            adAccountId,
+            tokens,
             facebookAccountId,
             geolocationId,
             audienceCategoryId,

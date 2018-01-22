@@ -4,6 +4,7 @@ import { CampaignsHelpers } from "./campaignsHelpers.js";
 import { FacebookAudiencesHelpers } from "/imports/api/facebook/audiences/server/audiencesHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
+import { AdAccountsHelpers } from "/imports/api/facebook/adAccounts/server/adAccountsHelpers.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 import _ from "underscore";
 
@@ -16,19 +17,32 @@ export const campaignsCreate = new ValidatedMethod({
     description: {
       type: String
     },
+    adAccountId: {
+      type: String
+    },
     contextId: {
       type: String
     }
   }).validator(),
-  run({ name, description, contextId }) {
-    logger.debug("campaigns.create called", { name, description, contextId });
+  run({ name, description, adAccountId, contextId }) {
+    logger.debug("campaigns.create called", {
+      name,
+      description,
+      contextId,
+      adAccountId
+    });
 
     const userId = Meteor.userId();
     if (!userId) {
       throw new Meteor.Error(401, "You need to login");
     }
     const users = [{ userId, role: "owner" }];
-    const insertDoc = { users, name, description, contextId };
+    const insertDoc = { users, name, description, contextId, adAccountId };
+
+    const user = Meteor.users.findOne(userId);
+    const token = user.services.facebook.accessToken;
+
+    AdAccountsHelpers.update({ adAccountId, token });
 
     campaignId = Campaigns.insert(insertDoc);
     return { result: campaignId };

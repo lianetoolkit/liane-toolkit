@@ -13,8 +13,10 @@ export default class AddCampaignPage extends React.Component {
     console.log("AddCampaignPage init", { props });
     this.state = {
       contexts: [],
+      adAccounts: [],
       name: "",
       contextId: "",
+      adAccountId: "",
       description: "",
       isLoading: false
     };
@@ -22,6 +24,7 @@ export default class AddCampaignPage extends React.Component {
     this._handleSubmit = this._handleSubmit.bind(this);
   }
   componentWillReceiveProps(nextProps) {
+    console.log(this.props, nextProps);
     if (nextProps.contexts != this.props.contexts) {
       const contexts = nextProps.contexts.map(c => ({
         key: c._id,
@@ -32,15 +35,28 @@ export default class AddCampaignPage extends React.Component {
         contexts
       });
     }
+    if (
+      nextProps.adAccounts !== this.props.adAccounts ||
+      (nextProps.adAccounts.length && !this.state.adAccounts.length)
+    ) {
+      const adAccounts = nextProps.adAccounts.map(ac => ({
+        key: ac.id,
+        text: ac.account_id,
+        value: ac.id
+      }));
+      this.setState({
+        adAccounts
+      });
+    }
   }
   _handleChange = (e, { name, value }) => this.setState({ [name]: value });
   _handleSubmit(e) {
-    const { name, description, contextId } = this.state;
+    const { name, description, contextId, adAccountId } = this.state;
     if (name && contextId) {
       this.setState({ isLoading: true });
       Meteor.call(
         "campaigns.create",
-        { name, description, contextId },
+        { name, description, contextId, adAccountId },
         (error, data) => {
           this.setState({ isLoading: false });
           if (error) {
@@ -55,7 +71,14 @@ export default class AddCampaignPage extends React.Component {
   }
   render() {
     const { loading, currentUser } = this.props;
-    const { contexts, name, description, context, isLoading } = this.state;
+    const {
+      contexts,
+      adAccounts,
+      name,
+      description,
+      context,
+      isLoading
+    } = this.state;
     return (
       <div>
         <PageHeader title="New Campaign" />
@@ -79,14 +102,26 @@ export default class AddCampaignPage extends React.Component {
                       onChange={this._handleChange}
                       placeholder="Campaign description"
                     />
-                    <Dropdown
-                      placeholder="Select Friend"
-                      selection
-                      onChange={this._handleChange}
-                      options={contexts}
-                      name="contextId"
-                      placeholder="Select context"
-                    />
+                    <Form.Field>
+                      <Dropdown
+                        placeholder="Select context"
+                        selection
+                        onChange={this._handleChange}
+                        options={contexts}
+                        name="contextId"
+                        placeholder="Select context"
+                      />
+                    </Form.Field>
+                    <Form.Field>
+                      <Dropdown
+                        placeholder="Select an ad account"
+                        selection
+                        onChange={this._handleChange}
+                        options={adAccounts}
+                        name="adAccountId"
+                        placeholder="Select an ad account"
+                      />
+                    </Form.Field>
                     <Divider />
                     <Button type="submit" loading={isLoading}>
                       Submit

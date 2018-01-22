@@ -2,6 +2,7 @@ import { Promise } from "meteor/promise";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+import { AdAccountsHelpers } from "/imports/api/facebook/adAccounts/server/adAccountsHelpers.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
@@ -35,10 +36,21 @@ const FacebookAudiencesHelpers = {
     });
 
     const campaign = Campaigns.findOne(campaignId);
+    const adAccountId = campaign.adAccountId;
     const context = Contexts.findOne(campaign.contextId);
     const audienceCategories = AudienceCategories.find({
       _id: { $in: context.audienceCategories }
     }).fetch();
+
+    const adAccountUsers = AdAccountsHelpers.getUsers({ adAccountId });
+
+    if (!adAccountUsers.length) {
+      throw new Meteor.Error("Ad account has no registered users on the app");
+    }
+
+    const tokens = adAccountUsers.map(
+      user => user.services.facebook.accessToken
+    );
 
     let jobIds = [];
     for (const audienceCategory of audienceCategories) {
@@ -46,6 +58,8 @@ const FacebookAudiencesHelpers = {
         FacebookAudiencesHelpers.fetchAudienceByCategory({
           contextId: context._id,
           campaignId: campaign._id,
+          adAccountId,
+          tokens,
           audienceCategoryId: audienceCategory._id,
           facebookAccountId
         })
@@ -81,17 +95,23 @@ const FacebookAudiencesHelpers = {
   fetchAudienceByCategory({
     contextId,
     campaignId,
+    adAccountId,
+    tokens,
     facebookAccountId,
     audienceCategoryId
   }) {
     check(contextId, String);
     check(campaignId, String);
+    check(adAccountId, String);
+    check(tokens, Array);
     check(facebookAccountId, String);
     check(audienceCategoryId, String);
 
     logger.debug("FacebookAudiencesHelpers.fetchAudienceByCategory", {
       contextId,
       campaignId,
+      adAccountId,
+      tokens,
       facebookAccountId,
       audienceCategoryId
     });
@@ -106,6 +126,8 @@ const FacebookAudiencesHelpers = {
     const jobIds = FacebookAudiencesHelpers.fetchContextAudiences({
       contextId,
       campaignId,
+      adAccountId,
+      tokens,
       facebookAccountId,
       audienceCategoryId,
       spec
@@ -159,12 +181,16 @@ const FacebookAudiencesHelpers = {
   fetchContextAudiences({
     contextId,
     campaignId,
+    adAccountId,
+    tokens,
     facebookAccountId,
     audienceCategoryId,
     spec
   }) {
     check(contextId, String);
     check(campaignId, String);
+    check(adAccountId, String);
+    check(tokens, Array);
     check(facebookAccountId, String);
     check(audienceCategoryId, String);
     check(spec, Object);
@@ -172,6 +198,8 @@ const FacebookAudiencesHelpers = {
     logger.debug("FacebookAudiencesHelpers.fetchContextAudiences", {
       contextId,
       campaignId,
+      adAccountId,
+      tokens,
       facebookAccountId,
       audienceCategoryId,
       spec
@@ -202,6 +230,8 @@ const FacebookAudiencesHelpers = {
         jobType: "audiences.fetchAndCreateSpecAudience",
         jobData: {
           campaignId,
+          adAccountId,
+          tokens,
           facebookAccountId,
           geolocationId,
           audienceCategoryId,
@@ -215,6 +245,8 @@ const FacebookAudiencesHelpers = {
   },
   async fetchAndCreateSpecAudience({
     campaignId,
+    adAccountId,
+    tokens,
     facebookAccountId,
     geolocationId,
     audienceCategoryId,
@@ -222,6 +254,8 @@ const FacebookAudiencesHelpers = {
   }) {
     logger.debug("FacebookAudiencesHelpers.fetchAndCreateSpecAudience", {
       campaignId,
+      adAccountId,
+      tokens,
       facebookAccountId,
       geolocationId,
       audienceCategoryId,
@@ -229,20 +263,14 @@ const FacebookAudiencesHelpers = {
     });
 
     check(campaignId, String);
+    check(adAccountId, String);
+    check(tokens, Array);
     check(facebookAccountId, String);
     check(geolocationId, String);
     check(audienceCategoryId, String);
     check(spec, Object);
 
-    const admin = Meteor.users.findOne({
-      "services.facebook.id": options.admin
-    });
-
-    if (!admin) {
-      throw new Meteor.Error("Admin does not exist");
-    }
-
-    const accessToken = admin.services.facebook.accessToken;
+    const accessToken = tokens[0];
 
     const fetchDate = moment().format("YYYY-MM-DD");
 
@@ -264,7 +292,7 @@ const FacebookAudiencesHelpers = {
         if (data) {
           return data;
         } else {
-          let res = await _fb.api(route, {
+          let res = await _fb.api(`${adAccountId}/reachestimate`, {
             targeting_spec: spec,
             access_token: accessToken
           });
