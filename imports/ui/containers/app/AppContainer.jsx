@@ -15,6 +15,7 @@ export default createContainer(() => {
     currentUser,
     loading,
     campaigns,
+    currentCampaign: FlowRouter.getParam('campaignId'),
     connected: Meteor.status().connected
   };
 }, App);

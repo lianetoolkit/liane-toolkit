@@ -84,6 +84,7 @@ export default class App extends React.Component {
     const { showConnectionIssue } = this.state;
     const {
       campaigns,
+      currentCampaign,
       currentUser,
       connected,
       loading,
@@ -100,7 +101,12 @@ export default class App extends React.Component {
           </Dimmer>
         ) : (
           <AppContainer id="main">
-            <AppHeader currentUser={currentUser} campaigns={campaigns} logout={this.logout} />
+            <AppHeader
+              currentUser={currentUser}
+              currentCampaign={currentCampaign}
+              campaigns={campaigns}
+              logout={this.logout}
+            />
             {/* <AppBar currentUser={currentUser} logout={this.logout} /> */}
             <ModalManager />
             <ConfirmManager />

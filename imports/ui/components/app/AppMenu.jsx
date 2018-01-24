@@ -5,12 +5,25 @@ import PropTypes from "prop-types";
 import { isFbLogged } from "/imports/ui/utils/utils.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 
-import { Menu, Accordion, Dropdown, Container, Icon } from "semantic-ui-react";
+import {
+  Header,
+  Menu,
+  Accordion,
+  Dropdown,
+  Container,
+  Icon
+} from "semantic-ui-react";
 
 const Wrapper = styled.nav`
   flex: 1 1 100%;
   display: flex;
   flex-direction: column;
+  h2 {
+    margin: 0;
+  }
+  .campaigns-menu.ui.accordion.menu .item .title > .dropdown.icon {
+    margin-top: 0.5em;
+  }
 `;
 
 const MenuWrapper = styled.div`
@@ -26,12 +39,21 @@ export default class AppMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeIndex: null
+      activeIndex: null,
+      showCampaignList: false
     };
     this._handleItemClick = this._handleItemClick.bind(this);
     this._handleAccordionClick = this._handleAccordionClick.bind(this);
+    this._toggleCampaignList = this._toggleCampaignList.bind(this);
   }
-
+  componentWillReceiveProps() {
+    const { showCampaignList } = this.state;
+    if (showCampaignList) {
+      this.setState({
+        showCampaignList: false
+      });
+    }
+  }
   _handleItemClick() {
     const { currentUser } = this.props;
     if (currentUser && isFbLogged(currentUser)) {
@@ -41,6 +63,24 @@ export default class AppMenu extends React.Component {
       return;
     }
   }
+  _handleAccordionClick(e, titleProps) {
+    const { index } = titleProps;
+    const { activeIndex } = this.state;
+    const newIndex = activeIndex === index ? -1 : index;
+    this.setState({ activeIndex: newIndex });
+  }
+  _toggleCampaignList() {
+    this.setState({
+      showCampaignList: !this.state.showCampaignList
+    });
+  }
+  _getCurrentCampaign() {
+    const { campaigns, currentCampaign } = this.props;
+    if (campaigns && currentCampaign) {
+      return campaigns.find(c => c._id == currentCampaign);
+    }
+    return false;
+  }
   _getUserInfo(currentUser) {
     if (isFbLogged(currentUser)) {
       return currentUser.services.facebook.name;
@@ -49,36 +89,50 @@ export default class AppMenu extends React.Component {
     }
   }
   _getCampaignsMenu() {
+    const { activeIndex, showCampaignList } = this.state;
     const { campaigns } = this.props;
-    if (campaigns) {
+    const currentCampaign = this._getCurrentCampaign();
+    if (campaigns && campaigns.length) {
       return (
-        <Menu.Item>
-          Campaigns
-          <Menu.Menu>
-            {campaigns.map(campaign => (
-              <Menu.Item
-                key={`campaign-${campaign._id}`}
-                name={`campaign-${campaign._id}`}
-                href={FlowRouter.path("App.campaignDetail", {
-                  _id: campaign._id
-                })}
-              >
-                {campaign.name}
-              </Menu.Item>
-            ))}
-          </Menu.Menu>
-        </Menu.Item>
+        <Accordion as={Menu} vertical inverted fluid className="campaigns-menu">
+          <Menu.Item>
+            <Accordion.Title
+              active={currentCampaign ? showCampaignList : true}
+              content={
+                currentCampaign ? <h2>{currentCampaign.name}</h2> : "Campaigns"
+              }
+              onClick={this._toggleCampaignList}
+            />
+            <Accordion.Content
+              active={currentCampaign ? showCampaignList : true}
+              content={
+                <div>
+                  {campaigns.map(campaign => {
+                    if (campaign._id !== currentCampaign._id) {
+                      return (
+                        <Menu.Item
+                          key={`campaign-${campaign._id}`}
+                          name={`campaign-${campaign._id}`}
+                          href={FlowRouter.path("App.campaignDetail", {
+                            campaignId: campaign._id
+                          })}
+                        >
+                          {campaign.name}
+                        </Menu.Item>
+                      );
+                    } else {
+                      return null;
+                    }
+                  })}
+                </div>
+              }
+            />
+          </Menu.Item>
+        </Accordion>
       );
     } else {
       return null;
     }
-  }
-  _handleAccordionClick(e, titleProps) {
-    const { index } = titleProps;
-    const { activeIndex } = this.state;
-    const newIndex = activeIndex === index ? -1 : index;
-
-    this.setState({ activeIndex: newIndex });
   }
   _getAdminMenu() {
     const { activeIndex } = this.state;
@@ -121,19 +175,55 @@ export default class AppMenu extends React.Component {
   }
   render() {
     const { activeIndex } = this.state;
-    const { loading, currentUser, logout } = this.props;
+    const { loading, currentUser, logout, currentCampaign } = this.props;
 
     return (
       <Wrapper>
         <MenuWrapper>
+          {this._getCampaignsMenu()}
+          {currentCampaign ? (
+            <Menu vertical inverted fluid>
+              <Menu.Item
+                name="campaignPeople"
+                href={FlowRouter.path("App.campaignPeople", {
+                  campaignId: currentCampaign
+                })}
+              >
+                People
+              </Menu.Item>
+              <Menu.Item
+                name="campaignAudience"
+                href={FlowRouter.path("App.campaignAudience", {
+                  campaignId: currentCampaign
+                })}
+              >
+                Audience
+              </Menu.Item>
+              <Menu.Item
+                name="campaignEntries"
+                href={FlowRouter.path("App.campaignEntries", {
+                  campaignId: currentCampaign
+                })}
+              >
+                Facebook Posts
+              </Menu.Item>
+              <Menu.Item
+                name="campaignEntries"
+                href={FlowRouter.path("App.campaignLists", {
+                  campaignId: currentCampaign
+                })}
+              >
+                Monitoring Lists
+              </Menu.Item>
+            </Menu>
+          ) : null}
+        </MenuWrapper>
+        <AdminWrapper>
           <Menu vertical inverted fluid>
-            {this._getCampaignsMenu()}
             <Menu.Item name="newCampaign" onClick={this._handleItemClick}>
               <Icon name="plus" /> {i18n.__("components.userMenu.newCampaign")}
             </Menu.Item>
           </Menu>
-        </MenuWrapper>
-        <AdminWrapper>
           <Accordion as={Menu} vertical inverted fluid>
             {this._getAdminMenu()}
             <Menu.Item>

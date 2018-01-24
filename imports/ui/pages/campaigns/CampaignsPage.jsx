@@ -36,7 +36,7 @@ export default class CampaignsPage extends React.Component {
         <PageHeader
           title={`Campaign: ${campaign ? campaign.name : ""}`}
           titleTo={FlowRouter.path("App.campaignDetail", {
-            _id: campaign ? campaign._id : ""
+            campaignId: campaign ? campaign._id : ""
           })}
           subTitle={!loading && facebookId ? facebookAccount.name : ""}
         />
@@ -66,7 +66,7 @@ export default class CampaignsPage extends React.Component {
                                 href={FlowRouter.path(
                                   "App.campaignDetail.account",
                                   {
-                                    _id: campaign._id,
+                                    campaignId: campaign._id,
                                     facebookId: account.facebookId
                                   }
                                 )}
@@ -93,15 +93,6 @@ export default class CampaignsPage extends React.Component {
                     <Grid.Column>
                       <Header as="h3">Monitoring Lists</Header>
                       <Button primary content="Create new list" />
-                    </Grid.Column>
-                  </Grid.Row>
-                  <Grid.Row>
-                    <Grid.Column>
-                      <PeopleTable
-                        selector={{
-                          campaignId: campaign._id
-                        }}
-                      />
                     </Grid.Column>
                   </Grid.Row>
                   {jobs.length ? (

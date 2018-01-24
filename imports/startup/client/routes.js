@@ -11,8 +11,13 @@ import AuthPageRecoveryPassword from "/imports/ui/pages/accounts/AuthPageRecover
 import AuthPageResetPassword from "/imports/ui/pages/accounts/AuthPageResetPassword.jsx";
 
 import DashboardPageContainer from "/imports/ui/containers/app/DashboardPageContainer.jsx";
+
 import AddCampaignPageContainer from "/imports/ui/containers/campaigns/AddCampaignPageContainer.jsx";
 import CampaignsPageContainer from "/imports/ui/containers/campaigns/CampaignsPageContainer.jsx";
+import CampaignsPeopleContainer from "/imports/ui/containers/campaigns/CampaignsPeopleContainer.jsx";
+import CampaignsAudienceContainer from "/imports/ui/containers/campaigns/CampaignsAudienceContainer.jsx";
+import CampaignsEntriesContainer from "/imports/ui/containers/campaigns/CampaignsEntriesContainer.jsx";
+import CampaignsListsContainer from "/imports/ui/containers/campaigns/CampaignsListsContainer.jsx";
 
 /* Admin */
 import JobsPage from "/imports/ui/pages/jobs/JobsPage.jsx";
@@ -123,26 +128,74 @@ appRoutes.route("/add-campaign", {
     });
   }
 });
-appRoutes.route("/campaign/:_id", {
+appRoutes.route("/campaign/:campaignId", {
   name: "App.campaignDetail",
   action: function(params) {
     _addTitle(`${APP_NAME} | Campaign`);
     return mount(AppContainer, {
       content: {
         component: CampaignsPageContainer,
-        props: { campaignId: params._id }
+        props: { campaignId: params.campaignId }
       }
     });
   }
 });
-appRoutes.route("/campaign/:_id/account/:facebookId", {
+appRoutes.route("/campaign/:campaignId/people/:facebookId?", {
+  name: "App.campaignPeople",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Campaign`);
+    return mount(AppContainer, {
+      content: {
+        component: CampaignsPeopleContainer,
+        props: { campaignId: params.campaignId, facebookId: params.facebookId }
+      }
+    });
+  }
+});
+appRoutes.route("/campaign/:campaignId/audience/:facebookId?", {
+  name: "App.campaignAudience",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Campaign`);
+    return mount(AppContainer, {
+      content: {
+        component: CampaignsAudienceContainer,
+        props: { campaignId: params.campaignId, facebookId: params.facebookId }
+      }
+    });
+  }
+});
+appRoutes.route("/campaign/:campaignId/entries/:facebookId?", {
+  name: "App.campaignEntries",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Campaign`);
+    return mount(AppContainer, {
+      content: {
+        component: CampaignsEntriesContainer,
+        props: { campaignId: params.campaignId, facebookId: params.facebookId }
+      }
+    });
+  }
+});
+appRoutes.route("/campaign/:campaignId/lists", {
+  name: "App.campaignLists",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Campaign`);
+    return mount(AppContainer, {
+      content: {
+        component: CampaignsListsContainer,
+        props: { campaignId: params.campaignId }
+      }
+    });
+  }
+});
+appRoutes.route("/campaign/:campaignId/account/:facebookId", {
   name: "App.campaignDetail.account",
   action: function(params) {
     _addTitle(`${APP_NAME} | Campaign`);
     return mount(AppContainer, {
       content: {
         component: CampaignsPageContainer,
-        props: { campaignId: params._id, facebookId: params.facebookId }
+        props: { campaignId: params.campaignId, facebookId: params.facebookId }
       }
     });
   }

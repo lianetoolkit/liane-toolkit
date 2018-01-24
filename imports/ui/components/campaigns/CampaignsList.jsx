@@ -28,7 +28,7 @@ export default class CampaignsList extends React.Component {
                     <List.Header
                       as="a"
                       href={FlowRouter.path("App.campaignDetail", {
-                        _id: campaign._id
+                        campaignId: campaign._id
                       })}
                     >
                       {campaign.name}

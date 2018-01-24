@@ -17,6 +17,7 @@ const Wrapper = styled.header`
 const Logo = styled.h1`
   flex: 0 0 auto;
   text-transform: uppercase;
+  font-size: 1em;
   a {
     color: #fff;
   }
@@ -24,16 +25,27 @@ const Logo = styled.h1`
 
 const Menu = styled.div`
   flex: 1 1 100%;
-`
+`;
 
-export default ({ children, campaigns, currentUser, logout }) => (
+export default ({
+  children,
+  campaigns,
+  currentCampaign,
+  currentUser,
+  logout
+}) => (
   <Wrapper>
     <Logo>
       <a href={FlowRouter.path("App.dashboard")}>
         {Meteor.settings.public.appName}
       </a>
     </Logo>
-    <AppMenu campaigns={campaigns} currentUser={currentUser} logout={logout} />
+    <AppMenu
+      campaigns={campaigns}
+      currentCampaign={currentCampaign}
+      currentUser={currentUser}
+      logout={logout}
+    />
     <div>{children}</div>
   </Wrapper>
 );
