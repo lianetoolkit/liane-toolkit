@@ -284,17 +284,28 @@ const FacebookAudiencesHelpers = {
         .digest("hex");
       const redisKey = `audiences::fetch::${hash}`;
       try {
-        let data = redisClient.getSync(redisKey);
-        if (data) {
-          return data;
+        let ready = false;
+        let res = redisClient.getSync(redisKey);
+        if (res) {
+          return JSON.parse(res).data.users;
         } else {
-          let res = await _fb.api(`${adAccountId}/reachestimate`, {
-            targeting_spec: spec,
-            access_token: accessToken
-          });
-          redisClient.setSync(redisKey, res.data.users, "EX", 24 * 60 * 60);
-          await sleep(5000);
-          return redisClient.getSync(redisKey);
+          let multiplier = 1;
+          while (ready === false) {
+            res = await _fb.api(`${adAccountId}/reachestimate`, {
+              targeting_spec: spec,
+              access_token: accessToken
+            });
+            ready = res.data.estimate_ready;
+            await sleep(5000 * multiplier);
+            multiplier = multiplier + 0.5;
+          }
+          redisClient.setSync(
+            redisKey,
+            JSON.stringify(res),
+            "EX",
+            24 * 60 * 60
+          );
+          return res.data.users;
         }
       } catch (error) {
         throw new Meteor.Error(error);

@@ -177,43 +177,52 @@ export default class AppMenu extends React.Component {
     const { activeIndex } = this.state;
     const { loading, currentUser, logout, currentCampaign } = this.props;
 
+    const currentRoute = FlowRouter.current().route.name;
+
     return (
       <Wrapper>
         <MenuWrapper>
           {this._getCampaignsMenu()}
           {currentCampaign ? (
             <Menu vertical inverted fluid>
+              <Menu.Item>
+                <Icon name="alarm" /> Actions
+              </Menu.Item>
               <Menu.Item
                 name="campaignPeople"
+                active={currentRoute.indexOf("App.campaignPeople") === 0}
                 href={FlowRouter.path("App.campaignPeople", {
                   campaignId: currentCampaign
                 })}
               >
-                People
+                <Icon name="address book" /> People
               </Menu.Item>
               <Menu.Item
                 name="campaignAudience"
+                active={currentRoute.indexOf("App.campaignAudience") === 0}
                 href={FlowRouter.path("App.campaignAudience", {
                   campaignId: currentCampaign
                 })}
               >
-                Audience
+                <Icon name="star" /> Audience
               </Menu.Item>
               <Menu.Item
                 name="campaignEntries"
+                active={currentRoute.indexOf("App.campaignEntries") === 0}
                 href={FlowRouter.path("App.campaignEntries", {
                   campaignId: currentCampaign
                 })}
               >
-                Facebook Posts
+                <Icon name="comments" /> Facebook Posts
               </Menu.Item>
               <Menu.Item
                 name="campaignEntries"
+                active={currentRoute.indexOf("App.campaignLists") === 0}
                 href={FlowRouter.path("App.campaignLists", {
                   campaignId: currentCampaign
                 })}
               >
-                Monitoring Lists
+                <Icon name="spy" /> Monitoring Lists
               </Menu.Item>
             </Menu>
           ) : null}

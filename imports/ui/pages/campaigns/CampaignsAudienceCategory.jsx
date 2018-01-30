@@ -62,35 +62,6 @@ export default class CampaignsAudience extends React.Component {
               ) : null}
               <Grid.Row>
                 <Grid.Column>
-                  {/* {facebookAccount ? (
-                    <AudiencesIndexTable
-                      selector={{
-                        facebookAccountId: facebookAccount.facebookId,
-                        campaignId: campaign._id
-                      }}
-                      hideHeader={true}
-                    />
-                  ) : (
-                    <p>No Facebook Account was found</p>
-                  )} */}
-                  {facebookAccount ? (
-                    <div>
-                      <AudienceCategoriesListContainer
-                        campaignId={campaign._id}
-                        facebookAccountId={facebookAccount.facebookId}
-                      />
-                      <Divider hidden />
-                      <AudiencesIndexTable
-                        selector={{
-                          facebookAccountId: facebookAccount.facebookId,
-                          campaignId: campaign._id
-                        }}
-                        hideHeader={true}
-                      />
-                    </div>
-                  ) : (
-                    <p>No Facebook Account was found</p>
-                  )}
                 </Grid.Column>
               </Grid.Row>
             </Grid>

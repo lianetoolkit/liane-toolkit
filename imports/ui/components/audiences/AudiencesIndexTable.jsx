@@ -3,6 +3,7 @@ import SmartTable from "/imports/ui/components/utils/tables/SmartTable.jsx";
 import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
+import moment from "moment";
 
 export default class AudiencesIndexTable extends React.Component {
   constructor(props) {
@@ -57,7 +58,10 @@ export default class AudiencesIndexTable extends React.Component {
           },
           {
             label: "fetch_date",
-            data: "fetch_date"
+            data: "fetch_date",
+            render: fetch_date => {
+              return moment(fetch_date).fromNow();
+            }
           },
           {
             label: "Ratio",

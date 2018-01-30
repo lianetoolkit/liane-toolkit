@@ -1,4 +1,6 @@
+import _ from "underscore";
 import { FacebookAudiences } from "../audiences.js";
+import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 
@@ -19,6 +21,28 @@ Meteor.publish("audiences.byCategory.byGeolocation", function({
       },
       { sort: { createdAt: -1 } }
     );
+  } else {
+    return this.ready();
+  }
+});
+
+Meteor.publish("audiences.byCampaignAccount", function({
+  campaignId,
+  facebookAccountId
+}) {
+  const userId = this.userId;
+  if(userId) {
+    const campaign = Campaigns.findOne(campaignId);
+    if(!_.findWhere(campaign.users, { userId })) {
+      return this.ready();
+    }
+    return FacebookAudiences.find(
+      {
+        campaignId,
+        facebookAccountId
+      },
+      { sort: { createdAt: - 1 } }
+    )
   } else {
     return this.ready();
   }

@@ -22,6 +22,7 @@ import "/imports/api/facebook/people/server/peopleMethods.js";
 import "/imports/api/facebook/people/server/peoplePublications.js";
 
 // audiences
+import "/imports/api/facebook/audiences/server/audiencesMethods.js";
 import "/imports/api/facebook/audiences/server/audiencesPublications.js";
 
 // geolocations
