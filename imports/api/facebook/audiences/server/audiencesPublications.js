@@ -31,9 +31,9 @@ Meteor.publish("audiences.byCampaignAccount", function({
   facebookAccountId
 }) {
   const userId = this.userId;
-  if(userId) {
+  if (userId) {
     const campaign = Campaigns.findOne(campaignId);
-    if(!_.findWhere(campaign.users, { userId })) {
+    if (!_.findWhere(campaign.users, { userId })) {
       return this.ready();
     }
     return FacebookAudiences.find(
@@ -41,8 +41,48 @@ Meteor.publish("audiences.byCampaignAccount", function({
         campaignId,
         facebookAccountId
       },
-      { sort: { createdAt: - 1 } }
-    )
+      { sort: { createdAt: -1 } }
+    );
+  } else {
+    return this.ready();
+  }
+});
+
+Meteor.publishComposite("audiences.byCategory", function({
+  campaignId,
+  facebookAccountId,
+  audienceCategoryId
+}) {
+  const userId = this.userId;
+  if (userId) {
+    const campaign = Campaigns.findOne(campaignId);
+    if (!_.findWhere(campaign.users, { userId })) {
+      return this.ready();
+    }
+    return {
+      find: function() {
+        return FacebookAudiences.find(
+          {
+            campaignId,
+            facebookAccountId,
+            audienceCategoryId
+          },
+          { sort: { createdAt: -1 } }
+        );
+      },
+      children: [
+        {
+          find: function(audience) {
+            return Geolocations.find(
+              {
+                _id: audience.geolocationId
+              },
+              { fields: { name: 1 } }
+            );
+          }
+        }
+      ]
+    };
   } else {
     return this.ready();
   }

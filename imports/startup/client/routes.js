@@ -16,6 +16,7 @@ import AddCampaignPageContainer from "/imports/ui/containers/campaigns/AddCampai
 import CampaignsPageContainer from "/imports/ui/containers/campaigns/CampaignsPageContainer.jsx";
 import CampaignsPeopleContainer from "/imports/ui/containers/campaigns/CampaignsPeopleContainer.jsx";
 import CampaignsAudienceContainer from "/imports/ui/containers/campaigns/CampaignsAudienceContainer.jsx";
+import CampaignsAudienceCategoryContainer from "/imports/ui/containers/campaigns/CampaignsAudienceCategoryContainer.jsx";
 import CampaignsEntriesContainer from "/imports/ui/containers/campaigns/CampaignsEntriesContainer.jsx";
 import CampaignsListsContainer from "/imports/ui/containers/campaigns/CampaignsListsContainer.jsx";
 
@@ -164,6 +165,25 @@ appRoutes.route("/campaign/:campaignId/audience/:facebookId?", {
     });
   }
 });
+appRoutes.route(
+  "/campaign/:campaignId/audience/:facebookId/category/:categoryId",
+  {
+    name: "App.campaignAudience.category",
+    action: function(params) {
+      _addTitle(`${APP_NAME} | Campaign`);
+      return mount(AppContainer, {
+        content: {
+          component: CampaignsAudienceCategoryContainer,
+          props: {
+            campaignId: params.campaignId,
+            facebookId: params.facebookId,
+            categoryId: params.categoryId
+          }
+        }
+      });
+    }
+  }
+);
 appRoutes.route("/campaign/:campaignId/entries/:facebookId?", {
   name: "App.campaignEntries",
   action: function(params) {

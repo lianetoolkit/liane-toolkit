@@ -13,7 +13,16 @@ export default class CampaignsAudience extends React.Component {
     console.log("CampaignsAudience init", { props });
   }
   render() {
-    const { loading, campaign, accounts, facebookId } = this.props;
+    const {
+      loading,
+      campaign,
+      accounts,
+      facebookId,
+      category,
+      audienceCategory,
+      audiences
+    } = this.props;
+
     let facebookAccount;
     if (!loading) {
       if (facebookId) {
@@ -24,6 +33,8 @@ export default class CampaignsAudience extends React.Component {
         facebookAccount = accounts[0];
       }
     }
+
+    console.log(audiences);
     return (
       <div>
         <PageHeader
@@ -62,6 +73,7 @@ export default class CampaignsAudience extends React.Component {
               ) : null}
               <Grid.Row>
                 <Grid.Column>
+                  <Header as="h2">{audienceCategory.title}</Header>
                 </Grid.Column>
               </Grid.Row>
             </Grid>

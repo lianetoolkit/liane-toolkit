@@ -85,6 +85,18 @@ export const removeAudienceCategory = new ValidatedMethod({
   }
 });
 
+export const getAudienceCategory = new ValidatedMethod({
+  name: "audienceCategories.get",
+  validate: new SimpleSchema({
+    audienceCategoryId: {
+      type: String
+    }
+  }).validator(),
+  run({ audienceCategoryId }) {
+    return AudienceCategories.findOne(audienceCategoryId);
+  }
+});
+
 export const searchAdInterests = new ValidatedMethod({
   name: "audienceCategories.searchAdInterests",
   validate: new SimpleSchema({
