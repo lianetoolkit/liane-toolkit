@@ -79,14 +79,14 @@ export default class CampaignsAudience extends React.Component {
                         campaignId={campaign._id}
                         facebookAccountId={facebookAccount.facebookId}
                       />
-                      <Divider hidden />
+                      {/* <Divider hidden />
                       <AudiencesIndexTable
                         selector={{
                           facebookAccountId: facebookAccount.facebookId,
                           campaignId: campaign._id
                         }}
                         hideHeader={true}
-                      />
+                      /> */}
                     </div>
                   ) : (
                     <p>No Facebook Account was found</p>
