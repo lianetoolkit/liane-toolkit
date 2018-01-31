@@ -10,12 +10,15 @@ export default class AudienceCategoriesList extends React.Component {
     if (audience.total < 100) {
       return "Not enough data";
     }
+    let prefix, ratio;
     const local = audience.estimate / audience.total;
     const location = audience.location_estimate / audience.location_total;
-    const ratio = local / location;
-    let prefix = "+";
-    if (ratio < 0) {
-      prefix = "";
+    if(local > location) {
+      prefix = "+";
+      ratio = local / location;
+    } else {
+      prefix = "-";
+      ratio = location / local;
     }
     return prefix + ratio.toFixed(2) + "x";
   }
