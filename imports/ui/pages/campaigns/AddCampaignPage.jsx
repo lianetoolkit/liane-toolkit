@@ -63,7 +63,7 @@ export default class AddCampaignPage extends React.Component {
             Alerts.error(error);
           } else {
             Alerts.success("Campaign was successfully created");
-            FlowRouter.go("App.campaignDetail", { _id: data.result });
+            FlowRouter.go("App.campaignDetail", { campaignId: data.result });
           }
         }
       );
