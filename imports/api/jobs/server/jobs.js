@@ -72,7 +72,7 @@ if (Meteor.settings.public.deployMode === "local") {
   };
 }
 
-// for (let jobType of Array.from(_.keys(JobsPool.jobs))) {
-//   const workerOptions = JobsPool.jobs[jobType].workerOptions || {};
-//   Jobs.processJobs(jobType, workerOptions, _runJob);
-// }
+for (let jobType of Array.from(_.keys(JobsPool.jobs))) {
+  const workerOptions = JobsPool.jobs[jobType].workerOptions || {};
+  Jobs.processJobs(jobType, workerOptions, _runJob);
+}
