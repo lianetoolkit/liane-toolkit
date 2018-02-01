@@ -8,8 +8,11 @@ export default class AudienceCategoriesList extends React.Component {
     super(props);
   }
   render() {
-    const { summary, campaignId, facebookAccountId } = this.props;
-    if (summary.length) {
+    const { loading, summary, campaignId, facebookAccountId } = this.props;
+    console.log(loading);
+    if (loading) {
+      return <Loading />;
+    } else if (summary.length) {
       return (
         <Card.Group>
           {summary.map(item => (
