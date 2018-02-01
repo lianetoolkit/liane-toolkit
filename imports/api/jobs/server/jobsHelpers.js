@@ -18,7 +18,7 @@ export const JobsHelpers = {
       return jobInCollectionId;
     } else {
       const newJob = new Job(Jobs, jobType, jobData);
-      const jobOptions = JobsPool.jobs[jobType].jobOptions({ jobData });
+      const jobOptions = JobsPool.jobs[jobType].jobOptions(newJob.doc);
       logger.debug("JobsHelpers.addJob", { jobOptions });
       newJob.retry({
         retries:

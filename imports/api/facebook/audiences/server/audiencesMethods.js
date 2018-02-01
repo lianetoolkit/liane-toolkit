@@ -16,7 +16,7 @@ export const accountAudienceSummary = new ValidatedMethod({
       type: String
     }
   }).validator(),
-  run({ campaignId, facebookAccountId, groupBy }) {
+  run({ campaignId, facebookAccountId }) {
     logger.debug("audiences.accountSummary", { campaignId, facebookAccountId });
 
     const userId = Meteor.userId();
@@ -58,7 +58,63 @@ export const accountAudienceSummary = new ValidatedMethod({
       result.push(catData);
     });
 
-    // console.log({ campaign, context, categories, geolocations });
+    return result;
+  }
+});
+
+export const accountAudienceByCategory = new ValidatedMethod({
+  name: "audiences.byCategory",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    facebookAccountId: {
+      type: String
+    },
+    audienceCategoryId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, facebookAccountId, audienceCategoryId }) {
+    logger.debug("audiences.byCategory", {
+      campaignId,
+      facebookAccountId,
+      audienceCategoryId
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!_.findWhere(campaign.users, { userId })) {
+      throw new Meteor.Error(401, "You are not part of this campaign");
+    }
+
+    const context = Contexts.findOne(campaign.contextId);
+
+    const category = AudienceCategories.findOne(audienceCategoryId);
+    const geolocations = Geolocations.find({
+      _id: { $in: context.geolocations }
+    }).fetch();
+
+    let result = { category, geolocations: [] };
+
+    geolocations.forEach(geolocation => {
+      const audiences = FacebookAudiences.find(
+        {
+          campaignId,
+          facebookAccountId,
+          audienceCategoryId: category._id,
+          geolocationId: geolocation._id
+        },
+        { sort: { createdAt: 1 } }
+      ).fetch();
+      result.geolocations.push({ geolocation, audiences });
+    });
+
     return result;
   }
 });

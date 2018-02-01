@@ -94,11 +94,11 @@ const AudiencesJobs = {
       concurrency: 1,
       pollInterval: 2500
     },
-    jobOptions() {
+    jobOptions(job) {
       const options = {
         retry: {
-          retries: 5,
-          wait: 5 * 60 * 1000
+          retries: 10,
+          wait: 5 * 60 * 1000 * Math.min(job.repeats * .5, 1)
         }
       };
       return options;

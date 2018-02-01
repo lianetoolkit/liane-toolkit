@@ -24,6 +24,7 @@
     "react-leaflet": "^1.8.0",
     "react-mounter": "^1.2.0",
     "react-spinner": "^0.2.7",
+    "recharts": "^1.0.0-beta.10",
     "redis": "^2.8.0",
     "semantic-ui-react": "^0.74.2",
     "simpl-schema": "^0.4.1",

@@ -4,6 +4,7 @@ import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
 import AudiencesIndexTable from "/imports/ui/components/audiences/AudiencesIndexTable.jsx";
 import AudienceCategoriesListContainer from "/imports/ui/containers/audiences/AudienceCategoriesListContainer.jsx";
+import AudienceCategoryContainer from "/imports/ui/containers/audiences/AudienceCategoryContainer.jsx";
 
 import { Grid, Menu, Header, List, Button, Divider } from "semantic-ui-react";
 
@@ -13,7 +14,7 @@ export default class CampaignsAudience extends React.Component {
     console.log("CampaignsAudience init", { props });
   }
   render() {
-    const { loading, campaign, accounts, facebookId } = this.props;
+    const { loading, campaign, accounts, facebookId, categoryId } = this.props;
     let facebookAccount;
     if (!loading) {
       if (facebookId) {
@@ -24,6 +25,9 @@ export default class CampaignsAudience extends React.Component {
         facebookAccount = accounts[0];
       }
     }
+    const path = categoryId
+      ? "App.campaignAudience.category"
+      : "App.campaignAudience";
     return (
       <div>
         <PageHeader
@@ -48,9 +52,10 @@ export default class CampaignsAudience extends React.Component {
                           active={
                             account.facebookId == facebookAccount.facebookId
                           }
-                          href={FlowRouter.path("App.campaignAudience", {
+                          href={FlowRouter.path(path, {
                             campaignId: campaign._id,
-                            facebookId: account.facebookId
+                            facebookId: account.facebookId,
+                            categoryId: categoryId
                           })}
                         >
                           {account.name}
@@ -62,31 +67,20 @@ export default class CampaignsAudience extends React.Component {
               ) : null}
               <Grid.Row>
                 <Grid.Column>
-                  {/* {facebookAccount ? (
-                    <AudiencesIndexTable
-                      selector={{
-                        facebookAccountId: facebookAccount.facebookId,
-                        campaignId: campaign._id
-                      }}
-                      hideHeader={true}
-                    />
-                  ) : (
-                    <p>No Facebook Account was found</p>
-                  )} */}
                   {facebookAccount ? (
                     <div>
-                      <AudienceCategoriesListContainer
-                        campaignId={campaign._id}
-                        facebookAccountId={facebookAccount.facebookId}
-                      />
-                      {/* <Divider hidden />
-                      <AudiencesIndexTable
-                        selector={{
-                          facebookAccountId: facebookAccount.facebookId,
-                          campaignId: campaign._id
-                        }}
-                        hideHeader={true}
-                      /> */}
+                      {categoryId ? (
+                        <AudienceCategoryContainer
+                          campaignId={campaign._id}
+                          facebookAccountId={facebookAccount.facebookId}
+                          audienceCategoryId={categoryId}
+                        />
+                      ) : (
+                        <AudienceCategoriesListContainer
+                          campaignId={campaign._id}
+                          facebookAccountId={facebookAccount.facebookId}
+                        />
+                      )}
                     </div>
                   ) : (
                     <p>No Facebook Account was found</p>
