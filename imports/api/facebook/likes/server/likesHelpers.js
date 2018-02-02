@@ -105,6 +105,16 @@ const LikesHelpers = {
               facebookAccounts: facebookAccountId
             }
           });
+        // Update users already registered to another campaign
+        peopleBulk
+          .find({
+            facebookId: likedPerson.id,
+            campaignId: { $ne: campaignId },
+            facebookAccounts: { $in: [facebookAccountId] }
+          })
+          .update({
+            $set: set
+          });
       }
       peopleBulk.execute();
     }

@@ -5,11 +5,7 @@ import { JobsHelpers } from "./jobsHelpers.js";
 
 // init jobs pool for workers
 JobsPool.jobs = _.extend(EntriesJobs, AudiencesJobs);
-// logger.debug JobsPool.jobs
 
-// logger.debug "jobs.js: initializing JobsPool", {JobsPool}
-
-// logger.info "> Jobs worker: adding #{_.keys(JobsPool.jobs)} jobs"
 let _runJob;
 Meteor.startup(function() {
   Jobs.startJobServer();

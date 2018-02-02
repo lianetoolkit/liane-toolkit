@@ -98,6 +98,16 @@ const CommentsHelpers = {
               facebookAccounts: facebookAccountId
             }
           });
+        // Update users already registered to another campaign
+        peopleBulk
+          .find({
+            facebookId: commentedPerson.id,
+            campaignId: { $ne: campaignId },
+            facebookAccounts: { $in: [facebookAccountId] }
+          })
+          .update({
+            $set: set
+          });
       }
       peopleBulk.execute();
     }
