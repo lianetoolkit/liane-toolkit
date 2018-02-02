@@ -95,7 +95,6 @@ const AudiencesJobs = {
       pollInterval: 2500
     },
     jobOptions(job) {
-      console.log("FETCHING JOB OPTIONS", job.retried);
       const options = {
         retry: {
           retries: 10,
