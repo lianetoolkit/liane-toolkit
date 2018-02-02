@@ -26,7 +26,10 @@ export const JobsHelpers = {
           1,
         wait:
           (jobOptions.retry != null ? jobOptions.retry.wait : undefined) ||
-          5 * 60 * 1000
+          5 * 60 * 1000,
+        backoff:
+          (jobOptions.retry != null ? jobOptions.retry.backoff : undefined) ||
+          "constant"
       }); // default 5 minutes
       if (jobOptions.delay != null) {
         newJob.delay(jobOptions.delay);
