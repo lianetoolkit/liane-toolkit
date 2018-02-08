@@ -3,6 +3,8 @@ import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
 import PeopleTable from "/imports/ui/components/people/PeopleTable.jsx";
+import PeopleSearch from "/imports/ui/components/people/PeopleSearch.jsx";
+import PeopleSummary from "/imports/ui/components/people/PeopleSummary.jsx";
 
 import { Grid, Header, Menu, List, Button } from "semantic-ui-react";
 
@@ -12,18 +14,22 @@ export default class CampaignsPeople extends React.Component {
     console.log("CampaignsPeople init", { props });
   }
   render() {
-    const { loading, campaign, accounts, facebookId } = this.props;
+    let { facebookId } = this.props;
+    const { loading, campaign, accounts, peopleSummary } = this.props;
     let facebookAccount, selector;
     if (!loading) {
       selector = {
         campaignId: campaign._id
       };
       if (facebookId) {
-        selector.facebookAccounts = { $in: [facebookId] };
         facebookAccount = !loading
           ? _.findWhere(accounts, { facebookId: facebookId })
           : null;
+      } else {
+        facebookAccount = accounts[0];
+        facebookId = facebookAccount.facebookId;
       }
+      selector.facebookAccounts = { $in: [facebookAccount.facebookId] };
     }
     return (
       <div>
@@ -43,14 +49,14 @@ export default class CampaignsPeople extends React.Component {
                 <Grid.Row>
                   <Grid.Column>
                     <Menu>
-                      <Menu.Item
+                      {/* <Menu.Item
                         active={!facebookAccount}
                         href={FlowRouter.path("App.campaignPeople", {
                           campaignId: campaign._id
                         })}
                       >
                         All people
-                      </Menu.Item>
+                      </Menu.Item> */}
                       {accounts.map(account => (
                         <Menu.Item
                           key={`account-${account._id}`}
@@ -72,9 +78,14 @@ export default class CampaignsPeople extends React.Component {
               ) : null}
               <Grid.Row>
                 <Grid.Column>
-                  <PeopleTable
+                  {/* <PeopleTable
                     facebookAccount={facebookId || null}
                     selector={selector}
+                  /> */}
+                  <PeopleSearch campaignId={campaign._id} />
+                  <PeopleSummary
+                    facebookId={facebookId}
+                    peopleSummary={peopleSummary}
                   />
                 </Grid.Column>
               </Grid.Row>

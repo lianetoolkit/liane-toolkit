@@ -3,6 +3,7 @@ import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { AccountLists } from "/imports/api/facebook/accountLists/accountLists.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
+import { Jobs } from "/imports/api/jobs/jobs.js";
 
 import _ from "underscore";
 
@@ -83,3 +84,28 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
     return this.ready();
   }
 });
+
+// Meteor.publishComposite("campaigns.jobsCount", function() {
+//   const currentUser = this.userId;
+//   logger.debug("campaigns.jobsCount pub");
+//   if (Roles.userIsInRole(currentUser, ["admin"])) {
+//     return {
+//       find: function() {
+//         return Campaigns.find(null, { fields: { name: 1 } });
+//       },
+//       children: [
+//         {
+//           find: function(campaign) {
+//             return Counts.publish(
+//               this,
+//               "jobCountFor",
+//               FacebookAudiences.find(search)
+//             );
+//           }
+//         }
+//       ]
+//     };
+//   } else {
+//     this.ready();
+//   }
+// });

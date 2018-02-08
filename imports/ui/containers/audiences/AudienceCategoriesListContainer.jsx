@@ -28,7 +28,6 @@ export default createContainer(props => {
       if (JSON.stringify(accountSummary.get()) !== JSON.stringify(data)) {
         accountSummary.set(data);
         loading.set(false);
-        console.log("should have changed loading", loading.get());
       }
     }
   );

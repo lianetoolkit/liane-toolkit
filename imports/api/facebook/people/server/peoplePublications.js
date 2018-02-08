@@ -1,4 +1,24 @@
-import { People } from "../people.js";
+import { People, PeopleIndex } from "../people.js";
+import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+
+Meteor.publish("people.campaignSearch", function({ search, campaignId }) {
+  logger.debug("people.campaignSearch called", { search, campaignId });
+  // check(search, String);
+  // check(campaignId, String);
+  const userId = this.userId;
+  if (userId) {
+    const campaign = Campaigns.findOne(campaignId);
+    const allowed = _.findWhere(campaign.users, { userId });
+    if (allowed) {
+      const cursor = PeopleIndex.search(search, { props: { campaignId } });
+      console.log("result", cursor.fetch());
+      return cursor.mongoCursor;
+    } else {
+      console.log("not allowed");
+    }
+  }
+  return this.ready();
+});
 
 Meteor.publish("people.byAccount", function({
   search,
