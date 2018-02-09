@@ -1,10 +1,46 @@
 import React from "react";
-import { Grid, Segment, Table } from "semantic-ui-react";
+import { Grid, Segment, Table, Icon } from "semantic-ui-react";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 
 export default class PeopleSummary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      peopleSummary: null
+    };
+    this._onMetaButtonsChange = this._onMetaButtonsChange.bind(this);
+  }
+  componentDidMount() {
+    const { peopleSummary } = this.props;
+    this.setState({ peopleSummary });
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.facebookId !== this.props.facebookId) {
+      this.setState({ peopleSummary: null });
+    }
+    if (nextProps.peopleSummary && !this.state.peopleSummary) {
+      this.setState({ peopleSummary: nextProps.peopleSummary });
+    }
+  }
+  _onMetaButtonsChange(data) {
+    const { peopleSummary } = this.state;
+    // Likers
+    peopleSummary.topLikers.forEach(person => {
+      if (person._id == data.personId) {
+        person.campaignMeta[data.metaKey] = data.metaValue;
+      }
+    });
+    // Commenters
+    peopleSummary.topCommenters.forEach(person => {
+      if (person._id == data.personId) {
+        person.campaignMeta[data.metaKey] = data.metaValue;
+      }
+    });
+    this.setState({ peopleSummary: Object.assign({}, peopleSummary) });
+  }
   render() {
-    const { peopleSummary, facebookId } = this.props;
+    const { peopleSummary } = this.state;
+    const { facebookId } = this.props;
     if (peopleSummary) {
       return (
         <Segment>
@@ -18,14 +54,25 @@ export default class PeopleSummary extends React.Component {
                     {peopleSummary.topLikers.map(person => (
                       <Table.Row key={`liker-${person._id}`}>
                         <Table.Cell>
-                          {person.name}
+                          <a
+                            target="_blank"
+                            href={`https://facebook.com/${person.facebookId}`}
+                          >
+                            <Icon name="facebook" />
+                          </a>
                         </Table.Cell>
-                        <Table.Cell>
-                          <PeopleMetaButtons person={person} />
+                        <Table.Cell>{person.name}</Table.Cell>
+                        <Table.Cell singleLine>
+                          <PeopleMetaButtons
+                            person={person}
+                            onChange={this._onMetaButtonsChange}
+                          />
                         </Table.Cell>
-                        <Table.Cell>
-                          {person.counts[facebookId].likes} likes
-                        </Table.Cell>
+                        {person.counts[facebookId] ? (
+                          <Table.Cell singleLine>
+                            {person.counts[facebookId].likes} likes
+                          </Table.Cell>
+                        ) : null}
                       </Table.Row>
                     ))}
                   </Table.Body>
@@ -38,14 +85,25 @@ export default class PeopleSummary extends React.Component {
                     {peopleSummary.topCommenters.map(person => (
                       <Table.Row key={`commenter-${person._id}`}>
                         <Table.Cell>
-                          {person.name}
+                          <a
+                            target="_blank"
+                            href={`https://facebook.com/${person.facebookId}`}
+                          >
+                            <Icon name="facebook" />
+                          </a>
                         </Table.Cell>
-                        <Table.Cell>
-                          <PeopleMetaButtons person={person} />
+                        <Table.Cell>{person.name}</Table.Cell>
+                        <Table.Cell singleLine>
+                          <PeopleMetaButtons
+                            person={person}
+                            onChange={this._onMetaButtonsChange}
+                          />
                         </Table.Cell>
-                        <Table.Cell>
-                          {person.counts[facebookId].comments} comments
-                        </Table.Cell>
+                        {person.counts[facebookId] ? (
+                          <Table.Cell singleLine>
+                            {person.counts[facebookId].comments || 0} comments
+                          </Table.Cell>
+                        ) : null}
                       </Table.Row>
                     ))}
                   </Table.Body>

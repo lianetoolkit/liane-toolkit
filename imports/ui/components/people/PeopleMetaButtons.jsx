@@ -8,7 +8,7 @@ export default class PeopleMetaButtons extends React.Component {
     this._handleClick = this._handleClick.bind(this);
   }
   _handleClick(key) {
-    let { person } = this.props;
+    let { person, onChange } = this.props;
     person.campaignMeta = person.campaignMeta || {};
     const personId = person.personId || person._id;
     return ev => {
@@ -21,6 +21,10 @@ export default class PeopleMetaButtons extends React.Component {
         if (error) {
           Alerts.error(error);
         } else {
+          if(onChange) {
+            onChange(data);
+          }
+          person.campaignMeta[key] = data.metaValue;
           Alerts.success("Person updated successfully");
         }
       });
@@ -78,7 +82,7 @@ export default class PeopleMetaButtons extends React.Component {
         trigger={
           <Icon
             color={iconColor}
-            size="large"
+            // size="large"
             name={iconName}
             style={style}
             onClick={this._handleClick(key)}

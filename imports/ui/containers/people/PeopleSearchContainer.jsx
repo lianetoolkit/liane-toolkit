@@ -6,30 +6,36 @@ import PeopleSearchResults from "/imports/ui/components/people/PeopleSearchResul
 const people = new ReactiveVar([]);
 const loading = new ReactiveVar(false);
 let search = null;
+let shouldCall = false;
 
 export default createContainer(props => {
   if (search !== props.search) {
+    shouldCall = true;
     search = props.search;
     people.set([]);
     loading.set(true);
+  } else {
+    shouldCall = false;
   }
 
-  Meteor.call(
-    "people.campaignSearch",
-    {
-      campaignId: props.campaignId,
-      search: props.search
-    },
-    (error, data) => {
-      if (error) {
-        console.warn(error);
+  if(shouldCall) {
+    Meteor.call(
+      "people.campaignSearch",
+      {
+        campaignId: props.campaignId,
+        search: props.search
+      },
+      (error, data) => {
+        if (error) {
+          console.warn(error);
+        }
+        loading.set(false);
+        if (JSON.stringify(people.get()) !== JSON.stringify(data)) {
+          people.set(data);
+        }
       }
-      loading.set(false);
-      if (JSON.stringify(people.get()) !== JSON.stringify(data)) {
-        people.set(data);
-      }
-    }
-  );
+    );
+  }
 
   return {
     loading: loading.get(),

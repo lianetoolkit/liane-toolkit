@@ -7,12 +7,15 @@ import CampaignsPeople from "/imports/ui/pages/campaigns/CampaignsPeople.jsx";
 
 const peopleSummary = new ReactiveVar(null);
 let currentRoutePath = null;
-let called = false;
+let shouldCall = false;
 
 export default createContainer(props => {
   if (currentRoutePath !== FlowRouter.current().path) {
+    shouldCall = true;
     currentRoutePath = FlowRouter.current().path;
     peopleSummary.set(null);
+  } else {
+    shouldCall = false;
   }
 
   const subsHandle = Meteor.subscribe("campaigns.detail", {
@@ -34,8 +37,7 @@ export default createContainer(props => {
   if (!props.facebookId && accounts.length) {
     facebookId = accounts[0].facebookId;
   }
-  if (facebookId && !called) {
-    called = true;
+  if (facebookId && shouldCall) {
     Meteor.call(
       "people.campaignSummary",
       {
