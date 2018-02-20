@@ -5,7 +5,18 @@ const options = {
   client_id: Meteor.settings.facebook.clientId,
   client_secret: Meteor.settings.facebook.clientSecret
 };
-_fb = new Facebook(options);
+const _fb = new Facebook(options);
+
+const _fetchFacebookPageData = ({ url }) => {
+  check(url, String);
+  let response;
+  try {
+    response = HTTP.get(url);
+  } catch (error) {
+    throw new Meteor.Error(error);
+  }
+  return response;
+};
 
 const FacebookAccountsHelpers = {
   getUserAccounts({ userId }) {
@@ -22,12 +33,21 @@ const FacebookAccountsHelpers = {
     }
 
     const accessToken = user.services.facebook.accessToken;
-    _fb.setAccessToken(accessToken);
-    const response = Promise.await(
-      _fb.api("me/accounts", { limit: 100 })
-    );
 
-    return { result: response.data };
+    _fb.setAccessToken(accessToken);
+
+    const response = Promise.await(_fb.api("me/accounts", { limit: 10 }));
+    let data = response.data;
+    let next = response.paging.next;
+    while (next !== undefined) {
+      let nextPage = _fetchFacebookPageData({ url: next });
+      next = nextPage.data.paging ? nextPage.data.paging.next : undefined;
+      if (nextPage.statusCode == 200 && nextPage.data.data.length) {
+        data = data.concat(nextPage.data.data);
+      }
+    }
+
+    return { result: data };
   },
   exchangeFBToken({ token }) {
     check(token, String);
