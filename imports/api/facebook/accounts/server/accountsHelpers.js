@@ -24,10 +24,10 @@ const FacebookAccountsHelpers = {
     const accessToken = user.services.facebook.accessToken;
     _fb.setAccessToken(accessToken);
     const response = Promise.await(
-      _fb.api("me", { fields: ["id", "accounts"] })
+      _fb.api("me/accounts", { limit: 100 })
     );
 
-    return { result: response.accounts.data };
+    return { result: response.data };
   },
   exchangeFBToken({ token }) {
     check(token, String);
