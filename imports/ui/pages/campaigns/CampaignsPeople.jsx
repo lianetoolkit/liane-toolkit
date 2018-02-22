@@ -45,7 +45,7 @@ export default class CampaignsPeople extends React.Component {
             <Loading />
           ) : (
             <Grid>
-              {accounts.length ? (
+              {accounts.length > 1 ? (
                 <Grid.Row>
                   <Grid.Column>
                     <Menu>
