@@ -2,9 +2,72 @@ import SimpleSchema from "simpl-schema";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
+import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
 import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
+
+export const accountAudienceGeolocationSummary = new ValidatedMethod({
+  name: "audiences.accountGeolocationSummary",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    facebookAccountId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, facebookAccountId }) {
+    logger.debug("audiences.accountGeolocationSummary", {
+      campaignId,
+      facebookAccountId
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!_.findWhere(campaign.users, { userId })) {
+      throw new Meteor.Error(401, "You are not part of this campaign");
+    }
+
+    const facebookAccount = FacebookAccounts.findOne({
+      facebookId: facebookAccountId
+    });
+
+    const context = Contexts.findOne(campaign.contextId);
+
+    let result = {
+      facebookAccount,
+      data: []
+    };
+
+    const geolocations = Geolocations.find({
+      _id: { $in: context.geolocations }
+    }).fetch();
+
+    geolocations.forEach(geolocation => {
+      let geolocationData = { geolocation };
+      const audience = FacebookAudiences.findOne(
+        {
+          campaignId,
+          facebookAccountId,
+          geolocationId: geolocation._id
+        },
+        { sort: { createdAt: -1 } }
+      );
+      geolocationData.audience = {
+        estimate: audience.total,
+        total: audience.location_total
+      };
+      result.data.push(geolocationData);
+    });
+    return result;
+  }
+});
 
 export const accountAudienceSummary = new ValidatedMethod({
   name: "audiences.accountSummary",

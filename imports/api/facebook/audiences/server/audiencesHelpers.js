@@ -23,6 +23,18 @@ const options = {
 const _fb = new Facebook(options);
 
 const FacebookAudiencesHelpers = {
+  async getFanCount(token) {
+    try {
+      const res = await _fb.api("me", {
+        fields: ["fan_count"],
+        access_token: token
+      });
+      return res.fan_count;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  },
   async updateAccountAudience({ campaignId, facebookAccountId }) {
     check(facebookAccountId, String);
 
@@ -47,6 +59,24 @@ const FacebookAudiencesHelpers = {
     const tokens = adAccountUsers.map(
       user => user.services.facebook.accessToken
     );
+
+    const campaignAccount = campaign.accounts.find(
+      c => c.facebookId == facebookAccountId
+    );
+
+    const fanCount = await this.getFanCount(campaignAccount.accessToken);
+    if(fanCount) {
+      FacebookAccounts.update(
+        {
+          facebookId: facebookAccountId
+        },
+        {
+          $set: {
+            fanCount
+          }
+        }
+      );
+    }
 
     let jobIds = [];
     for (const audienceCategory of audienceCategories) {

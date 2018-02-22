@@ -3,6 +3,7 @@ import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
 import AudiencesIndexTable from "/imports/ui/components/audiences/AudiencesIndexTable.jsx";
+import AudienceGeolocationSummaryContainer from "/imports/ui/containers/audiences/AudienceGeolocationSummaryContainer.jsx";
 import AudienceCategoriesListContainer from "/imports/ui/containers/audiences/AudienceCategoriesListContainer.jsx";
 import AudienceCategoryContainer from "/imports/ui/containers/audiences/AudienceCategoryContainer.jsx";
 
@@ -22,7 +23,6 @@ export default class CampaignsAudience extends React.Component {
       facebookId,
       categoryId
     } = this.props;
-    console.log(geolocations);
     let facebookAccount;
     if (!loading) {
       if (facebookId) {
@@ -84,10 +84,19 @@ export default class CampaignsAudience extends React.Component {
                           audienceCategoryId={categoryId}
                         />
                       ) : (
-                        <AudienceCategoriesListContainer
-                          campaignId={campaign._id}
-                          facebookAccountId={facebookAccount.facebookId}
-                        />
+                        <div>
+                          <Header>Geolocations</Header>
+                          <AudienceGeolocationSummaryContainer
+                            campaignId={campaign._id}
+                            facebookAccountId={facebookAccount.facebookId}
+                          />
+                          <Divider />
+                          <Header>Audience Categories</Header>
+                          <AudienceCategoriesListContainer
+                            campaignId={campaign._id}
+                            facebookAccountId={facebookAccount.facebookId}
+                          />
+                        </div>
                       )}
                     </div>
                   ) : (

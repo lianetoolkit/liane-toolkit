@@ -11,6 +11,10 @@ FacebookAccounts.schema = new SimpleSchema({
   name: {
     type: String
   },
+  fanCount: {
+    type: Number,
+    optional: true
+  },
   category: {
     type: String,
     optional: true
