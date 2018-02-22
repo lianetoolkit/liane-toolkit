@@ -207,6 +207,37 @@ const FacebookAudiencesHelpers = {
     }
 
     let jobIds = [];
+
+    // Main geolocation
+    const mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
+    if (
+      (!mainGeolocation.type || mainGeolocation.type == "location") &&
+      mainGeolocation.facebook
+    ) {
+      spec["geo_locations"] = this._buildFacebookLocations({
+        locations: mainGeolocation.facebook
+      });
+    } else if (mainGeolocation.type == "center") {
+      spec["geo_locations"] = this._buildFacebookCustomLocations({
+        center: mainGeolocation.center
+      });
+    }
+    jobIds.push(
+      JobsHelpers.addJob({
+        jobType: "audiences.fetchAndCreateSpecAudience",
+        jobData: {
+          campaignId,
+          adAccountId,
+          tokens,
+          facebookAccountId,
+          geolocationId: context.mainGeolocationId,
+          audienceCategoryId,
+          spec
+        }
+      })
+    );
+
+    // Context geolocations
     for (const geolocationId of context.geolocations) {
       const geolocation = Geolocations.findOne(geolocationId);
       if (

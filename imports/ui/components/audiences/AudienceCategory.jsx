@@ -23,9 +23,14 @@ export default class AudienceCategory extends React.Component {
     super(props);
   }
   render() {
-    const { loading, audienceCategory, campaignId, facebookAccountId } = this.props;
-    if(loading) {
-      return <Loading />
+    const {
+      loading,
+      audienceCategory,
+      campaignId,
+      facebookAccountId
+    } = this.props;
+    if (loading) {
+      return <Loading />;
     } else if (audienceCategory) {
       return (
         <div>

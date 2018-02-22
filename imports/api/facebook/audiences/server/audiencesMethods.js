@@ -42,7 +42,19 @@ export const accountAudienceSummary = new ValidatedMethod({
     let result = [];
 
     categories.forEach(category => {
-      let catData = { category, geolocations: [] };
+      let catData = {
+        category,
+        geolocations: [],
+        audience: FacebookAudiences.findOne(
+          {
+            campaignId,
+            facebookAccountId,
+            audienceCategoryId: category._id,
+            geolocationId: context.mainGeolocationId
+          },
+          { sort: { createdAt: -1 } }
+        )
+      };
       geolocations.forEach(geolocation => {
         const audience = FacebookAudiences.findOne(
           {

@@ -1,6 +1,6 @@
 import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
-import { Card, Label } from "semantic-ui-react";
+import { Card, Header, Label } from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
 
 export default class AudienceCategoriesList extends React.Component {
@@ -9,7 +9,6 @@ export default class AudienceCategoriesList extends React.Component {
   }
   render() {
     const { loading, summary, campaignId, facebookAccountId } = this.props;
-    console.log(loading);
     if (loading) {
       return <Loading />;
     } else if (summary.length) {
@@ -30,8 +29,18 @@ export default class AudienceCategoriesList extends React.Component {
                   </a>
                 </Card.Header>
               </Card.Content>
+              {item.audience ? (
+                <Card.Content textAlign="center">
+                  <Header size="large">
+                    <strong>{AudienceUtils.getPercentage(item.audience)}</strong>{" "}
+                    <Label size="small">
+                      {AudienceUtils.getRatio(item.audience)}
+                    </Label>
+                  </Header>
+                </Card.Content>
+              ) : null}
               {item.geolocations.map(item => (
-                <Card.Content key={item.geolocation._id}>
+                <Card.Content key={item.geolocation._id} extra>
                   {item.geolocation.name}:{" "}
                   {item.audience ? (
                     <span>

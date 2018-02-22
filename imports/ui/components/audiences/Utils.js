@@ -1,4 +1,5 @@
 export const getRatio = function(audience) {
+  if (!audience) return "";
   if (audience.total < 100) {
     return "Not enough data";
   }
@@ -16,6 +17,7 @@ export const getRatio = function(audience) {
 };
 
 export const getPercentage = function(audience) {
+  if (!audience) return "";
   if (audience.total < 100) {
     return "";
   }

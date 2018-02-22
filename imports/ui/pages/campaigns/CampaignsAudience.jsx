@@ -14,7 +14,15 @@ export default class CampaignsAudience extends React.Component {
     console.log("CampaignsAudience init", { props });
   }
   render() {
-    const { loading, campaign, accounts, facebookId, categoryId } = this.props;
+    const {
+      loading,
+      campaign,
+      geolocations,
+      accounts,
+      facebookId,
+      categoryId
+    } = this.props;
+    console.log(geolocations);
     let facebookAccount;
     if (!loading) {
       if (facebookId) {
