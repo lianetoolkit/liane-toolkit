@@ -25,7 +25,7 @@ export default class CampaignAccount extends React.Component {
   _onClickUpdate(e) {
     const { facebookId } = this.props;
     const action = e.target.name;
-    const campaignId = FlowRouter.getParam("_id");
+    const campaignId = FlowRouter.getParam("campaignId");
     Meteor.call(
       "campaigns.updateAccount",
       { facebookId, campaignId, action },

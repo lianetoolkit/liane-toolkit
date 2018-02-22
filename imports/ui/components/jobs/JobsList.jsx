@@ -61,9 +61,7 @@ export default class JobsList extends React.Component {
             {jobs.map(job => (
               <Table.Row key={job._id}>
                 <Table.Cell>
-                  <Header as="h4">
-                    <Icon name="tasks" /> {this._getJobName(job)}
-                  </Header>
+                  <Icon name="tasks" /> {this._getJobName(job)}
                 </Table.Cell>
                 <Table.Cell>
                   Last run {moment(job.updated).fromNow()}, next run{" "}

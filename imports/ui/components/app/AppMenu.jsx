@@ -185,9 +185,9 @@ export default class AppMenu extends React.Component {
           {this._getCampaignsMenu()}
           {currentCampaign ? (
             <Menu vertical inverted fluid>
-              <Menu.Item>
+              {/* <Menu.Item>
                 <Icon name="alarm" /> Actions
-              </Menu.Item>
+              </Menu.Item> */}
               <Menu.Item
                 name="campaignPeople"
                 active={currentRoute.indexOf("App.campaignPeople") === 0}

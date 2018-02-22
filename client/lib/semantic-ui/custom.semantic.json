@@ -63,7 +63,7 @@
     "duo": false,
     "fixed": false,
     "flat": false,
-    "github": true,
+    "github": false,
     "gmail": false,
     "instagram": false,
     "material": false,

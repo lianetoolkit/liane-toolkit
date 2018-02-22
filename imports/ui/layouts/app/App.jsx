@@ -30,6 +30,7 @@ import {
 } from "semantic-ui-react";
 
 if (!Meteor.isTest) {
+  // import 'semantic-ui-css/semantic.css';
   require("./App.less");
   require("/imports/ui/stylesheets/styles.less");
 }

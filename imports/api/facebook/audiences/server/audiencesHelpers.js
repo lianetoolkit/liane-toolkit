@@ -289,6 +289,15 @@ const FacebookAudiencesHelpers = {
         if (res) {
           return JSON.parse(res).data.users;
         } else {
+          const suspended = redisClient.getSync(
+            `adaccount:${adAccountId}:suspended`
+          );
+          if (suspended) {
+            throw new Meteor.Error(
+              "rate-limited",
+              "Ad Account temporarily suspended"
+            );
+          }
           let multiplier = 1;
           while (ready === false) {
             res = await _fb.api(`${adAccountId}/reachestimate`, {
@@ -308,7 +317,22 @@ const FacebookAudiencesHelpers = {
           return res.data.users;
         }
       } catch (error) {
-        throw new Meteor.Error(error);
+        if (error instanceof Meteor.Error) {
+          throw error;
+        } else {
+          if (error.response) {
+            const errorCode = error.response.error.code;
+            if (errorCode == 17) {
+              redisClient.setSync(
+                `adaccount:${adAccountId}:suspended`,
+                true,
+                "EX",
+                10 * 60 // 10 minutes
+              );
+            }
+          }
+          throw new Meteor.Error(error);
+        }
       }
     };
 

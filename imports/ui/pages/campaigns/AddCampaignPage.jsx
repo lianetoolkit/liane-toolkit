@@ -123,7 +123,7 @@ export default class AddCampaignPage extends React.Component {
                       />
                     </Form.Field>
                     <Divider />
-                    <Button type="submit" loading={isLoading}>
+                    <Button fluid primary type="submit" loading={isLoading}>
                       Submit
                     </Button>
                   </Form>
