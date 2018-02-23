@@ -8,6 +8,7 @@ import { Alerts } from "/imports/ui/utils/Alerts.js";
 import {
   Header,
   Menu,
+  Message,
   Accordion,
   Dropdown,
   Container,
@@ -175,7 +176,9 @@ export default class AppMenu extends React.Component {
   }
   render() {
     const { activeIndex } = this.state;
-    const { loading, currentUser, logout, currentCampaign } = this.props;
+    const { loading, currentUser, logout } = this.props;
+
+    const currentCampaign = this._getCurrentCampaign();
 
     const currentRoute = FlowRouter.current().route.name;
 
@@ -184,47 +187,54 @@ export default class AppMenu extends React.Component {
         <MenuWrapper>
           {this._getCampaignsMenu()}
           {currentCampaign ? (
-            <Menu vertical inverted fluid>
-              {/* <Menu.Item>
-                <Icon name="alarm" /> Actions
-              </Menu.Item> */}
-              <Menu.Item
-                name="campaignPeople"
-                active={currentRoute.indexOf("App.campaignPeople") === 0}
-                href={FlowRouter.path("App.campaignPeople", {
-                  campaignId: currentCampaign
-                })}
-              >
-                <Icon name="address book" /> People
-              </Menu.Item>
-              <Menu.Item
-                name="campaignAudience"
-                active={currentRoute.indexOf("App.campaignAudience") === 0}
-                href={FlowRouter.path("App.campaignAudience", {
-                  campaignId: currentCampaign
-                })}
-              >
-                <Icon name="star" /> Audience
-              </Menu.Item>
-              <Menu.Item
-                name="campaignEntries"
-                active={currentRoute.indexOf("App.campaignEntries") === 0}
-                href={FlowRouter.path("App.campaignEntries", {
-                  campaignId: currentCampaign
-                })}
-              >
-                <Icon name="comments" /> Facebook Posts
-              </Menu.Item>
-              <Menu.Item
-                name="campaignEntries"
-                active={currentRoute.indexOf("App.campaignLists") === 0}
-                href={FlowRouter.path("App.campaignLists", {
-                  campaignId: currentCampaign
-                })}
-              >
-                <Icon name="spy" /> Monitoring Lists
-              </Menu.Item>
-            </Menu>
+            <div>
+              {currentCampaign.status == "invalid_adaccount" ? (
+                <Message negative>
+                  Your campaign has an invalid ad account.
+                </Message>
+              ) : null}
+              <Menu vertical inverted fluid>
+                {/* <Menu.Item>
+                  <Icon name="alarm" /> Actions
+                </Menu.Item> */}
+                <Menu.Item
+                  name="campaignPeople"
+                  active={currentRoute.indexOf("App.campaignPeople") === 0}
+                  href={FlowRouter.path("App.campaignPeople", {
+                    campaignId: currentCampaign._id
+                  })}
+                >
+                  <Icon name="address book" /> People
+                </Menu.Item>
+                <Menu.Item
+                  name="campaignAudience"
+                  active={currentRoute.indexOf("App.campaignAudience") === 0}
+                  href={FlowRouter.path("App.campaignAudience", {
+                    campaignId: currentCampaign._id
+                  })}
+                >
+                  <Icon name="star" /> Audience
+                </Menu.Item>
+                <Menu.Item
+                  name="campaignEntries"
+                  active={currentRoute.indexOf("App.campaignEntries") === 0}
+                  href={FlowRouter.path("App.campaignEntries", {
+                    campaignId: currentCampaign._id
+                  })}
+                >
+                  <Icon name="comments" /> Facebook Posts
+                </Menu.Item>
+                <Menu.Item
+                  name="campaignEntries"
+                  active={currentRoute.indexOf("App.campaignLists") === 0}
+                  href={FlowRouter.path("App.campaignLists", {
+                    campaignId: currentCampaign._id
+                  })}
+                >
+                  <Icon name="spy" /> Monitoring Lists
+                </Menu.Item>
+              </Menu>
+            </div>
           ) : null}
         </MenuWrapper>
         <AdminWrapper>

@@ -35,7 +35,8 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
               accounts: 1,
               name: 1,
               description: 1,
-              contextId: 1
+              contextId: 1,
+              status: 1
             }
           }
         );

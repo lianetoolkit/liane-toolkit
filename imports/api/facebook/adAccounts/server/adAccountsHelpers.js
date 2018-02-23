@@ -1,6 +1,7 @@
 import { Promise } from "meteor/promise";
 import { Facebook, FacebookApiException } from "fb";
 import { AdAccounts } from "../adAccounts.js";
+import { UsersHelpers } from "/imports/api/users/server/usersHelpers";
 
 const options = {
   version: "v2.11",
@@ -11,8 +12,9 @@ const options = {
 const _fb = new Facebook(options);
 
 const AdAccountsHelpers = {
-  update({ adAccountId, token }) {
+  update({ adAccountId, userId, token }) {
     check(adAccountId, String);
+    check(userId, String);
     check(token, String);
     const response = Promise.await(
       _fb.api(adAccountId, {
@@ -20,6 +22,13 @@ const AdAccountsHelpers = {
         access_token: token
       })
     );
+    // const adminUsers = response.users.data.filter(user => {
+    //   return user.permissions.indexOf(1) !== -1;
+    // });
+    // const user = Meteor.users.findOne(userId);
+    // if (!adminUsers.find(u => user.services.facebook.id == u.id)) {
+    //   throw new Meteor.Error(401, "You are not an admin to this ad account.");
+    // }
     return AdAccounts.upsert(
       {
         _id: response.account_id
@@ -30,18 +39,45 @@ const AdAccountsHelpers = {
       }
     );
   },
+  removeUserByToken({ token, adAccountId }) {
+    check(token, String);
+    check(adAccountId, String);
+    if (adAccountId.indexOf("act_") === 0) {
+      adAccountId = adAccountId.replace("act_", "");
+    }
+    const user = UsersHelpers.getUserByToken({ token });
+    let adAccount = AdAccounts.findOne(adAccountId);
+    const users = adAccount.users.filter(
+      u => u.id !== user.services.facebook.id
+    );
+    return AdAccounts.update(
+      { _id: adAccount._id },
+      {
+        $set: {
+          users
+        }
+      }
+    );
+  },
   getUsers({ adAccountId }) {
     check(adAccountId, String);
     if (adAccountId.indexOf("act_") === 0) {
       adAccountId = adAccountId.replace("act_", "");
     }
     const adAccount = AdAccounts.findOne(adAccountId);
-    const ids = adAccount.users.map(user => user.id);
-    return Meteor.users
-      .find({
-        "services.facebook.id": { $in: ids }
-      })
-      .fetch();
+    const adminUsers = adAccount.users.filter(user => {
+      return user.permissions.indexOf(1) !== -1;
+    });
+    if (adminUsers.length) {
+      const ids = adminUsers.map(user => user.id);
+      return Meteor.users
+        .find({
+          "services.facebook.id": { $in: ids }
+        })
+        .fetch();
+    } else {
+      return [];
+    }
   }
 };
 

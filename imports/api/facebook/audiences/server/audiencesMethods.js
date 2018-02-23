@@ -59,11 +59,13 @@ export const accountAudienceGeolocationSummary = new ValidatedMethod({
         },
         { sort: { createdAt: -1 } }
       );
-      geolocationData.audience = {
-        estimate: audience.total,
-        total: audience.location_total
-      };
-      result.data.push(geolocationData);
+      if(audience) {
+        geolocationData.audience = {
+          estimate: audience.total,
+          total: audience.location_total
+        };
+        result.data.push(geolocationData);
+      }
     });
     return result;
   }

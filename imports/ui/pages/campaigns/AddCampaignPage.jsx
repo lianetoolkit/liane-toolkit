@@ -24,7 +24,6 @@ export default class AddCampaignPage extends React.Component {
     this._handleSubmit = this._handleSubmit.bind(this);
   }
   componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
     if (nextProps.contexts != this.props.contexts) {
       const contexts = nextProps.contexts.map(c => ({
         key: c._id,
@@ -60,6 +59,7 @@ export default class AddCampaignPage extends React.Component {
         (error, data) => {
           this.setState({ isLoading: false });
           if (error) {
+            console.log(error);
             Alerts.error(error);
           } else {
             Alerts.success("Campaign was successfully created");

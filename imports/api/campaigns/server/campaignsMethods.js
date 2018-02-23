@@ -42,7 +42,7 @@ export const campaignsCreate = new ValidatedMethod({
     const user = Meteor.users.findOne(userId);
     const token = user.services.facebook.accessToken;
 
-    AdAccountsHelpers.update({ adAccountId, token });
+    AdAccountsHelpers.update({ adAccountId, userId, token });
 
     campaignId = Campaigns.insert(insertDoc);
     return { result: campaignId };

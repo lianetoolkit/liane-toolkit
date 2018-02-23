@@ -41,7 +41,7 @@ const CampaignsHelpers = {
       jobData: {
         campaignId,
         facebookId: account.id,
-        accessToken: token.result,
+        accessToken: token.result
       }
     });
     JobsHelpers.addJob({
@@ -52,6 +52,13 @@ const CampaignsHelpers = {
       }
     });
     return;
+  },
+  suspendAdAccount({ campaignId }) {
+    check(campaignId, String);
+    Campaigns.update(
+      { _id: campaignId },
+      { $set: { adAccountId: null, status: "invalid_adaccount" } }
+    );
   }
 };
 

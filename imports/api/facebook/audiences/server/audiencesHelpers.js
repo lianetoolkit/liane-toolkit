@@ -2,7 +2,10 @@ import { Promise } from "meteor/promise";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
+import { AdAccounts } from "/imports/api/facebook/adAccounts/adAccounts.js";
 import { AdAccountsHelpers } from "/imports/api/facebook/adAccounts/server/adAccountsHelpers.js";
+import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
@@ -53,7 +56,8 @@ const FacebookAudiencesHelpers = {
     const adAccountUsers = AdAccountsHelpers.getUsers({ adAccountId });
 
     if (!adAccountUsers.length) {
-      throw new Meteor.Error("Ad account has no registered users on the app");
+      CampaignsHelpers.suspendAdAccount({ campaignId: campaign._id });
+      throw new Meteor.Error("Ad account has no admin users on the app");
     }
 
     const tokens = adAccountUsers.map(
@@ -65,7 +69,7 @@ const FacebookAudiencesHelpers = {
     );
 
     const fanCount = await this.getFanCount(campaignAccount.accessToken);
-    if(fanCount) {
+    if (fanCount) {
       FacebookAccounts.update(
         {
           facebookId: facebookAccountId
@@ -300,6 +304,52 @@ const FacebookAudiencesHelpers = {
     }
     return jobIds;
   },
+  errorHandle(error, payload) {
+    if (error instanceof Meteor.Error) {
+      throw error;
+    } else if (error.response) {
+      const errorCode = error.response.error.code;
+      switch (errorCode) {
+        case 17: // Ad account rate limite
+          redisClient.setSync(
+            `adaccount:${adAccountId}:suspended`,
+            true,
+            "EX",
+            10 * 60 // 10 minutes
+          );
+          break;
+        case 100: // Facebook random error (happened when user is no longer part of the adaccount)
+        case 273: // Token not admin or ad account does not exist (?)
+          CampaignsHelpers.suspendAdAccount({ campaignId: payload.campaignId });
+          AdAccountsHelpers.removeUserByToken({
+            token: payload.accessToken,
+            adAccountId: payload.adAccountId
+          });
+          break;
+      }
+    }
+    throw new Meteor.Error(error);
+  },
+  validateRequest({ campaignId, adAccountId, accessToken, facebookAccountId }) {
+    const campaign = Campaigns.findOne(campaignId);
+    const adAccount = AdAccounts.findOne(adAccountId);
+    const user = UsersHelpers.getUserByToken({ token: accessToken });
+    if (!campaign) {
+      throw new Meteor.Error("fatal", "Campaign does not exist");
+    }
+    if (!campaign.adAccountId) {
+      throw new Meteor.Error("fatal", "Campaign does not have an ad account");
+    }
+    if (!adAccount) {
+      throw new Meteor.Error("fatal", "Ad account does not exist");
+    }
+    if (campaign.adAccountId.replace("act_", "") !== adAccountId) {
+      throw new Meteor.Error("fatal", "Campaign ad account changed");
+    }
+    if (!adAccount.users.find(u => u.id == user.services.facebook.id)) {
+      throw new Meteor.Error("fatal", "User not part of this ad account");
+    }
+  },
   async fetchAndCreateSpecAudience({
     campaignId,
     adAccountId,
@@ -327,9 +377,22 @@ const FacebookAudiencesHelpers = {
     check(audienceCategoryId, String);
     check(spec, Object);
 
+    if (adAccountId.indexOf("act_") === 0) {
+      adAccountId = adAccountId.replace("act_", "");
+    }
+
+    const errorHandle = this.errorHandle;
+
     const accessToken = tokens[0];
 
     const fetchDate = moment().format("YYYY-MM-DD");
+
+    this.validateRequest({
+      campaignId,
+      adAccountId,
+      accessToken,
+      facebookAccountId
+    });
 
     spec["connections"] = [facebookAccountId];
 
@@ -361,7 +424,7 @@ const FacebookAudiencesHelpers = {
           }
           let multiplier = 1;
           while (ready === false) {
-            res = await _fb.api(`${adAccountId}/reachestimate`, {
+            res = await _fb.api(`act_${adAccountId}/reachestimate`, {
               targeting_spec: spec,
               access_token: accessToken
             });
@@ -378,22 +441,12 @@ const FacebookAudiencesHelpers = {
           return res.data.users;
         }
       } catch (error) {
-        if (error instanceof Meteor.Error) {
-          throw error;
-        } else {
-          if (error.response) {
-            const errorCode = error.response.error.code;
-            if (errorCode == 17) {
-              redisClient.setSync(
-                `adaccount:${adAccountId}:suspended`,
-                true,
-                "EX",
-                10 * 60 // 10 minutes
-              );
-            }
-          }
-          throw new Meteor.Error(error);
-        }
+        errorHandle(error, {
+          campaignId,
+          adAccountId,
+          facebookAccountId,
+          accessToken
+        });
       }
     };
 

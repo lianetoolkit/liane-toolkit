@@ -47,6 +47,10 @@ Campaigns.schema = new SimpleSchema({
     type: String,
     optional: true
   },
+  status: {
+    type: String,
+    optional: true
+  },
   "accounts.$": {
     type: Campaigns.accountsSchema
   },
