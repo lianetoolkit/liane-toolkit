@@ -322,6 +322,9 @@ const FacebookAudiencesHelpers = {
           break;
         case 100: // Facebook random error (happened when user is no longer part of the adaccount)
         case 273: // Token not admin or ad account does not exist (?)
+        case 272:
+        case 200:
+        case 2641:
           CampaignsHelpers.suspendAdAccount({ campaignId: payload.campaignId });
           AdAccountsHelpers.removeUserByToken({
             token: payload.accessToken,
