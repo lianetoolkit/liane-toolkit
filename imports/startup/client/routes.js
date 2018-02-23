@@ -22,6 +22,8 @@ import CampaignsListsContainer from "/imports/ui/containers/campaigns/CampaignsL
 /* Admin */
 import JobsPage from "/imports/ui/pages/jobs/JobsPage.jsx";
 
+import CampaignsContainer from "/imports/ui/containers/admin/CampaignsContainer.jsx";
+
 import ContextsPageContainer from "/imports/ui/containers/contexts/ContextsPageContainer.jsx";
 import EditContextsPageContainer from "/imports/ui/containers/contexts/EditContextsPageContainer.jsx";
 
@@ -271,6 +273,18 @@ appRoutes.route("/admin/audience-categories/edit/:audienceCategoryId?", {
       content: {
         component: EditAudienceCategoriesPageContainer,
         props: { audienceCategoryId: params.audienceCategoryId }
+      }
+    });
+  }
+});
+
+appRoutes.route("/admin/campaigns", {
+  name: "App.admin.campaigns",
+  action: function() {
+    _addTitle(`${APP_NAME} | Campaigns`);
+    return mount(AppContainer, {
+      content: {
+        component: CampaignsContainer
       }
     });
   }

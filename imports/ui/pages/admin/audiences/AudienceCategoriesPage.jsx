@@ -38,12 +38,12 @@ export default class AudienceCategoriesPage extends React.Component {
                       New Audience Category
                     </Button>
                   </Segment>
-                  <Table fixed>
+                  <Table>
                     <Table.Header>
                       <Table.Row>
                         <Table.HeaderCell>Title</Table.HeaderCell>
                         <Table.HeaderCell>Interests</Table.HeaderCell>
-                        <Table.HeaderCell>Actions</Table.HeaderCell>
+                        <Table.HeaderCell collapsing>Actions</Table.HeaderCell>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>

@@ -3,6 +3,7 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { CampaignsHelpers } from "./campaignsHelpers.js";
 import { FacebookAudiencesHelpers } from "/imports/api/facebook/audiences/server/audiencesHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
+import { Jobs } from "/imports/api/jobs/jobs.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { AdAccountsHelpers } from "/imports/api/facebook/adAccounts/server/adAccountsHelpers.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
@@ -144,5 +145,78 @@ export const updateAccount = new ValidatedMethod({
     }
 
     return;
+  }
+});
+
+export const refreshAccountJob = new ValidatedMethod({
+  name: "campaigns.refreshAccountJob",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    facebookAccountId: {
+      type: String
+    },
+    type: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, facebookAccountId, type }) {
+    logger.debug("campaigns.refreshAccountJob", {
+      campaignId,
+      facebookAccountId,
+      type
+    });
+
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    const account = _.findWhere(campaign.accounts, {
+      facebookId: facebookAccountId
+    });
+
+    let jobType, jobData;
+    switch (type) {
+      case "entries":
+        jobType = "entries.updateAccountEntries";
+        jobData = {
+          facebookId: facebookAccountId,
+          accessToken: account.accessToken,
+          campaignId: campaignId
+        };
+        break;
+      case "audiences":
+        jobType = "audiences.updateAccountAudience";
+        jobData = {
+          campaignId: campaign._id,
+          facebookAccountId: facebookAccountId
+        };
+        break;
+    }
+
+    const job = Jobs.findOne({
+      type: jobType,
+      data: jobData
+    });
+
+    if (job) {
+      if (job.status == "failed" || job.status == "cancelled") {
+        Jobs.getJob(job._id).restart();
+      } else if (job.status == "waiting") {
+        Jobs.getJob(job._id).ready({ time: Jobs.foreverDate });
+      }
+    } else {
+      JobsHelpers.addJob({
+        jobType,
+        jobData
+      });
+    }
   }
 });

@@ -38,11 +38,11 @@ export default class GeolocationsPage extends React.Component {
                       New Geolocation
                     </Button>
                   </Segment>
-                  <Table fixed>
+                  <Table>
                     <Table.Header>
                       <Table.Row>
                         <Table.HeaderCell>Name</Table.HeaderCell>
-                        <Table.HeaderCell>Actions</Table.HeaderCell>
+                        <Table.HeaderCell collapsing>Actions</Table.HeaderCell>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>

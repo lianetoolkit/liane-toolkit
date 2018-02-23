@@ -7,6 +7,46 @@ import { Jobs } from "/imports/api/jobs/jobs.js";
 
 import _ from "underscore";
 
+Meteor.publishComposite("campaigns.all", function() {
+  const currentUser = this.userId;
+  if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
+    return {
+      find: function() {
+        return Campaigns.find(
+          {},
+          {
+            sort: { createdAt: -1 }
+          }
+        );
+      },
+      children: [
+        {
+          find: function(campaign) {
+            return Jobs.find({
+              "data.campaignId": campaign._id,
+              type: {
+                $in: [
+                  "audiences.updateAccountAudience",
+                  "entries.updateAccountEntries"
+                ]
+              }
+            });
+          }
+        },
+        {
+          find: function(campaign) {
+            return FacebookAccounts.find({
+              facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
+            });
+          }
+        }
+      ]
+    };
+  } else {
+    return this.ready();
+  }
+});
+
 Meteor.publish("campaigns.byUser", function() {
   const currentUser = this.userId;
   if (currentUser) {
