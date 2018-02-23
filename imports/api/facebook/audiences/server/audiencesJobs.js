@@ -102,8 +102,7 @@ const AudiencesJobs = {
       const options = {
         retry: {
           retries: 10,
-          wait: 5 * 60 * 1000,
-          backoff: "exponential"
+          wait: 5 * 60 * 1000
         }
       };
       return options;
