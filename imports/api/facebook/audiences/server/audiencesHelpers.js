@@ -314,7 +314,7 @@ const FacebookAudiencesHelpers = {
       switch (errorCode) {
         case 17: // Ad account rate limite
           redisClient.setSync(
-            `adaccount:${adAccountId}:suspended`,
+            `adaccount:${payload.adAccountId}:suspended`,
             true,
             "EX",
             10 * 60 // 10 minutes
