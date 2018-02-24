@@ -1,4 +1,5 @@
 import { Facebook, FacebookApiException } from "fb";
+import simplifyGeojson, { simplify } from "simplify-geojson";
 import axios from "axios";
 
 const options = {
@@ -44,7 +45,7 @@ const GeolocationsHelpers = {
   getOSM({ osm_id, osm_type }) {
     const api = "http://nominatim.openstreetmap.org/reverse";
     try {
-      const res = Promise.await(
+      let res = Promise.await(
         axios.get(api, {
           params: {
             osm_type: this._parseOSMType(osm_type),
@@ -57,8 +58,18 @@ const GeolocationsHelpers = {
           }
         })
       );
+      console.log("BEFORE", JSON.stringify(res.data.geojson).length);
+      if (res.data.geojson && res.data.geojson.coordinates) {
+        res.data.geojson = simplifyGeojson(
+          { type: "Feature", geometry: res.data.geojson },
+          // res.data.geojson.coordinates,
+          0.01
+        );
+      }
+      console.log("AFTER", JSON.stringify(res.data.geojson).length);
       return res.data;
     } catch (error) {
+      console.log(error);
       throw new Meteor.Error(500, error.data);
     }
   },

@@ -45,6 +45,9 @@ export const accountAudienceGeolocationSummary = new ValidatedMethod({
       data: []
     };
 
+    if(context.mainGeolocationId)
+      result.mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
+
     const geolocations = Geolocations.find({
       _id: { $in: context.geolocations }
     }).fetch();

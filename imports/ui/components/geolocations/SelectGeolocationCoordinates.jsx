@@ -3,7 +3,6 @@ import { Form, Header, List } from "semantic-ui-react";
 import L from "leaflet";
 import { Map, TileLayer, Circle } from "react-leaflet";
 // import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
-import "leaflet/dist/leaflet.css";
 
 export default class SelectGeolocationCoordinates extends React.Component {
   constructor(props) {
