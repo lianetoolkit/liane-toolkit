@@ -468,6 +468,22 @@ const FacebookAudiencesHelpers = {
       _.omit(spec, "interests", "connections")
     );
 
+    const fanCount = async () => {
+      const redisKey = `audiences::fanCount::${facebookAccountId}`;
+      let fanCount = redisClient.getSync(redisKey);
+      if (!fanCount) {
+        const campaign = Campaigns.findOne(campaignId);
+        const campaignAccount = campaign.accounts.find(
+          c => c.facebookId == facebookAccountId
+        );
+        fanCount = await this.getFanCount(campaignAccount.accessToken);
+        redisClient.setSync(redisKey, fanCount, "EX", 10 * 60); // 10 minutes expiration
+      }
+      return fanCount;
+    };
+
+    result["fan_count"] = (await fanCount()) || null;
+
     return FacebookAudiences.upsert(
       {
         campaignId: campaignId,

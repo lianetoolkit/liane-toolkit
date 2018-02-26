@@ -102,9 +102,9 @@ export default class AudienceGeolocationSummary extends React.Component {
       zoom: map.getZoom()
     });
   }
-  _getPercentage(estimate) {
+  _getPercentage(estimate, total) {
     const { summary } = this.props;
-    const total = summary.facebookAccount.fanCount;
+    total = total || summary.facebookAccount.fanCount;
     let dif = Math.min(estimate / total, 0.99);
     return (dif * 100).toFixed(2) + "%";
   }
@@ -192,7 +192,8 @@ export default class AudienceGeolocationSummary extends React.Component {
       marker = L.marker(center);
       marker.icon = L.divIcon({
         html: `<span>${self._getPercentage(
-          feature.properties.estimate
+          feature.properties.estimate,
+          feature.properties.fanCount
         )}</span>`,
         iconSize: [100, 30],
         iconAnchor: [50, 15],
@@ -201,7 +202,8 @@ export default class AudienceGeolocationSummary extends React.Component {
       });
       marker.activeIcon = L.divIcon({
         html: `<span>${self._getPercentage(
-          feature.properties.estimate
+          feature.properties.estimate,
+          feature.properties.fanCount
         )}</span>`,
         iconSize: [100, 30],
         iconAnchor: [50, 15],
@@ -286,7 +288,10 @@ export default class AudienceGeolocationSummary extends React.Component {
                 <Card.Content textAlign="center">
                   <Statistic size="small">
                     <Statistic.Value>
-                      {this._getPercentage(item.audience.estimate)}
+                      {this._getPercentage(
+                        item.audience.estimate,
+                        item.audience.fanCount
+                      )}
                     </Statistic.Value>
                     <Statistic.Label>of your total audience</Statistic.Label>
                   </Statistic>

@@ -45,7 +45,7 @@ export const accountAudienceGeolocationSummary = new ValidatedMethod({
       data: []
     };
 
-    if(context.mainGeolocationId)
+    if (context.mainGeolocationId)
       result.mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
 
     const geolocations = Geolocations.find({
@@ -62,10 +62,10 @@ export const accountAudienceGeolocationSummary = new ValidatedMethod({
         },
         { sort: { createdAt: -1 } }
       );
-      if(audience) {
+      if (audience) {
         geolocationData.audience = {
           estimate: audience.total,
-          total: audience.location_total
+          fanCount: audience.fan_count
         };
         result.data.push(geolocationData);
       }

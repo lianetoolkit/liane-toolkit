@@ -36,6 +36,10 @@ FacebookAudiences.schema = new SimpleSchema({
     label: "YYYY-MM-DD",
     index: 1
   },
+  fan_count: {
+    type: Number,
+    optional: true
+  },
   createdAt: {
     type: Date,
     autoValue() {
