@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Card, Divider, Statistic, Header, Label } from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
@@ -10,6 +11,46 @@ import {
   LayerGroup,
   GeoJSON
 } from "react-leaflet";
+
+const Wrapper = styled.div`
+  &.zoom-0 {
+    .geolocation-icon {
+      font-size: 0.5em;
+    }
+  }
+  &.zoom-1 {
+    .geolocation-icon {
+      font-size: 0.8em;
+    }
+  }
+  &.zoom-2,
+  &.zoom-3 {
+    .geolocation-icon {
+      font-size: 1em;
+    }
+  }
+  &.zoom-4 {
+    .geolocation-icon {
+      font-size: 1.2em;
+    }
+  }
+  &.zoom-5 {
+    .geolocation-icon {
+      font-size: 1.5em;
+    }
+  }
+  .geolocation-icon {
+    text-align: center;
+    font-size: 1.8em;
+    color: #000;
+    span {
+      transition: all 0.2s linear;
+    }
+    &.active {
+      color: #fff;
+    }
+  }
+`;
 
 import L from "leaflet";
 // const imagePath = "/";
@@ -25,60 +66,198 @@ import L from "leaflet";
 // });
 
 export default class AudienceGeolocationSummary extends React.Component {
+  layers = [];
+  markers = [];
+  interactive = L.featureGroup();
+  constructor(props) {
+    super(props);
+    this.state = {
+      zoom: 0
+    };
+    this._pointToLayer = this._pointToLayer.bind(this);
+    this._onEachFeature = this._onEachFeature.bind(this);
+    this._handleZoom = this._handleZoom.bind(this);
+  }
+  _handleZoom() {
+    const map = this.refs.map.leafletElement;
+
+    this.setState({
+      zoom: map.getZoom()
+    });
+  }
   _getPercentage(estimate) {
     const { summary } = this.props;
     const total = summary.facebookAccount.fanCount;
     let dif = Math.min(estimate / total, 0.99);
     return (dif * 100).toFixed(2) + "%";
   }
-  _getGeoJSON() {
+  _geojson() {
     const { summary } = this.props;
-    console.log(summary);
     let geojson = {
       type: "FeatureCollection",
       features: []
     };
     if (summary.mainGeolocation && summary.mainGeolocation.geojson) {
-      geojson.features.push(summary.mainGeolocation.geojson);
+      geojson.features.push({
+        ...summary.mainGeolocation.geojson,
+        properties: {
+          main: true
+        }
+      });
     }
     summary.data.forEach(item => {
       if (item.geolocation.geojson) {
-        geojson.features.push(item.geolocation.geojson);
+        geojson.features.push({
+          ...item.geolocation.geojson,
+          properties: item.audience
+        });
       } else if (item.geolocation.center) {
         geojson.features.push({
           type: "Feature",
+          properties: {
+            ...item.audience,
+            radius: item.geolocation.center.radius
+          },
           geometry: {
             type: "Point",
-            coordinates: item.geolocation.center.center
+            coordinates: [
+              item.geolocation.center.center[1],
+              item.geolocation.center.center[0]
+            ]
           }
         });
       }
     });
-    console.log(geojson);
     return geojson;
   }
+  _style(feature) {
+    let style = {
+      color: "#000",
+      weight: 1
+    };
+    if (feature.properties && feature.properties.main) {
+      style = {
+        ...style,
+        fill: false
+      };
+    } else {
+      style = {
+        ...style,
+        fillOpacity: 0.1,
+        stroke: false
+      };
+    }
+    return style;
+  }
+  _pointToLayer(feature, latlng) {
+    const circle = L.circle(latlng, {
+      radius: feature.properties.radius * 1000,
+      stroke: false,
+      color: "#000"
+    });
+    return circle;
+  }
+  _onEachFeature(feature, layer) {
+    this.layers.push(layer);
+    const map = this.refs.map.leafletElement;
+    const self = this;
+    const group = L.featureGroup();
+    const interactive = !!feature.properties.estimate;
+    let center, marker;
+    if (layer._latlng) {
+      center = layer._latlng;
+    } else {
+      layer._map = map;
+      center = layer.getBounds().getCenter();
+      delete layer._map;
+    }
+    if (interactive) {
+      marker = L.marker(center);
+      marker.icon = L.divIcon({
+        html: `<span>${self._getPercentage(
+          feature.properties.estimate
+        )}</span>`,
+        iconSize: [100, 30],
+        iconAnchor: [50, 15],
+        popupAnchor: [0, -20],
+        className: "geolocation-icon"
+      });
+      marker.activeIcon = L.divIcon({
+        html: `<span>${self._getPercentage(
+          feature.properties.estimate
+        )}</span>`,
+        iconSize: [100, 30],
+        iconAnchor: [50, 15],
+        popupAnchor: [0, -20],
+        className: "geolocation-icon active"
+      });
+      marker.setIcon(marker.icon);
+      this.markers.push(marker);
+      marker.on("mouseover", ev => {
+        this.layers.forEach(layer => {
+          layer.setStyle({
+            fillOpacity: 0.1
+          });
+        });
+        this.markers.forEach(marker => {
+          marker.setIcon(marker.icon).setZIndexOffset(0);
+        });
+        layer.setStyle({
+          fillOpacity: 0.8
+        });
+        marker.setIcon(marker.activeIcon).setZIndexOffset(10);
+      });
+      marker.on("mouseout", ev => {
+        layer.setStyle({
+          fillOpacity: 0.2,
+          stroke: false
+        });
+        marker.setIcon(marker.icon).setZIndexOffset(0);
+      });
+      this.interactive.addLayer(group);
+    }
+    if (!this.interactive._map) {
+      map.addLayer(this.interactive);
+    }
+    group.addLayer(layer);
+    if (interactive) group.addLayer(marker);
+    map.addLayer(group);
+    const bounds = this.interactive.getBounds();
+    if(bounds.isValid()) {
+      console.log(this.interactive.getBounds());
+      map.fitBounds(this.interactive.getBounds());
+    }
+  }
   render() {
+    const { zoom } = this.state;
     const { loading, summary } = this.props;
     if (loading) {
       return <Loading />;
     } else {
       return (
-        <div>
+        <Wrapper className={`zoom-${zoom}`}>
           <Map
+            ref="map"
+            onZoomStart={this._handleZoom}
+            onZoomEnd={this._handleZoom}
             center={[0, 0]}
             zoom={2}
             style={{
               width: "100%",
-              height: "600px"
+              height: "400px"
             }}
           >
             <TileLayer
+              opacity={0.5}
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
             />
-            {summary.mainGeolocation && summary.mainGeolocation.geojson ? (
-              <GeoJSON data={this._getGeoJSON()} />
-            ) : null}
+            <GeoJSON
+              data={this._geojson()}
+              style={this._style}
+              pointToLayer={this._pointToLayer}
+              onEachFeature={this._onEachFeature}
+            />
           </Map>
           <Divider />
           <Card.Group>
@@ -98,7 +277,7 @@ export default class AudienceGeolocationSummary extends React.Component {
               </Card>
             ))}
           </Card.Group>
-        </div>
+        </Wrapper>
       );
       return <p>Teste</p>;
     }
