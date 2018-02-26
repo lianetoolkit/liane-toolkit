@@ -243,7 +243,7 @@ const FacebookAudiencesHelpers = {
     let jobIds = [];
 
     // Main geolocation
-    if(context.mainGeolocationId) {
+    if (context.mainGeolocationId) {
       const mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
       if (
         (!mainGeolocation.type || mainGeolocation.type == "location") &&
@@ -418,13 +418,17 @@ const FacebookAudiencesHelpers = {
         if (res) {
           return JSON.parse(res).data.users;
         } else {
-          const suspended = redisClient.getSync(
+          let suspended = redisClient.getSync(
             `adaccount:${adAccountId}:suspended`
           );
-          if (suspended) {
-            throw new Meteor.Error(
-              "rate-limited",
-              "Ad Account temporarily suspended"
+          while (suspended) {
+            logger.debug("Ad account rate limited, sleeping for 20 seconds", {
+              campaignId,
+              adAccountId
+            });
+            await sleep(20 * 1000); // 10 seconds
+            suspended = redisClient.getSync(
+              `adaccount:${adAccountId}:suspended`
             );
           }
           let multiplier = 1;
