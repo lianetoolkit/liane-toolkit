@@ -95,7 +95,7 @@ const AudiencesJobs = {
       }
     },
     workerOptions: {
-      concurrency: 1,
+      concurrency: 5,
       pollInterval: 2500
     },
     jobOptions(job) {
