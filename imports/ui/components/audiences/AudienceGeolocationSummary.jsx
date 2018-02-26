@@ -66,6 +66,7 @@ import L from "leaflet";
 // });
 
 export default class AudienceGeolocationSummary extends React.Component {
+  features = [];
   layers = [];
   markers = [];
   interactive = L.featureGroup();
@@ -77,6 +78,22 @@ export default class AudienceGeolocationSummary extends React.Component {
     this._pointToLayer = this._pointToLayer.bind(this);
     this._onEachFeature = this._onEachFeature.bind(this);
     this._handleZoom = this._handleZoom.bind(this);
+  }
+  componentWillReceiveProps(nextProps) {
+    const { facebookAccountId } = this.props;
+    if (nextProps.facebookAccountId !== facebookAccountId) {
+      this._resetMap();
+    }
+  }
+  _resetMap() {
+    const map = this.refs.map.leafletElement;
+    this.features.forEach(feature => {
+      map.removeLayer(feature);
+    });
+    this.features = [];
+    this.layers = [];
+    this.markers = [];
+    this.interactive = L.featureGroup();
   }
   _handleZoom() {
     const map = this.refs.map.leafletElement;
@@ -221,10 +238,10 @@ export default class AudienceGeolocationSummary extends React.Component {
     }
     group.addLayer(layer);
     if (interactive) group.addLayer(marker);
+    this.features.push(group);
     map.addLayer(group);
     const bounds = this.interactive.getBounds();
-    if(bounds.isValid()) {
-      console.log(this.interactive.getBounds());
+    if (bounds.isValid()) {
       map.fitBounds(this.interactive.getBounds());
     }
   }
