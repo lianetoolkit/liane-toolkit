@@ -262,6 +262,7 @@ export default class AudienceGeolocationSummary extends React.Component {
             onZoomEnd={this._handleZoom}
             center={[0, 0]}
             zoom={2}
+            scrollWheelZoom={false}
             style={{
               width: "100%",
               height: "400px"
