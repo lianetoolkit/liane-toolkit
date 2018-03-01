@@ -19,6 +19,8 @@ import CampaignsAudienceContainer from "/imports/ui/containers/campaigns/Campaig
 import CampaignsEntriesContainer from "/imports/ui/containers/campaigns/CampaignsEntriesContainer.jsx";
 import CampaignsListsContainer from "/imports/ui/containers/campaigns/CampaignsListsContainer.jsx";
 
+import AdsCreateContainer from "/imports/ui/containers/ads/AdsCreateContainer.jsx";
+
 /* Admin */
 import JobsPage from "/imports/ui/pages/jobs/JobsPage.jsx";
 
@@ -219,6 +221,23 @@ appRoutes.route("/campaign/:campaignId/account/:facebookId", {
         props: { campaignId: params.campaignId, facebookId: params.facebookId }
       }
     });
+  }
+});
+
+appRoutes.route("/campaign/:campaignId/ads/create/:facebookAccountId", {
+  name: "App.campaignAds.create",
+  action: function(params, queryParams) {
+    _addTitle(`${APP_NAME} | Campaign`);
+    return mount(AppContainer, {
+      content: {
+        component: AdsCreateContainer,
+        props: {
+          audienceCategoryId: queryParams.category,
+          campaignId: params.campaignId,
+          facebookAccountId: params.facebookAccountId
+        }
+      }
+    })
   }
 });
 

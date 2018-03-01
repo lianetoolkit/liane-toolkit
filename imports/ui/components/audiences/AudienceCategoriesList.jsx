@@ -1,6 +1,6 @@
 import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
-import { Card, Header, Label } from "semantic-ui-react";
+import { Card, Header, Label, Button } from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
 
 export default class AudienceCategoriesList extends React.Component {
@@ -32,7 +32,9 @@ export default class AudienceCategoriesList extends React.Component {
               {item.audience ? (
                 <Card.Content textAlign="center">
                   <Header size="large">
-                    <strong>{AudienceUtils.getPercentage(item.audience)}</strong>{" "}
+                    <strong>
+                      {AudienceUtils.getPercentage(item.audience)}
+                    </strong>{" "}
                     <Label size="small">
                       {AudienceUtils.getRatio(item.audience)}
                     </Label>
@@ -56,6 +58,25 @@ export default class AudienceCategoriesList extends React.Component {
                   )}
                 </Card.Content>
               ))}
+              <Card.Content>
+                <Button
+                  as="a"
+                  basic
+                  fluid
+                  attached
+                  size="tiny"
+                  href={FlowRouter.path(
+                    "App.campaignAds.create",
+                    {
+                      campaignId,
+                      facebookAccountId
+                    },
+                    { category: item.category._id }
+                  )}
+                >
+                  Place ad
+                </Button>
+              </Card.Content>
             </Card>
           ))}
         </Card.Group>

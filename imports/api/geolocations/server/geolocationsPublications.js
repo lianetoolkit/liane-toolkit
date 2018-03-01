@@ -28,7 +28,7 @@ Meteor.publish("geolocations.byCampaign", function({ campaignId }) {
     const context = Contexts.findOne(campaign.contextId);
     return Geolocations.find(
       {
-        _id: { $in: context.geolocations }
+        _id: { $in: [...context.geolocations, context.mainGeolocationId] }
       },
       {
         fields: {

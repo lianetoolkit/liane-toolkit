@@ -7,6 +7,54 @@ import { AudienceCategories } from "/imports/api/audienceCategories/audienceCate
 import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 
+export const accountAudienceItem = new ValidatedMethod({
+  name: "audiences.accountAudienceItem",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    audienceCategoryId: {
+      type: String
+    },
+    facebookAccountId: {
+      type: String
+    },
+    geolocationId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, audienceCategoryId, facebookAccountId, geolocationId }) {
+    logger.debug("audiences.accountAudienceItem", {
+      campaignId,
+      facebookAccountId,
+      geolocationId
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!_.findWhere(campaign.users, { userId })) {
+      throw new Meteor.Error(401, "You are not part of this campaign");
+    }
+
+    return FacebookAudiences.findOne(
+      {
+        campaignId,
+        audienceCategoryId,
+        facebookAccountId,
+        geolocationId
+      },
+      {
+        sort: { createdAt: -1 }
+      }
+    );
+  }
+});
+
 export const accountAudienceGeolocationSummary = new ValidatedMethod({
   name: "audiences.accountGeolocationSummary",
   validate: new SimpleSchema({
