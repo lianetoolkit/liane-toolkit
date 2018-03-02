@@ -229,7 +229,7 @@ export default class AppMenu extends React.Component {
                 >
                   <Icon name="comments" /> Facebook Posts
                 </Menu.Item>
-                <Menu.Item
+                {/* <Menu.Item
                   name="campaignEntries"
                   active={currentRoute.indexOf("App.campaignLists") === 0}
                   href={FlowRouter.path("App.campaignLists", {
@@ -237,7 +237,7 @@ export default class AppMenu extends React.Component {
                   })}
                 >
                   <Icon name="spy" /> Monitoring Lists
-                </Menu.Item>
+                </Menu.Item> */}
               </Menu>
             </div>
           ) : null}
