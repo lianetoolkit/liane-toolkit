@@ -8,4 +8,10 @@ export default styled.div`
   flex-direction: row;
   width: 100%;
   height: 100%;
+  table {
+    td {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+  }
 `;

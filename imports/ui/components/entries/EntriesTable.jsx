@@ -26,13 +26,15 @@ export default class PeopleTable extends React.Component {
             render: entry => {
               if(entry.message) {
                 return (
-                  <span>
-                    {entry.message.split("\n").map((item, key) => (
-                      <span key={key}>
-                        {item} <br />
-                      </span>
-                    ))}
-                  </span>
+                  <div style={{"max-width": "400px"}}>
+                    <span>
+                      {entry.message.split("\n").map((item, key) => (
+                        <span key={key}>
+                          {item} <br />
+                        </span>
+                      ))}
+                    </span>
+                  </div>
                 );
               }
               return null;
