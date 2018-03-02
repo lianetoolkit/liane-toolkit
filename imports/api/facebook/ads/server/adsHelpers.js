@@ -126,13 +126,8 @@ const AdsHelpers = {
       account_id: facebookAccountId,
       targeting,
       name,
-      // billing_event: billingEvent,
-      bid_amount: 2,
-      optimization_goals: "IMPRESSIONS",
       ...adConfig
     };
-
-    console.log(config);
 
     try {
       return await _fb.api(`act_${adAccountId}/adsets`, "post", config);

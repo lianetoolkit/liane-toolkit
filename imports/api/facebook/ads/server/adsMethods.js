@@ -99,8 +99,6 @@ export const createAd = new ValidatedMethod({
       adConfig
     });
 
-    console.log(ad);
-
     return ad;
   }
 });
