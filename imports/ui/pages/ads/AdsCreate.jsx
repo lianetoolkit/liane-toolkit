@@ -29,11 +29,11 @@ const initialFields = {
 };
 
 const billingEvents = {
-  APP_INSTALLS: "Pay when people install your app",
+  // APP_INSTALLS: "Pay when people install your app",
   // CLICKS: "Pay when people click anywhere in the ad", // UNAVAILABLE
   IMPRESSIONS: "Pay when the ads are shown to people",
   LINK_CLICKS: "Pay when people click on the link of the ad",
-  OFFER_CLAIMS: "Pay when people claim the offer",
+  // OFFER_CLAIMS: "Pay when people claim the offer",
   PAGE_LIKES: "Pay when people like your page",
   POST_ENGAGEMENT: "Pay when people engage with your post"
 };
