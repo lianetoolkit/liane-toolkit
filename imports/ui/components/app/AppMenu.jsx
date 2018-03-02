@@ -85,8 +85,10 @@ export default class AppMenu extends React.Component {
   _getUserInfo(currentUser) {
     if (isFbLogged(currentUser)) {
       return currentUser.services.facebook.name;
-    } else {
+    } else if(currentUser.emails) {
       return currentUser.emails[0].address;
+    } else {
+      return "";
     }
   }
   _getCampaignsMenu() {

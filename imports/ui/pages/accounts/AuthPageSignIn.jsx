@@ -29,7 +29,33 @@ export default class SignInPage extends React.Component {
     this._handleChange = this._handleChange.bind(this);
   }
   _handleChange = (e, { name, value }) => this.setState({ [name]: value });
-
+  _facebookLogin(event) {
+    event.preventDefault();
+    Meteor.loginWithFacebook(
+      {
+        requestPermissions: [
+          "user_friends",
+          "public_profile",
+          "email",
+          "manage_pages",
+          "pages_show_list",
+          "ads_management",
+          "ads_read"
+        ]
+      },
+      err => {
+        if (err) {
+          console.log(err);
+        } else {
+          Meteor.call("users.exchangeFBToken", (err, data) => {
+            if (err) {
+              console.log(err);
+            }
+          });
+        }
+      }
+    );
+  }
   pathFor(pathName) {
     return FlowRouter.path(pathName);
   }
@@ -104,6 +130,10 @@ export default class SignInPage extends React.Component {
           />
           <Button fluid primary onClick={this._onSubmit}>
             {i18n.__("pages.authPageJoin.signIn")}
+          </Button>
+          <Divider />
+          <Button fluid color="facebook" onClick={this._facebookLogin}>
+            <Icon name="facebook" /> Login with Facebook
           </Button>
           <Divider />
           <div className="signIn-help">
