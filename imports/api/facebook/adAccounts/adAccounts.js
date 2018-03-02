@@ -10,6 +10,10 @@ AdAccounts.schema = new SimpleSchema({
     type: Object,
     blackbox: true
   },
+  currency: {
+    type: String,
+    optional: true
+  },
   createdAt: {
     type: Date,
     autoValue() {

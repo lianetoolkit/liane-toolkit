@@ -25,6 +25,9 @@ import "/imports/api/facebook/people/server/peoplePublications.js";
 import "/imports/api/facebook/audiences/server/audiencesMethods.js";
 import "/imports/api/facebook/audiences/server/audiencesPublications.js";
 
+// ad accounts
+import "/imports/api/facebook/adAccounts/server/adAccountsPublications.js";
+
 // ads
 import "/imports/api/facebook/ads/server/adsMethods.js";
 

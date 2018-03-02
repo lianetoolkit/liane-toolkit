@@ -1,6 +1,6 @@
 import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
-import { Card, Header, Label, Button } from "semantic-ui-react";
+import { Card, Header, Label, Button, Icon } from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
 
 export default class AudienceCategoriesList extends React.Component {
@@ -65,6 +65,7 @@ export default class AudienceCategoriesList extends React.Component {
                   fluid
                   attached
                   size="tiny"
+                  icon
                   href={FlowRouter.path(
                     "App.campaignAds.create",
                     {
@@ -74,7 +75,7 @@ export default class AudienceCategoriesList extends React.Component {
                     { category: item.category._id }
                   )}
                 >
-                  Place ad
+                  <Icon name="facebook" /> Create adset
                 </Button>
               </Card.Content>
             </Card>

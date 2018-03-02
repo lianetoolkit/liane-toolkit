@@ -68,14 +68,13 @@ const AdsHelpers = {
     }
   },
   async createAd({
-    adCampaign,
     name,
     campaignId,
     facebookAccountId,
     audienceCategoryId,
     geolocationId,
     useConnection,
-    billingEvent
+    adConfig
   }) {
     const campaign = Campaigns.findOne(campaignId);
     const category = AudienceCategories.findOne(audienceCategoryId);
@@ -91,6 +90,15 @@ const AdsHelpers = {
 
     if (!adAccountId) {
       throw new Meteor.Error("Campaign doesnt have an ad account");
+    }
+
+    if (
+      !adConfig.billing_event ||
+      !adConfig.bid_amount ||
+      !adConfig.optimization_goals ||
+      !adConfig.daily_budget
+    ) {
+      throw new Meteor.Error("All fields are required.");
     }
 
     const adAccountUsers = AdAccountsHelpers.getUsers({ adAccountId });
@@ -115,18 +123,27 @@ const AdsHelpers = {
 
     let config = {
       access_token: tokens[0],
-      campaign_id: adCampaign,
       account_id: facebookAccountId,
-      billing_event: billingEvent,
-      bid_amount: 2,
-      optimization_goals: "PAGE_ENGAGEMENT",
       targeting,
-      name
+      name,
+      // billing_event: billingEvent,
+      bid_amount: 2,
+      optimization_goals: "IMPRESSIONS",
+      ...adConfig
     };
 
     console.log(config);
 
-    return await _fb.api(`act_${adAccountId}/adsets`, "post", config);
+    try {
+      return await _fb.api(`act_${adAccountId}/adsets`, "post", config);
+    } catch (e) {
+      const error = e.response.error;
+      throw new Meteor.Error(
+        error.error_user_title,
+        error.error_user_msg,
+        error
+      );
+    }
   }
 };
 

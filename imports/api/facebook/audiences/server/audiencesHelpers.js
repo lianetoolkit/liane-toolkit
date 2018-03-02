@@ -68,6 +68,9 @@ const FacebookAudiencesHelpers = {
       c => c.facebookId == facebookAccountId
     );
 
+    // Update adAccount data
+    AdAccountsHelpers.update({ adAccountId, token: tokens[0] });
+
     const fanCount = await this.getFanCount(campaignAccount.accessToken);
     if (fanCount) {
       FacebookAccounts.update(

@@ -12,30 +12,22 @@ const options = {
 const _fb = new Facebook(options);
 
 const AdAccountsHelpers = {
-  update({ adAccountId, userId, token }) {
+  update({ adAccountId, token }) {
     check(adAccountId, String);
-    check(userId, String);
     check(token, String);
     const response = Promise.await(
       _fb.api(adAccountId, {
-        fields: ["users", "account_id"],
+        fields: ["users", "account_id", "currency"],
         access_token: token
       })
     );
-    // const adminUsers = response.users.data.filter(user => {
-    //   return user.permissions.indexOf(1) !== -1;
-    // });
-    // const user = Meteor.users.findOne(userId);
-    // if (!adminUsers.find(u => user.services.facebook.id == u.id)) {
-    //   throw new Meteor.Error(401, "You are not an admin to this ad account.");
-    // }
     return AdAccounts.upsert(
       {
         _id: response.account_id
       },
       {
         $setOnInsert: { _id: response.account_id },
-        $set: { users: response.users.data }
+        $set: { users: response.users.data, currency: response.currency }
       }
     );
   },

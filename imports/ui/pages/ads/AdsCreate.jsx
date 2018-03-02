@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import {
+  Divider,
   Form,
   Grid,
   Button,
@@ -13,11 +14,18 @@ import {
   Select,
   Message
 } from "semantic-ui-react";
+import SimpleCurrencyInput from "react-simple-currency";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import _ from "underscore";
 
 const initialFields = {
-  useConnection: true
+  useConnection: true,
+  adConfig: {
+    billing_event: "IMPRESSIONS",
+    optimization_goals: "IMPRESSIONS",
+    bid_amount: 2,
+    daily_budget: 100
+  }
 };
 
 const billingEvents = {
@@ -73,7 +81,6 @@ export default class AdsCreate extends React.Component {
   componentDidMount() {
     const { campaignId } = this.props;
     Meteor.call("ads.getAdCampaigns", { campaignId }, (error, result) => {
-      console.log(result);
       this.setState({
         adCampaigns: result
       });
@@ -103,10 +110,23 @@ export default class AdsCreate extends React.Component {
       );
     }
   }
-  _handleChange = (e, { name, value }) =>
-    this.setState({
-      fields: Object.assign({}, this.state.fields, { [name]: value })
-    });
+  _handleChange = (e, { name, value }) => {
+    if (name.indexOf("adConfig.") === 0) {
+      this.setState({
+        fields: {
+          ...this.state.fields,
+          adConfig: {
+            ...this.state.fields.adConfig,
+            [name.split(".")[1]]: value
+          }
+        }
+      });
+    } else {
+      this.setState({
+        fields: Object.assign({}, this.state.fields, { [name]: value })
+      });
+    }
+  };
   _handleCheckbox = (e, { name, value }) => {
     const checked = this.state.fields[name];
     this.setState({
@@ -126,13 +146,18 @@ export default class AdsCreate extends React.Component {
       facebookAccountId,
       audienceCategoryId
     };
-    console.log(data);
     Meteor.call("ads.create", data, error => {
       this.setState({ isLoading: false });
       if (error) {
-        Alerts.error(error);
+        Alerts.error(error.reason);
       } else {
-        Alerts.success("Ad created successfully");
+        Alerts.success("Adset created successfully. Access your Facebook Business Manager to create and manage your ads.");
+        {
+          FlowRouter.go("App.campaignAudience", {
+            campaignId,
+            facebookId: facebookAccountId
+          });
+        }
       }
     });
   }
@@ -169,16 +194,27 @@ export default class AdsCreate extends React.Component {
     }
     return options;
   }
+  _getOptGoalsOptions() {
+    let options = [];
+    for (const key in optimizationGoals) {
+      options.push({
+        key: key,
+        value: key,
+        text: optimizationGoals[key]
+      });
+    }
+    return options;
+  }
   render() {
     const {
       loading,
+      adAccount,
       audienceCategory,
       campaignId,
       facebookAccountId,
       geolocations
     } = this.props;
     const { estimate, adCampaigns, fields, isLoading } = this.state;
-    console.log(geolocations);
     return (
       <div>
         <PageHeader
@@ -188,7 +224,7 @@ export default class AdsCreate extends React.Component {
             facebookId: facebookAccountId
           })}
           subTitle={
-            !loading ? `Create ad targeting ${audienceCategory.title}` : ""
+            !loading ? `Create adset targeting ${audienceCategory.title}` : ""
           }
         />
         <section className="content">
@@ -202,8 +238,8 @@ export default class AdsCreate extends React.Component {
                     {adCampaigns.length ? (
                       <Form.Field
                         control={Select}
-                        name="adCampaign"
-                        label="Ad campaign"
+                        name="adConfig.campaign_id"
+                        label="Adset campaign"
                         placeholder="Select the ad campaign for this adset"
                         options={this._getAdCampaignsOptions()}
                         onChange={this._handleChange}
@@ -212,12 +248,14 @@ export default class AdsCreate extends React.Component {
                     <Form.Field
                       control={Input}
                       size="big"
-                      placeholder="Name"
+                      label="Name"
+                      placeholder="Name your adset"
                       name="name"
                       loading={isLoading}
                       value={fields.name}
                       onChange={this._handleChange}
                     />
+                    <Divider />
                     <Form.Field>
                       <Form.Field label="Select the location target:" />
                       {geolocations.map(geolocation => (
@@ -233,24 +271,54 @@ export default class AdsCreate extends React.Component {
                         />
                       ))}
                     </Form.Field>
+                    <Divider />
                     <Form.Field
                       control={Checkbox}
                       checked={fields.useConnection}
                       onChange={this._handleCheckbox}
                       name="useConnection"
-                      label="Target to your facebook page"
+                      label="Target only people who likes your page"
+                    />
+                    <Divider />
+                    <Form.Field
+                      control={Select}
+                      name="adConfig.optimization_goals"
+                      label="Optimization goals"
+                      placeholder="Select the optimization goals for this adset"
+                      options={this._getOptGoalsOptions()}
+                      onChange={this._handleChange}
+                      value={fields.adConfig.optimization_goals}
                     />
                     <Form.Field
                       control={Select}
-                      name="billingEvent"
+                      name="adConfig.billing_event"
                       label="Billing event"
                       placeholder="Select the billing event for this adset"
                       options={this._getBillingOptions()}
                       onChange={this._handleChange}
+                      value={fields.adConfig.billing_event}
+                    />
+                    <Divider />
+                    <Form.Field
+                      control={SimpleCurrencyInput}
+                      name="adConfig.bid_amount"
+                      label="Bid amount"
+                      unit={adAccount.currency}
+                      onChange={this._handleChange}
+                      value={fields.adConfig.bid_amount}
+                    />
+                    <Form.Field
+                      control={SimpleCurrencyInput}
+                      name="adConfig.daily_budget"
+                      label="Daily budget"
+                      unit={adAccount.currency}
+                      onChange={this._handleChange}
+                      value={fields.adConfig.daily_budget}
                     />
                     {estimate ? (
                       <Message>
-                        The estimate reach for this ad is {this._getEstimate()}
+                        The estimate reach for this ad is {this._getEstimate()}{" "}
+                        people
                       </Message>
                     ) : null}
                     <Button primary>

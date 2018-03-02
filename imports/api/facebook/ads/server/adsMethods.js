@@ -35,9 +35,6 @@ export const getAdCampaigns = new ValidatedMethod({
 export const createAd = new ValidatedMethod({
   name: "ads.create",
   validate: new SimpleSchema({
-    adCampaign: {
-      type: String
-    },
     name: {
       type: String,
       optional: true
@@ -57,29 +54,28 @@ export const createAd = new ValidatedMethod({
     useConnection: {
       type: Boolean
     },
-    billingEvent: {
-      type: String
+    adConfig: {
+      type: Object,
+      blackbox: true
     }
   }).validator(),
   run({
-    adCampaign,
     name,
     campaignId,
     facebookAccountId,
     audienceCategoryId,
     geolocationId,
     useConnection,
-    billingEvent
+    adConfig
   }) {
     logger.debug("ads.create called", {
-      adCampaign,
       name,
       campaignId,
       facebookAccountId,
       audienceCategoryId,
       geolocationId,
       useConnection,
-      billingEvent
+      adConfig
     });
 
     const userId = Meteor.userId();
@@ -94,14 +90,13 @@ export const createAd = new ValidatedMethod({
     }
 
     const ad = AdsHelpers.createAd({
-      adCampaign,
       name,
       campaignId,
       facebookAccountId,
       audienceCategoryId,
       geolocationId,
       useConnection,
-      billingEvent
+      adConfig
     });
 
     console.log(ad);
