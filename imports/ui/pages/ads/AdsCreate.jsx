@@ -39,20 +39,20 @@ const billingEvents = {
 };
 
 const optimizationGoals = {
-  APP_INSTALLS: "Will optimize for people more likely to install your app.",
-  AD_RECALL_LIFT:
-    "Optimize for people more likely to remember seeing your ads. You cannot set bid_amount, and is_autobid must be true if this goal is used.",
-  ENGAGED_USERS:
-    "Will optimize for people more likely to take a particular action in your app.",
-  EVENT_RESPONSES: "Will optimize for people more likely to attend your event.",
+  // APP_INSTALLS: "Will optimize for people more likely to install your app.",
+  // AD_RECALL_LIFT:
+  //   "Optimize for people more likely to remember seeing your ads. You cannot set bid_amount, and is_autobid must be true if this goal is used.",
+  // ENGAGED_USERS:
+  //   "Will optimize for people more likely to take a particular action in your app.",
+  // EVENT_RESPONSES: "Will optimize for people more likely to attend your event.",
   IMPRESSIONS: "Will show the ads as many times as possible.",
-  LEAD_GENERATION:
-    "Will optimize for people more likely to fill out a lead generation form.",
+  // LEAD_GENERATION:
+  //   "Will optimize for people more likely to fill out a lead generation form.",
   LINK_CLICKS:
     "Will optimize for people more likely to click in the link of the ad.",
-  OFFER_CLAIMS: "Will optimize for people more likely to claim the offer.",
-  OFFSITE_CONVERSIONS:
-    "Will optimize for people more likely to make a conversion in the site",
+  // OFFER_CLAIMS: "Will optimize for people more likely to claim the offer.",
+  // OFFSITE_CONVERSIONS:
+  //   "Will optimize for people more likely to make a conversion in the site",
   PAGE_ENGAGEMENT:
     "Will optimize for people more likely to engage with your page.",
   PAGE_LIKES: "Will optimize for people more likely to like your page.",
