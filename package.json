@@ -23,6 +23,7 @@
     "react-dom": "^15.6.1",
     "react-leaflet": "^1.8.1",
     "react-mounter": "^1.2.0",
+    "react-simple-currency": "^1.0.16",
     "react-spinner": "^0.2.7",
     "recharts": "^1.0.0-beta.10",
     "redis": "^2.8.0",
