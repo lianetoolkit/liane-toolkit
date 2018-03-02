@@ -86,35 +86,6 @@ export default class CampaignAccount extends React.Component {
             />
           </Tab.Pane>
         )
-      },
-      {
-        menuItem: { key: "audience", icon: "users", content: "Audience" },
-        render: () => (
-          <Tab.Pane>
-            {" "}
-            <Segment basic clearing>
-              <Button
-                onClick={this._onClickUpdate}
-                floated="right"
-                name="audience"
-              >
-                Update
-              </Button>
-            </Segment>
-            {/* <AudiencesChartsContainer
-              campaignId={campaignId}
-              contextId={contextId}
-              facebookAccountId={facebookId}
-            /> */}
-            <AudiencesIndexTable
-              selector={{
-                facebookAccountId: facebookId,
-                campaignId: campaignId
-              }}
-              hideHeader={true}
-            />
-          </Tab.Pane>
-        )
       }
     ];
     return (

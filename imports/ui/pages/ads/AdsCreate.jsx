@@ -224,7 +224,7 @@ export default class AdsCreate extends React.Component {
             facebookId: facebookAccountId
           })}
           subTitle={
-            !loading ? `Create adset targeting ${audienceCategory.title}` : ""
+            !loading ? `Create an adset targeting ${audienceCategory.title}` : ""
           }
         />
         <section className="content">

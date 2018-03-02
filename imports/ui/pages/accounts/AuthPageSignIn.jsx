@@ -107,13 +107,13 @@ export default class SignInPage extends React.Component {
           </Button>
           <Divider />
           <div className="signIn-help">
-            {i18n.__("pages.authPageSignIn.needAccount")} {" "}
+            {i18n.__("pages.authPageSignIn.needAccount")}{" "}
             <a href={this.pathFor("Accounts.join")} className="accounts-join">
               {i18n.__("pages.authPageJoin.joinNow")}
             </a>
           </div>
           <div className="signIn-help">
-            {i18n.__("pages.authPageSignIn.forgotPassword")} {" "}
+            {i18n.__("pages.authPageSignIn.forgotPassword")}{" "}
             <a
               href={this.pathFor("Accounts.forgotPassword")}
               className="forgot-password"
@@ -121,6 +121,14 @@ export default class SignInPage extends React.Component {
               {i18n.__("pages.authPageRecoveryPassword.recoverNow")}
             </a>
           </div>
+          <Divider />
+          <a
+            href="//www.iubenda.com/privacy-policy/21067437"
+            className="iubenda-white iubenda-embed"
+            title="Privacy Policy"
+          >
+            Privacy Policy
+          </a>
         </Segment>
       </Form>
     );

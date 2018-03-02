@@ -138,6 +138,14 @@ export default class JoinPage extends React.Component {
             </a>
           </div>
         </Segment>
+        <Divider />
+        <a
+          href="//www.iubenda.com/privacy-policy/21067437"
+          className="iubenda-white iubenda-embed"
+          title="Privacy Policy"
+        >
+          Privacy Policy
+        </a>
       </Form>
     );
   }

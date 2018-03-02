@@ -10,7 +10,7 @@ export default createContainer(() => {
   const loading = !userHandle.ready();
 
   const campaignsHandle = Meteor.subscribe("campaigns.byUser");
-  const campaigns = campaignsHandle.ready() ? Campaigns.find({
+  const campaigns = campaignsHandle.ready() && currentUser ? Campaigns.find({
     users: { $elemMatch: { userId: currentUser._id } }
   }).fetch() : null;
 
