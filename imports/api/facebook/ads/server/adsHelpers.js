@@ -44,27 +44,34 @@ const AdsHelpers = {
       user => user.services.facebook.accessToken
     );
 
+    const suspendedKey = `adaccount::${adAccountId}::suspended`;
     const redisKey = `adaccount::${adAccountId}::adCampaigns`;
 
+    const suspended = redisClient.getSync(suspendedKey);
     let adCampaigns = redisClient.getSync(redisKey);
 
-    if (!adCampaigns) {
+    if (suspended) {
+      if (!adCampaigns)
+        throw new Meteor.Error(
+          500,
+          "Service unavailable. Try again in a few minutes."
+        );
+      else return JSON.parse(adCampaigns);
+    }
+
+    try {
       const res = await _fb.api(`act_${adAccountId}/campaigns`, {
         fields: ["id, name"],
         access_token: tokens[0]
       });
-      if (res && res.data) {
-        adCampaigns = res.data;
-        redisClient.setSync(
-          redisKey,
-          JSON.stringify(adCampaigns),
-          "EX",
-          10 * 60
-        );
-        return adCampaigns;
-      }
-    } else {
-      return JSON.parse(adCampaigns);
+      adCampaigns = res.data;
+      redisClient.setSync(redisKey, JSON.stringify(adCampaigns));
+      return adCampaigns;
+    } catch (error) {
+      throw new Meteor.Error(
+        500,
+        "Service unavailable. Try again in a few minutes."
+      )
     }
   },
   async createAd({

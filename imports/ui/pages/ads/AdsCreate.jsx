@@ -81,9 +81,13 @@ export default class AdsCreate extends React.Component {
   componentDidMount() {
     const { campaignId } = this.props;
     Meteor.call("ads.getAdCampaigns", { campaignId }, (error, result) => {
-      this.setState({
-        adCampaigns: result
-      });
+      if(error) {
+        Alerts.error(error);
+      } else {
+        this.setState({
+          adCampaigns: result
+        });
+      }
     });
   }
   componentDidUpdate(prevProps, prevState) {
@@ -104,7 +108,7 @@ export default class AdsCreate extends React.Component {
               estimate: result
             });
           } else {
-            console.log(error);
+            Alerts.error(error);
           }
         }
       );
