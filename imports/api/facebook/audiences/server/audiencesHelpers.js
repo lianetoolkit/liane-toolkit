@@ -263,7 +263,7 @@ const FacebookAudiencesHelpers = {
     // Main geolocation
     if (context.mainGeolocationId) {
       const mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
-      spec["geo_locations"] = this.buildLocations(geolocation);
+      spec["geo_locations"] = this.buildLocations(mainGeolocation);
       jobIds.push(
         JobsHelpers.addJob({
           jobType: "audiences.fetchAndCreateSpecAudience",
