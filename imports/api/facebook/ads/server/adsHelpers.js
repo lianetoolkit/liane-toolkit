@@ -71,7 +71,7 @@ const AdsHelpers = {
       }
     } catch (error) {
       if (adCampaigns) {
-        return adCampaigns;
+        return JSON.parse(adCampaigns);
       } else {
         throw new Meteor.Error(
           500,
