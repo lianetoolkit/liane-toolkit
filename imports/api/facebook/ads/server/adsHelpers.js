@@ -64,14 +64,20 @@ const AdsHelpers = {
         fields: ["id, name"],
         access_token: tokens[0]
       });
-      adCampaigns = res.data;
-      redisClient.setSync(redisKey, JSON.stringify(adCampaigns));
-      return adCampaigns;
+      if (res && res.data) {
+        adCampaigns = res.data;
+        redisClient.setSync(redisKey, JSON.stringify(adCampaigns));
+        return adCampaigns;
+      }
     } catch (error) {
-      throw new Meteor.Error(
-        500,
-        "Service unavailable. Try again in a few minutes."
-      )
+      if (adCampaigns) {
+        return adCampaigns;
+      } else {
+        throw new Meteor.Error(
+          500,
+          "Service unavailable. Try again in a few minutes."
+        );
+      }
     }
   },
   async createAd({
