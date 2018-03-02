@@ -81,7 +81,7 @@ export default class AdsCreate extends React.Component {
   componentDidMount() {
     const { campaignId } = this.props;
     Meteor.call("ads.getAdCampaigns", { campaignId }, (error, result) => {
-      if(error) {
+      if (error) {
         Alerts.error(error);
       } else {
         this.setState({
@@ -155,7 +155,9 @@ export default class AdsCreate extends React.Component {
       if (error) {
         Alerts.error(error.reason);
       } else {
-        Alerts.success("Adset created successfully. Access your Facebook Business Manager to create and manage your ads.");
+        Alerts.success(
+          "Adset created successfully. Access your Facebook Business Manager to create and manage your ads."
+        );
         {
           FlowRouter.go("App.campaignAudience", {
             campaignId,
@@ -228,7 +230,9 @@ export default class AdsCreate extends React.Component {
             facebookId: facebookAccountId
           })}
           subTitle={
-            !loading ? `Create an adset targeting ${audienceCategory.title}` : ""
+            !loading
+              ? `Adset targeting ${audienceCategory.title}`
+              : ""
           }
         />
         <section className="content">
@@ -239,96 +243,110 @@ export default class AdsCreate extends React.Component {
               <Grid.Row>
                 <Grid.Column>
                   <Form onSubmit={this._handleSubmit}>
-                    {adCampaigns.length ? (
-                      <Form.Field
-                        control={Select}
-                        name="adConfig.campaign_id"
-                        label="Adset campaign"
-                        placeholder="Select the ad campaign for this adset"
-                        options={this._getAdCampaignsOptions()}
-                        onChange={this._handleChange}
-                      />
-                    ) : null}
-                    <Form.Field
-                      control={Input}
-                      size="big"
-                      label="Name"
-                      placeholder="Name your adset"
-                      name="name"
-                      loading={isLoading}
-                      value={fields.name}
-                      onChange={this._handleChange}
-                    />
-                    <Divider />
-                    <Form.Field>
-                      <Form.Field label="Select the location target:" />
-                      {geolocations.map(geolocation => (
+                    {!adCampaigns.length ? (
+                      <p>
+                        You must have available Facebook Ad Campaigns to create
+                        an adset.<br />
+                        <a
+                          href="https://www.facebook.com/ads/manage/powereditor/manage/campaigns"
+                          target="_blank"
+                        >
+                          Click here
+                        </a>{" "}
+                        to access your Facebook Ads Manager.
+                      </p>
+                    ) : (
+                      <div>
+                        <Form.Field
+                          control={Select}
+                          name="adConfig.campaign_id"
+                          label="Adset campaign"
+                          placeholder="Select the ad campaign for this adset"
+                          options={this._getAdCampaignsOptions()}
+                          onChange={this._handleChange}
+                        />
+                        <Form.Field
+                          control={Input}
+                          size="big"
+                          label="Name"
+                          placeholder="Name your adset"
+                          name="name"
+                          loading={isLoading}
+                          value={fields.name}
+                          onChange={this._handleChange}
+                        />
+                        <Divider />
+                        <Form.Field>
+                          <Form.Field label="Select the location target:" />
+                          {geolocations.map(geolocation => (
+                            <Form.Field
+                              control={Checkbox}
+                              radio
+                              key={geolocation._id}
+                              checked={fields.geolocationId == geolocation._id}
+                              onChange={this._handleChange}
+                              name="geolocationId"
+                              value={geolocation._id}
+                              label={geolocation.name}
+                            />
+                          ))}
+                        </Form.Field>
+                        <Divider />
                         <Form.Field
                           control={Checkbox}
-                          radio
-                          key={geolocation._id}
-                          checked={fields.geolocationId == geolocation._id}
-                          onChange={this._handleChange}
-                          name="geolocationId"
-                          value={geolocation._id}
-                          label={geolocation.name}
+                          checked={fields.useConnection}
+                          onChange={this._handleCheckbox}
+                          name="useConnection"
+                          label="Target only people who likes your page"
                         />
-                      ))}
-                    </Form.Field>
-                    <Divider />
-                    <Form.Field
-                      control={Checkbox}
-                      checked={fields.useConnection}
-                      onChange={this._handleCheckbox}
-                      name="useConnection"
-                      label="Target only people who likes your page"
-                    />
-                    <Divider />
-                    <Form.Field
-                      control={Select}
-                      name="adConfig.optimization_goals"
-                      label="Optimization goals"
-                      placeholder="Select the optimization goals for this adset"
-                      options={this._getOptGoalsOptions()}
-                      onChange={this._handleChange}
-                      value={fields.adConfig.optimization_goals}
-                    />
-                    <Form.Field
-                      control={Select}
-                      name="adConfig.billing_event"
-                      label="Billing event"
-                      placeholder="Select the billing event for this adset"
-                      options={this._getBillingOptions()}
-                      onChange={this._handleChange}
-                      value={fields.adConfig.billing_event}
-                    />
-                    <Divider />
-                    <Form.Field
-                      control={SimpleCurrencyInput}
-                      name="adConfig.bid_amount"
-                      label="Bid amount"
-                      unit={adAccount.currency}
-                      onChange={this._handleChange}
-                      value={fields.adConfig.bid_amount}
-                    />
-                    <Form.Field
-                      control={SimpleCurrencyInput}
-                      name="adConfig.daily_budget"
-                      label="Daily budget"
-                      unit={adAccount.currency}
-                      onChange={this._handleChange}
-                      value={fields.adConfig.daily_budget}
-                    />
-                    {estimate ? (
-                      <Message>
-                        The estimate reach for this ad is {this._getEstimate()}{" "}
-                        people
-                      </Message>
-                    ) : null}
-                    <Button primary>
-                      <Icon name="save" />
-                      Create ad
-                    </Button>
+                        <Divider />
+                        <Form.Field
+                          control={Select}
+                          name="adConfig.optimization_goals"
+                          label="Optimization goals"
+                          placeholder="Select the optimization goals for this adset"
+                          options={this._getOptGoalsOptions()}
+                          onChange={this._handleChange}
+                          value={fields.adConfig.optimization_goals}
+                        />
+                        <Form.Field
+                          control={Select}
+                          name="adConfig.billing_event"
+                          label="Billing event"
+                          placeholder="Select the billing event for this adset"
+                          options={this._getBillingOptions()}
+                          onChange={this._handleChange}
+                          value={fields.adConfig.billing_event}
+                        />
+                        <Divider />
+                        <Form.Field
+                          control={SimpleCurrencyInput}
+                          name="adConfig.bid_amount"
+                          label="Bid amount"
+                          unit={adAccount.currency}
+                          onChange={this._handleChange}
+                          value={fields.adConfig.bid_amount}
+                        />
+                        <Form.Field
+                          control={SimpleCurrencyInput}
+                          name="adConfig.daily_budget"
+                          label="Daily budget"
+                          unit={adAccount.currency}
+                          onChange={this._handleChange}
+                          value={fields.adConfig.daily_budget}
+                        />
+                        {estimate ? (
+                          <Message>
+                            The estimate reach for this ad is{" "}
+                            {this._getEstimate()} people
+                          </Message>
+                        ) : null}
+                        <Button primary>
+                          <Icon name="save" />
+                          Create ad
+                        </Button>
+                      </div>
+                    )}
                   </Form>
                 </Grid.Column>
               </Grid.Row>

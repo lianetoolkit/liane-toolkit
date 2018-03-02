@@ -12,7 +12,7 @@ Meteor.publish("audienceCategories.all", function() {
 
 Meteor.publish("audienceCategories.detail", function({ audienceCategoryId }) {
   const currentUser = this.userId;
-  if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
+  if (currentUser) {
     return AudienceCategories.find({
       _id: audienceCategoryId
     });
