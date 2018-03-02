@@ -229,11 +229,7 @@ export default class AdsCreate extends React.Component {
             campaignId: campaignId,
             facebookId: facebookAccountId
           })}
-          subTitle={
-            !loading
-              ? `Adset targeting ${audienceCategory.title}`
-              : ""
-          }
+          subTitle={!loading ? `Adset targeting ${audienceCategory.title}` : ""}
         />
         <section className="content">
           {loading ? (
@@ -245,15 +241,17 @@ export default class AdsCreate extends React.Component {
                   <Form onSubmit={this._handleSubmit}>
                     {!adCampaigns.length ? (
                       <p>
-                        You must have available Facebook Ad Campaigns to create
-                        an adset.<br />
+                        You must have at least one Facebook Ad Campaign
+                        available in order to create an adset.<br />
                         <a
-                          href="https://www.facebook.com/ads/manage/powereditor/manage/campaigns"
+                          href={`https://www.facebook.com/ads/manage/powereditor/manage/campaigns?act=${
+                            adAccount._id
+                          }`}
                           target="_blank"
                         >
                           Click here
                         </a>{" "}
-                        to access your Facebook Ads Manager.
+                        to access your Ads Manager.
                       </p>
                     ) : (
                       <div>
