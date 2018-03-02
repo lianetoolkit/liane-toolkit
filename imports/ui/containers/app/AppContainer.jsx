@@ -3,7 +3,6 @@ import { createContainer } from "meteor/react-meteor-data";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import App from "/imports/ui/layouts/app/App.jsx";
 
-
 export default createContainer(() => {
   const currentUser = Meteor.user();
   const userHandle = Meteor.subscribe("users.data");
