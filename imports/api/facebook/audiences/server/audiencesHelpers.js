@@ -179,6 +179,21 @@ const FacebookAudiencesHelpers = {
       }
     }
   },
+  buildLocations(geolocation) {
+    if (
+      (!geolocation.type || geolocation.type == "location") &&
+      geolocation.facebook
+    ) {
+      return this._buildFacebookLocations({
+        locations: geolocation.facebook
+      });
+    } else if (geolocation.type == "center") {
+      return this._buildFacebookCustomLocations({
+        center: geolocation.center
+      });
+    }
+    return false;
+  },
   _buildFacebookLocations({ locations }) {
     if (!Array.isArray(locations)) {
       locations = [locations];
@@ -245,18 +260,7 @@ const FacebookAudiencesHelpers = {
     // Main geolocation
     if (context.mainGeolocationId) {
       const mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
-      if (
-        (!mainGeolocation.type || mainGeolocation.type == "location") &&
-        mainGeolocation.facebook
-      ) {
-        spec["geo_locations"] = this._buildFacebookLocations({
-          locations: mainGeolocation.facebook
-        });
-      } else if (mainGeolocation.type == "center") {
-        spec["geo_locations"] = this._buildFacebookCustomLocations({
-          center: mainGeolocation.center
-        });
-      }
+      spec["geo_locations"] = this.buildLocations(geolocation);
       jobIds.push(
         JobsHelpers.addJob({
           jobType: "audiences.fetchAndCreateSpecAudience",
@@ -276,18 +280,7 @@ const FacebookAudiencesHelpers = {
     // Context geolocations
     for (const geolocationId of context.geolocations) {
       const geolocation = Geolocations.findOne(geolocationId);
-      if (
-        (!geolocation.type || geolocation.type == "location") &&
-        geolocation.facebook
-      ) {
-        spec["geo_locations"] = this._buildFacebookLocations({
-          locations: geolocation.facebook
-        });
-      } else if (geolocation.type == "center") {
-        spec["geo_locations"] = this._buildFacebookCustomLocations({
-          center: geolocation.center
-        });
-      }
+      spec["geo_locations"] = this.buildLocations(geolocation);
 
       const jobId = JobsHelpers.addJob({
         jobType: "audiences.fetchAndCreateSpecAudience",
@@ -419,16 +412,16 @@ const FacebookAudiencesHelpers = {
           return JSON.parse(res).data.users;
         } else {
           let suspended = redisClient.getSync(
-            `adaccount:${adAccountId}:suspended`
+            `adaccount::${adAccountId}::suspended`
           );
           while (suspended) {
             logger.debug("Ad account rate limited, sleeping for 20 seconds", {
               campaignId,
               adAccountId
             });
-            await sleep(20 * 1000); // 10 seconds
+            await sleep(20 * 1000); // 20 seconds
             suspended = redisClient.getSync(
-              `adaccount:${adAccountId}:suspended`
+              `adaccount::${adAccountId}::suspended`
             );
           }
           let multiplier = 1;

@@ -1,7 +1,7 @@
 import SimpleSchema from "simpl-schema";
 import { Promise } from "meteor/promise";
-import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
+import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { GeolocationsHelpers } from "./geolocationsHelpers.js";
 
 const schemaConfig = {

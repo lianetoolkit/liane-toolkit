@@ -20,34 +20,87 @@ const initialFields = {
   useConnection: true
 };
 
+const billingEvents = {
+  APP_INSTALLS: "Pay when people install your app",
+  // CLICKS: "Pay when people click anywhere in the ad", // UNAVAILABLE
+  IMPRESSIONS: "Pay when the ads are shown to people",
+  LINK_CLICKS: "Pay when people click on the link of the ad",
+  OFFER_CLAIMS: "Pay when people claim the offer",
+  PAGE_LIKES: "Pay when people like your page",
+  POST_ENGAGEMENT: "Pay when people engage with your post"
+};
+
+const optimizationGoals = {
+  APP_INSTALLS: "Will optimize for people more likely to install your app.",
+  AD_RECALL_LIFT:
+    "Optimize for people more likely to remember seeing your ads. You cannot set bid_amount, and is_autobid must be true if this goal is used.",
+  ENGAGED_USERS:
+    "Will optimize for people more likely to take a particular action in your app.",
+  EVENT_RESPONSES: "Will optimize for people more likely to attend your event.",
+  IMPRESSIONS: "Will show the ads as many times as possible.",
+  LEAD_GENERATION:
+    "Will optimize for people more likely to fill out a lead generation form.",
+  LINK_CLICKS:
+    "Will optimize for people more likely to click in the link of the ad.",
+  OFFER_CLAIMS: "Will optimize for people more likely to claim the offer.",
+  OFFSITE_CONVERSIONS:
+    "Will optimize for people more likely to make a conversion in the site",
+  PAGE_ENGAGEMENT:
+    "Will optimize for people more likely to engage with your page.",
+  PAGE_LIKES: "Will optimize for people more likely to like your page.",
+  POST_ENGAGEMENT:
+    "Will optimize for people more likely to engage with your post.",
+  REACH:
+    "Optimize to reach the most unique users of each day or interval specified in frequency_control_specs.",
+  SOCIAL_IMPRESSIONS:
+    "Increase the number of impressions with social context. I.e. with the names of one or more of the user's friends attached to the ad who have already liked the page or installed the app.",
+  VIDEO_VIEWS: "Will optimize for people more likely to watch videos.",
+  VALUE:
+    "Will optimize for maximum total purchase value within the specified attribution window."
+};
+
 export default class AdsCreate extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoading: false,
+      adCampaigns: [],
       fields: Object.assign({}, initialFields)
     };
     this._handleChange = this._handleChange.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
   }
+  componentDidMount() {
+    const { campaignId } = this.props;
+    Meteor.call("ads.getAdCampaigns", { campaignId }, (error, result) => {
+      console.log(result);
+      this.setState({
+        adCampaigns: result
+      });
+    });
+  }
   componentDidUpdate(prevProps, prevState) {
     const { fields } = this.state;
     const { campaignId, audienceCategoryId, facebookAccountId } = this.props;
-    if(prevState.fields.geolocationId !== fields.geolocationId) {
-      Meteor.call("audiences.accountAudienceItem", {
-        campaignId,
-        audienceCategoryId,
-        facebookAccountId,
-        geolocationId: fields.geolocationId
-      }, (error, result) => {
-        if(!error) {
-          this.setState({
-            estimate: result
-          });
-        } else {
-          console.log(error);
+    if (prevState.fields.geolocationId !== fields.geolocationId) {
+      Meteor.call(
+        "audiences.accountAudienceItem",
+        {
+          campaignId,
+          audienceCategoryId,
+          facebookAccountId,
+          geolocationId: fields.geolocationId
+        },
+        (error, result) => {
+          if (!error) {
+            this.setState({
+              estimate: result
+            });
+          } else {
+            console.log(error);
+          }
         }
-      })
+      );
     }
   }
   _handleChange = (e, { name, value }) =>
@@ -64,29 +117,57 @@ export default class AdsCreate extends React.Component {
     });
   };
   _handleSubmit(e) {
-    const { audienceCategory } = this.props;
+    const { audienceCategoryId, campaignId, facebookAccountId } = this.props;
     const { fields } = this.state;
     this.setState({ isLoading: true });
-    console.log(fields);
-    // Meteor.call("geolocations.update", data, error => {
-    //   this.setState({ isLoading: false });
-    //   if (error) {
-    //     Alerts.error(error);
-    //   } else {
-    //     Alerts.success("Geolocation was updated successfully");
-    //   }
-    // });
+    const data = {
+      ...fields,
+      campaignId,
+      facebookAccountId,
+      audienceCategoryId
+    };
+    console.log(data);
+    Meteor.call("ads.create", data, error => {
+      this.setState({ isLoading: false });
+      if (error) {
+        Alerts.error(error);
+      } else {
+        Alerts.success("Ad created successfully");
+      }
+    });
   }
   _getEstimate() {
     const { estimate, fields } = this.state;
-    if(estimate) {
-      if(fields.useConnection) {
+    if (estimate) {
+      if (fields.useConnection) {
         return estimate.estimate;
       } else {
         return estimate.location_estimate;
       }
     }
     return false;
+  }
+  _getAdCampaignsOptions() {
+    const { adCampaigns } = this.state;
+    let options = [];
+    return adCampaigns.map(adCampaign => {
+      return {
+        key: adCampaign.id,
+        value: adCampaign.id,
+        text: adCampaign.name
+      };
+    });
+  }
+  _getBillingOptions() {
+    let options = [];
+    for (const key in billingEvents) {
+      options.push({
+        key: key,
+        value: key,
+        text: billingEvents[key]
+      });
+    }
+    return options;
   }
   render() {
     const {
@@ -96,8 +177,8 @@ export default class AdsCreate extends React.Component {
       facebookAccountId,
       geolocations
     } = this.props;
-    const { estimate, fields, isLoading } = this.state;
-    console.log(estimate);
+    const { estimate, adCampaigns, fields, isLoading } = this.state;
+    console.log(geolocations);
     return (
       <div>
         <PageHeader
@@ -118,6 +199,16 @@ export default class AdsCreate extends React.Component {
               <Grid.Row>
                 <Grid.Column>
                   <Form onSubmit={this._handleSubmit}>
+                    {adCampaigns.length ? (
+                      <Form.Field
+                        control={Select}
+                        name="adCampaign"
+                        label="Ad campaign"
+                        placeholder="Select the ad campaign for this adset"
+                        options={this._getAdCampaignsOptions()}
+                        onChange={this._handleChange}
+                      />
+                    ) : null}
                     <Form.Field
                       control={Input}
                       size="big"
@@ -127,8 +218,8 @@ export default class AdsCreate extends React.Component {
                       value={fields.name}
                       onChange={this._handleChange}
                     />
-                    <Form.Field>Select the location target:</Form.Field>
                     <Form.Field>
+                      <Form.Field label="Select the location target:" />
                       {geolocations.map(geolocation => (
                         <Form.Field
                           control={Checkbox}
@@ -148,6 +239,14 @@ export default class AdsCreate extends React.Component {
                       onChange={this._handleCheckbox}
                       name="useConnection"
                       label="Target to your facebook page"
+                    />
+                    <Form.Field
+                      control={Select}
+                      name="billingEvent"
+                      label="Billing event"
+                      placeholder="Select the billing event for this adset"
+                      options={this._getBillingOptions()}
+                      onChange={this._handleChange}
                     />
                     {estimate ? (
                       <Message>
