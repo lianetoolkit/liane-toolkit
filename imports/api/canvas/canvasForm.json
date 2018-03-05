@@ -1,0 +1,110 @@
+[
+  {
+    "key": "basic_info",
+    "title": "Basic information",
+    "description":
+      "Empecemos con algunas informaciones básicas de la candidata",
+    "fields": [
+      {
+        "key": "name",
+        "label": "Your name",
+        "fieldType": "text"
+      },
+      {
+        "key": "name_bb",
+        "label": "Your name in the ballot box",
+        "fieldType": "text"
+      },
+      {
+        "key": "age",
+        "label": "Your age",
+        "fieldType": "text"
+      },
+      {
+        "key": "gender",
+        "label": "Gender",
+        "fieldType": "select",
+        "options": {
+          "cis_woman": "Cis woman",
+          "cis_man": "Cis man",
+          "trans_wman": "Trans woman",
+          "cis_male": "Trans man",
+          "travesti": "Travesti",
+          "non_binary": "Non binary"
+        }
+      },
+      {
+        "key": "state",
+        "label": "State/Province",
+        "fieldType": "facebook_location"
+      },
+      {
+        "key": "city",
+        "label": "City",
+        "fieldType": "facebook_location"
+      },
+      {
+        "key": "occupation",
+        "label": "Job/Education",
+        "fieldType": "text"
+      },
+      {
+        "key": "social_networks",
+        "label": "Your social networks",
+        "fieldType": "group",
+        "fields": [
+          {
+            "key": "twitter",
+            "label": "Twitter",
+            "fieldType": "text"
+          },
+          {
+            "key": "instagram",
+            "label": "Instagram",
+            "fieldType": "text"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "candidate",
+    "title": "Candidate"
+  },
+  {
+    "key": "principles",
+    "title": "Principles"
+  },
+  {
+    "key": "causes",
+    "title": "Causes"
+  },
+  {
+    "key": "proposals",
+    "title": "Proposals"
+  },
+  {
+    "key": "commitments",
+    "title": "Commitments"
+  },
+  {
+    "key": "potential_voter",
+    "title": "Potential Voter"
+  },
+  {
+    "key": "network",
+    "title": "Personal Network"
+  },
+  {
+    "key": "channels",
+    "title": "Channel"
+  },
+  {
+    "key": "assets",
+    "title": "Assets"
+  },
+  {
+    "key": "team",
+    "title": "Team"
+  }
+]

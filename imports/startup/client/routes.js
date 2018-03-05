@@ -21,12 +21,14 @@ import CampaignsListsContainer from "/imports/ui/containers/campaigns/CampaignsL
 
 import AdsCreateContainer from "/imports/ui/containers/ads/AdsCreateContainer.jsx";
 
-/* Admin */
 import JobsPage from "/imports/ui/pages/jobs/JobsPage.jsx";
 
 import CampaignsContainer from "/imports/ui/containers/admin/CampaignsContainer.jsx";
 
 import ContextsPageContainer from "/imports/ui/containers/contexts/ContextsPageContainer.jsx";
+
+import CanvasEditContainer from "/imports/ui/containers/canvas/CanvasEditContainer.jsx";
+
 import EditContextsPageContainer from "/imports/ui/containers/contexts/EditContextsPageContainer.jsx";
 
 import AudienceCategoriesPageContainer from "/imports/ui/containers/audiences/AudienceCategoriesPageContainer.jsx";
@@ -144,6 +146,18 @@ appRoutes.route("/campaign/:campaignId", {
     });
   }
 });
+appRoutes.route("/campaign/:campaignId/canvas/edit/:sectionKey?", {
+  name: "App.campaignCanvas.edit",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Campaign`);
+    return mount(AppContainer, {
+      content: {
+        component: CanvasEditContainer,
+        props: { campaignId: params.campaignId, sectionKey: params.sectionKey }
+      }
+    });
+  }
+});
 appRoutes.route("/campaign/:campaignId/people/:facebookId?", {
   name: "App.campaignPeople",
   action: function(params) {
@@ -237,7 +251,7 @@ appRoutes.route("/campaign/:campaignId/ads/create/:facebookAccountId", {
           facebookAccountId: params.facebookAccountId
         }
       }
-    })
+    });
   }
 });
 

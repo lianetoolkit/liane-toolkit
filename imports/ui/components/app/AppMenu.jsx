@@ -204,6 +204,15 @@ export default class AppMenu extends React.Component {
                 </Menu.Item> */}
                 <Menu.Item
                   name="campaignPeople"
+                  active={currentRoute.indexOf("App.campaignCanvas") === 0}
+                  href={FlowRouter.path("App.campaignCanvas.edit", {
+                    campaignId: currentCampaign._id
+                  })}
+                >
+                  <Icon name="options" /> Canvas
+                </Menu.Item>
+                <Menu.Item
+                  name="campaignPeople"
                   active={currentRoute.indexOf("App.campaignPeople") === 0}
                   href={FlowRouter.path("App.campaignPeople", {
                     campaignId: currentCampaign._id

@@ -29,7 +29,7 @@ export default class CampaignsAudience extends React.Component {
         facebookAccount = !loading
           ? _.findWhere(accounts, { facebookId: facebookId })
           : null;
-      } else {
+      } else if (accounts.length) {
         facebookAccount = accounts[0];
       }
     }

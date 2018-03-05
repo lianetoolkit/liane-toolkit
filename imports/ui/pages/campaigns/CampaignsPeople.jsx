@@ -25,11 +25,12 @@ export default class CampaignsPeople extends React.Component {
         facebookAccount = !loading
           ? _.findWhere(accounts, { facebookId: facebookId })
           : null;
-      } else {
+      } else if (accounts.length) {
         facebookAccount = accounts[0];
         facebookId = facebookAccount.facebookId;
       }
-      selector.facebookAccounts = { $in: [facebookAccount.facebookId] };
+      if(facebookAccount)
+        selector.facebookAccounts = { $in: [facebookAccount.facebookId] };
     }
     return (
       <div>

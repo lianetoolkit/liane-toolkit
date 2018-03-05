@@ -29,16 +29,24 @@ export default class SelectGeolocationFacebook extends React.Component {
   }
   _parseValueInput(value) {
     if (!value) return "";
-    if (!Array.isArray(value)) value = [value];
-    return value.map(item => JSON.stringify(item));
+    // if (!Array.isArray(value)) value = [value];
+    if (Array.isArray(value)) {
+      return value.map(item => JSON.stringify(item));
+    } else {
+      return JSON.stringify(item);
+    }
   }
   _parseValueOutput(value) {
-    return value.map(item => JSON.parse(item));
+    if (Array.isArray(value)) {
+      return value.map(item => JSON.parse(item));
+    } else {
+      return JSON.stringify(value);
+    }
   }
   componentDidUpdate(prevProps, prevState) {
     const { value } = this.state;
     const { name, onChange } = this.props;
-    if (JSON.stringify(prevState.value) != JSON.stringify(value)) {
+    if (JSON.stringify(prevState.value) != JSON.stringify(value) && onChange) {
       onChange(null, { name, value: this._parseValueOutput(value) });
     }
   }
@@ -109,10 +117,15 @@ export default class SelectGeolocationFacebook extends React.Component {
   }
   _handleChange = (e, { name, value }) => this.setState({ value });
   render() {
+    const { multiple } = this.props;
     let { value } = this.state;
     const { availableGeolocations } = this.state;
-    if (value && !Array.isArray(value)) {
-      value = [value];
+    if (multiple) {
+      if (value && !Array.isArray(value)) {
+        value = [value];
+      } else if(!value) {
+        value = [];
+      }
     }
     const geolocationOptions = Object.values(availableGeolocations);
     return (
@@ -120,7 +133,7 @@ export default class SelectGeolocationFacebook extends React.Component {
         options={geolocationOptions}
         placeholder="Search a Facebook geolocation"
         name="geolocation"
-        multiple
+        multiple={multiple || false}
         search
         selection
         fluid

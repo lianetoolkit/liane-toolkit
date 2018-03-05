@@ -167,6 +167,7 @@ export default class EditGeolocationsPage extends React.Component {
                         <Form.Field>
                           <SelectGeolocationFacebook
                             name="facebook"
+                            multiple
                             value={fields.facebook}
                             onChange={this._handleChange}
                           />
