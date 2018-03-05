@@ -69,11 +69,35 @@
   },
   {
     "key": "candidate",
-    "title": "Candidate"
+    "title": "Candidate",
+    "description":
+      "Sobre la candidata como figura pública como la gente la identifica? Aquí son menos características de autoevaluación de la candidata, y más de imagen pública. El objetivo es identificar los puntos que la campaña tiene que valorizar (positivos) o minimizar (negativos). Ej: Al votante le gusta porque la candidata es joven, pero tiene una preocupación con su falta de experiência. Como comunicar las dos cosas?"
   },
   {
     "key": "principles",
-    "title": "Principles"
+    "title": "Principles",
+    "description":
+      "Princípios son los valores que hacen la candidata tener credibilidad y pedir la confianza de sus electoras. Ej: Diálogo, eficiencia y transparencia.",
+    "fields": [
+      {
+        "key": "principles",
+        "label": "Principles",
+        "fieldType": "repeater",
+        "limit": 3,
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "fieldType": "text"
+          },
+          {
+            "key": "principle",
+            "label": "Describe your principle",
+            "fieldType": "textarea"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "causes",

@@ -6,7 +6,7 @@ Canvas.schema = new SimpleSchema({
   campaignId: {
     type: String
   },
-  section: {
+  sectionKey: {
     type: String
   },
   parentKey: {
@@ -17,7 +17,11 @@ Canvas.schema = new SimpleSchema({
     type: String
   },
   value: {
-    type: String,
+    type: Match.OneOf(
+      String,
+      { type: Object, blackbox: true },
+      { type: Array, blackbox: true }
+    ),
     optional: true
   },
   createdAt: {

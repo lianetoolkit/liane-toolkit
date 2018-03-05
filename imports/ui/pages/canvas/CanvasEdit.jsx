@@ -18,11 +18,44 @@ const Description = styled.p`
 export default class CanvasEdit extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      sectionKey: null
+    };
     console.log("CanvasEdit init", { props });
+    this._handleSubmit = this._handleSubmit.bind(this);
+  }
+  componentDidMount() {
+    const sectionKey = this.props.sectionKey || CanvasConfig[0].key;
+    this.setState({
+      sectionKey
+    });
+  }
+  componentWillReceiveProps(nextProps) {
+    const { sectionKey } = this.props;
+    if (nextProps.sectionKey !== sectionKey) {
+      this.setState({
+        sectionKey: nextProps.sectionKey || CanvasConfig[0].key
+      });
+    }
+  }
+  _handleSubmit(data) {
+    const { campaignId } = this.props;
+    const { sectionKey } = this.state;
+    Meteor.call(
+      "canvas.formUpdate",
+      {
+        campaignId,
+        sectionKey,
+        data
+      },
+      (error, result) => {
+        console.log(result);
+      }
+    );
   }
   render() {
-    const { loading, campaign } = this.props;
-    const sectionKey = this.props.sectionKey || CanvasConfig[0].key;
+    const { sectionKey } = this.state;
+    const { loading, campaign, canvas } = this.props;
     const section = CanvasConfig.find(section => section.key == sectionKey);
     return (
       <div>
@@ -57,10 +90,16 @@ export default class CanvasEdit extends React.Component {
                     ))}
                   </Step.Group>
                 </Grid.Column>
-                <Grid.Column width={11}>
-                  <Description>{section.description}</Description>
-                  <CanvasForm config={section} />
-                </Grid.Column>
+                {sectionKey && section ? (
+                  <Grid.Column width={11}>
+                    <Description>{section.description}</Description>
+                    <CanvasForm
+                      config={section}
+                      canvas={canvas}
+                      onSubmit={this._handleSubmit}
+                    />
+                  </Grid.Column>
+                ) : null}
               </Grid.Row>
             </Grid>
           )}

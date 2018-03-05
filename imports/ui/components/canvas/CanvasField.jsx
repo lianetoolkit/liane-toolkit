@@ -4,15 +4,18 @@ import {
   Header,
   Form,
   Input,
+  TextArea,
   Select,
   Radio,
   Checkbox
 } from "semantic-ui-react";
 import styled from "styled-components";
 import SelectGeolocationFacebook from "/imports/ui/components/geolocations/SelectGeolocationFacebook.jsx";
+import RepeaterField from "./RepeaterField.jsx";
+import GroupField from "./GroupField.jsx";
 
 const GroupWrapper = styled.div`
-  padding: 1.5rem;
+  padding: 1rem;
   border: 1px solid #ddd;
   border-radius: 3px;
   .ui.header {
@@ -24,12 +27,22 @@ export default class CanvasForm extends React.Component {
   static propTypes = {
     config: PropTypes.object
   };
+  constructor(props) {
+    super(props);
+    this._props = this._props.bind(this);
+  }
   _control(config) {
     switch (config.fieldType) {
       case "text":
         return Input;
+      case "textarea":
+        return TextArea;
       case "select":
         return Select;
+      case "group":
+        return GroupField;
+      case "repeater":
+        return RepeaterField;
       case "facebook_location":
         return SelectGeolocationFacebook;
       default:
@@ -37,7 +50,7 @@ export default class CanvasForm extends React.Component {
     }
   }
   _label(config) {
-    if (config.fieldType == "group") {
+    if (config.fieldType == "group" || config.fieldType == "repeater") {
       return null;
     } else {
       return config.label;
@@ -57,33 +70,27 @@ export default class CanvasForm extends React.Component {
     return options;
   }
   _props(config) {
+    const { onChange, value } = this.props;
     const fieldProps = {
       key: config.key,
+      name: config.key,
       label: this._label(config),
-      control: this._control(config)
+      control: this._control(config),
+      value: value
     };
+    if (config.fieldType == "repeater" || config.fieldType == "group") {
+      fieldProps["config"] = config;
+    }
     if (config.options) {
       fieldProps["options"] = this._options(config);
     }
-    return fieldProps;
-  }
-  _field(config, children) {
-    return <Form.Field {...this._props(config)}>{children || null}</Form.Field>;
-  }
-  _group(config) {
-    if (config.fieldType == "group" && config.fields && config.fields.length) {
-      return (
-        <GroupWrapper>
-          <Header size="tiny">{config.label}</Header>
-          {config.fields.map(field => this._field(field))}
-        </GroupWrapper>
-      );
-    } else {
-      return null;
+    if (onChange) {
+      fieldProps["onChange"] = onChange;
     }
+    return fieldProps;
   }
   render() {
     const { config } = this.props;
-    return this._field(config, this._group(config));
+    return <Form.Field {...this._props(config)} />;
   }
 }

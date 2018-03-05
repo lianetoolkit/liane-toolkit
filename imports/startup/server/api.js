@@ -14,6 +14,10 @@ import "/imports/api/audienceCategories/server/audienceCategoriesPublications.js
 import "/imports/api/campaigns/server/campaignsMethods.js";
 import "/imports/api/campaigns/server/campaignsPublications.js";
 
+// canvas
+import "/imports/api/canvas/server/canvasMethods.js";
+import "/imports/api/canvas/server/canvasPublications.js";
+
 // entries
 import "/imports/api/facebook/entries/server/entriesPublications.js";
 

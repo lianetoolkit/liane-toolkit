@@ -145,7 +145,7 @@ export default class AppMenu extends React.Component {
         <Menu.Item>
           <Accordion.Title
             active={activeIndex === 0}
-            content="Administração"
+            content="Administration"
             index={0}
             onClick={this._handleAccordionClick}
           />
