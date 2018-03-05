@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Header, List } from "semantic-ui-react";
+import { Form, Dropdown, Header, List } from "semantic-ui-react";
 
 export default class SelectGeolocationFacebook extends React.Component {
   static defaultProps = {
@@ -22,6 +22,7 @@ export default class SelectGeolocationFacebook extends React.Component {
   }
   componentWillReceiveProps(nextProps) {
     if (this.props.value !== nextProps.value) {
+      this._updateAvailableGeolocations(nextProps.value);
       this.setState({
         value: this._parseValueInput(nextProps.value)
       });
@@ -29,11 +30,10 @@ export default class SelectGeolocationFacebook extends React.Component {
   }
   _parseValueInput(value) {
     if (!value) return "";
-    // if (!Array.isArray(value)) value = [value];
     if (Array.isArray(value)) {
       return value.map(item => JSON.stringify(item));
     } else {
-      return JSON.stringify(item);
+      return JSON.stringify(value);
     }
   }
   _parseValueOutput(value) {
@@ -123,13 +123,14 @@ export default class SelectGeolocationFacebook extends React.Component {
     if (multiple) {
       if (value && !Array.isArray(value)) {
         value = [value];
-      } else if(!value) {
+      } else if (!value) {
         value = [];
       }
     }
     const geolocationOptions = Object.values(availableGeolocations);
     return (
-      <Form.Dropdown
+      <Form.Field
+        control={Dropdown}
         options={geolocationOptions}
         placeholder="Search a Facebook geolocation"
         name="geolocation"
@@ -137,6 +138,7 @@ export default class SelectGeolocationFacebook extends React.Component {
         search
         selection
         fluid
+        autoComplete="off"
         value={value}
         onSearchChange={this._searchGeolocations}
         onChange={this._handleChange}

@@ -52,6 +52,5 @@ export default class GroupField extends React.Component {
         ))}
       </Wrapper>
     );
-    // return null;
   }
 }

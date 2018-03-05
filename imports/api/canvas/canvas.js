@@ -22,6 +22,16 @@ Canvas.schema = new SimpleSchema({
       { type: Object, blackbox: true },
       { type: Array, blackbox: true }
     ),
+    blackbox: true,
+    optional: true
+  },
+  "value.$": {
+    type: Match.OneOf(
+      String,
+      { type: Object, blackbox: true },
+      { type: Array, blackbox: true }
+    ),
+    blackbox: true,
     optional: true
   },
   createdAt: {

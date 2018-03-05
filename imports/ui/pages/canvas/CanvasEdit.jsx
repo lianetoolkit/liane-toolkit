@@ -41,6 +41,7 @@ export default class CanvasEdit extends React.Component {
   _handleSubmit(data) {
     const { campaignId } = this.props;
     const { sectionKey } = this.state;
+    // console.log(data);
     Meteor.call(
       "canvas.formUpdate",
       {

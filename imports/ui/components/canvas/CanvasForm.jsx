@@ -11,7 +11,9 @@ export default class CanvasForm extends React.Component {
   };
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      formData: {}
+    };
     this._handleChange = this._handleChange.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
   }
@@ -27,30 +29,33 @@ export default class CanvasForm extends React.Component {
         }
       }
     }
-    this.setState(values);
+    this.setState({ formData: values });
   }
   componentWillReceiveProps(nextProps) {
-    const { config } = this.props;
-    if (JSON.stringify(nextProps.config) !== config) {
-      this.setState({});
+    const { config, canvas } = this.props;
+    if (
+      JSON.stringify(nextProps.config) !== JSON.stringify(config) ||
+      JSON.stringify(nextProps.canvas) !== JSON.stringify(canvas)
+    ) {
+      this._updateValues(nextProps.canvas, nextProps.config.key);
     }
   }
   _handleChange = (e, { name, value }) => {
-    let newState = Object.assign({}, this.state);
-    set(newState, name, value);
-    this.setState(newState);
+    let newFormData = Object.assign({}, this.state.formData);
+    set(newFormData, name, value);
+    this.setState({ formData: newFormData });
   };
   _handleSubmit(ev) {
     const { onSubmit } = this.props;
     ev.preventDefault();
     if (onSubmit) {
-      onSubmit(this.state);
+      onSubmit(this.state.formData);
     }
   }
   render() {
+    const { formData } = this.state;
     const { config, canvas, ...props } = this.props;
     if (config && config.fields) {
-      console.log(this.state);
       return (
         <Form {...props} onSubmit={this._handleSubmit}>
           {config.fields.map(field => (
@@ -58,7 +63,7 @@ export default class CanvasForm extends React.Component {
               key={field.key}
               config={field}
               onChange={this._handleChange}
-              value={this.state[field.key]}
+              value={formData[field.key]}
             />
           ))}
           <Button primary fluid>

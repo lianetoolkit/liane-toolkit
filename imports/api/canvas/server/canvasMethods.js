@@ -54,20 +54,22 @@ export const canvasFormUpdate = new ValidatedMethod({
       });
     }
 
+    let result = [];
+
     for ({ campaignId, sectionKey, key, ...item } of items) {
-      Canvas.upsert(
-        {
-          campaignId,
-          sectionKey,
-          key
-        },
-        {
-          $set: { ...item }
-        }
+      result.push(
+        Canvas.upsert(
+          {
+            campaignId,
+            sectionKey,
+            key
+          },
+          {
+            $set: { ...item }
+          }
+        )
       );
     }
-
-    console.log(data);
 
     return true;
   }
