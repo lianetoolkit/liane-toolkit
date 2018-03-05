@@ -40,7 +40,7 @@ export default class SelectGeolocationFacebook extends React.Component {
     if (Array.isArray(value)) {
       return value.map(item => JSON.parse(item));
     } else {
-      return JSON.stringify(value);
+      return JSON.parse(value);
     }
   }
   componentDidUpdate(prevProps, prevState) {
