@@ -47,11 +47,13 @@ const _addTitle = function(title) {
 };
 
 const trackRouteEntry = () => {
+  const node = document.getElementById("app-content");
+  if (node) node.scrollTop = 0;
   Meteor.setTimeout(() => {
     const userId = Meteor.userId();
     if (userId) {
       // Woopra.track({ userId });
-      console.log("trackRouteEntry");
+      // console.log("trackRouteEntry");
     }
   }, 3000);
 };
