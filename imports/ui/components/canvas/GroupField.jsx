@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Header } from "semantic-ui-react";
+import { Header, Accordion, Icon, Label } from "semantic-ui-react";
 import CanvasField from "./CanvasField.jsx";
 
 const Wrapper = styled.div`
@@ -15,8 +15,11 @@ const Wrapper = styled.div`
 export default class GroupField extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      active: false
+    };
     this._handleChange = this._handleChange.bind(this);
+    this._handleClick = this._handleClick.bind(this);
   }
   componentDidMount() {
     if (this.props.value) {
@@ -37,20 +40,38 @@ export default class GroupField extends React.Component {
   _handleChange = (e, { name, value }) => {
     this.setState({ [name]: value });
   };
+  _handleClick = () => {
+    const { active } = this.state;
+    this.setState({ active: !active });
+  };
+  _hasValues = () => {
+    const { config } = this.state;
+    let hasValues = false;
+    for (const field of config.field) {
+      hasValues = !!this.state[field.key];
+    }
+  };
   render() {
     const { config } = this.props;
+    const { active } = this.state;
     return (
-      <Wrapper>
-        <Header size="tiny">{config.label}</Header>
-        {config.fields.map(field => (
-          <CanvasField
-            key={field.key}
-            config={field}
-            onChange={this._handleChange}
-            value={this.state[field.key]}
-          />
-        ))}
-      </Wrapper>
+      <Accordion>
+        <Accordion.Title active={active} onClick={this._handleClick}>
+          <Icon name="dropdown" />
+          {config.label}{" "}
+          <Label size="tiny" basic>{config.fields.length} field(s)</Label>
+        </Accordion.Title>
+        <Accordion.Content active={active}>
+          {config.fields.map(field => (
+            <CanvasField
+              key={field.key}
+              config={field}
+              onChange={this._handleChange}
+              value={this.state[field.key]}
+            />
+          ))}
+        </Accordion.Content>
+      </Accordion>
     );
   }
 }

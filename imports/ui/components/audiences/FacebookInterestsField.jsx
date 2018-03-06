@@ -114,10 +114,7 @@ export default class FacebookInterestsField extends React.Component {
       });
     };
   }
-  _handleChange = (e, { name, value }) => {
-    console.log(name, value);
-    this.setState({ value });
-  };
+  _handleChange = (e, { name, value }) => this.setState({ value });
   render() {
     const options = Object.values(this.state.availableInterests);
     const { interestSuggestions, value } = this.state;
