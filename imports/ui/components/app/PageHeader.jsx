@@ -4,7 +4,7 @@ import { Breadcrumb, Header, Divider } from "semantic-ui-react";
 import styled from "styled-components";
 
 const Wrapper = styled.section`
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   .ui.header {
     margin: 3rem 0 2rem;
   }
@@ -41,7 +41,6 @@ export default class PageHeader extends React.Component {
           )}
         </Breadcrumb>
         <Header as="h1">{subTitle ? subTitle : title}</Header>
-        <Divider />
       </Wrapper>
     );
   }

@@ -217,7 +217,7 @@ export default [
         fields: [
           {
             key: "name",
-            label: "Give a tag this profile",
+            label: "Tag/name for this profile",
             fieldType: "text"
           },
           {

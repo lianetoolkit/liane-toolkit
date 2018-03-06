@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Form, Button } from "semantic-ui-react";
 import CanvasField from "./CanvasField.jsx";
-import { set } from "lodash";
+import { setWith, clone } from "lodash";
 
 const Wrapper = styled.div``;
 
@@ -45,8 +45,9 @@ export default class CanvasForm extends React.Component {
   }
   _handleChange = (e, { name, value }) => {
     let newFormData = Object.assign({}, this.state.formData);
-    set(newFormData, name, value);
-    this.setState({ formData: newFormData });
+    this.setState({
+      formData: setWith(clone(newFormData), name, value, clone)
+    });
   };
   _handleSubmit(ev) {
     const { onSubmit } = this.props;

@@ -6,7 +6,6 @@ import CanvasField from "./CanvasField.jsx";
 const Wrapper = styled.div`
   padding: 1rem;
   border: 1px solid #ddd;
-  border-radius: 3px;
   .ui.header {
     color: #999;
   }

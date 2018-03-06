@@ -15,15 +15,6 @@ import FacebookInterestsField from "/imports/ui/components/audiences/FacebookInt
 import RepeaterField from "./RepeaterField.jsx";
 import GroupField from "./GroupField.jsx";
 
-const GroupWrapper = styled.div`
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-  .ui.header {
-    color: #999;
-  }
-`;
-
 export default class CanvasForm extends React.Component {
   static propTypes = {
     config: PropTypes.object
@@ -75,10 +66,10 @@ export default class CanvasForm extends React.Component {
     return options;
   }
   _props(config) {
-    const { onChange, value } = this.props;
+    const { onChange, name, value } = this.props;
     const fieldProps = {
       key: config.key,
-      name: config.key,
+      name: name || config.key,
       label: this._label(config),
       control: this._control(config),
       value: value
@@ -91,7 +82,7 @@ export default class CanvasForm extends React.Component {
       fieldProps["checked"] = !!value;
       if (onChange) {
         fieldProps["onChange"] = function() {
-          onChange(null, { name: config.key, value: !value });
+          onChange(null, { name: name || config.key, value: !value });
         };
       }
     } else if (onChange) {

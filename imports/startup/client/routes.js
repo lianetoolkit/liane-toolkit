@@ -27,6 +27,7 @@ import CampaignsContainer from "/imports/ui/containers/admin/CampaignsContainer.
 
 import ContextsPageContainer from "/imports/ui/containers/contexts/ContextsPageContainer.jsx";
 
+import CanvasContainer from "/imports/ui/containers/canvas/CanvasContainer.jsx";
 import CanvasEditContainer from "/imports/ui/containers/canvas/CanvasEditContainer.jsx";
 
 import EditContextsPageContainer from "/imports/ui/containers/contexts/EditContextsPageContainer.jsx";
@@ -141,6 +142,18 @@ appRoutes.route("/campaign/:campaignId", {
     return mount(AppContainer, {
       content: {
         component: CampaignsPageContainer,
+        props: { campaignId: params.campaignId }
+      }
+    });
+  }
+});
+appRoutes.route("/campaign/:campaignId/canvas", {
+  name: "App.campaignCanvas",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Campaign`);
+    return mount(AppContainer, {
+      content: {
+        component: CanvasContainer,
         props: { campaignId: params.campaignId }
       }
     });

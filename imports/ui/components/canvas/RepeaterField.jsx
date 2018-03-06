@@ -3,13 +3,12 @@ import PropTypes from "prop-types";
 import { Header, Label, Button, Icon, Divider } from "semantic-ui-react";
 import CanvasField from "./CanvasField.jsx";
 import styled from "styled-components";
-import { set } from "lodash";
+import { setWith, clone } from "lodash";
 
 const Item = styled.div`
   margin: 0 0 1rem;
   padding: 1rem;
   border: 1px solid #ddd;
-  border-radius: 3px;
   .ui.header {
     color: #999;
   }
@@ -29,38 +28,27 @@ export default class RepeaterField extends React.Component {
   }
   componentDidMount() {
     const { value } = this.props;
-    if (value) {
-      this.setState({ value });
-    } else {
-      if (!value || !value.length) {
-        this._new();
-      }
+    if (value && value.length) {
+      this.setState({ value: value.slice(0) });
     }
   }
   componentWillReceiveProps(nextProps) {
-    const { value } = this.props;
-    if (JSON.stringify(value) !== JSON.stringify(nextProps.value)) {
-      this.setState({ value: nextProps.value });
-    }
-    if (!this.state.value || !this.state.value.length) {
-      this._new();
+    const { value } = this.state;
+    if (JSON.stringify(value) != JSON.stringify(nextProps.value)) {
+      this.setState({ value: nextProps.value ? nextProps.value.slice(0) : [] });
     }
   }
   componentDidUpdate(prevProps, prevState) {
     const { onChange, config } = this.props;
     const { value } = this.state;
-    if (JSON.stringify(prevState.value) !== JSON.stringify(value)) {
+    if (JSON.stringify(prevState.value) != JSON.stringify(value)) {
       if (onChange) onChange(null, { name: config.key, value: value });
-    }
-    if (!value || !value.length) {
-      this._new();
     }
   }
   _handleChange = (e, { name, value }) => {
-    let newData = [...this.state.value];
-    set(newData, name, value);
+    const newData = { data: this.state.value ? this.state.value.slice(0) : [] };
     this.setState({
-      value: newData
+      value: setWith(clone(newData), name, value, clone).data
     });
   };
   _new(ev) {
@@ -70,9 +58,10 @@ export default class RepeaterField extends React.Component {
     const { config } = this.props;
     const { value } = this.state;
     if (!config.limit || value.length < config.limit) {
+      const newValue = [...value, {}];
       this.setState({
-        value: [...value, {}],
-        activeIndex: value.length
+        value: newValue,
+        activeIndex: newValue.length - 1
       });
     }
   }
@@ -94,26 +83,6 @@ export default class RepeaterField extends React.Component {
       });
     }
   }
-  _item(i) {
-    const { value } = this.state;
-    const { config } = this.props;
-    if (value.length) {
-      const itemValue = value[i];
-      return (
-        <Item key={i}>
-          {config.fields.map(field => (
-            <CanvasField
-              key={field.key}
-              config={{ ...field, key: `[${i}]${field.key}` }}
-              onChange={this._handleChange}
-              value={itemValue[field.key]}
-            />
-          ))}
-        </Item>
-      );
-    }
-    return null;
-  }
   render() {
     const { value, activeIndex } = this.state;
     const { config } = this.props;
@@ -122,7 +91,7 @@ export default class RepeaterField extends React.Component {
         <Header size="small" floated="left">
           {config.label}
         </Header>
-        <Button basic size="small" floated="right" onClick={this._new}>
+        <Button as="a" basic size="small" floated="right" onClick={this._new}>
           + Add new
         </Button>
         <Button.Group size="mini" basic>
@@ -138,7 +107,25 @@ export default class RepeaterField extends React.Component {
           </Label>
         ) : null}
         <Divider hidden />
-        {this._item(activeIndex)}
+        {value.length ? (
+          <Item>
+            {config.fields.map(field => (
+              <CanvasField
+                key={field.key}
+                config={field}
+                name={`data[${activeIndex}]${field.key}`}
+                onChange={this._handleChange}
+                value={value[activeIndex][field.key]}
+              />
+            ))}
+          </Item>
+        ) : (
+          <p>
+            <a href="#" onClick={this._new}>
+              Create your first item.
+            </a>
+          </p>
+        )}
         <Divider hidden />
       </div>
     );
