@@ -25,8 +25,8 @@ const Wrapper = styled.div`
 
 const Description = styled.p`
   font-size: 1.2em;
-  margin: 1rem 0;
-  padding: 1rem 0;
+  margin: 0 0 2rem 0;
+  padding: 1rem 0 2rem 0;
   border-bottom: 1px solid #eee;
 `;
 
