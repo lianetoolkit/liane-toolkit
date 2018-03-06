@@ -1,6 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Breadcrumb, Header, Divider } from "semantic-ui-react";
+import styled from "styled-components";
+
+const Wrapper = styled.section`
+  margin-bottom: 3rem;
+  .ui.header {
+    margin: 3rem 0 2rem;
+  }
+`
 
 export default class PageHeader extends React.Component {
   constructor(props) {
@@ -10,7 +18,7 @@ export default class PageHeader extends React.Component {
   render() {
     const { title, titleTo, subTitle } = this.props;
     return (
-      <section className="content-header">
+      <Wrapper className="content-header">
         <Breadcrumb>
           <Breadcrumb.Section href="/">Dashboard</Breadcrumb.Section>
           <Breadcrumb.Divider icon="right angle" />
@@ -34,7 +42,7 @@ export default class PageHeader extends React.Component {
         </Breadcrumb>
         <Header as="h1">{subTitle ? subTitle : title}</Header>
         <Divider />
-      </section>
+      </Wrapper>
     );
   }
 }

@@ -23,7 +23,7 @@ const Wrapper = styled.nav`
     margin: 0;
   }
   .campaigns-menu.ui.accordion.menu .item .title > .dropdown.icon {
-    margin-top: 0.5em;
+    margin-top: 0.75em;
   }
 `;
 
