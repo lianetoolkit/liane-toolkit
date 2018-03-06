@@ -8,6 +8,12 @@ import CanvasForm from "/imports/ui/components/canvas/CanvasForm.jsx";
 
 import { Step, Divider, Grid, Header, List, Button } from "semantic-ui-react";
 
+const Wrapper = styled.div`
+  .ui.ordered.steps .step:before {
+    font-size: 1em;
+  }
+`;
+
 const Description = styled.p`
   font-size: 1.2em;
   margin: 1rem 0;
@@ -59,7 +65,7 @@ export default class CanvasEdit extends React.Component {
     const { loading, campaign, canvas } = this.props;
     const section = CanvasConfig.find(section => section.key == sectionKey);
     return (
-      <div>
+      <Wrapper>
         <PageHeader
           title={`Campaign: ${campaign ? campaign.name : ""}`}
           titleTo={FlowRouter.path("App.campaignDetail", {
@@ -105,7 +111,7 @@ export default class CanvasEdit extends React.Component {
             </Grid>
           )}
         </section>
-      </div>
+      </Wrapper>
     );
   }
 }

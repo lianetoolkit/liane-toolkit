@@ -1,8 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
+import styled from "styled-components";
 import { Form, Button } from "semantic-ui-react";
 import CanvasField from "./CanvasField.jsx";
 import { set } from "lodash";
+
+const Wrapper = styled.div`
+`;
 
 export default class CanvasForm extends React.Component {
   static propTypes = {
@@ -57,19 +61,21 @@ export default class CanvasForm extends React.Component {
     const { config, canvas, ...props } = this.props;
     if (config && config.fields) {
       return (
-        <Form {...props} onSubmit={this._handleSubmit}>
-          {config.fields.map(field => (
-            <CanvasField
-              key={field.key}
-              config={field}
-              onChange={this._handleChange}
-              value={formData[field.key]}
-            />
-          ))}
-          <Button primary fluid>
-            Save
-          </Button>
-        </Form>
+        <Wrapper>
+          <Form {...props} onSubmit={this._handleSubmit}>
+            {config.fields.map(field => (
+              <CanvasField
+                key={field.key}
+                config={field}
+                onChange={this._handleChange}
+                value={formData[field.key]}
+              />
+            ))}
+            <Button primary fluid>
+              Save
+            </Button>
+          </Form>
+        </Wrapper>
       );
     } else {
       return null;

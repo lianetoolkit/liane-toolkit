@@ -11,6 +11,7 @@ import {
 } from "semantic-ui-react";
 import styled from "styled-components";
 import SelectGeolocationFacebook from "/imports/ui/components/geolocations/SelectGeolocationFacebook.jsx";
+import FacebookInterestsField from "/imports/ui/components/audiences/FacebookInterestsField.jsx";
 import RepeaterField from "./RepeaterField.jsx";
 import GroupField from "./GroupField.jsx";
 
@@ -45,6 +46,8 @@ export default class CanvasForm extends React.Component {
         return RepeaterField;
       case "facebook_location":
         return SelectGeolocationFacebook;
+      case "facebook_interests":
+        return FacebookInterestsField;
       default:
         return null;
     }
