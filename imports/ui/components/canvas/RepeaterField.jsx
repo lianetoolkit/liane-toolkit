@@ -132,13 +132,14 @@ export default class RepeaterField extends React.Component {
         <Label basic size="tiny">
           {activeIndex + 1}/{value.length}
         </Label>{" "}
-        <Label basic size="tiny">
-          {config.limit ? <span>max: {config.limit}</span> : null}
-        </Label>
+        {config.limit ? (
+          <Label basic size="tiny">
+            <span>max: {config.limit}</span>
+          </Label>
+        ) : null}
         <Divider hidden />
         {this._item(activeIndex)}
         <Divider hidden />
-        {/* {value.map((item, i) => this._item(item, i))} */}
       </div>
     );
   }
