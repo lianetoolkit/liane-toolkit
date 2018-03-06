@@ -112,10 +112,6 @@ export const searchAdInterests = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    if (!Roles.userIsInRole(userId, ["admin"])) {
-      throw new Meteor.Error(403, "Access denied");
-    }
-
     const user = Meteor.users.findOne(userId);
 
     return AudienceCategoriesHelpers.facebookSearch({
