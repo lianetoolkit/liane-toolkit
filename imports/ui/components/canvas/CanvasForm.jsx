@@ -5,8 +5,7 @@ import { Form, Button } from "semantic-ui-react";
 import CanvasField from "./CanvasField.jsx";
 import { set } from "lodash";
 
-const Wrapper = styled.div`
-`;
+const Wrapper = styled.div``;
 
 export default class CanvasForm extends React.Component {
   static propTypes = {
@@ -45,6 +44,7 @@ export default class CanvasForm extends React.Component {
     }
   }
   _handleChange = (e, { name, value }) => {
+    console.log(name);
     let newFormData = Object.assign({}, this.state.formData);
     set(newFormData, name, value);
     this.setState({ formData: newFormData });

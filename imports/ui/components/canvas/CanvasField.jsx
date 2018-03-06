@@ -34,6 +34,8 @@ export default class CanvasForm extends React.Component {
   }
   _control(config) {
     switch (config.fieldType) {
+      case "boolean":
+        return Checkbox;
       case "text":
         return Input;
       case "textarea":
@@ -84,11 +86,19 @@ export default class CanvasForm extends React.Component {
     if (config.fieldType == "repeater" || config.fieldType == "group") {
       fieldProps["config"] = config;
     }
+    if (config.fieldType == "boolean") {
+      delete fieldProps["value"];
+      fieldProps["checked"] = !!value;
+      if (onChange) {
+        fieldProps["onChange"] = function() {
+          onChange(null, { name: config.key, value: !value });
+        };
+      }
+    } else if (onChange) {
+      fieldProps["onChange"] = onChange;
+    }
     if (config.options) {
       fieldProps["options"] = this._options(config);
-    }
-    if (onChange) {
-      fieldProps["onChange"] = onChange;
     }
     return fieldProps;
   }

@@ -3,10 +3,19 @@ import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
 import styled from "styled-components";
-import CanvasConfig from "/imports/api/canvas/canvasForm.json";
+import CanvasModel from "/imports/api/canvas/model/canvas";
 import CanvasForm from "/imports/ui/components/canvas/CanvasForm.jsx";
 
-import { Step, Divider, Grid, Header, List, Button } from "semantic-ui-react";
+import {
+  Step,
+  Rail,
+  Sticky,
+  Divider,
+  Grid,
+  Header,
+  List,
+  Button
+} from "semantic-ui-react";
 
 const Wrapper = styled.div`
   .ui.ordered.steps .step:before {
@@ -31,7 +40,7 @@ export default class CanvasEdit extends React.Component {
     this._handleSubmit = this._handleSubmit.bind(this);
   }
   componentDidMount() {
-    const sectionKey = this.props.sectionKey || CanvasConfig[0].key;
+    const sectionKey = this.props.sectionKey || CanvasModel[0].key;
     this.setState({
       sectionKey
     });
@@ -40,10 +49,11 @@ export default class CanvasEdit extends React.Component {
     const { sectionKey } = this.props;
     if (nextProps.sectionKey !== sectionKey) {
       this.setState({
-        sectionKey: nextProps.sectionKey || CanvasConfig[0].key
+        sectionKey: nextProps.sectionKey || CanvasModel[0].key
       });
     }
   }
+  _handleContextRef = contextRef => this.setState({ contextRef });
   _handleSubmit(data) {
     const { campaignId } = this.props;
     const { sectionKey } = this.state;
@@ -61,9 +71,10 @@ export default class CanvasEdit extends React.Component {
     );
   }
   render() {
-    const { sectionKey } = this.state;
+    const { sectionKey, contextRef } = this.state;
     const { loading, campaign, canvas } = this.props;
-    const section = CanvasConfig.find(section => section.key == sectionKey);
+    const section = CanvasModel.find(section => section.key == sectionKey);
+    console.log(contextRef);
     return (
       <Wrapper>
         <PageHeader
@@ -80,31 +91,44 @@ export default class CanvasEdit extends React.Component {
             <Grid columns={2}>
               <Grid.Row>
                 <Grid.Column width={5}>
-                  <Step.Group fluid ordered vertical size="mini">
-                    {CanvasConfig.map(section => (
-                      <Step
-                        key={section.key}
-                        active={sectionKey == section.key}
-                        href={FlowRouter.path("App.campaignCanvas.edit", {
-                          sectionKey: section.key,
-                          campaignId: campaign._id
-                        })}
-                      >
-                        <Step.Content>
-                          <Step.Title>{section.title}</Step.Title>
-                        </Step.Content>
-                      </Step>
-                    ))}
-                  </Step.Group>
+                  {/* <Rail position="left"> */}
+                  <div className="test">
+                    <Sticky
+                      pushing
+                      offset={20}
+                      context={contextRef}
+                      scrollContext={document.getElementById("app-content")}
+                    >
+                      <Step.Group fluid ordered vertical size="mini">
+                        {CanvasModel.map(section => (
+                          <Step
+                            key={section.key}
+                            active={sectionKey == section.key}
+                            href={FlowRouter.path("App.campaignCanvas.edit", {
+                              sectionKey: section.key,
+                              campaignId: campaign._id
+                            })}
+                          >
+                            <Step.Content>
+                              <Step.Title>{section.title}</Step.Title>
+                            </Step.Content>
+                          </Step>
+                        ))}
+                      </Step.Group>
+                    </Sticky>
+                  </div>
+                  {/* </Rail> */}
                 </Grid.Column>
                 {sectionKey && section ? (
                   <Grid.Column width={11}>
-                    <Description>{section.description}</Description>
-                    <CanvasForm
-                      config={section}
-                      canvas={canvas}
-                      onSubmit={this._handleSubmit}
-                    />
+                    <div ref={this._handleContextRef}>
+                      <Description>{section.description}</Description>
+                      <CanvasForm
+                        config={section}
+                        canvas={canvas}
+                        onSubmit={this._handleSubmit}
+                      />
+                    </div>
                   </Grid.Column>
                 ) : null}
               </Grid.Row>

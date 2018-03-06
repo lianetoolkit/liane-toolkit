@@ -20,7 +20,7 @@ const Footer = styled.footer`
 `;
 
 export default ({ children }) => (
-  <Wrapper>
+  <Wrapper id="app-content">
     <Content>
       {children}
       <Footer>

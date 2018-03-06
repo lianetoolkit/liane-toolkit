@@ -53,7 +53,7 @@ export default class RepeaterField extends React.Component {
     ev.preventDefault();
     const { config } = this.props;
     const { value } = this.state;
-    if (config.limit && value.length < config.limit) {
+    if (!config.limit || value.length < config.limit) {
       this.setState({
         value: [...value, {}]
       });
