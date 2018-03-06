@@ -81,7 +81,7 @@ export default class CanvasEdit extends React.Component {
           titleTo={FlowRouter.path("App.campaignDetail", {
             campaignId: campaign ? campaign._id : ""
           })}
-          subTitle="Canvas"
+          subTitle="Editing your canvas"
         />
         <section className="content">
           {loading ? (
