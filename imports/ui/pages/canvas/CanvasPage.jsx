@@ -30,8 +30,8 @@ const CanvasItems = styled.div`
       width: auto;
       float: none;
       padding-right: 0;
-      &::before,
-      &::after {
+      &:before,
+      &:after {
         content: "";
         clear: both;
         display: table;
@@ -70,7 +70,7 @@ export default class CanvasEdit extends React.Component {
           ) : (
             <Segment.Group>
               {CanvasModel.map(section => (
-                <Segment key={section.key}>
+                <Segment key={section.key} clearing>
                   <Header as="h2" floated="left">
                     {section.title}
                   </Header>
@@ -96,7 +96,6 @@ export default class CanvasEdit extends React.Component {
                       />
                     ))}
                   </CanvasItems>
-                  <Divider clearing hidden />
                 </Segment>
               ))}
             </Segment.Group>

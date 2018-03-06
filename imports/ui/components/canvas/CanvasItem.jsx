@@ -5,6 +5,9 @@ import styled from "styled-components";
 const Wrapper = styled.div`
   font-size: 1.2em;
   margin: 0 0 1.5rem;
+  &:last-child {
+    margin: 0;
+  }
   .canvas-label {
     margin-bottom: 0.5rem;
     letter-spacing: 0.1rem;
