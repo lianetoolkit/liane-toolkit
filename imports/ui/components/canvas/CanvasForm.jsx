@@ -44,7 +44,6 @@ export default class CanvasForm extends React.Component {
     }
   }
   _handleChange = (e, { name, value }) => {
-    console.log(name);
     let newFormData = Object.assign({}, this.state.formData);
     set(newFormData, name, value);
     this.setState({ formData: newFormData });
