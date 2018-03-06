@@ -74,7 +74,6 @@ export default class CanvasEdit extends React.Component {
     const { sectionKey, contextRef } = this.state;
     const { loading, campaign, canvas } = this.props;
     const section = CanvasModel.find(section => section.key == sectionKey);
-    console.log(contextRef);
     return (
       <Wrapper>
         <PageHeader
@@ -91,7 +90,6 @@ export default class CanvasEdit extends React.Component {
             <Grid columns={2}>
               <Grid.Row>
                 <Grid.Column width={5}>
-                  {/* <Rail position="left"> */}
                   <div className="test">
                     <Sticky
                       pushing
@@ -117,7 +115,6 @@ export default class CanvasEdit extends React.Component {
                       </Step.Group>
                     </Sticky>
                   </div>
-                  {/* </Rail> */}
                 </Grid.Column>
                 {sectionKey && section ? (
                   <Grid.Column width={11}>
