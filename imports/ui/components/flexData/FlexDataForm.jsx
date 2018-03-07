@@ -2,14 +2,14 @@ import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Form, Button } from "semantic-ui-react";
-import CanvasField from "./CanvasField.jsx";
+import FlexDataField from "./FlexDataField.jsx";
 import { setWith, clone } from "lodash";
 
 const Wrapper = styled.div``;
 
-export default class CanvasForm extends React.Component {
+export default class FlexDataForm extends React.Component {
   static propTypes = {
-    canvas: PropTypes.array,
+    data: PropTypes.array,
     config: PropTypes.object
   };
   constructor(props) {
@@ -21,12 +21,12 @@ export default class CanvasForm extends React.Component {
     this._handleSubmit = this._handleSubmit.bind(this);
   }
   componentDidMount() {
-    this._updateValues(this.props.canvas, this.props.config.key);
+    this._updateValues(this.props.data, this.props.config.key);
   }
-  _updateValues(canvas, sectionKey) {
+  _updateValues(data, sectionKey) {
     let values = {};
-    if (canvas && canvas.length) {
-      for (const item of canvas) {
+    if (data && data.length) {
+      for (const item of data) {
         if (item.sectionKey == sectionKey) {
           values[item.key] = item.value;
         }
@@ -35,12 +35,12 @@ export default class CanvasForm extends React.Component {
     this.setState({ formData: values });
   }
   componentWillReceiveProps(nextProps) {
-    const { config, canvas } = this.props;
+    const { config, data } = this.props;
     if (
       JSON.stringify(nextProps.config) !== JSON.stringify(config) ||
-      JSON.stringify(nextProps.canvas) !== JSON.stringify(canvas)
+      JSON.stringify(nextProps.data) !== JSON.stringify(data)
     ) {
-      this._updateValues(nextProps.canvas, nextProps.config.key);
+      this._updateValues(nextProps.data, nextProps.config.key);
     }
   }
   _handleChange = (e, { name, value }) => {
@@ -58,13 +58,13 @@ export default class CanvasForm extends React.Component {
   }
   render() {
     const { formData } = this.state;
-    const { config, canvas, ...props } = this.props;
+    const { config, data, ...props } = this.props;
     if (config && config.fields) {
       return (
         <Wrapper>
           <Form {...props} onSubmit={this._handleSubmit}>
             {config.fields.map(field => (
-              <CanvasField
+              <FlexDataField
                 key={field.key}
                 config={field}
                 onChange={this._handleChange}

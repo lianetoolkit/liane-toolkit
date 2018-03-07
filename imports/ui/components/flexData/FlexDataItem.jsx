@@ -8,7 +8,7 @@ const Wrapper = styled.div`
   &:last-child {
     margin: 0;
   }
-  .canvas-label {
+  .flex-data-label {
     margin-bottom: 0.5rem;
     letter-spacing: 0.1rem;
     display: block;
@@ -22,11 +22,11 @@ const Wrapper = styled.div`
     font-style: italic;
   }
   &.group {
-    > .canvas-value {
+    > .flex-data-value {
       font-size: 0.8em;
       border: 1px solid #eee;
       padding: 1rem;
-      .canvas-item {
+      .flex-data-item {
         margin: 0;
       }
     }
@@ -35,13 +35,13 @@ const Wrapper = styled.div`
     .table {
       font-size: 0.8em;
     }
-    td > .canvas-item {
+    td > .flex-data-item {
       margin: 0;
     }
-    td > .canvas-item > .canvas-label {
+    td > .flex-data-item > .flex-data-label {
       display: none;
     }
-    .group > .canvas-value {
+    .group > .flex-data-value {
       padding: 0;
       border: 0;
     }
@@ -53,7 +53,7 @@ const GroupItem = ({ field, data }) => {
     <List>
       {field.fields.map(item => (
         <List.Item key={item.key}>
-          <CanvasItem field={item} data={{ value: data.value[item.key] }} />
+          <FlexDataItem field={item} data={{ value: data.value[item.key] }} />
         </List.Item>
       ))}
     </List>
@@ -75,7 +75,7 @@ const RepeaterItem = ({ field, data }) => {
           <Table.Row key={i}>
             {field.fields.map(fieldItem => (
               <Table.Cell key={fieldItem.key} verticalAlign="top">
-                <CanvasItem
+                <FlexDataItem
                   field={fieldItem}
                   data={{ value: item[fieldItem.key] }}
                 />
@@ -92,7 +92,7 @@ const BooleanItem = ({ field, data }) => {
   return <Checkbox disabled checked={!!data.value} />;
 };
 
-export default class CanvasItem extends React.Component {
+export default class FlexDataItem extends React.Component {
   _value() {
     const { field, data } = this.props;
     if (data && (data.value !== undefined && data.value !== null)) {
@@ -120,9 +120,9 @@ export default class CanvasItem extends React.Component {
   render() {
     const { field } = this.props;
     return (
-      <Wrapper key={field.key} className={`canvas-item ${field.fieldType}`}>
-        <span className="canvas-label">{field.label}</span>
-        <div className="canvas-value">{this._value()}</div>
+      <Wrapper key={field.key} className={`flex-data-item ${field.fieldType}`}>
+        <span className="flex-data-label">{field.label}</span>
+        <div className="flex-data-value">{this._value()}</div>
       </Wrapper>
     );
   }

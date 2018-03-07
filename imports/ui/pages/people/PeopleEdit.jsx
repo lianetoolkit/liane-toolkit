@@ -3,7 +3,7 @@ import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
 import styled from "styled-components";
-import CanvasModel from "/imports/api/canvas/model/canvas";
+import PeopleMetaModel from "/imports/api/facebook/people/model/meta";
 import FlexDataForm from "/imports/ui/components/flexData/FlexDataForm.jsx";
 
 import {
@@ -30,21 +30,21 @@ const Description = styled.div`
   padding: 1rem 0 2rem 0;
   border-bottom: 1px solid #eee;
   p {
-    margin: 0 0 .5rem;
+    margin: 0 0 0.5rem;
   }
 `;
 
-export default class CanvasEdit extends React.Component {
+export default class PeopleEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       sectionKey: null
     };
-    console.log("CanvasEdit init", { props });
+    console.log("PeopleEdit init", { props });
     this._handleSubmit = this._handleSubmit.bind(this);
   }
   componentDidMount() {
-    const sectionKey = this.props.sectionKey || CanvasModel[0].key;
+    const sectionKey = this.props.sectionKey || PeopleMetaModel[0].key;
     this.setState({
       sectionKey
     });
@@ -53,18 +53,19 @@ export default class CanvasEdit extends React.Component {
     const { sectionKey } = this.props;
     if (nextProps.sectionKey !== sectionKey) {
       this.setState({
-        sectionKey: nextProps.sectionKey || CanvasModel[0].key
+        sectionKey: nextProps.sectionKey || PeopleMetaModel[0].key
       });
     }
   }
   _handleContextRef = contextRef => this.setState({ contextRef });
   _handleSubmit(data) {
-    const { campaignId } = this.props;
+    const { campaignId, person } = this.props;
     const { sectionKey } = this.state;
     Meteor.call(
-      "canvas.formUpdate",
+      "people.metaUpdate",
       {
         campaignId,
+        personId: person._id,
         sectionKey,
         data
       },
@@ -75,8 +76,8 @@ export default class CanvasEdit extends React.Component {
   }
   render() {
     const { sectionKey, contextRef } = this.state;
-    const { loading, campaign, canvas } = this.props;
-    const section = CanvasModel.find(section => section.key == sectionKey);
+    const { loading, campaign, person } = this.props;
+    const section = PeopleMetaModel.find(section => section.key == sectionKey);
     return (
       <Wrapper>
         <PageHeader
@@ -84,7 +85,7 @@ export default class CanvasEdit extends React.Component {
           titleTo={FlowRouter.path("App.campaignDetail", {
             campaignId: campaign ? campaign._id : ""
           })}
-          subTitle="Editing your canvas"
+          subTitle={person ? person.name : ""}
         />
         <section className="content">
           {loading ? (
@@ -101,12 +102,13 @@ export default class CanvasEdit extends React.Component {
                       scrollContext={document.getElementById("app-content")}
                     >
                       <Step.Group fluid ordered vertical size="mini">
-                        {CanvasModel.map(section => (
+                        {PeopleMetaModel.map(section => (
                           <Step
                             key={section.key}
                             active={sectionKey == section.key}
-                            href={FlowRouter.path("App.campaignCanvas.edit", {
+                            href={FlowRouter.path("App.campaignPeople.edit", {
                               sectionKey: section.key,
+                              personId: person._id,
                               campaignId: campaign._id
                             })}
                           >
@@ -122,14 +124,20 @@ export default class CanvasEdit extends React.Component {
                 {sectionKey && section ? (
                   <Grid.Column width={11}>
                     <div ref={this._handleContextRef}>
-                      <Description
-                        dangerouslySetInnerHTML={{
-                          __html: section.description
-                        }}
-                      />
+                      {section.description ? (
+                        <Description
+                          dangerouslySetInnerHTML={{
+                            __html: section.description
+                          }}
+                        />
+                      ) : null}
                       <FlexDataForm
                         config={section}
-                        data={canvas}
+                        data={
+                          person.campaignMeta
+                            ? person.campaignMeta.items || []
+                            : []
+                        }
                         onSubmit={this._handleSubmit}
                       />
                     </div>

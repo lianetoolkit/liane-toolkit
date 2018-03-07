@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Header, Label, Button, Icon, Divider } from "semantic-ui-react";
-import CanvasField from "./CanvasField.jsx";
+import FlexDataField from "./FlexDataField.jsx";
 import styled from "styled-components";
 import { setWith, clone } from "lodash";
 
@@ -110,7 +110,7 @@ export default class RepeaterField extends React.Component {
         {value.length ? (
           <Item>
             {config.fields.map(field => (
-              <CanvasField
+              <FlexDataField
                 key={field.key}
                 config={field}
                 name={`data[${activeIndex}]${field.key}`}

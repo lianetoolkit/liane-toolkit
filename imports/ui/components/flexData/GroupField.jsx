@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Header, Accordion, Icon, Label } from "semantic-ui-react";
-import CanvasField from "./CanvasField.jsx";
+import FlexDataField from "./FlexDataField.jsx";
 
 const Wrapper = styled.div`
   padding: 1rem;
@@ -62,7 +62,7 @@ export default class GroupField extends React.Component {
         </Accordion.Title>
         <Accordion.Content active={active}>
           {config.fields.map(field => (
-            <CanvasField
+            <FlexDataField
               key={field.key}
               config={field}
               onChange={this._handleChange}

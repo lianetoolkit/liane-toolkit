@@ -51,6 +51,60 @@ export const updatePersonMeta = new ValidatedMethod({
   }
 });
 
+export const canvasFormUpdate = new ValidatedMethod({
+  name: "people.metaUpdate",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    personId: {
+      type: String
+    },
+    sectionKey: {
+      type: String
+    },
+    data: {
+      type: Object,
+      blackbox: true
+    }
+  }).validator(),
+  run({ campaignId, personId, sectionKey, data }) {
+    logger.debug("people.metaUpdate called", {
+      campaignId,
+      personId,
+      sectionKey,
+      data
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    const allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    return People.update(
+      {
+        campaignId,
+        _id: personId
+      },
+      {
+        $set: {
+          [`campaignMeta.${sectionKey}`]: data
+        }
+      }
+    );
+  }
+});
+
 export const peopleCampaignSummary = new ValidatedMethod({
   name: "people.campaignSummary",
   validate: new SimpleSchema({

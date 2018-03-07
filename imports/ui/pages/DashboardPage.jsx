@@ -4,8 +4,6 @@ import Loading from "/imports/ui/components/utils/Loading.jsx";
 import AuthFacebook from "/imports/ui/components/facebook/AuthFacebook.jsx";
 import CampaignsListContainer from "/imports/ui/containers/campaigns/CampaignsListContainer.jsx";
 
-import CanvasForm from "/imports/ui/components/canvas/CanvasForm.jsx";
-
 import { Card, Statistic, Grid, Header, Button } from "semantic-ui-react";
 
 import moment from "moment";
@@ -33,7 +31,6 @@ export default class DashboardPage extends React.Component {
                   ) : (
                     <AuthFacebook />
                   )}
-                  <CanvasForm section="basic_info" />
                 </Grid.Column>
               </Grid.Row>
             </Grid>

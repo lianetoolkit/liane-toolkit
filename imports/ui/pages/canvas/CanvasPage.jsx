@@ -4,7 +4,7 @@ import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
 import styled from "styled-components";
 import CanvasModel from "/imports/api/canvas/model/canvas";
-import CanvasItem from "/imports/ui/components/canvas/CanvasItem.jsx";
+import FlexDataItem from "/imports/ui/components/flexData/FlexDataItem.jsx";
 
 import {
   Segment,
@@ -20,7 +20,7 @@ import {
 } from "semantic-ui-react";
 
 const CanvasItems = styled.div`
-  > .canvas-item {
+  > .flex-data-item {
     width: 33.3333%;
     float: left;
     box-sizing: border-box;
@@ -36,6 +36,7 @@ const CanvasItems = styled.div`
         clear: both;
         display: table;
       }
+    }
   }
 `;
 
@@ -89,7 +90,7 @@ export default class CanvasEdit extends React.Component {
                   <Divider clearing hidden />
                   <CanvasItems>
                     {section.fields.map(field => (
-                      <CanvasItem
+                      <FlexDataItem
                         key={field.key}
                         field={field}
                         data={this._fieldData(section, field)}

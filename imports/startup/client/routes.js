@@ -17,6 +17,7 @@ import CampaignsPageContainer from "/imports/ui/containers/campaigns/CampaignsPa
 
 import CampaignsPeopleContainer from "/imports/ui/containers/campaigns/CampaignsPeopleContainer.jsx";
 import PeopleSinglePageContainer from "/imports/ui/containers/people/PeopleSinglePageContainer.jsx";
+import PeopleEditContainer from "/imports/ui/containers/people/PeopleEditContainer.jsx";
 
 import CampaignsAudienceContainer from "/imports/ui/containers/campaigns/CampaignsAudienceContainer.jsx";
 import CampaignsEntriesContainer from "/imports/ui/containers/campaigns/CampaignsEntriesContainer.jsx";
@@ -184,6 +185,22 @@ appRoutes.route("/campaign/:campaignId/people/view/:personId", {
       content: {
         component: PeopleSinglePageContainer,
         props: { campaignId: params.campaignId, personId: params.personId }
+      }
+    });
+  }
+});
+appRoutes.route("/campaign/:campaignId/people/edit/:personId/:sectionKey?", {
+  name: "App.campaignPeople.edit",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Campaign`);
+    return mount(AppContainer, {
+      content: {
+        component: PeopleEditContainer,
+        props: {
+          campaignId: params.campaignId,
+          personId: params.personId,
+          sectionKey: params.sectionKey
+        }
       }
     });
   }

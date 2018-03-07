@@ -15,7 +15,7 @@ import FacebookInterestsField from "/imports/ui/components/audiences/FacebookInt
 import RepeaterField from "./RepeaterField.jsx";
 import GroupField from "./GroupField.jsx";
 
-export default class CanvasForm extends React.Component {
+export default class FlexDataField extends React.Component {
   static propTypes = {
     config: PropTypes.object
   };
