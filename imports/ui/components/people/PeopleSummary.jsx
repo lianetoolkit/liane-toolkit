@@ -18,7 +18,7 @@ export default class PeopleSummary extends React.Component {
     if (nextProps.facebookId !== this.props.facebookId) {
       this.setState({ peopleSummary: null });
     }
-    if (nextProps.peopleSummary && !this.state.peopleSummary) {
+    if (nextProps.peopleSummary != this.props.peopleSummary) {
       this.setState({ peopleSummary: nextProps.peopleSummary });
     }
   }
