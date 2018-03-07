@@ -9,7 +9,8 @@ import {
   Header,
   Icon,
   Button,
-  Divider
+  Divider,
+  Menu
 } from "semantic-ui-react";
 import PeopleInteractivityItem from "/imports/ui/components/people/PeopleInteractivityItem.jsx";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
@@ -36,12 +37,10 @@ const Wrapper = styled.div`
   }
   .interactions-summary {
     .grid {
-      font-size: 1.6em;
       text-align: center;
       color: #999;
       h4 {
-        font-size: 0.5em;
-        background: #f7f7f7;
+        font-size: 0.8em;
         color: #666;
         line-height: 1.2;
         padding: 0.5rem;
@@ -49,9 +48,16 @@ const Wrapper = styled.div`
       img,
       .icon {
         display: inline-block;
-        margin-right: 1rem;
+        float: left;
+        margin-right: 0.5rem;
         color: #333;
       }
+    }
+  }
+  .person-data {
+    .segments,
+    .segment {
+      margin-top: 0;
     }
   }
 `;
@@ -82,7 +88,10 @@ const reactions = ["like", "love", "wow", "haha", "sad", "angry"];
 export default class PeopleSinglePage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      nav: "intro"
+    };
+    this._nav = this._nav.bind(this);
   }
   componentDidMount() {
     this._buildEntries();
@@ -92,6 +101,11 @@ export default class PeopleSinglePage extends React.Component {
     if (likes != nextProps.likes || comments != nextProps.comments) {
       this._buildEntries(nextProps);
     }
+  }
+  _nav(nav) {
+    return () => {
+      this.setState({ nav });
+    };
   }
   _fieldData(section, field) {
     const { person } = this.props;
@@ -138,7 +152,7 @@ export default class PeopleSinglePage extends React.Component {
     });
   }
   render() {
-    const { entries } = this.state;
+    const { entries, nav } = this.state;
     const { loading, campaign, person, likes, comments } = this.props;
     if (loading) {
       return <Loading />;
@@ -157,10 +171,10 @@ export default class PeopleSinglePage extends React.Component {
               <Segment size="small">
                 <Grid columns={3}>
                   <Grid.Row>
-                    <Grid.Column width={3}>
+                    <Grid.Column width={4}>
                       <PeopleMetaButtons person={person} size="large" />
                     </Grid.Column>
-                    <Grid.Column width={13}>
+                    <Grid.Column width={12}>
                       {comments.length ? (
                         <div className="comment-history">
                           <Header>
@@ -187,8 +201,7 @@ export default class PeopleSinglePage extends React.Component {
                   </Grid.Row>
                 </Grid>
               </Segment>
-              <Segment className="interactions-summary">
-                <Header>Interactions</Header>
+              <Segment size="small" className="interactions-summary">
                 {campaign.accounts.map(account => (
                   <Grid
                     key={account._id}
@@ -202,62 +215,93 @@ export default class PeopleSinglePage extends React.Component {
                       </Grid.Column>
                       <Grid.Column>
                         <Icon name="comment" />
-                        {person.counts[account.facebookId].comments || 0}
+                        {person.counts[account.facebookId] ? (
+                          <span>
+                            {person.counts[account.facebookId].comments || 0}
+                          </span>
+                        ) : (
+                          <span>0</span>
+                        )}
                       </Grid.Column>
                       {reactions.map(reaction => (
                         <Grid.Column key={reaction}>
-                          <Reaction reaction={reaction} />
-                          {
-                            person.counts[account.facebookId].reactions[
-                              reaction
-                            ]
-                          }
+                          <Reaction size="small" reaction={reaction} />
+                          {person.counts[account.facebookId] ? (
+                            <span>
+                              {
+                                person.counts[account.facebookId].reactions[
+                                  reaction
+                                ]
+                              }
+                            </span>
+                          ) : (
+                            <span>0</span>
+                          )}
                         </Grid.Column>
                       ))}
                     </Grid.Row>
                   </Grid>
                 ))}
               </Segment>
-              {PeopleMetaModel.map(section => (
-                <Segment key={section.key} clearing>
-                  <Header floated="left">{section.title}</Header>
-                  <Button
-                    as="a"
-                    primary
-                    floated="right"
-                    href={FlowRouter.path("App.campaignPeople.edit", {
-                      campaignId: campaign._id,
-                      personId: person._id,
-                      sectionKey: section.key
-                    })}
-                  >
-                    <Icon name="edit" />
-                    Edit information
-                  </Button>
-                  <Divider clearing hidden />
-                  <MetaItem>
-                    {section.fields.map(field => (
-                      <FlexDataItem
-                        key={field.key}
-                        field={field}
-                        data={this._fieldData(section, field)}
-                      />
-                    ))}
-                  </MetaItem>
-                </Segment>
-              ))}
-              <Segment>
-                <Header>All activity</Header>
-                {entries.map(entry => (
-                  <PeopleInteractivityItem
-                    key={entry._id}
-                    entry={entry}
-                    comments={entry.comments}
-                    like={entry.like}
-                  />
-                ))}
-              </Segment>
             </Segment.Group>
+            <div className="person-data">
+              <Menu pointing attached="top">
+                <Menu.Item active={nav == "intro"} onClick={this._nav("intro")}>
+                  Information
+                </Menu.Item>
+                <Menu.Item
+                  active={nav == "activity"}
+                  onClick={this._nav("activity")}
+                >
+                  Activity
+                </Menu.Item>
+              </Menu>
+              {nav == "intro" ? (
+                <Segment.Group>
+                  {PeopleMetaModel.map(section => (
+                    <Segment key={section.key} clearing>
+                      <Header floated="left">{section.title}</Header>
+                      <Button
+                        as="a"
+                        primary
+                        floated="right"
+                        href={FlowRouter.path("App.campaignPeople.edit", {
+                          campaignId: campaign._id,
+                          personId: person._id,
+                          sectionKey: section.key
+                        })}
+                      >
+                        <Icon name="edit" />
+                        Edit
+                      </Button>
+                      <Divider clearing hidden />
+                      <MetaItem>
+                        {section.fields.map(field => (
+                          <FlexDataItem
+                            key={field.key}
+                            field={field}
+                            data={this._fieldData(section, field)}
+                          />
+                        ))}
+                      </MetaItem>
+                    </Segment>
+                  ))}
+                </Segment.Group>
+              ) : null}
+              {nav == "activity" ? (
+                <Segment>
+                  <Header>All activity</Header>
+                  {entries.map(entry => (
+                    <PeopleInteractivityItem
+                      key={entry._id}
+                      entry={entry}
+                      comments={entry.comments}
+                      like={entry.like}
+                    />
+                  ))}
+                </Segment>
+              ) : null}
+            </div>
           </section>
         </Wrapper>
       );
