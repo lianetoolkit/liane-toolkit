@@ -37,7 +37,7 @@ export default createContainer(props => {
   if (!props.facebookId && accounts.length) {
     facebookId = accounts[0].facebookId;
   }
-  if (facebookId && shouldCall) {
+  if (facebookId) {
     Meteor.call(
       "people.campaignSummary",
       {

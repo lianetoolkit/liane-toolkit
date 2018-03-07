@@ -43,13 +43,34 @@ Entries.schema = new SimpleSchema({
   counts: {
     type: Object,
   },
-  "counts.likes": {
+  "counts.reaction": {
     type: Number
   },
-  "counts.comments": {
+  "counts.like": {
     type: Number
   },
-  "counts.shares": {
+  "counts.love": {
+    type: Number
+  },
+  "counts.wow": {
+    type: Number
+  },
+  "counts.haha": {
+    type: Number
+  },
+  "counts.sad": {
+    type: Number
+  },
+  "counts.angry": {
+    type: Number
+  },
+  "counts.thankful": {
+    type: Number
+  },
+  "counts.comment": {
+    type: Number
+  },
+  "counts.share": {
     type: Number
   }
 });

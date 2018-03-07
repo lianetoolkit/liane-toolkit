@@ -70,6 +70,7 @@ export default class PeopleMetaButtons extends React.Component {
     }
   }
   _metaButton(data = {}, key) {
+    const { size } = this.props;
     const iconName = this._metaIconName(key);
     const iconColor = this._metaIconColor(key);
     const iconLabel = this._metaIconLabel(key);
@@ -82,7 +83,7 @@ export default class PeopleMetaButtons extends React.Component {
         trigger={
           <Icon
             color={iconColor}
-            // size="large"
+            size={size}
             name={iconName}
             style={style}
             onClick={this._handleClick(key)}

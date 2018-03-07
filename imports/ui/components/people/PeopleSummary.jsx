@@ -40,7 +40,7 @@ export default class PeopleSummary extends React.Component {
   }
   render() {
     const { peopleSummary } = this.state;
-    const { facebookId } = this.props;
+    const { facebookId, campaignId } = this.props;
     if (peopleSummary) {
       return (
         <Segment>
@@ -61,7 +61,16 @@ export default class PeopleSummary extends React.Component {
                             <Icon name="facebook" />
                           </a>
                         </Table.Cell>
-                        <Table.Cell>{person.name}</Table.Cell>
+                        <Table.Cell>
+                          <a
+                            href={FlowRouter.path("App.campaignPeople.detail", {
+                              campaignId,
+                              personId: person._id
+                            })}
+                          >
+                            {person.name}
+                          </a>
+                        </Table.Cell>
                         <Table.Cell singleLine>
                           <PeopleMetaButtons
                             person={person}
@@ -92,7 +101,16 @@ export default class PeopleSummary extends React.Component {
                             <Icon name="facebook" />
                           </a>
                         </Table.Cell>
-                        <Table.Cell>{person.name}</Table.Cell>
+                        <Table.Cell>
+                          <a
+                            href={FlowRouter.path("App.campaignPeople.detail", {
+                              campaignId,
+                              personId: person._id
+                            })}
+                          >
+                            {person.name}
+                          </a>
+                        </Table.Cell>
                         <Table.Cell singleLine>
                           <PeopleMetaButtons
                             person={person}

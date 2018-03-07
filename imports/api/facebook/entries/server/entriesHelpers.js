@@ -77,8 +77,15 @@ const EntriesHelpers = {
             "created_time",
             "updated_time",
             "shares",
-            "comments.limit(1).summary(true)",
-            "likes.limit(1).summary(true)"
+            "comments.limit(0).summary(true)",
+            "reactions.limit(0).summary(true).as(reaction)",
+            "reactions.type(LIKE).limit(0).summary(true).as(like)",
+            "reactions.type(LOVE).limit(0).summary(true).as(love)",
+            "reactions.type(WOW).limit(0).summary(true).as(wow)",
+            "reactions.type(HAHA).limit(0).summary(true).as(haha)",
+            "reactions.type(SAD).limit(0).summary(true).as(sad)",
+            "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
+            "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
           ],
           limit: 100
         })
@@ -88,6 +95,18 @@ const EntriesHelpers = {
     }
 
     const _getUpdateObj = ({ entry }) => {
+      const counts = {
+        share: entry.shares ? entry.shares.count : 0,
+        like: entry.like ? entry.like.summary.total_count : 0,
+        love: entry.love ? entry.love.summary.total_count : 0,
+        wow: entry.wow ? entry.wow.summary.total_count : 0,
+        haha: entry.haha ? entry.haha.summary.total_count : 0,
+        sad: entry.sad ? entry.sad.summary.total_count : 0,
+        angry: entry.angry ? entry.angry.summary.total_count : 0,
+        thankful: entry.thankful ? entry.thankful.summary.total_count : 0,
+        reaction: entry.reaction ? entry.reaction.summary.total_count : 0,
+        comment: entry.comments ? entry.comments.summary.total_count : 0
+      };
       return {
         $setOnInsert: {
           _id: entry.id,
@@ -101,11 +120,7 @@ const EntriesHelpers = {
           parentId: entry.parent_id,
           link: entry.link,
           updatedTime: entry.updated_time,
-          counts: {
-            likes: entry.likes ? entry.likes.summary.total_count : 0,
-            comments: entry.comments ? entry.comments.summary.total_count : 0,
-            shares: entry.shares ? entry.shares.count : 0
-          }
+          counts
         }
       };
     };
@@ -118,8 +133,8 @@ const EntriesHelpers = {
         let updateInteractions = [];
         if (currentEntry) {
           if (
-            vals.counts.comments &&
-            currentEntry.counts.comments !== vals.counts.comments
+            vals.counts.comment &&
+            currentEntry.counts.comment !== vals.counts.comment
           ) {
             updateInteractions.push("comments");
           } else {
@@ -134,8 +149,8 @@ const EntriesHelpers = {
             // });
           }
           if (
-            vals.counts.likes &&
-            currentEntry.counts.likes !== vals.counts.likes
+            vals.counts.reaction &&
+            currentEntry.counts.reaction !== vals.counts.reaction
           ) {
             updateInteractions.push("likes");
           } else {
@@ -150,8 +165,8 @@ const EntriesHelpers = {
             // });
           }
         } else {
-          if (vals.counts.likes) updateInteractions.push("likes");
-          if (vals.counts.comments) updateInteractions.push("comments");
+          if (vals.counts.reaction) updateInteractions.push("likes");
+          if (vals.counts.comment) updateInteractions.push("comments");
         }
         Entries.upsert(
           {

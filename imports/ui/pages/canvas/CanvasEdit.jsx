@@ -23,11 +23,15 @@ const Wrapper = styled.div`
   }
 `;
 
-const Description = styled.p`
+const Description = styled.div`
   font-size: 1.2em;
+  line-height: 1.7em;
   margin: 0 0 2rem 0;
   padding: 1rem 0 2rem 0;
   border-bottom: 1px solid #eee;
+  p {
+    margin: 0 0 .5rem;
+  }
 `;
 
 export default class CanvasEdit extends React.Component {
@@ -119,7 +123,11 @@ export default class CanvasEdit extends React.Component {
                 {sectionKey && section ? (
                   <Grid.Column width={11}>
                     <div ref={this._handleContextRef}>
-                      <Description>{section.description}</Description>
+                      <Description
+                        dangerouslySetInnerHTML={{
+                          __html: section.description
+                        }}
+                      />
                       <CanvasForm
                         config={section}
                         canvas={canvas}

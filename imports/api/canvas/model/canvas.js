@@ -401,7 +401,17 @@ export default [
     key: "team",
     title: "Team",
     description:
-      "Ahora hablemos de tu equipo de campaña. Toda campaña idealmente tiene que tener algunas actividades y gente responsable por ellas. Campañas activistas generalmente no tienen recursos para contratar personas, y trabajan más con amigos/colegas para realizar las actividades. Identifiquémoslos.",
+      "<p>Ahora hablemos de tu equipo de campaña. Toda campaña idealmente tiene que tener algunas actividades y gente responsable por ellas. Campañas activistas generalmente no tienen recursos para contratar personas, y trabajan más con amigos/colegas para realizar las actividades. Identifiquémoslos.</p> <p>Las coordinaciones de campaña son</p>" +
+      "<ul>" +
+      "<li>Coordinación general</li>" +
+      "<li>Comunicación</li>" +
+      "<li>Financiero/fondos</li>" +
+      "<li>Jurídico</li>" +
+      "<li>Movilización/território</li>" +
+      "<li>Agenda</li>" +
+      "<li>Alianzas</li>" +
+      "<li>Encuestas</li>" +
+      "</ul>",
     fields: [
       {
         key: "team",
@@ -410,9 +420,19 @@ export default [
         fields: [
           ...personFields,
           {
-            key: "coordination",
-            label: "Coordination",
-            fieldType: "text"
+            key: "Role",
+            label: "Role",
+            fieldType: "select",
+            options: {
+              general_coordination: "General coordination",
+              communication: "Communication",
+              finance: "Finance",
+              legal: "Legal",
+              mobilization: "Mobilization/Territory",
+              schedule: "Schedule",
+              alliances: "Alliances",
+              polling: "Polling"
+            }
           },
           {
             key: "hours",
@@ -421,13 +441,23 @@ export default [
           },
           {
             key: "active",
-            label: "Is in",
+            label: "Accepted role",
             fieldType: "boolean"
           },
           {
             key: "volunteer",
             label: "Is a volunteer",
             fieldType: "boolean"
+          },
+          {
+            key: "experience",
+            label: "Experience level for the role",
+            fieldType: "text"
+          },
+          {
+            key: "bio",
+            label: "Short biography",
+            fieldType: "textarea"
           }
         ]
       }

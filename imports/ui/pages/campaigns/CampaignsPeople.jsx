@@ -86,6 +86,7 @@ export default class CampaignsPeople extends React.Component {
                   <PeopleSearch campaignId={campaign._id} />
                   <PeopleSummary
                     facebookId={facebookId}
+                    campaignId={campaign._id}
                     peopleSummary={peopleSummary}
                   />
                 </Grid.Column>

@@ -8,7 +8,7 @@ export default class PeopleSearchResults extends React.Component {
     super(props);
   }
   render() {
-    const { loading, facebookId, people } = this.props;
+    const { loading, facebookId, campaignId, people } = this.props;
     if (loading) {
       return <Loading />;
     } else {
@@ -31,7 +31,16 @@ export default class PeopleSearchResults extends React.Component {
                     onChange={this._onMetaButtonsChange}
                   />
                 </Table.Cell>
-                <Table.Cell>{person.name}</Table.Cell>
+                <Table.Cell>
+                  <a
+                    href={FlowRouter.path("App.campaignPeople.detail", {
+                      campaignId,
+                      personId: person._id
+                    })}
+                  >
+                    {person.name}
+                  </a>
+                </Table.Cell>
               </Table.Row>
             ))}
           </Table.Body>

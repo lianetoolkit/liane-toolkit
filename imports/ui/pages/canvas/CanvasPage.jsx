@@ -76,7 +76,7 @@ export default class CanvasEdit extends React.Component {
                   </Header>
                   <Button
                     as="a"
-                    basic
+                    primary
                     floated="right"
                     href={FlowRouter.path("App.campaignCanvas.edit", {
                       campaignId: campaign._id,

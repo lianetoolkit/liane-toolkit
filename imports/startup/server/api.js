@@ -21,6 +21,12 @@ import "/imports/api/canvas/server/canvasPublications.js";
 // entries
 import "/imports/api/facebook/entries/server/entriesPublications.js";
 
+// likes
+import "/imports/api/facebook/likes/server/likesPublications.js";
+
+// comments
+import "/imports/api/facebook/comments/server/commentsPublications.js";
+
 // people
 import "/imports/api/facebook/people/server/peopleMethods.js";
 import "/imports/api/facebook/people/server/peoplePublications.js";

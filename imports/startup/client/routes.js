@@ -14,7 +14,10 @@ import DashboardPageContainer from "/imports/ui/containers/app/DashboardPageCont
 
 import AddCampaignPageContainer from "/imports/ui/containers/campaigns/AddCampaignPageContainer.jsx";
 import CampaignsPageContainer from "/imports/ui/containers/campaigns/CampaignsPageContainer.jsx";
+
 import CampaignsPeopleContainer from "/imports/ui/containers/campaigns/CampaignsPeopleContainer.jsx";
+import PeopleSinglePageContainer from "/imports/ui/containers/people/PeopleSinglePageContainer.jsx";
+
 import CampaignsAudienceContainer from "/imports/ui/containers/campaigns/CampaignsAudienceContainer.jsx";
 import CampaignsEntriesContainer from "/imports/ui/containers/campaigns/CampaignsEntriesContainer.jsx";
 import CampaignsListsContainer from "/imports/ui/containers/campaigns/CampaignsListsContainer.jsx";
@@ -169,6 +172,18 @@ appRoutes.route("/campaign/:campaignId/canvas/edit/:sectionKey?", {
       content: {
         component: CanvasEditContainer,
         props: { campaignId: params.campaignId, sectionKey: params.sectionKey }
+      }
+    });
+  }
+});
+appRoutes.route("/campaign/:campaignId/people/view/:personId", {
+  name: "App.campaignPeople.detail",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Campaign`);
+    return mount(AppContainer, {
+      content: {
+        component: PeopleSinglePageContainer,
+        props: { campaignId: params.campaignId, personId: params.personId }
       }
     });
   }

@@ -189,7 +189,7 @@ export const refreshAccountJob = new ValidatedMethod({
         jobData = {
           facebookId: facebookAccountId,
           accessToken: account.accessToken,
-          campaignId: campaignId
+          campaignId: campaign._id
         };
         break;
       case "audiences":
@@ -201,15 +201,27 @@ export const refreshAccountJob = new ValidatedMethod({
         break;
     }
 
-    const job = Jobs.findOne({
-      type: jobType,
-      data: jobData
-    });
+    const query = {
+      type: jobType
+    };
+
+    for(const prop in jobData) {
+      if(prop !== "accessToken") {
+        query[`data.${prop}`] = jobData[prop];
+      }
+    }
+
+    console.log("QUERY", query);
+
+    const job = Jobs.findOne(query);
+
+    console.log("job found", job);
 
     if (job) {
       if (job.status == "failed" || job.status == "cancelled") {
         Jobs.getJob(job._id).restart();
       } else if (job.status == "waiting") {
+        console.log("waiting");
         Jobs.getJob(job._id).ready({ time: Jobs.foreverDate });
       }
     } else {

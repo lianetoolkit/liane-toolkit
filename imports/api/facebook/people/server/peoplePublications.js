@@ -20,6 +20,23 @@ Meteor.publish("people.campaignSearch", function({ search, campaignId }) {
   return this.ready();
 });
 
+Meteor.publish("people.detail", function({ personId }) {
+  logger.debug("people.detail called", { personId });
+
+  const userId = this.userId;
+  if (userId) {
+    const person = People.findOne(personId);
+    if (person) {
+      const campaign = Campaigns.findOne(person.campaignId);
+      const allowed = _.findWhere(campaign.users, { userId });
+      if (allowed) {
+        return People.find({ _id: personId });
+      }
+    }
+  }
+  return this.ready();
+});
+
 Meteor.publish("people.byAccount", function({
   search,
   limit,
