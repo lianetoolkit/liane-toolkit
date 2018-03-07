@@ -1,20 +1,25 @@
 import { People, PeopleIndex } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+import _ from "underscore";
 
 Meteor.publish("people.campaignSearch", function({ search, campaignId }) {
   logger.debug("people.campaignSearch called", { search, campaignId });
-  // check(search, String);
-  // check(campaignId, String);
+  check(search, Object);
+  check(campaignId, String);
   const userId = this.userId;
   if (userId) {
     const campaign = Campaigns.findOne(campaignId);
     const allowed = _.findWhere(campaign.users, { userId });
     if (allowed) {
-      const cursor = PeopleIndex.search(search, { props: { campaignId } });
-      console.log("result", cursor.fetch());
+      const props = { campaignId };
+      const meta = _.omit(search, "name");
+      for (const key in meta) {
+        if (meta[key]) {
+          props[`campaignMeta.${key}`] = meta[key];
+        }
+      }
+      const cursor = PeopleIndex.search(search.name || "", { props });
       return cursor.mongoCursor;
-    } else {
-      console.log("not allowed");
     }
   }
   return this.ready();

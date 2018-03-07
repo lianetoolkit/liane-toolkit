@@ -194,7 +194,7 @@ export default class PeopleSinglePage extends React.Component {
                         </div>
                       ) : (
                         <div className="comment-history">
-                          <Header>Person never commented</Header>
+                          <Header>Never commented</Header>
                         </div>
                       )}
                     </Grid.Column>

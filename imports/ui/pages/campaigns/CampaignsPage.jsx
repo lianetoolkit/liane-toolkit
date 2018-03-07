@@ -53,7 +53,7 @@ export default class CampaignsPage extends React.Component {
                 />
               ) : (
                 <Grid>
-                  <Grid.Row columns={3}>
+                  <Grid.Row columns={2}>
                     <Grid.Column>
                       <Header as="h3">Campaign Accounts</Header>
                       {accounts.length ? (
@@ -90,19 +90,7 @@ export default class CampaignsPage extends React.Component {
                         selectedAccountsIds={_.pluck(accounts, "facebookId")}
                       />
                     </Grid.Column>
-                    <Grid.Column>
-                      <Header as="h3">Monitoring Lists</Header>
-                      <Button primary content="Create new list" />
-                    </Grid.Column>
                   </Grid.Row>
-                  {jobs.length ? (
-                    <Grid.Row>
-                      <Grid.Column>
-                        <Header as="h3">Jobs</Header>
-                        <JobsList jobs={jobs} />
-                      </Grid.Column>
-                    </Grid.Row>
-                  ) : null}
                 </Grid>
               )}
             </div>

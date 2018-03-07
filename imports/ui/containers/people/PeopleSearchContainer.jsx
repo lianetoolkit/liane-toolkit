@@ -1,6 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import { createContainer } from "meteor/react-meteor-data";
 import { ReactiveVar } from "meteor/reactive-var";
+import { People } from "/imports/api/facebook/people/people.js";
 import PeopleSearchResults from "/imports/ui/components/people/PeopleSearchResults.jsx";
 
 const people = new ReactiveVar([]);
@@ -9,36 +10,18 @@ let search = null;
 let shouldCall = false;
 
 export default createContainer(props => {
-  if (search !== props.search) {
-    shouldCall = true;
-    search = props.search;
-    people.set([]);
-    loading.set(true);
-  } else {
-    shouldCall = false;
-  }
+  const subsHandle = Meteor.subscribe("people.campaignSearch", {
+    campaignId: props.campaignId,
+    search: props.search
+  });
 
-  if(shouldCall) {
-    Meteor.call(
-      "people.campaignSearch",
-      {
-        campaignId: props.campaignId,
-        search: props.search
-      },
-      (error, data) => {
-        if (error) {
-          console.warn(error);
-        }
-        loading.set(false);
-        if (JSON.stringify(people.get()) !== JSON.stringify(data)) {
-          people.set(data);
-        }
-      }
-    );
-  }
+  const loading = !subsHandle.ready();
+
+  const people = subsHandle.ready ? People.find().fetch() : null;
 
   return {
-    loading: loading.get(),
-    people: people.get()
+    facebookId: FlowRouter.getParam("facebookId"),
+    loading: loading,
+    people: people
   };
 }, PeopleSearchResults);

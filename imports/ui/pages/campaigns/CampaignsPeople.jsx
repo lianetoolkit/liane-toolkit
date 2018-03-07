@@ -50,14 +50,6 @@ export default class CampaignsPeople extends React.Component {
                 <Grid.Row>
                   <Grid.Column>
                     <Menu>
-                      {/* <Menu.Item
-                        active={!facebookAccount}
-                        href={FlowRouter.path("App.campaignPeople", {
-                          campaignId: campaign._id
-                        })}
-                      >
-                        All people
-                      </Menu.Item> */}
                       {accounts.map(account => (
                         <Menu.Item
                           key={`account-${account._id}`}
@@ -79,10 +71,6 @@ export default class CampaignsPeople extends React.Component {
               ) : null}
               <Grid.Row>
                 <Grid.Column>
-                  {/* <PeopleTable
-                    facebookAccount={facebookId || null}
-                    selector={selector}
-                  /> */}
                   <PeopleSearch campaignId={campaign._id} />
                   <PeopleSummary
                     facebookId={facebookId}

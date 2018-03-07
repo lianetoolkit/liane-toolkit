@@ -1,7 +1,26 @@
 import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
-import { Table, Icon } from "semantic-ui-react";
+import styled from "styled-components";
+import { Table, Icon, Grid } from "semantic-ui-react";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
+import Reaction from "/imports/ui/components/entries/Reaction.jsx";
+
+const Interactivity = styled.div`
+  opacity: 0.75;
+  .grid {
+    text-align: center;
+    color: #999;
+    img,
+    .icon {
+      display: inline-block;
+      float: left;
+      margin-right: 0.5rem;
+      color: #333;
+    }
+  }
+`;
+
+const reactions = ["like", "love", "wow", "haha", "sad", "angry"];
 
 export default class PeopleSearchResults extends React.Component {
   constructor(props) {
@@ -11,7 +30,7 @@ export default class PeopleSearchResults extends React.Component {
     const { loading, facebookId, campaignId, people } = this.props;
     if (loading) {
       return <Loading />;
-    } else {
+    } else if(people.length) {
       return (
         <Table>
           <Table.Body>
@@ -41,11 +60,48 @@ export default class PeopleSearchResults extends React.Component {
                     {person.name}
                   </a>
                 </Table.Cell>
+                <Table.Cell>
+                  <Interactivity>
+                    <Grid
+                      className="interactivity"
+                      widths="equal"
+                      columns={7}
+                      verticalAlign="middle"
+                    >
+                      <Grid.Row>
+                        <Grid.Column>
+                          <Icon name="comment" />
+                          {person.counts[facebookId] ? (
+                            <span>
+                              {person.counts[facebookId].comments || 0}
+                            </span>
+                          ) : (
+                            <span>0</span>
+                          )}
+                        </Grid.Column>
+                        {reactions.map(reaction => (
+                          <Grid.Column key={reaction}>
+                            <Reaction size="tiny" reaction={reaction} />
+                            {person.counts[facebookId] ? (
+                              <span>
+                                {person.counts[facebookId].reactions[reaction]}
+                              </span>
+                            ) : (
+                              <span>0</span>
+                            )}
+                          </Grid.Column>
+                        ))}
+                      </Grid.Row>
+                    </Grid>
+                  </Interactivity>
+                </Table.Cell>
               </Table.Row>
             ))}
           </Table.Body>
         </Table>
       );
+    } else {
+      return <p>No people were found.</p>
     }
   }
 }

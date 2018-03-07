@@ -74,6 +74,21 @@ export default class PeopleEdit extends React.Component {
       }
     );
   }
+  _flexData() {
+    const { sectionKey } = this.state;
+    const { person } = this.props;
+    let data = [];
+    if (person.campaignMeta && person.campaignMeta[sectionKey]) {
+      for (const key in person.campaignMeta[sectionKey]) {
+        data.push({
+          key,
+          sectionKey,
+          value: person.campaignMeta[sectionKey][key]
+        });
+      }
+    }
+    return data;
+  }
   render() {
     const { sectionKey, contextRef } = this.state;
     const { loading, campaign, person } = this.props;
@@ -133,11 +148,7 @@ export default class PeopleEdit extends React.Component {
                       ) : null}
                       <FlexDataForm
                         config={section}
-                        data={
-                          person.campaignMeta
-                            ? person.campaignMeta.items || []
-                            : []
-                        }
+                        data={this._flexData()}
                         onSubmit={this._handleSubmit}
                       />
                     </div>

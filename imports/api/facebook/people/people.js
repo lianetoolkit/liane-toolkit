@@ -1,10 +1,15 @@
 import SimpleSchema from "simpl-schema";
 import { Index, MongoDBEngine } from "meteor/easy:search";
+import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 
 const People = new Mongo.Collection("people");
 const PeopleIndex = new Index({
   collection: People,
-  fields: ["name"],
+  fields: ["name", "campaignMeta"],
+  defaultSearchOptions: {
+    sortBy: "name",
+    limit: 10
+  },
   engine: new MongoDBEngine({
     selector: function(searchObject, options, aggregation) {
       let selector = this.defaultConfiguration().selector(
@@ -13,10 +18,30 @@ const PeopleIndex = new Index({
         aggregation
       );
       if (options.search.props && options.search.props.campaignId)
-        selector.campaignId = options.search.props.campaignId;
+        selector = { ...selector, ...options.search.props };
       return selector;
+    },
+    sort: function(searchObject, options) {
+      const sortBy = options.search.props.sortBy || options.search.sortBy;
+      if ("name" === sortBy) {
+        return {
+          name: 1
+        };
+      } else {
+        throw new Meteor.Error("Invalid sort by prop passed");
+      }
     }
-  })
+  }),
+  permission: options => {
+    console.log(options);
+    const campaignId = options.props.campaignId;
+    if (options.userId && campaignId) {
+      const campaign = Campaigns.findOne(campaignId);
+      return _.findWhere(campaign.users, { userId: options.userId });
+    }
+    return false;
+    console.log(user);
+  }
 });
 
 People.schema = new SimpleSchema({
