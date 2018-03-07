@@ -4,8 +4,6 @@ import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
 import SelectFacebookAccount from "/imports/ui/components/facebook/SelectFacebookAccount.jsx";
 import CampaignAccount from "/imports/ui/components/campaigns/CampaignAccount.jsx";
-import PeopleTable from "/imports/ui/components/people/PeopleTable.jsx";
-import JobsList from "/imports/ui/components/jobs/JobsList.jsx";
 
 import { Grid, Header, List, Button } from "semantic-ui-react";
 
@@ -26,7 +24,7 @@ export default class CampaignsPage extends React.Component {
   }
 
   render() {
-    const { loading, campaign, jobs, accounts, accountLists } = this.props;
+    const { loading, campaign, accounts } = this.props;
     const { facebookId } = this.state;
     const facebookAccount = !loading
       ? _.findWhere(accounts, { facebookId: facebookId })

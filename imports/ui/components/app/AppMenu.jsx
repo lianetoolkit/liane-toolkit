@@ -238,6 +238,15 @@ export default class AppMenu extends React.Component {
                 >
                   <Icon name="comments" /> Facebook Posts
                 </Menu.Item>
+                <Menu.Item
+                  name="campaignSettings"
+                  active={currentRoute.indexOf("App.campaignSettings") === 0}
+                  href={FlowRouter.path("App.campaignSettings", {
+                    campaignId: currentCampaign._id
+                  })}
+                >
+                  <Icon name="settings" /> Settings
+                </Menu.Item>
                 {/* <Menu.Item
                   name="campaignEntries"
                   active={currentRoute.indexOf("App.campaignLists") === 0}

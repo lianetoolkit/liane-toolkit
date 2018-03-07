@@ -14,6 +14,7 @@ import DashboardPageContainer from "/imports/ui/containers/app/DashboardPageCont
 
 import AddCampaignPageContainer from "/imports/ui/containers/campaigns/AddCampaignPageContainer.jsx";
 import CampaignsPageContainer from "/imports/ui/containers/campaigns/CampaignsPageContainer.jsx";
+import CampaignsSettingsContainer from "/imports/ui/containers/campaigns/CampaignsSettingsContainer.jsx";
 
 import CampaignsPeopleContainer from "/imports/ui/containers/campaigns/CampaignsPeopleContainer.jsx";
 import PeopleSinglePageContainer from "/imports/ui/containers/people/PeopleSinglePageContainer.jsx";
@@ -148,6 +149,18 @@ appRoutes.route("/campaign/:campaignId", {
     return mount(AppContainer, {
       content: {
         component: CampaignsPageContainer,
+        props: { campaignId: params.campaignId }
+      }
+    });
+  }
+});
+appRoutes.route("/campaign/:campaignId/settings", {
+  name: "App.campaignSettings",
+  action: function(params) {
+    _addTitle(`${APP_NAME} | Campaign`);
+    return mount(AppContainer, {
+      content: {
+        component: CampaignsSettingsContainer,
         props: { campaignId: params.campaignId }
       }
     });

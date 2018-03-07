@@ -26,7 +26,7 @@ export default class PeopleTable extends React.Component {
             render: entry => {
               if(entry.message) {
                 return (
-                  <div style={{"max-width": "400px"}}>
+                  <div style={{"maxWidth": "400px"}}>
                     <span>
                       {entry.message.split("\n").map((item, key) => (
                         <span key={key}>

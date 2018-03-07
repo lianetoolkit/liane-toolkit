@@ -96,12 +96,6 @@ export default class AddCampaignPage extends React.Component {
                       onChange={this._handleChange}
                       placeholder="Campaign name"
                     />
-                    <Form.TextArea
-                      label="Description"
-                      name="description"
-                      onChange={this._handleChange}
-                      placeholder="Campaign description"
-                    />
                     <Form.Field>
                       <Dropdown
                         placeholder="Select context"
