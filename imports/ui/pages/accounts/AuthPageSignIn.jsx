@@ -88,7 +88,6 @@ export default class SignInPage extends React.Component {
         });
       } else {
         this.setState({ loading: false });
-        console.log("........");
         FlowRouter.go("App.dashboard");
       }
     });

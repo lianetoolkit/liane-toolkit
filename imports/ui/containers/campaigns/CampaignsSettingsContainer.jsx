@@ -19,10 +19,12 @@ export default createContainer(props => {
         facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
       }).fetch()
     : [];
+  const users = campaign ? Meteor.users.find().fetch() : [];
   return {
     loading,
     facebookId: props.facebookId || null,
     campaign,
-    accounts
+    accounts,
+    users
   };
 }, CampaignsSettings);

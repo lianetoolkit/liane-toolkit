@@ -98,6 +98,21 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
         },
         {
           find: function(campaign) {
+            return Meteor.users.find(
+              {
+                _id: { $in: _.pluck(campaign.users, "userId") }
+              },
+              {
+                fields: {
+                  name: 1,
+                  "emails.address": 1
+                }
+              }
+            );
+          }
+        },
+        {
+          find: function(campaign) {
             return Contexts.find({
               _id: campaign.contextId
             });

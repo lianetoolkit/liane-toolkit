@@ -2,7 +2,7 @@ import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 
-import { Grid, Segment, Table, Icon, Button } from "semantic-ui-react";
+import { Grid, Segment, Table, Icon, Button, Divider } from "semantic-ui-react";
 
 import moment from "moment";
 
@@ -26,18 +26,17 @@ export default class AudienceCategoriesPage extends React.Component {
             <Grid>
               <Grid.Row>
                 <Grid.Column>
-                  <Segment basic clearing>
-                    <Button
-                      as="a"
-                      href={FlowRouter.path(
-                        "App.admin.audienceCategories.edit"
-                      )}
-                      floated="right"
-                    >
-                      <Icon name="plus" />
-                      New Audience Category
-                    </Button>
-                  </Segment>
+                  <Button
+                    as="a"
+                    href={FlowRouter.path(
+                      "App.admin.audienceCategories.edit"
+                    )}
+                    floated="right"
+                  >
+                    <Icon name="plus" />
+                    New Audience Category
+                  </Button>
+                  <Divider hidden clearing />
                   <Table>
                     <Table.Header>
                       <Table.Row>

@@ -13,6 +13,10 @@ Meteor.users.allow({
 });
 
 Meteor.users.schema = new SimpleSchema({
+  name: {
+    type: String,
+    optional: true
+  },
   emails: {
     type: Array,
     optional: true

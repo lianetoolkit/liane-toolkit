@@ -11,8 +11,35 @@ Accounts.config({
   sendVerificationEmail: false
 });
 
-Accounts.onCreateUser(function(options, user) {
+Accounts.onLogin(function(data) {
+  if (data.user.services.facebook) {
+    const facebookData = data.user.services.facebook;
+    let set = {};
+    if (!data.user.name) {
+      set["name"] = facebookData.first_name + " " + facebookData.last_name;
+    }
+    if (!data.user.emails || !data.user.emails.length) {
+      set["emails"] = [
+        {
+          address: facebookData.email,
+          verified: true
+        }
+      ];
+    }
+    if (Object.keys(set).length) {
+      Meteor.users.update(
+        {
+          _id: data.user._id
+        },
+        {
+          $set: set
+        }
+      );
+    }
+  }
+});
 
+Accounts.onCreateUser(function(options, user) {
   const userProperties = { profile: {} };
 
   const hasUser = !!Meteor.users.findOne();

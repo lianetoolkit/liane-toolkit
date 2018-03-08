@@ -128,6 +128,7 @@ export default class CampaignsPage extends React.Component {
                     <Table.Header>
                       <Table.Row>
                         <Table.HeaderCell>Name</Table.HeaderCell>
+                        <Table.HeaderCell>Ad Account</Table.HeaderCell>
                         <Table.HeaderCell>Accounts</Table.HeaderCell>
                         <Table.HeaderCell collapsing>
                           Entries jobs
@@ -142,6 +143,11 @@ export default class CampaignsPage extends React.Component {
                         <Table.Row key={campaign._id}>
                           <Table.Cell>
                             <strong>{campaign.name}</strong>
+                          </Table.Cell>
+                          <Table.Cell>
+                            {campaign.adAccountId ? (
+                              <Label size="tiny">{campaign.adAccountId}</Label>
+                            ) : null}
                           </Table.Cell>
                           <Table.Cell>
                             {campaign.accounts.map(acc => acc.name).join(", ")}
