@@ -33,6 +33,7 @@ export default class CampaignsSettings extends React.Component {
     if (campaign) {
       this.setState({
         formData: {
+          ...this.state.formData,
           general: {
             name: campaign.name
           }
