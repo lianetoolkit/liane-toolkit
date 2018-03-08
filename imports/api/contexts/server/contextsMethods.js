@@ -34,7 +34,7 @@ const validateUpdate = new SimpleSchema(
 export const createContext = new ValidatedMethod({
   name: "contexts.create",
   validate: validateCreate,
-  run({ name, geolocations, audienceCategories }) {
+  run({ name, mainGeolocationId, geolocations, audienceCategories }) {
     logger.debug("contexts.create called", { name });
 
     const userId = Meteor.userId();
@@ -46,7 +46,12 @@ export const createContext = new ValidatedMethod({
       throw new Meteor.Error(403, "Access denied");
     }
 
-    const insertDoc = { name, geolocations, audienceCategories };
+    const insertDoc = {
+      name,
+      mainGeolocationId,
+      geolocations,
+      audienceCategories
+    };
     return Contexts.insert(insertDoc);
   }
 });
@@ -124,7 +129,7 @@ export const exportContext = new ValidatedMethod({
     const context = Contexts.findOne(contextId);
 
     const geolocations = Geolocations.find({
-      _id: { $in: context.geolocations }
+      _id: { $in: [...context.geolocations, context.mainGeolocationId] }
     }).fetch();
 
     const categories = AudienceCategories.find({
@@ -183,8 +188,8 @@ export const importContext = new ValidatedMethod({
     }
 
     // Import audience categories
-    if (data.audienceCategories && data.audienceCategories.length) {
-      for (const category of data.audienceCategories) {
+    if (data.categories && data.categories.length) {
+      for (const category of data.categories) {
         AudienceCategories.upsert(
           {
             _id: category._id
