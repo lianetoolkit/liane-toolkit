@@ -1,8 +1,9 @@
 import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
+import { Alerts } from "/imports/ui/utils/Alerts.js";
 
-import { Grid, Segment, Table, Icon, Button } from "semantic-ui-react";
+import { Grid, Segment, Table, Icon, Button, Divider } from "semantic-ui-react";
 
 import moment from "moment";
 
@@ -12,7 +13,72 @@ export default class ContextsPage extends React.Component {
   };
   constructor(props) {
     super(props);
-    console.log("ContextsPage init", { props });
+    this.state = {};
+    this._handleExportClick = this._handleExportClick.bind(this);
+    this._handleImportClick = this._handleImportClick.bind(this);
+    this._handleImport = this._handleImport.bind(this);
+  }
+  _handleImportClick(ev) {
+    ev.preventDefault();
+    this.importInput.click();
+  }
+  _handleImport(ev) {
+    this.setState({ loading: true });
+    let file = ev.currentTarget.files[0];
+    const reader = new FileReader();
+    if (file.type == "application/json" || file.type == "text/json") {
+      reader.onload = () => {
+        Meteor.call(
+          "contexts.import",
+          {
+            fileInfo: {
+              name: file.name,
+              size: file.size,
+              type: file.type
+            },
+            fileData: reader.result
+          },
+          (error, result) => {
+            this.setState({ loading: false });
+            if (error) {
+              console.log(error);
+              Alerts.error(error);
+            } else {
+              Alerts.success(
+                "Context and its configuration imported successfully"
+              );
+            }
+          }
+        );
+      };
+      reader.readAsText(file, "utf-8");
+    } else {
+      Alerts.error(
+        "File format not accepted. The import file must be of JSON format."
+      );
+    }
+  }
+  _handleExportClick(contextId) {
+    return ev => {
+      ev.preventDefault();
+      Meteor.call("contexts.export", { contextId }, (error, result) => {
+        if (error) {
+          console.log(error);
+          Alerts.error(error);
+        } else {
+          const dataStr =
+            "data:text/json;charset=utf-8," +
+            encodeURIComponent(JSON.stringify(result));
+          const anchor = document.getElementById("export-anchor");
+          anchor.setAttribute("href", dataStr);
+          anchor.setAttribute("download", `context-${result.context._id}.json`);
+          setTimeout(() => {
+            console.log("clicking");
+            anchor.click();
+          }, 200);
+        }
+      });
+    };
   }
   render() {
     const { loading, contexts, currentUser } = this.props;
@@ -20,22 +86,26 @@ export default class ContextsPage extends React.Component {
       <div>
         <PageHeader title="Contexts" />
         <section className="content">
-          {loading ? (
+          {loading || this.state.loading ? (
             <Loading />
           ) : (
             <Grid>
               <Grid.Row>
                 <Grid.Column>
-                  <Segment basic clearing>
+                  <Button.Group floated="right">
                     <Button
                       as="a"
                       href={FlowRouter.path("App.admin.contexts.edit")}
-                      floated="right"
                     >
                       <Icon name="plus" />
                       New context
                     </Button>
-                  </Segment>
+                    <Button onClick={this._handleImportClick}>
+                      <Icon name="upload" />
+                      Import context
+                    </Button>
+                  </Button.Group>
+                  <Divider hidden clearing />
                   <Table>
                     <Table.Header>
                       <Table.Row>
@@ -71,13 +141,24 @@ export default class ContextsPage extends React.Component {
                             {context.campaigns.length} campaign(s)
                           </Table.Cell>
                           <Table.Cell>
-                            <a
-                              href={FlowRouter.path("App.admin.contexts.edit", {
-                                contextId: context._id
-                              })}
-                            >
-                              Edit
-                            </a>
+                            <Button.Group basic fluid>
+                              <Button
+                                href={FlowRouter.path(
+                                  "App.admin.contexts.edit",
+                                  {
+                                    contextId: context._id
+                                  }
+                                )}
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                href="#"
+                                onClick={this._handleExportClick(context._id)}
+                              >
+                                Export
+                              </Button>
+                            </Button.Group>
                           </Table.Cell>
                         </Table.Row>
                       ))}
@@ -87,6 +168,13 @@ export default class ContextsPage extends React.Component {
               </Grid.Row>
             </Grid>
           )}
+          <a id="export-anchor" />
+          <input
+            type="file"
+            onChange={this._handleImport}
+            style={{ display: "none" }}
+            ref={input => (this.importInput = input)}
+          />
         </section>
       </div>
     );
