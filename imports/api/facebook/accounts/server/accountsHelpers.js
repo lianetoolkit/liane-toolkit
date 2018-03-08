@@ -49,6 +49,33 @@ const FacebookAccountsHelpers = {
 
     return { result: data };
   },
+  getUserAccount({ userId, facebookAccountId }) {
+    check(userId, String);
+    check(facebookAccountId, String);
+
+    logger.info("FacebookAccountsHelpers.getUserAccount: called", {
+      userId,
+      facebookAccountId
+    });
+
+    const user = Meteor.users.findOne(userId);
+    if (!user) {
+      return { error: "This user does not exists" };
+    }
+    if (!user.services.facebook) {
+      return { error: "This user has not accessToken" };
+    }
+
+    const accessToken = user.services.facebook.accessToken;
+
+    return Promise.await(
+      _fb.api(facebookAccountId, {
+        fields: ["name", "access_token", "category"],
+        access_token: accessToken,
+        limit: 10
+      })
+    );
+  },
   exchangeFBToken({ token }) {
     check(token, String);
     const response = Promise.await(

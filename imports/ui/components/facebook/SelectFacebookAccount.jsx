@@ -60,7 +60,6 @@ export default class SelectFacebookAccount extends React.Component {
   }
   componentDidMount() {
     const { selectedAccountsIds } = this.props;
-    console.log("selectedAccountsIds", selectedAccountsIds);
     Meteor.call("facebook.accounts.getUserAccounts", (error, data) => {
       if (error) {
         Alerts.error(error);

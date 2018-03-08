@@ -2,6 +2,7 @@ import SimpleSchema from "simpl-schema";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { CampaignsHelpers } from "./campaignsHelpers.js";
 import { FacebookAudiencesHelpers } from "/imports/api/facebook/audiences/server/audiencesHelpers.js";
+import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { Jobs } from "/imports/api/jobs/jobs.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
@@ -23,14 +24,18 @@ export const campaignsCreate = new ValidatedMethod({
     },
     contextId: {
       type: String
+    },
+    facebookAccountId: {
+      type: String
     }
   }).validator(),
-  run({ name, description, adAccountId, contextId }) {
+  run({ name, description, adAccountId, contextId, facebookAccountId }) {
     logger.debug("campaigns.create called", {
       name,
       description,
       contextId,
-      adAccountId
+      adAccountId,
+      facebookAccountId
     });
 
     const userId = Meteor.userId();
@@ -46,6 +51,14 @@ export const campaignsCreate = new ValidatedMethod({
     AdAccountsHelpers.update({ adAccountId, token });
 
     campaignId = Campaigns.insert(insertDoc);
+
+    const account = FacebookAccountsHelpers.getUserAccount({
+      userId,
+      facebookAccountId
+    });
+
+    CampaignsHelpers.addAccountToCampaign({ campaignId, account });
+
     return { result: campaignId };
   }
 });
@@ -205,17 +218,13 @@ export const refreshAccountJob = new ValidatedMethod({
       type: jobType
     };
 
-    for(const prop in jobData) {
-      if(prop !== "accessToken") {
+    for (const prop in jobData) {
+      if (prop !== "accessToken") {
         query[`data.${prop}`] = jobData[prop];
       }
     }
 
-    console.log("QUERY", query);
-
     const job = Jobs.findOne(query);
-
-    console.log("job found", job);
 
     if (job) {
       if (job.status == "failed" || job.status == "cancelled") {

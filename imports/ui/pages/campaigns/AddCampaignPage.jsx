@@ -2,8 +2,16 @@ import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
+import SelectFacebookAccountField from "/imports/ui/components/facebook/SelectFacebookAccountField.jsx";
 
-import { Form, Grid, Button, Dropdown, Divider } from "semantic-ui-react";
+import {
+  Form,
+  Grid,
+  Button,
+  Dropdown,
+  Input,
+  Divider
+} from "semantic-ui-react";
 
 import moment from "moment";
 
@@ -15,6 +23,7 @@ export default class AddCampaignPage extends React.Component {
       contexts: [],
       adAccounts: [],
       name: "",
+      facebookAccountId: "",
       contextId: "",
       adAccountId: "",
       description: "",
@@ -50,12 +59,18 @@ export default class AddCampaignPage extends React.Component {
   }
   _handleChange = (e, { name, value }) => this.setState({ [name]: value });
   _handleSubmit(e) {
-    const { name, description, contextId, adAccountId } = this.state;
+    const {
+      name,
+      description,
+      contextId,
+      adAccountId,
+      facebookAccountId
+    } = this.state;
     if (name && contextId) {
       this.setState({ isLoading: true });
       Meteor.call(
         "campaigns.create",
-        { name, description, contextId, adAccountId },
+        { name, description, contextId, adAccountId, facebookAccountId },
         (error, data) => {
           this.setState({ isLoading: false });
           if (error) {
@@ -63,7 +78,7 @@ export default class AddCampaignPage extends React.Component {
             Alerts.error(error);
           } else {
             Alerts.success("Campaign was successfully created");
-            FlowRouter.go("App.campaignDetail", { campaignId: data.result });
+            FlowRouter.go("App.campaignCanvas", { campaignId: data.result });
           }
         }
       );
@@ -90,32 +105,38 @@ export default class AddCampaignPage extends React.Component {
               <Grid.Row>
                 <Grid.Column>
                   <Form onSubmit={this._handleSubmit}>
-                    <Form.Input
+                    <Form.Field
+                      control={Input}
                       label="Name"
                       name="name"
                       onChange={this._handleChange}
                       placeholder="Campaign name"
                     />
-                    <Form.Field>
-                      <Dropdown
-                        placeholder="Select context"
-                        selection
-                        onChange={this._handleChange}
-                        options={contexts}
-                        name="contextId"
-                        placeholder="Select context"
-                      />
-                    </Form.Field>
-                    <Form.Field>
-                      <Dropdown
-                        placeholder="Select an ad account"
-                        selection
-                        onChange={this._handleChange}
-                        options={adAccounts}
-                        name="adAccountId"
-                        placeholder="Select an ad account"
-                      />
-                    </Form.Field>
+                    <Form.Field
+                      control={Dropdown}
+                      label="Select a context"
+                      placeholder="Select context"
+                      selection
+                      onChange={this._handleChange}
+                      options={contexts}
+                      name="contextId"
+                      placeholder="Select context"
+                    />
+                    <SelectFacebookAccountField
+                      name="facebookAccountId"
+                      label="Select the facebook account for your campaign"
+                      onChange={this._handleChange}
+                    />
+                    <Form.Field
+                      control={Dropdown}
+                      label="Select your ad account for audience and ad creation"
+                      placeholder="Select an ad account"
+                      selection
+                      onChange={this._handleChange}
+                      options={adAccounts}
+                      name="adAccountId"
+                      placeholder="Select an ad account"
+                    />
                     <Divider />
                     <Button fluid primary type="submit" loading={isLoading}>
                       Submit
