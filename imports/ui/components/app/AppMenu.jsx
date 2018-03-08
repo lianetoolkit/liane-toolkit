@@ -40,7 +40,7 @@ export default class AppMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeIndex: null,
+      activeIndex: -1,
       showCampaignList: false
     };
     this._handleItemClick = this._handleItemClick.bind(this);
@@ -85,7 +85,7 @@ export default class AppMenu extends React.Component {
   _getUserInfo(currentUser) {
     if (isFbLogged(currentUser)) {
       return currentUser.services.facebook.name;
-    } else if(currentUser.emails) {
+    } else if (currentUser.emails) {
       return currentUser.emails[0].address;
     } else {
       return "";
@@ -144,13 +144,13 @@ export default class AppMenu extends React.Component {
       return (
         <Menu.Item>
           <Accordion.Title
-            active={activeIndex === 0}
+            active={activeIndex === 1}
             content="Administration"
-            index={0}
+            index={1}
             onClick={this._handleAccordionClick}
           />
           <Accordion.Content
-            active={activeIndex === 0}
+            active={activeIndex === 1}
             content={
               <div>
                 <Menu.Item href={FlowRouter.path("App.admin.campaigns")}>
@@ -180,7 +180,7 @@ export default class AppMenu extends React.Component {
     }
   }
   render() {
-    const { activeIndex } = this.state;
+    const { activeIndex, showCampaignList } = this.state;
     const { loading, currentUser, logout } = this.props;
 
     const currentCampaign = this._getCurrentCampaign();
@@ -191,7 +191,7 @@ export default class AppMenu extends React.Component {
       <Wrapper>
         <MenuWrapper>
           {this._getCampaignsMenu()}
-          {currentCampaign ? (
+          {currentCampaign && !showCampaignList && activeIndex == -1 ? (
             <div>
               {currentCampaign.status == "invalid_adaccount" ? (
                 <Message negative>
@@ -270,13 +270,13 @@ export default class AppMenu extends React.Component {
             {this._getAdminMenu()}
             <Menu.Item>
               <Accordion.Title
-                active={activeIndex === 1}
+                active={activeIndex === 2}
                 content={currentUser ? this._getUserInfo(currentUser) : ""}
-                index={1}
+                index={2}
                 onClick={this._handleAccordionClick}
               />
               <Accordion.Content
-                active={activeIndex === 1}
+                active={activeIndex === 2}
                 content={
                   <div>
                     <Menu.Item onClick={logout}>
