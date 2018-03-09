@@ -12,13 +12,14 @@ export default class CampaignsEntries extends React.Component {
     console.log("CampaignsEntries init", { props });
   }
   render() {
-    const { loading, campaign, accounts, facebookId } = this.props;
+    const { loading, campaign, facebookId } = this.props;
+    const { accounts } = campaign;
     let facebookAccount, selector;
     if (!loading) {
       if (facebookId) {
         selector = {
           facebookAccountId: facebookId
-        }
+        };
         facebookAccount = !loading
           ? _.findWhere(accounts, { facebookId: facebookId })
           : null;
@@ -75,9 +76,7 @@ export default class CampaignsEntries extends React.Component {
               ) : null}
               <Grid.Row>
                 <Grid.Column>
-                  <EntriesTable
-                    selector={selector}
-                  />
+                  <EntriesTable selector={selector} />
                 </Grid.Column>
               </Grid.Row>
             </Grid>

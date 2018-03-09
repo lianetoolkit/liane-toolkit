@@ -2,7 +2,7 @@ import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import AuthFacebook from "/imports/ui/components/facebook/AuthFacebook.jsx";
-import CampaignsListContainer from "/imports/ui/containers/campaigns/CampaignsListContainer.jsx";
+import CampaignsList from "/imports/ui/components/campaigns/CampaignsList.jsx";
 
 import { Card, Statistic, Grid, Header, Button } from "semantic-ui-react";
 
@@ -15,7 +15,7 @@ export default class DashboardPage extends React.Component {
   }
 
   render() {
-    const { loading, currentUser } = this.props;
+    const { loading, currentUser, campaigns } = this.props;
     return (
       <div>
         <PageHeader title="Dashboard" />
@@ -27,7 +27,10 @@ export default class DashboardPage extends React.Component {
               <Grid.Row>
                 <Grid.Column>
                   {currentUser.services.facebook ? (
-                    <CampaignsListContainer />
+                    <CampaignsList
+                      currentUser={currentUser}
+                      campaigns={campaigns}
+                    />
                   ) : (
                     <AuthFacebook />
                   )}

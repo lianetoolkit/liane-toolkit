@@ -38,7 +38,7 @@ export default class AccountsLayout extends React.Component {
       <Grid
         className="middle center aligned"
         style={{
-          "max-width": "500px",
+          "maxWidth": "500px",
           margin: "5% auto"
         }}
       >

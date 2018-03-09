@@ -226,7 +226,8 @@ export default class PeopleSinglePage extends React.Component {
                       {reactions.map(reaction => (
                         <Grid.Column key={reaction}>
                           <Reaction size="small" reaction={reaction} />
-                          {person.counts[account.facebookId] ? (
+                          {person.counts[account.facebookId] &&
+                          person.counts[account.facebookId].reactions ? (
                             <span>
                               {
                                 person.counts[account.facebookId].reactions[

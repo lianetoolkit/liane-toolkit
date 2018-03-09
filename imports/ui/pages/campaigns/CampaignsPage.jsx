@@ -24,7 +24,8 @@ export default class CampaignsPage extends React.Component {
   }
 
   render() {
-    const { loading, campaign, accounts } = this.props;
+    const { loading, campaign } = this.props;
+    const { accounts } = campaign;
     const { facebookId } = this.state;
     const facebookAccount = !loading
       ? _.findWhere(accounts, { facebookId: facebookId })

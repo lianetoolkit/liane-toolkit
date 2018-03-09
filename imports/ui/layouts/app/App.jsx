@@ -1,7 +1,6 @@
 import React from "react";
 import { Meteor } from "meteor/meteor";
 import PropTypes from "prop-types";
-import ReactCSSTransitionGroup from "react-addons-css-transition-group";
 
 import AppContainer from "/imports/ui/components/app/AppContainer.jsx";
 import AppHeader from "/imports/ui/components/app/AppHeader.jsx";
@@ -85,6 +84,7 @@ export default class App extends React.Component {
     const { showConnectionIssue } = this.state;
     const {
       campaigns,
+      campaign,
       currentCampaign,
       currentUser,
       connected,
@@ -108,29 +108,22 @@ export default class App extends React.Component {
               campaigns={campaigns}
               logout={this.logout}
             />
-            {/* <AppBar currentUser={currentUser} logout={this.logout} /> */}
             <ModalManager />
             <ConfirmManager />
             <AppContent>
               {loading ? (
                 <Loading />
               ) : (
-                <ReactCSSTransitionGroup
-                  transitionName="fade"
-                  transitionEnterTimeout={200}
-                  transitionLeaveTimeout={200}
-                >
+                <div>
                   {currentUser ? (
-                    <div>
-                      <content.component
-                        {...content.props}
-                        currentUser={currentUser}
-                      />
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                </ReactCSSTransitionGroup>
+                    <content.component
+                      {...content.props}
+                      campaign={campaign}
+                      campaigns={campaigns}
+                      currentUser={currentUser}
+                    />
+                  ) : null}
+                </div>
               )}
             </AppContent>
           </AppContainer>

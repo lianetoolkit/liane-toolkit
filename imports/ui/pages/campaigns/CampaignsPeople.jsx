@@ -15,7 +15,8 @@ export default class CampaignsPeople extends React.Component {
   }
   render() {
     let { facebookId } = this.props;
-    const { loading, campaign, accounts, peopleSummary } = this.props;
+    const { loading, campaign } = this.props;
+    const { accounts } = campaign;
     let facebookAccount, selector;
     if (!loading) {
       selector = {
@@ -29,7 +30,7 @@ export default class CampaignsPeople extends React.Component {
         facebookAccount = accounts[0];
         facebookId = facebookAccount.facebookId;
       }
-      if(facebookAccount)
+      if (facebookAccount)
         selector.facebookAccounts = { $in: [facebookAccount.facebookId] };
     }
     return (
@@ -72,11 +73,11 @@ export default class CampaignsPeople extends React.Component {
               <Grid.Row>
                 <Grid.Column>
                   <PeopleSearch campaignId={campaign._id} />
-                  <PeopleSummary
+                  {/* <PeopleSummary
                     facebookId={facebookId}
                     campaignId={campaign._id}
                     peopleSummary={peopleSummary}
-                  />
+                  /> */}
                 </Grid.Column>
               </Grid.Row>
             </Grid>

@@ -22,12 +22,10 @@ export default createContainer(() => {
 
   const contexts = contextsHandle.ready() ? Contexts.find().fetch() : [];
 
-  if(shouldCall) {
+  if (shouldCall) {
     Meteor.call("users.getAdAccounts", null, (error, { result }) => {
       if (error) {
         console.warn(error);
-      } else {
-        console.log("call", result);
       }
       if (JSON.stringify(adAccounts.get()) !== JSON.stringify(result)) {
         adAccounts.set(result);

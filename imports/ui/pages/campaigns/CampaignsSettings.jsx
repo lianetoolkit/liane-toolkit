@@ -112,8 +112,8 @@ export default class CampaignsSettings extends React.Component {
   }
   render() {
     const { formData, section } = this.state;
-    const { loading, campaign, users } = this.props;
-    console.log(users);
+    const { loading, campaign } = this.props;
+    const { users } = campaign;
     return (
       <div>
         <PageHeader

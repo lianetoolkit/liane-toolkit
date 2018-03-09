@@ -19,10 +19,10 @@ export default class CampaignsAudience extends React.Component {
       loading,
       campaign,
       geolocations,
-      accounts,
       facebookId,
       categoryId
     } = this.props;
+    const { accounts } = campaign;
     let facebookAccount;
     if (!loading) {
       if (facebookId) {

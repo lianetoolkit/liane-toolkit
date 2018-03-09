@@ -1,2 +1,2 @@
-import "./routes.js";
+import "./routes/index.js";
 import "./globals.js";
