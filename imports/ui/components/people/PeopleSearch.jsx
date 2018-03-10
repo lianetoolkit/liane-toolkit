@@ -10,7 +10,8 @@ import {
   Grid,
   Popup,
   Icon,
-  Button
+  Button,
+  Divider
 } from "semantic-ui-react";
 
 const Wrapper = styled.div`
@@ -173,6 +174,7 @@ export default class PeopleSearch extends React.Component {
             </Grid.Column>
           </Grid.Row>
         </Grid>
+        <Divider hidden />
         <PeopleSearchContainer
           campaignId={campaignId}
           facebookId={facebookId}

@@ -27,78 +27,85 @@ export default class PeopleSearchResults extends React.Component {
     super(props);
   }
   render() {
-    const { loading, facebookId, campaignId, people } = this.props;
+    const { loading, facebookId, campaignId, people, totalCount } = this.props;
     if (loading) {
       return <Loading />;
     } else if (people.length) {
       return (
-        <Table>
-          <Table.Body>
-            {people.map(person => (
-              <Table.Row key={`commenter-${person._id}`}>
-                <Table.Cell collapsing>
-                  <a
-                    target="_blank"
-                    href={`https://facebook.com/${person.facebookId}`}
-                  >
-                    <Icon name="facebook" />
-                  </a>
-                </Table.Cell>
-                <Table.Cell singleLine collapsing>
-                  <PeopleMetaButtons
-                    person={person}
-                    onChange={this._onMetaButtonsChange}
-                  />
-                </Table.Cell>
-                <Table.Cell>
-                  <a
-                    href={FlowRouter.path("App.campaignPeople.detail", {
-                      campaignId,
-                      personId: person.__originalId
-                    })}
-                  >
-                    {person.name}
-                  </a>
-                </Table.Cell>
-                <Table.Cell>
-                  <Interactivity>
-                    <Grid
-                      className="interactivity"
-                      widths="equal"
-                      columns={7}
-                      verticalAlign="middle"
+        <div>
+          <p>{totalCount} people found.</p>
+          <Table>
+            <Table.Body>
+              {people.map(person => (
+                <Table.Row key={`commenter-${person._id}`}>
+                  <Table.Cell collapsing>
+                    <a
+                      target="_blank"
+                      href={`https://facebook.com/${person.facebookId}`}
                     >
-                      <Grid.Row>
-                        <Grid.Column>
-                          <Icon name="comment" />
-                          {person.counts[facebookId] ? (
-                            <span>
-                              {person.counts[facebookId].comments || 0}
-                            </span>
-                          ) : (
-                            <span>0</span>
-                          )}
-                        </Grid.Column>
-                        {reactions.map(reaction => (
-                          <Grid.Column key={reaction}>
-                            <Reaction size="tiny" reaction={reaction} />
+                      <Icon name="facebook" />
+                    </a>
+                  </Table.Cell>
+                  <Table.Cell singleLine collapsing>
+                    <PeopleMetaButtons
+                      person={person}
+                      onChange={this._onMetaButtonsChange}
+                    />
+                  </Table.Cell>
+                  <Table.Cell>
+                    <a
+                      href={FlowRouter.path("App.campaignPeople.detail", {
+                        campaignId,
+                        personId: person.__originalId
+                      })}
+                    >
+                      {person.name}
+                    </a>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Interactivity>
+                      <Grid
+                        className="interactivity"
+                        widths="equal"
+                        columns={7}
+                        verticalAlign="middle"
+                      >
+                        <Grid.Row>
+                          <Grid.Column>
+                            <Icon name="comment" />
                             {person.counts[facebookId] ? (
                               <span>
-                                {person.counts[facebookId].reactions[reaction]}
+                                {person.counts[facebookId].comments || 0}
                               </span>
                             ) : (
                               <span>0</span>
                             )}
                           </Grid.Column>
-                        ))}
-                      </Grid.Row>
-                    </Grid>
-                  </Interactivity>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
+                          {reactions.map(reaction => (
+                            <Grid.Column key={reaction}>
+                              <Reaction size="tiny" reaction={reaction} />
+                              {person.counts[facebookId] ? (
+                                <span>
+                                  {
+                                    person.counts[facebookId].reactions[
+                                      reaction
+                                    ]
+                                  }
+                                </span>
+                              ) : (
+                                <span>0</span>
+                              )}
+                            </Grid.Column>
+                          ))}
+                        </Grid.Row>
+                      </Grid>
+                    </Interactivity>
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
+        </div>
       );
     } else {
       return <p>No people were found.</p>;

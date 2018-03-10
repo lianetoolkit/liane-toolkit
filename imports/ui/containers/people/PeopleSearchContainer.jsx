@@ -14,13 +14,17 @@ export default createContainer(props => {
 
   const loading = !subsHandle.ready();
 
-  const people = subsHandle.ready
-    ? PeopleIndex.search(props.search, { ...props.options }).fetch()
-    : null;
+  let cursor, people, totalCount;
+  if (subsHandle.ready()) {
+    cursor = PeopleIndex.search(props.search, { ...props.options });
+    people = cursor.fetch();
+    totalCount = cursor.count();
+  }
 
   return {
     ...props,
     loading,
-    people
+    people,
+    totalCount
   };
 }, PeopleSearchResults);
