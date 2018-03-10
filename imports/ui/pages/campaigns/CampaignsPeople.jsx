@@ -15,23 +15,15 @@ export default class CampaignsPeople extends React.Component {
   }
   render() {
     let { facebookId } = this.props;
-    const { loading, campaign } = this.props;
+    const { loading, campaign, currentFacebookId } = this.props;
     const { accounts } = campaign;
-    let facebookAccount, selector;
+    let facebookAccount;
     if (!loading) {
-      selector = {
-        campaignId: campaign._id
-      };
-      if (facebookId) {
+      if (currentFacebookId) {
         facebookAccount = !loading
-          ? _.findWhere(accounts, { facebookId: facebookId })
+          ? _.findWhere(accounts, { facebookId: currentFacebookId })
           : null;
-      } else if (accounts.length) {
-        facebookAccount = accounts[0];
-        facebookId = facebookAccount.facebookId;
       }
-      if (facebookAccount)
-        selector.facebookAccounts = { $in: [facebookAccount.facebookId] };
     }
     return (
       <div>
@@ -72,7 +64,10 @@ export default class CampaignsPeople extends React.Component {
               ) : null}
               <Grid.Row>
                 <Grid.Column>
-                  <PeopleSearch campaignId={campaign._id} />
+                  <PeopleSearch
+                    campaignId={campaign._id}
+                    facebookId={currentFacebookId}
+                  />
                   {/* <PeopleSummary
                     facebookId={facebookId}
                     campaignId={campaign._id}

@@ -19,7 +19,7 @@ const Wrapper = styled.div`
     letter-spacing: 0.1rem;
     font-size: 0.8em;
     display: block;
-    margin-bottom: .5rem;
+    margin-bottom: 0.5rem;
   }
 `;
 
@@ -80,7 +80,7 @@ export default class PeopleSearch extends React.Component {
   }, 250);
   render() {
     const { search } = this.state;
-    const { campaignId } = this.props;
+    const { campaignId, facebookId } = this.props;
     return (
       <Wrapper>
         <h3>Find people</h3>
@@ -116,7 +116,11 @@ export default class PeopleSearch extends React.Component {
             </Grid.Column>
           </Grid.Row>
         </Grid>
-        <PeopleSearchContainer search={search} campaignId={campaignId} />
+        <PeopleSearchContainer
+          search={search}
+          campaignId={campaignId}
+          facebookId={facebookId}
+        />
       </Wrapper>
     );
   }

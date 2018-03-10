@@ -39,6 +39,16 @@ export default createContainer(props => {
     ? Campaigns.findOne(props.campaignId, campaignOptions)
     : null;
 
+  let currentFacebookId = FlowRouter.getParam("facebookId");
+  if (
+    !currentFacebookId &&
+    campaign &&
+    campaign.accounts &&
+    campaign.accounts.length
+  ) {
+    currentFacebookId = campaign.accounts[0].facebookId;
+  }
+
   const loading =
     !userHandle.ready() || !campaignsHandle.ready() || !campaignHandle.ready();
 
@@ -48,6 +58,7 @@ export default createContainer(props => {
     campaigns,
     currentCampaign: FlowRouter.getParam("campaignId"),
     connected: Meteor.status().connected,
-    campaign
+    campaign,
+    currentFacebookId
   };
 }, App);

@@ -20,8 +20,8 @@ export default createContainer(props => {
   const people = subsHandle.ready ? People.find().fetch() : null;
 
   return {
-    facebookId: FlowRouter.getParam("facebookId"),
+    ...props,
     loading: loading,
-    people: people
+    people: people,
   };
 }, PeopleSearchResults);
