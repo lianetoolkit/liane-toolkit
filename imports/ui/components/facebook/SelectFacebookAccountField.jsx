@@ -53,11 +53,11 @@ export default class SelectFacebookAccountField extends React.Component {
     return (
       <Form.Field
         control={Dropdown}
+        loading={loading}
         name="accounts"
         placeholder="Search a Facebook Account"
-        search
-        selection
         fluid
+        selection
         {...props}
         options={accounts.map(account => {
           return {
