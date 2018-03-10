@@ -84,7 +84,8 @@ export default class PeopleSearchResults extends React.Component {
                           {reactions.map(reaction => (
                             <Grid.Column key={reaction}>
                               <Reaction size="tiny" reaction={reaction} />
-                              {person.counts[facebookId] ? (
+                              {person.counts[facebookId] &&
+                              person.counts[facebookId].reactions ? (
                                 <span>
                                   {
                                     person.counts[facebookId].reactions[
