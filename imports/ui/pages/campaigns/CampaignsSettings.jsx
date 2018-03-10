@@ -174,10 +174,10 @@ export default class CampaignsSettings extends React.Component {
                   Team
                 </Menu.Item>
                 <Menu.Item
-                  active={section == "delete"}
-                  onClick={this._handleNav("delete")}
+                  active={section == "actions"}
+                  onClick={this._handleNav("actions")}
                 >
-                  Delete campaign
+                  Actions
                 </Menu.Item>
               </Menu>
               <Segment.Group>
@@ -225,7 +225,7 @@ export default class CampaignsSettings extends React.Component {
                         />
                       </div>
                     ) : null}
-                    {section == "delete" ? (
+                    {section == "actions" ? (
                       <div>
                         <Button fluid negative onClick={this._handleRemove}>
                           <Icon name="trash" />
