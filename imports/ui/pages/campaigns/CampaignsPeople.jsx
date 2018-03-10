@@ -15,16 +15,8 @@ export default class CampaignsPeople extends React.Component {
   }
   render() {
     let { facebookId } = this.props;
-    const { loading, campaign, currentFacebookId } = this.props;
+    const { loading, campaign, account } = this.props;
     const { accounts } = campaign;
-    let facebookAccount;
-    if (!loading) {
-      if (currentFacebookId) {
-        facebookAccount = !loading
-          ? _.findWhere(accounts, { facebookId: currentFacebookId })
-          : null;
-      }
-    }
     return (
       <div>
         <PageHeader
@@ -43,16 +35,15 @@ export default class CampaignsPeople extends React.Component {
                 <Grid.Row>
                   <Grid.Column>
                     <Menu>
-                      {accounts.map(account => (
+                      {accounts.map(acc => (
                         <Menu.Item
-                          key={`account-${account._id}`}
+                          key={`account-${acc._id}`}
                           active={
-                            facebookAccount &&
-                            account.facebookId == facebookAccount.facebookId
+                            account && acc.facebookId == account.facebookId
                           }
                           href={FlowRouter.path("App.campaignPeople", {
                             campaignId: campaign._id,
-                            facebookId: account.facebookId
+                            facebookId: acc.facebookId
                           })}
                         >
                           {account.name}
@@ -66,7 +57,7 @@ export default class CampaignsPeople extends React.Component {
                 <Grid.Column>
                   <PeopleSearch
                     campaignId={campaign._id}
-                    facebookId={currentFacebookId}
+                    facebookId={account.facebookId}
                   />
                   {/* <PeopleSummary
                     facebookId={facebookId}

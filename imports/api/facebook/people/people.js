@@ -5,7 +5,7 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 const People = new Mongo.Collection("people");
 const PeopleIndex = new Index({
   collection: People,
-  fields: ["name", "campaignMeta"],
+  fields: ["name"],
   defaultSearchOptions: {
     sortBy: "name",
     limit: 10
@@ -17,30 +17,49 @@ const PeopleIndex = new Index({
         options,
         aggregation
       );
-      if (options.search.props && options.search.props.campaignId)
-        selector = { ...selector, ...options.search.props };
+      for (const key in options.search.props) {
+        if (key == "campaignId" || key.indexOf("campaignMeta.") == 0) {
+          selector[key] = options.search.props[key];
+        }
+      }
       return selector;
     },
     sort: function(searchObject, options) {
       const sortBy = options.search.props.sortBy || options.search.sortBy;
-      if ("name" === sortBy) {
-        return {
-          name: 1
-        };
-      } else {
-        throw new Meteor.Error("Invalid sort by prop passed");
+      const { facebookId } = options.search.props;
+      switch (sortBy) {
+        case "name":
+          return {
+            name: 1
+          };
+        case "comments":
+          if (facebookId) {
+            return {
+              [`counts.${facebookId}.comments`]: -1
+            };
+          } else {
+            throw new Meteor.Error("Facebook ID is required");
+          }
+        case "reactions":
+          if (facebookId) {
+            return {
+              [`counts.${facebookId}.likes`]: -1
+            };
+          } else {
+            throw new Meteor.Error("Facebook ID is required");
+          }
+        default:
+          throw new Meteor.Error("Invalid sort by prop passed");
       }
     }
   }),
   permission: options => {
-    console.log(options);
     const campaignId = options.props.campaignId;
     if (options.userId && campaignId) {
       const campaign = Campaigns.findOne(campaignId);
       return _.findWhere(campaign.users, { userId: options.userId });
     }
     return false;
-    console.log(user);
   }
 });
 

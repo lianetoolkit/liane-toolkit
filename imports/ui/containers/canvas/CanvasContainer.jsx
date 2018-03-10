@@ -5,18 +5,11 @@ import { Canvas } from "/imports/api/canvas/canvas.js";
 import CanvasPage from "/imports/ui/pages/canvas/CanvasPage.jsx";
 
 export default createContainer(props => {
-  const subsHandle = Meteor.subscribe("campaigns.detail", {
-    campaignId: props.campaignId
-  });
   const canvasHandle = Meteor.subscribe("canvas.byCampaign", {
     campaignId: props.campaignId
   });
 
-  const loading = !subsHandle.ready() || !canvasHandle.ready();
-
-  const campaign = subsHandle.ready()
-    ? Campaigns.findOne(props.campaignId)
-    : null;
+  const loading = !canvasHandle.ready();
 
   const canvas = canvasHandle.ready()
     ? Canvas.find({ campaignId: props.campaignId }).fetch()
@@ -24,7 +17,6 @@ export default createContainer(props => {
 
   return {
     loading,
-    campaign,
     canvas
   };
 }, CanvasPage);

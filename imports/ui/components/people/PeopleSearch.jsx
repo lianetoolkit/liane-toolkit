@@ -6,6 +6,7 @@ import {
   Segment,
   Form,
   Input,
+  Select,
   Grid,
   Popup,
   Icon,
@@ -50,41 +51,69 @@ export default class PeopleSearch extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      search: {}
+      search: {
+        name: ""
+      },
+      options: {
+        props: {
+          sortBy: "name",
+          facebookId: props.facebookId,
+          campaignId: props.campaignId
+        }
+      }
     };
-    this._handleChange = this._handleChange.bind(this);
+    this._handleSearchChange = this._handleSearchChange.bind(this);
+    this._handleOptionChange = this._handleOptionChange.bind(this);
+    this._handleSortChange = this._handleSortChange.bind(this);
     this._toggleMeta = this._toggleMeta.bind(this);
   }
   _toggleMeta = prop => {
     return () => {
-      const { search } = this.state;
-      if (!search[prop]) {
+      const { options } = this.state;
+      if (!options.props[`campaignMeta.${prop}`]) {
         this.setState({
-          search: {
-            ...search,
-            [prop]: true
+          options: {
+            ...options,
+            props: {
+              ...options.props,
+              [`campaignMeta.${prop}`]: true
+            }
           }
         });
       } else {
+        let newProps = { ...options.props };
+        delete newProps[`campaignMeta.${prop}`];
         this.setState({
-          search: {
-            ...search,
-            [prop]: null
+          options: {
+            ...options,
+            props: newProps
           }
         });
       }
     };
   };
-  _handleChange = _.debounce((ev, { name, value }) => {
+  _handleSearchChange = _.debounce((ev, { name, value }) => {
     this.setState({ search: { ...this.state.search, [name]: value } });
   }, 250);
+  _handleOptionChange = _.debounce((ev, { name, value }) => {
+    this.setState({ options: { ...this.state.options, [name]: value } });
+  }, 250);
+  _handleSortChange = _.debounce((ev, { value }) => {
+    const { options } = this.state;
+    this.setState({
+      options: {
+        ...options,
+        props: { ...options.props, sortBy: value }
+      }
+    });
+  }, 250);
   render() {
-    const { search } = this.state;
+    const { search, options } = this.state;
     const { campaignId, facebookId } = this.props;
     return (
       <Wrapper>
         <h3>Find people</h3>
-        <Grid columns={2} widths="equal">
+        <Grid columns={3} widths="equal">
           <Grid.Row>
             <Grid.Column>
               <span className="filter-label">Search by name</span>
@@ -93,7 +122,7 @@ export default class PeopleSearch extends React.Component {
                 control={Input}
                 placeholder="Type a name..."
                 name="name"
-                onChange={this._handleChange}
+                onChange={this._handleSearchChange}
               />
             </Grid.Column>
             <Grid.Column>
@@ -104,7 +133,7 @@ export default class PeopleSearch extends React.Component {
                     key={flag.prop}
                     trigger={
                       <Button
-                        active={search[flag.prop]}
+                        active={options.props[`campaignMeta.${flag.prop}`]}
                         icon={flag.icon}
                         onClick={this._toggleMeta(flag.prop)}
                       />
@@ -114,12 +143,39 @@ export default class PeopleSearch extends React.Component {
                 ))}
               </Button.Group>
             </Grid.Column>
+            <Grid.Column>
+              <span className="filter-label">Sorting</span>
+              <Form.Field
+                control={Select}
+                onChange={this._handleSortChange}
+                value={options.props.sortBy}
+                fluid
+                options={[
+                  {
+                    key: "name",
+                    value: "name",
+                    text: "Name"
+                  },
+                  {
+                    key: "comments",
+                    value: "comments",
+                    text: "Comments"
+                  },
+                  {
+                    key: "reactions",
+                    value: "reactions",
+                    text: "Reactions"
+                  }
+                ]}
+              />
+            </Grid.Column>
           </Grid.Row>
         </Grid>
         <PeopleSearchContainer
-          search={search}
           campaignId={campaignId}
           facebookId={facebookId}
+          search={search}
+          options={options}
         />
       </Wrapper>
     );

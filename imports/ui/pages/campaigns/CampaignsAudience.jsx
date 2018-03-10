@@ -18,21 +18,11 @@ export default class CampaignsAudience extends React.Component {
     const {
       loading,
       campaign,
+      account,
       geolocations,
-      facebookId,
       categoryId
     } = this.props;
     const { accounts } = campaign;
-    let facebookAccount;
-    if (!loading) {
-      if (facebookId) {
-        facebookAccount = !loading
-          ? _.findWhere(accounts, { facebookId: facebookId })
-          : null;
-      } else if (accounts.length) {
-        facebookAccount = accounts[0];
-      }
-    }
     const path = categoryId
       ? "App.campaignAudience.category"
       : "App.campaignAudience";
@@ -54,19 +44,19 @@ export default class CampaignsAudience extends React.Component {
                 <Grid.Row>
                   <Grid.Column>
                     <Menu>
-                      {accounts.map(account => (
+                      {accounts.map(acc => (
                         <Menu.Item
-                          key={`account-${account._id}`}
+                          key={`account-${acc._id}`}
                           active={
-                            account.facebookId == facebookAccount.facebookId
+                            acc.facebookId == account.facebookId
                           }
                           href={FlowRouter.path(path, {
                             campaignId: campaign._id,
-                            facebookId: account.facebookId,
+                            facebookId: acc.facebookId,
                             categoryId: categoryId
                           })}
                         >
-                          {account.name}
+                          {acc.name}
                         </Menu.Item>
                       ))}
                     </Menu>
@@ -75,12 +65,12 @@ export default class CampaignsAudience extends React.Component {
               ) : null}
               <Grid.Row>
                 <Grid.Column>
-                  {facebookAccount ? (
+                  {account ? (
                     <div>
                       {categoryId ? (
                         <AudienceCategoryContainer
                           campaignId={campaign._id}
-                          facebookAccountId={facebookAccount.facebookId}
+                          facebookAccountId={account.facebookId}
                           audienceCategoryId={categoryId}
                         />
                       ) : (
@@ -88,13 +78,13 @@ export default class CampaignsAudience extends React.Component {
                           <Header>Geolocations</Header>
                           <AudienceGeolocationSummaryContainer
                             campaignId={campaign._id}
-                            facebookAccountId={facebookAccount.facebookId}
+                            facebookAccountId={account.facebookId}
                           />
                           <Divider />
                           <Header>Audience Categories</Header>
                           <AudienceCategoriesListContainer
                             campaignId={campaign._id}
-                            facebookAccountId={facebookAccount.facebookId}
+                            facebookAccountId={account.facebookId}
                           />
                         </div>
                       )}

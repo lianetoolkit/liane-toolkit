@@ -30,7 +30,7 @@ export default class PeopleSearchResults extends React.Component {
     const { loading, facebookId, campaignId, people } = this.props;
     if (loading) {
       return <Loading />;
-    } else if(people.length) {
+    } else if (people.length) {
       return (
         <Table>
           <Table.Body>
@@ -54,7 +54,7 @@ export default class PeopleSearchResults extends React.Component {
                   <a
                     href={FlowRouter.path("App.campaignPeople.detail", {
                       campaignId,
-                      personId: person._id
+                      personId: person.__originalId
                     })}
                   >
                     {person.name}
@@ -101,7 +101,7 @@ export default class PeopleSearchResults extends React.Component {
         </Table>
       );
     } else {
-      return <p>No people were found.</p>
+      return <p>No people were found.</p>;
     }
   }
 }
