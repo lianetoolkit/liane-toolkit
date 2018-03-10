@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
@@ -13,7 +14,8 @@ import {
   Form,
   Input,
   Table,
-  Menu
+  Menu,
+  Icon
 } from "semantic-ui-react";
 
 export default class CampaignsSettings extends React.Component {
@@ -29,6 +31,7 @@ export default class CampaignsSettings extends React.Component {
     this._handleNav = this._handleNav.bind(this);
     this._handleChange = this._handleChange.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
+    this._handleRemove = this._handleRemove.bind(this);
   }
   componentDidMount() {
     const { campaign } = this.props;
@@ -114,6 +117,31 @@ export default class CampaignsSettings extends React.Component {
       }
     });
   }
+  _handleRemove(e) {
+    e.preventDefault();
+    this.context.confirmStore.show({
+      callback: () => {
+        const { campaign } = this.props;
+        this.setState({ isLoading: true });
+        if (campaign) {
+          Meteor.call(
+            "campaigns.remove",
+            { campaignId: campaign._id },
+            error => {
+              this.setState({ isLoading: false });
+              if (error) {
+                Alerts.error(error);
+              } else {
+                Alerts.success("Campaign removed successfully");
+                this.context.confirmStore.hide();
+                FlowRouter.go("App.dashboard");
+              }
+            }
+          );
+        }
+      }
+    });
+  }
   render() {
     const { formData, section } = this.state;
     const { loading, campaign } = this.props;
@@ -144,6 +172,12 @@ export default class CampaignsSettings extends React.Component {
                   onClick={this._handleNav("team")}
                 >
                   Team
+                </Menu.Item>
+                <Menu.Item
+                  active={section == "delete"}
+                  onClick={this._handleNav("delete")}
+                >
+                  Delete campaign
                 </Menu.Item>
               </Menu>
               <Segment.Group>
@@ -191,6 +225,14 @@ export default class CampaignsSettings extends React.Component {
                         />
                       </div>
                     ) : null}
+                    {section == "delete" ? (
+                      <div>
+                        <Button fluid negative onClick={this._handleRemove}>
+                          <Icon name="trash" />
+                          Detele campaign and all its data
+                        </Button>
+                      </div>
+                    ) : null}
                   </Form>
                 </Segment>
               </Segment.Group>
@@ -201,3 +243,7 @@ export default class CampaignsSettings extends React.Component {
     );
   }
 }
+
+CampaignsSettings.contextTypes = {
+  confirmStore: PropTypes.object
+};

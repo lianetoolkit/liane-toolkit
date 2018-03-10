@@ -1,5 +1,9 @@
 import { Promise } from "meteor/promise";
 import { Facebook, FacebookApiException } from "fb";
+import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
+import { Entries } from "/imports/api/facebook/entries/entries.js";
+import { Likes } from "/imports/api/facebook/likes/likes.js";
+import { Comments } from "/imports/api/facebook/comments/comments.js";
 
 const options = {
   client_id: Meteor.settings.facebook.clientId,
@@ -19,6 +23,16 @@ const _fetchFacebookPageData = ({ url }) => {
 };
 
 const FacebookAccountsHelpers = {
+  removeAccount({ facebookAccountId }) {
+    const account = FacebookAccounts.findOne({ facebookId: facebookAccountId });
+    if (!account) {
+      throw new Meteor.Error(404, "Facebook Account not found");
+    }
+
+    Likes.remove({ facebookAccountId });
+    Comments.remove({ facebookAccountId });
+    FacebookAccounts.remove(account._id);
+  },
   getUserAccounts({ userId }) {
     check(userId, String);
 
