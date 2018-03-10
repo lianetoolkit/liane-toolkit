@@ -5,6 +5,8 @@ import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import App from "/imports/ui/layouts/app/App.jsx";
 
+const CampaignSubs = new SubsManager();
+
 export default createContainer(props => {
   const currentUser = Meteor.user();
   const userHandle = Meteor.subscribe("users.data");
@@ -17,7 +19,7 @@ export default createContainer(props => {
         }).fetch()
       : null;
 
-  const campaignHandle = Meteor.subscribe("campaigns.detail", {
+  const campaignHandle = CampaignSubs.subscribe("campaigns.detail", {
     campaignId: props.campaignId
   });
 

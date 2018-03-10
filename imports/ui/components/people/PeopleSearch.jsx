@@ -55,6 +55,8 @@ export default class PeopleSearch extends React.Component {
         name: ""
       },
       options: {
+        limit: 10,
+        skip: 0,
         props: {
           sortBy: "name",
           facebookId: props.facebookId,
