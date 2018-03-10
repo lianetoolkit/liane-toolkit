@@ -53,7 +53,13 @@ const FacebookAudiencesHelpers = {
       _id: { $in: context.audienceCategories }
     }).fetch();
 
+    if (!adAccountId) {
+      CampaignsHelpers.suspendAdAccount({ campaignId: campaign._id });
+      throw new Meteor.Error("Campaign has no ad account.");
+    }
+
     const adAccountUsers = AdAccountsHelpers.getUsers({ adAccountId });
+
 
     if (!adAccountUsers.length) {
       CampaignsHelpers.suspendAdAccount({ campaignId: campaign._id });

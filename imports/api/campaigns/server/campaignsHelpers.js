@@ -14,7 +14,7 @@ const CampaignsHelpers = {
     check(campaignId, String);
     check(account, Object);
 
-    logger.info("CampaignsHelpers.addAccountToCampaign: called", {
+    logger.debug("CampaignsHelpers.addAccountToCampaign: called", {
       campaignId,
       account
     });
@@ -58,8 +58,63 @@ const CampaignsHelpers = {
     });
     return;
   },
-  removeCampaign({ campaignId }) {
+  refreshAccountJob({ campaignId, facebookAccountId, type }) {
+    logger.debug("CampaignsHelpers.refreshAccountJob: called", {
+      campaignId,
+      facebookAccountId,
+      type
+    });
+    const campaign = Campaigns.findOne(campaignId);
 
+    const account = _.findWhere(campaign.accounts, {
+      facebookId: facebookAccountId
+    });
+
+    let jobType, jobData;
+    switch (type) {
+      case "entries":
+        jobType = "entries.updateAccountEntries";
+        jobData = {
+          facebookId: facebookAccountId,
+          accessToken: account.accessToken,
+          campaignId: campaign._id
+        };
+        break;
+      case "audiences":
+        jobType = "audiences.updateAccountAudience";
+        jobData = {
+          campaignId: campaign._id,
+          facebookAccountId: facebookAccountId
+        };
+        break;
+    }
+
+    const query = {
+      type: jobType
+    };
+
+    for (const prop in jobData) {
+      if (prop !== "accessToken") {
+        query[`data.${prop}`] = jobData[prop];
+      }
+    }
+
+    const job = Jobs.findOne(query);
+
+    if (job) {
+      if (job.status == "failed" || job.status == "cancelled") {
+        Jobs.getJob(job._id).restart();
+      } else if (job.status == "waiting") {
+        Jobs.getJob(job._id).ready({ time: Jobs.foreverDate });
+      }
+    } else {
+      JobsHelpers.addJob({
+        jobType,
+        jobData
+      });
+    }
+  },
+  removeCampaign({ campaignId }) {
     const campaign = Campaigns.findOne(campaignId);
 
     if (!campaign) {

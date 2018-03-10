@@ -195,7 +195,14 @@ export default class AppMenu extends React.Component {
             <div>
               {currentCampaign.status == "invalid_adaccount" ? (
                 <Message negative>
-                  Your campaign has an invalid ad account.
+                  Your campaign has an invalid ad account.{" "}
+                  <a
+                    href={FlowRouter.path("App.campaignSettings", {
+                      campaignId: currentCampaign._id
+                    })}
+                  >
+                    Edit your settings
+                  </a>.
                 </Message>
               ) : null}
               <Menu vertical inverted fluid>
