@@ -2,6 +2,8 @@ import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
+import AdAccountField from "/imports/ui/components/facebook/AdAccountField.jsx";
+import _ from "underscore";
 
 import {
   Grid,
@@ -34,9 +36,7 @@ export default class CampaignsSettings extends React.Component {
       this.setState({
         formData: {
           ...this.state.formData,
-          general: {
-            name: campaign.name
-          }
+          general: campaign
         }
       });
     }
@@ -48,9 +48,7 @@ export default class CampaignsSettings extends React.Component {
         this.setState({
           formData: {
             ...this.state.formData,
-            general: {
-              name: nextProps.campaign.name
-            }
+            general: nextProps.campaign
           }
         });
       } else {
@@ -80,7 +78,13 @@ export default class CampaignsSettings extends React.Component {
     ev.preventDefault();
     const { campaign } = this.props;
     const { section, formData } = this.state;
-    const data = formData[section];
+    let data = {};
+    for (const key in formData[section]) {
+      if (formData[section][key]) {
+        data[key] = formData[section][key];
+      }
+    }
+    data = _.pick(data, ["name", "adAccountId"]);
     switch (section) {
       case "general":
         Meteor.call(
@@ -152,6 +156,12 @@ export default class CampaignsSettings extends React.Component {
                           label="Campaign name"
                           name="name"
                           value={formData.general.name}
+                          onChange={this._handleChange}
+                        />
+                        <AdAccountField
+                          label="Ad Account"
+                          name="adAccountId"
+                          value={formData.general.adAccountId}
                           onChange={this._handleChange}
                         />
                         <Button fluid primary>

@@ -70,13 +70,18 @@ export const campaignsUpdate = new ValidatedMethod({
       type: String
     },
     name: {
-      type: String
+      type: String,
+      optional: true
+    },
+    adAccountId: {
+      type: String,
+      optional: true
     }
   }).validator(),
-  run({ campaignId, name }) {
+  run({ campaignId, ...data }) {
     logger.debug("campaigns.update called", {
       campaignId,
-      name
+      data
     });
 
     const userId = Meteor.userId();
@@ -99,7 +104,7 @@ export const campaignsUpdate = new ValidatedMethod({
         _id: campaignId
       },
       {
-        $set: { name }
+        $set: data
       }
     );
   }

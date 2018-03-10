@@ -3,6 +3,7 @@ import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import SelectFacebookAccountField from "/imports/ui/components/facebook/SelectFacebookAccountField.jsx";
+import AdAccountField from "/imports/ui/components/facebook/AdAccountField.jsx";
 
 import {
   Form,
@@ -21,7 +22,6 @@ export default class AddCampaignPage extends React.Component {
     console.log("AddCampaignPage init", { props });
     this.state = {
       contexts: [],
-      adAccounts: [],
       name: "",
       facebookAccountId: "",
       contextId: "",
@@ -41,19 +41,6 @@ export default class AddCampaignPage extends React.Component {
       }));
       this.setState({
         contexts
-      });
-    }
-    if (
-      nextProps.adAccounts !== this.props.adAccounts ||
-      (nextProps.adAccounts.length && !this.state.adAccounts.length)
-    ) {
-      const adAccounts = nextProps.adAccounts.map(ac => ({
-        key: ac.id,
-        text: ac.account_id,
-        value: ac.id
-      }));
-      this.setState({
-        adAccounts
       });
     }
   }
@@ -88,7 +75,6 @@ export default class AddCampaignPage extends React.Component {
     const { loading, currentUser } = this.props;
     const {
       contexts,
-      adAccounts,
       name,
       description,
       context,
@@ -127,17 +113,11 @@ export default class AddCampaignPage extends React.Component {
                       label="Select the facebook account for your campaign"
                       onChange={this._handleChange}
                     />
-                    <Form.Field
-                      control={Dropdown}
+                    <AdAccountField
                       label="Select your ad account for audience and ad creation"
-                      placeholder="Select an ad account"
-                      selection
                       onChange={this._handleChange}
-                      options={adAccounts}
                       name="adAccountId"
-                      placeholder="Select an ad account"
                     />
-                    <Divider />
                     <Button fluid primary type="submit" loading={isLoading}>
                       Submit
                     </Button>

@@ -27,9 +27,7 @@ export default createContainer(props => {
   };
 
   const loading =
-    !personHandle.ready() ||
-    !likesHandle.ready() ||
-    !commentsHandle.ready();
+    !personHandle.ready() || !likesHandle.ready() || !commentsHandle.ready();
 
   const person = personHandle.ready() ? People.findOne(props.personId) : null;
 
