@@ -1,6 +1,5 @@
 import { Meteor } from "meteor/meteor";
 import { createContainer } from "meteor/react-meteor-data";
-import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import PeopleEdit from "/imports/ui/pages/people/PeopleEdit.jsx";
 
