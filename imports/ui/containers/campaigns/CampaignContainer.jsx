@@ -1,5 +1,5 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
@@ -7,7 +7,7 @@ import App from "/imports/ui/layouts/app/App.jsx";
 
 const CampaignSubs = new SubsManager();
 
-export default createContainer(props => {
+export default withTracker(props => {
   const currentUser = Meteor.user();
   const userHandle = Meteor.subscribe("users.data");
 
@@ -71,4 +71,4 @@ export default createContainer(props => {
     account,
     currentFacebookId
   };
-}, App);
+})(App);

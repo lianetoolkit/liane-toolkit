@@ -1,9 +1,9 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import App from "/imports/ui/layouts/app/App.jsx";
 
-export default createContainer(() => {
+export default withTracker(() => {
   const currentUser = Meteor.user();
   const userHandle = Meteor.subscribe("users.data");
   const loading = !userHandle.ready();
@@ -20,4 +20,4 @@ export default createContainer(() => {
     currentCampaign: FlowRouter.getParam('campaignId'),
     connected: Meteor.status().connected
   };
-}, App);
+})(App);
