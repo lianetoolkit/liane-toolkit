@@ -10,7 +10,7 @@ export default class PeopleMetaButtons extends React.Component {
   _handleClick(key) {
     let { person, onChange } = this.props;
     person.campaignMeta = person.campaignMeta || {};
-    const personId = person.personId || person._id;
+    const personId = person.personId || person.__originalId || person._id;
     return ev => {
       const data = {
         personId,
@@ -21,7 +21,7 @@ export default class PeopleMetaButtons extends React.Component {
         if (error) {
           Alerts.error(error);
         } else {
-          if(onChange) {
+          if (onChange) {
             onChange(data);
           }
           person.campaignMeta[key] = data.metaValue;
