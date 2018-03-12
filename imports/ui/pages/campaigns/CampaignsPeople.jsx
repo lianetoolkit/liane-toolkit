@@ -46,7 +46,7 @@ export default class CampaignsPeople extends React.Component {
                             facebookId: acc.facebookId
                           })}
                         >
-                          {account.name}
+                          {acc.name}
                         </Menu.Item>
                       ))}
                     </Menu>
