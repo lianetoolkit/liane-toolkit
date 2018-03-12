@@ -13,6 +13,7 @@ import {
   Button,
   Form,
   Input,
+  Select,
   Table,
   Menu,
   Icon
@@ -32,6 +33,7 @@ export default class CampaignsSettings extends React.Component {
     this._handleChange = this._handleChange.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
     this._handleRemove = this._handleRemove.bind(this);
+    this._handleRemoveUser = this._handleRemoveUser.bind(this);
   }
   componentDidMount() {
     const { campaign } = this.props;
@@ -64,14 +66,6 @@ export default class CampaignsSettings extends React.Component {
       }
     }
   }
-  _role(user) {
-    const { campaign } = this.props;
-    const campaignUser = campaign.users.find(u => u.userId == user._id);
-    if (campaignUser) {
-      return campaignUser.role;
-    }
-    return "";
-  }
   _handleNav(section) {
     return () => {
       this.setState({ section });
@@ -87,9 +81,9 @@ export default class CampaignsSettings extends React.Component {
         data[key] = formData[section][key];
       }
     }
-    data = _.pick(data, ["name", "adAccountId"]);
     switch (section) {
       case "general":
+        data = _.pick(data, ["name", "adAccountId"]);
         Meteor.call(
           "campaigns.update",
           { ...data, campaignId: campaign._id },
@@ -99,6 +93,21 @@ export default class CampaignsSettings extends React.Component {
               Alerts.error(error);
             } else {
               Alerts.success("Campaign updated successfully.");
+            }
+          }
+        );
+        break;
+      case "team":
+        console.log(data);
+        Meteor.call(
+          "campaigns.addUser",
+          { ...data, campaignId: campaign._id },
+          (error, result) => {
+            if (error) {
+              console.log(error);
+              Alerts.error(error);
+            } else {
+              Alerts.success("User added successfully.");
             }
           }
         );
@@ -142,9 +151,32 @@ export default class CampaignsSettings extends React.Component {
       }
     });
   }
+  _handleRemoveUser = userId => ev => {
+    ev.preventDefault();
+    this.context.confirmStore.show({
+      callback: () => {
+        const { campaign } = this.props;
+        Meteor.call(
+          "campaigns.removeUser",
+          {
+            campaignId: campaign._id,
+            userId
+          },
+          error => {
+            this.context.confirmStore.hide();
+            if (error) {
+              Alerts.error(error);
+            } else {
+              Alerts.success("User removed successfully");
+            }
+          }
+        );
+      }
+    });
+  };
   render() {
     const { formData, section } = this.state;
-    const { loading, campaign } = this.props;
+    const { loading, campaign, currentUser } = this.props;
     const { users } = campaign;
     return (
       <div>
@@ -210,19 +242,60 @@ export default class CampaignsSettings extends React.Component {
                             {users.map(user => (
                               <Table.Row key={user._id}>
                                 <Table.Cell>{user.name}</Table.Cell>
-                                <Table.Cell>{this._role(user)}</Table.Cell>
+                                <Table.Cell>{user.campaign.role}</Table.Cell>
+                                <Table.Cell>
+                                  {user._id !== currentUser._id ? (
+                                    <a
+                                      href="#"
+                                      onClick={this._handleRemoveUser(user._id)}
+                                    >
+                                      Remove
+                                    </a>
+                                  ) : null}
+                                </Table.Cell>
                               </Table.Row>
                             ))}
                           </Table.Body>
                         </Table>
-                        <Header size="small">Add user</Header>
-                        <Form.Field
-                          control={Input}
-                          label="User email"
-                          name="email"
-                          value={formData.team.email}
-                          onChange={this._handleChange}
-                        />
+                        <Segment>
+                          <Header size="small">Add user</Header>
+                          <Form.Group widths="equal">
+                            <Form.Field
+                              control={Input}
+                              label="User email"
+                              name="email"
+                              value={formData.team.email}
+                              onChange={this._handleChange}
+                            />
+                            <Form.Field
+                              control={Select}
+                              label="User role"
+                              name="role"
+                              value={formData.team.role}
+                              onChange={this._handleChange}
+                              options={[
+                                {
+                                  key: "guest",
+                                  value: "guest",
+                                  text: "Guest"
+                                },
+                                {
+                                  key: "manager",
+                                  value: "manager",
+                                  text: "Manager"
+                                },
+                                {
+                                  key: "owner",
+                                  value: "owner",
+                                  text: "Owner"
+                                }
+                              ]}
+                            />
+                          </Form.Group>
+                          <Button fluid primary>
+                            Add user to your campaign
+                          </Button>
+                        </Segment>
                       </div>
                     ) : null}
                     {section == "actions" ? (

@@ -161,6 +161,105 @@ export const campaignsRemove = new ValidatedMethod({
   }
 });
 
+export const addUser = new ValidatedMethod({
+  name: "campaigns.addUser",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    email: {
+      type: String
+    },
+    role: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, email, role }) {
+    logger.debug("campaigns.addUser called", { campaignId, email, role });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exists");
+    }
+
+    allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    const user = Meteor.users.findOne({
+      emails: { $elemMatch: { address: email } }
+    });
+
+    if (!user) {
+      throw new Meteor.Error(404, "User not found");
+    }
+
+    if (_.findWhere(campaign.users, { userId: user._id })) {
+      throw new Meteor.Error(401, "User already part of this campaign.");
+    }
+
+    Campaigns.update(
+      {
+        _id: campaignId
+      },
+      { $push: { users: { userId: user._id, role } } }
+    );
+  }
+});
+
+export const removeUser = new ValidatedMethod({
+  name: "campaigns.removeUser",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    userId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, userId }) {
+    logger.debug("campaigns.removeUser called", { campaignId, userId });
+
+    const currentUser = Meteor.userId();
+    if (!currentUser) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exists");
+    }
+
+    allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    if (currentUser == userId) {
+      throw new Meteor.Error(401, "You can't remove yourself");
+    }
+
+    const campaignUser = _.findWhere(campaign.users, { userId });
+
+    if (!campaignUser) {
+      throw new Meteor.Error(401, "User is not part of this campaign.");
+    }
+
+    Campaigns.update(
+      {
+        _id: campaignId
+      },
+      { $pull: { users: campaignUser } }
+    );
+  }
+});
+
 export const addSelfAccount = new ValidatedMethod({
   name: "campaigns.addSelfAccount",
   validate: new SimpleSchema({

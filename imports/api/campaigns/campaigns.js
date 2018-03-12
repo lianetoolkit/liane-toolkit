@@ -9,7 +9,7 @@ Campaigns.usersSchema = new SimpleSchema({
   },
   role: {
     type: String,
-    allowedValues: ["owner", "manager"]
+    allowedValues: ["owner", "manager", "guest"]
   }
 });
 

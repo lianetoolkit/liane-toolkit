@@ -32,7 +32,11 @@ export default withTracker(props => {
         .find({
           _id: { $in: _.pluck(campaign.users, "userId") }
         })
-        .fetch();
+        .fetch()
+        .map(user => {
+          user.campaign = campaign.users.find(u => u.userId == user._id);
+          return user;
+        });
       campaign.context = Contexts.findOne(campaign.contextId);
       return campaign;
     }
