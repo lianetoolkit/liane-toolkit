@@ -98,7 +98,6 @@ export default class CampaignsSettings extends React.Component {
         );
         break;
       case "team":
-        console.log(data);
         Meteor.call(
           "campaigns.addUser",
           { ...data, campaignId: campaign._id },

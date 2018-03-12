@@ -93,7 +93,6 @@ const BooleanItem = ({ field, data }) => {
 };
 
 const LocationItem = ({ data }) => {
-  console.log(data);
   data = data.value;
   let text = "";
   if (data.city) {
