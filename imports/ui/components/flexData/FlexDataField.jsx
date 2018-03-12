@@ -10,6 +10,7 @@ import {
   Checkbox
 } from "semantic-ui-react";
 import styled from "styled-components";
+import LocationField from "/imports/ui/components/facebook/LocationField.jsx";
 import SelectGeolocationFacebook from "/imports/ui/components/geolocations/SelectGeolocationFacebook.jsx";
 import FacebookInterestsField from "/imports/ui/components/audiences/FacebookInterestsField.jsx";
 import RepeaterField from "./RepeaterField.jsx";
@@ -38,7 +39,7 @@ export default class FlexDataField extends React.Component {
       case "repeater":
         return RepeaterField;
       case "facebook_location":
-        return SelectGeolocationFacebook;
+        return LocationField;
       case "facebook_interests":
         return FacebookInterestsField;
       default:

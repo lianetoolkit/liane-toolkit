@@ -28,13 +28,8 @@ export default [
         options: genderOptions
       },
       {
-        key: "state",
-        label: "State/Province",
-        fieldType: "facebook_location"
-      },
-      {
-        key: "city",
-        label: "City",
+        key: "location",
+        label: "Location",
         fieldType: "facebook_location"
       },
       {
@@ -259,13 +254,8 @@ export default [
             fieldType: "group",
             fields: [
               {
-                key: "state",
-                label: "State",
-                fieldType: "facebook_location"
-              },
-              {
-                key: "city",
-                label: "City",
+                key: "location",
+                label: "Location",
                 fieldType: "facebook_location"
               },
               {

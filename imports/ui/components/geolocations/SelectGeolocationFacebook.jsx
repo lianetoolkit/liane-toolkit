@@ -120,6 +120,7 @@ export default class SelectGeolocationFacebook extends React.Component {
     const { multiple } = this.props;
     let { value } = this.state;
     const { availableGeolocations } = this.state;
+    const geolocationOptions = Object.values(availableGeolocations);
     if (multiple) {
       if (value && !Array.isArray(value)) {
         value = [value];
@@ -127,7 +128,6 @@ export default class SelectGeolocationFacebook extends React.Component {
         value = [];
       }
     }
-    const geolocationOptions = Object.values(availableGeolocations);
     return (
       <Form.Field
         control={Dropdown}

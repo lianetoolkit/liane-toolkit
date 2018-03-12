@@ -11,13 +11,8 @@ const options = {
 const _fb = new Facebook(options);
 
 const GeolocationsHelpers = {
-  facebookSearch({ accessToken, type, q }) {
-    _fb.setAccessToken(accessToken);
-
-    return _fb.api("search", {
-      type,
-      q
-    });
+  facebookSearch(query) {
+    return _fb.api("search", query);
   },
   nominatimSearch({ q }) {
     const api = "http://nominatim.openstreetmap.org/search";

@@ -95,7 +95,6 @@ export default class CanvasEdit extends React.Component {
                 <Grid.Column width={5}>
                   <div className="test">
                     <Sticky
-                      pushing
                       offset={20}
                       context={contextRef}
                       scrollContext={document.getElementById("app-content")}

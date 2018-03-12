@@ -133,10 +133,25 @@ export const searchAdGeolocations = new ValidatedMethod({
   validate: new SimpleSchema({
     q: {
       type: String
+    },
+    location_types: {
+      type: Array,
+      optional: true
+    },
+    "location_types.$": {
+      type: String
+    },
+    country_code: {
+      type: String,
+      optional: true
+    },
+    region_id: {
+      type: String,
+      optional: true
     }
   }).validator(),
-  run({ q }) {
-    logger.debug("geolocations.searchAdGeolocations called", { q });
+  run(query) {
+    logger.debug("geolocations.searchAdGeolocations called", { query });
 
     const userId = Meteor.userId();
     if (!userId) {
@@ -150,9 +165,9 @@ export const searchAdGeolocations = new ValidatedMethod({
     const user = Meteor.users.findOne(userId);
 
     return GeolocationsHelpers.facebookSearch({
+      ...query,
       type: "adgeolocation",
-      accessToken: user.services.facebook.accessToken,
-      q
+      access_token: user.services.facebook.accessToken
     });
   }
 });
