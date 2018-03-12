@@ -7,6 +7,12 @@ export const genderOptions = {
   non_binary: "Non binary"
 };
 
+export const educationOptions = {
+  option_1: "Option 1",
+  option_2: "Option 2",
+  option_3: "Option 3"
+};
+
 export const personFields = [
   {
     key: "name",
@@ -26,6 +32,16 @@ export const personFields = [
   {
     key: "facebook_url",
     label: "Facebook URL",
+    fieldType: "text"
+  },
+  {
+    key: "cellphone",
+    label: "Cellphone",
+    fieldType: "text"
+  },
+  {
+    key: "telephone",
+    label: "Telephone",
     fieldType: "text"
   }
 ];

@@ -180,15 +180,15 @@ export default class PeopleSinglePage extends React.Component {
                           <Header>
                             First commented{" "}
                             <strong>
-                              {moment(this._firstComment().created_time).format(
-                                "DD/MM/YYYY"
-                              )}
+                              {moment(
+                                this._firstComment().created_time
+                              ).fromNow()}
                             </strong>{" "}
                             and most recently commented{" "}
                             <strong>
-                              {moment(this._lastComment().created_time).format(
-                                "DD/MM/YYYY"
-                              )}
+                              {moment(
+                                this._lastComment().created_time
+                              ).fromNow()}
                             </strong>.
                           </Header>
                         </div>

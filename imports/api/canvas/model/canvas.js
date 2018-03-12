@@ -1,4 +1,4 @@
-import { genderOptions, personFields } from "./common";
+import { genderOptions, educationOptions, personFields } from "./common";
 
 export default [
   {
@@ -7,25 +7,24 @@ export default [
     description: "Empecemos con algunas informaciones básicas de la candidata",
     fields: [
       {
-        key: "name",
-        label: "Your name",
+        key: "name_bb",
+        label: "Your name in the ballot box",
         fieldType: "text"
       },
       {
-        key: "name_bb",
-        label: "Your name in the ballot box",
+        key: "party_name",
+        label: "Name of your party",
+        fieldType: "text"
+      },
+      {
+        key: "number",
+        label: "Your number",
         fieldType: "text"
       },
       {
         key: "age",
         label: "Your age",
         fieldType: "text"
-      },
-      {
-        key: "gender",
-        label: "Gender",
-        fieldType: "select",
-        options: genderOptions
       },
       {
         key: "location",
@@ -45,11 +44,13 @@ export default [
           {
             key: "twitter",
             label: "Twitter",
+            placeholder: "@your_name",
             fieldType: "text"
           },
           {
             key: "instagram",
             label: "Instagram",
+            placeholder: "your_name",
             fieldType: "text"
           }
         ]
@@ -65,17 +66,22 @@ export default [
       {
         key: "positive_characteristic",
         label: "Positive Characteristic",
-        fieldType: "textarea"
+        fieldType: "text"
       },
       {
         key: "negative_characteristic",
         label: "Negative Characteristic",
-        fieldType: "textarea"
+        fieldType: "text"
       },
       {
-        key: "talent_limitation",
-        label: "One talent and one limitation",
-        fieldType: "textarea"
+        key: "talent",
+        label: "One talent",
+        fieldType: "text"
+      },
+      {
+        key: "limitation",
+        label: "One limitation",
+        fieldType: "text"
       },
       {
         key: "life_experience",
@@ -142,37 +148,6 @@ export default [
     ]
   },
   {
-    key: "proposals",
-    title: "Proposals",
-    description:
-      "Propuestas son proyectos de leyes/acciones legislativas por las cuales vas a luchar cuando seas electa. Ej: Voy a buscar aprobar una ley para instaurar un callcenter de denuncias de violencia contra mujeres.",
-    fields: [
-      {
-        key: "proposals",
-        label: "Main proposals",
-        fieldType: "repeater",
-        limit: 3,
-        fields: [
-          {
-            key: "title",
-            label: "Proposal short name",
-            fieldType: "text"
-          },
-          {
-            key: "importance",
-            label: "Why is this important for your city/state/country?",
-            fieldType: "textarea"
-          },
-          {
-            key: "capability",
-            label: "What makes you capable of accomplishing this?",
-            fieldType: "textarea"
-          }
-        ]
-      }
-    ]
-  },
-  {
     key: "commitments",
     title: "Commitments",
     description:
@@ -212,7 +187,12 @@ export default [
         fields: [
           {
             key: "name",
-            label: "Tag/name for this profile",
+            label: "Person name",
+            fieldType: "text"
+          },
+          {
+            key: "tag",
+            label: "Profile name/tag",
             fieldType: "text"
           },
           {
@@ -239,7 +219,8 @@ export default [
               {
                 key: "education",
                 label: "Education",
-                fieldType: "text"
+                fieldType: "select",
+                options: educationOptions
               },
               {
                 key: "social_class",
@@ -290,12 +271,12 @@ export default [
               {
                 key: "fears",
                 label: "Fears",
-                fieldType: "textarea"
+                fieldType: "text"
               },
               {
                 key: "desires",
                 label: "Desires",
-                fieldType: "textarea"
+                fieldType: "text"
               }
             ]
           }
@@ -336,36 +317,6 @@ export default [
         fieldType: "repeater",
         limit: 10,
         fields: personFields
-      }
-    ]
-  },
-  {
-    key: "channels",
-    title: "Channel",
-    description:
-      "Cuales son los canales que puedes utilizar? Mapea los canales para pensar en estrategias específicas para cada uno",
-    fields: [
-      {
-        key: "social_channels",
-        label: "List of social media channels",
-        fieldType: "repeater",
-        fields: [
-          {
-            key: "url",
-            label: "URL",
-            fieldType: "text"
-          },
-          {
-            key: "type",
-            label: "Type",
-            fieldType: "select",
-            options: {
-              facebook: "Facebook",
-              twitter: "Twitter",
-              instagram: "Instagram"
-            }
-          }
-        ]
       }
     ]
   },
@@ -426,23 +377,28 @@ export default [
           },
           {
             key: "hours",
-            label: "Hours a week",
-            fieldType: "text"
+            label: "Participation",
+            fieldType: "select",
+            options: {
+              full_time: "Full time",
+              part_time: "Part time"
+            }
           },
           {
-            key: "active",
-            label: "Accepted role",
-            fieldType: "boolean"
-          },
-          {
-            key: "volunteer",
-            label: "Is a volunteer",
+            key: "remunerated",
+            label: "Is this member remunerated?",
             fieldType: "boolean"
           },
           {
             key: "experience",
             label: "Experience level for the role",
-            fieldType: "text"
+            fieldType: "select",
+            options: {
+              none: "None",
+              little: "Little experience",
+              reasonable: "Reasonable experience",
+              expert: "Expert"
+            }
           },
           {
             key: "bio",
@@ -450,6 +406,22 @@ export default [
             fieldType: "textarea"
           }
         ]
+      }
+    ]
+  },
+  {
+    key: "funds",
+    title: "Funds",
+    fields: [
+      {
+        key: "expense",
+        label: "How much the campaign will spend",
+        fieldType: "text"
+      },
+      {
+        key: "funders",
+        label: "Who will finance",
+        fieldType: "textarea"
       }
     ]
   }

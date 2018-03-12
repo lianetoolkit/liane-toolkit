@@ -30,7 +30,7 @@ const Description = styled.div`
   padding: 1rem 0 2rem 0;
   border-bottom: 1px solid #eee;
   p {
-    margin: 0 0 .5rem;
+    margin: 0 0 0.5rem;
   }
 `;
 
@@ -121,11 +121,13 @@ export default class CanvasEdit extends React.Component {
                 {sectionKey && section ? (
                   <Grid.Column width={11}>
                     <div ref={this._handleContextRef}>
-                      <Description
-                        dangerouslySetInnerHTML={{
-                          __html: section.description
-                        }}
-                      />
+                      {section.description ? (
+                        <Description
+                          dangerouslySetInnerHTML={{
+                            __html: section.description
+                          }}
+                        />
+                      ) : null}
                       <FlexDataForm
                         config={section}
                         data={canvas}

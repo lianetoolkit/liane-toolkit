@@ -40,7 +40,7 @@ export default class RepeaterField extends React.Component {
   }
   componentDidUpdate(prevProps, prevState) {
     const { onChange, config } = this.props;
-    const { value } = this.state;
+    const { activeIndex, value } = this.state;
     if (JSON.stringify(prevState.value) != JSON.stringify(value)) {
       if (onChange) onChange(null, { name: config.key, value: value });
     }
@@ -115,7 +115,7 @@ export default class RepeaterField extends React.Component {
                 config={field}
                 name={`data[${activeIndex}]${field.key}`}
                 onChange={this._handleChange}
-                value={value[activeIndex][field.key]}
+                value={value[activeIndex][field.key] || ""}
               />
             ))}
           </Item>

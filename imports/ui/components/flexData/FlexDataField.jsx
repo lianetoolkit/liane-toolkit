@@ -73,6 +73,7 @@ export default class FlexDataField extends React.Component {
       name: name || config.key,
       label: this._label(config),
       control: this._control(config),
+      placeholder: config.placeholder || null,
       value: value
     };
     if (config.fieldType == "repeater" || config.fieldType == "group") {
