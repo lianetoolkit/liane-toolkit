@@ -92,6 +92,28 @@ const BooleanItem = ({ field, data }) => {
   return <Checkbox disabled checked={!!data.value} />;
 };
 
+const LocationItem = ({ data }) => {
+  console.log(data);
+  data = data.value;
+  let text = "";
+  if (data.city) {
+    text += data.city.name;
+  }
+  if (data.city && data.region) {
+    text += ", ";
+  }
+  if (data.region) {
+    text += data.region.name;
+  }
+  if (data.region && data.country) {
+    text += " - ";
+  }
+  if (data.country) {
+    text += data.country.name;
+  }
+  return <span>{text}</span>;
+};
+
 export default class FlexDataItem extends React.Component {
   _value() {
     const { field, data } = this.props;
@@ -101,7 +123,7 @@ export default class FlexDataItem extends React.Component {
         case "text":
           return data.value;
         case "facebook_location":
-          return data.value.name;
+          return <LocationItem data={data} />;
         case "select":
           return field.options[data.value];
         case "group":
