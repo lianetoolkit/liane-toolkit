@@ -67,8 +67,7 @@ const FacebookAccountsHelpers = {
         }
       }
     } catch (error) {
-      console.log(error);
-      throw new Meteor.Error(500, error);
+      throw new Meteor.Error(500, "Error trying to fetch your accounts");
     }
 
     return { result: data };
