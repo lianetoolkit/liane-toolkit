@@ -8,7 +8,10 @@ JobsPool.jobs = _.extend(EntriesJobs, AudiencesJobs);
 
 let _runJob;
 Meteor.startup(function() {
-  if (!Meteor.settings.server || Meteor.settings.server == "jobs") {
+  if (
+    !Meteor.settings.public.server ||
+    Meteor.settings.public.server == "jobs"
+  ) {
     Jobs.startJobServer();
     return JobsHelpers.cleanIdleJobs();
   }

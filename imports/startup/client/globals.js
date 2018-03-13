@@ -1,5 +1,3 @@
-import Alerts from "/imports/utils/alerts.js";
-
 // Privacy policy
 (function(w, d) {
   var loader = function() {

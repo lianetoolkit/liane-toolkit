@@ -1,9 +1,13 @@
-import "./logger.js";
 import "./globals.js";
-import "./accounts.js";
-import "./api.js";
+import "./logger.js";
 import "./redis.js";
-import "./fixtures.js";
+if (!Meteor.settings.public.server || Meteor.settings.public.server == "main") {
+  import "./accounts.js";
+  import "./api.js";
+  import "./fixtures.js";
+} else {
+  import "/imports/api/jobs/server/jobs.js";
+}
 
 // Meteor.setInterval(function() {
 //   var output = {};
