@@ -424,11 +424,11 @@ const FacebookAudiencesHelpers = {
             `adaccount::${adAccountId}::suspended`
           );
           while (suspended) {
-            logger.debug("Ad account rate limited, sleeping for 20 seconds", {
+            logger.debug("Ad account rate limited, sleeping for 30 seconds", {
               campaignId,
               adAccountId
             });
-            await sleep(20 * 1000); // 20 seconds
+            await sleep(30 * 1000); // 30 seconds
             suspended = redisClient.getSync(
               `adaccount::${adAccountId}::suspended`
             );
@@ -440,7 +440,7 @@ const FacebookAudiencesHelpers = {
               access_token: accessToken
             });
             ready = res.data.estimate_ready;
-            await sleep(5000 * multiplier);
+            await sleep(2000 * multiplier);
             multiplier = multiplier + 0.5;
           }
           redisClient.setSync(
