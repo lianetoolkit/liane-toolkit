@@ -5,7 +5,7 @@ import Loading from "/imports/ui/components/utils/Loading.jsx";
 import SelectGeolocationFacebook from "/imports/ui/components/geolocations/SelectGeolocationFacebook.jsx";
 import SelectGeolocationNominatim from "/imports/ui/components/geolocations/SelectGeolocationNominatim.jsx";
 import SelectGeolocationCoordinates from "/imports/ui/components/geolocations/SelectGeolocationCoordinates.jsx";
-import { Form, Grid, Button, Icon, Radio } from "semantic-ui-react";
+import { Form, Grid, Button, Icon, Radio, Divider } from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import _ from "underscore";
 
@@ -190,6 +190,7 @@ export default class EditGeolocationsPage extends React.Component {
                         />
                       </Form.Field>
                     ) : null}
+                    <Divider hidden />
                     {geolocationId ? (
                       <Button onClick={this._handleRemove} negative>
                         <Icon name="trash" />
