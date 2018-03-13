@@ -57,21 +57,6 @@ const LikesHelpers = {
     check(campaignId, String);
     check(facebookAccountId, String);
 
-    // Fetch distinct people from Likes collection if not provided
-    // TODO Distinct is not the proper method, use mongo aggregation instead
-    // if (!likedPeople) {
-    //   likedPeople = rawLikes
-    //     .distinctAsync("personId", {
-    //       facebookAccountId
-    //     })
-    //     .map(like => {
-    //       return {
-    //         id: like.personId,
-    //         name: like.name
-    //       };
-    //     });
-    // }
-
     if (likedPeople.length) {
       const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
       for (const likedPerson of likedPeople) {
@@ -108,13 +93,18 @@ const LikesHelpers = {
         // Update users already registered to another campaign
         peopleBulk
           .find({
-            facebookId: likedPerson.id,
             campaignId: { $ne: campaignId },
+            facebookId: likedPerson.id,
             facebookAccounts: { $in: [facebookAccountId] }
           })
-          .update({
-            $set: set
-          });
+          .update(
+            {
+              $set: set
+            },
+            {
+              multi: true
+            }
+          );
       }
       peopleBulk.execute();
     }

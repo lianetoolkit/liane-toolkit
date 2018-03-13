@@ -60,21 +60,6 @@ const CommentsHelpers = {
     check(campaignId, String);
     check(facebookAccountId, String);
 
-    // Fetch distinct people from Comments collection if not provided
-    // TODO Distinct is not the proper method, use mongo aggregation instead
-    // if (!commentedPeople) {
-    //   commentedPeople = rawComments
-    //     .distinctAsync("personId", {
-    //       facebookAccountId
-    //     })
-    //     .map(comment => {
-    //       return {
-    //         id: comment.personId,
-    //         name: comment.name
-    //       };
-    //     });
-    // }
-
     if (commentedPeople.length) {
       const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
       for (const commentedPerson of commentedPeople) {
@@ -101,13 +86,18 @@ const CommentsHelpers = {
         // Update users already registered to another campaign
         peopleBulk
           .find({
-            facebookId: commentedPerson.id,
             campaignId: { $ne: campaignId },
+            facebookId: commentedPerson.id,
             facebookAccounts: { $in: [facebookAccountId] }
           })
-          .update({
-            $set: set
-          });
+          .update(
+            {
+              $set: set
+            },
+            {
+              multi: true
+            }
+          );
       }
       peopleBulk.execute();
     }
