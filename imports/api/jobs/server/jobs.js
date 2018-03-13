@@ -8,9 +8,9 @@ JobsPool.jobs = _.extend(EntriesJobs, AudiencesJobs);
 
 let _runJob;
 Meteor.startup(function() {
-  Jobs.startJobServer();
-  return JobsHelpers.cleanIdleJobs();
-  if (Meteor.settings.public.deployMode != "local") {
+  if (!Meteor.settings.server || Meteor.settings.server == "jobs") {
+    Jobs.startJobServer();
+    return JobsHelpers.cleanIdleJobs();
   }
 });
 
@@ -68,7 +68,9 @@ if (Meteor.settings.public.deployMode === "local") {
   };
 }
 
-for (let jobType of Array.from(_.keys(JobsPool.jobs))) {
-  const workerOptions = JobsPool.jobs[jobType].workerOptions || {};
-  Jobs.processJobs(jobType, workerOptions, _runJob);
+if (!Meteor.settings.server || Meteor.settings.server == "jobs") {
+  for (let jobType of Array.from(_.keys(JobsPool.jobs))) {
+    const workerOptions = JobsPool.jobs[jobType].workerOptions || {};
+    Jobs.processJobs(jobType, workerOptions, _runJob);
+  }
 }
