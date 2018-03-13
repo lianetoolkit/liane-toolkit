@@ -24,6 +24,7 @@ export const accountAudienceItem = new ValidatedMethod({
     }
   }).validator(),
   run({ campaignId, audienceCategoryId, facebookAccountId, geolocationId }) {
+    this.unblock();
     logger.debug("audiences.accountAudienceItem", {
       campaignId,
       facebookAccountId,
@@ -66,6 +67,7 @@ export const accountAudienceGeolocationSummary = new ValidatedMethod({
     }
   }).validator(),
   run({ campaignId, facebookAccountId }) {
+    this.unblock();
     logger.debug("audiences.accountGeolocationSummary", {
       campaignId,
       facebookAccountId
@@ -133,6 +135,7 @@ export const accountAudienceSummary = new ValidatedMethod({
     }
   }).validator(),
   run({ campaignId, facebookAccountId }) {
+    this.unblock();
     logger.debug("audiences.accountSummary", { campaignId, facebookAccountId });
 
     const userId = Meteor.userId();
@@ -204,6 +207,7 @@ export const accountAudienceByCategory = new ValidatedMethod({
     }
   }).validator(),
   run({ campaignId, facebookAccountId, audienceCategoryId }) {
+    this.unblock();
     logger.debug("audiences.byCategory", {
       campaignId,
       facebookAccountId,

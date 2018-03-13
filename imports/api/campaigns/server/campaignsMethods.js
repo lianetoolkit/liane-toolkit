@@ -140,6 +140,7 @@ export const campaignsRemove = new ValidatedMethod({
     }
   }).validator(),
   run({ campaignId }) {
+    this.unblock();
     logger.debug("campaigns.remove called", { campaignId });
 
     const userId = Meteor.userId();
@@ -272,6 +273,7 @@ export const addSelfAccount = new ValidatedMethod({
     }
   }).validator(),
   run({ campaignId, account }) {
+    this.unblock();
     logger.debug("campaigns.addSelfAccount called", {
       campaignId,
       account
@@ -311,6 +313,7 @@ export const refreshAccountJob = new ValidatedMethod({
     }
   }).validator(),
   run({ campaignId, facebookAccountId, type }) {
+    this.unblock();
     logger.debug("campaigns.refreshAccountJob", {
       campaignId,
       facebookAccountId,

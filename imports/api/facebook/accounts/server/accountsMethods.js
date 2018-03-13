@@ -9,6 +9,7 @@ export const getUserAccounts = new ValidatedMethod({
   name: "facebook.accounts.getUserAccounts",
   validate() {},
   run() {
+    this.unblock();
     logger.debug("facebook.accounts.getUserAccounts called");
 
     const userId = Meteor.userId();
@@ -29,6 +30,7 @@ export const getAccountLikes = new ValidatedMethod({
     }
   }).validator(),
   run({ facebookAccountId }) {
+    this.unblock();
     logger.debug("facebook.account.likes", { facebookAccountId });
 
     const userId = Meteor.userId();
@@ -40,7 +42,6 @@ export const getAccountLikes = new ValidatedMethod({
       { $match: { facebookAccountId: facebookAccountId } },
       { $group: { _id: "$name", counter: { $sum: 1 } } }
     ]);
-    console.log(likes);
     return likes;
   }
 });
@@ -52,6 +53,7 @@ export const getAccountComments = new ValidatedMethod({
     }
   }).validator(),
   run({ facebookAccountId }) {
+    this.unblock();
     logger.debug("facebook.account.comments", { facebookAccountId });
 
     const userId = Meteor.userId();
@@ -63,7 +65,6 @@ export const getAccountComments = new ValidatedMethod({
       { $match: { facebookAccountId: facebookAccountId } },
       { $group: { _id: "$name", counter: { $sum: 1 } } }
     ]);
-    console.log(comments);
     return comments;
   }
 });

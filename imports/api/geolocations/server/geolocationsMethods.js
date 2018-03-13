@@ -151,6 +151,7 @@ export const searchAdGeolocations = new ValidatedMethod({
     }
   }).validator(),
   run(query) {
+    this.unblock();
     logger.debug("geolocations.searchAdGeolocations called", { query });
 
     const userId = Meteor.userId();
@@ -180,6 +181,7 @@ export const searchNominatim = new ValidatedMethod({
     }
   }).validator(),
   run({ q }) {
+    this.unblock();
     logger.debug("geolocations.searchNominatim called", { q });
 
     const userId = Meteor.userId();

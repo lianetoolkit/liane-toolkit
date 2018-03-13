@@ -105,6 +105,7 @@ export const searchAdInterests = new ValidatedMethod({
     }
   }).validator(),
   run({ q }) {
+    this.unblock();
     logger.debug("audienceCategories.searchAdInterests called", { q });
 
     const userId = Meteor.userId();
@@ -133,6 +134,7 @@ export const searchAdInterestSuggestions = new ValidatedMethod({
     }
   }).validator(),
   run({ interest_list }) {
+    this.unblock();
     logger.debug("audienceCategories.searchAdInterestSuggestions called", {
       interest_list
     });

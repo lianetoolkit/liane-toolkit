@@ -68,6 +68,7 @@ export const createAd = new ValidatedMethod({
     useConnection,
     adConfig
   }) {
+    this.unblock();
     logger.debug("ads.create called", {
       name,
       campaignId,

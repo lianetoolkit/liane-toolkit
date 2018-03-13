@@ -38,6 +38,7 @@ export const getAdAccounts = new ValidatedMethod({
   name: "users.getAdAccounts",
   validate() {},
   run() {
+    this.unblock();
     logger.debug("users.getAdAccounts called");
 
     const userId = Meteor.userId();
