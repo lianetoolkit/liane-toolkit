@@ -33,6 +33,9 @@ export default class FacebookInterestsField extends React.Component {
     if (JSON.stringify(prevState.value) != JSON.stringify(value) && onChange) {
       onChange(null, { name, value: this._parseValueOutput(value) });
     }
+    if (JSON.stringify(prevState.value) != JSON.stringify(value)) {
+      this._searchInterestSuggestions();
+    }
   }
   _parseValueInput(value) {
     if (!value) return "";
