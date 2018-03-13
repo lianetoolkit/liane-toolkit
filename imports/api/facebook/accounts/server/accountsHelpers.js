@@ -31,6 +31,7 @@ const FacebookAccountsHelpers = {
 
     Likes.remove({ facebookAccountId });
     Comments.remove({ facebookAccountId });
+    Entries.remove({ facebookAccountId });
     FacebookAccounts.remove(account._id);
   },
   getUserAccounts({ userId }) {
