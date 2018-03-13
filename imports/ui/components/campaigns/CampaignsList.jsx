@@ -36,7 +36,7 @@ export default class CampaignsList extends React.Component {
         <Container>
           <Header as="h3">Your Campaigns</Header>
           <Divider hidden />
-          {campaigns.length ? (
+          {campaigns && campaigns.length ? (
             <div>
               <List divided relaxed>
                 {campaigns.map(campaign => {

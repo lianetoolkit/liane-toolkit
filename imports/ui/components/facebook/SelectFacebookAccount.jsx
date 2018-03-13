@@ -96,7 +96,11 @@ export default class SelectFacebookAccount extends React.Component {
       <div>
         {!loading ? (
           <div>
-            {accounts.length ? <Header as="h3">Available Accounts</Header> : ""}
+            {accounts && accounts.length ? (
+              <Header as="h3">Available Accounts</Header>
+            ) : (
+              ""
+            )}
             <List selection verticalAlign="middle">
               {accounts.map(account => (
                 <FacebookAccount

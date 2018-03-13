@@ -57,22 +57,18 @@ const UsersHelpers = {
   },
   getUserAdAccounts({ token }) {
     check(token, String);
-    let response = Promise.await(
-      _fb.api("me/adaccounts", {
-        fields: ["account_id", "users"],
-        access_token: token
-      })
-    );
-    // Filter admin accounts only
-    const user = this.getUserByToken({ token });
-    const result = response.data.filter(adAccount => {
-      // return adAccount.users.data.find(u => {
-      //   return (
-      //     u.id == user.services.facebook.id && u.permissions.indexOf(1) !== -1
-      //   );
-      // });
-      return true;
-    });
+    let result;
+    try {
+      response = Promise.await(
+        _fb.api("me/adaccounts", {
+          fields: ["account_id", "users"],
+          access_token: token
+        })
+      );
+      result = response.data;
+    } catch (error) {
+      throw new Meteor.Error(500, "Error trying to fetch ad accounts.");
+    }
     return { result };
   },
   getUserByToken({ token }) {

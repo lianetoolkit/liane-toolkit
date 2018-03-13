@@ -68,7 +68,7 @@ export default class AppAlerts extends React.Component {
   render() {
     const alerts = Object.keys(this.state);
     const { currentUser } = this.props;
-    if (alerts.length) {
+    if (alerts && alerts.length) {
       return (
         <div>
           {alerts.map(alert => (
