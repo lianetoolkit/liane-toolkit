@@ -101,8 +101,8 @@ const AudiencesJobs = {
     jobOptions(job) {
       const options = {
         retry: {
-          retries: 10,
-          wait: 5 * 60 * 1000
+          retries: 20,
+          wait: 11 * 60 * 1000
         }
       };
       return options;

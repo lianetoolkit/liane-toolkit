@@ -60,7 +60,6 @@ const FacebookAudiencesHelpers = {
 
     const adAccountUsers = AdAccountsHelpers.getUsers({ adAccountId });
 
-
     if (!adAccountUsers.length) {
       CampaignsHelpers.suspendAdAccount({ campaignId: campaign._id });
       throw new Meteor.Error("Ad account has no admin users on the app");
@@ -423,15 +422,8 @@ const FacebookAudiencesHelpers = {
           let suspended = redisClient.getSync(
             `adaccount::${adAccountId}::suspended`
           );
-          while (suspended) {
-            logger.debug("Ad account rate limited, sleeping for 30 seconds", {
-              campaignId,
-              adAccountId
-            });
-            await sleep(30 * 1000); // 30 seconds
-            suspended = redisClient.getSync(
-              `adaccount::${adAccountId}::suspended`
-            );
+          if (suspended) {
+            throw new Meteor.Error("rate-limit", "Ad account rate limited");
           }
           let multiplier = 1;
           while (ready === false) {
