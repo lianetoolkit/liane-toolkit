@@ -5,3 +5,4 @@ npm-debug.log
 packages/*/.build*
 docker-compose.dev.yml
 .data/
+*.rdb
