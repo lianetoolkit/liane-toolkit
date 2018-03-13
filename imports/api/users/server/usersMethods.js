@@ -3,10 +3,22 @@ import { UsersHelpers } from "./usersHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 
+export const validatePermissions = new ValidatedMethod({
+  name: "users.validatePermissions",
+  validate() {},
+  run() {
+    this.unblock();
+    logger.debug("users.validatePermissions called");
+    const userId = Meteor.userId();
+    const permissions = UsersHelpers.getFacebookPermissions({ userId });
+  }
+});
+
 export const exchangeFBToken = new ValidatedMethod({
   name: "users.exchangeFBToken",
   validate() {},
   run() {
+    this.unblock();
     logger.debug("users.exchangeFBToken called");
 
     const userId = Meteor.userId();

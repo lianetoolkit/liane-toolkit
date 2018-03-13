@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 
 import AppContainer from "/imports/ui/components/app/AppContainer.jsx";
 import AppHeader from "/imports/ui/components/app/AppHeader.jsx";
+import AppAlerts from "/imports/ui/components/app/AppAlerts.jsx";
 import AppContent from "/imports/ui/components/app/AppContent.jsx";
 import AppFooter from "/imports/ui/components/app/AppFooter.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
@@ -40,7 +41,6 @@ const CONNECTION_ISSUE_TIMEOUT = 5000;
 export default class App extends React.Component {
   constructor(props) {
     super(props);
-    console.log("App init", { props });
     this.logout = this.logout.bind(this);
     this.modalsStore = new ModalsStore();
     this.confirmStore = new ConfirmStore();
@@ -80,7 +80,6 @@ export default class App extends React.Component {
   }
 
   render() {
-    // console.log("app render", { state: this.state });
     const { showConnectionIssue } = this.state;
     const {
       campaigns,
@@ -113,6 +112,7 @@ export default class App extends React.Component {
             <ModalManager />
             <ConfirmManager />
             <AppContent>
+              <AppAlerts currentUser={currentUser} />
               {loading ? (
                 <Loading />
               ) : (

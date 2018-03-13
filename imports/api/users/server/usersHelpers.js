@@ -1,5 +1,6 @@
 import { Promise } from "meteor/promise";
 import { Facebook, FacebookApiException } from "fb";
+import _ from "underscore";
 
 const options = {
   version: "v2.11",
@@ -14,6 +15,29 @@ const UsersHelpers = {
     check(userId, String);
     logger.info("UsersHelpers.supervise: called", { userId });
     const user = Meteor.users.findOne(userId);
+  },
+  getFacebookPermissions({ userId }) {
+    check(userId, String);
+    const user = Meteor.users.findOne(userId);
+    if (!user) {
+      throw new Meteor.Error(404, "User not found");
+    }
+    if (!user.services.facebook) {
+      throw new Meteor.Error(503, "Not connected to Facebook");
+    }
+    const access_token = user.services.facebook.accessToken;
+    return Promise.await(_fb.api("me/permissions", { access_token }));
+  },
+  getFacebookDeclinedPermissions({ userId }) {
+    check(userId, String);
+    const permissions = this.getFacebookPermissions({ userId });
+    return _.compact(
+      permissions.data.map(permission => {
+        if (permission.status == "declined") {
+          return permission.permission;
+        }
+      })
+    );
   },
   exchangeFBToken({ token }) {
     check(token, String);

@@ -51,15 +51,21 @@ const FacebookAccountsHelpers = {
 
     _fb.setAccessToken(accessToken);
 
-    const response = Promise.await(_fb.api("me/accounts", { limit: 10 }));
-    let data = response.data;
-    let next = response.paging.next;
-    while (next !== undefined) {
-      let nextPage = _fetchFacebookPageData({ url: next });
-      next = nextPage.data.paging ? nextPage.data.paging.next : undefined;
-      if (nextPage.statusCode == 200 && nextPage.data.data.length) {
-        data = data.concat(nextPage.data.data);
+    let data;
+
+    try {
+      const response = Promise.await(_fb.api("me/accounts", { limit: 10 }));
+      data = response.data;
+      let next = response.paging.next;
+      while (next !== undefined) {
+        let nextPage = _fetchFacebookPageData({ url: next });
+        next = nextPage.data.paging ? nextPage.data.paging.next : undefined;
+        if (nextPage.statusCode == 200 && nextPage.data.data.length) {
+          data = data.concat(nextPage.data.data);
+        }
       }
+    } catch (error) {
+      throw new Meteor.Error(500, error);
     }
 
     return { result: data };

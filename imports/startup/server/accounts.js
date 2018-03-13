@@ -1,5 +1,6 @@
 import { Accounts } from "meteor/accounts-base";
 import { Random } from "meteor/random";
+import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
 
 Accounts.emailTemplates.siteName = Meteor.settings.public.appName;
 Accounts.emailTemplates.from = `${Meteor.settings.public.appName} <${
@@ -14,9 +15,29 @@ Accounts.config({
 Accounts.onLogin(function(data) {
   if (data.user.services.facebook) {
     const facebookData = data.user.services.facebook;
+    const declinedPermissions = UsersHelpers.getFacebookDeclinedPermissions({
+      userId: data.user._id
+    });
+    if (
+      JSON.stringify(facebookData.declined_permissions) !==
+      JSON.stringify(declinedPermissions)
+    ) {
+      Meteor.users.update(
+        {
+          _id: data.user._id
+        },
+        {
+          $set: {
+            "services.facebook.declined_permissions": declinedPermissions
+          }
+        }
+      );
+    }
     let set = {};
     if (!data.user.name) {
-      set["name"] = facebookData.first_name + " " + facebookData.last_name;
+      set["name"] =
+        facebookData.name ||
+        facebookData.first_name + " " + facebookData.last_name;
     }
     if (!data.user.emails || !data.user.emails.length) {
       set["emails"] = [
