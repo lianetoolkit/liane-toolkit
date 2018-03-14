@@ -453,7 +453,7 @@ const FacebookAudiencesHelpers = {
       _.omit(spec, "interests", "connections")
     );
 
-    const fanCount = async () => {
+    const _getFanCount = async () => {
       const redisKey = `audiences::fanCount::${facebookAccountId}`;
       let fanCount = redisClient.getSync(redisKey);
       if (!fanCount) {
@@ -467,7 +467,9 @@ const FacebookAudiencesHelpers = {
       return fanCount;
     };
 
-    result["fan_count"] = (await fanCount()) || 0;
+    const fanCount = await _getFanCount();
+    if(fanCount) {
+      result["fan_count"] = fanCount;
 
     return FacebookAudiences.upsert(
       {
