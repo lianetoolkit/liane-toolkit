@@ -26,7 +26,7 @@ const FacebookAudiencesHelpers = {
       return res.fan_count;
     } catch (e) {
       console.log(e);
-      return false;
+      return 0;
     }
   },
   async updateAccountAudience({ campaignId, facebookAccountId }) {
@@ -467,7 +467,7 @@ const FacebookAudiencesHelpers = {
       return fanCount;
     };
 
-    result["fan_count"] = (await fanCount()) || null;
+    result["fan_count"] = (await fanCount()) || 0;
 
     return FacebookAudiences.upsert(
       {
