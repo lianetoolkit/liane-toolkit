@@ -18,7 +18,9 @@ export default createContainer(props => {
     !audienceCategoriesHandle.ready();
 
   const context =
-    contextHandle.ready() && props.contextId ? Contexts.findOne() : null;
+    contextHandle.ready() && props.contextId
+      ? Contexts.findOne(props.contextId)
+      : null;
 
   const geolocations = geolocationsHandle.ready()
     ? Geolocations.find().fetch()
