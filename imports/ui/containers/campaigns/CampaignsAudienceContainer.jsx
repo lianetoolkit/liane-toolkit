@@ -1,12 +1,12 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import CampaignsAudience from "/imports/ui/pages/campaigns/CampaignsAudience.jsx";
 import _ from "underscore";
 
-export default createContainer(props => {
+export default withTracker(props => {
   const geolocationsHandle = Meteor.subscribe("geolocations.byCampaign", {
     campaignId: props.campaignId
   });
@@ -21,4 +21,4 @@ export default createContainer(props => {
     loading,
     geolocations
   };
-}, CampaignsAudience);
+})(CampaignsAudience);

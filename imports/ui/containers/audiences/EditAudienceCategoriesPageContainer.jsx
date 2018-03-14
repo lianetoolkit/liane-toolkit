@@ -1,9 +1,9 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
 import EditAudienceCategoriesPage from "/imports/ui/pages/admin/audiences/EditAudienceCategoriesPage.jsx";
 
-export default createContainer(props => {
+export default withTracker(props => {
   const subsHandle = Meteor.subscribe("audienceCategories.detail", {
     audienceCategoryId: props.audienceCategoryId
   });
@@ -18,4 +18,4 @@ export default createContainer(props => {
     loading,
     audienceCategory
   };
-}, EditAudienceCategoriesPage);
+})(EditAudienceCategoriesPage);

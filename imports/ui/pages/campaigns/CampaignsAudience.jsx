@@ -6,26 +6,27 @@ import AudiencesIndexTable from "/imports/ui/components/audiences/AudiencesIndex
 import AudienceGeolocationSummaryContainer from "/imports/ui/containers/audiences/AudienceGeolocationSummaryContainer.jsx";
 import AudienceCategoriesListContainer from "/imports/ui/containers/audiences/AudienceCategoriesListContainer.jsx";
 import AudienceCategoryContainer from "/imports/ui/containers/audiences/AudienceCategoryContainer.jsx";
+import AudienceGeolocationContainer from "/imports/ui/containers/audiences/AudienceGeolocationContainer.jsx";
 
 import { Grid, Menu, Header, List, Button, Divider } from "semantic-ui-react";
 
 export default class CampaignsAudience extends React.Component {
-  constructor(props) {
-    super(props);
-    console.log("CampaignsAudience init", { props });
-  }
   render() {
     const {
       loading,
       campaign,
       account,
       geolocations,
-      categoryId
+      categoryId,
+      geolocationId
     } = this.props;
     const { accounts } = campaign;
-    const path = categoryId
-      ? "App.campaignAudience.category"
-      : "App.campaignAudience";
+    let path = "App.campaignAudience";
+    if (categoryId) {
+      path += ".category";
+    } else if (geolocationId) {
+      path += ".geolocation";
+    }
     return (
       <div>
         <PageHeader
@@ -47,13 +48,12 @@ export default class CampaignsAudience extends React.Component {
                       {accounts.map(acc => (
                         <Menu.Item
                           key={`account-${acc._id}`}
-                          active={
-                            acc.facebookId == account.facebookId
-                          }
+                          active={acc.facebookId == account.facebookId}
                           href={FlowRouter.path(path, {
                             campaignId: campaign._id,
                             facebookId: acc.facebookId,
-                            categoryId: categoryId
+                            categoryId: categoryId,
+                            geolocationId: geolocationId
                           })}
                         >
                           {acc.name}
@@ -73,21 +73,28 @@ export default class CampaignsAudience extends React.Component {
                           facebookAccountId={account.facebookId}
                           audienceCategoryId={categoryId}
                         />
-                      ) : (
+                      ) : null}
+                      {geolocationId ? (
+                        <AudienceGeolocationContainer
+                          campaign={campaign}
+                          facebookAccount={account}
+                          geolocationId={geolocationId}
+                          geolocations={geolocations}
+                        />
+                      ) : null}
+                      {!categoryId && !geolocationId ? (
                         <div>
-                          <Header>Geolocations</Header>
                           <AudienceGeolocationSummaryContainer
                             campaignId={campaign._id}
                             facebookAccountId={account.facebookId}
                           />
-                          <Divider />
-                          <Header>Audience Categories</Header>
+                          <Divider hidden />
                           <AudienceCategoriesListContainer
                             campaignId={campaign._id}
                             facebookAccountId={account.facebookId}
                           />
                         </div>
-                      )}
+                      ) : null}
                     </div>
                   ) : (
                     <p>No Facebook Account was found</p>

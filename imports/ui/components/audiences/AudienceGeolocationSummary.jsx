@@ -1,7 +1,14 @@
 import React from "react";
 import styled from "styled-components";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
-import { Card, Divider, Statistic, Header, Label } from "semantic-ui-react";
+import {
+  Grid,
+  Table,
+  Divider,
+  Statistic,
+  Header,
+  Label
+} from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
 import {
   Map,
@@ -48,7 +55,7 @@ const Wrapper = styled.div`
     }
     &.active {
       color: #fff;
-      text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+      text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
     }
   }
 `;
@@ -250,57 +257,102 @@ export default class AudienceGeolocationSummary extends React.Component {
   }
   render() {
     const { zoom } = this.state;
-    const { loading, summary } = this.props;
+    const { loading, summary, campaignId, facebookAccountId } = this.props;
     if (loading) {
       return <Loading />;
     } else {
       return (
         <Wrapper className={`zoom-${zoom}`}>
-          <Map
-            ref="map"
-            onZoomStart={this._handleZoom}
-            onZoomEnd={this._handleZoom}
-            center={[0, 0]}
-            zoom={2}
-            scrollWheelZoom={false}
-            style={{
-              width: "100%",
-              height: "400px"
-            }}
-          >
-            <TileLayer
-              opacity={0.5}
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-            />
-            <GeoJSON
-              data={this._geojson()}
-              style={this._style}
-              pointToLayer={this._pointToLayer}
-              onEachFeature={this._onEachFeature}
-            />
-          </Map>
-          <Divider />
-          <Card.Group>
-            {summary.data.map(item => (
-              <Card key={item.geolocation._id}>
-                <Card.Content>
-                  <Card.Header>{item.geolocation.name}</Card.Header>
-                </Card.Content>
-                <Card.Content textAlign="center">
-                  <Statistic size="small">
-                    <Statistic.Value>
-                      {this._getPercentage(
-                        item.audience.estimate,
-                        item.audience.fanCount
-                      )}
-                    </Statistic.Value>
-                    <Statistic.Label>of your total audience</Statistic.Label>
-                  </Statistic>
-                </Card.Content>
-              </Card>
-            ))}
-          </Card.Group>
+          <Grid verticalAlign="middle">
+            <Grid.Row>
+              <Grid.Column width={6}>
+                <Header size="large">
+                  {summary.facebookAccount.fanCount} fans
+                </Header>
+                <Table selectable>
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.HeaderCell>Location</Table.HeaderCell>
+                      <Table.HeaderCell collapsing>
+                        Estimate reach
+                      </Table.HeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Cell colSpan="2">
+                        <a
+                          href={FlowRouter.path(
+                            "App.campaignAudience.geolocation",
+                            {
+                              campaignId,
+                              facebookId: facebookAccountId,
+                              geolocationId: summary.mainGeolocation._id
+                            }
+                          )}
+                        >
+                          {summary.mainGeolocation.name}
+                        </a>
+                      </Table.Cell>
+                    </Table.Row>
+                    {summary.data.map(item => (
+                      <Table.Row key={item.geolocation._id}>
+                        <Table.Cell>
+                          <a
+                            href={FlowRouter.path(
+                              "App.campaignAudience.geolocation",
+                              {
+                                campaignId,
+                                facebookId: facebookAccountId,
+                                geolocationId: item.geolocation._id
+                              }
+                            )}
+                          >
+                            {item.geolocation.name}
+                          </a>
+                        </Table.Cell>
+                        <Table.Cell collapsing>
+                          <strong>
+                            {this._getPercentage(
+                              item.audience.estimate,
+                              item.audience.fanCount
+                            )}
+                          </strong>{" "}
+                          <Label size="tiny">{item.audience.estimate}</Label>
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table>
+              </Grid.Column>
+              <Grid.Column width={10}>
+                <Map
+                  ref="map"
+                  onZoomStart={this._handleZoom}
+                  onZoomEnd={this._handleZoom}
+                  center={[0, 0]}
+                  zoom={2}
+                  scrollWheelZoom={false}
+                  style={{
+                    width: "100%",
+                    height: "400px"
+                  }}
+                >
+                  <TileLayer
+                    opacity={0.5}
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
+                  />
+                  <GeoJSON
+                    data={this._geojson()}
+                    style={this._style}
+                    pointToLayer={this._pointToLayer}
+                    onEachFeature={this._onEachFeature}
+                  />
+                </Map>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
         </Wrapper>
       );
       return <p>Teste</p>;

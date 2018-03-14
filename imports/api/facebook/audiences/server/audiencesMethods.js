@@ -250,3 +250,62 @@ export const accountAudienceByCategory = new ValidatedMethod({
     return result;
   }
 });
+
+export const accountAudienceByGeolocation = new ValidatedMethod({
+  name: "audiences.byGeolocation",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    facebookAccountId: {
+      type: String
+    },
+    geolocationId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, facebookAccountId, geolocationId }) {
+    this.unblock();
+    logger.debug("audiences.byCategory", {
+      campaignId,
+      facebookAccountId,
+      geolocationId
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!_.findWhere(campaign.users, { userId })) {
+      throw new Meteor.Error(401, "You are not part of this campaign");
+    }
+
+    const context = Contexts.findOne(campaign.contextId);
+
+    const geolocation = Geolocations.findOne(geolocationId);
+
+    const audienceCategories = AudienceCategories.find({
+      _id: { $in: context.audienceCategories }
+    }).fetch();
+
+    let result = { geolocation, audienceCategories: [] };
+
+    audienceCategories.forEach(category => {
+      const audiences = FacebookAudiences.find(
+        {
+          campaignId,
+          facebookAccountId,
+          geolocationId: geolocation._id,
+          audienceCategoryId: category._id
+        },
+        { sort: { createdAt: 1 } }
+      ).fetch();
+      result.audienceCategories.push({ category, audiences });
+    });
+
+    return result;
+  }
+});

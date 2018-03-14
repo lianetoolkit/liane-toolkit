@@ -1,9 +1,9 @@
 import { Meteor } from "meteor/meteor";
 import { ReactiveVar } from "meteor/reactive-var";
 import { withTracker } from "meteor/react-meteor-data";
-import AudienceCategory from "/imports/ui/components/audiences/AudienceCategory.jsx";
+import AudienceGeolocation from "/imports/ui/components/audiences/AudienceGeolocation.jsx";
 
-const audienceCategory = new ReactiveVar(null);
+const geolocation = new ReactiveVar(null);
 const loading = new ReactiveVar(false);
 let currentRoutePath = null;
 
@@ -11,23 +11,23 @@ export default withTracker(props => {
   // Reset vars when route has changed (ReactiveVar set without a check will cause state change)
   if (currentRoutePath !== FlowRouter.current().path) {
     currentRoutePath = FlowRouter.current().path;
-    audienceCategory.set(null);
+    geolocation.set(null);
     loading.set(true);
   }
 
   Meteor.call(
-    "audiences.byCategory",
+    "audiences.byGeolocation",
     {
-      campaignId: props.campaignId,
-      facebookAccountId: props.facebookAccountId,
-      audienceCategoryId: props.audienceCategoryId
+      campaignId: props.campaign._id,
+      facebookAccountId: props.facebookAccount.facebookId,
+      geolocationId: props.geolocationId
     },
     (error, data) => {
       if (error) {
         console.warn(error);
       }
-      if (JSON.stringify(audienceCategory.get()) !== JSON.stringify(data)) {
-        audienceCategory.set(data);
+      if (JSON.stringify(geolocation.get()) !== JSON.stringify(data)) {
+        geolocation.set(data);
         loading.set(false);
       }
     }
@@ -36,6 +36,6 @@ export default withTracker(props => {
   return {
     ...props,
     loading: loading.get(),
-    audienceCategory: audienceCategory.get()
+    geolocation: geolocation.get()
   };
-})(AudienceCategory);
+})(AudienceGeolocation);

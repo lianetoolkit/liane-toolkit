@@ -4,11 +4,16 @@ import { Breadcrumb, Header, Divider } from "semantic-ui-react";
 import styled from "styled-components";
 
 const Wrapper = styled.section`
-  margin-bottom: 2rem;
+  margin: -4rem -4rem 2rem;
+  padding: 4rem 4rem 1.7rem;
+  background: #fff;
+  border-bottom: 1px solid rgba(34, 36, 38, 0.11);
   .ui.header {
-    margin: 3rem 0 2rem;
+    margin: 3.75rem 0 0;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
   }
-`
+`;
 
 export default class PageHeader extends React.Component {
   constructor(props) {
@@ -40,7 +45,9 @@ export default class PageHeader extends React.Component {
             ""
           )}
         </Breadcrumb>
-        <Header as="h1">{subTitle ? subTitle : title}</Header>
+        <Header as="h1" size="small">
+          {subTitle ? subTitle : title}
+        </Header>
       </Wrapper>
     );
   }

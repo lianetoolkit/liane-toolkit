@@ -1,13 +1,13 @@
 import { Meteor } from "meteor/meteor";
 import { ReactiveVar } from "meteor/reactive-var";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import AudienceCategoriesList from "/imports/ui/components/audiences/AudienceCategoriesList.jsx";
 
 const accountSummary = new ReactiveVar([]);
 const loading = new ReactiveVar(false);
 let currentRoutePath = null;
 
-export default createContainer(props => {
+export default withTracker(props => {
   // Reset vars when route has changed (ReactiveVar set without a check will cause state change)
   if (currentRoutePath !== FlowRouter.current().path) {
     currentRoutePath = FlowRouter.current().path;
@@ -36,4 +36,4 @@ export default createContainer(props => {
     loading: loading.get(),
     summary: accountSummary.get()
   };
-}, AudienceCategoriesList);
+})(AudienceCategoriesList);

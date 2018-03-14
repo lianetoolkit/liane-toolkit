@@ -150,6 +150,22 @@ campaignRoutes.route("/audience/:facebookId/category/:categoryId", {
     });
   }
 });
+campaignRoutes.route("/audience/:facebookId/geolocation/:geolocationId", {
+  name: "App.campaignAudience.geolocation",
+  action: function(params) {
+    addTitle(`${APP_NAME} | Campaign`);
+    return _mount(params, {
+      content: {
+        component: CampaignsAudienceContainer,
+        props: {
+          campaignId: params.campaignId,
+          facebookId: params.facebookId,
+          geolocationId: params.geolocationId
+        }
+      }
+    });
+  }
+});
 campaignRoutes.route("/entries/:facebookId?", {
   name: "App.campaignEntries",
   action: function(params) {

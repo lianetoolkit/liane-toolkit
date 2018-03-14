@@ -13,7 +13,7 @@ export default class AudienceCategoriesList extends React.Component {
       return <Loading />;
     } else if (summary.length) {
       return (
-        <Card.Group>
+        <Card.Group itemsPerRow={3}>
           {summary.map(item => (
             <Card key={item.category._id}>
               <Card.Content>

@@ -1,9 +1,9 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js";
 import AudienceGeoLocationChart from "/imports/ui/components/audiences/AudienceGeoLocationChart.jsx";
 
-export default createContainer(props => {
+export default withTracker(props => {
   const subsHandle = Meteor.subscribe("audiences.byCategory.byGeolocation", {
     campaignId: props.campaignId,
     facebookAccountId: props.facebookAccountId,
@@ -28,4 +28,4 @@ export default createContainer(props => {
     loading,
     audiences
   };
-}, AudienceGeoLocationChart);
+})(AudienceGeoLocationChart);

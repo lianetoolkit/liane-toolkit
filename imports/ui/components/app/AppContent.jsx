@@ -4,13 +4,13 @@ import { Divider } from "semantic-ui-react";
 
 const Wrapper = styled.div`
   flex: 1 1 100%;
-  ${"" /* background: lightblue; */} padding: 2rem 4rem;
   overflow: auto;
 `;
 
 const Content = styled.div`
-  margin: 0 auto;
-  max-width: 900px;
+  padding: 2rem 4rem;
+  ${'' /* margin: 0 auto; */}
+  ${'' /* max-width: 900px; */}
 `;
 
 const Footer = styled.footer`
