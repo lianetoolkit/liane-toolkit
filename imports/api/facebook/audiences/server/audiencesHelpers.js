@@ -468,8 +468,7 @@ const FacebookAudiencesHelpers = {
     };
 
     const fanCount = await _getFanCount();
-    if(fanCount) {
-      result["fan_count"] = fanCount;
+    if (fanCount) result["fan_count"] = fanCount;
 
     return FacebookAudiences.upsert(
       {
