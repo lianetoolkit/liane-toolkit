@@ -11,24 +11,15 @@ import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js"
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
 import { Jobs } from "/imports/api/jobs/jobs";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
-import { Facebook, FacebookApiException } from "fb";
 import redisClient from "/imports/startup/server/redis";
 import crypto from "crypto";
 import _ from "underscore";
 import moment from "moment";
 
-const options = {
-  version: "v2.11",
-  client_id: Meteor.settings.facebook.clientId,
-  client_secret: Meteor.settings.facebook.clientSecret
-};
-
-const _fb = new Facebook(options);
-
 const FacebookAudiencesHelpers = {
   async getFanCount(token) {
     try {
-      const res = await _fb.api("me", {
+      const res = await FB.api("me", {
         fields: ["fan_count"],
         access_token: token
       });
@@ -427,7 +418,7 @@ const FacebookAudiencesHelpers = {
           }
           let multiplier = 1;
           while (ready === false) {
-            res = await _fb.api(`act_${adAccountId}/reachestimate`, {
+            res = await FB.api(`act_${adAccountId}/reachestimate`, {
               targeting_spec: spec,
               access_token: accessToken
             });

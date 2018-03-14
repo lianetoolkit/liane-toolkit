@@ -1,22 +1,13 @@
 import { Promise } from "meteor/promise";
-import { Facebook, FacebookApiException } from "fb";
 import { AdAccounts } from "../adAccounts.js";
 import { UsersHelpers } from "/imports/api/users/server/usersHelpers";
-
-const options = {
-  version: "v2.11",
-  client_id: Meteor.settings.facebook.clientId,
-  client_secret: Meteor.settings.facebook.clientSecret
-};
-
-const _fb = new Facebook(options);
 
 const AdAccountsHelpers = {
   update({ adAccountId, token }) {
     check(adAccountId, String);
     check(token, String);
     const response = Promise.await(
-      _fb.api(adAccountId, {
+      FB.api(adAccountId, {
         fields: ["users", "account_id", "currency"],
         access_token: token
       })

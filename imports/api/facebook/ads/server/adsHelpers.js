@@ -1,5 +1,4 @@
 import { Promise } from "meteor/promise";
-import { Facebook, FacebookApiException } from "fb";
 import redisClient from "/imports/startup/server/redis";
 
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
@@ -9,14 +8,6 @@ import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
 import { AdAccountsHelpers } from "/imports/api/facebook/adAccounts/server/adAccountsHelpers.js";
 import { FacebookAudiencesHelpers } from "/imports/api/facebook/audiences/server/audiencesHelpers.js";
-
-const options = {
-  version: "v2.11",
-  client_id: Meteor.settings.facebook.clientId,
-  client_secret: Meteor.settings.facebook.clientSecret
-};
-
-const _fb = new Facebook(options);
 
 const AdsHelpers = {
   async getAdCampaigns({ campaignId }) {
@@ -60,7 +51,7 @@ const AdsHelpers = {
     }
 
     try {
-      const res = await _fb.api(`act_${adAccountId}/campaigns`, {
+      const res = await FB.api(`act_${adAccountId}/campaigns`, {
         fields: ["id, name"],
         access_token: tokens[0]
       });
@@ -143,7 +134,7 @@ const AdsHelpers = {
     };
 
     try {
-      return await _fb.api(`act_${adAccountId}/adsets`, "post", config);
+      return await FB.api(`act_${adAccountId}/adsets`, "post", config);
     } catch (e) {
       const error = e.response.error;
       throw new Meteor.Error(

@@ -1,14 +1,5 @@
 import { Promise } from "meteor/promise";
-import { Facebook, FacebookApiException } from "fb";
 import _ from "underscore";
-
-const options = {
-  version: "v2.11",
-  client_id: Meteor.settings.facebook.clientId,
-  client_secret: Meteor.settings.facebook.clientSecret
-};
-
-const _fb = new Facebook(options);
 
 const UsersHelpers = {
   supervise({ userId }) {
@@ -26,7 +17,7 @@ const UsersHelpers = {
       throw new Meteor.Error(503, "Not connected to Facebook");
     }
     const access_token = user.services.facebook.accessToken;
-    return Promise.await(_fb.api("me/permissions", { access_token }));
+    return Promise.await(FB.api("me/permissions", { access_token }));
   },
   getFacebookDeclinedPermissions({ userId }) {
     check(userId, String);
@@ -42,7 +33,7 @@ const UsersHelpers = {
   exchangeFBToken({ token }) {
     check(token, String);
     const response = Promise.await(
-      _fb.api(
+      FB.api(
         "oauth/access_token",
         Object.assign(
           {
@@ -60,13 +51,14 @@ const UsersHelpers = {
     let result;
     try {
       response = Promise.await(
-        _fb.api("me/adaccounts", {
+        FB.api("me/adaccounts", {
           fields: ["account_id", "users"],
           access_token: token
         })
       );
       result = response.data;
     } catch (error) {
+      console.log(error);
       throw new Meteor.Error(500, "Error trying to fetch ad accounts.");
     }
     return { result };

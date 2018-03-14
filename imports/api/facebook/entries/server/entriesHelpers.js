@@ -1,5 +1,4 @@
 import { Promise } from "meteor/promise";
-import { Facebook, FacebookApiException } from "fb";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
 import { CommentsHelpers } from "/imports/api/facebook/comments/server/commentsHelpers.js";
@@ -7,12 +6,6 @@ import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 
 import { HTTP } from "meteor/http";
-
-const options = {
-  client_id: Meteor.settings.facebook.clientId,
-  client_secret: Meteor.settings.facebook.clientSecret
-};
-const _fb = new Facebook(options);
 
 const _fetchFacebookPageData = ({ url }) => {
   check(url, String);
@@ -63,11 +56,10 @@ const EntriesHelpers = {
       facebookId
     });
 
-    _fb.setAccessToken(accessToken);
     let response;
     try {
       response = Promise.await(
-        _fb.api(`${accountPath}/posts`, {
+        FB.api(`${accountPath}/posts`, {
           fields: [
             "object_id",
             "parent_id",
@@ -87,7 +79,8 @@ const EntriesHelpers = {
             "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
             "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
           ],
-          limit: 100
+          limit: 100,
+          access_token: accessToken
         })
       );
     } catch (error) {

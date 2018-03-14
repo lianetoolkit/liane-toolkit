@@ -1,23 +1,14 @@
 import { AccountLists } from "../accountLists.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
-import { Facebook, FacebookApiException } from "fb";
-
-const options = {
-  version: "v2.11",
-  client_id: Meteor.settings.facebook.clientId,
-  client_secret: Meteor.settings.facebook.clientSecret
-};
-
-const _fb = new Facebook(options);
 
 const AccountListsHelpers = {
   facebookSearch({ accessToken, type, fields, q }) {
-    _fb.setAccessToken(accessToken);
-    return _fb.api("search", {
+    return FB.api("search", {
       type,
       fields,
-      q
+      q,
+      access_token: accessToken
     });
   },
   addAccountToList({ accountListId, account, accessToken }) {

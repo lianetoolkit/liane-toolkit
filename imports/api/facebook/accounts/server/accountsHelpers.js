@@ -1,15 +1,8 @@
 import { Promise } from "meteor/promise";
-import { Facebook, FacebookApiException } from "fb";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
-
-const options = {
-  client_id: Meteor.settings.facebook.clientId,
-  client_secret: Meteor.settings.facebook.clientSecret
-};
-const _fb = new Facebook(options);
 
 const _fetchFacebookPageData = ({ url }) => {
   check(url, String);
@@ -49,12 +42,12 @@ const FacebookAccountsHelpers = {
 
     const accessToken = user.services.facebook.accessToken;
 
-    _fb.setAccessToken(accessToken);
-
     let data;
 
     try {
-      const response = Promise.await(_fb.api("me/accounts", { limit: 10 }));
+      const response = Promise.await(
+        FB.api("me/accounts", { limit: 10, access_token: accessToken })
+      );
       data = response.data;
       if (response.paging) {
         let next = response.paging.next;
@@ -92,7 +85,7 @@ const FacebookAccountsHelpers = {
     const accessToken = user.services.facebook.accessToken;
 
     return Promise.await(
-      _fb.api(facebookAccountId, {
+      FB.api(facebookAccountId, {
         fields: ["name", "access_token", "category"],
         access_token: accessToken,
         limit: 10
@@ -102,14 +95,18 @@ const FacebookAccountsHelpers = {
   exchangeFBToken({ token }) {
     check(token, String);
     const response = Promise.await(
-      _fb.api(
+      FB.api(
         "oauth/access_token",
         Object.assign(
           {
             grant_type: "fb_exchange_token",
             fb_exchange_token: token
           },
-          options
+          {
+            version: "v2.12",
+            client_id: Meteor.settings.facebook.clientId,
+            client_secret: Meteor.settings.facebook.clientSecret
+          }
         )
       )
     );

@@ -1,17 +1,9 @@
 import { Promise } from "meteor/promise";
-import { Facebook, FacebookApiException } from "fb";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { HTTP } from "meteor/http";
 import { Random } from "meteor/random";
 import _ from "underscore";
-
-const options = {
-  client_id: Meteor.settings.facebook.clientId,
-  client_secret: Meteor.settings.facebook.clientSecret
-};
-
-const _fb = new Facebook(options);
 
 const rawComments = Comments.rawCollection();
 rawComments.distinctAsync = Meteor.wrapAsync(rawComments.distinct);
@@ -112,11 +104,10 @@ const CommentsHelpers = {
       entryId
     });
 
-    _fb.setAccessToken(accessToken);
     let response;
     try {
       response = Promise.await(
-        _fb.api(`${entryId}/comments`, {
+        FB.api(`${entryId}/comments`, {
           fields: [
             "id",
             "from",
@@ -126,7 +117,8 @@ const CommentsHelpers = {
             "like_count",
             "created_time"
           ],
-          limit: 1000
+          limit: 1000,
+          access_token: accessToken
         })
       );
     } catch (error) {

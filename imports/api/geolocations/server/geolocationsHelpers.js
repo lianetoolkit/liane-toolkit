@@ -1,18 +1,9 @@
-import { Facebook, FacebookApiException } from "fb";
 import simplifyGeojson, { simplify } from "simplify-geojson";
 import axios from "axios";
 
-const options = {
-  version: "v2.11",
-  client_id: Meteor.settings.facebook.clientId,
-  client_secret: Meteor.settings.facebook.clientSecret
-};
-
-const _fb = new Facebook(options);
-
 const GeolocationsHelpers = {
   facebookSearch(query) {
-    return _fb.api("search", query);
+    return FB.api("search", query);
   },
   nominatimSearch({ q }) {
     const api = "http://nominatim.openstreetmap.org/search";
@@ -53,7 +44,6 @@ const GeolocationsHelpers = {
           }
         })
       );
-      console.log("BEFORE", JSON.stringify(res.data.geojson).length);
       if (res.data.geojson && res.data.geojson.coordinates) {
         res.data.geojson = simplifyGeojson(
           { type: "Feature", geometry: res.data.geojson },
@@ -61,7 +51,6 @@ const GeolocationsHelpers = {
           0.01
         );
       }
-      console.log("AFTER", JSON.stringify(res.data.geojson).length);
       return res.data;
     } catch (error) {
       console.log(error);

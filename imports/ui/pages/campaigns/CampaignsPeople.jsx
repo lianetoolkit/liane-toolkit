@@ -55,10 +55,12 @@ export default class CampaignsPeople extends React.Component {
               ) : null}
               <Grid.Row>
                 <Grid.Column>
-                  <PeopleSearch
-                    campaignId={campaign._id}
-                    facebookId={account.facebookId}
-                  />
+                  {account ? (
+                    <PeopleSearch
+                      campaignId={campaign._id}
+                      facebookId={account.facebookId}
+                    />
+                  ) : null}
                   {/* <PeopleSummary
                     facebookId={facebookId}
                     campaignId={campaign._id}

@@ -1,16 +1,8 @@
 import { Promise } from "meteor/promise";
-import { Facebook, FacebookApiException } from "fb";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { HTTP } from "meteor/http";
 import { Random } from "meteor/random";
-
-const options = {
-  client_id: Meteor.settings.facebook.clientId,
-  client_secret: Meteor.settings.facebook.clientSecret
-};
-
-const _fb = new Facebook(options);
 
 const _fetchFacebookPageData = ({ url }) => {
   check(url, String);
@@ -119,12 +111,12 @@ const LikesHelpers = {
       entryId
     });
 
-    _fb.setAccessToken(accessToken);
     let response;
     try {
       response = Promise.await(
-        _fb.api(`${entryId}/reactions`, {
-          limit: 1000
+        FB.api(`${entryId}/reactions`, {
+          limit: 1000,
+          access_token: accessToken
         })
       );
     } catch (error) {
