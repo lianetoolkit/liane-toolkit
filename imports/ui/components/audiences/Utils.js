@@ -1,7 +1,32 @@
+export const getValue = function(value, users) {
+  if (typeof value == "string" || typeof value == "number") {
+    return parseInt(value);
+  } else if (typeof value == "object") {
+    return value[users || "dau"];
+  }
+  return 0;
+};
+
+export const transformValues = function(audience, users) {
+  let transformed = Object.assign({}, audience);
+  for (const key in transformed) {
+    if (
+      key == "estimate" ||
+      key == "total" ||
+      key == "location_estimate" ||
+      key == "location_total"
+    ) {
+      transformed[key] = getValue(transformed[key], users);
+    }
+  }
+  return transformed;
+};
+
 export const getRatio = function(audience) {
   if (!audience) return "";
-  if (audience.total < 100) {
-    return "Not enough data";
+  audience = transformValues(audience);
+  if (audience.total < 1500) {
+    return "Not available";
   }
   let prefix, ratio;
   const local = audience.estimate / audience.total;
@@ -13,12 +38,17 @@ export const getRatio = function(audience) {
     prefix = "-";
     ratio = location / local;
   }
-  return prefix + ratio.toFixed(2) + "x";
+  if (isFinite(ratio)) {
+    return prefix + ratio.toFixed(2) + "x";
+  } else {
+    return "--";
+  }
 };
 
 export const getPercentage = function(audience) {
   if (!audience) return "";
-  if (audience.total < 100) {
+  audience = transformValues(audience);
+  if (audience.total < 1500) {
     return "";
   }
   let dif = Math.min(audience.estimate / audience.total, 0.99);
@@ -26,6 +56,8 @@ export const getPercentage = function(audience) {
 };
 
 export default {
+  getValue,
+  transformValues,
   getRatio,
   getPercentage
 };

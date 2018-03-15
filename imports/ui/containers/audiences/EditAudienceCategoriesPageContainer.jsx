@@ -11,7 +11,7 @@ export default withTracker(props => {
 
   const audienceCategory =
     subsHandle.ready() && props.audienceCategoryId
-      ? AudienceCategories.findOne()
+      ? AudienceCategories.findOne(props.audienceCategoryId)
       : null;
 
   return {

@@ -24,6 +24,9 @@ export default createContainer(() => {
       campaign.accounts = FacebookAccounts.find({
         facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
       }).fetch();
+      campaign.users = Meteor.users.find({
+        _id: { $in: _.pluck(campaign.users, "userId") }
+      }).fetch();
       return campaign;
     }
   };

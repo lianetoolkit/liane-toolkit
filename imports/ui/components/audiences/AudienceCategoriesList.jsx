@@ -1,6 +1,6 @@
 import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
-import { Card, Header, Label, Button, Icon } from "semantic-ui-react";
+import { Card, Header, Label, Button, Icon, Message } from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
 
 export default class AudienceCategoriesList extends React.Component {
@@ -9,8 +9,17 @@ export default class AudienceCategoriesList extends React.Component {
   }
   render() {
     const { loading, summary, campaignId, facebookAccountId } = this.props;
+    let total;
+    if (summary.length)
+      total = AudienceUtils.transformValues(summary[0].audience).total;
     if (loading) {
       return <Loading />;
+    } else if (total < 1500) {
+      return (
+        <Message negative>
+          There's not enough sample data for themes analysis
+        </Message>
+      );
     } else if (summary.length) {
       return (
         <Card.Group itemsPerRow={3}>

@@ -34,7 +34,7 @@ export default class CampaignsAudience extends React.Component {
           titleTo={FlowRouter.path("App.campaignDetail", {
             campaignId: campaign ? campaign._id : ""
           })}
-          subTitle="Audience"
+          subTitle="Audience - Daily Active Users Estimates"
         />
         <section className="content">
           {loading ? (

@@ -49,7 +49,7 @@ const Bar = styled.div`
 const Label = styled.div`
   position: relative;
   z-index: 1;
-  padding: 0 .8rem;
+  padding: 0 0.8rem;
   line-height: 2rem;
   font-size: 0.6em;
   text-transform: uppercase;
@@ -77,25 +77,36 @@ const Label = styled.div`
 `;
 
 export default class CompareLine extends React.Component {
-  _getDiff(type) {
-    const { audience } = this.props;
-    let diff;
+  _getPercentage(type) {
+    const audience = AudienceUtils.transformValues(this.props.audience);
+    let cent = 0,
+      keys;
     switch (type) {
       case "account":
-        diff = audience.estimate / audience.total;
+        keys = ["estimate", "total"];
         break;
       case "location":
-        diff = audience.location_estimate / audience.location_total;
+        keys = ["location_estimate", "location_total"];
         break;
     }
-    return Math.min(diff, 0.99);
+    if (audience[keys[1]] > 1500) {
+      cent = audience[keys[0]] / audience[keys[1]];
+    }
+    return Math.min(cent, 0.99);
   }
-  _format(diff) {
-    return (diff * 100).toFixed(2) + "%";
+  _format(cent) {
+    if (cent > 0.00) {
+      return (cent * 100).toFixed(2) + "%";
+    } else {
+      return "--";
+    }
   }
   render() {
     const { audience } = this.props;
-    const diffs = [this._getDiff("location"), this._getDiff("account")];
+    const diffs = [
+      this._getPercentage("location"),
+      this._getPercentage("account")
+    ];
     return (
       <Wrapper>
         <Container right>

@@ -110,11 +110,14 @@ export default class AudienceGeolocationSummary extends React.Component {
       zoom: map.getZoom()
     });
   }
-  _getPercentage(estimate, total) {
+  _getPercentage(estimate) {
     const { summary } = this.props;
-    total = total || summary.facebookAccount.fanCount;
-    let dif = Math.min(estimate / total, 0.99);
-    return (dif * 100).toFixed(2) + "%";
+    let total = summary.facebookAccount.fanCount;
+    if (summary.mainGeolocation) {
+      total = AudienceUtils.getValue(summary.mainGeolocation.audience.estimate);
+    }
+    let cent = Math.min(AudienceUtils.getValue(estimate) / total, 0.99);
+    return (cent * 100).toFixed(2) + "%";
   }
   _geojson() {
     const { summary } = this.props;
@@ -200,8 +203,7 @@ export default class AudienceGeolocationSummary extends React.Component {
       marker = L.marker(center);
       marker.icon = L.divIcon({
         html: `<span>${self._getPercentage(
-          feature.properties.estimate,
-          feature.properties.fanCount
+          feature.properties.estimate
         )}</span>`,
         iconSize: [100, 30],
         iconAnchor: [50, 15],
@@ -210,8 +212,7 @@ export default class AudienceGeolocationSummary extends React.Component {
       });
       marker.activeIcon = L.divIcon({
         html: `<span>${self._getPercentage(
-          feature.properties.estimate,
-          feature.properties.fanCount
+          feature.properties.estimate
         )}</span>`,
         iconSize: [100, 30],
         iconAnchor: [50, 15],
@@ -274,13 +275,13 @@ export default class AudienceGeolocationSummary extends React.Component {
                     <Table.Row>
                       <Table.HeaderCell>Location</Table.HeaderCell>
                       <Table.HeaderCell collapsing>
-                        Estimate reach
+                        Today's estimate
                       </Table.HeaderCell>
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
                     <Table.Row>
-                      <Table.Cell colSpan="2">
+                      <Table.Cell>
                         <a
                           href={FlowRouter.path(
                             "App.campaignAudience.geolocation",
@@ -293,6 +294,13 @@ export default class AudienceGeolocationSummary extends React.Component {
                         >
                           {summary.mainGeolocation.name}
                         </a>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <strong>
+                          {AudienceUtils.getValue(
+                            summary.mainGeolocation.audience.estimate
+                          )}
+                        </strong>
                       </Table.Cell>
                     </Table.Row>
                     {summary.data.map(item => (
@@ -313,12 +321,11 @@ export default class AudienceGeolocationSummary extends React.Component {
                         </Table.Cell>
                         <Table.Cell collapsing>
                           <strong>
-                            {this._getPercentage(
-                              item.audience.estimate,
-                              item.audience.fanCount
-                            )}
+                            {this._getPercentage(item.audience.estimate)}
                           </strong>{" "}
-                          <Label size="tiny">{item.audience.estimate}</Label>
+                          <Label size="tiny">
+                            {AudienceUtils.getValue(item.audience.estimate)}
+                          </Label>
                         </Table.Cell>
                       </Table.Row>
                     ))}

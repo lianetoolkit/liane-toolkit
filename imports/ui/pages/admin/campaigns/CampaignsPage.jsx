@@ -10,7 +10,8 @@ import {
   Popup,
   Header,
   Icon,
-  Button
+  Button,
+  List
 } from "semantic-ui-react";
 
 import moment from "moment";
@@ -77,12 +78,12 @@ class JobButton extends React.Component {
     );
   }
   _popupContent() {
-    const { account } = this.props;
+    const { account, title } = this.props;
     const job = this._getJob();
     return (
       <div>
-        <Header size="small">{account.name}</Header>
-        <p>
+        {title ? <Header size="small">{account.name}</Header> : null}
+        <p style={{ margin: 0 }}>
           <Label>{job ? job.status : "No job found"}</Label>
         </p>
         {job ? <p>{moment(job.updated).fromNow()}</p> : null}
@@ -90,12 +91,12 @@ class JobButton extends React.Component {
     );
   }
   render() {
-    const { campaign, account } = this.props;
+    const { campaign, account, children } = this.props;
     return (
       <Popup
         trigger={
           <Button size="tiny" onClick={this._handleJob} icon>
-            <Icon name={this._getJobIcon()} />
+            <Icon name={this._getJobIcon()} /> {children}
           </Button>
         }
         content={this._popupContent()}
@@ -114,6 +115,7 @@ export default class CampaignsPage extends React.Component {
   }
   render() {
     const { loading, campaigns, currentUser } = this.props;
+    console.log(campaigns);
     return (
       <div>
         <PageHeader title="Campaigns" />
@@ -128,61 +130,69 @@ export default class CampaignsPage extends React.Component {
                     <Table.Header>
                       <Table.Row>
                         <Table.HeaderCell>Name</Table.HeaderCell>
-                        <Table.HeaderCell>Ad Account</Table.HeaderCell>
+                        <Table.HeaderCell>
+                          Ad Account
+                        </Table.HeaderCell>
+                        <Table.HeaderCell>Users</Table.HeaderCell>
                         <Table.HeaderCell>Accounts</Table.HeaderCell>
-                        <Table.HeaderCell collapsing>
-                          Entries jobs
-                        </Table.HeaderCell>
-                        <Table.HeaderCell collapsing>
-                          Audience jobs
-                        </Table.HeaderCell>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
                       {campaigns.map(campaign => (
                         <Table.Row key={campaign._id}>
-                          <Table.Cell>
+                          <Table.Cell collapsing verticalAlign="top">
                             <strong>{campaign.name}</strong>
                           </Table.Cell>
-                          <Table.Cell>
+                          <Table.Cell collapsing verticalAlign="top">
                             {campaign.adAccountId ? (
                               <Label size="tiny">{campaign.adAccountId}</Label>
                             ) : null}
                           </Table.Cell>
+                          <Table.Cell collapsing verticalAlign="top">
+                            <List>
+                              {campaign.users.map(user => (
+                                <List.Item key={user._id}>
+                                  {user.name}
+                                </List.Item>
+                              ))}
+                            </List>
+                          </Table.Cell>
                           <Table.Cell>
-                            {campaign.accounts.map(acc => acc.name).join(", ")}
-                          </Table.Cell>
-                          <Table.Cell collapsing>
-                            {campaign.accounts ? (
-                              <div>
-                                {campaign.accounts.map(account => (
-                                  <JobButton
-                                    key={account.facebookId}
-                                    campaign={campaign}
-                                    account={account}
-                                    type="entries"
-                                  />
+                            <Table basic="very">
+                              <Table.Header>
+                                <Table.Row>
+                                  <Table.HeaderCell>
+                                    Account name
+                                  </Table.HeaderCell>
+                                  <Table.HeaderCell>Fan count</Table.HeaderCell>
+                                  <Table.HeaderCell>Jobs</Table.HeaderCell>
+                                </Table.Row>
+                              </Table.Header>
+                              <Table.Body>
+                                {campaign.accounts.map(acc => (
+                                  <Table.Row key={acc._id}>
+                                    <Table.Cell>{acc.name}</Table.Cell>
+                                    <Table.Cell>{acc.fanCount || 0}</Table.Cell>
+                                    <Table.Cell>
+                                      <JobButton
+                                        campaign={campaign}
+                                        account={acc}
+                                        type="entries"
+                                      >
+                                        Entries
+                                      </JobButton>
+                                      <JobButton
+                                        campaign={campaign}
+                                        account={acc}
+                                        type="audiences"
+                                      >
+                                        Audience
+                                      </JobButton>
+                                    </Table.Cell>
+                                  </Table.Row>
                                 ))}
-                              </div>
-                            ) : (
-                              "No accounts"
-                            )}
-                          </Table.Cell>
-                          <Table.Cell collapsing>
-                            {campaign.accounts ? (
-                              <div>
-                                {campaign.accounts.map(account => (
-                                  <JobButton
-                                    key={account.facebookId}
-                                    campaign={campaign}
-                                    account={account}
-                                    type="audiences"
-                                  />
-                                ))}
-                              </div>
-                            ) : (
-                              "No accounts"
-                            )}
+                              </Table.Body>
+                            </Table>
                           </Table.Cell>
                         </Table.Row>
                       ))}

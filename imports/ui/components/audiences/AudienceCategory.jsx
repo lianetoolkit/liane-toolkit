@@ -46,7 +46,10 @@ export default class AudienceCategory extends React.Component {
           </p>
           <Header as="h2">{audienceCategory.category.title}</Header>
           {audienceCategory.geolocations.map(item => {
-            const lastAudience = item.audiences[item.audiences.length - 1];
+            const audiences = item.audiences.map(audience =>
+              AudienceUtils.transformValues(audience)
+            );
+            const lastAudience = audiences[item.audiences.length - 1];
             const percentage = AudienceUtils.getPercentage(lastAudience);
             return (
               <Segment key={item.geolocation._id}>
@@ -73,56 +76,24 @@ export default class AudienceCategory extends React.Component {
                     There's not enough data for this region.
                   </Message>
                 )}
-                <Divider />
-                <Header as="h4">Estimate history chart</Header>
-                <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={item.audiences}>
-                    <Line type="monotone" dataKey="estimate" />
-                    {/* <CartesianGrid stroke="#ccc" strokeDasharray="5 5" /> */}
-                    <XAxis dataKey="fetch_date" />
-                    <YAxis />
-                    <Tooltip />
-                  </LineChart>
-                </ResponsiveContainer>
+                {percentage ? (
+                  <div>
+                    <Divider />
+                    <Header as="h4">Estimate history chart</Header>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart data={audiences}>
+                        <Line type="monotone" dataKey="estimate" />
+                        {/* <CartesianGrid stroke="#ccc" strokeDasharray="5 5" /> */}
+                        <XAxis dataKey="fetch_date" />
+                        <YAxis />
+                        <Tooltip />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : null}
               </Segment>
             );
           })}
-          {/* <Card.Group>
-            {audienceCategory.map(item => (
-              <Card key={item.category._id}>
-                <Card.Content>
-                  <Card.Header>
-                    <a
-                      href={FlowRouter.path("App.campaignAudience.category", {
-                        campaignId,
-                        facebookId: facebookAccountId,
-                        categoryId: item.category._id
-                      })}
-                    >
-                      {item.category.title}
-                    </a>
-                  </Card.Header>
-                </Card.Content>
-                {item.geolocations.map(item => (
-                  <Card.Content key={item.geolocation._id}>
-                    {item.geolocation.name}:{" "}
-                    {item.audience ? (
-                      <span>
-                        <strong>
-                          {AudienceUtils.getPercentage(item.audience)}{" "}
-                        </strong>
-                        <Label size="small">
-                          {AudienceUtils.getRatio(item.audience)}
-                        </Label>
-                      </span>
-                    ) : (
-                      "Data not found"
-                    )}
-                  </Card.Content>
-                ))}
-              </Card>
-            ))}
-          </Card.Group> */}
         </div>
       );
     } else {

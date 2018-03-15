@@ -20,16 +20,20 @@ FacebookAudiences.schema = new SimpleSchema({
     index: true
   },
   estimate: {
-    type: Number
+    type: Match.OneOf(Number, { type: Object, blackbox: true }),
+    blackbox: true
   },
   total: {
-    type: Number
+    type: Match.OneOf(Number, { type: Object, blackbox: true }),
+    blackbox: true
   },
   location_estimate: {
-    type: Number
+    type: Match.OneOf(Number, { type: Object, blackbox: true }),
+    blackbox: true
   },
   location_total: {
-    type: Number
+    type: Match.OneOf(Number, { type: Object, blackbox: true }),
+    blackbox: true
   },
   fetch_date: {
     type: String,

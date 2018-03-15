@@ -95,8 +95,23 @@ export const accountAudienceGeolocationSummary = new ValidatedMethod({
       data: []
     };
 
-    if (context.mainGeolocationId)
+    if (context.mainGeolocationId) {
       result.mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
+      const mainLocAudience = FacebookAudiences.findOne(
+        {
+          campaignId,
+          facebookAccountId,
+          geolocationId: context.mainGeolocationId
+        },
+        { sort: { createdAt: -1 } }
+      );
+      if (mainLocAudience) {
+        result.mainGeolocation.audience = {
+          estimate: mainLocAudience.total,
+          fanCount: mainLocAudience.fan_count
+        };
+      }
+    }
 
     const geolocations = Geolocations.find({
       _id: { $in: context.geolocations }
@@ -234,6 +249,24 @@ export const accountAudienceByCategory = new ValidatedMethod({
 
     let result = { category, geolocations: [] };
 
+    if (context.mainGeolocationId) {
+      result.mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
+      const mainLocAudience = FacebookAudiences.findOne(
+        {
+          campaignId,
+          facebookAccountId,
+          geolocationId: context.mainGeolocationId
+        },
+        { sort: { createdAt: -1 } }
+      );
+      if (mainLocAudience) {
+        result.mainGeolocation.audience = {
+          estimate: mainLocAudience.total,
+          fanCount: mainLocAudience.fan_count
+        };
+      }
+    }
+
     geolocations.forEach(geolocation => {
       const audiences = FacebookAudiences.find(
         {
@@ -293,6 +326,24 @@ export const accountAudienceByGeolocation = new ValidatedMethod({
 
     let result = { geolocation, audienceCategories: [] };
 
+    if (context.mainGeolocationId) {
+      result.mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
+      const mainLocAudience = FacebookAudiences.findOne(
+        {
+          campaignId,
+          facebookAccountId,
+          geolocationId: context.mainGeolocationId
+        },
+        { sort: { createdAt: -1 } }
+      );
+      if (mainLocAudience) {
+        result.mainGeolocation.audience = {
+          estimate: mainLocAudience.total,
+          fanCount: mainLocAudience.fan_count
+        };
+      }
+    }
+
     audienceCategories.forEach(category => {
       const audiences = FacebookAudiences.find(
         {
@@ -301,7 +352,7 @@ export const accountAudienceByGeolocation = new ValidatedMethod({
           geolocationId: geolocation._id,
           audienceCategoryId: category._id
         },
-        { sort: { createdAt: 1 } }
+        { sort: { createdAt: -1 } }
       ).fetch();
       result.audienceCategories.push({ category, audiences });
     });

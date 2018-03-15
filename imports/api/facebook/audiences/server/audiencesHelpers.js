@@ -401,13 +401,18 @@ const FacebookAudiencesHelpers = {
     const fetch = async function(spec) {
       const hash = crypto
         .createHash("sha1")
-        .update(JSON.stringify(spec) + fetchDate)
+        .update("delivery_estimate" + JSON.stringify(spec) + fetchDate)
         .digest("hex");
       const redisKey = `audiences::fetch::${hash}`;
       try {
         let ready = false;
         let res = redisClient.getSync(redisKey);
         if (res) {
+          const data = JSON.parse(res).data;
+          return {
+            dau: data[0].estimate_dau,
+            mau: data[0].estimate_mau
+          };
           return JSON.parse(res).data.users;
         } else {
           let suspended = redisClient.getSync(
@@ -418,11 +423,13 @@ const FacebookAudiencesHelpers = {
           }
           let multiplier = 1;
           while (ready === false) {
-            res = await FB.api(`act_${adAccountId}/reachestimate`, {
+            res = await FB.api(`act_${adAccountId}/delivery_estimate`, {
+              optimization_goal: "NONE",
               targeting_spec: spec,
               access_token: accessToken
             });
-            ready = res.data.estimate_ready;
+            console.log(res);
+            ready = res.data[0].estimate_ready;
             await sleep(2000 * multiplier);
             multiplier = multiplier + 0.5;
           }
@@ -432,7 +439,10 @@ const FacebookAudiencesHelpers = {
             "EX",
             24 * 60 * 60
           );
-          return res.data.users;
+          return {
+            dau: res.data[0].estimate_dau,
+            mau: res.data[0].estimate_mau
+          };
         }
       } catch (error) {
         errorHandle(error, {

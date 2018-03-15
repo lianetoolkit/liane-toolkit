@@ -9,12 +9,28 @@ export default class AudienceGeolocation extends React.Component {
     super(props);
     this.state = {};
   }
+  _latest() {
+    const { geolocation } = this.props;
+    return (audience = AudienceUtils.transformValues(
+      this._latestAudience(geolocation.audienceCategories[0])
+    ));
+  }
   _getPercentage() {
-    const { geolocation, facebookAccount } = this.props;
-    const audience = this._latestAudience(geolocation.audienceCategories[0]);
-    const total = audience.fanCount || facebookAccount.fanCount;
-    let dif = Math.min(audience.total / total, 0.99);
-    return (dif * 100).toFixed(2) + "%";
+    const { facebookAccount, geolocation } = this.props;
+    const audience = this._latest();
+    let total = facebookAccount.fanCount;
+    console.log(geolocation);
+    if (geolocation.mainGeolocation) {
+      total = AudienceUtils.getValue(
+        geolocation.mainGeolocation.audience.estimate
+      );
+    }
+    let cent = Math.min(audience.total / total, 0.99);
+    return (cent * 100).toFixed(2) + "%";
+  }
+  _getTotal() {
+    const audience = this._latest();
+    return audience.total;
   }
   _latestAudience(item) {
     return item.audiences[0];
@@ -65,7 +81,15 @@ export default class AudienceGeolocation extends React.Component {
                 </Sticky>
               </Grid.Column>
               <Grid.Column width={12} ref={this._handleContextRef}>
-                <Header>{this._getPercentage()} of your audience</Header>
+                <Header>{this._getTotal()} daily active users</Header>
+                {geolocation.mainGeolocation &&
+                geolocation.geolocation._id !==
+                  geolocation.mainGeolocation._id ? (
+                  <p>
+                    {this._getPercentage()} of{" "}
+                    {geolocation.mainGeolocation.name} estimate
+                  </p>
+                ) : null}
                 <Table>
                   <Table.Body>
                     {geolocation.audienceCategories.map(item => (
