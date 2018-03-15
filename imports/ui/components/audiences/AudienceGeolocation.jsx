@@ -19,7 +19,6 @@ export default class AudienceGeolocation extends React.Component {
     const { facebookAccount, geolocation } = this.props;
     const audience = this._latest();
     let total = facebookAccount.fanCount;
-    console.log(geolocation);
     if (geolocation.mainGeolocation) {
       total = AudienceUtils.getValue(
         geolocation.mainGeolocation.audience.estimate
