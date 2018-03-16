@@ -73,7 +73,6 @@ export default class ContextsPage extends React.Component {
           anchor.setAttribute("href", dataStr);
           anchor.setAttribute("download", `context-${result.context._id}.json`);
           setTimeout(() => {
-            console.log("clicking");
             anchor.click();
           }, 200);
         }

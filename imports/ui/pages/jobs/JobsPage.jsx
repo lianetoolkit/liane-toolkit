@@ -7,7 +7,6 @@ import JobsTable from "/imports/ui/components/jobs/JobsTable.jsx";
 export default class JobsPage extends React.Component {
   constructor(props) {
     super(props);
-    // console.log("UsersPage init", { props });
   }
 
   render() {

@@ -51,7 +51,6 @@ export default class SelectGeolocationNominatim extends React.Component {
           if (error) {
             console.log(error);
           } else {
-            console.log(data);
             this._updateAvailableGeolocations(data);
           }
         }

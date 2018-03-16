@@ -26,14 +26,12 @@ Meteor.methods({
       },
       { fields: { _id: 1 } }
     ).fetch();
-    console.log("jobsToClear", jobsToClear);
     const jobsToClearIds = _.pluck(jobsToClear, "_id");
-    console.log("jobsToClearIds", jobsToClearIds);
     return Jobs.removeJobs(jobsToClearIds);
   },
 
   "jobs.repairIdleJobs"() {
-    logger.info("jobs.repairIdleJobs: called");
+    logger.debug("jobs.repairIdleJobs: called");
     const thirty_mins_ago = moment()
       .subtract(30, "minutes")
       .toDate();
@@ -65,7 +63,7 @@ Meteor.methods({
     const jobsToRestartIds = _.pluck(jobsToRestart, "_id");
 
     if (jobsToRestartIds.length) {
-      logger.info("Jobs.cleanIdleJobs: restarting this jobs", {
+      logger.debug("Jobs.cleanIdleJobs: restarting this jobs", {
         jobsToRestart: jobsToRestartIds.length
       });
     }
@@ -92,18 +90,18 @@ Meteor.methods({
     const jobsToRemoveIds = _.pluck(jobsToRemove, "_id");
 
     if (jobsToRemoveIds.length) {
-      logger.info("Jobs.cleanIdleJobs: removing this jobs", {
+      logger.debug("Jobs.cleanIdleJobs: removing this jobs", {
         jobsToRemoveIds: jobsToRemoveIds.length
       });
     }
     Jobs.cancelJobs(jobsToRemoveIds); // need to cancel before remove
     Jobs.removeJobs(jobsToRemoveIds);
 
-    return logger.info("jobs.repairIdleJobs: finished");
+    return logger.debug("jobs.repairIdleJobs: finished");
   },
 
   "jobs.restartIdleJobs"() {
-    logger.info("jobs.restartIdleJobs: called");
+    logger.debug("jobs.restartIdleJobs: called");
     const jobsTypesToRestart = [
       "serviceAccounts.instagram.triggers",
       "serviceAccounts.twitter.triggers",

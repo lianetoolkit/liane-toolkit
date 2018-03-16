@@ -11,7 +11,6 @@ import { Grid, Header, Menu, List, Button } from "semantic-ui-react";
 export default class CampaignsPeople extends React.Component {
   constructor(props) {
     super(props);
-    console.log("CampaignsPeople init", { props });
   }
   render() {
     let { facebookId } = this.props;

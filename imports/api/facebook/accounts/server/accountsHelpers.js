@@ -30,7 +30,7 @@ const FacebookAccountsHelpers = {
   getUserAccounts({ userId }) {
     check(userId, String);
 
-    logger.info("FacebookAccountsHelpers.getUserAccounts: called", { userId });
+    logger.debug("FacebookAccountsHelpers.getUserAccounts: called", { userId });
 
     const user = Meteor.users.findOne(userId);
     if (!user) {
@@ -69,7 +69,7 @@ const FacebookAccountsHelpers = {
     check(userId, String);
     check(facebookAccountId, String);
 
-    logger.info("FacebookAccountsHelpers.getUserAccount: called", {
+    logger.debug("FacebookAccountsHelpers.getUserAccount: called", {
       userId,
       facebookAccountId
     });

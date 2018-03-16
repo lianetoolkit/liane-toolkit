@@ -22,7 +22,7 @@ if (Meteor.settings.public.deployMode === "local") {
     const startTime = new Date().getTime();
     const { data } = job;
     const jobType = job.type;
-    logger.info("JobsHelpers.runJob: called", {
+    logger.debug("JobsHelpers.runJob: called", {
       jobType,
       jobId: job.doc._id,
       jobData: data
@@ -36,7 +36,7 @@ if (Meteor.settings.public.deployMode === "local") {
     const { data } = job;
     const jobType = job.type;
     try {
-      logger.info("JobsHelpers.runJob: called", {
+      logger.debug("JobsHelpers.runJob: called", {
         jobType,
         jobId: job.doc._id,
         jobData: data
@@ -61,7 +61,7 @@ if (Meteor.settings.public.deployMode === "local") {
     } finally {
       const finishTime = new Date().getTime();
       const totalTime = (finishTime - startTime) / (60 * 1000);
-      logger.info("JobsHelpers.runJob: finished", {
+      logger.debug("JobsHelpers.runJob: finished", {
         jobType,
         jobData: data,
         totalTime: totalTime.toFixed(3)

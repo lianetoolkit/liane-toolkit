@@ -40,7 +40,6 @@ export default class PeopleEdit extends React.Component {
     this.state = {
       sectionKey: null
     };
-    console.log("PeopleEdit init", { props });
     this._handleSubmit = this._handleSubmit.bind(this);
   }
   componentDidMount() {
@@ -70,7 +69,7 @@ export default class PeopleEdit extends React.Component {
         data
       },
       (error, result) => {
-        console.log(result);
+        // console.log(result);
       }
     );
   }

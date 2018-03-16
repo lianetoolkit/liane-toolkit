@@ -113,7 +113,6 @@ export default class CampaignsPage extends React.Component {
   };
   constructor(props) {
     super(props);
-    console.log("CampaignsPage init", { props });
   }
   _handleRemove = campaignId => ev => {
     ev.preventDefault();

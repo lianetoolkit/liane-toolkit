@@ -334,6 +334,9 @@ const FacebookAudiencesHelpers = {
     if (!campaign) {
       throw new Meteor.Error("fatal", "Campaign does not exist");
     }
+    if (campaign.status == "suspended") {
+      throw new Meteor.Error("fatal", "Campaign suspended");
+    }
     if (!campaign.adAccountId) {
       throw new Meteor.Error("fatal", "Campaign does not have an ad account");
     }
@@ -347,6 +350,37 @@ const FacebookAudiencesHelpers = {
       throw new Meteor.Error("fatal", "User not part of this ad account");
     }
   },
+  validateResultByAvg({
+    facebookAccountId,
+    audienceCategoryId,
+    geolocationId,
+    data,
+    key
+  }) {
+    const audiences = FacebookAudiences.find({
+      facebookAccountId,
+      audienceCategoryId,
+      geolocationId
+    }).fetch();
+    if (!audiences.length) return data;
+    let total = 0;
+    let amount = 0;
+    for (const audience of audiences) {
+      if (audience[key] && audience[key].dau) {
+        total += audience[key].dau;
+        amount++;
+      }
+    }
+    const avg = total / amount;
+    if (avg > 1100 && !data.dau) {
+      throw new Meteor.Error(500, "Error fetching daily active users estimate");
+    }
+    const distance = data.dau / avg;
+    if (avg > 1100 && (distance < 0.1 || distance > 10)) {
+      throw new Meteor.Error(500, "Inconsistent daily active users estimate");
+    }
+    return data;
+  },
   async fetchAndCreateSpecAudience({
     campaignId,
     adAccountId,
@@ -356,15 +390,15 @@ const FacebookAudiencesHelpers = {
     audienceCategoryId,
     spec
   }) {
-    logger.debug("FacebookAudiencesHelpers.fetchAndCreateSpecAudience", {
-      campaignId,
-      adAccountId,
-      tokens,
-      facebookAccountId,
-      geolocationId,
-      audienceCategoryId,
-      spec
-    });
+    // logger.debug("FacebookAudiencesHelpers.fetchAndCreateSpecAudience", {
+    //   campaignId,
+    //   adAccountId,
+    //   tokens,
+    //   facebookAccountId,
+    //   geolocationId,
+    //   audienceCategoryId,
+    //   spec
+    // });
 
     check(campaignId, String);
     check(adAccountId, String);
@@ -398,10 +432,12 @@ const FacebookAudiencesHelpers = {
         setTimeout(resolve, ms);
       });
 
-    const fetch = async function(spec) {
+    let validateResultByAvg = this.validateResultByAvg;
+
+    const fetch = async function(spec, key) {
       const hash = crypto
         .createHash("sha1")
-        .update("delivery_estimate" + JSON.stringify(spec) + fetchDate)
+        .update(JSON.stringify(spec) + fetchDate)
         .digest("hex");
       const redisKey = `audiences::fetch::${hash}`;
       try {
@@ -413,7 +449,6 @@ const FacebookAudiencesHelpers = {
             dau: data[0].estimate_dau,
             mau: data[0].estimate_mau
           };
-          return JSON.parse(res).data.users;
         } else {
           let suspended = redisClient.getSync(
             `adaccount::${adAccountId}::suspended`
@@ -428,21 +463,30 @@ const FacebookAudiencesHelpers = {
               targeting_spec: spec,
               access_token: accessToken
             });
-            console.log(res);
             ready = res.data[0].estimate_ready;
             await sleep(2000 * multiplier);
             multiplier = multiplier + 0.5;
           }
-          redisClient.setSync(
-            redisKey,
-            JSON.stringify(res),
-            "EX",
-            24 * 60 * 60
-          );
-          return {
-            dau: res.data[0].estimate_dau,
-            mau: res.data[0].estimate_mau
-          };
+          if (res.data[0]) {
+            const data = {
+              dau: res.data[0].estimate_dau,
+              mau: res.data[0].estimate_mau
+            };
+            validateResultByAvg({
+              facebookAccountId,
+              audienceCategoryId,
+              geolocationId,
+              data: data,
+              key
+            });
+            redisClient.setSync(
+              redisKey,
+              JSON.stringify(res),
+              "EX",
+              6 * 60 * 60
+            );
+            return data;
+          }
         }
       } catch (error) {
         errorHandle(error, {
@@ -454,14 +498,24 @@ const FacebookAudiencesHelpers = {
       }
     };
 
+    const reqs = {
+      estimate: [],
+      total: ["interests"],
+      location_estimate: ["connections"],
+      location_total: ["interests", "connections"]
+    };
+
     let result = {};
 
-    result["estimate"] = await fetch(spec);
-    result["total"] = await fetch(_.omit(spec, "interests"));
-    result["location_estimate"] = await fetch(_.omit(spec, "connections"));
-    result["location_total"] = await fetch(
-      _.omit(spec, "interests", "connections")
-    );
+    for (const key in reqs) {
+      let req;
+      if (reqs[key].length) {
+        req = _.omit(spec, reqs[key]);
+      } else {
+        req = spec;
+      }
+      result[key] = await fetch(req, key);
+    }
 
     const _getFanCount = async () => {
       const redisKey = `audiences::fanCount::${facebookAccountId}`;
@@ -482,9 +536,9 @@ const FacebookAudiencesHelpers = {
 
     return FacebookAudiences.upsert(
       {
-        campaignId: campaignId,
-        facebookAccountId: facebookAccountId,
-        audienceCategoryId: audienceCategoryId,
+        campaignId,
+        facebookAccountId,
+        audienceCategoryId,
         fetch_date: fetchDate,
         geolocationId: geolocationId
       },

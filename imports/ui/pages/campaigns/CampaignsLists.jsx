@@ -8,7 +8,6 @@ import { Grid, Header, List, Button } from "semantic-ui-react";
 export default class CampaignsLists extends React.Component {
   constructor(props) {
     super(props);
-    console.log("CampaignsLists init", { props });
   }
   render() {
     const { loading, campaign } = this.props;

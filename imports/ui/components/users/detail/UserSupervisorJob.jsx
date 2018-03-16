@@ -21,7 +21,7 @@ export default class UserSupervisorJob extends React.Component {
       if (error) {
         console.log(error);
       } else {
-        console.log(result);
+        // console.log(result);
       }
       this.setState({ loading: false });
     });

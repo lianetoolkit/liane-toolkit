@@ -11,7 +11,6 @@ import {
 export default class NotFoundPage extends React.Component {
   constructor(props) {
     super(props);
-    console.log("NotFoundPage init", { props });
   }
   render() {
     return (

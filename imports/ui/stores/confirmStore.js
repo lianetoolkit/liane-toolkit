@@ -5,14 +5,12 @@ export default class ConfirmStore {
     this.subscriptions = [];
   }
   show({ text, callback }) {
-    console.log("ConfirmStore.show", { text, callback });
     this.open = true;
     this.text = text;
     this.callback = callback;
     this.subscriptions.forEach(f => f());
   }
   hide() {
-    console.log("ConfirmStore.hide");
     this.open = false;
     this.subscriptions.forEach(f => f());
   }

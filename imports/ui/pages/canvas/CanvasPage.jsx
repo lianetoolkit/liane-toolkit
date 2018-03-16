@@ -44,7 +44,6 @@ export default class CanvasEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
-    console.log("CanvasPage init", { props });
   }
   componentDidMount() {}
   _fieldData(section, field) {

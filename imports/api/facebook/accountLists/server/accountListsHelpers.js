@@ -15,7 +15,7 @@ const AccountListsHelpers = {
     check(accountListId, String);
     check(account, Object);
 
-    logger.info("CampaignsHelpers.addAccountToCampaign: called", {
+    logger.debug("CampaignsHelpers.addAccountToCampaign: called", {
       accountListId,
       account
     });

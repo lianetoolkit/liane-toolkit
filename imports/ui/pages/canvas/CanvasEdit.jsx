@@ -69,7 +69,7 @@ export default class CanvasEdit extends React.Component {
         data
       },
       (error, result) => {
-        console.log(result);
+        // console.log(result);
       }
     );
   }

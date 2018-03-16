@@ -92,7 +92,7 @@ export const JobsHelpers = {
       const jobsToRestartIds = _.pluck(jobsToRestart, "_id");
 
       if (jobsToRestartIds.length) {
-        logger.info("Jobs.cleanIdleJobs: restarting this jobs", {
+        logger.debug("Jobs.cleanIdleJobs: restarting this jobs", {
           jobsToRestartIds
         });
       }
@@ -117,7 +117,7 @@ export const JobsHelpers = {
       const jobsToRemoveIds = _.pluck(jobsToRemove, "_id");
 
       if (jobsToRemoveIds.length) {
-        logger.info("Jobs.cleanIdleJobs: removing this jobs", {
+        logger.debug("Jobs.cleanIdleJobs: removing this jobs", {
           jobsToRemoveIds
         });
       }

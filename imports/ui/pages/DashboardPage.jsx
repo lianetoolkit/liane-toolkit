@@ -11,7 +11,6 @@ import moment from "moment";
 export default class DashboardPage extends React.Component {
   constructor(props) {
     super(props);
-    console.log("DashboardPage init", { props });
   }
 
   render() {
