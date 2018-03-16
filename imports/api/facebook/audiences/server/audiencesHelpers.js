@@ -372,11 +372,11 @@ const FacebookAudiencesHelpers = {
       }
     }
     const avg = total / amount;
-    if (avg > 1100 && !data.dau) {
+    if (avg > 999 && !data.dau) {
       throw new Meteor.Error(500, "Error fetching daily active users estimate");
     }
     const distance = data.dau / avg;
-    if (avg > 1100 && (distance < 0.1 || distance > 10)) {
+    if (avg > 999 && (distance < 0.1 || distance > 10)) {
       throw new Meteor.Error(500, "Inconsistent daily active users estimate");
     }
     return data;
