@@ -58,6 +58,26 @@ const CampaignsHelpers = {
     });
     return;
   },
+  refreshCampaignJobs({ campaignId }) {
+    check(campaignId, String);
+    if (campaign.accounts && campaign.accounts.length) {
+      const accounts = FacebookAccounts.find({
+        facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
+      }).fetch();
+      for (const account of accounts) {
+        this.refreshAccountJob({
+          campaignId,
+          facebookAccountId: account.facebookId,
+          type: "entries"
+        });
+        this.refreshAccountJob({
+          campaignId,
+          facebookAccountId: account.facebookId,
+          type: "audiences"
+        });
+      }
+    }
+  },
   refreshAccountJob({ campaignId, facebookAccountId, type }) {
     logger.debug("CampaignsHelpers.refreshAccountJob: called", {
       campaignId,
@@ -65,6 +85,10 @@ const CampaignsHelpers = {
       type
     });
     const campaign = Campaigns.findOne(campaignId);
+
+    if (campaign.status == "suspended") {
+      throw new Meteor.Error(401, "This campaign is suspended");
+    }
 
     const account = _.findWhere(campaign.accounts, {
       facebookId: facebookAccountId
@@ -121,7 +145,8 @@ const CampaignsHelpers = {
       throw new Meteor.Error(404, "Campaign not found");
     }
 
-    Jobs.remove({ "data.campaignId": campaignId });
+    this.clearCampaignJobs({ campaignId });
+
     People.remove({ campaignId });
     Canvas.remove({ campaignId });
     FacebookAudiences.remove({ campaignId });
@@ -146,6 +171,20 @@ const CampaignsHelpers = {
     }
 
     return Campaigns.remove(campaignId);
+  },
+  clearCampaignJobs({ campaignId }) {
+    check(campaignId, String);
+    Jobs.remove({ "data.campaignId": campaignId });
+  },
+  suspendCampaign({ campaignId }) {
+    check(campaignId, String);
+    Campaigns.update({ _id: campaignId }, { $set: { status: "suspended" } });
+    this.clearCampaignJobs({ campaignId });
+  },
+  activateCampaign({ campaignId }) {
+    check(campaignId, String);
+    Campaigns.update({ _id: campaignId }, { $set: { status: "active" } });
+    this.refreshCampaignJobs({ campaignId });
   },
   suspendAdAccount({ campaignId }) {
     check(campaignId, String);

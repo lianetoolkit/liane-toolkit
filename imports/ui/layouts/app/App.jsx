@@ -15,19 +15,7 @@ import ModalManager from "/imports/ui/components/modals/ModalManager.jsx";
 import ConfirmStore from "/imports/ui/stores/confirmStore.js";
 import ConfirmManager from "/imports/ui/components/confirm/ConfirmManager.jsx";
 
-import {
-  Sidebar,
-  Segment,
-  Button,
-  Menu,
-  Image,
-  Icon,
-  Header,
-  Grid,
-  Dimmer,
-  Loader,
-  Container
-} from "semantic-ui-react";
+import { Dimmer, Loader } from "semantic-ui-react";
 
 if (!Meteor.isTest) {
   // import 'semantic-ui-css/semantic.css';

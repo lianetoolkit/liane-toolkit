@@ -4,14 +4,13 @@ import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
 import SelectFacebookAccount from "/imports/ui/components/facebook/SelectFacebookAccount.jsx";
 
-import { Grid, Header, List, Button } from "semantic-ui-react";
+import { Grid, Header, List, Button, Message } from "semantic-ui-react";
 
 import moment from "moment";
 
 export default class CampaignsPage extends React.Component {
   constructor(props) {
     super(props);
-    console.log("CampaignPage init", { props });
     this.state = {
       facebookId: props.facebookId
     };
@@ -39,8 +38,9 @@ export default class CampaignsPage extends React.Component {
           subTitle={!loading && facebookId ? facebookAccount.name : ""}
         />
         <section className="content">
-          {loading ? (
-            <Loading />
+          {loading ? <Loading /> : null}
+          {campaign.status == "suspended" ? (
+            <Message negative>This campaign has been suspended</Message>
           ) : (
             <Grid>
               <Grid.Row columns={2}>

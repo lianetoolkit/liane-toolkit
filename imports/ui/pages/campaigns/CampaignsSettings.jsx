@@ -16,7 +16,8 @@ import {
   Select,
   Table,
   Menu,
-  Icon
+  Icon,
+  Message
 } from "semantic-ui-react";
 
 export default class CampaignsSettings extends React.Component {
@@ -211,6 +212,9 @@ export default class CampaignsSettings extends React.Component {
                   Actions
                 </Menu.Item>
               </Menu>
+              {campaign.status == "suspended" ? (
+                <Message negative>Your campaign is suspended.</Message>
+              ) : null}
               <Segment.Group>
                 <Segment>
                   <Form onSubmit={this._handleSubmit}>

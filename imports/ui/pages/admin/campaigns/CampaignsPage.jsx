@@ -1,6 +1,8 @@
 import React from "react";
+import PropTypes from "prop-types";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
+import { Alerts } from "/imports/ui/utils/Alerts.js";
 
 import {
   Grid,
@@ -113,9 +115,42 @@ export default class CampaignsPage extends React.Component {
     super(props);
     console.log("CampaignsPage init", { props });
   }
+  _handleRemove = campaignId => ev => {
+    ev.preventDefault();
+    this.context.confirmStore.show({
+      callback: () => {
+        if (campaignId) {
+          Meteor.call("campaigns.remove", { campaignId }, error => {
+            if (error) {
+              Alerts.error(error);
+            } else {
+              Alerts.success("Campaign removed successfully");
+              this.context.confirmStore.hide();
+            }
+          });
+        }
+      }
+    });
+  };
+  _handleSuspend = (campaignId, suspend) => ev => {
+    ev.preventDefault();
+    this.context.confirmStore.show({
+      callback: () => {
+        if (campaignId) {
+          Meteor.call("campaigns.suspend", { campaignId, suspend }, error => {
+            if (error) {
+              Alerts.error(error);
+            } else {
+              Alerts.success("Campaign updated successfully");
+              this.context.confirmStore.hide();
+            }
+          });
+        }
+      }
+    });
+  };
   render() {
     const { loading, campaigns, currentUser } = this.props;
-    console.log(campaigns);
     return (
       <div>
         <PageHeader title="Campaigns" />
@@ -130,11 +165,10 @@ export default class CampaignsPage extends React.Component {
                     <Table.Header>
                       <Table.Row>
                         <Table.HeaderCell>Name</Table.HeaderCell>
-                        <Table.HeaderCell>
-                          Ad Account
-                        </Table.HeaderCell>
+                        <Table.HeaderCell>Ad Account</Table.HeaderCell>
                         <Table.HeaderCell>Users</Table.HeaderCell>
                         <Table.HeaderCell>Accounts</Table.HeaderCell>
+                        <Table.HeaderCell>Actions</Table.HeaderCell>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -194,6 +228,38 @@ export default class CampaignsPage extends React.Component {
                               </Table.Body>
                             </Table>
                           </Table.Cell>
+                          <Table.Cell collapsing verticalAlign="top">
+                            <Button.Group size="tiny">
+                              {campaign.status == "suspended" ? (
+                                <Button
+                                  onClick={this._handleSuspend(
+                                    campaign._id,
+                                    false
+                                  )}
+                                  icon
+                                >
+                                  <Icon name="play" /> Activate
+                                </Button>
+                              ) : (
+                                <Button
+                                  onClick={this._handleSuspend(
+                                    campaign._id,
+                                    true
+                                  )}
+                                  icon
+                                >
+                                  <Icon name="pause" /> Suspend
+                                </Button>
+                              )}
+                              <Button
+                                onClick={this._handleRemove(campaign._id)}
+                                negative
+                                icon
+                              >
+                                <Icon name="trash" /> Delete
+                              </Button>
+                            </Button.Group>
+                          </Table.Cell>
                         </Table.Row>
                       ))}
                     </Table.Body>
@@ -207,3 +273,7 @@ export default class CampaignsPage extends React.Component {
     );
   }
 }
+
+CampaignsPage.contextTypes = {
+  confirmStore: PropTypes.object
+};
