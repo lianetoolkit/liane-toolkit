@@ -156,6 +156,9 @@ export default class AppMenu extends React.Component {
                 <Menu.Item href={FlowRouter.path("App.admin.campaigns")}>
                   <Icon name="announcement" /> Campaigns
                 </Menu.Item>
+                <Menu.Item href={FlowRouter.path("App.admin.users")}>
+                  <Icon name="users" /> Users
+                </Menu.Item>
                 <Menu.Item href={FlowRouter.path("App.admin.jobs")}>
                   <Icon name="tasks" /> Backend Jobs
                 </Menu.Item>

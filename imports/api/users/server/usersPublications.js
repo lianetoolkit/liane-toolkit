@@ -18,44 +18,44 @@ Meteor.publish("users.data", function() {
   }
 });
 
-Meteor.publish("admin.users", function({ search, limit, orderBy, fields }) {
+Meteor.publish("users.all", function() {
   this.unblock();
-  // Meteor._sleepForMs 2000
   const currentUser = this.userId;
-  if (currentUser && Roles.userIsInRole(currentUser, ["admin", "staff"])) {
-    const options = {
-      sort: {},
-      limit: Math.min(limit, 1000),
-      fields
-    };
-    options["sort"][orderBy.field] = orderBy.ordering;
-    return Meteor.users.find(search, options);
+  if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
+    return Meteor.users.find(
+      {},
+      {
+        fields: {
+          name: 1,
+          roles: 1,
+          emails: 1,
+          createdAt: 1
+        }
+      }
+    );
   } else {
-    this.stop();
-    return;
+    return this.ready();
   }
 });
 
-Meteor.publish("admin.users.counter", function({ search }) {
+Meteor.publish("users.detail", function({ userId }) {
   this.unblock();
   const currentUser = this.userId;
-  if (currentUser && Roles.userIsInRole(currentUser, ["admin", "staff"])) {
-    Counts.publish(this, "admin.users.counter", Meteor.users.find(search));
-    return;
+  if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
+    return Meteor.users.find(
+      {
+        _id: userId
+      },
+      {
+        fields: {
+          name: 1,
+          roles: 1,
+          emails: 1,
+          createdAt: 1
+        }
+      }
+    );
   } else {
-    this.stop();
-    return;
-  }
-});
-
-Meteor.publish("admin.usersDetail", function({ userId }) {
-  check(userId, String);
-  this.unblock();
-  const currentUser = this.userId;
-  if (currentUser && Roles.userIsInRole(currentUser, ["admin", "staff"])) {
-    return Meteor.users.find(userId);
-  } else {
-    this.stop();
-    return;
+    return this.ready();
   }
 });

@@ -18,6 +18,9 @@ import EditAudienceCategoriesPageContainer from "/imports/ui/containers/audience
 import GeolocationsPageContainer from "/imports/ui/containers/geolocations/GeolocationsPageContainer.jsx";
 import EditGeolocationsPageContainer from "/imports/ui/containers/geolocations/EditGeolocationsPageContainer.jsx";
 
+import UsersContainer from "/imports/ui/containers/users/UsersContainer.jsx";
+import EditUsersContainer from "/imports/ui/containers/users/EditUsersContainer.jsx";
+
 import { APP_NAME, addTitle, trackRouteEntry } from "./utils.js";
 
 // app routes
@@ -116,6 +119,31 @@ adminRoutes.route("/geolocations/edit/:geolocationId?", {
       content: {
         component: EditGeolocationsPageContainer,
         props: { geolocationId: params.geolocationId }
+      }
+    });
+  }
+});
+
+adminRoutes.route("/users", {
+  name: "App.admin.users",
+  action: function() {
+    addTitle(`${APP_NAME} | Geolocations`);
+    return mount(AppContainer, {
+      content: {
+        component: UsersContainer
+      }
+    });
+  }
+});
+
+adminRoutes.route("/users/edit/:userId?", {
+  name: "App.admin.users.edit",
+  action: function(params) {
+    addTitle(`${APP_NAME} | Geolocations`);
+    return mount(AppContainer, {
+      content: {
+        component: EditUsersContainer,
+        props: { userId: params.userId }
       }
     });
   }
