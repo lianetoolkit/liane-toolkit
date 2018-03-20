@@ -70,6 +70,21 @@ export default class PeopleSearch extends React.Component {
     this._handleSortChange = this._handleSortChange.bind(this);
     this._toggleMeta = this._toggleMeta.bind(this);
   }
+  componentWillReceiveProps(nextProps) {
+    const { facebookId } = this.props;
+    const { options } = this.state;
+    if (nextProps.facebookId !== facebookId) {
+      this.setState({
+        options: {
+          ...options,
+          props: {
+            ...options.props,
+            facebookId: nextProps.facebookId
+          }
+        }
+      });
+    }
+  }
   _toggleMeta = prop => {
     return () => {
       const { options } = this.state;
