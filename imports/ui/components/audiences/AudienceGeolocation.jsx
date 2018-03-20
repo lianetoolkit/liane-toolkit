@@ -59,7 +59,7 @@ export default class AudienceGeolocation extends React.Component {
                   context={contextRef}
                   scrollContext={document.getElementById("app-content")}
                 >
-                  <Menu pointing vertical>
+                  <Menu pointing vertical fluid>
                     {geolocations.map(gl => (
                       <Menu.Item
                         key={gl._id}
@@ -93,7 +93,7 @@ export default class AudienceGeolocation extends React.Component {
                   <Table.Body>
                     {geolocation.audienceCategories.map(item => (
                       <Table.Row key={item.category._id}>
-                        <Table.Cell collapsing>
+                        <Table.Cell style={{ maxWidth: "100px" }}>
                           <a
                             href={FlowRouter.path(
                               "App.campaignAudience.category",
@@ -110,7 +110,7 @@ export default class AudienceGeolocation extends React.Component {
                         <Table.Cell>
                           <CompareLine audience={this._latestAudience(item)} />
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell collapsing>
                           <strong>
                             {AudienceUtils.getRatio(this._latestAudience(item))}
                           </strong>
