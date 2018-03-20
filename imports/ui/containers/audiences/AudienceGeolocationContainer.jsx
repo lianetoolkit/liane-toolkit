@@ -11,7 +11,6 @@ export default withTracker(props => {
   // Reset vars when route has changed (ReactiveVar set without a check will cause state change)
   if (currentRoutePath !== FlowRouter.current().path) {
     currentRoutePath = FlowRouter.current().path;
-    geolocation.set(null);
     loading.set(true);
   }
 

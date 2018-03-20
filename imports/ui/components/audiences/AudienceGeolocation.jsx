@@ -1,7 +1,16 @@
 import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import styled from "styled-components";
-import { Grid, Sticky, Header, Divider, Table, Menu } from "semantic-ui-react";
+import {
+  Grid,
+  Sticky,
+  Header,
+  Divider,
+  Table,
+  Menu,
+  Dimmer,
+  Loader
+} from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
 import CompareLine from "./CompareLine.jsx";
 import AudienceInfo from "./AudienceInfo.jsx";
@@ -79,7 +88,7 @@ export default class AudienceGeolocation extends React.Component {
       geolocations,
       facebookAccount
     } = this.props;
-    if (loading) {
+    if (loading && !geolocation) {
       return <Loading />;
     } else {
       return (
@@ -141,7 +150,13 @@ export default class AudienceGeolocation extends React.Component {
                   </Menu>
                 </Sticky>
               </Grid.Column>
-              <Grid.Column width={12} ref={this._handleContextRef}>
+              <Dimmer.Dimmable
+                blurring
+                as={Grid.Column}
+                width={12}
+                dimmed={loading}
+                ref={this._handleContextRef}
+              >
                 <Header>{this._getTotal()} daily active users</Header>
                 {geolocation.mainGeolocation &&
                 geolocation.geolocation._id !==
@@ -150,7 +165,9 @@ export default class AudienceGeolocation extends React.Component {
                     {this._getPercentage()} of{" "}
                     {geolocation.mainGeolocation.name} estimate
                   </p>
-                ) : null}
+                ) : (
+                  <p />
+                )}
                 <Table selectable>
                   {geolocation.audienceCategories.map(item => {
                     const expanded = this._isExpanded(item.category._id);
@@ -204,7 +221,7 @@ export default class AudienceGeolocation extends React.Component {
                     );
                   })}
                 </Table>
-              </Grid.Column>
+              </Dimmer.Dimmable>
             </Grid.Row>
           </Grid>
         </Wrapper>

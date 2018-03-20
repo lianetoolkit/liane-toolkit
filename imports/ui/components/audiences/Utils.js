@@ -25,8 +25,8 @@ export const transformValues = function(audience, users) {
 export const getRatio = function(audience) {
   if (!audience) return "";
   audience = transformValues(audience);
-  if (audience.total < 1500) {
-    return "Not available";
+  if (audience.total <= 1500) {
+    return "--";
   }
   let prefix, ratio;
   const local = audience.estimate / audience.total;
@@ -48,7 +48,7 @@ export const getRatio = function(audience) {
 export const getPercentage = function(audience) {
   if (!audience) return "";
   audience = transformValues(audience);
-  if (audience.total < 1500) {
+  if (audience.total <= 1500) {
     return "";
   }
   let dif = Math.min(audience.estimate / audience.total, 0.99);

@@ -4,9 +4,23 @@ export const addTitle = function(title) {
   DocHead.setTitle(title);
 };
 
-export const trackRouteEntry = () => {
+const routesToMaintain = ["App.campaignAudience"];
+
+const shouldScrollTop = context => {
+  const old = context.oldRoute ? context.oldRoute.name : "";
+  const cur = context.route.name;
+  let should = true;
+  for (const name of routesToMaintain) {
+    if (old.indexOf(name) == 0 && cur.indexOf(name) == 0) {
+      should = false;
+    }
+  }
+  return should;
+};
+
+export const trackRouteEntry = context => {
   const node = document.getElementById("app-content");
-  if (node) node.scrollTop = 0;
+  if (node && shouldScrollTop(context)) node.scrollTop = 0;
   Meteor.setTimeout(() => {
     const userId = Meteor.userId();
     if (userId) {
