@@ -43,7 +43,7 @@ export default class PeopleSearchResults extends React.Component {
                       target="_blank"
                       href={`https://facebook.com/${person.facebookId}`}
                     >
-                      <Icon name="facebook" />
+                      <Icon name="facebook official" />
                     </a>
                   </Table.Cell>
                   <Table.Cell singleLine collapsing>
