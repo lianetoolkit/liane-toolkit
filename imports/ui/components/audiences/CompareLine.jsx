@@ -4,6 +4,8 @@ import AudienceUtils from "./Utils.js";
 
 const Wrapper = styled.div`
   height: 2rem;
+  background: #fff;
+  padding: 2px;
 `;
 
 const Container = styled.div`
@@ -59,6 +61,7 @@ const Label = styled.div`
     font-weight: 600;
     display: inline-block;
     font-size: 1.3em;
+    line-height: 1.8rem;
     width: 4em;
   }
   ${props =>

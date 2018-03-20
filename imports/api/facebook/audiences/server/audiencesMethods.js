@@ -334,7 +334,7 @@ export const accountAudienceByGeolocation = new ValidatedMethod({
           facebookAccountId,
           geolocationId: context.mainGeolocationId
         },
-        { sort: { createdAt: -1 } }
+        { sort: { createdAt: 1 } }
       );
       if (mainLocAudience) {
         result.mainGeolocation.audience = {
@@ -352,7 +352,7 @@ export const accountAudienceByGeolocation = new ValidatedMethod({
           geolocationId: geolocation._id,
           audienceCategoryId: category._id
         },
-        { sort: { createdAt: -1 } }
+        { sort: { createdAt: 1 } }
       ).fetch();
       result.audienceCategories.push({ category, audiences });
     });

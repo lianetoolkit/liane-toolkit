@@ -1,13 +1,27 @@
 import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
+import styled from "styled-components";
 import { Grid, Sticky, Header, Divider, Table, Menu } from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
 import CompareLine from "./CompareLine.jsx";
+import AudienceInfo from "./AudienceInfo.jsx";
+
+const Wrapper = styled.div`
+  .selectable td {
+    cursor: pointer;
+  }
+  .active .category-title {
+    font-weight: 600;
+  }
+`;
 
 export default class AudienceGeolocation extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      expanded: {}
+    };
+    this._handleExpand = this._handleExpand.bind(this);
   }
   _latest() {
     const { geolocation } = this.props;
@@ -32,8 +46,29 @@ export default class AudienceGeolocation extends React.Component {
     return audience.total;
   }
   _latestAudience(item) {
-    return item.audiences[0];
+    return item.audiences[item.audiences.length - 1];
   }
+  _handleExpand = categoryId => ev => {
+    const { expanded } = this.state;
+    if (!expanded[categoryId]) {
+      this.setState({
+        expanded: {
+          ...expanded,
+          [categoryId]: true
+        }
+      });
+    } else {
+      this.setState({
+        expanded: {
+          ...expanded,
+          [categoryId]: false
+        }
+      });
+    }
+  };
+  _isExpanded = categoryId => {
+    return this.state.expanded[categoryId];
+  };
   _handleContextRef = contextRef => this.setState({ contextRef });
   render() {
     const { contextRef } = this.state;
@@ -48,7 +83,7 @@ export default class AudienceGeolocation extends React.Component {
       return <Loading />;
     } else {
       return (
-        <div>
+        <Wrapper>
           <Header as="h2">Geolocation Details</Header>
           <Divider hidden />
           <Grid columns={2} relaxed>
@@ -60,22 +95,49 @@ export default class AudienceGeolocation extends React.Component {
                   scrollContext={document.getElementById("app-content")}
                 >
                   <Menu pointing vertical fluid>
-                    {geolocations.map(gl => (
+                    {geolocation.mainGeolocation ? (
                       <Menu.Item
-                        key={gl._id}
-                        active={gl._id == geolocation.geolocation._id}
+                        active={
+                          geolocation.mainGeolocation._id ==
+                          geolocation.geolocation._id
+                        }
                         href={FlowRouter.path(
                           "App.campaignAudience.geolocation",
                           {
                             campaignId: campaign._id,
                             facebookId: facebookAccount.facebookId,
-                            geolocationId: gl._id
+                            geolocationId: geolocation.mainGeolocation._id
                           }
                         )}
                       >
-                        {gl.name}
+                        {geolocation.mainGeolocation.name}
                       </Menu.Item>
-                    ))}
+                    ) : null}
+                    {geolocations.map(gl => {
+                      if (
+                        !geolocation.mainGeolocation ||
+                        gl._id !== geolocation.mainGeolocation._id
+                      ) {
+                        return (
+                          <Menu.Item
+                            key={gl._id}
+                            active={gl._id == geolocation.geolocation._id}
+                            href={FlowRouter.path(
+                              "App.campaignAudience.geolocation",
+                              {
+                                campaignId: campaign._id,
+                                facebookId: facebookAccount.facebookId,
+                                geolocationId: gl._id
+                              }
+                            )}
+                          >
+                            {gl.name}
+                          </Menu.Item>
+                        );
+                      } else {
+                        return null;
+                      }
+                    })}
                   </Menu>
                 </Sticky>
               </Grid.Column>
@@ -89,40 +151,63 @@ export default class AudienceGeolocation extends React.Component {
                     {geolocation.mainGeolocation.name} estimate
                   </p>
                 ) : null}
-                <Table>
-                  <Table.Body>
-                    {geolocation.audienceCategories.map(item => (
-                      <Table.Row key={item.category._id}>
-                        <Table.Cell style={{ maxWidth: "100px" }}>
-                          <a
-                            href={FlowRouter.path(
-                              "App.campaignAudience.category",
-                              {
-                                campaignId: campaign._id,
-                                facebookId: facebookAccount.facebookId,
-                                categoryId: item.category._id
-                              }
-                            )}
-                          >
-                            {item.category.title}
-                          </a>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <CompareLine audience={this._latestAudience(item)} />
-                        </Table.Cell>
-                        <Table.Cell collapsing>
-                          <strong>
-                            {AudienceUtils.getRatio(this._latestAudience(item))}
-                          </strong>
-                        </Table.Cell>
-                      </Table.Row>
-                    ))}
-                  </Table.Body>
+                <Table selectable>
+                  {geolocation.audienceCategories.map(item => {
+                    const expanded = this._isExpanded(item.category._id);
+                    return (
+                      <Table.Body key={item.category._id}>
+                        <Table.Row
+                          className="selectable"
+                          active={expanded}
+                          onClick={this._handleExpand(item.category._id)}
+                        >
+                          <Table.Cell collapsing>
+                            {/* <a
+                              className="category-title"
+                              href={FlowRouter.path(
+                                "App.campaignAudience.category",
+                                {
+                                  campaignId: campaign._id,
+                                  facebookId: facebookAccount.facebookId,
+                                  categoryId: item.category._id
+                                }
+                              )}
+                            > */}
+                            <span className="category-title">
+                              {item.category.title}
+                            </span>
+                            {/* </a> */}
+                          </Table.Cell>
+                          <Table.Cell>
+                            {!expanded ? (
+                              <CompareLine
+                                audience={this._latestAudience(item)}
+                              />
+                            ) : null}
+                          </Table.Cell>
+                          <Table.Cell collapsing>
+                            <strong>
+                              {AudienceUtils.getRatio(
+                                this._latestAudience(item)
+                              )}
+                            </strong>
+                          </Table.Cell>
+                        </Table.Row>
+                        {expanded ? (
+                          <Table.Row active>
+                            <Table.Cell colSpan="3">
+                              <AudienceInfo data={item} />
+                            </Table.Cell>
+                          </Table.Row>
+                        ) : null}
+                      </Table.Body>
+                    );
+                  })}
                 </Table>
               </Grid.Column>
             </Grid.Row>
           </Grid>
-        </div>
+        </Wrapper>
       );
     }
   }
