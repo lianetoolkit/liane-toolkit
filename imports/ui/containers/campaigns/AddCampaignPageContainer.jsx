@@ -1,10 +1,10 @@
 import { Meteor } from "meteor/meteor";
 import { ReactiveVar } from "meteor/reactive-var";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import AddCampaignPage from "/imports/ui/pages/campaigns/AddCampaignPage.jsx";
 
-export default createContainer(() => {
+export default withTracker(() => {
   const contextsHandle = Meteor.subscribe("contexts.all");
   const loading = !contextsHandle.ready();
 
@@ -14,4 +14,4 @@ export default createContainer(() => {
     loading,
     contexts
   };
-}, AddCampaignPage);
+})(AddCampaignPage);

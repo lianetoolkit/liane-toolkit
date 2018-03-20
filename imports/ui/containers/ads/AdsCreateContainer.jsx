@@ -1,11 +1,11 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import { AdAccounts } from "/imports/api/facebook/adAccounts/adAccounts.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import AdsCreate from "/imports/ui/pages/ads/AdsCreate.jsx";
 
-export default createContainer(props => {
+export default withTracker(props => {
   const adAccountHandle = Meteor.subscribe("adAccounts.byCampaign", {
     campaignId: props.campaignId
   });
@@ -36,4 +36,4 @@ export default createContainer(props => {
     audienceCategory,
     geolocations
   };
-}, AdsCreate);
+})(AdsCreate);

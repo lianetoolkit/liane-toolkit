@@ -1,9 +1,9 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import AccountsLayout from "/imports/ui/layouts/accounts/AccountsLayout.jsx";
 import { FlowRouter } from "meteor/kadira:flow-router";
 
-export default createContainer(({ content }) => {
+export default withTracker(({ content }) => {
   const user = Meteor.user();
   return {
     user,
@@ -12,4 +12,4 @@ export default createContainer(({ content }) => {
     content: content,
     routeName: FlowRouter.getRouteName()
   };
-}, AccountsLayout);
+})(AccountsLayout);

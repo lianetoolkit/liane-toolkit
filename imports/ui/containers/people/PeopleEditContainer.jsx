@@ -1,9 +1,9 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import { People } from "/imports/api/facebook/people/people.js";
 import PeopleEdit from "/imports/ui/pages/people/PeopleEdit.jsx";
 
-export default createContainer(props => {
+export default withTracker(props => {
   const personHandle = Meteor.subscribe("people.detail", {
     personId: props.personId
   });
@@ -16,4 +16,4 @@ export default createContainer(props => {
     loading,
     person
   };
-}, PeopleEdit);
+})(PeopleEdit);

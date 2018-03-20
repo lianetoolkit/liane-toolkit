@@ -9,9 +9,9 @@ const CampaignSubs = new SubsManager();
 
 export default withTracker(props => {
   const currentUser = Meteor.user();
-  const userHandle = Meteor.subscribe("users.data");
+  const userHandle = CampaignSubs.subscribe("users.data");
 
-  const campaignsHandle = Meteor.subscribe("campaigns.byUser");
+  const campaignsHandle = CampaignSubs.subscribe("campaigns.byUser");
   const campaigns =
     campaignsHandle.ready() && currentUser
       ? Campaigns.find({

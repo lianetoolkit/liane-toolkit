@@ -1,11 +1,11 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
 import EditContextsPage from "/imports/ui/pages/admin/contexts/EditContextsPage.jsx";
 
-export default createContainer(props => {
+export default withTracker(props => {
   const contextHandle = Meteor.subscribe("admin.contexts.detail", {
     contextId: props.contextId
   });
@@ -38,4 +38,4 @@ export default createContainer(props => {
       audienceCategories
     }
   };
-}, EditContextsPage);
+})(EditContextsPage);

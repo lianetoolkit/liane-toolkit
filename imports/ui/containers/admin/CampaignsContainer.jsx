@@ -1,12 +1,12 @@
 import _ from "underscore";
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Jobs } from "/imports/api/jobs/jobs.js";
 import CampaignsPage from "/imports/ui/pages/admin/campaigns/CampaignsPage.jsx";
 
-export default createContainer(() => {
+export default withTracker(() => {
   const subsHandle = Meteor.subscribe("campaigns.all");
   const loading = !subsHandle.ready();
 
@@ -43,4 +43,4 @@ export default createContainer(() => {
     loading,
     campaigns
   };
-}, CampaignsPage);
+})(CampaignsPage);

@@ -1,12 +1,12 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
 import ContextsPage from "/imports/ui/pages/admin/contexts/ContextsPage.jsx";
 
-export default createContainer(() => {
+export default withTracker(() => {
   const contextsHandle = Meteor.subscribe("admin.contexts");
   const loading = !contextsHandle.ready();
 
@@ -41,4 +41,4 @@ export default createContainer(() => {
     loading,
     contexts
   };
-}, ContextsPage);
+})(ContextsPage);

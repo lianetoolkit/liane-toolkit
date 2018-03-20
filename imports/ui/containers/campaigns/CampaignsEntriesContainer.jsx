@@ -1,7 +1,7 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import CampaignsEntries from "/imports/ui/pages/campaigns/CampaignsEntries.jsx";
 
-export default createContainer(props => {
+export default withTracker(props => {
   return {};
-}, CampaignsEntries);
+})(CampaignsEntries);

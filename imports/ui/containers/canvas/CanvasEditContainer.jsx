@@ -1,10 +1,10 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Canvas } from "/imports/api/canvas/canvas.js";
 import CanvasEdit from "/imports/ui/pages/canvas/CanvasEdit.jsx";
 
-export default createContainer(props => {
+export default withTracker(props => {
   const subsHandle = Meteor.subscribe("campaigns.detail", {
     campaignId: props.campaignId
   });
@@ -27,4 +27,4 @@ export default createContainer(props => {
     campaign,
     canvas
   };
-}, CanvasEdit);
+})(CanvasEdit);

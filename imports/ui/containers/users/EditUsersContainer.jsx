@@ -1,8 +1,8 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import EditUsersPage from "/imports/ui/pages/admin/users/EditUsersPage.jsx";
 
-export default createContainer(props => {
+export default withTracker(props => {
   const subsHandle = Meteor.subscribe("users.detail", {
     userId: props.userId
   });
@@ -17,4 +17,4 @@ export default createContainer(props => {
     loading,
     user
   };
-}, EditUsersPage);
+})(EditUsersPage);

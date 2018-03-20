@@ -1,9 +1,9 @@
 import { Meteor } from "meteor/meteor";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import EditGeolocationsPage from "/imports/ui/pages/admin/geolocations/EditGeolocationsPage.jsx";
 
-export default createContainer(props => {
+export default withTracker(props => {
   const subsHandle = Meteor.subscribe("geolocations.detail", {
     geolocationId: props.geolocationId
   });
@@ -18,4 +18,4 @@ export default createContainer(props => {
     loading,
     geolocation
   };
-}, EditGeolocationsPage);
+})(EditGeolocationsPage);

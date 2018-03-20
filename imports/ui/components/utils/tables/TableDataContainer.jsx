@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Meteor } from "meteor/meteor";
 import { _ } from "meteor/underscore";
 import i18n from "meteor/universe:i18n";
-import { createContainer } from "meteor/react-meteor-data";
+import { withTracker } from "meteor/react-meteor-data";
 import TableData from "./TableData.jsx";
 import {
   prepareSubscriptionFields,
@@ -12,7 +12,7 @@ import {
 
 const CollectionSubs = new SubsManager();
 
-export default createContainer(props => {
+export default withTracker(props => {
   const defaultLimit = 20;
   const {
     selector,
@@ -100,4 +100,4 @@ export default createContainer(props => {
     hasMore,
     loadingMore
   };
-}, TableData);
+})(TableData);

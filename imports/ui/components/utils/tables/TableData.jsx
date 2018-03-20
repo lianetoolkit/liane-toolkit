@@ -3,7 +3,6 @@ import Proptypes from "prop-types";
 import { Meteor } from "meteor/meteor";
 import { _ } from "meteor/underscore";
 import i18n from "meteor/universe:i18n";
-import { createContainer } from "meteor/react-meteor-data";
 import LoadingBlock from "/imports/ui/components/utils/LoadingBlock.jsx";
 import SearchBox from "./SearchBox.jsx";
 import { cleanFieldName } from "./Utils";
