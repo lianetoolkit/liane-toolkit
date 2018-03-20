@@ -9,15 +9,13 @@ const Wrapper = styled.header`
   min-width: 300px;
   background: #222;
   color: #fff;
-  h1 {
-    margin: 2rem;
-  }
 `;
 
 const Logo = styled.h1`
   flex: 0 0 auto;
   text-transform: uppercase;
   font-size: 1em;
+  margin: 2rem !important;
   a {
     color: #fff;
   }
