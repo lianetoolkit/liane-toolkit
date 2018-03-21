@@ -11,7 +11,7 @@ import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js"
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
 import { Jobs } from "/imports/api/jobs/jobs";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
-import redisClient from "/imports/startup/server/redis";
+import redisClient, { deleteByPattern } from "/imports/startup/server/redis";
 import crypto from "crypto";
 import _ from "underscore";
 import moment from "moment";
@@ -533,6 +533,20 @@ const FacebookAudiencesHelpers = {
 
     const fanCount = await _getFanCount();
     if (fanCount) result["fan_count"] = fanCount;
+
+    // Clean up methods cache
+    const keys = [
+      campaignId + facebookAccountId,
+      campaignId + facebookAccountId + audienceCategoryId,
+      campaignId + facebookAccountId + geolocationId
+    ];
+    for (const key of keys) {
+      const hash = crypto
+        .createHash("sha1")
+        .update(key)
+        .digest("hex");
+      deleteByPattern(`audiences::result::${hash}::*`);
+    }
 
     return FacebookAudiences.upsert(
       {
