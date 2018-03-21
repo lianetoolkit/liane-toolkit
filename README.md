@@ -23,18 +23,20 @@ Liane is a free software using [Meteor](https://meteor.com), [MongoDB](https://w
 
 ### Dependencies
 
- - [Meteor](https://guide.meteor.com)
- - [Redis](https://redis.io/)
+* [Meteor](https://guide.meteor.com)
+* [Redis](https://redis.io/)
 
 Install **Meteor** full-stack framework.
-~~~shell
+
+```shell
 curl https://install.meteor.com/ | sh
-~~~
+```
 
 Clone this repository.
-~~~shell
+
+```shell
 git clone https://github.com/lianetoolkit/liane-toolkit
-~~~
+```
 
 ### Configuration
 
@@ -44,13 +46,15 @@ Create a file at `.deploy/local/` and name it `settings.json`. You can find an e
 
 Paste your client id and secret and on your Facebook App dashboard you must add the app domain and URL on the Dashboard settings and OAuth setup. Default is `http://localhost:3000`.
 
+If you are using strict mode (recommended) on your Facebook OAuth configuration, make sure to use the following path: `http://localhost:3000/_oauth/facebook?close`
+
 ### Start the app
 
 Make sure your **Redis** server is running and run your project.
 
-~~~js
+```js
 npm start
-~~~
+```
 
 Once the app install all of its dependencies, it will be running at `http://localhost:3000`. The first user created is automatically set with the admin role.
 
@@ -62,7 +66,7 @@ This project uses **[FlowRouter](https://github.com/kadirahq/flow-router)** for 
 
 This projects follows Meteor guide recommendations for application struture.
 
-~~~
+```
 imports/
   startup/
     client/
@@ -87,7 +91,7 @@ client/
   main.js                      # client entry point, imports all client code
 server/
   main.js
-~~~
+```
 
 ## On startup
 
@@ -108,8 +112,8 @@ This projects uses **[Mocha](https://github.com/mochajs/mocha)** framework, **[F
 You can find tests inside server folders `../server/campaigns.tests.js` and fake models `../server/campaigns.fake.js`.
 To run the tests:
 
-~~~shell
+```shell
 npm run test
-~~~
+```
 
 It will run at http://localhost:3100
