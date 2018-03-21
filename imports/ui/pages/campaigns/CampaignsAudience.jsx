@@ -11,6 +11,15 @@ import AudienceGeolocationContainer from "/imports/ui/containers/audiences/Audie
 import { Grid, Menu, Header, List, Button, Divider } from "semantic-ui-react";
 
 export default class CampaignsAudience extends React.Component {
+  _getMainGeolocation() {
+    const { campaign, geolocations } = this.props;
+    if (campaign.context.mainGeolocationId) {
+      return geolocations.find(
+        location => location._id == campaign.context.mainGeolocationId
+      );
+    }
+    return null;
+  }
   render() {
     const {
       loading,
@@ -67,6 +76,12 @@ export default class CampaignsAudience extends React.Component {
                 <Grid.Column>
                   {account ? (
                     <div>
+                      <AudienceGeolocationSummaryContainer
+                        campaignId={campaign._id}
+                        facebookAccountId={account.facebookId}
+                        geolocationId={geolocationId}
+                      />
+                      <Divider hidden />
                       {categoryId ? (
                         <AudienceCategoryContainer
                           campaignId={campaign._id}
@@ -83,17 +98,10 @@ export default class CampaignsAudience extends React.Component {
                         />
                       ) : null}
                       {!categoryId && !geolocationId ? (
-                        <div>
-                          <AudienceGeolocationSummaryContainer
-                            campaignId={campaign._id}
-                            facebookAccountId={account.facebookId}
-                          />
-                          <Divider hidden />
-                          <AudienceCategoriesListContainer
-                            campaignId={campaign._id}
-                            facebookAccountId={account.facebookId}
-                          />
-                        </div>
+                        <AudienceCategoriesListContainer
+                          campaignId={campaign._id}
+                          facebookAccountId={account.facebookId}
+                        />
                       ) : null}
                     </div>
                   ) : (

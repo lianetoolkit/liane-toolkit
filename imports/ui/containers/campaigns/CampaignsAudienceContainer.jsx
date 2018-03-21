@@ -17,8 +17,20 @@ export default withTracker(props => {
     ? Geolocations.find().fetch()
     : null;
 
+  let geolocationId = props.geolocationId;
+
+  if (!loading && !geolocationId && props.campaign.context.mainGeolocationId) {
+    const geolocation = geolocations.find(
+      location => props.campaign.context.mainGeolocationId == location._id
+    );
+    if (geolocation) {
+      geolocationId = geolocation._id;
+    }
+  }
+
   return {
     loading,
-    geolocations
+    geolocations,
+    geolocationId
   };
 })(CampaignsAudience);

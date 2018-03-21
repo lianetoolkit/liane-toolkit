@@ -3,7 +3,7 @@ import { ReactiveVar } from "meteor/reactive-var";
 import { withTracker } from "meteor/react-meteor-data";
 import AudienceGeolocationSummary from "/imports/ui/components/audiences/AudienceGeolocationSummary.jsx";
 
-const geolocationSummary = new ReactiveVar([]);
+const geolocationSummary = new ReactiveVar(null);
 const loading = new ReactiveVar(false);
 let currentRoutePath = null;
 
@@ -11,7 +11,6 @@ export default withTracker(props => {
   // Reset vars when route has changed (ReactiveVar set without a check will cause state change)
   if (currentRoutePath !== FlowRouter.current().path) {
     currentRoutePath = FlowRouter.current().path;
-    geolocationSummary.set([]);
     loading.set(true);
   }
 
@@ -25,9 +24,9 @@ export default withTracker(props => {
       if (error) {
         console.warn(error);
       }
+      loading.set(false);
       if (JSON.stringify(geolocationSummary.get()) !== JSON.stringify(data)) {
         geolocationSummary.set(data);
-        loading.set(false);
       }
     }
   );

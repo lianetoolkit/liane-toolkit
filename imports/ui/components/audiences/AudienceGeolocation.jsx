@@ -8,8 +8,7 @@ import {
   Divider,
   Table,
   Menu,
-  Dimmer,
-  Loader
+  Dimmer
 } from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
 import CompareLine from "./CompareLine.jsx";
@@ -93,8 +92,6 @@ export default class AudienceGeolocation extends React.Component {
     } else {
       return (
         <Wrapper>
-          <Header as="h2">Geolocation Details</Header>
-          <Divider hidden />
           <Grid columns={2} relaxed>
             <Grid.Row>
               <Grid.Column width={4}>
@@ -157,7 +154,9 @@ export default class AudienceGeolocation extends React.Component {
                 dimmed={loading}
                 ref={this._handleContextRef}
               >
-                <Header>{this._getTotal()} daily active users</Header>
+                <Header>
+                  Today's estimate: {this._getTotal()} active users
+                </Header>
                 {geolocation.mainGeolocation &&
                 geolocation.geolocation._id !==
                   geolocation.mainGeolocation._id ? (
