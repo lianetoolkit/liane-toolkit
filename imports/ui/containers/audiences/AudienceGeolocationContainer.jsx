@@ -5,32 +5,36 @@ import AudienceGeolocation from "/imports/ui/components/audiences/AudienceGeoloc
 
 const geolocation = new ReactiveVar(null);
 const loading = new ReactiveVar(false);
-let currentRoutePath = null;
+let current = null;
 
 export default withTracker(props => {
   // Reset vars when route has changed (ReactiveVar set without a check will cause state change)
-  if (currentRoutePath !== FlowRouter.current().path) {
-    currentRoutePath = FlowRouter.current().path;
+  if (
+    !current ||
+    current.params.campaignId !== FlowRouter.current().params.campaignId ||
+    current.params.facebookId !== FlowRouter.current().params.facebookId ||
+    current.params.geolocationId !== FlowRouter.current().params.geolocationId
+  ) {
+    current = FlowRouter.current();
     loading.set(true);
+    Meteor.call(
+      "audiences.byGeolocation",
+      {
+        campaignId: props.campaign._id,
+        facebookAccountId: props.facebookAccount.facebookId,
+        geolocationId: props.geolocationId
+      },
+      (error, data) => {
+        if (error) {
+          console.warn(error);
+        }
+        loading.set(false);
+        if (JSON.stringify(geolocation.get()) !== JSON.stringify(data)) {
+          geolocation.set(data);
+        }
+      }
+    );
   }
-
-  Meteor.call(
-    "audiences.byGeolocation",
-    {
-      campaignId: props.campaign._id,
-      facebookAccountId: props.facebookAccount.facebookId,
-      geolocationId: props.geolocationId
-    },
-    (error, data) => {
-      if (error) {
-        console.warn(error);
-      }
-      loading.set(false);
-      if (JSON.stringify(geolocation.get()) !== JSON.stringify(data)) {
-        geolocation.set(data);
-      }
-    }
-  );
 
   return {
     ...props,

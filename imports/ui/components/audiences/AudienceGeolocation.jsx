@@ -8,7 +8,8 @@ import {
   Divider,
   Table,
   Menu,
-  Dimmer
+  Dimmer,
+  Loader
 } from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
 import CompareLine from "./CompareLine.jsx";
@@ -85,7 +86,8 @@ export default class AudienceGeolocation extends React.Component {
       geolocation,
       campaign,
       geolocations,
-      facebookAccount
+      facebookAccount,
+      geolocationId
     } = this.props;
     if (loading && !geolocation) {
       return <Loading />;
@@ -104,8 +106,7 @@ export default class AudienceGeolocation extends React.Component {
                     {geolocation.mainGeolocation ? (
                       <Menu.Item
                         active={
-                          geolocation.mainGeolocation._id ==
-                          geolocation.geolocation._id
+                          geolocation.mainGeolocation._id == geolocationId
                         }
                         href={FlowRouter.path(
                           "App.campaignAudience.geolocation",
@@ -127,7 +128,7 @@ export default class AudienceGeolocation extends React.Component {
                         return (
                           <Menu.Item
                             key={gl._id}
-                            active={gl._id == geolocation.geolocation._id}
+                            active={gl._id == geolocationId}
                             href={FlowRouter.path(
                               "App.campaignAudience.geolocation",
                               {
@@ -148,12 +149,14 @@ export default class AudienceGeolocation extends React.Component {
                 </Sticky>
               </Grid.Column>
               <Dimmer.Dimmable
-                blurring
                 as={Grid.Column}
                 width={12}
                 dimmed={loading}
                 ref={this._handleContextRef}
               >
+                <Dimmer active={loading} inverted>
+                  <Loader>Loading</Loader>
+                </Dimmer>
                 <Header>
                   Today's estimate: {this._getTotal()} active users
                 </Header>

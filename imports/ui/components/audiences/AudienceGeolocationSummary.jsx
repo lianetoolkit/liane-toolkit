@@ -347,6 +347,9 @@ export default class AudienceGeolocationSummary extends React.Component {
           as={Wrapper}
           className={`zoom-${zoom}`}
         >
+          <Dimmer active={loading} inverted>
+            <Loader>Loading</Loader>
+          </Dimmer>
           <Header size="large">{summary.facebookAccount.fanCount} fans</Header>
           <Map
             ref="map"

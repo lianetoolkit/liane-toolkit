@@ -36,7 +36,6 @@ export const deleteByPattern = key => {
   });
   stream.on("end", function() {
     if (keys.length) {
-      console.log("UNLINK REDIS", { key });
       client.unlink(keys);
     }
   });

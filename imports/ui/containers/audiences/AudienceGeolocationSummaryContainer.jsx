@@ -5,31 +5,33 @@ import AudienceGeolocationSummary from "/imports/ui/components/audiences/Audienc
 
 const geolocationSummary = new ReactiveVar(null);
 const loading = new ReactiveVar(false);
-let currentRoutePath = null;
+let current = null;
 
 export default withTracker(props => {
-  // Reset vars when route has changed (ReactiveVar set without a check will cause state change)
-  if (currentRoutePath !== FlowRouter.current().path) {
-    currentRoutePath = FlowRouter.current().path;
+  if (
+    !current ||
+    (current.params.campaignId !== FlowRouter.current().params.campaignId ||
+      current.params.facebookId !== FlowRouter.current().params.facebookId)
+  ) {
+    current = FlowRouter.current();
     loading.set(true);
+    Meteor.call(
+      "audiences.accountGeolocationSummary",
+      {
+        campaignId: props.campaignId,
+        facebookAccountId: props.facebookAccountId
+      },
+      (error, data) => {
+        if (error) {
+          console.warn(error);
+        }
+        loading.set(false);
+        if (JSON.stringify(geolocationSummary.get()) !== JSON.stringify(data)) {
+          geolocationSummary.set(data);
+        }
+      }
+    );
   }
-
-  Meteor.call(
-    "audiences.accountGeolocationSummary",
-    {
-      campaignId: props.campaignId,
-      facebookAccountId: props.facebookAccountId
-    },
-    (error, data) => {
-      if (error) {
-        console.warn(error);
-      }
-      loading.set(false);
-      if (JSON.stringify(geolocationSummary.get()) !== JSON.stringify(data)) {
-        geolocationSummary.set(data);
-      }
-    }
-  );
 
   return {
     ...props,
