@@ -10,10 +10,6 @@ export default class AudienceCategoriesPage extends React.Component {
   static defaultProps = {
     audienceCategories: []
   };
-  constructor(props) {
-    super(props);
-    console.log("AudienceCategoriesPage init", { props });
-  }
   render() {
     const { loading, audienceCategories, currentUser } = this.props;
     return (

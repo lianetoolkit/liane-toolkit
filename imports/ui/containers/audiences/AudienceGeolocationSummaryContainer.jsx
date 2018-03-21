@@ -26,7 +26,6 @@ export default withTracker(props => {
       }
       loading.set(false);
       if (JSON.stringify(geolocationSummary.get()) !== JSON.stringify(data)) {
-        console.log("setting", data);
         geolocationSummary.set(data);
       }
     }

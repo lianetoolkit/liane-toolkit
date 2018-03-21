@@ -10,10 +10,7 @@ import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js"
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 
 const geolocationFields = {
-  name: 1,
-  type: 1,
-  center: 1,
-  geojson: 1
+  name: 1
 };
 
 export const accountAudienceItem = new ValidatedMethod({
@@ -119,7 +116,12 @@ export const accountAudienceGeolocationSummary = new ValidatedMethod({
         result.mainGeolocation = Geolocations.findOne(
           context.mainGeolocationId,
           {
-            fields: geolocationFields
+            fields: {
+              ...geolocationFields,
+              center: 1,
+              geojson: 1,
+              type: 1
+            }
           }
         );
         const mainLocAudience = FacebookAudiences.findOne(
@@ -143,7 +145,12 @@ export const accountAudienceGeolocationSummary = new ValidatedMethod({
           _id: { $in: context.geolocations }
         },
         {
-          fields: geolocationFields
+          fields: {
+            ...geolocationFields,
+            center: 1,
+            geojson: 1,
+            type: 1
+          }
         }
       ).fetch();
 
