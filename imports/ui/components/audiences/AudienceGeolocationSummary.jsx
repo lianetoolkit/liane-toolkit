@@ -92,26 +92,26 @@ export default class AudienceGeolocationSummary extends React.Component {
     this._handleZoom = this._handleZoom.bind(this);
   }
   componentWillReceiveProps(nextProps) {
-    const { facebookAccountId, geolocationId } = this.props;
+    const { campaignId, facebookAccountId, geolocationId } = this.props;
     if (
+      nextProps.campaignId !== campaignId ||
       nextProps.facebookAccountId !== facebookAccountId ||
       nextProps.geolocationId !== geolocationId
     ) {
       this._resetMap();
     }
   }
+  componentWillUnmount() {
+    this._resetMap();
+  }
   _resetMap() {
-    const map = this.refs.map.leafletElement;
+    this.interactive.clearLayers();
     this.features.forEach(feature => {
-      feature.eachLayer(layer => {
-        feature.removeLayer(layer);
-      });
-      map.removeLayer(feature);
+      feature.clearLayers();
     });
     this.features = [];
     this.layers = [];
     this.markers = [];
-    this.interactive = L.featureGroup();
   }
   _handleZoom() {
     const map = this.refs.map.leafletElement;
@@ -228,9 +228,17 @@ export default class AudienceGeolocationSummary extends React.Component {
   }
   _fitBounds = _.debounce(() => {
     const map = this.refs.map.leafletElement;
-    const bounds = this.interactive.getBounds();
-    if (bounds.isValid()) {
-      map.fitBounds(this.interactive.getBounds());
+    if (
+      this.interactive._layers &&
+      Object.keys(this.interactive._layers).length
+    ) {
+      this.interactive._map = this.interactive._map || map;
+      try {
+        const bounds = this.interactive.getBounds();
+        if (bounds.isValid()) {
+          map.fitBounds(bounds);
+        }
+      } catch (e) {}
     }
   }, 100);
   _onEachFeature(feature, layer) {
@@ -247,6 +255,9 @@ export default class AudienceGeolocationSummary extends React.Component {
       layer._map = map;
       center = layer.getBounds().getCenter();
       delete layer._map;
+    }
+    if (!this.interactive._map) {
+      map.addLayer(this.interactive);
     }
     if (interactive) {
       marker = L.marker(center);
@@ -307,9 +318,6 @@ export default class AudienceGeolocationSummary extends React.Component {
       this.interactive.addLayer(group);
       this._fitBounds();
     }
-    if (!this.interactive._map) {
-      map.addLayer(this.interactive);
-    }
     group.addLayer(layer);
     if (interactive) group.addLayer(marker);
     this.features.push(group);
@@ -330,7 +338,7 @@ export default class AudienceGeolocationSummary extends React.Component {
       const geojson = this._geojson();
       const geoHash = crypto
         .createHash("sha1")
-        .update(JSON.stringify(geojson))
+        .update(JSON.stringify(geojson) + campaignId)
         .digest("hex");
       return (
         <Dimmer.Dimmable
