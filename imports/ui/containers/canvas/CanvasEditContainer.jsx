@@ -4,11 +4,13 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Canvas } from "/imports/api/canvas/canvas.js";
 import CanvasEdit from "/imports/ui/pages/canvas/CanvasEdit.jsx";
 
+const CanvasEditSubs = new SubsManager();
+
 export default withTracker(props => {
-  const subsHandle = Meteor.subscribe("campaigns.detail", {
+  const subsHandle = CanvasEditSubs.subscribe("campaigns.detail", {
     campaignId: props.campaignId
   });
-  const canvasHandle = Meteor.subscribe("canvas.byCampaign", {
+  const canvasHandle = CanvasEditSubs.subscribe("canvas.byCampaign", {
     campaignId: props.campaignId
   });
 

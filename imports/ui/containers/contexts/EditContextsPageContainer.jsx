@@ -5,12 +5,16 @@ import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
 import EditContextsPage from "/imports/ui/pages/admin/contexts/EditContextsPage.jsx";
 
+const EditContextSubs = new SubsManager();
+
 export default withTracker(props => {
-  const contextHandle = Meteor.subscribe("admin.contexts.detail", {
+  const contextHandle = EditContextSubs.subscribe("admin.contexts.detail", {
     contextId: props.contextId
   });
-  const geolocationsHandle = Meteor.subscribe("geolocations.all");
-  const audienceCategoriesHandle = Meteor.subscribe("audienceCategories.all");
+  const geolocationsHandle = EditContextSubs.subscribe("geolocations.all");
+  const audienceCategoriesHandle = EditContextSubs.subscribe(
+    "audienceCategories.all"
+  );
 
   const loading =
     !contextHandle.ready() &&

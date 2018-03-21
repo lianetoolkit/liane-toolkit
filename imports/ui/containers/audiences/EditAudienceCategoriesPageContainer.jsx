@@ -3,8 +3,10 @@ import { withTracker } from "meteor/react-meteor-data";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
 import EditAudienceCategoriesPage from "/imports/ui/pages/admin/audiences/EditAudienceCategoriesPage.jsx";
 
+const EditAudienceSubs = new SubsManager();
+
 export default withTracker(props => {
-  const subsHandle = Meteor.subscribe("audienceCategories.detail", {
+  const subsHandle = EditAudienceSubs.subscribe("audienceCategories.detail", {
     audienceCategoryId: props.audienceCategoryId
   });
   const loading = !subsHandle.ready();

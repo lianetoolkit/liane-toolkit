@@ -3,8 +3,10 @@ import { withTracker } from "meteor/react-meteor-data";
 import { People } from "/imports/api/facebook/people/people.js";
 import PeopleEdit from "/imports/ui/pages/people/PeopleEdit.jsx";
 
+const PeopleEditSubs = new SubsManager();
+
 export default withTracker(props => {
-  const personHandle = Meteor.subscribe("people.detail", {
+  const personHandle = PeopleEditSubs.subscribe("people.detail", {
     personId: props.personId
   });
 

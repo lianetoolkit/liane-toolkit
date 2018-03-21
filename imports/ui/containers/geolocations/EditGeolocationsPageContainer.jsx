@@ -3,8 +3,10 @@ import { withTracker } from "meteor/react-meteor-data";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import EditGeolocationsPage from "/imports/ui/pages/admin/geolocations/EditGeolocationsPage.jsx";
 
+const EditGeolocationSubs = new SubsManager();
+
 export default withTracker(props => {
-  const subsHandle = Meteor.subscribe("geolocations.detail", {
+  const subsHandle = EditGeolocationSubs.subscribe("geolocations.detail", {
     geolocationId: props.geolocationId
   });
 

@@ -66,7 +66,7 @@ export default withTracker(props => {
     fields
   };
 
-  const counterHandle = Meteor.subscribe(`${publication}.counter`, {
+  const counterHandle = CollectionSubs.subscribe(`${publication}.counter`, {
     search
   });
   const countReady = counterHandle.ready();

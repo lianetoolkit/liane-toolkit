@@ -2,8 +2,10 @@ import { Meteor } from "meteor/meteor";
 import { withTracker } from "meteor/react-meteor-data";
 import EditUsersPage from "/imports/ui/pages/admin/users/EditUsersPage.jsx";
 
+const EditUserSubs = new SubsManager();
+
 export default withTracker(props => {
-  const subsHandle = Meteor.subscribe("users.detail", {
+  const subsHandle = EditUserSubs.subscribe("users.detail", {
     userId: props.userId
   });
 

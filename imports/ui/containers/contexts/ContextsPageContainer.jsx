@@ -6,8 +6,10 @@ import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
 import ContextsPage from "/imports/ui/pages/admin/contexts/ContextsPage.jsx";
 
+const ContextSubs = new SubsManager();
+
 export default withTracker(() => {
-  const contextsHandle = Meteor.subscribe("admin.contexts");
+  const contextsHandle = ContextSubs.subscribe("admin.contexts");
   const loading = !contextsHandle.ready();
 
   const options = {

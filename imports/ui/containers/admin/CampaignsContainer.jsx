@@ -6,8 +6,10 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Jobs } from "/imports/api/jobs/jobs.js";
 import CampaignsPage from "/imports/ui/pages/admin/campaigns/CampaignsPage.jsx";
 
+const CampaignSubs = new SubsManager();
+
 export default withTracker(() => {
-  const subsHandle = Meteor.subscribe("campaigns.all");
+  const subsHandle = CampaignSubs.subscribe("campaigns.all");
   const loading = !subsHandle.ready();
 
   const options = {

@@ -5,14 +5,16 @@ import { AudienceCategories } from "/imports/api/audienceCategories/audienceCate
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import AdsCreate from "/imports/ui/pages/ads/AdsCreate.jsx";
 
+const AdsSubs = new SubsManager();
+
 export default withTracker(props => {
-  const adAccountHandle = Meteor.subscribe("adAccounts.byCampaign", {
+  const adAccountHandle = AdsSubs.subscribe("adAccounts.byCampaign", {
     campaignId: props.campaignId
   });
-  const categoriesHandle = Meteor.subscribe("audienceCategories.detail", {
+  const categoriesHandle = AdsSubs.subscribe("audienceCategories.detail", {
     audienceCategoryId: props.audienceCategoryId
   });
-  const geolocationsHandle = Meteor.subscribe("geolocations.byCampaign", {
+  const geolocationsHandle = AdsSubs.subscribe("geolocations.byCampaign", {
     campaignId: props.campaignId
   });
   const loading =

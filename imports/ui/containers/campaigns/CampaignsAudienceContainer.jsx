@@ -6,10 +6,15 @@ import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import CampaignsAudience from "/imports/ui/pages/campaigns/CampaignsAudience.jsx";
 import _ from "underscore";
 
+const GeolocationSubs = new SubsManager();
+
 export default withTracker(props => {
-  const geolocationsHandle = Meteor.subscribe("geolocations.byCampaign", {
-    campaignId: props.campaignId
-  });
+  const geolocationsHandle = GeolocationSubs.subscribe(
+    "geolocations.byCampaign",
+    {
+      campaignId: props.campaignId
+    }
+  );
 
   const loading = !geolocationsHandle.ready();
 

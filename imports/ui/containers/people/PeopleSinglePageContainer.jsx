@@ -6,15 +6,17 @@ import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
 import PeopleSinglePage from "/imports/ui/pages/people/PeopleSinglePage.jsx";
 
+const PersonSubs = new SubsManager();
+
 export default withTracker(props => {
-  const personHandle = Meteor.subscribe("people.detail", {
+  const personHandle = PersonSubs.subscribe("people.detail", {
     personId: props.personId
   });
-  const likesHandle = Meteor.subscribe("likes.byPerson", {
+  const likesHandle = PersonSubs.subscribe("likes.byPerson", {
     personId: props.personId,
     campaignId: props.campaignId
   });
-  const commentsHandle = Meteor.subscribe("comments.byPerson", {
+  const commentsHandle = PersonSubs.subscribe("comments.byPerson", {
     personId: props.personId,
     campaignId: props.campaignId
   });
