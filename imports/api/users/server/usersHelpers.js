@@ -40,7 +40,11 @@ const UsersHelpers = {
             grant_type: "fb_exchange_token",
             fb_exchange_token: token
           },
-          options
+          {
+            version: "v2.12",
+            client_id: Meteor.settings.facebook.clientId,
+            client_secret: Meteor.settings.facebook.clientSecret
+          }
         )
       )
     );
@@ -58,7 +62,6 @@ const UsersHelpers = {
       );
       result = response.data;
     } catch (error) {
-      console.log(error);
       throw new Meteor.Error(500, "Error trying to fetch ad accounts.");
     }
     return { result };
