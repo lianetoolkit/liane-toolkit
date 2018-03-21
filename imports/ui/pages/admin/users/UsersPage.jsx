@@ -10,10 +10,6 @@ export default class UsersPage extends React.Component {
   static defaultProps = {
     users: []
   };
-  constructor(props) {
-    super(props);
-    console.log("UsersPage init", { props });
-  }
   render() {
     const { loading, users, currentUser } = this.props;
     return (

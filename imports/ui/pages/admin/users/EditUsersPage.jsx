@@ -21,6 +21,21 @@ export default class EditUsersPage extends React.Component {
     this._handleChange = this._handleChange.bind(this);
     this._handleRemove = this._handleRemove.bind(this);
   }
+  componentDidMount() {
+    const { user } = this.props;
+    if (user && user._id) {
+      const { fields } = this.state;
+      const { _id, name, roles } = user;
+      this.setState({
+        fields: {
+          ...fields,
+          _id,
+          name,
+          roles
+        }
+      });
+    }
+  }
   componentWillReceiveProps(nextProps) {
     if (nextProps.user) {
       if (nextProps.user._id) {
