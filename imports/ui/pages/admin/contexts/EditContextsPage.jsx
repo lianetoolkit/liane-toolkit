@@ -15,7 +15,6 @@ const initialFields = {
 export default class EditContextsPage extends React.Component {
   constructor(props) {
     super(props);
-    console.log("EditContextsPage init", { props });
     this.state = {
       fields: Object.assign({}, initialFields),
       isLoading: false
@@ -23,6 +22,29 @@ export default class EditContextsPage extends React.Component {
     this._handleSubmit = this._handleSubmit.bind(this);
     this._handleChange = this._handleChange.bind(this);
     this._handleRemove = this._handleRemove.bind(this);
+  }
+  componentDidMount() {
+    const { context } = this.props;
+    if (context && context._id) {
+      const { fields } = this.state;
+      const {
+        _id,
+        name,
+        mainGeolocationId,
+        geolocations,
+        audienceCategories
+      } = context;
+      this.setState({
+        fields: {
+          ...fields,
+          _id,
+          name,
+          mainGeolocationId,
+          geolocations,
+          audienceCategories
+        }
+      });
+    }
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.context) {

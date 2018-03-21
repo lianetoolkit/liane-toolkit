@@ -44,6 +44,16 @@ export default class AudiencesTargetingSpecForm extends React.Component {
       )
     });
   }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.value != this.props.value) {
+      this.setState({
+        fields: Object.assign(
+          this.state.fields,
+          this._parseIncoming(nextProps.value)
+        )
+      });
+    }
+  }
   componentDidUpdate(prevProps, prevState) {
     const { fields } = this.state;
     if (JSON.stringify(prevState.fields) != JSON.stringify(fields)) {

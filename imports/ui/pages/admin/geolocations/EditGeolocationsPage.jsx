@@ -28,18 +28,19 @@ export default class EditGeolocationsPage extends React.Component {
     this._handleSubmit = this._handleSubmit.bind(this);
     this._handleRemove = this._handleRemove.bind(this);
   }
+  componentDidMount() {
+    const { geolocation } = this.props;
+    if (geolocation && geolocation._id) {
+      const { fields } = this.state;
+      this.setState({
+        fields: Object.assign({}, initialFields, geolocation)
+      });
+    }
+  }
   componentWillReceiveProps(nextProps) {
     if (nextProps.geolocation) {
       if (nextProps.geolocation._id) {
         const { fields } = this.state;
-        const {
-          _id,
-          type,
-          name,
-          facebook,
-          osm,
-          center
-        } = nextProps.geolocation;
         this.setState({
           fields: Object.assign({}, initialFields, nextProps.geolocation)
         });

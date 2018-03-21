@@ -23,6 +23,21 @@ export default class EditAudienceCategoriesPage extends React.Component {
     this._handleSubmit = this._handleSubmit.bind(this);
     this._handleRemove = this._handleRemove.bind(this);
   }
+  componentDidMount() {
+    const { audienceCategory } = this.props;
+    if (audienceCategory && audienceCategory._id) {
+      const { fields } = this.state;
+      const { _id, title, spec } = audienceCategory;
+      this.setState({
+        fields: {
+          ...fields,
+          _id,
+          title,
+          spec
+        }
+      });
+    }
+  }
   componentWillReceiveProps(nextProps) {
     if (nextProps.audienceCategory) {
       if (nextProps.audienceCategory._id) {

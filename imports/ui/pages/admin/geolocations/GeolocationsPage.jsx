@@ -10,10 +10,6 @@ export default class GeolocationsPage extends React.Component {
   static defaultProps = {
     geolocations: []
   };
-  constructor(props) {
-    super(props);
-    console.log("GeolocationsPage init", { props });
-  }
   render() {
     const { loading, geolocations, currentUser } = this.props;
     return (
@@ -28,9 +24,7 @@ export default class GeolocationsPage extends React.Component {
                 <Grid.Column>
                   <Button
                     as="a"
-                    href={FlowRouter.path(
-                      "App.admin.geolocations.edit"
-                    )}
+                    href={FlowRouter.path("App.admin.geolocations.edit")}
                     floated="right"
                   >
                     <Icon name="plus" />
