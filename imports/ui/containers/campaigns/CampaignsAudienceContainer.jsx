@@ -18,8 +18,12 @@ export default withTracker(props => {
 
   const loading = !geolocationsHandle.ready();
 
+  const context = props.campaign.context;
+
   const geolocations = geolocationsHandle.ready()
-    ? Geolocations.find().fetch()
+    ? Geolocations.find({
+        _id: { $in: [...context.geolocations, context.mainGeolocationId] }
+      }).fetch()
     : null;
 
   let geolocationId = props.geolocationId;
