@@ -26,9 +26,9 @@ export default withTracker(props => {
       if (error) {
         console.warn(error);
       }
+      loading.set(false);
       if (JSON.stringify(audienceCategory.get()) !== JSON.stringify(data)) {
         audienceCategory.set(data);
-        loading.set(false);
       }
     }
   );

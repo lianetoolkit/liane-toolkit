@@ -25,9 +25,9 @@ export default withTracker(props => {
       if (error) {
         console.warn(error);
       }
+      loading.set(false);
       if (JSON.stringify(accountSummary.get()) !== JSON.stringify(data)) {
         accountSummary.set(data);
-        loading.set(false);
       }
     }
   );

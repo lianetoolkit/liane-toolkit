@@ -25,9 +25,9 @@ export default withTracker(props => {
       if (error) {
         console.warn(error);
       }
+      loading.set(false);
       if (JSON.stringify(geolocation.get()) !== JSON.stringify(data)) {
         geolocation.set(data);
-        loading.set(false);
       }
     }
   );
