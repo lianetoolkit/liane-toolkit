@@ -24,7 +24,7 @@ Liane is a free software using [Meteor](https://meteor.com), [MongoDB](https://w
 ### Dependencies
 
 * [Meteor](https://guide.meteor.com)
-* [Redis](https://redis.io/)
+* [Redis](https://redis.io/) (v4.0.0 or newer)
 
 Install **Meteor** full-stack framework.
 
