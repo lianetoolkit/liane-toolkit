@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import {
   Header,
-  Container,
   List,
   Link,
   Divider,
@@ -33,7 +32,7 @@ export default class CampaignsList extends React.Component {
       return <Loading />;
     } else {
       return (
-        <Container>
+        <div>
           <Header as="h3">Your Campaigns</Header>
           <Divider hidden />
           {campaigns && campaigns.length ? (
@@ -70,7 +69,7 @@ export default class CampaignsList extends React.Component {
           <Button onClick={this._handleItemClick}>
             <Icon name="plus" /> {i18n.__("components.userMenu.newCampaign")}
           </Button>
-        </Container>
+        </div>
       );
     }
   }

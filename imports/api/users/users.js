@@ -5,7 +5,7 @@ Meteor.users.allow({
     return false;
   },
   update(userId, doc) {
-    return userId && userId === doc.userId;
+    return false;
   },
   remove(userId, doc) {
     return false;
