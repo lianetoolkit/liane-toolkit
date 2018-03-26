@@ -98,7 +98,7 @@ export default class AudienceGeolocation extends React.Component {
             <Grid.Row>
               <Grid.Column width={4}>
                 <Sticky
-                  offset={20}
+                  offset={50}
                   context={contextRef}
                   scrollContext={document.getElementById("app-content")}
                 >
