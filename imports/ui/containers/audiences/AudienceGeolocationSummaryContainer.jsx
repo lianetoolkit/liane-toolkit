@@ -11,7 +11,7 @@ export default withTracker(props => {
   if (
     !current ||
     (current.params.campaignId !== FlowRouter.current().params.campaignId ||
-      current.params.facebookId !== FlowRouter.current().params.facebookId)
+      current.params.audienceFacebookId !== FlowRouter.current().params.audienceFacebookId)
   ) {
     current = FlowRouter.current();
     loading.set(true);

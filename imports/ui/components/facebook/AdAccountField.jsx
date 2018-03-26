@@ -40,7 +40,6 @@ export default class AdAccountField extends React.Component {
         value={value}
         name={name}
         onChange={onChange}
-        placeholder="Select an ad account"
       />
     );
   }

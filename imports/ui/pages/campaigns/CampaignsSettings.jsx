@@ -4,11 +4,14 @@ import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import AdAccountField from "/imports/ui/components/facebook/AdAccountField.jsx";
+import FacebookAccountField from "/imports/ui/components/facebook/FacebookAccountField.jsx";
+import SelectFacebookAccount from "/imports/ui/components/facebook/SelectFacebookAccount.jsx";
 import _ from "underscore";
 
 import {
   Grid,
   Header,
+  List,
   Segment,
   Button,
   Form,
@@ -17,6 +20,7 @@ import {
   Table,
   Menu,
   Icon,
+  Divider,
   Message
 } from "semantic-ui-react";
 
@@ -26,6 +30,7 @@ export default class CampaignsSettings extends React.Component {
     this.state = {
       formData: {
         general: {},
+        accounts: {},
         team: {}
       },
       section: "general"
@@ -34,6 +39,9 @@ export default class CampaignsSettings extends React.Component {
     this._handleChange = this._handleChange.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
     this._handleRemove = this._handleRemove.bind(this);
+    this._handleRemoveAudienceAccount = this._handleRemoveAudienceAccount.bind(
+      this
+    );
     this._handleRemoveUser = this._handleRemoveUser.bind(this);
   }
   componentDidMount() {
@@ -98,6 +106,24 @@ export default class CampaignsSettings extends React.Component {
           }
         );
         break;
+      case "accounts":
+        if (data.audienceAccount) {
+          Meteor.call(
+            "campaigns.addSelfAudienceAccount",
+            {
+              campaignId: campaign._id,
+              account: data.audienceAccount
+            },
+            (error, result) => {
+              if (error) {
+                Alerts.error(error);
+              } else {
+                Alerts.success("Audience account added successfully.");
+              }
+            }
+          );
+        }
+        break;
       case "team":
         Meteor.call(
           "campaigns.addUser",
@@ -151,6 +177,52 @@ export default class CampaignsSettings extends React.Component {
       }
     });
   }
+  _handleRemoveAccount = facebookId => ev => {
+    ev.preventDefault();
+    this.context.confirmStore.show({
+      callback: () => {
+        const { campaign } = this.props;
+        Meteor.call(
+          "campaigns.removeSelfAccount",
+          {
+            campaignId: campaign._id,
+            facebookId
+          },
+          error => {
+            this.context.confirmStore.hide();
+            if (error) {
+              Alerts.error(error);
+            } else {
+              Alerts.success("Account removed successfully.");
+            }
+          }
+        );
+      }
+    });
+  };
+  _handleRemoveAudienceAccount = facebookId => ev => {
+    ev.preventDefault();
+    this.context.confirmStore.show({
+      callback: () => {
+        const { campaign } = this.props;
+        Meteor.call(
+          "campaigns.removeSelfAudienceAccount",
+          {
+            campaignId: campaign._id,
+            facebookId
+          },
+          error => {
+            this.context.confirmStore.hide();
+            if (error) {
+              Alerts.error(error);
+            } else {
+              Alerts.success("Audience Account removed successfully.");
+            }
+          }
+        );
+      }
+    });
+  };
   _handleRemoveUser = userId => ev => {
     ev.preventDefault();
     this.context.confirmStore.show({
@@ -177,7 +249,7 @@ export default class CampaignsSettings extends React.Component {
   render() {
     const { formData, section } = this.state;
     const { loading, campaign, currentUser } = this.props;
-    const { users } = campaign;
+    const { accounts, users } = campaign;
     return (
       <div>
         <PageHeader
@@ -198,6 +270,12 @@ export default class CampaignsSettings extends React.Component {
                   onClick={this._handleNav("general")}
                 >
                   General Settings
+                </Menu.Item>
+                <Menu.Item
+                  active={section == "accounts"}
+                  onClick={this._handleNav("accounts")}
+                >
+                  Facebook Accounts
                 </Menu.Item>
                 <Menu.Item
                   active={section == "team"}
@@ -238,6 +316,97 @@ export default class CampaignsSettings extends React.Component {
                         </Button>
                       </div>
                     ) : null}
+                    {section == "accounts" ? (
+                      <div>
+                        <Grid>
+                          <Grid.Row columns={2}>
+                            <Grid.Column>
+                              <Header as="h3">Campaign Accounts</Header>
+                              {campaign.accounts.length ? (
+                                <List divided verticalAlign="middle">
+                                  {campaign.accounts.map(account => {
+                                    return (
+                                      <List.Item key={account._id}>
+                                        <List.Content floated="right">
+                                          <Button
+                                            negative
+                                            onClick={this._handleRemoveAccount(
+                                              account.facebookId
+                                            )}
+                                          >
+                                            Remove
+                                          </Button>
+                                        </List.Content>
+                                        <List.Icon name="facebook square" />
+                                        <List.Content>
+                                          <List.Header>
+                                            {account.name}
+                                          </List.Header>
+                                          {account.category}
+                                        </List.Content>
+                                      </List.Item>
+                                    );
+                                  })}
+                                </List>
+                              ) : (
+                                "You do not have associated accounts for this campaign"
+                              )}
+                            </Grid.Column>
+                            <Grid.Column>
+                              <SelectFacebookAccount
+                                campaignId={campaign._id}
+                                selectedAccountsIds={_.pluck(
+                                  accounts,
+                                  "facebookId"
+                                )}
+                              />
+                            </Grid.Column>
+                          </Grid.Row>
+                        </Grid>
+                        <Divider />
+                        <Header as="h3">Audience Monitoring Accounts</Header>
+                        {campaign.audienceAccounts &&
+                        campaign.audienceAccounts.length ? (
+                          <Table>
+                            <Table.Body>
+                              {campaign.audienceAccounts.map(account => (
+                                <Table.Row key={account.facebookId}>
+                                  <Table.Cell>
+                                    <Icon name="facebook square" />{" "}
+                                    <strong>{account.name}</strong>
+                                  </Table.Cell>
+                                  <Table.Cell>{account.facebookId}</Table.Cell>
+                                  <Table.Cell>
+                                    {account.fanCount} fans
+                                  </Table.Cell>
+                                  <Table.Cell collapsing>
+                                    <Button
+                                      onClick={this._handleRemoveAudienceAccount(
+                                        account.facebookId
+                                      )}
+                                      negative
+                                    >
+                                      Remove
+                                    </Button>
+                                  </Table.Cell>
+                                </Table.Row>
+                              ))}
+                            </Table.Body>
+                          </Table>
+                        ) : null}
+                        <FacebookAccountField
+                          label="Add a new audience account"
+                          name="audienceAccount"
+                          onChange={this._handleChange}
+                        />
+                        <Button
+                          primary
+                          disabled={!formData.accounts.audienceAccount}
+                        >
+                          Add audience account
+                        </Button>
+                      </div>
+                    ) : null}
                     {section == "team" ? (
                       <div>
                         <Table>
@@ -246,7 +415,7 @@ export default class CampaignsSettings extends React.Component {
                               <Table.Row key={user._id}>
                                 <Table.Cell>{user.name}</Table.Cell>
                                 <Table.Cell>{user.campaign.role}</Table.Cell>
-                                <Table.Cell>
+                                <Table.Cell collapsing>
                                   {user._id !== currentUser._id ? (
                                     <a
                                       href="#"

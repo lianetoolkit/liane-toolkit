@@ -17,9 +17,9 @@ import _ from "underscore";
 import moment from "moment";
 
 const FacebookAudiencesHelpers = {
-  async getFanCount(token) {
+  async getFanCount(facebookId, token) {
     try {
-      const res = await FB.api("me", {
+      const res = await FB.api(facebookId, {
         fields: ["fan_count"],
         access_token: token
       });
@@ -67,7 +67,7 @@ const FacebookAudiencesHelpers = {
     // Update adAccount data
     AdAccountsHelpers.update({ adAccountId, token: tokens[0] });
 
-    const fanCount = await this.getFanCount(campaignAccount.accessToken);
+    const fanCount = await this.getFanCount(facebookAccountId, tokens[0]);
     if (fanCount) {
       FacebookAccounts.update(
         {
@@ -521,11 +521,7 @@ const FacebookAudiencesHelpers = {
       const redisKey = `audiences::fanCount::${facebookAccountId}`;
       let fanCount = redisClient.getSync(redisKey);
       if (!fanCount) {
-        const campaign = Campaigns.findOne(campaignId);
-        const campaignAccount = campaign.accounts.find(
-          c => c.facebookId == facebookAccountId
-        );
-        fanCount = await this.getFanCount(campaignAccount.accessToken);
+        fanCount = await this.getFanCount(facebookAccountId, accessToken);
         redisClient.setSync(redisKey, fanCount, "EX", 10 * 60); // 10 minutes expiration
       }
       return fanCount;

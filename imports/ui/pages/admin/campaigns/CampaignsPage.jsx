@@ -197,7 +197,6 @@ export default class CampaignsPage extends React.Component {
                                   <Table.HeaderCell>
                                     Account name
                                   </Table.HeaderCell>
-                                  <Table.HeaderCell>Fan count</Table.HeaderCell>
                                   <Table.HeaderCell>Jobs</Table.HeaderCell>
                                 </Table.Row>
                               </Table.Header>
@@ -205,7 +204,6 @@ export default class CampaignsPage extends React.Component {
                                 {campaign.accounts.map(acc => (
                                   <Table.Row key={acc._id}>
                                     <Table.Cell>{acc.name}</Table.Cell>
-                                    <Table.Cell>{acc.fanCount || 0}</Table.Cell>
                                     <Table.Cell>
                                       <JobButton
                                         campaign={campaign}
@@ -214,6 +212,13 @@ export default class CampaignsPage extends React.Component {
                                       >
                                         Entries
                                       </JobButton>
+                                    </Table.Cell>
+                                  </Table.Row>
+                                ))}
+                                {campaign.audienceAccounts.map(acc => (
+                                  <Table.Row key={acc.facebookId}>
+                                    <Table.Cell>{acc.name}</Table.Cell>
+                                    <Table.Cell>
                                       <JobButton
                                         campaign={campaign}
                                         account={acc}

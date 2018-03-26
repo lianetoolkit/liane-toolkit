@@ -101,9 +101,15 @@ export const accountAudienceGeolocationSummary = new ValidatedMethod({
     if (result) {
       return JSON.parse(result);
     } else {
-      const facebookAccount = FacebookAccounts.findOne({
+      let facebookAccount = FacebookAccounts.findOne({
         facebookId: facebookAccountId
       });
+
+      if (!facebookAccount) {
+        facebookAccount = campaign.audienceAccounts.find(
+          acc => acc.facebookId == facebookAccountId
+        );
+      }
 
       const context = Contexts.findOne(campaign.contextId);
 

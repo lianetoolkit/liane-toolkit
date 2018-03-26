@@ -10,14 +10,9 @@ import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import _ from "underscore";
 
 const CampaignsHelpers = {
-  addAccountToCampaign({ campaignId, account }) {
+  addAccount({ campaignId, account }) {
     check(campaignId, String);
     check(account, Object);
-
-    logger.debug("CampaignsHelpers.addAccountToCampaign: called", {
-      campaignId,
-      account
-    });
 
     const token = FacebookAccountsHelpers.exchangeFBToken({
       token: account.access_token
@@ -36,7 +31,8 @@ const CampaignsHelpers = {
     const upsertObj = {
       $set: {
         name: account.name,
-        category: account.category
+        category: account.category,
+        fanCount: account.fan_count
       }
     };
 
@@ -49,6 +45,57 @@ const CampaignsHelpers = {
         accessToken: token.result
       }
     });
+    return;
+  },
+  removeAccount({ campaignId, facebookId }) {
+    check(campaignId, String);
+    check(facebookId, String);
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    let account;
+    if (campaign.accounts && campaign.accounts.length) {
+      account = campaign.accounts.find(acc => acc.facebookId == facebookId);
+    }
+
+    // Remove entry job
+    Jobs.remove({
+      "data.campaignId": campaign._id,
+      "data.facebookId": facebookId
+    });
+
+    if (account) {
+      Campaigns.update({ _id: campaignId }, { $pull: { accounts: account } });
+    }
+    return;
+  },
+  addAudienceAccount({ campaignId, account }) {
+    check(campaignId, String);
+    check(account, Object);
+
+    logger.debug("CampaignsHelpers.addAudienceAccountToCampaign: called", {
+      campaignId,
+      account
+    });
+
+    let updateObj = {
+      facebookId: account.id,
+      name: account.name
+    };
+
+    if (account.fan_count) {
+      updateObj.fanCount = account.fan_count;
+    }
+
+    Campaigns.update(
+      { _id: campaignId },
+      { $addToSet: { audienceAccounts: updateObj } }
+    );
+
     JobsHelpers.addJob({
       jobType: "audiences.updateAccountAudience",
       jobData: {
@@ -58,8 +105,44 @@ const CampaignsHelpers = {
     });
     return;
   },
+  removeAudienceAccount({ campaignId, facebookId }) {
+    check(campaignId, String);
+    check(facebookId, String);
+
+    const audienceAccount = _.findWhere(campaign.audienceAccounts, {
+      facebookId
+    });
+
+    if (!audienceAccount) {
+      throw new Meteor.Error(404, "Audience Account not found");
+    }
+
+    Jobs.remove({
+      "data.campaignId": campaignId,
+      "data.facebookAccountId": facebookId
+    });
+
+    FacebookAudiences.remove({
+      campaignId,
+      facebookAccountId: facebookId
+    });
+
+    return Campaigns.update(
+      { _id: campaignId },
+      { $pull: { audienceAccounts: audienceAccount } }
+    );
+  },
   refreshCampaignJobs({ campaignId }) {
     check(campaignId, String);
+    if (campaign.audienceAccounts && campaign.audienceAccounts.length) {
+      for (const account of campaign.audienceAccounts) {
+        this.refreshAccountJob({
+          campaignId,
+          facebookAccountId: account.facebookId,
+          type: "audiences"
+        });
+      }
+    }
     if (campaign.accounts && campaign.accounts.length) {
       const accounts = FacebookAccounts.find({
         facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }

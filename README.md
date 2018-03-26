@@ -70,25 +70,25 @@ This projects follows Meteor guide recommendations for application struture.
 imports/
   startup/
     client/
-      index.js                 # import client startup through a single index entry point
-      routes.js                # set up all routes in the app
+      routes/                       # set up all routes in the app
+      index.js                      # import client startup through a single index entry point
     server/
-      fixtures.js              # fill the DB with example data on startup
-      index.js                 # import server startup through a single index entry point
+      fixtures.js                   # fill the DB with example data on startup
+      index.js                      # import server startup through a single index entry point
   api/
-    campaigns/                     # a unit of domain logic
+    campaigns/                      # a unit of domain logic
       server/
         campaignsHelpers.js
-        campaignsPublications.js        # all campaigns-related publications
-        campaignsMethods.js  # tests for the list publications
-      campaigns.js                 # definition of the Lists collection
+        campaignsPublications.js    # all campaigns-related publications
+        campaignsMethods.js         # methods
+      campaigns.js                  # definition of the Campaigns collection
   ui/
-    components/                # all reusable components in the application
-    containers/                 # can be split by domain if there are many
-    layouts/                   # wrapper components for behaviour and visuals
-    pages/                     # entry points for rendering used by the router
+    components/                     # all reusable components in the application
+    containers/                     # can be split by domain if there are many
+    layouts/                        # wrapper components for behaviour and visuals
+    pages/                          # entry points for rendering used by the router
 client/
-  main.js                      # client entry point, imports all client code
+  main.js                           # client entry point, imports all client code
 server/
   main.js
 ```

@@ -97,7 +97,7 @@ export default class SelectFacebookAccount extends React.Component {
         {!loading ? (
           <div>
             {accounts && accounts.length ? (
-              <Header as="h3">Available Accounts</Header>
+              <Header as="h3">Select from your accounts</Header>
             ) : (
               ""
             )}

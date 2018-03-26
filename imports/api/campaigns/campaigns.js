@@ -22,6 +22,19 @@ Campaigns.accountsSchema = new SimpleSchema({
   }
 });
 
+Campaigns.audienceAccountsSchema = new SimpleSchema({
+  facebookId: {
+    type: String
+  },
+  name: {
+    type: String
+  },
+  fanCount: {
+    type: String,
+    optional: true
+  }
+});
+
 Campaigns.schema = new SimpleSchema({
   users: {
     type: Array
@@ -39,10 +52,6 @@ Campaigns.schema = new SimpleSchema({
     type: String,
     optional: true
   },
-  accounts: {
-    type: Array,
-    optional: true
-  },
   adAccountId: {
     type: String,
     optional: true
@@ -51,8 +60,19 @@ Campaigns.schema = new SimpleSchema({
     type: String,
     optional: true
   },
+  accounts: {
+    type: Array,
+    optional: true
+  },
   "accounts.$": {
     type: Campaigns.accountsSchema
+  },
+  audienceAccounts: {
+    type: Array,
+    optional: true
+  },
+  "audienceAccounts.$": {
+    type: Campaigns.audienceAccountsSchema
   },
   createdAt: {
     type: Date,

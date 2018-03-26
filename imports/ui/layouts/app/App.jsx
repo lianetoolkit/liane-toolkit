@@ -73,6 +73,7 @@ export default class App extends React.Component {
       campaigns,
       campaign,
       account,
+      audienceAccount,
       currentFacebookId,
       currentCampaign,
       currentUser,
@@ -110,6 +111,7 @@ export default class App extends React.Component {
                       {...content.props}
                       campaign={campaign}
                       account={account}
+                      audienceAccount={audienceAccount}
                       currentFacebookId={currentFacebookId}
                       campaigns={campaigns}
                       currentUser={currentUser}

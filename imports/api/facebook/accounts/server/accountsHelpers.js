@@ -46,7 +46,11 @@ const FacebookAccountsHelpers = {
 
     try {
       const response = Promise.await(
-        FB.api("me/accounts", { limit: 10, access_token: accessToken })
+        FB.api("me/accounts", {
+          fields: ["name", "fan_count", "category", "access_token"],
+          limit: 10,
+          access_token: accessToken
+        })
       );
       data = response.data;
       if (response.paging) {
@@ -76,17 +80,17 @@ const FacebookAccountsHelpers = {
 
     const user = Meteor.users.findOne(userId);
     if (!user) {
-      return { error: "This user does not exists" };
+      throw new Meteor.Error(500, "This user does not exists");
     }
     if (!user.services.facebook) {
-      return { error: "This user has not accessToken" };
+      throw new Meteor.Error(500, "Missing accessToken");
     }
 
     const accessToken = user.services.facebook.accessToken;
 
     return Promise.await(
       FB.api(facebookAccountId, {
-        fields: ["name", "access_token", "category"],
+        fields: ["name", "fan_count", "access_token", "category"],
         access_token: accessToken,
         limit: 10
       })
@@ -111,6 +115,30 @@ const FacebookAccountsHelpers = {
       )
     );
     return { result: response.access_token };
+  },
+  searchFBAccounts({ userId, q }) {
+    check(userId, String);
+    check(q, String);
+
+    const user = Meteor.users.findOne(userId);
+
+    if (!user) {
+      throw new Meteor.Error(500, "This user does not exists");
+    }
+    if (!user.services.facebook) {
+      throw new Meteor.Error(500, "Missing accessToken");
+    }
+
+    const accessToken = user.services.facebook.accessToken;
+
+    return Promise.await(
+      FB.api("search", {
+        q,
+        type: "page",
+        fields: ["name", "fan_count", "website", "link"],
+        access_token: accessToken
+      })
+    );
   }
 };
 

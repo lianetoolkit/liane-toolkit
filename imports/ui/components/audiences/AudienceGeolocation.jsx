@@ -112,7 +112,7 @@ export default class AudienceGeolocation extends React.Component {
                           "App.campaignAudience.geolocation",
                           {
                             campaignId: campaign._id,
-                            facebookId: facebookAccount.facebookId,
+                            audienceFacebookId: facebookAccount.facebookId,
                             geolocationId: geolocation.mainGeolocation._id
                           }
                         )}
@@ -133,7 +133,7 @@ export default class AudienceGeolocation extends React.Component {
                               "App.campaignAudience.geolocation",
                               {
                                 campaignId: campaign._id,
-                                facebookId: facebookAccount.facebookId,
+                                audienceFacebookId: facebookAccount.facebookId,
                                 geolocationId: gl._id
                               }
                             )}

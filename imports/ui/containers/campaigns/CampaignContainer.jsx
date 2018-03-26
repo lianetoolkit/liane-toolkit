@@ -62,6 +62,28 @@ export default withTracker(props => {
     );
   }
 
+  let currentAudienceFacebookId = FlowRouter.getParam("audienceFacebookId");
+  if (
+    !currentAudienceFacebookId &&
+    campaign &&
+    campaign.audienceAccounts &&
+    campaign.audienceAccounts.length
+  ) {
+    currentAudienceFacebookId = campaign.audienceAccounts[0].facebookId;
+  }
+
+  let audienceAccount;
+  if (
+    currentAudienceFacebookId &&
+    campaign &&
+    campaign.audienceAccounts &&
+    campaign.audienceAccounts.length
+  ) {
+    audienceAccount = campaign.audienceAccounts.find(
+      acc => acc.facebookId == currentAudienceFacebookId
+    );
+  }
+
   const loading =
     !userHandle.ready() || !campaignsHandle.ready() || !campaignHandle.ready();
 
@@ -73,6 +95,7 @@ export default withTracker(props => {
     connected: Meteor.status().connected,
     campaign,
     account,
+    audienceAccount,
     currentFacebookId
   };
 })(App);

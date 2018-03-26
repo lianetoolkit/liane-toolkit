@@ -22,6 +22,28 @@ export const getUserAccounts = new ValidatedMethod({
   }
 });
 
+export const seachFBAccounts = new ValidatedMethod({
+  name: "facebook.accounts.search",
+  validate: new SimpleSchema({
+    q: {
+      type: String
+    }
+  }).validator(),
+  run({ q }) {
+    this.unblock();
+    logger.debug("facebook.accounts.search called", { q });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    response = FacebookAccountsHelpers.searchFBAccounts({ userId, q });
+
+    return response;
+  }
+});
+
 export const getAccountLikes = new ValidatedMethod({
   name: "facebook.account.likes",
   validate: new SimpleSchema({

@@ -8,9 +8,21 @@ import AudienceCategoriesListContainer from "/imports/ui/containers/audiences/Au
 import AudienceCategoryContainer from "/imports/ui/containers/audiences/AudienceCategoryContainer.jsx";
 import AudienceGeolocationContainer from "/imports/ui/containers/audiences/AudienceGeolocationContainer.jsx";
 
-import { Grid, Menu, Header, List, Button, Divider } from "semantic-ui-react";
+import {
+  Grid,
+  Menu,
+  Header,
+  List,
+  Button,
+  Divider,
+  Sticky
+} from "semantic-ui-react";
 
 export default class CampaignsAudience extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
   _getMainGeolocation() {
     const { campaign, geolocations } = this.props;
     if (campaign.context.mainGeolocationId) {
@@ -20,16 +32,20 @@ export default class CampaignsAudience extends React.Component {
     }
     return null;
   }
+  _handleContextRef = contextRef => this.setState({ contextRef });
   render() {
     const {
       loading,
       campaign,
-      account,
+      audienceAccount,
       geolocations,
       categoryId,
       geolocationId
     } = this.props;
-    const { accounts } = campaign;
+    const { audienceAccounts } = campaign;
+
+    const { contextRef } = this.state;
+
     let path = "App.campaignAudience";
     if (categoryId) {
       path += ".category";
@@ -37,7 +53,7 @@ export default class CampaignsAudience extends React.Component {
       path += ".geolocation";
     }
     return (
-      <div>
+      <div ref={this._handleContextRef}>
         <PageHeader
           title={`Campaign: ${campaign ? campaign.name : ""}`}
           titleTo={FlowRouter.path("App.campaignDetail", {
@@ -50,49 +66,57 @@ export default class CampaignsAudience extends React.Component {
             <Loading />
           ) : (
             <Grid>
-              {accounts.length > 1 ? (
-                <Grid.Row>
+              {audienceAccounts && audienceAccounts.length ? (
+                <Grid.Row style={{ zIndex: 100 }}>
                   <Grid.Column>
-                    <Menu>
-                      {accounts.map(acc => (
-                        <Menu.Item
-                          key={`account-${acc._id}`}
-                          active={acc.facebookId == account.facebookId}
-                          href={FlowRouter.path(path, {
-                            campaignId: campaign._id,
-                            facebookId: acc.facebookId,
-                            categoryId: categoryId,
-                            geolocationId: geolocationId
-                          })}
-                        >
-                          {acc.name}
-                        </Menu.Item>
-                      ))}
-                    </Menu>
+                    <Sticky
+                      offset={0}
+                      context={contextRef}
+                      scrollContext={document.getElementById("app-content")}
+                    >
+                      <Menu>
+                        {audienceAccounts.map(acc => (
+                          <Menu.Item
+                            key={`audienceAccount-${acc.facebookId}`}
+                            active={
+                              acc.facebookId == audienceAccount.facebookId
+                            }
+                            href={FlowRouter.path(path, {
+                              campaignId: campaign._id,
+                              audienceFacebookId: acc.facebookId,
+                              categoryId: categoryId,
+                              geolocationId: geolocationId
+                            })}
+                          >
+                            {acc.name}
+                          </Menu.Item>
+                        ))}
+                      </Menu>
+                    </Sticky>
                   </Grid.Column>
                 </Grid.Row>
               ) : null}
               <Grid.Row>
                 <Grid.Column>
-                  {account ? (
+                  {audienceAccount ? (
                     <div>
                       <AudienceGeolocationSummaryContainer
                         campaignId={campaign._id}
-                        facebookAccountId={account.facebookId}
+                        facebookAccountId={audienceAccount.facebookId}
                         geolocationId={geolocationId}
                       />
                       <Divider hidden />
                       {categoryId ? (
                         <AudienceCategoryContainer
                           campaignId={campaign._id}
-                          facebookAccountId={account.facebookId}
+                          facebookAccountId={audienceAccount.facebookId}
                           audienceCategoryId={categoryId}
                         />
                       ) : null}
                       {geolocationId ? (
                         <AudienceGeolocationContainer
                           campaign={campaign}
-                          facebookAccount={account}
+                          facebookAccount={audienceAccount}
                           geolocationId={geolocationId}
                           geolocations={geolocations}
                         />
@@ -100,12 +124,21 @@ export default class CampaignsAudience extends React.Component {
                       {!categoryId && !geolocationId ? (
                         <AudienceCategoriesListContainer
                           campaignId={campaign._id}
-                          facebookAccountId={account.facebookId}
+                          facebookAccountId={audienceAccount.facebookId}
                         />
                       ) : null}
                     </div>
                   ) : (
-                    <p>No Facebook Account was found</p>
+                    <p>
+                      No Facebook Account was found.{" "}
+                      <a
+                        href={FlowRouter.path("App.campaignSettings", {
+                          campaignId: campaign._id
+                        })}
+                      >
+                        Go to your settings page and add an Audience Account
+                      </a>.
+                    </p>
                   )}
                 </Grid.Column>
               </Grid.Row>

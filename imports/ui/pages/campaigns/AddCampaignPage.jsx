@@ -73,13 +73,7 @@ export default class AddCampaignPage extends React.Component {
   }
   render() {
     const { loading, currentUser } = this.props;
-    const {
-      contexts,
-      name,
-      description,
-      context,
-      isLoading
-    } = this.state;
+    const { contexts, name, description, context, isLoading } = this.state;
     return (
       <div>
         <PageHeader title="New Campaign" />
@@ -110,7 +104,7 @@ export default class AddCampaignPage extends React.Component {
                     />
                     <SelectFacebookAccountField
                       name="facebookAccountId"
-                      label="Select the facebook account for your campaign"
+                      label="Select a facebook account for your campaign"
                       onChange={this._handleChange}
                     />
                     <AdAccountField

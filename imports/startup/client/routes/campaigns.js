@@ -40,7 +40,7 @@ campaignRoutes.route("/", {
     addTitle(`${APP_NAME} | Campaign`);
     return _mount(params, {
       content: {
-        component: CampaignsPageContainer,
+        component: CanvasContainer,
         props: { campaignId: params.campaignId }
       }
     });
@@ -122,7 +122,7 @@ campaignRoutes.route("/people/:facebookId?", {
     });
   }
 });
-campaignRoutes.route("/audience/:facebookId?", {
+campaignRoutes.route("/audience/:audienceFacebookId?", {
   name: "App.campaignAudience",
   action: function(params) {
     addTitle(`${APP_NAME} | Campaign`);
@@ -134,7 +134,7 @@ campaignRoutes.route("/audience/:facebookId?", {
     });
   }
 });
-campaignRoutes.route("/audience/:facebookId/category/:categoryId", {
+campaignRoutes.route("/audience/:audienceFacebookId/category/:categoryId", {
   name: "App.campaignAudience.category",
   action: function(params) {
     addTitle(`${APP_NAME} | Campaign`);
@@ -150,22 +150,25 @@ campaignRoutes.route("/audience/:facebookId/category/:categoryId", {
     });
   }
 });
-campaignRoutes.route("/audience/:facebookId/geolocation/:geolocationId", {
-  name: "App.campaignAudience.geolocation",
-  action: function(params) {
-    addTitle(`${APP_NAME} | Campaign`);
-    return _mount(params, {
-      content: {
-        component: CampaignsAudienceContainer,
-        props: {
-          campaignId: params.campaignId,
-          facebookId: params.facebookId,
-          geolocationId: params.geolocationId
+campaignRoutes.route(
+  "/audience/:audienceFacebookId/geolocation/:geolocationId",
+  {
+    name: "App.campaignAudience.geolocation",
+    action: function(params) {
+      addTitle(`${APP_NAME} | Campaign`);
+      return _mount(params, {
+        content: {
+          component: CampaignsAudienceContainer,
+          props: {
+            campaignId: params.campaignId,
+            facebookId: params.facebookId,
+            geolocationId: params.geolocationId
+          }
         }
-      }
-    });
+      });
+    }
   }
-});
+);
 campaignRoutes.route("/entries/:facebookId?", {
   name: "App.campaignEntries",
   action: function(params) {

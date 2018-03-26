@@ -41,14 +41,14 @@ const AudienceTooltip = ({ type, payload, label }) => {
           <div key={item.dataKey} className={item.dataKey}>
             {item.dataKey == "percentage" ? (
               <p>
-                <strong>Your page:</strong> {item.value.toFixed(2) + "%"} ({
-                  data.estimate
-                })
+                <strong>
+                  Page: {item.value.toFixed(2) + "%"} ({data.estimate})
+                </strong>
               </p>
             ) : null}
             {item.dataKey == "location_percentage" ? (
               <p>
-                <strong>Location:</strong> {item.value.toFixed(2) + "%"} ({
+                <strong>Global:</strong> {item.value.toFixed(2) + "%"} ({
                   data.location_estimate
                 })
               </p>
@@ -99,6 +99,7 @@ export default class AudienceChart extends React.Component {
               type="monotone"
               dataKey="percentage"
               stroke="#82ca9d"
+              strokeWidth={2}
             />
           ) : null}
           <Line
