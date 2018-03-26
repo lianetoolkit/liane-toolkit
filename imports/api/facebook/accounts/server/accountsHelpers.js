@@ -91,8 +91,7 @@ const FacebookAccountsHelpers = {
     return Promise.await(
       FB.api(facebookAccountId, {
         fields: ["name", "fan_count", "access_token", "category"],
-        access_token: accessToken,
-        limit: 10
+        access_token: accessToken
       })
     );
   },

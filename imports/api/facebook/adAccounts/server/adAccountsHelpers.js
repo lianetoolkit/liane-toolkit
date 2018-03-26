@@ -6,12 +6,20 @@ const AdAccountsHelpers = {
   update({ adAccountId, token }) {
     check(adAccountId, String);
     check(token, String);
-    const response = Promise.await(
-      FB.api(adAccountId, {
-        fields: ["users", "account_id", "currency"],
-        access_token: token
-      })
-    );
+    let response;
+    try {
+      response = Promise.await(
+        FB.api(adAccountId, {
+          fields: ["users", "account_id", "currency"],
+          access_token: token
+        })
+      );
+    } catch (e) {
+      throw new Meteor.Error(
+        500,
+        "Unexpected error, try again in a few minutes"
+      );
+    }
     return AdAccounts.upsert(
       {
         _id: response.account_id

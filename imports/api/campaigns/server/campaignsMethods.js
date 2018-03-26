@@ -26,7 +26,8 @@ export const campaignsCreate = new ValidatedMethod({
       type: String
     },
     facebookAccountId: {
-      type: String
+      type: String,
+      optional: true
     }
   }).validator(),
   run({ name, description, adAccountId, contextId, facebookAccountId }) {
@@ -52,13 +53,14 @@ export const campaignsCreate = new ValidatedMethod({
 
     campaignId = Campaigns.insert(insertDoc);
 
-    const account = FacebookAccountsHelpers.getUserAccount({
-      userId,
-      facebookAccountId
-    });
-
-    CampaignsHelpers.addAccountToCampaign({ campaignId, account });
-    CampaignsHelpers.addAudienceAccount({ campaignId, account });
+    if (facebookAccountId) {
+      const account = FacebookAccountsHelpers.getUserAccount({
+        userId,
+        facebookAccountId
+      });
+      CampaignsHelpers.addAccount({ campaignId, account });
+      CampaignsHelpers.addAudienceAccount({ campaignId, account });
+    }
 
     return { result: campaignId };
   }
