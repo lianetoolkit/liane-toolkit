@@ -201,34 +201,36 @@ export default class CampaignsPage extends React.Component {
                                 </Table.Row>
                               </Table.Header>
                               <Table.Body>
-                                {campaign.accounts.map(acc => (
-                                  <Table.Row key={acc._id}>
-                                    <Table.Cell>{acc.name}</Table.Cell>
-                                    <Table.Cell>
-                                      <JobButton
-                                        campaign={campaign}
-                                        account={acc}
-                                        type="entries"
-                                      >
-                                        Entries
-                                      </JobButton>
-                                    </Table.Cell>
-                                  </Table.Row>
-                                ))}
-                                {campaign.audienceAccounts.map(acc => (
-                                  <Table.Row key={acc.facebookId}>
-                                    <Table.Cell>{acc.name}</Table.Cell>
-                                    <Table.Cell>
-                                      <JobButton
-                                        campaign={campaign}
-                                        account={acc}
-                                        type="audiences"
-                                      >
-                                        Audience
-                                      </JobButton>
-                                    </Table.Cell>
-                                  </Table.Row>
-                                ))}
+                                {campaign.accounts &&
+                                  campaign.accounts.map(acc => (
+                                    <Table.Row key={acc._id}>
+                                      <Table.Cell>{acc.name}</Table.Cell>
+                                      <Table.Cell>
+                                        <JobButton
+                                          campaign={campaign}
+                                          account={acc}
+                                          type="entries"
+                                        >
+                                          Entries
+                                        </JobButton>
+                                      </Table.Cell>
+                                    </Table.Row>
+                                  ))}
+                                {campaign.audienceAccounts &&
+                                  campaign.audienceAccounts.map(acc => (
+                                    <Table.Row key={acc.facebookId}>
+                                      <Table.Cell>{acc.name}</Table.Cell>
+                                      <Table.Cell>
+                                        <JobButton
+                                          campaign={campaign}
+                                          account={acc}
+                                          type="audiences"
+                                        >
+                                          Audience
+                                        </JobButton>
+                                      </Table.Cell>
+                                    </Table.Row>
+                                  ))}
                               </Table.Body>
                             </Table>
                           </Table.Cell>
