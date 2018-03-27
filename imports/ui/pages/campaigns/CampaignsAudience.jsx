@@ -69,11 +69,7 @@ export default class CampaignsAudience extends React.Component {
               {audienceAccounts && audienceAccounts.length ? (
                 <Grid.Row style={{ zIndex: 100 }}>
                   <Grid.Column>
-                    <Sticky
-                      offset={0}
-                      context={contextRef}
-                      scrollContext={document.getElementById("app-content")}
-                    >
+                    <Sticky offset={0} context={contextRef}>
                       <Menu>
                         {audienceAccounts.map(acc => (
                           <Menu.Item

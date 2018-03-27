@@ -112,7 +112,7 @@ export default class PeopleEdit extends React.Component {
                     <Sticky
                       offset={20}
                       context={contextRef}
-                      scrollContext={document.getElementById("app-content")}
+                      // scrollContext={document.getElementById("app-content")}
                     >
                       <Step.Group fluid ordered vertical size="mini">
                         {PeopleMetaModel.map(section => (

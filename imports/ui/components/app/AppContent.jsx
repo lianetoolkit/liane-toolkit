@@ -4,7 +4,7 @@ import { Divider } from "semantic-ui-react";
 
 const Wrapper = styled.div`
   flex: 1 1 100%;
-  overflow: auto;
+  margin-left: 300px;
 `;
 
 const Content = styled.div`

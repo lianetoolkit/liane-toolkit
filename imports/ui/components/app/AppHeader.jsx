@@ -9,6 +9,9 @@ const Wrapper = styled.header`
   min-width: 300px;
   background: #222;
   color: #fff;
+  position: fixed;
+  top: 0;
+  bottom: 0;
 `;
 
 const Logo = styled.h1`
