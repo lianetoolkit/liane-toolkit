@@ -66,7 +66,8 @@ const PeopleIndex = new Index({
 People.schema = new SimpleSchema({
   facebookId: {
     type: String,
-    index: 1
+    index: 1,
+    optional: true
   },
   name: {
     type: String
