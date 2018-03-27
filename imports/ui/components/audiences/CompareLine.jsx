@@ -24,10 +24,10 @@ const Container = styled.div`
     css`
       text-align: left;
     `} ${props =>
-      props.right &&
-      css`
-        text-align: right;
-      `};
+    props.right &&
+    css`
+      text-align: right;
+    `};
 `;
 
 const Bar = styled.div`
@@ -37,15 +37,18 @@ const Bar = styled.div`
   position: absolute;
   top: 0;
   bottom: 0;
+  transition: all ease-in-out 0.5s;
   ${props =>
     props.left &&
     css`
+      background: #82ca9d;
       left: 0;
     `} ${props =>
-      props.right &&
-      css`
-        right: 0;
-      `};
+    props.right &&
+    css`
+      background: #8884d8;
+      right: 0;
+    `};
 `;
 
 const Label = styled.div`
@@ -55,7 +58,7 @@ const Label = styled.div`
   line-height: 2rem;
   font-size: 0.6em;
   text-transform: uppercase;
-  color: #999;
+  color: #333;
   span {
     color: #333;
     font-weight: 600;
@@ -71,12 +74,12 @@ const Label = styled.div`
         float: left;
       }
     `} ${props =>
-      props.right &&
-      css`
-        span {
-          float: right;
-        }
-      `};
+    props.right &&
+    css`
+      span {
+        float: right;
+      }
+    `};
 `;
 
 export default class CompareLine extends React.Component {
@@ -98,7 +101,7 @@ export default class CompareLine extends React.Component {
     return Math.min(cent, 0.99);
   }
   _format(cent) {
-    if (cent > 0.00) {
+    if (cent > 0.0) {
       return (cent * 100).toFixed(2) + "%";
     } else {
       return "--";
