@@ -311,7 +311,7 @@ export default class AudienceGeolocationSummary extends React.Component {
       marker.on("click", ev => {
         FlowRouter.go("App.campaignAudience.geolocation", {
           campaignId: campaignId,
-          facebookId: facebookAccountId,
+          audienceFacebookId: facebookAccountId,
           geolocationId: layer.feature.properties._id
         });
       });
