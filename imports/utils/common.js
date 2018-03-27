@@ -82,3 +82,30 @@ const pluralize = function(n, thing) {
     return n + " " + thing + "s";
   }
 };
+
+export const flattenObject = function(data) {
+  let result = {};
+  function recurse(cur, prop) {
+    if (Object(cur) !== cur) {
+      result[prop] = cur;
+    } else if (Array.isArray(cur)) {
+      for (const i = 0, l = cur.length; i < l; i++)
+        recurse(cur[i], prop + "[" + i + "]");
+      if (l == 0) result[prop] = [];
+    } else if (
+      (prop.indexOf(".region") !== -1 || prop.indexOf(".city") !== -1) &&
+      cur.name
+    ) {
+      result[prop] = cur.name;
+    } else {
+      let isEmpty = true;
+      for (const p in cur) {
+        isEmpty = false;
+        recurse(cur[p], prop ? prop + "." + p : p);
+      }
+      if (isEmpty && prop) result[prop] = {};
+    }
+  }
+  recurse(data, "");
+  return result;
+};

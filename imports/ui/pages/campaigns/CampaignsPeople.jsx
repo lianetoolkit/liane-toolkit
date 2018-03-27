@@ -1,16 +1,34 @@
 import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
-import Alerts from "/imports/ui/utils/Alerts.js";
+import { Alerts } from "/imports/ui/utils/Alerts.js";
 import PeopleTable from "/imports/ui/components/people/PeopleTable.jsx";
 import PeopleSearch from "/imports/ui/components/people/PeopleSearch.jsx";
 import PeopleSummary from "/imports/ui/components/people/PeopleSummary.jsx";
 
-import { Grid, Header, Menu, List, Button } from "semantic-ui-react";
+import { Grid, Header, Menu, List, Button, Icon } from "semantic-ui-react";
 
 export default class CampaignsPeople extends React.Component {
   constructor(props) {
     super(props);
+    this._handleExport = this._handleExport.bind(this);
+  }
+  _handleExport(ev) {
+    ev.preventDefault();
+    const { campaign } = this.props;
+    Meteor.call(
+      "people.export",
+      { campaignId: campaign._id },
+      (error, result) => {
+        if (error) {
+          console.log(error);
+          Alerts.error(error);
+        } else {
+          const blob = new Blob([result], { type: "text/csv;charset=utf-8" });
+          saveAs(blob, `${campaign.name}-people.csv`);
+        }
+      }
+    );
   }
   render() {
     let { facebookId } = this.props;
@@ -48,6 +66,11 @@ export default class CampaignsPeople extends React.Component {
                           {acc.name}
                         </Menu.Item>
                       ))}
+                      <Menu.Menu position="right">
+                        <Menu.Item onClick={this._handleExport}>
+                          <Icon name="download" /> Export CSV
+                        </Menu.Item>
+                      </Menu.Menu>
                     </Menu>
                   </Grid.Column>
                 </Grid.Row>

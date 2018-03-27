@@ -46,3 +46,5 @@ xolvio:cleaner
 practicalmeteor:chai
 practicalmeteor:mocha
 easy:search
+harrison:papa-parse
+pfafman:filesaver
