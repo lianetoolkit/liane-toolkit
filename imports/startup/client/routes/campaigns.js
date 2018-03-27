@@ -129,7 +129,10 @@ campaignRoutes.route("/audience/:audienceFacebookId?", {
     return _mount(params, {
       content: {
         component: CampaignsAudienceContainer,
-        props: { campaignId: params.campaignId, facebookId: params.facebookId }
+        props: {
+          campaignId: params.campaignId,
+          audienceFacebookId: params.audienceFacebookId
+        }
       }
     });
   }
@@ -143,7 +146,7 @@ campaignRoutes.route("/audience/:audienceFacebookId/category/:categoryId", {
         component: CampaignsAudienceContainer,
         props: {
           campaignId: params.campaignId,
-          facebookId: params.facebookId,
+          audienceFacebookId: params.audienceFacebookId,
           categoryId: params.categoryId
         }
       }
@@ -161,7 +164,7 @@ campaignRoutes.route(
           component: CampaignsAudienceContainer,
           props: {
             campaignId: params.campaignId,
-            facebookId: params.facebookId,
+            audienceFacebookId: params.audienceFacebookId,
             geolocationId: params.geolocationId
           }
         }
