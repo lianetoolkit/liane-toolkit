@@ -48,33 +48,29 @@ export default class CampaignsPeople extends React.Component {
             <Loading />
           ) : (
             <Grid>
-              {accounts.length > 1 ? (
-                <Grid.Row>
-                  <Grid.Column>
-                    <Menu>
-                      {accounts.map(acc => (
-                        <Menu.Item
-                          key={`account-${acc._id}`}
-                          active={
-                            account && acc.facebookId == account.facebookId
-                          }
-                          href={FlowRouter.path("App.campaignPeople", {
-                            campaignId: campaign._id,
-                            facebookId: acc.facebookId
-                          })}
-                        >
-                          {acc.name}
-                        </Menu.Item>
-                      ))}
-                      <Menu.Menu position="right">
-                        <Menu.Item onClick={this._handleExport}>
-                          <Icon name="download" /> Export CSV
-                        </Menu.Item>
-                      </Menu.Menu>
-                    </Menu>
-                  </Grid.Column>
-                </Grid.Row>
-              ) : null}
+              <Grid.Row>
+                <Grid.Column>
+                  <Menu>
+                    {accounts.map(acc => (
+                      <Menu.Item
+                        key={`account-${acc._id}`}
+                        active={account && acc.facebookId == account.facebookId}
+                        href={FlowRouter.path("App.campaignPeople", {
+                          campaignId: campaign._id,
+                          facebookId: acc.facebookId
+                        })}
+                      >
+                        {acc.name}
+                      </Menu.Item>
+                    ))}
+                    <Menu.Menu position="right">
+                      <Menu.Item onClick={this._handleExport}>
+                        <Icon name="download" /> Export CSV
+                      </Menu.Item>
+                    </Menu.Menu>
+                  </Menu>
+                </Grid.Column>
+              </Grid.Row>
               <Grid.Row>
                 <Grid.Column>
                   {account ? (
