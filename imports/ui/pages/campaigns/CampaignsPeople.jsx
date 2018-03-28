@@ -11,17 +11,21 @@ import { Grid, Header, Menu, List, Button, Icon } from "semantic-ui-react";
 export default class CampaignsPeople extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isLoading: false
+    };
     this._handleExport = this._handleExport.bind(this);
   }
   _handleExport(ev) {
     ev.preventDefault();
     const { campaign } = this.props;
+    this.setState({ isLoading: true });
     Meteor.call(
       "people.export",
       { campaignId: campaign._id },
       (error, result) => {
+        this.setState({ isLoading: false });
         if (error) {
-          console.log(error);
           Alerts.error(error);
         } else {
           const blob = new Blob([result], { type: "text/csv;charset=utf-8" });
@@ -31,8 +35,8 @@ export default class CampaignsPeople extends React.Component {
     );
   }
   render() {
-    let { facebookId } = this.props;
-    const { loading, campaign, account } = this.props;
+    const { isLoading } = this.state;
+    const { loading, facebookId, campaign, account } = this.props;
     const { accounts } = campaign;
     return (
       <div>
@@ -64,8 +68,15 @@ export default class CampaignsPeople extends React.Component {
                       </Menu.Item>
                     ))}
                     <Menu.Menu position="right">
-                      <Menu.Item onClick={this._handleExport}>
-                        <Icon name="download" /> Export CSV
+                      <Menu.Item
+                        onClick={this._handleExport}
+                        disabled={isLoading}
+                      >
+                        <Icon
+                          name={isLoading ? "spinner" : "download"}
+                          loading={isLoading}
+                        />{" "}
+                        Export CSV
                       </Menu.Item>
                     </Menu.Menu>
                   </Menu>
