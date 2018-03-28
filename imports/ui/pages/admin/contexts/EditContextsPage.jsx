@@ -16,6 +16,7 @@ export default class EditContextsPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      searchQueries: {},
       fields: Object.assign({}, initialFields),
       isLoading: false
     };
@@ -76,7 +77,11 @@ export default class EditContextsPage extends React.Component {
   }
   _handleChange = (e, { name, value }) =>
     this.setState({
-      fields: Object.assign({}, this.state.fields, { [name]: value })
+      fields: Object.assign({}, this.state.fields, { [name]: value }),
+      searchQueries: {
+        ...this.state.searchQueries,
+        [name]: ""
+      }
     });
   _handleSubmit(e) {
     const { contextId } = this.props;
@@ -126,9 +131,17 @@ export default class EditContextsPage extends React.Component {
       }
     });
   }
+  _handleSearchChange = (ev, data) => {
+    this.setState({
+      searchQueries: {
+        ...this.state.searchQueries,
+        [data.name]: data.searchQuery
+      }
+    });
+  };
   render() {
     const { contextId, context, loading, currentUser, available } = this.props;
-    const { fields, isLoading } = this.state;
+    const { searchQueries, fields, isLoading } = this.state;
     const geolocationOptions = [];
     available.geolocations.forEach(geolocation => {
       geolocationOptions.push({
@@ -178,6 +191,8 @@ export default class EditContextsPage extends React.Component {
                       fluid
                       value={fields.mainGeolocationId}
                       onChange={this._handleChange}
+                      searchQuery={searchQueries.mainGeolocationId}
+                      onSearchChange={this._handleSearchChange}
                     />
                     <Form.Dropdown
                       options={geolocationOptions}
@@ -189,6 +204,8 @@ export default class EditContextsPage extends React.Component {
                       multiple
                       value={fields.geolocations}
                       onChange={this._handleChange}
+                      searchQuery={searchQueries.geolocations}
+                      onSearchChange={this._handleSearchChange}
                     />
                     <Form.Dropdown
                       options={audienceCategoryOptions}
@@ -200,6 +217,8 @@ export default class EditContextsPage extends React.Component {
                       multiple
                       value={fields.audienceCategories}
                       onChange={this._handleChange}
+                      searchQuery={searchQueries.audienceCategories}
+                      onSearchChange={this._handleSearchChange}
                     />
                     {contextId ? (
                       <Button onClick={this._handleRemove} negative>
