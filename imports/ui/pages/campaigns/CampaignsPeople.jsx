@@ -73,10 +73,13 @@ export default class CampaignsPeople extends React.Component {
                         disabled={isLoading}
                       >
                         <Icon
-                          name={isLoading ? "spinner" : "download"}
+                          name={isLoading ? "spinner" : "upload"}
                           loading={isLoading}
                         />{" "}
                         Export CSV
+                      </Menu.Item>
+                      <Menu.Item>
+                        <Icon name="download" /> Import spreadsheet
                       </Menu.Item>
                     </Menu.Menu>
                   </Menu>
