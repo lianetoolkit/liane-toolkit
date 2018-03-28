@@ -19,8 +19,9 @@ const shouldScrollTop = context => {
 };
 
 export const trackRouteEntry = context => {
-  const node = document.getElementById("app-content");
-  if (node && shouldScrollTop(context)) node.scrollTop = 0;
+  // const node = document.getElementById("app-content");
+  // if (node && shouldScrollTop(context)) node.scrollTop = 0;
+  if (shouldScrollTop(context)) window.scrollTo(0, 0);
   Meteor.setTimeout(() => {
     const userId = Meteor.userId();
     if (userId) {
