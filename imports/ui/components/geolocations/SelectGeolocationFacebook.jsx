@@ -8,6 +8,7 @@ export default class SelectGeolocationFacebook extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      searchQuery: "",
       availableGeolocations: {},
       value: ""
     };
@@ -76,7 +77,7 @@ export default class SelectGeolocationFacebook extends React.Component {
       </div>
     );
   }
-  _searchGeolocations = _.debounce((ev, data) => {
+  _searchGeolocations = _.debounce(data => {
     if (data.searchQuery) {
       Meteor.call(
         "geolocations.searchAdGeolocations",
@@ -91,6 +92,10 @@ export default class SelectGeolocationFacebook extends React.Component {
       );
     }
   }, 200);
+  _handleSearchChange = (ev, data) => {
+    this.setState({ searchQuery: data.searchQuery });
+    this._searchGeolocations(data);
+  };
   _updateAvailableGeolocations(data = []) {
     if (!Array.isArray(data)) {
       data = [data];
@@ -115,10 +120,11 @@ export default class SelectGeolocationFacebook extends React.Component {
       });
     }
   }
-  _handleChange = (e, { name, value }) => this.setState({ value });
+  _handleChange = (e, { name, value }) =>
+    this.setState({ value, searchQuery: "" });
   render() {
     const { multiple } = this.props;
-    let { value } = this.state;
+    let { searchQuery, value } = this.state;
     const { availableGeolocations } = this.state;
     const geolocationOptions = Object.values(availableGeolocations);
     if (multiple) {
@@ -140,7 +146,8 @@ export default class SelectGeolocationFacebook extends React.Component {
         fluid
         autoComplete="off"
         value={value}
-        onSearchChange={this._searchGeolocations}
+        searchQuery={searchQuery}
+        onSearchChange={this._handleSearchChange}
         onChange={this._handleChange}
       />
     );

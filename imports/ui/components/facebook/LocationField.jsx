@@ -14,6 +14,11 @@ export default class LocationField extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      searchQuery: {
+        country: "",
+        region: "",
+        city: ""
+      },
       value: {
         country: "",
         region: "",
@@ -29,7 +34,7 @@ export default class LocationField extends React.Component {
     };
     this._handleChange = this._handleChange.bind(this);
     this._search = this._search.bind(this);
-    this._searchGeolocations = this._searchGeolocations.bind(this);
+    this._handleSearchChange = this._handleSearchChange.bind(this);
   }
   componentDidMount() {
     if (this.props.value) {
@@ -162,10 +167,22 @@ export default class LocationField extends React.Component {
       });
     }
   }, 200);
-  _searchGeolocations = type => (ev, data) => {
+  _handleSearchChange = type => (ev, data) => {
+    this.setState({
+      searchQuery: {
+        ...this.state.searchQuery,
+        [type]: data.searchQuery
+      }
+    });
     this._search(type, data);
   };
   _handleChange = type => (e, { name, value }) => {
+    this.setState({
+      searchQuery: {
+        ...this.state.searchQuery,
+        [type]: ""
+      }
+    });
     let newState = { ...this.state.value };
     let { region, city } = this.state.value;
     if (type == "country") {
@@ -218,8 +235,7 @@ export default class LocationField extends React.Component {
   }
   render() {
     const { types } = this.props;
-    let { value } = this.state;
-    const { availableGeolocations } = this.state;
+    const { searchQuery, value, availableGeolocations } = this.state;
     const options = {
       country: Object.values(availableGeolocations.country),
       region: Object.values(availableGeolocations.region),
@@ -237,8 +253,9 @@ export default class LocationField extends React.Component {
             selection
             fluid
             autoComplete="off"
+            searchQuery={searchQuery.country}
             value={value.country}
-            onSearchChange={this._searchGeolocations("country")}
+            onSearchChange={this._handleSearchChange("country")}
             onChange={this._handleChange("country")}
           />
         ) : null}
@@ -253,8 +270,9 @@ export default class LocationField extends React.Component {
             fluid
             autoComplete="off"
             disabled={types.indexOf("country") !== -1 && !value.country}
+            searchQuery={searchQuery.region}
             value={value.region}
-            onSearchChange={this._searchGeolocations("region")}
+            onSearchChange={this._handleSearchChange("region")}
             onChange={this._handleChange("region")}
           />
         ) : null}
@@ -269,8 +287,9 @@ export default class LocationField extends React.Component {
             fluid
             autoComplete="off"
             disabled={types.indexOf("region") !== -1 && !value.region}
+            searchQuery={searchQuery.city}
             value={value.city}
-            onSearchChange={this._searchGeolocations("city")}
+            onSearchChange={this._handleSearchChange("city")}
             onChange={this._handleChange("city")}
           />
         ) : null}

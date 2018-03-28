@@ -5,6 +5,7 @@ export default class FacebookInterestsField extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      searchQuery: "",
       availableInterests: {},
       interestSuggestions: [],
       value: []
@@ -75,7 +76,7 @@ export default class FacebookInterestsField extends React.Component {
       });
     }
   }
-  _searchInterests = _.debounce((ev, data) => {
+  _searchInterests = _.debounce(data => {
     if (data.searchQuery) {
       Meteor.call(
         "audienceCategories.searchAdInterests",
@@ -90,6 +91,10 @@ export default class FacebookInterestsField extends React.Component {
       );
     }
   }, 200);
+  _handleSearchChange = (ev, data) => {
+    this.setState({ searchQuery: data.searchQuery });
+    this._searchInterests(data);
+  };
   _searchInterestSuggestions() {
     const { value } = this.state;
     const interest_list = value.map(interest => JSON.parse(interest).name);
@@ -117,10 +122,11 @@ export default class FacebookInterestsField extends React.Component {
       });
     };
   }
-  _handleChange = (e, { name, value }) => this.setState({ value });
+  _handleChange = (e, { name, value }) =>
+    this.setState({ value, searchQuery: "" });
   render() {
     const options = Object.values(this.state.availableInterests);
-    const { interestSuggestions, value } = this.state;
+    const { searchQuery, interestSuggestions, value } = this.state;
     return (
       <div>
         <Form.Field
@@ -130,9 +136,10 @@ export default class FacebookInterestsField extends React.Component {
           multiple
           search
           selection
-          onSearchChange={this._searchInterests}
+          onSearchChange={this._handleSearchChange}
           onChange={this._handleChange}
           options={options}
+          searchQuery={searchQuery}
           value={value}
         />
         {interestSuggestions.length ? (

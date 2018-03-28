@@ -8,6 +8,7 @@ export default class SelectGeolocationNominatim extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      searchQuery: "",
       availableGeolocations: {},
       value: ""
     };
@@ -43,7 +44,7 @@ export default class SelectGeolocationNominatim extends React.Component {
       </div>
     );
   }
-  _searchGeolocations = _.debounce((ev, data) => {
+  _searchGeolocations = _.debounce(data => {
     if (data.searchQuery) {
       Meteor.call(
         "geolocations.searchNominatim",
@@ -58,6 +59,10 @@ export default class SelectGeolocationNominatim extends React.Component {
       );
     }
   }, 200);
+  _handleSearchChange = (ev, data) => {
+    this.setState({ searchQuery: data.searchQuery });
+    this._searchGeolocations(data);
+  };
   _updateAvailableGeolocations(data = []) {
     if (!Array.isArray(data)) {
       data = [data];
@@ -82,9 +87,10 @@ export default class SelectGeolocationNominatim extends React.Component {
       });
     }
   }
-  _handleChange = (e, { name, value }) => this.setState({ value });
+  _handleChange = (e, { name, value }) =>
+    this.setState({ value, searchQuery: "" });
   render() {
-    const { value, availableGeolocations } = this.state;
+    const { searchQuery, value, availableGeolocations } = this.state;
     const geolocationOptions = Object.values(availableGeolocations);
     return (
       <Form.Field
@@ -95,8 +101,9 @@ export default class SelectGeolocationNominatim extends React.Component {
         search
         selection
         fluid
+        searchQuery={searchQuery}
         value={value}
-        onSearchChange={this._searchGeolocations}
+        onSearchChange={this._handleSearchChange}
         onChange={this._handleChange}
       />
     );
