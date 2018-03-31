@@ -25,18 +25,44 @@ const reactions = ["like", "love", "wow", "haha", "sad", "angry"];
 export default class PeopleSearchResults extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      people: {}
+    };
   }
+  componentDidMount() {
+    const { people } = this.props;
+    this.setState({ people });
+  }
+  componentWillReceiveProps(nextProps) {
+    this.setState({ people: nextProps.people });
+  }
+  _handleMetaChange = data => {
+    let people = { ...this.state.people };
+    people.data.forEach((person, i) => {
+      if (person._id == data.personId) {
+        people.data[i] = {
+          ...person,
+          campaignMeta: {
+            ...person.campaignMeta,
+            [data.metaKey]: data.metaValue
+          }
+        };
+      }
+    });
+    this.setState({ people });
+  };
   render() {
-    const { loading, facebookId, campaignId, people, totalCount } = this.props;
+    const { loading, facebookId, campaignId, totalCount } = this.props;
+    const { people } = this.state;
     if (loading) {
       return <Loading />;
-    } else if (people.length) {
+    } else if (people.data && people.data.length) {
       return (
         <div>
-          <p>{totalCount} people found.</p>
+          <p>{people.total} people found.</p>
           <Table>
             <Table.Body>
-              {people.map(person => (
+              {people.data.map(person => (
                 <Table.Row key={`commenter-${person._id}`}>
                   <Table.Cell collapsing>
                     <a
@@ -49,14 +75,14 @@ export default class PeopleSearchResults extends React.Component {
                   <Table.Cell singleLine collapsing>
                     <PeopleMetaButtons
                       person={person}
-                      onChange={this._onMetaButtonsChange}
+                      onChange={this._handleMetaChange}
                     />
                   </Table.Cell>
                   <Table.Cell>
                     <a
                       href={FlowRouter.path("App.campaignPeople.detail", {
                         campaignId,
-                        personId: person.__originalId
+                        personId: person._id
                       })}
                     >
                       {person.name}

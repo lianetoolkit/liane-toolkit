@@ -7,7 +7,6 @@ const PeopleIndex = new Index({
   collection: People,
   fields: ["name"],
   defaultSearchOptions: {
-    sortBy: "name",
     limit: 10
   },
   engine: new MongoDBEngine({
@@ -37,6 +36,7 @@ const PeopleIndex = new Index({
             return {
               [`counts.${facebookId}.comments`]: -1
             };
+            console.log(query);
           } else {
             throw new Meteor.Error("Facebook ID is required");
           }
@@ -49,7 +49,7 @@ const PeopleIndex = new Index({
             throw new Meteor.Error("Facebook ID is required");
           }
         default:
-          throw new Meteor.Error("Invalid sort by prop passed");
+          return {};
       }
     }
   }),
@@ -70,7 +70,8 @@ People.schema = new SimpleSchema({
     optional: true
   },
   name: {
-    type: String
+    type: String,
+    index: "text"
   },
   campaignId: {
     type: String,
@@ -83,7 +84,8 @@ People.schema = new SimpleSchema({
   },
   facebookAccounts: {
     type: Array,
-    optional: true
+    optional: true,
+    index: 1
   },
   "facebookAccounts.$": {
     type: String
@@ -96,6 +98,12 @@ People.schema = new SimpleSchema({
 });
 
 People.attachSchema(People.schema);
+
+if (Meteor.isServer) {
+  People._ensureIndex({
+    name: "text"
+  });
+}
 
 exports.People = People;
 exports.PeopleIndex = PeopleIndex;

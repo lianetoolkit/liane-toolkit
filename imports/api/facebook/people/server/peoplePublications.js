@@ -2,8 +2,8 @@ import { People, PeopleIndex } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import _ from "underscore";
 
-Meteor.publish("people.campaignSearch", function({ search, options }) {
-  logger.debug("people.campaignSearch called", {
+Meteor.publish("people.search", function({ search, options }) {
+  logger.debug("people.search called", {
     search,
     options
   });
@@ -15,8 +15,21 @@ Meteor.publish("people.campaignSearch", function({ search, options }) {
       const campaign = Campaigns.findOne(options.props.campaignId);
       const allowed = _.findWhere(campaign.users, { userId });
       if (allowed) {
-        const cursor = PeopleIndex.search(search, options);
-        return cursor.mongoCursor;
+        let query = {
+          campaignId: options.props.campaignId
+        };
+        if (search.q) {
+          let regex = new RegExp(search.q, "i");
+          query.$or = [
+            { name: regex },
+            { "campaignMeta.contact.email": regex }
+          ];
+        }
+        Mongo.Collection._publishCursor(
+          People.find(query, { limit: 10 }),
+          this,
+          "people.search"
+        );
       }
     }
   }
