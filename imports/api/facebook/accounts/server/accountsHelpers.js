@@ -1,4 +1,5 @@
 import { Promise } from "meteor/promise";
+import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
@@ -114,6 +115,12 @@ const FacebookAccountsHelpers = {
       )
     );
     return { result: response.access_token };
+  },
+  getAccountCampaigns({ facebookId }) {
+    check(facebookId, String);
+    return Campaigns.find({
+      accounts: { $elemMatch: { facebookId } }
+    }).fetch();
   },
   searchFBAccounts({ userId, q }) {
     check(userId, String);

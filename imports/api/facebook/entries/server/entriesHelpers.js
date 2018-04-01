@@ -1,6 +1,7 @@
 import { Promise } from "meteor/promise";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
+import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { CommentsHelpers } from "/imports/api/facebook/comments/server/commentsHelpers.js";
 import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
@@ -49,6 +50,12 @@ const EntriesHelpers = {
         account => account.facebookId == facebookId
       );
     }
+
+    const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
+      facebookId
+    });
+
+    console.log("LENGTH", accountCampaigns.length);
 
     const accountPath = isCampaignAccount ? "me" : facebookId;
 
@@ -132,14 +139,16 @@ const EntriesHelpers = {
             updateInteractions.push("comments");
           } else {
             // Update count when interaction update is not scheduled
-            // JobsHelpers.addJob({
-            //   jobType: "entries.updatePeopleCommentsCount",
-            //   jobData: {
-            //     campaignId,
-            //     facebookAccountId: facebookId,
-            //     entryId: entry.id
-            //   }
-            // });
+            if (accountCampaigns.length > 1) {
+              JobsHelpers.addJob({
+                jobType: "entries.updatePeopleCommentsCount",
+                jobData: {
+                  campaignId,
+                  facebookAccountId: facebookId,
+                  entryId: entry.id
+                }
+              });
+            }
           }
           if (
             vals.counts.reaction &&
@@ -148,14 +157,16 @@ const EntriesHelpers = {
             updateInteractions.push("likes");
           } else {
             // Update count when interaction update is not scheduled
-            // JobsHelpers.addJob({
-            //   jobType: "entries.updatePeopleLikesCount",
-            //   jobData: {
-            //     campaignId,
-            //     facebookAccountId: facebookId,
-            //     entryId: entry.id
-            //   }
-            // });
+            if (accountCampaigns.length > 1) {
+              JobsHelpers.addJob({
+                jobType: "entries.updatePeopleLikesCount",
+                jobData: {
+                  campaignId,
+                  facebookAccountId: facebookId,
+                  entryId: entry.id
+                }
+              });
+            }
           }
         } else {
           if (vals.counts.reaction) updateInteractions.push("likes");

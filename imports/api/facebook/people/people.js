@@ -36,7 +36,6 @@ const PeopleIndex = new Index({
             return {
               [`counts.${facebookId}.comments`]: -1
             };
-            console.log(query);
           } else {
             throw new Meteor.Error("Facebook ID is required");
           }
@@ -94,6 +93,26 @@ People.schema = new SimpleSchema({
     type: Object,
     blackbox: true,
     optional: true
+  },
+  createdAt: {
+    type: Date,
+    index: 1,
+    autoValue() {
+      if (this.isInsert) {
+        return new Date();
+      } else if (this.isUpsert) {
+        return { $setOnInsert: new Date() };
+      } else {
+        return this.unset();
+      }
+    }
+  },
+  updatedAt: {
+    type: Date,
+    index: 1,
+    autoValue() {
+      return new Date();
+    }
   }
 });
 
