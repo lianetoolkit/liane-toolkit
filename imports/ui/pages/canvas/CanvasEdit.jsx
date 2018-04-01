@@ -57,7 +57,7 @@ export default class CanvasEdit extends React.Component {
     }
   }
   _handleContextRef = contextRef => this.setState({ contextRef });
-  _handleSubmit(data) {
+  _handleSubmit(data, cb) {
     const { campaignId } = this.props;
     const { sectionKey } = this.state;
     Meteor.call(
@@ -71,9 +71,9 @@ export default class CanvasEdit extends React.Component {
         if (error) {
           Alerts.error(error);
         } else {
+          cb();
           Alerts.success("Canvas updated successfully");
         }
-        // console.log(result);
       }
     );
   }
