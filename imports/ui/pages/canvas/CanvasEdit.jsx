@@ -1,7 +1,7 @@
 import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
-import Alerts from "/imports/ui/utils/Alerts.js";
+import { Alerts } from "/imports/ui/utils/Alerts.js";
 import styled from "styled-components";
 import CanvasModel from "/imports/api/canvas/model/canvas";
 import FlexDataForm from "/imports/ui/components/flexData/FlexDataForm.jsx";
@@ -40,7 +40,6 @@ export default class CanvasEdit extends React.Component {
     this.state = {
       sectionKey: null
     };
-    console.log("CanvasEdit init", { props });
     this._handleSubmit = this._handleSubmit.bind(this);
   }
   componentDidMount() {
@@ -69,6 +68,11 @@ export default class CanvasEdit extends React.Component {
         data
       },
       (error, result) => {
+        if (error) {
+          Alerts.error(error);
+        } else {
+          Alerts.success("Canvas updated successfully");
+        }
         // console.log(result);
       }
     );

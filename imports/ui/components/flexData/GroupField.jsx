@@ -15,50 +15,51 @@ export default class GroupField extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      active: false
+      active: false,
+      value: {}
     };
     this._handleChange = this._handleChange.bind(this);
     this._handleClick = this._handleClick.bind(this);
   }
   componentDidMount() {
     if (this.props.value) {
-      this.setState(this.props.value);
+      this.setState({ value: this.props.value });
     }
   }
   componentWillReceiveProps(nextProps) {
-    if (JSON.stringify(this.props.value) !== JSON.stringify(nextProps.value)) {
-      this.setState(nextProps.value);
+    const { value, name } = this.props;
+    if (
+      JSON.stringify(value) !== JSON.stringify(nextProps.value) ||
+      name !== nextProps.name
+    ) {
+      this.setState({ value: nextProps.value || {} });
     }
   }
   componentDidUpdate(prevProps, prevState) {
-    const { onChange, config } = this.props;
+    const { onChange, config, name } = this.props;
     if (JSON.stringify(prevState) !== JSON.stringify(this.state)) {
-      if (onChange) onChange(null, { name: config.key, value: this.state });
+      if (onChange)
+        onChange(null, { name: name || config.key, value: this.state.value });
     }
   }
   _handleChange = (e, { name, value }) => {
-    this.setState({ [name]: value });
+    this.setState({ value: { ...this.state.value, [name]: value } });
   };
   _handleClick = () => {
     const { active } = this.state;
     this.setState({ active: !active });
   };
-  _hasValues = () => {
-    const { config } = this.state;
-    let hasValues = false;
-    for (const field of config.field) {
-      hasValues = !!this.state[field.key];
-    }
-  };
   render() {
     const { config } = this.props;
-    const { active } = this.state;
+    const { active, value } = this.state;
     return (
       <Accordion>
         <Accordion.Title active={active} onClick={this._handleClick}>
           <Icon name="dropdown" />
           {config.label}{" "}
-          <Label size="tiny" basic>{config.fields.length} field(s)</Label>
+          <Label size="tiny" basic>
+            {config.fields.length} field(s)
+          </Label>
         </Accordion.Title>
         <Accordion.Content active={active}>
           {config.fields.map(field => (
@@ -66,7 +67,7 @@ export default class GroupField extends React.Component {
               key={field.key}
               config={field}
               onChange={this._handleChange}
-              value={this.state[field.key]}
+              value={value[field.key]}
             />
           ))}
         </Accordion.Content>
