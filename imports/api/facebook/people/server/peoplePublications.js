@@ -1,4 +1,4 @@
-import { People, PeopleIndex } from "../people.js";
+import { People } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import _ from "underscore";
 

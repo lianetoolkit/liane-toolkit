@@ -1,7 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import { withTracker } from "meteor/react-meteor-data";
 import { ReactiveVar } from "meteor/reactive-var";
-import { People, PeopleIndex } from "/imports/api/facebook/people/people.js";
+import { People } from "/imports/api/facebook/people/people.js";
 import PeopleSearchResults from "/imports/ui/components/people/PeopleSearchResults.jsx";
 
 const people = new ReactiveVar(null);

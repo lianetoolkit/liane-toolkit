@@ -86,16 +86,28 @@ export default class AudienceChart extends React.Component {
         <LineChart data={audiences}>
           {/* <CartesianGrid stroke="#ccc" strokeDasharray="5 5" /> */}
           <XAxis hide dataKey="fetch_date" />
-          <YAxis yAxisId="left" domain={["auto", "auto"]} />
+          <YAxis
+            yAxisId="left"
+            orientation="left"
+            domain={[
+              dataMin => Math.floor(dataMin) - 3,
+              dataMax => Math.ceil(dataMax) + 3
+            ]}
+            tickFormatter={tick => tick + "%"}
+          />
           <YAxis
             yAxisId="right"
             orientation="right"
-            domain={["auto", "auto"]}
+            domain={[
+              dataMin => Math.floor(dataMin) - 3,
+              dataMax => Math.ceil(dataMax) + 3
+            ]}
+            tickFormatter={tick => tick + "%"}
           />
           <Tooltip content={<AudienceTooltip />} />
           {percentage ? (
             <Line
-              yAxisId="left"
+              yAxisId="right"
               type="monotone"
               dataKey="percentage"
               stroke="#82ca9d"
@@ -103,7 +115,7 @@ export default class AudienceChart extends React.Component {
             />
           ) : null}
           <Line
-            yAxisId="right"
+            yAxisId="left"
             type="monotone"
             dataKey="location_percentage"
             stroke="#8884d8"

@@ -1,6 +1,6 @@
 import SimpleSchema from "simpl-schema";
 import { performance } from "perf_hooks";
-import { People, PeopleIndex } from "../people.js";
+import { People } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
