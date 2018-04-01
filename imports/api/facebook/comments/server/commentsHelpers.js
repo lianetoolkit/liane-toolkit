@@ -59,7 +59,9 @@ const CommentsHelpers = {
           personId: commentedPerson.id,
           facebookAccountId: facebookAccountId
         }).count();
-        let set = {};
+        let set = {
+          updatedAt: new Date()
+        };
         set["name"] = commentedPerson.name;
         set[`counts.${facebookAccountId}.comments`] = commentsCount;
         peopleBulk
@@ -69,7 +71,10 @@ const CommentsHelpers = {
           })
           .upsert()
           .update({
-            $setOnInsert: { _id: Random.id() },
+            $setOnInsert: {
+              _id: Random.id(),
+              createdAt: new Date()
+            },
             $set: set,
             $addToSet: {
               facebookAccounts: facebookAccountId

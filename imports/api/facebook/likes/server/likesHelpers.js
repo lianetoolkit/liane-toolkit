@@ -65,7 +65,9 @@ const LikesHelpers = {
             type: reactionType
           }).count();
         }
-        let set = {};
+        let set = {
+          updatedAt: new Date()
+        };
         set["name"] = likedPerson.name;
         set[`counts.${facebookAccountId}.likes`] = likesCount;
         set[`counts.${facebookAccountId}.reactions`] = reactionsCount;
@@ -76,7 +78,10 @@ const LikesHelpers = {
           })
           .upsert()
           .update({
-            $setOnInsert: { _id: Random.id() },
+            $setOnInsert: {
+              _id: Random.id(),
+              createdAt: new Date()
+            },
             $set: set,
             $addToSet: {
               facebookAccounts: facebookAccountId

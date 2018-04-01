@@ -247,7 +247,8 @@ export default [
               {
                 key: "locus",
                 label: "Locus",
-                description: "Onde podemos encontrar essa pessoa? ex: Café, Universidade, Praça, Praia, etc",
+                description:
+                  "Onde podemos encontrar essa pessoa? ex: Café, Universidade, Praça, Praia, etc",
                 fieldType: "text"
               }
             ]
@@ -272,13 +273,15 @@ export default [
               {
                 key: "fears",
                 label: "Medos",
-                description: "Do que essa pessoa tema medo? Ex: desemprego, violência, ficar doente",
+                description:
+                  "Do que essa pessoa tema medo? Ex: desemprego, violência, ficar doente",
                 fieldType: "text"
               },
               {
                 key: "desires",
                 label: "Desejos",
-                description: "Quais são os sonhos e desejos dessa pessoa? Ex: entrar na faculdade, comprar a casa própria, formar uma família",
+                description:
+                  "Quais são os sonhos e desejos dessa pessoa? Ex: entrar na faculdade, comprar a casa própria, formar uma família",
                 fieldType: "text"
               }
             ]
@@ -296,7 +299,8 @@ export default [
       {
         key: "voters",
         label: "Votos garantidos",
-        description: "Nomeie pessoas de perfis diferentes que você tem certeza que votarão em você.",
+        description:
+          "Nomeie pessoas de perfis diferentes que você tem certeza que votarão em você.",
         fieldType: "repeater",
         limit: 10,
         fields: personFields
@@ -304,7 +308,8 @@ export default [
       {
         key: "volunteers",
         label: "Voluntários",
-        description: "Nomeie pessoas que você sabe que vão se voluntariar para trabalhar na sua campanha",
+        description:
+          "Nomeie pessoas que você sabe que vão se voluntariar para trabalhar na sua campanha",
         fieldType: "repeater",
         limit: 10,
         fields: personFields
@@ -312,7 +317,8 @@ export default [
       {
         key: "donors",
         label: "Doadores",
-        description: "Nomeie pessoas que podem doar dinheiro para sua campanha - qualquer quantidade",
+        description:
+          "Nomeie pessoas que podem doar dinheiro para sua campanha - qualquer quantidade",
         fieldType: "repeater",
         limit: 10,
         fields: personFields
@@ -320,17 +326,52 @@ export default [
       {
         key: "influencers",
         label: "Influenciadores",
-        description: "Nomeie influenciadores, pessoas com redes sociais com grande alcance online ou offline",
+        description:
+          "Nomeie influenciadores, pessoas com redes sociais com grande alcance online ou offline",
         fieldType: "repeater",
         limit: 10,
         fields: personFields
+      },
+      {
+        key: "competitors",
+        label: "Competidores",
+        fieldType: "repeater",
+        limit: 10,
+        fields: [
+          {
+            key: "party",
+            label: "Partido",
+            fieldType: "text"
+          },
+          {
+            key: "name",
+            label: "Name",
+            fieldType: "text"
+          },
+          {
+            key: "location",
+            label: "Location",
+            fieldType: "facebook_location"
+          },
+          {
+            key: "facebook_url",
+            label: "Facebook URL",
+            fieldType: "text"
+          },
+          {
+            key: "twitter_url",
+            label: "Twitter URL",
+            fieldType: "text"
+          }
+        ]
       }
     ]
   },
   {
     key: "assets",
     title: "Ativos",
-    description: "Ativos são todos os recursos materiais/humanos/financeiros que você dispõe para dar força a sua campanha",
+    description:
+      "Ativos são todos os recursos materiais/humanos/financeiros que você dispõe para dar força a sua campanha",
     fields: [
       {
         key: "assets",
@@ -425,13 +466,15 @@ export default [
       {
         key: "expense",
         label: "Quanto você vai gastar na campanha?",
-        description: "Esse número pode ser um chute. É importante você começar a pensar sobre isso.",
+        description:
+          "Esse número pode ser um chute. É importante você começar a pensar sobre isso.",
         fieldType: "text"
       },
       {
         key: "funders",
         label: "Quem e como vai financiar?",
-        description: "Crowdfunding, amigos da família, rede de apoiadores, nomeie aqui como pretende captar esses recursos",
+        description:
+          "Crowdfunding, amigos da família, rede de apoiadores, nomeie aqui como pretende captar esses recursos",
         fieldType: "textarea"
       }
     ]

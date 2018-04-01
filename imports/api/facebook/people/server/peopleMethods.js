@@ -1,8 +1,82 @@
 import SimpleSchema from "simpl-schema";
-import { People, PeopleIndex } from "../people.js";
+import { performance } from "perf_hooks";
+import { People } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
+
+export const peopleSearch = new ValidatedMethod({
+  name: "people.search",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    query: {
+      type: Object,
+      blackbox: true
+    },
+    options: {
+      type: Object,
+      blackbox: true
+    }
+  }).validator(),
+  run({ campaignId, query, options }) {
+    logger.debug("people.search called", {
+      campaignId,
+      query
+    });
+
+    let queryOptions = {};
+
+    console.log(options);
+
+    if (options.sort) {
+      switch (options.sort) {
+        case "comments":
+        case "likes":
+          if (options.facebookId) {
+            queryOptions.sort = {
+              [`counts.${options.facebookId}.${options.sort}`]: -1
+            };
+          }
+          break;
+        case "name":
+          queryOptions.sort = { name: 1 };
+          break;
+        default:
+      }
+    }
+
+    query.campaignId = campaignId;
+
+    if (query.q) {
+      const regex = new RegExp(query.q, "i");
+      query.$text = { $search: query.q };
+      if (!queryOptions.sort) {
+        queryOptions.fields = { score: { $meta: "textScore" } };
+        queryOptions.sort = { score: { $meta: "textScore" } };
+      }
+    }
+    delete query.q;
+
+    // const t0 = performance.now();
+
+    const cursor = People.find(query, {
+      ...queryOptions,
+      limit: 10
+    });
+
+    const result = {
+      data: cursor.fetch(),
+      total: cursor.count()
+    };
+
+    // const t1 = performance.now();
+    // console.log("Search took " + (t1 - t0) + " ms.");
+
+    return result;
+  }
+});
 
 export const updatePersonMeta = new ValidatedMethod({
   name: "facebook.people.updatePersonMeta",
