@@ -14,6 +14,7 @@ import {
 import AudienceUtils from "./Utils.js";
 import CompareLine from "./CompareLine.jsx";
 import AudienceInfo from "./AudienceInfo.jsx";
+import LocationChart from "./LocationChart.jsx";
 import DataAlert from "./DataAlert.jsx";
 
 const Wrapper = styled.div`
@@ -199,6 +200,15 @@ export default class AudienceGeolocation extends React.Component {
                       ) : (
                         <p />
                       )}
+                      {geolocation.audienceCategories[0] &&
+                      geolocation.audienceCategories[0].audiences &&
+                      geolocation.audienceCategories[0].audiences.length > 1 ? (
+                        <LocationChart
+                          audiences={
+                            geolocation.audienceCategories[0].audiences
+                          }
+                        />
+                      ) : null}
                       <Table selectable>
                         {geolocation.audienceCategories.map(item => {
                           const expanded = this._isExpanded(item.category._id);
