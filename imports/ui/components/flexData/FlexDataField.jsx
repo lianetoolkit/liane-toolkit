@@ -16,6 +16,14 @@ import FacebookInterestsField from "/imports/ui/components/audiences/FacebookInt
 import RepeaterField from "./RepeaterField.jsx";
 import GroupField from "./GroupField.jsx";
 
+const Wrapper = styled.div`
+  margin: 0 0 1em;
+  .description {
+    color: #999;
+    margin: 0 0 0.5em;
+  }
+`;
+
 export default class FlexDataField extends React.Component {
   static propTypes = {
     config: PropTypes.object
@@ -53,6 +61,13 @@ export default class FlexDataField extends React.Component {
       return config.label;
     }
   }
+  _description(config) {
+    if (config.fieldType == "group" || config.fieldType == "repeater") {
+      return null;
+    } else {
+      return config.description;
+    }
+  }
   _options(config) {
     let options = [];
     if (config.options) {
@@ -71,7 +86,6 @@ export default class FlexDataField extends React.Component {
     const fieldProps = {
       key: config.key,
       name: name || config.key,
-      label: this._label(config),
       control: this._control(config),
       placeholder: config.placeholder || null,
       value: value
@@ -97,6 +111,14 @@ export default class FlexDataField extends React.Component {
   }
   render() {
     const { config } = this.props;
-    return <Form.Field {...this._props(config)} />;
+    const label = this._label(config);
+    const description = this._description(config);
+    return (
+      <Wrapper className="field">
+        {label ? <label>{label}</label> : null}
+        {description ? <p className="description">{description}</p> : null}
+        <Form.Field {...this._props(config)} />
+      </Wrapper>
+    );
   }
 }

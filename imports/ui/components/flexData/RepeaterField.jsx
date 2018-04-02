@@ -5,6 +5,12 @@ import FlexDataField from "./FlexDataField.jsx";
 import styled from "styled-components";
 import { setWith, clone } from "lodash";
 
+const Wrapper = styled.div`
+  .description {
+    margin-top: -0.5em;
+  }
+`;
+
 const Item = styled.div`
   margin: 0 0 1rem;
   padding: 1rem;
@@ -87,7 +93,7 @@ export default class RepeaterField extends React.Component {
     const { value, activeIndex } = this.state;
     const { config } = this.props;
     return (
-      <div>
+      <Wrapper>
         <Header size="small" floated="left">
           {config.label}
         </Header>
@@ -107,6 +113,9 @@ export default class RepeaterField extends React.Component {
           </Label>
         ) : null}
         <Divider hidden />
+        {config.description ? (
+          <p className="description">{config.description}</p>
+        ) : null}
         {value.length ? (
           <Item>
             {config.fields.map(field => (
@@ -127,7 +136,7 @@ export default class RepeaterField extends React.Component {
           </p>
         )}
         <Divider hidden />
-      </div>
+      </Wrapper>
     );
   }
 }

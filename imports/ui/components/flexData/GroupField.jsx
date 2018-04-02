@@ -62,6 +62,9 @@ export default class GroupField extends React.Component {
           </Label>
         </Accordion.Title>
         <Accordion.Content active={active}>
+          {config.description ? (
+            <p className="description">{config.description}</p>
+          ) : null}
           {config.fields.map(field => (
             <FlexDataField
               key={field.key}
