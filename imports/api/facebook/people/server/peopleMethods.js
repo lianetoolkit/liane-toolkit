@@ -28,8 +28,6 @@ export const peopleSearch = new ValidatedMethod({
 
     let queryOptions = {};
 
-    console.log(options);
-
     if (options.sort) {
       switch (options.sort) {
         case "comments":
@@ -58,6 +56,11 @@ export const peopleSearch = new ValidatedMethod({
       }
     }
     delete query.q;
+
+    if (query.accountOnly && options.facebookId) {
+      query.facebookAccounts = { $in: [options.facebookId] };
+    }
+    delete query.accountOnly;
 
     // const t0 = performance.now();
 

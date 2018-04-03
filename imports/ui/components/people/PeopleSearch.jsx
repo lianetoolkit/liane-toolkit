@@ -6,6 +6,7 @@ import {
   Segment,
   Form,
   Input,
+  Checkbox,
   Select,
   Grid,
   Popup,
@@ -53,7 +54,8 @@ export default class PeopleSearch extends React.Component {
     super(props);
     this.state = {
       search: {
-        q: ""
+        q: "",
+        accountOnly: false
       },
       options: {
         limit: 10,
@@ -117,7 +119,7 @@ export default class PeopleSearch extends React.Component {
     return (
       <Wrapper>
         <h3>Find people</h3>
-        <Grid columns={3} widths="equal">
+        <Grid columns={4} widths="equal" verticalAlign="middle">
           <Grid.Row>
             <Grid.Column>
               <span className="filter-label">Text search</span>
@@ -146,6 +148,28 @@ export default class PeopleSearch extends React.Component {
                   />
                 ))}
               </Button.Group>
+            </Grid.Column>
+            <Grid.Column>
+              <span className="filter-label">Filter by page</span>
+              <Form.Field
+                control={Select}
+                value={search.accountOnly}
+                name="accountOnly"
+                onChange={this._handleSearchChange}
+                fluid
+                options={[
+                  {
+                    key: "all",
+                    value: false,
+                    text: "Show all people"
+                  },
+                  {
+                    key: "account",
+                    value: true,
+                    text: "Only from this page"
+                  }
+                ]}
+              />
             </Grid.Column>
             <Grid.Column>
               <span className="filter-label">Sorting</span>
