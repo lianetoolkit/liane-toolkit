@@ -91,6 +91,16 @@ const CampaignsHelpers = {
       updateObj.fanCount = account.fan_count;
     }
 
+    const campaign = Campaigns.findOne(campaignId);
+
+    const audienceAccount = _.findWhere(campaign.audienceAccounts, {
+      facebookId: account.id
+    });
+
+    if (audienceAccount) {
+      throw new Meteor.Error(403, "Audience Account already connected");
+    }
+
     Campaigns.update(
       { _id: campaignId },
       { $addToSet: { audienceAccounts: updateObj } }

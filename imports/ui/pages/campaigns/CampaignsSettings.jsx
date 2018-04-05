@@ -98,7 +98,6 @@ export default class CampaignsSettings extends React.Component {
           { ...data, campaignId: campaign._id },
           (error, result) => {
             if (error) {
-              console.log(error);
               Alerts.error(error);
             } else {
               Alerts.success("Campaign updated successfully.");
@@ -109,15 +108,23 @@ export default class CampaignsSettings extends React.Component {
       case "accounts":
         if (data.audienceAccount) {
           Meteor.call(
-            "campaigns.addSelfAudienceAccount",
+            "campaigns.findAndAddSelfAudienceAccount",
             {
               campaignId: campaign._id,
-              account: data.audienceAccount
+              address: data.audienceAccount
             },
             (error, result) => {
               if (error) {
                 Alerts.error(error);
               } else {
+                this.setState({
+                  formData: {
+                    ...formData,
+                    accounts: {
+                      audienceAccount: ""
+                    }
+                  }
+                });
                 Alerts.success("Audience account added successfully.");
               }
             }
@@ -130,7 +137,6 @@ export default class CampaignsSettings extends React.Component {
           { ...data, campaignId: campaign._id },
           (error, result) => {
             if (error) {
-              console.log(error);
               Alerts.error(error);
             } else {
               Alerts.success("User added successfully.");
@@ -394,10 +400,18 @@ export default class CampaignsSettings extends React.Component {
                             </Table.Body>
                           </Table>
                         ) : null}
-                        <FacebookAccountField
+                        {/* <FacebookAccountField
                           label="Add a new audience account"
                           name="audienceAccount"
                           onChange={this._handleChange}
+                        /> */}
+                        <Form.Field
+                          control={Input}
+                          label="Add account"
+                          placeholder="Paste URL, ID or slug"
+                          name="audienceAccount"
+                          onChange={this._handleChange}
+                          value={formData.accounts.audienceAccount}
                         />
                         <Button
                           primary
