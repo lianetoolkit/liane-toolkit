@@ -6,8 +6,6 @@ import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
 
 const buildSearchQuery = ({ campaignId, query, options }) => {
-  console.log("RECEIVED OPTIONS", options);
-
   let queryOptions = {
     skip: options.skip || 0,
     limit: Math.min(options.limit || 10, 50)
