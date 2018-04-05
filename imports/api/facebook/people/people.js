@@ -12,7 +12,7 @@ People.schema = new SimpleSchema({
   },
   name: {
     type: String,
-    index: "text"
+    index: true
   },
   campaignId: {
     type: String,
