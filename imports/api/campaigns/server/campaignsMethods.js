@@ -398,7 +398,7 @@ export const findAndAddSelfAudienceAccount = new ValidatedMethod({
   }).validator(),
   run({ campaignId, address }) {
     this.unblock();
-    logger.debug("campaigns.addSelfAudienceAccount called", {
+    logger.debug("campaigns.findAndAddSelfAudienceAccount called", {
       campaignId,
       address
     });
