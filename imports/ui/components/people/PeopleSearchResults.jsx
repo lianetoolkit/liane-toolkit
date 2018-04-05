@@ -1,7 +1,7 @@
 import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import styled from "styled-components";
-import { Table, Icon, Grid } from "semantic-ui-react";
+import { Table, Icon, Grid, Dimmer } from "semantic-ui-react";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import Reaction from "/imports/ui/components/entries/Reaction.jsx";
 
@@ -32,8 +32,14 @@ export default class PeopleSearchResults extends React.Component {
   componentDidMount() {
     const { people } = this.props;
     this.setState({ people });
+    if (this.props.onChange) {
+      this.props.onChange(this.props);
+    }
   }
   componentWillReceiveProps(nextProps) {
+    if (nextProps.onChange) {
+      nextProps.onChange(nextProps);
+    }
     this.setState({ people: nextProps.people });
   }
   _handleMetaChange = data => {
@@ -52,14 +58,20 @@ export default class PeopleSearchResults extends React.Component {
     this.setState({ people });
   };
   render() {
-    const { loading, facebookId, campaignId, count } = this.props;
+    const { loading, loadingCount, facebookId, campaignId, count } = this.props;
     const { people } = this.state;
-    if (loading) {
+    if (!loadingCount && count == 0) {
+      return <p>No people were found.</p>;
+    } else if (loading) {
       return <Loading />;
     } else if (people && people.length) {
       return (
         <div>
-          <p>{count} people found.</p>
+          {loadingCount ? (
+            <p>Calculating people count...</p>
+          ) : (
+            <p>{count} people found.</p>
+          )}
           <Table>
             <Table.Body>
               {people.map(person => (

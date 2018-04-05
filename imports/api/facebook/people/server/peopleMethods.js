@@ -6,7 +6,12 @@ import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
 
 const buildSearchQuery = ({ campaignId, query, options }) => {
-  let queryOptions = {};
+  console.log("RECEIVED OPTIONS", options);
+
+  let queryOptions = {
+    skip: options.skip || 0,
+    limit: Math.min(options.limit || 10, 50)
+  };
 
   if (options.sort) {
     switch (options.sort) {
@@ -70,17 +75,14 @@ export const peopleSearch = new ValidatedMethod({
 
     const searchQuery = buildSearchQuery({ campaignId, query, options });
 
-    // const t0 = performance.now();
+    const t0 = performance.now();
 
-    const cursor = People.find(searchQuery.query, {
-      ...searchQuery.options,
-      limit: 10
-    });
+    const cursor = People.find(searchQuery.query, searchQuery.options);
 
     const result = cursor.fetch();
 
-    // const t1 = performance.now();
-    // console.log("Search took " + (t1 - t0) + " ms.", searchQuery);
+    const t1 = performance.now();
+    console.log("Search took " + (t1 - t0) + " ms.", searchQuery);
 
     return result;
   }
@@ -111,12 +113,17 @@ export const peopleSearchCount = new ValidatedMethod({
 
     const searchQuery = buildSearchQuery({ campaignId, query, options });
 
-    // const t0 = performance.now();
+    const t0 = performance.now();
 
-    const result = People.rawCollection().count(searchQuery.query);
+    const result = Promise.await(
+      People.rawCollection().count(searchQuery.query)
+    );
 
-    // const t1 = performance.now();
-    // console.log("Count took " + (t1 - t0) + " ms.", searchQuery);
+    const t1 = performance.now();
+    console.log(
+      "Counted " + result + " and took " + (t1 - t0) + " ms.",
+      searchQuery
+    );
 
     return result;
   }

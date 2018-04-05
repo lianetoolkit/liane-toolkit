@@ -12,7 +12,8 @@ import {
   Popup,
   Icon,
   Button,
-  Divider
+  Divider,
+  Pagination
 } from "semantic-ui-react";
 
 const Wrapper = styled.div`
@@ -53,12 +54,14 @@ export default class PeopleSearch extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      activePage: 1,
+      count: 0,
       search: {
         q: "",
         accountFilter: "account"
       },
       options: {
-        limit: 10,
+        limit: 15,
         skip: 0,
         sort: "auto",
         facebookId: props.facebookId,
@@ -102,20 +105,51 @@ export default class PeopleSearch extends React.Component {
     };
   };
   _handleSearchChange = _.debounce((ev, { name, value }) => {
-    this.setState({ search: { ...this.state.search, [name]: value } });
+    const { search, options } = this.state;
+    this.setState({
+      activePage: 1,
+      search: { ...search, [name]: value },
+      options: { ...options, skip: 0 }
+    });
   }, 250);
   _handleOptionChange = _.debounce((ev, { name, value }) => {
-    this.setState({ options: { ...this.state.options, [name]: value } });
+    const { options } = this.state;
+    this.setState({
+      activePage: 1,
+      options: { ...options, [name]: value, skip: 0 }
+    });
   }, 250);
   _handleSortChange = _.debounce((ev, { value }) => {
     const { options } = this.state;
     this.setState({
-      options: { ...options, sort: value }
+      activePage: 1,
+      options: { ...options, sort: value, skip: 0 }
     });
   }, 250);
+  _handleDataChange = data => {
+    this.setState({ count: data.count });
+  };
+  _handlePageChange = (e, { activePage }) => {
+    const { options } = this.state;
+    this.setState({
+      activePage,
+      options: {
+        ...options,
+        skip: (activePage - 1) * options.limit
+      }
+    });
+  };
+  _getPageCount() {
+    const { count, options } = this.state;
+    if (count) {
+      return Math.floor(count / options.limit);
+    }
+    return 0;
+  }
   render() {
-    const { search, options } = this.state;
+    const { activePage, search, options } = this.state;
     const { campaignId, facebookId } = this.props;
+    const pageCount = this._getPageCount();
     return (
       <Wrapper>
         <h3>Find people</h3>
@@ -210,7 +244,16 @@ export default class PeopleSearch extends React.Component {
           facebookId={facebookId}
           search={search}
           options={options}
+          onChange={this._handleDataChange}
         />
+        <Divider hidden />
+        {pageCount ? (
+          <Pagination
+            activePage={activePage}
+            totalPages={pageCount}
+            onPageChange={this._handlePageChange}
+          />
+        ) : null}
       </Wrapper>
     );
   }

@@ -62,16 +62,42 @@ People.attachSchema(People.schema);
 
 Meteor.startup(() => {
   if (Meteor.isServer) {
+    // console.log(People.rawCollection().getIndexes());
+    People.rawCollection().dropIndex("name_text");
+    People.rawCollection().dropIndex(
+      "campaignMeta.influencer_1_campaignMeta.voteIntent_1_campaignMeta.starred_1_campaignMeta.troll_1"
+    );
     People.rawCollection().createIndex({
       name: "text",
-      facebookAccounts: true
+      "campaignMeta.contact.email": "text"
     });
     People.rawCollection().createIndex({
-      "campaignMeta.influencer": true,
-      "campaignMeta.voteIntent": true,
-      "campaignMeta.starred": true,
-      "campaignMeta.troll": true
+      facebookAccounts: 1
     });
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.influencer": 1
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.voteIntent": 1
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.starred": 1
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.troll": 1
+      },
+      { sparse: true }
+    );
   }
 });
 
