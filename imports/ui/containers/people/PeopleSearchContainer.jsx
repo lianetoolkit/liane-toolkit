@@ -5,6 +5,7 @@ import { People } from "/imports/api/facebook/people/people.js";
 import PeopleSearchResults from "/imports/ui/components/people/PeopleSearchResults.jsx";
 
 const people = new ReactiveVar(null);
+const count = new ReactiveVar(0);
 const loading = new ReactiveVar(false);
 let current = null;
 
@@ -26,9 +27,23 @@ export default withTracker(props => {
         }
       }
     );
+    Meteor.call(
+      "people.search.count",
+      {
+        campaignId: props.campaignId,
+        query: props.search,
+        options: props.options
+      },
+      (error, data) => {
+        if (JSON.stringify(count.get()) !== JSON.stringify(data)) {
+          count.set(data);
+        }
+      }
+    );
   }
   return {
     loading: loading.get(),
-    people: people.get()
+    people: people.get(),
+    count: count.get()
   };
 })(PeopleSearchResults);

@@ -7,7 +7,7 @@ const People = new Mongo.Collection("people");
 People.schema = new SimpleSchema({
   facebookId: {
     type: String,
-    index: 1,
+    index: true,
     optional: true
   },
   name: {
@@ -16,7 +16,7 @@ People.schema = new SimpleSchema({
   },
   campaignId: {
     type: String,
-    index: 1
+    index: true
   },
   campaignMeta: {
     type: Object,
@@ -26,7 +26,7 @@ People.schema = new SimpleSchema({
   facebookAccounts: {
     type: Array,
     optional: true,
-    index: 1
+    index: true
   },
   "facebookAccounts.$": {
     type: String
@@ -38,7 +38,7 @@ People.schema = new SimpleSchema({
   },
   createdAt: {
     type: Date,
-    index: 1,
+    index: true,
     autoValue() {
       if (this.isInsert) {
         return new Date();
@@ -51,7 +51,7 @@ People.schema = new SimpleSchema({
   },
   updatedAt: {
     type: Date,
-    index: 1,
+    index: true,
     autoValue() {
       return new Date();
     }
@@ -60,10 +60,19 @@ People.schema = new SimpleSchema({
 
 People.attachSchema(People.schema);
 
-if (Meteor.isServer) {
-  People._ensureIndex({
-    name: "text"
-  });
-}
+Meteor.startup(() => {
+  if (Meteor.isServer) {
+    People.rawCollection().createIndex({
+      name: "text",
+      facebookAccounts: true
+    });
+    People.rawCollection().createIndex({
+      "campaignMeta.influencer": true,
+      "campaignMeta.voteIntent": true,
+      "campaignMeta.starred": true,
+      "campaignMeta.troll": true
+    });
+  }
+});
 
 exports.People = People;

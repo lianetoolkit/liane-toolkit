@@ -55,7 +55,7 @@ export default class PeopleSearch extends React.Component {
     this.state = {
       search: {
         q: "",
-        accountOnly: false
+        accountFilter: "account"
       },
       options: {
         limit: 10,
@@ -153,19 +153,19 @@ export default class PeopleSearch extends React.Component {
               <span className="filter-label">Filter by page</span>
               <Form.Field
                 control={Select}
-                value={search.accountOnly}
-                name="accountOnly"
+                value={search.accountFilter}
+                name="accountFilter"
                 onChange={this._handleSearchChange}
                 fluid
                 options={[
                   {
                     key: "all",
-                    value: false,
+                    value: "all",
                     text: "Show all people"
                   },
                   {
                     key: "account",
-                    value: true,
+                    value: "account",
                     text: "Only from this page"
                   }
                 ]}

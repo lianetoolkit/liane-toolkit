@@ -37,10 +37,10 @@ export default class PeopleSearchResults extends React.Component {
     this.setState({ people: nextProps.people });
   }
   _handleMetaChange = data => {
-    let people = { ...this.state.people };
-    people.data.forEach((person, i) => {
+    let people = [...this.state.people];
+    people.forEach((person, i) => {
       if (person._id == data.personId) {
-        people.data[i] = {
+        people[i] = {
           ...person,
           campaignMeta: {
             ...person.campaignMeta,
@@ -52,17 +52,17 @@ export default class PeopleSearchResults extends React.Component {
     this.setState({ people });
   };
   render() {
-    const { loading, facebookId, campaignId, totalCount } = this.props;
+    const { loading, facebookId, campaignId, count } = this.props;
     const { people } = this.state;
     if (loading) {
       return <Loading />;
-    } else if (people.data && people.data.length) {
+    } else if (people && people.length) {
       return (
         <div>
-          <p>{people.total} people found.</p>
+          <p>{count} people found.</p>
           <Table>
             <Table.Body>
-              {people.data.map(person => (
+              {people.map(person => (
                 <Table.Row key={`commenter-${person._id}`}>
                   <Table.Cell collapsing>
                     <a
