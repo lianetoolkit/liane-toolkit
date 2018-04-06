@@ -55,8 +55,6 @@ const EntriesHelpers = {
       facebookId
     });
 
-    console.log("LENGTH", accountCampaigns.length);
-
     const accountPath = isCampaignAccount ? "me" : facebookId;
 
     logger.debug("EntriesHelpers.updateAccountEntries called", {
