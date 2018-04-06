@@ -27,13 +27,22 @@ export default class GroupField extends React.Component {
     }
   }
   componentWillReceiveProps(nextProps) {
-    const { value, name } = this.props;
+    const { value, name, config } = this.props;
     if (
       JSON.stringify(value) !== JSON.stringify(nextProps.value) ||
-      name !== nextProps.name
+      name !== nextProps.name ||
+      config.key !== nextProps.config.key
     ) {
-      this.setState({ value: nextProps.value || {} });
+      this.setState({ value: nextProps.value || this._newValues() });
     }
+  }
+  _newValues() {
+    const { config } = this.props;
+    let values = {};
+    for (const field of config.fields) {
+      values[field.key] = "";
+    }
+    return values;
   }
   componentDidUpdate(prevProps, prevState) {
     const { onChange, config, name } = this.props;

@@ -64,12 +64,20 @@ export default class RepeaterField extends React.Component {
     const { config } = this.props;
     const { value } = this.state;
     if (!config.limit || value.length < config.limit) {
-      const newValue = [...value, {}];
+      const newValue = [...value, this._newValues()];
       this.setState({
         value: newValue,
         activeIndex: newValue.length - 1
       });
     }
+  }
+  _newValues() {
+    const { config } = this.props;
+    let values = {};
+    for (const field of config.fields) {
+      values[field.key] = "";
+    }
+    return values;
   }
   _handlePrevClick(ev) {
     if (ev) ev.preventDefault();
@@ -124,7 +132,7 @@ export default class RepeaterField extends React.Component {
                 config={field}
                 name={`data[${activeIndex}]${field.key}`}
                 onChange={this._handleChange}
-                value={value[activeIndex][field.key] || ""}
+                value={value[activeIndex][field.key]}
               />
             ))}
           </Item>
