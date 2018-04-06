@@ -130,7 +130,7 @@ export default class RepeaterField extends React.Component {
               <FlexDataField
                 key={field.key}
                 config={field}
-                name={`data[${activeIndex}]${field.key}`}
+                name={`data[${activeIndex}].${field.key}`}
                 onChange={this._handleChange}
                 value={value[activeIndex][field.key]}
               />
