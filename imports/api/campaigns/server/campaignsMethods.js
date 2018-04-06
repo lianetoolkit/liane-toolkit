@@ -105,6 +105,9 @@ export const campaignsUpdate = new ValidatedMethod({
     let runJobs = {};
 
     if (campaign.adAccountId !== data.adAccountId) {
+      const user = Meteor.users.findOne(userId);
+      const token = user.services.facebook.accessToken;
+      AdAccountsHelpers.update({ adAccountId: data.adAccountId, token });
       data.status = "ok";
       runJobs["audiences"] = true;
     }
