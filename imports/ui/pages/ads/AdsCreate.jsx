@@ -16,6 +16,7 @@ import {
 } from "semantic-ui-react";
 import SimpleCurrencyInput from "react-simple-currency";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
+import AudienceUtils from "/imports/ui/components/audiences/Utils.js";
 import _ from "underscore";
 
 const initialFields = {
@@ -171,9 +172,9 @@ export default class AdsCreate extends React.Component {
     const { estimate, fields } = this.state;
     if (estimate) {
       if (fields.useConnection) {
-        return estimate.estimate;
+        return AudienceUtils.getValue(estimate.estimate);
       } else {
-        return estimate.location_estimate;
+        return AudienceUtils.getValue(estimate.location_estimate);
       }
     }
     return false;
@@ -214,6 +215,7 @@ export default class AdsCreate extends React.Component {
   render() {
     const {
       loading,
+      account,
       adAccount,
       audienceCategory,
       campaignId,
@@ -295,7 +297,7 @@ export default class AdsCreate extends React.Component {
                           checked={fields.useConnection}
                           onChange={this._handleCheckbox}
                           name="useConnection"
-                          label="Target only people who likes your page"
+                          label={`Target people connected to ${account.name}`}
                         />
                         <Divider />
                         <Form.Field
