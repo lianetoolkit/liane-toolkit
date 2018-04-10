@@ -37,7 +37,6 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
   query.campaignId = campaignId;
 
   if (query.q) {
-    const regex = new RegExp(query.q, "i");
     query.$text = { $search: query.q };
     if (!queryOptions.sort) {
       queryOptions.fields.score = { $meta: "textScore" };
@@ -47,7 +46,7 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
   delete query.q;
 
   if (query.accountFilter == "account" && options.facebookId) {
-    query.facebookAccounts = { $in: [options.facebookId] };
+    query.facebookAccounts = options.facebookId;
   }
   delete query.accountFilter;
 
@@ -119,8 +118,16 @@ export const peopleSearchCount = new ValidatedMethod({
 
     // const t0 = performance.now();
 
+    let hint = {
+      campaignId: 1
+    };
+
+    if (searchQuery.facebookAccounts) {
+      hint.facebookAccounts = 1;
+    }
+
     const result = Promise.await(
-      People.rawCollection().count(searchQuery.query)
+      People.rawCollection().count(searchQuery.query, { hint })
     );
 
     // const t1 = performance.now();
