@@ -209,7 +209,7 @@ campaignRoutes.route("/account/:facebookId", {
   }
 });
 
-campaignRoutes.route("/ads/create/:facebookAccountId", {
+campaignRoutes.route("/ads/create/:audienceFacebookId", {
   name: "App.campaignAds.create",
   action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Campaign`);
@@ -219,7 +219,7 @@ campaignRoutes.route("/ads/create/:facebookAccountId", {
         props: {
           audienceCategoryId: queryParams.category,
           campaignId: params.campaignId,
-          facebookAccountId: params.facebookAccountId
+          audienceFacebookId: params.audienceFacebookId
         }
       }
     });

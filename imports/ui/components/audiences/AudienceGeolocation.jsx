@@ -254,7 +254,7 @@ export default class AudienceGeolocation extends React.Component {
                                       "App.campaignAds.create",
                                       {
                                         campaignId: campaign._id,
-                                        facebookAccountId:
+                                        audienceFacebookId:
                                           facebookAccount.facebookId
                                       },
                                       { category: item.category._id }
