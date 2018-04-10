@@ -8,7 +8,13 @@ import _ from "underscore";
 const buildSearchQuery = ({ campaignId, query, options }) => {
   let queryOptions = {
     skip: options.skip || 0,
-    limit: Math.min(options.limit || 10, 50)
+    limit: Math.min(options.limit || 10, 50),
+    fields: {
+      name: 1,
+      facebookId: 1,
+      counts: 1,
+      campaignMeta: 1
+    }
   };
 
   if (options.sort) {
@@ -34,7 +40,7 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
     const regex = new RegExp(query.q, "i");
     query.$text = { $search: query.q };
     if (!queryOptions.sort) {
-      queryOptions.fields = { score: { $meta: "textScore" } };
+      queryOptions.fields.score = { $meta: "textScore" };
       queryOptions.sort = { score: { $meta: "textScore" } };
     }
   }
@@ -73,14 +79,14 @@ export const peopleSearch = new ValidatedMethod({
 
     const searchQuery = buildSearchQuery({ campaignId, query, options });
 
-    const t0 = performance.now();
+    // const t0 = performance.now();
 
     const cursor = People.find(searchQuery.query, searchQuery.options);
 
     const result = cursor.fetch();
 
-    const t1 = performance.now();
-    console.log("Search took " + (t1 - t0) + " ms.", searchQuery);
+    // const t1 = performance.now();
+    // console.log("Search took " + (t1 - t0) + " ms.", searchQuery);
 
     return result;
   }
@@ -111,17 +117,17 @@ export const peopleSearchCount = new ValidatedMethod({
 
     const searchQuery = buildSearchQuery({ campaignId, query, options });
 
-    const t0 = performance.now();
+    // const t0 = performance.now();
 
     const result = Promise.await(
       People.rawCollection().count(searchQuery.query)
     );
 
-    const t1 = performance.now();
-    console.log(
-      "Counted " + result + " and took " + (t1 - t0) + " ms.",
-      searchQuery
-    );
+    // const t1 = performance.now();
+    // console.log(
+    //   "Counted " + result + " and took " + (t1 - t0) + " ms.",
+    //   searchQuery
+    // );
 
     return result;
   }
