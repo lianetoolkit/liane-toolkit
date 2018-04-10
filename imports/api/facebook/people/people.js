@@ -76,6 +76,13 @@ Meteor.startup(() => {
     });
     People.rawCollection().createIndex(
       {
+        campaignId: 1,
+        facebookAccounts: 1
+      },
+      { background: true }
+    );
+    People.rawCollection().createIndex(
+      {
         "campaignMeta.influencer": 1
       },
       { sparse: true }
