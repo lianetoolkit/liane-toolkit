@@ -118,16 +118,8 @@ export const peopleSearchCount = new ValidatedMethod({
 
     // const t0 = performance.now();
 
-    let hint = {
-      campaignId: 1
-    };
-
-    if (searchQuery.facebookAccounts) {
-      hint.facebookAccounts = 1;
-    }
-
     const result = Promise.await(
-      People.rawCollection().count(searchQuery.query, { hint })
+      People.rawCollection().count(searchQuery.query)
     );
 
     // const t1 = performance.now();
