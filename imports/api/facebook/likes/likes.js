@@ -16,7 +16,8 @@ Likes.schema = new SimpleSchema({
     index: true
   },
   name: {
-    type: String
+    type: String,
+    index: true
   },
   type: {
     type: String,
