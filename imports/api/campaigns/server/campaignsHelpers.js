@@ -45,6 +45,13 @@ const CampaignsHelpers = {
         accessToken: token.result
       }
     });
+    JobsHelpers.addJob({
+      jobType: "people.updateFBUsers",
+      jobData: {
+        campaignId,
+        facebookAccountId: account.id
+      }
+    });
     return;
   },
   removeAccount({ campaignId, facebookId }) {
@@ -62,10 +69,22 @@ const CampaignsHelpers = {
       account = campaign.accounts.find(acc => acc.facebookId == facebookId);
     }
 
-    // Remove entry job
+    // Remove entry jobs
     Jobs.remove({
-      "data.campaignId": campaign._id,
-      "data.facebookId": facebookId
+      $or: {
+        "data.facebookId": facebookId,
+        "data.facebookAccountId": facebookId
+      },
+      "data.campaignId": campaignId,
+      type: {
+        $in: [
+          "entries.updateAccountEntries",
+          "entries.updateEntryInteractions",
+          "entries.updatePeopleLikesCount",
+          "entries.updatePeopleCommentsCount",
+          "people.updateFBUsers"
+        ]
+      }
     });
 
     if (account) {

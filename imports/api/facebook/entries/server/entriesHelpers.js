@@ -137,16 +137,16 @@ const EntriesHelpers = {
             updateInteractions.push("comments");
           } else {
             // Update count when interaction update is not scheduled
-            if (accountCampaigns.length > 1) {
-              JobsHelpers.addJob({
-                jobType: "entries.updatePeopleCommentsCount",
-                jobData: {
-                  campaignId,
-                  facebookAccountId: facebookId,
-                  entryId: entry.id
-                }
-              });
-            }
+            // if (accountCampaigns.length > 1) {
+            //   JobsHelpers.addJob({
+            //     jobType: "entries.updatePeopleCommentsCount",
+            //     jobData: {
+            //       campaignId,
+            //       facebookAccountId: facebookId,
+            //       entryId: entry.id
+            //     }
+            //   });
+            // }
           }
           if (
             vals.counts.reaction &&
@@ -155,16 +155,16 @@ const EntriesHelpers = {
             updateInteractions.push("likes");
           } else {
             // Update count when interaction update is not scheduled
-            if (accountCampaigns.length > 1) {
-              JobsHelpers.addJob({
-                jobType: "entries.updatePeopleLikesCount",
-                jobData: {
-                  campaignId,
-                  facebookAccountId: facebookId,
-                  entryId: entry.id
-                }
-              });
-            }
+            // if (accountCampaigns.length > 1) {
+            //   JobsHelpers.addJob({
+            //     jobType: "entries.updatePeopleLikesCount",
+            //     jobData: {
+            //       campaignId,
+            //       facebookAccountId: facebookId,
+            //       entryId: entry.id
+            //     }
+            //   });
+            // }
           }
         } else {
           if (vals.counts.reaction) updateInteractions.push("likes");
