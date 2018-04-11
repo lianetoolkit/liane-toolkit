@@ -1,6 +1,7 @@
 import { Promise } from "meteor/promise";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { People } from "/imports/api/facebook/people/people.js";
+import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { HTTP } from "meteor/http";
 import { Random } from "meteor/random";
 
@@ -49,6 +50,10 @@ const LikesHelpers = {
     check(campaignId, String);
     check(facebookAccountId, String);
 
+    const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
+      facebookId: facebookAccountId
+    });
+
     if (likedPeople.length) {
       const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
       for (const likedPerson of likedPeople) {
@@ -73,34 +78,22 @@ const LikesHelpers = {
         set[`counts.${facebookAccountId}.reactions`] = reactionsCount;
         peopleBulk
           .find({
-            campaignId,
+            campaignId: { $in: accountCampaigns.map(campaign => campaign._id) },
             facebookId: likedPerson.id
           })
           .upsert()
-          .update({
-            $setOnInsert: {
-              _id: Random.id(),
-              createdAt: new Date()
-            },
-            $set: set,
-            $addToSet: {
-              facebookAccounts: facebookAccountId
-            }
-          });
-        // Update users already registered to another campaign
-        peopleBulk
-          .find({
-            campaignId: { $ne: campaignId },
-            facebookId: likedPerson.id,
-            facebookAccounts: { $in: [facebookAccountId] }
-          })
           .update(
             {
-              $set: set
+              $setOnInsert: {
+                _id: Random.id(),
+                createdAt: new Date()
+              },
+              $set: set,
+              $addToSet: {
+                facebookAccounts: facebookAccountId
+              }
             },
-            {
-              multi: true
-            }
+            { multi: true }
           );
       }
       peopleBulk.execute();

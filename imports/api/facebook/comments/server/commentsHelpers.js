@@ -1,6 +1,7 @@
 import { Promise } from "meteor/promise";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { People } from "/imports/api/facebook/people/people.js";
+import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { HTTP } from "meteor/http";
 import { Random } from "meteor/random";
 import _ from "underscore";
@@ -52,6 +53,10 @@ const CommentsHelpers = {
     check(campaignId, String);
     check(facebookAccountId, String);
 
+    const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
+      facebookId: facebookAccountId
+    });
+
     if (commentedPeople.length) {
       const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
       for (const commentedPerson of commentedPeople) {
@@ -66,30 +71,20 @@ const CommentsHelpers = {
         set[`counts.${facebookAccountId}.comments`] = commentsCount;
         peopleBulk
           .find({
-            campaignId,
+            campaignId: { $in: accountCampaigns.map(campaign => campaign._id) },
             facebookId: commentedPerson.id
           })
           .upsert()
-          .update({
-            $setOnInsert: {
-              _id: Random.id(),
-              createdAt: new Date()
-            },
-            $set: set,
-            $addToSet: {
-              facebookAccounts: facebookAccountId
-            }
-          });
-        // Update users already registered to another campaign
-        peopleBulk
-          .find({
-            campaignId: { $ne: campaignId },
-            facebookId: commentedPerson.id,
-            facebookAccounts: { $in: [facebookAccountId] }
-          })
           .update(
             {
-              $set: set
+              $setOnInsert: {
+                _id: Random.id(),
+                createdAt: new Date()
+              },
+              $set: set,
+              $addToSet: {
+                facebookAccounts: facebookAccountId
+              }
             },
             {
               multi: true
