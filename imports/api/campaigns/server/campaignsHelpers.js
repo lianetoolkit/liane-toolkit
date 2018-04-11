@@ -71,10 +71,10 @@ const CampaignsHelpers = {
 
     // Remove entry jobs
     Jobs.remove({
-      $or: {
-        "data.facebookId": facebookId,
-        "data.facebookAccountId": facebookId
-      },
+      $or: [
+        { "data.facebookId": facebookId },
+        { "data.facebookAccountId": facebookId }
+      ],
       "data.campaignId": campaignId,
       type: {
         $in: [
