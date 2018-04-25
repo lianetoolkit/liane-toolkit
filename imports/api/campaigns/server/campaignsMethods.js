@@ -10,6 +10,8 @@ import { AdAccountsHelpers } from "/imports/api/facebook/adAccounts/server/adAcc
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 import _ from "underscore";
 
+const PRIVATE = Meteor.settings.private;
+
 export const campaignsCreate = new ValidatedMethod({
   name: "campaigns.create",
   validate: new SimpleSchema({
@@ -43,6 +45,11 @@ export const campaignsCreate = new ValidatedMethod({
     if (!userId) {
       throw new Meteor.Error(401, "You need to login");
     }
+
+    if (PRIVATE && !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "Campaign creation is currently disabled.");
+    }
+
     const users = [{ userId, role: "owner" }];
     const insertDoc = { users, name, description, contextId, adAccountId };
 
