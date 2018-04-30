@@ -53,7 +53,6 @@ const AudiencesJobs = {
     run({ job }) {
       check(job && job.data && job.data.campaignId, String);
       check(job && job.data && job.data.adAccountId, String);
-      check(job && job.data && job.data.tokens, Array);
       check(job && job.data && job.data.facebookAccountId, String);
       check(job && job.data && job.data.geolocationId, String);
       check(job && job.data && job.data.audienceCategoryId, String);
@@ -61,7 +60,6 @@ const AudiencesJobs = {
 
       const campaignId = job.data.campaignId;
       const adAccountId = job.data.adAccountId;
-      const tokens = job.data.tokens;
       const facebookAccountId = job.data.facebookAccountId;
       const geolocationId = job.data.geolocationId;
       const audienceCategoryId = job.data.audienceCategoryId;
@@ -73,7 +71,6 @@ const AudiencesJobs = {
           FacebookAudiencesHelpers.fetchAndCreateSpecAudience({
             campaignId,
             adAccountId,
-            tokens,
             facebookAccountId,
             geolocationId,
             audienceCategoryId,

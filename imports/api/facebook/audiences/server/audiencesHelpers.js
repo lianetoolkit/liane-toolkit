@@ -29,6 +29,14 @@ const FacebookAudiencesHelpers = {
       return 0;
     }
   },
+  _getTokens({ adAccountId, campaignId }) {
+    const adAccountUsers = AdAccountsHelpers.getUsers({ adAccountId });
+    if (!adAccountUsers.length) {
+      CampaignsHelpers.suspendAdAccount({ campaignId: campaignId });
+      throw new Meteor.Error("Ad account has no admin users on the app");
+    }
+    return adAccountUsers.map(user => user.services.facebook.accessToken);
+  },
   async updateAccountAudience({ campaignId, facebookAccountId }) {
     check(facebookAccountId, String);
 
@@ -49,20 +57,8 @@ const FacebookAudiencesHelpers = {
       throw new Meteor.Error("Campaign has no ad account.");
     }
 
-    const adAccountUsers = AdAccountsHelpers.getUsers({ adAccountId });
-
-    if (!adAccountUsers.length) {
-      CampaignsHelpers.suspendAdAccount({ campaignId: campaign._id });
-      throw new Meteor.Error("Ad account has no admin users on the app");
-    }
-
-    const tokens = adAccountUsers.map(
-      user => user.services.facebook.accessToken
-    );
-
-    const campaignAccount = campaign.accounts.find(
-      c => c.facebookId == facebookAccountId
-    );
+    // Validate token
+    const tokens = this._getTokens({ adAccountId, campaignId: campaign._id });
 
     // Update adAccount data
     AdAccountsHelpers.update({ adAccountId, token: tokens[0] });
@@ -88,7 +84,6 @@ const FacebookAudiencesHelpers = {
           contextId: context._id,
           campaignId: campaign._id,
           adAccountId,
-          tokens,
           audienceCategoryId: audienceCategory._id,
           facebookAccountId
         })
@@ -125,14 +120,12 @@ const FacebookAudiencesHelpers = {
     contextId,
     campaignId,
     adAccountId,
-    tokens,
     facebookAccountId,
     audienceCategoryId
   }) {
     check(contextId, String);
     check(campaignId, String);
     check(adAccountId, String);
-    check(tokens, Array);
     check(facebookAccountId, String);
     check(audienceCategoryId, String);
 
@@ -140,7 +133,6 @@ const FacebookAudiencesHelpers = {
       contextId,
       campaignId,
       adAccountId,
-      tokens,
       facebookAccountId,
       audienceCategoryId
     });
@@ -156,7 +148,6 @@ const FacebookAudiencesHelpers = {
       contextId,
       campaignId,
       adAccountId,
-      tokens,
       facebookAccountId,
       audienceCategoryId,
       spec
@@ -226,7 +217,6 @@ const FacebookAudiencesHelpers = {
     contextId,
     campaignId,
     adAccountId,
-    tokens,
     facebookAccountId,
     audienceCategoryId,
     spec
@@ -234,7 +224,6 @@ const FacebookAudiencesHelpers = {
     check(contextId, String);
     check(campaignId, String);
     check(adAccountId, String);
-    check(tokens, Array);
     check(facebookAccountId, String);
     check(audienceCategoryId, String);
     check(spec, Object);
@@ -243,7 +232,6 @@ const FacebookAudiencesHelpers = {
       contextId,
       campaignId,
       adAccountId,
-      tokens,
       facebookAccountId,
       audienceCategoryId,
       spec
@@ -266,7 +254,6 @@ const FacebookAudiencesHelpers = {
           jobData: {
             campaignId,
             adAccountId,
-            tokens,
             facebookAccountId,
             geolocationId: context.mainGeolocationId,
             audienceCategoryId,
@@ -286,7 +273,6 @@ const FacebookAudiencesHelpers = {
         jobData: {
           campaignId,
           adAccountId,
-          tokens,
           facebookAccountId,
           geolocationId,
           audienceCategoryId,
@@ -331,6 +317,9 @@ const FacebookAudiencesHelpers = {
     const campaign = Campaigns.findOne(campaignId);
     const adAccount = AdAccounts.findOne(adAccountId);
     const user = UsersHelpers.getUserByToken({ token: accessToken });
+    if (!user) {
+      throw new Meteor.Error("fatal", "User token has changed.");
+    }
     if (!campaign) {
       throw new Meteor.Error("fatal", "Campaign does not exist");
     }
@@ -384,7 +373,6 @@ const FacebookAudiencesHelpers = {
   async fetchAndCreateSpecAudience({
     campaignId,
     adAccountId,
-    tokens,
     facebookAccountId,
     geolocationId,
     audienceCategoryId,
@@ -393,7 +381,6 @@ const FacebookAudiencesHelpers = {
     // logger.debug("FacebookAudiencesHelpers.fetchAndCreateSpecAudience", {
     //   campaignId,
     //   adAccountId,
-    //   tokens,
     //   facebookAccountId,
     //   geolocationId,
     //   audienceCategoryId,
@@ -402,11 +389,14 @@ const FacebookAudiencesHelpers = {
 
     check(campaignId, String);
     check(adAccountId, String);
-    check(tokens, Array);
     check(facebookAccountId, String);
     check(geolocationId, String);
     check(audienceCategoryId, String);
     check(spec, Object);
+
+    const tokens = this._getTokens({ adAccountId, campaignId });
+    // Update adAccount data
+    AdAccountsHelpers.update({ adAccountId, token: tokens[0] });
 
     if (adAccountId.indexOf("act_") === 0) {
       adAccountId = adAccountId.replace("act_", "");
