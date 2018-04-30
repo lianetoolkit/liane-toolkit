@@ -396,7 +396,7 @@ const FacebookAudiencesHelpers = {
 
     const tokens = this._getTokens({ adAccountId, campaignId });
     // Update adAccount data
-    AdAccountsHelpers.update({ adAccountId, token: tokens[0] });
+    // AdAccountsHelpers.update({ adAccountId, token: tokens[0] });
 
     if (adAccountId.indexOf("act_") === 0) {
       adAccountId = adAccountId.replace("act_", "");
