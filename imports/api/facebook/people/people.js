@@ -4,6 +4,12 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 
 const People = new Mongo.Collection("people");
 
+People.lastInteractionsSchema = new SimpleSchema({
+  facebookId: { type: String },
+  lastInteraction: { type: Date },
+  estimate: { type: Boolean, defaultValue: false }
+});
+
 People.schema = new SimpleSchema({
   facebookId: {
     type: String,
@@ -30,6 +36,14 @@ People.schema = new SimpleSchema({
   },
   "facebookAccounts.$": {
     type: String
+  },
+  lastInteractions: {
+    type: Array,
+    index: true,
+    optional: true
+  },
+  "lastInteractions.$": {
+    type: People.lastInteractionsSchema
   },
   counts: {
     type: Object,
@@ -62,7 +76,6 @@ People.attachSchema(People.schema);
 
 Meteor.startup(() => {
   if (Meteor.isServer) {
-    // console.log(People.rawCollection().getIndexes());
     People.rawCollection().dropIndex("name_text");
     People.rawCollection().dropIndex(
       "campaignMeta.influencer_1_campaignMeta.voteIntent_1_campaignMeta.starred_1_campaignMeta.troll_1"

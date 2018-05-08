@@ -99,11 +99,21 @@ const LikesHelpers = {
       peopleBulk.execute();
     }
   },
-  getEntryLikes({ campaignId, facebookAccountId, entryId, accessToken }) {
+  getEntryLikes({
+    campaignId,
+    facebookAccountId,
+    entryId,
+    likeDateEstimate,
+    accessToken
+  }) {
     check(campaignId, String);
     check(facebookAccountId, String);
     check(entryId, String);
     check(accessToken, String);
+
+    if (likeDateEstimate) {
+      console.log("storing like date estimate", { entryId, facebookAccountId });
+    }
 
     logger.debug("LikesHelpers.getEntryLikes called", {
       entryId
@@ -131,15 +141,19 @@ const LikesHelpers = {
         like.facebookAccountId = facebookAccountId;
         const personId = like.id;
         delete like.id;
+        let insert = {
+          _id: Random.id(),
+          personId,
+          entryId
+        };
+        if (likeDateEstimate) {
+          insert["created_time"] = new Date();
+        }
         bulk
           .find({ personId, entryId })
           .upsert()
           .update({
-            $setOnInsert: {
-              _id: Random.id(),
-              personId,
-              entryId
-            },
+            $setOnInsert: insert,
             $set: like
           });
       }
