@@ -1,25 +1,34 @@
-import { genderOptions, educationOptions, personFields } from "./common";
+import { genderOptions, educationOptions, personFields, raceOptions, socialClassOptions } from "./common";
 
 export default [
   {
     key: "basic_info",
     title: "Informações básicas",
-    description: "Vamos começar com informações básicas da candidatura",
+    description: "Vamos começar com informações básicas da candidatura.",
     fields: [
       {
         key: "name_bb",
         label: "Seu nome na urna",
-        fieldType: "text"
+        fieldType: "text",
+        print: true
       },
       {
         key: "party_name",
         label: "Nome do partido",
-        fieldType: "text"
+        fieldType: "text",
+        print:true
+      },
+      {
+        key: "electoral_post",
+        label: "Cargo",
+        fieldType: "text",
+        print: true
       },
       {
         key: "number",
         label: "Numero na urna",
-        fieldType: "text"
+        fieldType: "text",
+        print:true
       },
       {
         key: "age",
@@ -29,7 +38,8 @@ export default [
       {
         key: "location",
         label: "Localização",
-        fieldType: "facebook_location"
+        fieldType: "facebook_location",
+        print: true
       },
       {
         key: "occupation",
@@ -61,32 +71,42 @@ export default [
     key: "candidate",
     title: "Candidata",
     description:
-      "Sobre la candidata como figura pública como la gente la identifica? Aquí son menos características de autoevaluación de la candidata, y más de imagen pública. El objetivo es identificar los puntos que la campaña tiene que valorizar (positivos) o minimizar (negativos). Ej: Al votante le gusta porque la candidata es joven, pero tiene una preocupación con su falta de experiência. Como comunicar las dos cosas?",
+      "Como as pessoas identificam a candidata? Aqui são menos caracteristicas de auto-avaliação e mais de imagem pública. O objetivo é identificar os pontos que a campanha tem (positivas) ou minimizar (negativas). Ex: O eleitor gosta porque a candidata é jovem, porém se preocupa com a falta de experiência. Como comunicar as duas coisas?",
     fields: [
       {
         key: "positive_characteristic",
-        label: "Caracteristica positiva",
-        fieldType: "text"
+        label: "Característica positiva",
+        description: "Liste aqui uma característica positiva que te diferencie, algo que - do ponto de vista eleitoral - você acredite que é um valor que vá atrair os eleitores:\n'Eu votaria na candidata por que ela é__________'",
+        fieldType: "text",
+        print: true
       },
       {
         key: "negative_characteristic",
-        label: "Caracteristica negativa",
-        fieldType: "text"
+        label: "Característica negativa",
+        description: "Liste aqui uma característica negativa, algo que - do ponto de vista eleitoral - você acredite que vá afastar os eleitores:\n'Eu não votaria na candidata por que ela é _________'\n'Eu até votaria na candidata mas ela é _________'",
+        fieldType: "text",
+        print: true
       },
       {
         key: "talent",
         label: "Um talento",
-        fieldType: "text"
+        description: "Aqui é uma habilidade ou talento que você tem que te ajude a ser uma boa parlamentar.",
+        fieldType: "text",
+        print: true
       },
       {
         key: "limitation",
         label: "Uma limitação",
-        fieldType: "text"
+        description: "Aqui é uma limitação, uma dificuldade que você tenha que pode te atrapalhar ou dificultar em ser uma boa parlamentar.",
+        fieldType: "text",
+        print: true
       },
       {
         key: "life_experience",
         label: "Uma experiência de vida",
-        fieldType: "textarea"
+        description: "De maneira muito sintética e direta contar uma história sobre algo que você vivenciou e que possa expressar os pontos elencados acima.\nProcure uma história que evidencia sua característica positiva e o uso do seu talento e que - de preferência - mostre também como você superou sua característica negativa e sua limitação para chegar no fim da história.",
+        fieldType: "textarea",
+        print: true
       }
     ]
   },
@@ -94,18 +114,20 @@ export default [
     key: "principles",
     title: "Princípios",
     description:
-      "Princípios son los valores que hacen la candidata tener credibilidad y pedir la confianza de sus electoras. Ej: Diálogo, eficiencia y transparencia.",
+      "Liste três princípios que vão te guiar por todo e qualquer processo, aquilo que é caro e verdadeiro para você não importando o contexto.\nPara ajudar a dar clareza ao princípio, mesmo que pareça óbvio, descreva em uma frase o que esse princípio significa.",
     fields: [
       {
         key: "principles",
         label: "Princípios",
         fieldType: "repeater",
+        print: true,
         limit: 3,
         fields: [
           {
             key: "title",
             label: "Título",
-            fieldType: "text"
+            fieldType: "text",
+            print: true
           },
           {
             key: "principle",
@@ -120,18 +142,20 @@ export default [
     key: "causes",
     title: "Causas",
     description:
-      "Causas son los temas que la candidata más tiene familiaridad y defiende. Ej: Cultura, movilidad urbana y feminismo.",
+      "Liste três causas que você vai defender no mandato, são áreas e bandeiras onde você vai concentrar os esforços de atuação parlamentar.",
     fields: [
       {
         key: "causes",
         label: "Causas principais",
         fieldType: "repeater",
+        print: true,
         limit: 3,
         fields: [
           {
             key: "title",
-            label: "Descrição",
-            fieldType: "text"
+            label: "Título",
+            fieldType: "text",
+            print: true
           },
           {
             key: "importance",
@@ -151,18 +175,20 @@ export default [
     key: "commitments",
     title: "Compromissos",
     description:
-      "Compromisos son acciones que tu puedes tener una vez electo que no dependen de votaciones o aprobación de leyes. Ej. voy a transparentar todas mis cuentas / voy a firmar la 3 de 3.",
+      "Compromissos são ações concretas que você vai cumprir durante seu mandato. Em geral, aqui, pela própria limitação da atuação parlamentar, faz mais sentido se comprometer com *forma* (isso é, como você vai operar e fazer as construções políticas) do que conteúdo (o que você vai fazer durante o mandato).",
     fields: [
       {
         key: "commitments",
         label: "Compromissos principais",
         fieldType: "repeater",
+        print: true,
         limit: 3,
         fields: [
           {
             key: "title",
             label: "Título",
-            fieldType: "text"
+            fieldType: "text",
+            print: true
           },
           {
             key: "explain",
@@ -175,9 +201,9 @@ export default [
   },
   {
     key: "potential_voter",
-    title: "Pleitoras em potencial",
+    title: "Eleitoras em potencial",
     description:
-      "El objetivo de esa sección es identificar 3 perfiles de potencial elector a partir de personas que ya sabes que van a votar en la candidata, evitando personas como tu mama porque probablemente personas como ellas no votarían en ti :)",
+      "A ideia é você descrever um eleitor ou eleitora real, alguém com nome e sobrenome que você sabia que vai votar em você e depois generalizar as características dessa pessoa para encontrar perfis de eleitores.\n'Rodrigo, branco, 26 anos, morador de Pinheiros, é estudante universitário da PUC e cursa administração pública vai votar em mim porque acredita que eu tenho experiência de gestão pública'\n'Flávia, negra, 33 anos, mora na Lapa, é mãe solo e trabalha com comunicação, vai votar em mim porque reconhece em mim uma feminista preocupada com a infância'",
     fields: [
       {
         key: "profiles",
@@ -188,11 +214,6 @@ export default [
           {
             key: "name",
             label: "Nome da pessoa",
-            fieldType: "text"
-          },
-          {
-            key: "tag",
-            label: "Nome do perfil",
             fieldType: "text"
           },
           {
@@ -212,9 +233,10 @@ export default [
                 options: genderOptions
               },
               {
-                key: "ehtnicity",
+                key: "ethnicity",
                 label: "Raça",
-                fieldType: "text"
+                fieldType: "select",
+                options: raceOptions
               },
               {
                 key: "education",
@@ -225,7 +247,8 @@ export default [
               {
                 key: "social_class",
                 label: "Classe social",
-                fieldType: "text"
+                fieldType: "select",
+                options: socialClassOptions
               }
             ]
           },
@@ -246,9 +269,9 @@ export default [
               },
               {
                 key: "locus",
-                label: "Locus",
+                label: "Local",
                 description:
-                  "Onde podemos encontrar essa pessoa? ex: Café, Universidade, Praça, Praia, etc",
+                  "Onde podemos encontrar essa pessoa na cidade? ex: Café, Universidade, Praça, Praia, etc",
                 fieldType: "text"
               }
             ]
@@ -256,6 +279,7 @@ export default [
           {
             key: "themes",
             label: "Interesses",
+            description: "Esse campo é conectado com interesses do Facebook portanto está em inglês e é limitado.",
             fieldType: "group",
             fields: [
               {
@@ -274,17 +298,29 @@ export default [
                 key: "fears",
                 label: "Medos",
                 description:
-                  "Do que essa pessoa tema medo? Ex: desemprego, violência, ficar doente",
+                  "Qual o principal medo dessa pessoa hoje? Ex: 'Perder meu emprego', 'Não conseguir prover para os meus filhos', 'Não conseguir me aposentar'",
                 fieldType: "text"
               },
               {
                 key: "desires",
                 label: "Desejos",
                 description:
-                  "Quais são os sonhos e desejos dessa pessoa? Ex: entrar na faculdade, comprar a casa própria, formar uma família",
+                  "Qual o principal desejo dessa pessoa? Ex: 'Quero entrar na faculdade para garantir um bom emprego', 'Quero andar na rua sem ter medo'",
                 fieldType: "text"
               }
             ]
+          },
+          {
+            key: "reason",
+            label: "Motivo",
+            description: "Descreva em uma frase porque essa pessoa vai votar em você.",
+            fieldType: "text"
+          },
+          {
+            key: "tag",
+            label: "Nome do perfil",
+            description: "Use um nome que identifique genericamente esse tipo de eleitor.\nJovem universitário ativista.",
+            fieldType: "text"
           }
         ]
       }
@@ -294,7 +330,7 @@ export default [
     key: "network",
     title: "Redes",
     description:
-      "Para esta sección, el objetivo es mapear dos niveles de tus redes, la red más próxima y los principales influenciadores de tus redes.",
+      "Toda campanha parte das redes mais próximas, abaixo mapeie seus primeiros eleitores, voluntários, doadores e influenciadores. Também identifique seus competidores.",
     fields: [
       {
         key: "voters",
@@ -336,31 +372,34 @@ export default [
         key: "competitors",
         label: "Competidores",
         fieldType: "repeater",
+        print: true,
         limit: 10,
         fields: [
           {
-            key: "party",
-            label: "Partido",
-            fieldType: "text"
+            key: "name",
+            label: "Nome",
+            fieldType: "text",
+            print: true
           },
           {
-            key: "name",
-            label: "Name",
-            fieldType: "text"
+            key: "party",
+            label: "Partido",
+            fieldType: "text",
+            print: true
           },
           {
             key: "location",
-            label: "Location",
+            label: "Local",
             fieldType: "facebook_location"
           },
           {
             key: "facebook_url",
-            label: "Facebook URL",
+            label: "Link facebook",
             fieldType: "text"
           },
           {
             key: "twitter_url",
-            label: "Twitter URL",
+            label: "Link twitter",
             fieldType: "text"
           }
         ]
@@ -369,9 +408,9 @@ export default [
   },
   {
     key: "assets",
-    title: "Ativos",
+    title: "Diferenciais de campanha",
     description:
-      "Ativos são todos os recursos materiais/humanos/financeiros que você dispõe para dar força a sua campanha",
+      "São todos os recursos materiais/humanos/financeiros que você dispõe para dar força a sua campanha",
     fields: [
       {
         key: "assets",
@@ -391,28 +430,35 @@ export default [
     key: "team",
     title: "Equipe",
     description:
-      "<p>Ahora hablemos de tu equipo de campaña. Toda campaña idealmente tiene que tener algunas actividades y gente responsable por ellas. Campañas activistas generalmente no tienen recursos para contratar personas, y trabajan más con amigos/colegas para realizar las actividades. Identifiquémoslos.</p> <p>Las coordinaciones de campaña son</p>" +
-      "<ul>" +
-      "<li>Coordinación general</li>" +
-      "<li>Comunicación</li>" +
-      "<li>Financiero/fondos</li>" +
-      "<li>Jurídico</li>" +
-      "<li>Movilización/território</li>" +
-      "<li>Agenda</li>" +
-      "<li>Alianzas</li>" +
-      "<li>Encuestas</li>" +
-      "</ul>",
+      "Liste aqui qual é a sua estrutura de campanha, quais são os cargos e quem vai ocupar esses cargos.\nNão tem problema se você não tiver os nomes ainda, mas é importante então você identificar esses perfis para justamente poder buscar.\nAcesse [aqui https://docs.google.com/document/d/14w9e0ZoLnA7FSoXTkoZLrQJYksb3Fv6Dz6hEagawQFU/edit?usp=sharing] uma sugestão de estrutura de campanha.",
     fields: [
       {
         key: "team",
         label: "Equipe",
         fieldType: "repeater",
+        print: true,
         fields: [
-          ...personFields,
+          {
+            key: "name",
+            label: "Nome",
+            fieldType: "text",
+            print: true
+          },
+          {
+            key: "email",
+            label: "Email",
+            fieldType: "text"
+          },
+          {
+            key: "cellphone",
+            label: "Celular",
+            fieldType: "text"
+          },
           {
             key: "role",
-            label: "Papel",
+            label: "Função",
             fieldType: "select",
+            print: true,
             options: {
               general_coordination: "Coordenadora geral",
               communication: "Comunicação",
@@ -440,7 +486,7 @@ export default [
           },
           {
             key: "experience",
-            label: "Experiência no papel",
+            label: "Experiência na função",
             fieldType: "select",
             options: {
               none: "Nenhuma",
@@ -452,7 +498,7 @@ export default [
           {
             key: "bio",
             label: "Mini-bio",
-            description: "Pode ser usado no site.",
+            description: "ATENÇÃO: Pode ser usado no site.",
             fieldType: "textarea"
           }
         ]
@@ -465,17 +511,19 @@ export default [
     fields: [
       {
         key: "expense",
-        label: "Quanto você vai gastar na campanha?",
+        label: "Quanto vai custar sua campanha?",
         description:
           "Esse número pode ser um chute. É importante você começar a pensar sobre isso.",
-        fieldType: "text"
+        fieldType: "text",
+        print:true
       },
       {
         key: "funders",
-        label: "Quem e como vai financiar?",
+        label: "Como você vai financiar?",
         description:
-          "Crowdfunding, amigos da família, rede de apoiadores, nomeie aqui como pretende captar esses recursos",
-        fieldType: "textarea"
+          "Crowdfunding, amigos da família, rede de apoiadores, nomeie aqui como pretende captar esses recursos.",
+        fieldType: "textarea",
+        print:true
       }
     ]
   }
