@@ -125,7 +125,9 @@ const LikesHelpers = {
               },
               $set: set,
               $max: {
-                lastInteractionDate: likedPerson.like.created_time || 0
+                lastInteractionDate: new Date(
+                  likedPerson.like.created_time || 0
+                )
               },
               $addToSet: {
                 facebookAccounts: facebookAccountId
