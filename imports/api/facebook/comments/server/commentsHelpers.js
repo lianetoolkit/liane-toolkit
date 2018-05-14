@@ -67,29 +67,60 @@ const CommentsHelpers = {
         let set = {
           updatedAt: new Date()
         };
+        // let lastInteraction = {
+        //   facebookId: facebookAccountId
+        // };
+        // if (commentedPerson.comment.created_time) {
+        //   lastInteraction["date"] = {
+        //     $max: commentedPerson.comment.created_time
+        //   };
+        //   lastInteraction["estimate"] = false;
+        // }
         set["name"] = commentedPerson.name;
         set[`counts.${facebookAccountId}.comments`] = commentsCount;
-        peopleBulk
-          .find({
-            campaignId: { $in: accountCampaigns.map(campaign => campaign._id) },
-            facebookId: commentedPerson.id
-          })
-          .upsert()
-          .update(
-            {
+        // set["lastInteraction"] = lastInteraction;
+
+        for (const campaign of accountCampaigns) {
+          // Person has the last interaction populated
+          // peopleBulk
+          //   .find({
+          //     campaignId: campaign._id,
+          //     facebookId: commentedPerson.id,
+          //     "lastInteractions.facebookId": facebookAccountId
+          //   })
+          //   .update({
+          //     $setOnInsert: {
+          //       _id: Random.id(),
+          //       createdAt: new Date()
+          //     },
+          //     $set: { ...set, "lastInteractions.$": lastInteraction },
+          //     $addToSet: {
+          //       facebookAccounts: facebookAccountId
+          //     }
+          //   });
+
+          // Person does not have the last interaction populated
+          peopleBulk
+            .find({
+              campaignId: campaign._id,
+              facebookId: commentedPerson.id
+            })
+            .upsert()
+            .update({
               $setOnInsert: {
                 _id: Random.id(),
                 createdAt: new Date()
               },
               $set: set,
+              $max: {
+                lastInteractionDate: commentedPerson.comment.created_time || 0
+              },
               $addToSet: {
                 facebookAccounts: facebookAccountId
+                // lastInteractions: lastInteraction
               }
-            },
-            {
-              multi: true
-            }
-          );
+            });
+        }
       }
       peopleBulk.execute();
     }
@@ -130,7 +161,7 @@ const CommentsHelpers = {
       const commentedPeople = [];
       for (const comment of data) {
         if (comment.from) {
-          commentedPeople.push(comment.from);
+          commentedPeople.push({ ...comment.from, comment });
           comment.personId = comment.from.id;
           comment.name = comment.from.name;
           comment.entryId = entryId;

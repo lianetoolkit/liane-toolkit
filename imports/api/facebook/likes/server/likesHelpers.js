@@ -55,7 +55,7 @@ const LikesHelpers = {
     });
 
     if (likedPeople.length) {
-      const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
+      const peopleBulk = People.rawCollection().initializeOrderedBulkOp();
       for (const likedPerson of likedPeople) {
         const likesCount = Likes.find({
           personId: likedPerson.id,
@@ -73,28 +73,66 @@ const LikesHelpers = {
         let set = {
           updatedAt: new Date()
         };
+
+        // let lastInteraction = {
+        //   facebookId: facebookAccountId
+        // };
+        // if (likedPerson.like.created_time) {
+        //   lastInteraction["date"] = { $max: likedPerson.like.created_time };
+        //   lastInteraction["estimate"] = true;
+        // }
         set["name"] = likedPerson.name;
         set[`counts.${facebookAccountId}.likes`] = likesCount;
         set[`counts.${facebookAccountId}.reactions`] = reactionsCount;
-        peopleBulk
-          .find({
-            campaignId: { $in: accountCampaigns.map(campaign => campaign._id) },
-            facebookId: likedPerson.id
-          })
-          .upsert()
-          .update(
-            {
+        // set["lastInteraction"] = lastInteraction;
+
+        for (const campaign of accountCampaigns) {
+          // Person has the last interaction populated
+          // peopleBulk
+          //   .find({
+          //     campaignId: campaign._id,
+          //     facebookId: likedPerson.id,
+          //     // "lastInteractions.facebookId": facebookAccountId
+          //   })
+          //   .update({
+          //     $setOnInsert: {
+          //       _id: Random.id(),
+          //       createdAt: new Date()
+          //     },
+          //     $set: {
+          //       ...set,
+          //       // "lastInteractions.$": lastInteraction
+          //     },
+          //     $max: {
+          //       "lastInteractionDate": likedPerson.like.created_time || 0
+          //     },
+          //     $addToSet: {
+          //       facebookAccounts: facebookAccountId
+          //     }
+          //   });
+
+          // Person does not have the last interaction populated
+          peopleBulk
+            .find({
+              campaignId: campaign._id,
+              facebookId: likedPerson.id
+            })
+            .upsert()
+            .update({
               $setOnInsert: {
                 _id: Random.id(),
                 createdAt: new Date()
               },
               $set: set,
+              $max: {
+                lastInteractionDate: likedPerson.like.created_time || 0
+              },
               $addToSet: {
                 facebookAccounts: facebookAccountId
+                // lastInteractions: lastInteraction
               }
-            },
-            { multi: true }
-          );
+            });
+        }
       }
       peopleBulk.execute();
     }
@@ -110,10 +148,6 @@ const LikesHelpers = {
     check(facebookAccountId, String);
     check(entryId, String);
     check(accessToken, String);
-
-    if (likeDateEstimate) {
-      console.log("storing like date estimate", { entryId, facebookAccountId });
-    }
 
     logger.debug("LikesHelpers.getEntryLikes called", {
       entryId
@@ -137,7 +171,6 @@ const LikesHelpers = {
       const bulk = Likes.rawCollection().initializeUnorderedBulkOp();
       const likedPeople = [];
       for (const like of data) {
-        likedPeople.push({ id: like.id, name: like.name });
         like.facebookAccountId = facebookAccountId;
         const personId = like.id;
         delete like.id;
@@ -149,6 +182,7 @@ const LikesHelpers = {
         if (likeDateEstimate) {
           insert["created_time"] = new Date();
         }
+        likedPeople.push({ id: personId, name: like.name, like: insert });
         bulk
           .find({ personId, entryId })
           .upsert()

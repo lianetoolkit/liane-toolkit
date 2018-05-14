@@ -219,6 +219,11 @@ export default class PeopleSearch extends React.Component {
                     text: "Auto"
                   },
                   {
+                    key: "lastInteraction",
+                    value: "lastInteraction",
+                    text: "Last interaction"
+                  },
+                  {
                     key: "name",
                     value: "name",
                     text: "Name"

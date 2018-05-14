@@ -6,7 +6,7 @@ const People = new Mongo.Collection("people");
 
 People.lastInteractionsSchema = new SimpleSchema({
   facebookId: { type: String },
-  lastInteraction: { type: Date },
+  date: { type: Date, optional: true },
   estimate: { type: Boolean, defaultValue: false }
 });
 
@@ -37,14 +37,40 @@ People.schema = new SimpleSchema({
   "facebookAccounts.$": {
     type: String
   },
-  lastInteractions: {
-    type: Array,
-    index: true,
-    optional: true
+  lastInteractionDate: {
+    type: Date,
+    optional: true,
+    index: true
   },
-  "lastInteractions.$": {
-    type: People.lastInteractionsSchema
-  },
+  // lastInteraction: {
+  //   type: Object,
+  //   optional: true,
+  //   index: true
+  // },
+  // "lastInteraction.date": {
+  //   type: Date,
+  //   optional: true,
+  //   index: true
+  // },
+  // "lastInteraction.facebookId": {
+  //   type: String,
+  //   optional: true,
+  //   index: true
+  // },
+  // "lastInteraction.estimate": {
+  //   type: Boolean,
+  //   defaultValue: false,
+  //   optional: true,
+  //   index: true
+  // },
+  // lastInteractions: {
+  //   type: Array,
+  //   index: true,
+  //   optional: true
+  // },
+  // "lastInteractions.$": {
+  //   type: People.lastInteractionsSchema
+  // },
   counts: {
     type: Object,
     blackbox: true,

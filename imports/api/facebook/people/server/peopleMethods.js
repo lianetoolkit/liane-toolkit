@@ -13,7 +13,8 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
       name: 1,
       facebookId: 1,
       counts: 1,
-      campaignMeta: 1
+      campaignMeta: 1,
+      lastInteractionDate: 1
     }
   };
 
@@ -29,6 +30,13 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
         break;
       case "name":
         queryOptions.sort = { name: 1 };
+        break;
+      case "lastInteraction":
+        if (options.facebookId) {
+          queryOptions.sort = {
+            "lastInteractionDate": -1
+          };
+        }
         break;
       default:
     }
@@ -78,14 +86,9 @@ export const peopleSearch = new ValidatedMethod({
 
     const searchQuery = buildSearchQuery({ campaignId, query, options });
 
-    // const t0 = performance.now();
-
     const cursor = People.find(searchQuery.query, searchQuery.options);
 
     const result = cursor.fetch();
-
-    // const t1 = performance.now();
-    // console.log("Search took " + (t1 - t0) + " ms.", searchQuery);
 
     return result;
   }
@@ -116,17 +119,9 @@ export const peopleSearchCount = new ValidatedMethod({
 
     const searchQuery = buildSearchQuery({ campaignId, query, options });
 
-    // const t0 = performance.now();
-
     const result = Promise.await(
       People.rawCollection().count(searchQuery.query)
     );
-
-    // const t1 = performance.now();
-    // console.log(
-    //   "Counted " + result + " and took " + (t1 - t0) + " ms.",
-    //   searchQuery
-    // );
 
     return result;
   }

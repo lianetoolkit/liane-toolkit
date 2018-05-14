@@ -4,6 +4,14 @@ import styled from "styled-components";
 import { Table, Icon, Grid, Dimmer } from "semantic-ui-react";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import Reaction from "/imports/ui/components/entries/Reaction.jsx";
+import moment from "moment";
+
+const Wrapper = styled.div`
+  .last-interaction {
+    font-size: 0.8em;
+    color: #999;
+  }
+`;
 
 const Interactivity = styled.div`
   opacity: 0.75;
@@ -57,6 +65,31 @@ export default class PeopleSearchResults extends React.Component {
     });
     this.setState({ people });
   };
+  _getLastInteraction(person) {
+    const { facebookId } = this.props;
+    let str = "--";
+    // if (
+    //   facebookId &&
+    //   person.lastInteractions &&
+    //   person.lastInteractions.length
+    // ) {
+    //   const lastInteraction = person.lastInteractions.find(
+    //     l => l.facebookId == facebookId
+    //   );
+    //   if (lastInteraction) {
+    //     const date = moment(lastInteraction.date).fromNow();
+    //     if(lastInteraction.estimate) {
+    //       str = `~${date}`;
+    //     } else {
+    //       str = date;
+    //     }
+    //   }
+    // }
+    if (person.lastInteractionDate) {
+      str = moment(person.lastInteractionDate).fromNow();
+    }
+    return <span className="last-interaction">{str}</span>;
+  }
   render() {
     const { loading, loadingCount, facebookId, campaignId, count } = this.props;
     const { people } = this.state;
@@ -66,7 +99,7 @@ export default class PeopleSearchResults extends React.Component {
       return <Loading />;
     } else if (people && people.length) {
       return (
-        <div>
+        <Wrapper>
           {loadingCount ? (
             <p>Calculating people count...</p>
           ) : (
@@ -140,11 +173,16 @@ export default class PeopleSearchResults extends React.Component {
                       </Grid>
                     </Interactivity>
                   </Table.Cell>
+                  <Table.Cell collapsing>
+                    {person.lastInteractionDate
+                      ? this._getLastInteraction(person)
+                      : ""}
+                  </Table.Cell>
                 </Table.Row>
               ))}
             </Table.Body>
           </Table>
-        </div>
+        </Wrapper>
       );
     } else {
       return <p>No people were found.</p>;
