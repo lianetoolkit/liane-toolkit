@@ -80,8 +80,6 @@ const CommentsHelpers = {
         set[`counts.${facebookAccountId}.comments`] = commentsCount;
         // set["lastInteraction"] = lastInteraction;
 
-        console.log("FETCHING COMMENT", commentedPerson.comment.created_time);
-
         for (const campaign of accountCampaigns) {
           // Person has the last interaction populated
           // peopleBulk
