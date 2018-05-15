@@ -171,7 +171,7 @@ export default class PeopleSinglePage extends React.Component {
               <Segment size="small">
                 <Grid columns={3} verticalAlign="middle">
                   <Grid.Row>
-                    {/* <Grid.Column width={3} textAlign="center">
+                    <Grid.Column width={3} textAlign="center">
                       <a
                         href={`https://facebook.com/${person.facebookId}`}
                         target="_blank"
@@ -179,11 +179,11 @@ export default class PeopleSinglePage extends React.Component {
                       >
                         <Icon name="facebook" /> Profile
                       </a>
-                    </Grid.Column> */}
+                    </Grid.Column>
                     <Grid.Column width={3} textAlign="center">
                       <PeopleMetaButtons person={person} size="large" />
                     </Grid.Column>
-                    <Grid.Column width={13}>
+                    <Grid.Column width={10}>
                       {comments.length ? (
                         <div className="comment-history">
                           <Header>

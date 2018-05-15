@@ -109,14 +109,14 @@ export default class PeopleSearchResults extends React.Component {
             <Table.Body>
               {people.map(person => (
                 <Table.Row key={`commenter-${person._id}`}>
-                  {/* <Table.Cell collapsing>
+                  <Table.Cell collapsing>
                     <a
                       target="_blank"
                       href={`https://facebook.com/${person.facebookId}`}
                     >
                       <Icon name="facebook official" />
                     </a>
-                  </Table.Cell> */}
+                  </Table.Cell>
                   <Table.Cell singleLine collapsing>
                     <PeopleMetaButtons
                       person={person}
