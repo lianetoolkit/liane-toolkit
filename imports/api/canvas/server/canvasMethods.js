@@ -3,6 +3,40 @@ import SimpleSchema from "simpl-schema";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Canvas } from "/imports/api/canvas/canvas.js";
 
+export const getNormalized = new ValidatedMethod({
+  name: "canvas.getNormalized",
+  validate: new SimpleSchema({
+    campaignId: { type: String }
+  }).validator(),
+  run({ campaignId }) {
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    const allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    const data = Canvas.find({ campaignId }).fetch();
+
+    let result = {};
+
+    for (const item of data) {
+      if (!result[item.sectionKey]) result[item.sectionKey] = {};
+      result[item.sectionKey][item.key] = item.value;
+    }
+
+    return result;
+  }
+});
+
 export const canvasFormUpdate = new ValidatedMethod({
   name: "canvas.formUpdate",
   validate: new SimpleSchema({

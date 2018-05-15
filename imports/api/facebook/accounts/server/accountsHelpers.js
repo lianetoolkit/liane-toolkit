@@ -1,4 +1,5 @@
 import { Promise } from "meteor/promise";
+import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
@@ -114,6 +115,43 @@ const FacebookAccountsHelpers = {
       )
     );
     return { result: response.access_token };
+  },
+  getAccountCampaigns({ facebookId }) {
+    check(facebookId, String);
+    return Campaigns.find({
+      status: { $ne: "suspended" },
+      accounts: { $elemMatch: { facebookId } }
+    }).fetch();
+  },
+  fetchFBAccount({ userId, address }) {
+    check(userId, String);
+    check(address, String);
+
+    const user = Meteor.users.findOne(userId);
+
+    if (!user) {
+      throw new Meteor.Error(500, "This user does not exists");
+    }
+    if (!user.services.facebook) {
+      throw new Meteor.Error(500, "Missing accessToken");
+    }
+
+    const accessToken = user.services.facebook.accessToken;
+
+    let id = "";
+
+    if (address.indexOf("https://www.facebook.com") == 0) {
+      id = address.split("/")[3];
+    } else {
+      id = address;
+    }
+
+    return Promise.await(
+      FB.api(id, {
+        fields: ["name", "fan_count", "website", "link"],
+        access_token: accessToken
+      })
+    );
   },
   searchFBAccounts({ userId, q }) {
     check(userId, String);

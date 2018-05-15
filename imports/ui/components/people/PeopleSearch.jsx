@@ -6,12 +6,14 @@ import {
   Segment,
   Form,
   Input,
+  Checkbox,
   Select,
   Grid,
   Popup,
   Icon,
   Button,
-  Divider
+  Divider,
+  Pagination
 } from "semantic-ui-react";
 
 const Wrapper = styled.div`
@@ -52,17 +54,18 @@ export default class PeopleSearch extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      activePage: 1,
+      count: 0,
       search: {
-        name: ""
+        q: "",
+        accountFilter: "account"
       },
       options: {
-        limit: 10,
+        limit: 15,
         skip: 0,
-        props: {
-          sortBy: "name",
-          facebookId: props.facebookId,
-          campaignId: props.campaignId
-        }
+        sort: "auto",
+        facebookId: props.facebookId,
+        campaignId: props.campaignId
       }
     };
     this._handleSearchChange = this._handleSearchChange.bind(this);
@@ -77,69 +80,88 @@ export default class PeopleSearch extends React.Component {
       this.setState({
         options: {
           ...options,
-          props: {
-            ...options.props,
-            facebookId: nextProps.facebookId
-          }
+          facebookId: nextProps.facebookId
         }
       });
     }
   }
   _toggleMeta = prop => {
     return () => {
-      const { options } = this.state;
-      if (!options.props[`campaignMeta.${prop}`]) {
+      const { search } = this.state;
+      if (!search[`campaignMeta.${prop}`]) {
         this.setState({
-          options: {
-            ...options,
-            props: {
-              ...options.props,
-              [`campaignMeta.${prop}`]: true
-            }
+          search: {
+            ...search,
+            [`campaignMeta.${prop}`]: true
           }
         });
       } else {
-        let newProps = { ...options.props };
-        delete newProps[`campaignMeta.${prop}`];
+        let newSearch = { ...search };
+        delete newSearch[`campaignMeta.${prop}`];
         this.setState({
-          options: {
-            ...options,
-            props: newProps
-          }
+          search: newSearch
         });
       }
     };
   };
   _handleSearchChange = _.debounce((ev, { name, value }) => {
-    this.setState({ search: { ...this.state.search, [name]: value } });
+    const { search, options } = this.state;
+    this.setState({
+      activePage: 1,
+      search: { ...search, [name]: value },
+      options: { ...options, skip: 0 }
+    });
   }, 250);
   _handleOptionChange = _.debounce((ev, { name, value }) => {
-    this.setState({ options: { ...this.state.options, [name]: value } });
+    const { options } = this.state;
+    this.setState({
+      activePage: 1,
+      options: { ...options, [name]: value, skip: 0 }
+    });
   }, 250);
   _handleSortChange = _.debounce((ev, { value }) => {
     const { options } = this.state;
     this.setState({
-      options: {
-        ...options,
-        props: { ...options.props, sortBy: value }
-      }
+      activePage: 1,
+      options: { ...options, sort: value, skip: 0 }
     });
   }, 250);
+  _handleDataChange = data => {
+    this.setState({ count: data.count });
+  };
+  _handlePageChange = (e, { activePage }) => {
+    const { options } = this.state;
+    this.setState({
+      activePage,
+      options: {
+        ...options,
+        skip: (activePage - 1) * options.limit
+      }
+    });
+  };
+  _getPageCount() {
+    const { count, options } = this.state;
+    if (count) {
+      return Math.floor(count / options.limit);
+    }
+    return 0;
+  }
   render() {
-    const { search, options } = this.state;
+    const { activePage, search, options } = this.state;
     const { campaignId, facebookId } = this.props;
+    const pageCount = this._getPageCount();
     return (
       <Wrapper>
         <h3>Find people</h3>
-        <Grid columns={3} widths="equal">
+        <Grid columns={4} widths="equal" verticalAlign="middle">
           <Grid.Row>
             <Grid.Column>
-              <span className="filter-label">Search by name</span>
+              <span className="filter-label">Text search</span>
               <Form.Field
                 fluid
                 control={Input}
-                placeholder="Type a name..."
-                name="name"
+                placeholder="Find anything..."
+                name="q"
                 onChange={this._handleSearchChange}
               />
             </Grid.Column>
@@ -151,7 +173,7 @@ export default class PeopleSearch extends React.Component {
                     key={flag.prop}
                     trigger={
                       <Button
-                        active={options.props[`campaignMeta.${flag.prop}`]}
+                        active={search[`campaignMeta.${flag.prop}`]}
                         icon={flag.icon}
                         onClick={this._toggleMeta(flag.prop)}
                       />
@@ -162,13 +184,45 @@ export default class PeopleSearch extends React.Component {
               </Button.Group>
             </Grid.Column>
             <Grid.Column>
+              <span className="filter-label">Filter by page</span>
+              <Form.Field
+                control={Select}
+                value={search.accountFilter}
+                name="accountFilter"
+                onChange={this._handleSearchChange}
+                fluid
+                options={[
+                  {
+                    key: "all",
+                    value: "all",
+                    text: "Show all people"
+                  },
+                  {
+                    key: "account",
+                    value: "account",
+                    text: "Only from this page"
+                  }
+                ]}
+              />
+            </Grid.Column>
+            <Grid.Column>
               <span className="filter-label">Sorting</span>
               <Form.Field
                 control={Select}
                 onChange={this._handleSortChange}
-                value={options.props.sortBy}
+                value={options.sort}
                 fluid
                 options={[
+                  {
+                    key: "auto",
+                    value: "auto",
+                    text: "Auto"
+                  },
+                  {
+                    key: "lastInteraction",
+                    value: "lastInteraction",
+                    text: "Last interaction"
+                  },
                   {
                     key: "name",
                     value: "name",
@@ -181,7 +235,7 @@ export default class PeopleSearch extends React.Component {
                   },
                   {
                     key: "reactions",
-                    value: "reactions",
+                    value: "likes",
                     text: "Reactions"
                   }
                 ]}
@@ -195,7 +249,16 @@ export default class PeopleSearch extends React.Component {
           facebookId={facebookId}
           search={search}
           options={options}
+          onChange={this._handleDataChange}
         />
+        <Divider hidden />
+        {pageCount ? (
+          <Pagination
+            activePage={activePage}
+            totalPages={pageCount}
+            onPageChange={this._handlePageChange}
+          />
+        ) : null}
       </Wrapper>
     );
   }

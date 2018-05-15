@@ -113,6 +113,28 @@ const LocationItem = ({ data }) => {
   return <span>{text}</span>;
 };
 
+const KeyValWrapper = styled.div`
+  p {
+    margin: 0;
+  }
+`;
+
+const KeyValItem = ({ data }) => {
+  data = data.value;
+  if (!data.length) {
+    return <p className="not-found">Information not found</p>;
+  }
+  children = [];
+  for (const item of data) {
+    children.push(
+      <p key={item.key}>
+        <strong>{item.key}</strong>: {item.val}
+      </p>
+    );
+  }
+  return <KeyValWrapper>{children}</KeyValWrapper>;
+};
+
 export default class FlexDataItem extends React.Component {
   _value() {
     const { field, data } = this.props;
@@ -129,6 +151,8 @@ export default class FlexDataItem extends React.Component {
           return <GroupItem field={field} data={data} />;
         case "repeater":
           return <RepeaterItem field={field} data={data} />;
+        case "keyval":
+          return <KeyValItem field={field} data={data} />;
         case "boolean":
           return <BooleanItem field={field} data={data} />;
         default:

@@ -3,78 +3,26 @@ import { Index, MongoDBEngine } from "meteor/easy:search";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 
 const People = new Mongo.Collection("people");
-const PeopleIndex = new Index({
-  collection: People,
-  fields: ["name"],
-  defaultSearchOptions: {
-    sortBy: "name",
-    limit: 10
-  },
-  engine: new MongoDBEngine({
-    selector: function(searchObject, options, aggregation) {
-      let selector = this.defaultConfiguration().selector(
-        searchObject,
-        options,
-        aggregation
-      );
-      for (const key in options.search.props) {
-        if (key == "campaignId" || key.indexOf("campaignMeta.") == 0) {
-          selector[key] = options.search.props[key];
-        }
-      }
-      return selector;
-    },
-    sort: function(searchObject, options) {
-      const sortBy = options.search.props.sortBy || options.search.sortBy;
-      const { facebookId } = options.search.props;
-      switch (sortBy) {
-        case "name":
-          return {
-            name: 1
-          };
-        case "comments":
-          if (facebookId) {
-            return {
-              [`counts.${facebookId}.comments`]: -1
-            };
-          } else {
-            throw new Meteor.Error("Facebook ID is required");
-          }
-        case "reactions":
-          if (facebookId) {
-            return {
-              [`counts.${facebookId}.likes`]: -1
-            };
-          } else {
-            throw new Meteor.Error("Facebook ID is required");
-          }
-        default:
-          throw new Meteor.Error("Invalid sort by prop passed");
-      }
-    }
-  }),
-  permission: options => {
-    const campaignId = options.props.campaignId;
-    if (options.userId && campaignId) {
-      const campaign = Campaigns.findOne(campaignId);
-      return _.findWhere(campaign.users, { userId: options.userId });
-    }
-    return false;
-  }
+
+People.lastInteractionsSchema = new SimpleSchema({
+  facebookId: { type: String },
+  date: { type: Date, optional: true },
+  estimate: { type: Boolean, defaultValue: false }
 });
 
 People.schema = new SimpleSchema({
   facebookId: {
     type: String,
-    index: 1,
+    index: true,
     optional: true
   },
   name: {
-    type: String
+    type: String,
+    index: true
   },
   campaignId: {
     type: String,
-    index: 1
+    index: true
   },
   campaignMeta: {
     type: Object,
@@ -83,19 +31,120 @@ People.schema = new SimpleSchema({
   },
   facebookAccounts: {
     type: Array,
-    optional: true
+    optional: true,
+    index: true
   },
   "facebookAccounts.$": {
     type: String
   },
+  lastInteractionDate: {
+    type: Date,
+    optional: true,
+    index: true
+  },
+  // lastInteraction: {
+  //   type: Object,
+  //   optional: true,
+  //   index: true
+  // },
+  // "lastInteraction.date": {
+  //   type: Date,
+  //   optional: true,
+  //   index: true
+  // },
+  // "lastInteraction.facebookId": {
+  //   type: String,
+  //   optional: true,
+  //   index: true
+  // },
+  // "lastInteraction.estimate": {
+  //   type: Boolean,
+  //   defaultValue: false,
+  //   optional: true,
+  //   index: true
+  // },
+  // lastInteractions: {
+  //   type: Array,
+  //   index: true,
+  //   optional: true
+  // },
+  // "lastInteractions.$": {
+  //   type: People.lastInteractionsSchema
+  // },
   counts: {
     type: Object,
     blackbox: true,
     optional: true
+  },
+  createdAt: {
+    type: Date,
+    index: true,
+    autoValue() {
+      if (this.isInsert) {
+        return new Date();
+      } else if (this.isUpsert) {
+        return { $setOnInsert: new Date() };
+      } else {
+        return this.unset();
+      }
+    }
+  },
+  updatedAt: {
+    type: Date,
+    index: true,
+    autoValue() {
+      return new Date();
+    }
   }
 });
 
 People.attachSchema(People.schema);
 
+Meteor.startup(() => {
+  if (Meteor.isServer) {
+    People.rawCollection().dropIndex("name_text");
+    People.rawCollection().dropIndex(
+      "campaignMeta.influencer_1_campaignMeta.voteIntent_1_campaignMeta.starred_1_campaignMeta.troll_1"
+    );
+    People.rawCollection().createIndex({
+      name: "text",
+      "campaignMeta.contact.email": "text"
+    });
+    People.rawCollection().createIndex({
+      facebookAccounts: 1
+    });
+    People.rawCollection().createIndex(
+      {
+        campaignId: 1,
+        facebookAccounts: 1
+      },
+      { background: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.influencer": 1
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.voteIntent": 1
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.starred": 1
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.troll": 1
+      },
+      { sparse: true }
+    );
+  }
+});
+
 exports.People = People;
-exports.PeopleIndex = PeopleIndex;

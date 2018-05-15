@@ -9,11 +9,15 @@ import {
   Table,
   Menu,
   Dimmer,
-  Loader
+  Loader,
+  Button,
+  Icon
 } from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
 import CompareLine from "./CompareLine.jsx";
 import AudienceInfo from "./AudienceInfo.jsx";
+import LocationChart from "./LocationChart.jsx";
+import DataAlert from "./DataAlert.jsx";
 
 const Wrapper = styled.div`
   .selectable td {
@@ -198,6 +202,15 @@ export default class AudienceGeolocation extends React.Component {
                       ) : (
                         <p />
                       )}
+                      {geolocation.audienceCategories[0] &&
+                      geolocation.audienceCategories[0].audiences &&
+                      geolocation.audienceCategories[0].audiences.length > 1 ? (
+                        <LocationChart
+                          audiences={
+                            geolocation.audienceCategories[0].audiences
+                          }
+                        />
+                      ) : null}
                       <Table selectable>
                         {geolocation.audienceCategories.map(item => {
                           const expanded = this._isExpanded(item.category._id);
@@ -209,21 +222,9 @@ export default class AudienceGeolocation extends React.Component {
                                 onClick={this._handleExpand(item.category._id)}
                               >
                                 <Table.Cell collapsing>
-                                  {/* <a
-                              className="category-title"
-                              href={FlowRouter.path(
-                                "App.campaignAudience.category",
-                                {
-                                  campaignId: campaign._id,
-                                  facebookId: facebookAccount.facebookId,
-                                  categoryId: item.category._id
-                                }
-                              )}
-                            > */}
                                   <span className="category-title">
                                     {item.category.title}
                                   </span>
-                                  {/* </a> */}
                                 </Table.Cell>
                                 <Table.Cell>
                                   {!expanded ? (
@@ -239,10 +240,33 @@ export default class AudienceGeolocation extends React.Component {
                                     )}
                                   </strong>
                                 </Table.Cell>
+                                <Table.Cell collapsing>
+                                  <DataAlert
+                                    audience={this._latestAudience(item)}
+                                  />
+                                </Table.Cell>
+                                <Table.Cell collapsing>
+                                  <Button
+                                    size="tiny"
+                                    basic
+                                    icon
+                                    href={FlowRouter.path(
+                                      "App.campaignAds.create",
+                                      {
+                                        campaignId: campaign._id,
+                                        audienceFacebookId:
+                                          facebookAccount.facebookId
+                                      },
+                                      { category: item.category._id }
+                                    )}
+                                  >
+                                    <Icon name="add" corner /> Adset
+                                  </Button>
+                                </Table.Cell>
                               </Table.Row>
                               {expanded ? (
                                 <Table.Row active>
-                                  <Table.Cell colSpan="3">
+                                  <Table.Cell colSpan="5">
                                     <AudienceInfo data={item} />
                                   </Table.Cell>
                                 </Table.Row>

@@ -5,6 +5,7 @@
     "appName": "Liane",
     "appEmail": "contact@example.com"
   },
+  "private": false,
   "facebook": {
     "clientId": "<YOUR APP ID>",
     "clientSecret": "<YOUR APP SECRET>"

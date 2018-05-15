@@ -125,7 +125,7 @@ export default class CompareLine extends React.Component {
         <Container left>
           <Bar left style={{ width: diffs[1] * 100 + "%" }} />
           <Label left>
-            Your page
+            Page
             <span>{this._format(diffs[1])}</span>
           </Label>
         </Container>

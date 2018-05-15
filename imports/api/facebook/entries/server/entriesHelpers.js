@@ -1,6 +1,7 @@
 import { Promise } from "meteor/promise";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
+import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { CommentsHelpers } from "/imports/api/facebook/comments/server/commentsHelpers.js";
 import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
@@ -35,7 +36,12 @@ const EntriesHelpers = {
       entryId
     });
   },
-  updateAccountEntries({ campaignId, facebookId, accessToken }) {
+  updateAccountEntries({
+    campaignId,
+    facebookId,
+    accessToken,
+    likeDateEstimate
+  }) {
     check(campaignId, String);
     check(facebookId, String);
     check(accessToken, String);
@@ -130,32 +136,12 @@ const EntriesHelpers = {
             currentEntry.counts.comment !== vals.counts.comment
           ) {
             updateInteractions.push("comments");
-          } else {
-            // Update count when interaction update is not scheduled
-            JobsHelpers.addJob({
-              jobType: "entries.updatePeopleCommentsCount",
-              jobData: {
-                campaignId,
-                facebookAccountId: facebookId,
-                entryId: entry.id
-              }
-            });
           }
           if (
             vals.counts.reaction &&
             currentEntry.counts.reaction !== vals.counts.reaction
           ) {
             updateInteractions.push("likes");
-          } else {
-            // Update count when interaction update is not scheduled
-            JobsHelpers.addJob({
-              jobType: "entries.updatePeopleLikesCount",
-              jobData: {
-                campaignId,
-                facebookAccountId: facebookId,
-                entryId: entry.id
-              }
-            });
           }
         } else {
           if (vals.counts.reaction) updateInteractions.push("likes");
@@ -171,6 +157,7 @@ const EntriesHelpers = {
           JobsHelpers.addJob({
             jobType: "entries.updateEntryInteractions",
             jobData: {
+              likeDateEstimate,
               interactionTypes: updateInteractions,
               facebookAccountId: facebookId,
               accessToken: accessToken,
@@ -226,12 +213,14 @@ const EntriesHelpers = {
     campaignId,
     facebookAccountId,
     entryId,
-    accessToken
+    accessToken,
+    likeDateEstimate
   }) {
     check(campaignId, String);
     check(facebookAccountId, String);
     check(entryId, String);
     check(accessToken, String);
+    check(likeDateEstimate, Boolean);
 
     interactionTypes = interactionTypes || ["comments", "likes"];
 
@@ -253,7 +242,8 @@ const EntriesHelpers = {
         facebookAccountId,
         entryId,
         accessToken,
-        campaignId
+        campaignId,
+        likeDateEstimate
       });
     }
   }

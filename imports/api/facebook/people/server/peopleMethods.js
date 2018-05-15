@@ -1,8 +1,131 @@
 import SimpleSchema from "simpl-schema";
-import { People, PeopleIndex } from "../people.js";
+import { performance } from "perf_hooks";
+import { People } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
+
+const buildSearchQuery = ({ campaignId, query, options }) => {
+  let queryOptions = {
+    skip: options.skip || 0,
+    limit: Math.min(options.limit || 10, 50),
+    fields: {
+      name: 1,
+      facebookId: 1,
+      counts: 1,
+      campaignMeta: 1,
+      lastInteractionDate: 1
+    }
+  };
+
+  if (options.sort) {
+    switch (options.sort) {
+      case "comments":
+      case "likes":
+        if (options.facebookId) {
+          queryOptions.sort = {
+            [`counts.${options.facebookId}.${options.sort}`]: -1
+          };
+        }
+        break;
+      case "name":
+        queryOptions.sort = { name: 1 };
+        break;
+      case "lastInteraction":
+        if (options.facebookId) {
+          queryOptions.sort = {
+            "lastInteractionDate": -1
+          };
+        }
+        break;
+      default:
+    }
+  }
+
+  query.campaignId = campaignId;
+
+  if (query.q) {
+    query.$text = { $search: query.q };
+    if (!queryOptions.sort) {
+      queryOptions.fields.score = { $meta: "textScore" };
+      queryOptions.sort = { score: { $meta: "textScore" } };
+    }
+  }
+  delete query.q;
+
+  if (query.accountFilter == "account" && options.facebookId) {
+    query.facebookAccounts = options.facebookId;
+  }
+  delete query.accountFilter;
+
+  return { query, options: queryOptions };
+};
+
+export const peopleSearch = new ValidatedMethod({
+  name: "people.search",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    query: {
+      type: Object,
+      blackbox: true
+    },
+    options: {
+      type: Object,
+      blackbox: true
+    }
+  }).validator(),
+  run({ campaignId, query, options }) {
+    this.unblock();
+    logger.debug("people.search called", {
+      campaignId,
+      query,
+      options
+    });
+
+    const searchQuery = buildSearchQuery({ campaignId, query, options });
+
+    const cursor = People.find(searchQuery.query, searchQuery.options);
+
+    const result = cursor.fetch();
+
+    return result;
+  }
+});
+
+export const peopleSearchCount = new ValidatedMethod({
+  name: "people.search.count",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    query: {
+      type: Object,
+      blackbox: true
+    },
+    options: {
+      type: Object,
+      blackbox: true
+    }
+  }).validator(),
+  run({ campaignId, query, options }) {
+    this.unblock();
+    logger.debug("people.search.count called", {
+      campaignId,
+      query,
+      options
+    });
+
+    const searchQuery = buildSearchQuery({ campaignId, query, options });
+
+    const result = Promise.await(
+      People.rawCollection().count(searchQuery.query)
+    );
+
+    return result;
+  }
+});
 
 export const updatePersonMeta = new ValidatedMethod({
   name: "facebook.people.updatePersonMeta",

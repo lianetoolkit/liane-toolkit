@@ -18,15 +18,12 @@ const TooltipWrapper = styled.div`
   p {
     margin: 0;
   }
-  .percentage {
+  .total {
     color: #82ca9d;
-  }
-  .location_percentage {
-    color: #8884d8;
   }
 `;
 
-const AudienceTooltip = ({ type, payload, label }) => {
+const LocationTooltip = ({ type, payload, label }) => {
   let data;
   if (payload.length) {
     data = payload[0].payload;
@@ -39,20 +36,9 @@ const AudienceTooltip = ({ type, payload, label }) => {
         </p>
         {payload.map(item => (
           <div key={item.dataKey} className={item.dataKey}>
-            {item.dataKey == "percentage" ? (
-              <p>
-                <strong>
-                  Page: {item.value.toFixed(2) + "%"} ({data.estimate})
-                </strong>
-              </p>
-            ) : null}
-            {item.dataKey == "location_percentage" ? (
-              <p>
-                <strong>Global:</strong> {item.value.toFixed(2) + "%"} ({
-                  data.location_estimate
-                })
-              </p>
-            ) : null}
+            <p>
+              <strong>Total: {item.value}</strong>
+            </p>
           </div>
         ))}
       </TooltipWrapper>
@@ -62,7 +48,7 @@ const AudienceTooltip = ({ type, payload, label }) => {
   }
 };
 
-export default class AudienceChart extends React.Component {
+export default class LocationChart extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -79,46 +65,23 @@ export default class AudienceChart extends React.Component {
       AudienceUtils.transformValues(audience)
     );
     audiences = this.populatePercentages(audiences);
-    const lastAudience = audiences[audiences.length - 1];
-    const percentage = AudienceUtils.getPercentage(lastAudience);
     return (
       <ResponsiveContainer width="100%" height={100}>
         <LineChart data={audiences}>
           {/* <CartesianGrid stroke="#ccc" strokeDasharray="5 5" /> */}
           <XAxis hide dataKey="fetch_date" />
           <YAxis
-            yAxisId="left"
-            orientation="left"
-            domain={[
-              dataMin => Math.floor(dataMin) - 3,
-              dataMax => Math.ceil(dataMax) + 3
-            ]}
-            tickFormatter={tick => tick + "%"}
-          />
-          <YAxis
             yAxisId="right"
             orientation="right"
-            domain={[
-              dataMin => Math.floor(dataMin) - 3,
-              dataMax => Math.ceil(dataMax) + 3
-            ]}
-            tickFormatter={tick => tick + "%"}
+            domain={["auto", "auto"]}
           />
-          <Tooltip content={<AudienceTooltip />} />
-          {percentage ? (
-            <Line
-              yAxisId="right"
-              type="monotone"
-              dataKey="percentage"
-              stroke="#82ca9d"
-              strokeWidth={2}
-            />
-          ) : null}
+          <Tooltip content={<LocationTooltip />} />
           <Line
-            yAxisId="left"
+            yAxisId="right"
             type="monotone"
-            dataKey="location_percentage"
-            stroke="#8884d8"
+            dataKey="total"
+            stroke="#82ca9d"
+            strokeWidth={2}
           />
         </LineChart>
       </ResponsiveContainer>
