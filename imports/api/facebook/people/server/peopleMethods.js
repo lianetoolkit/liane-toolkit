@@ -34,7 +34,7 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
       case "lastInteraction":
         if (options.facebookId) {
           queryOptions.sort = {
-            "lastInteractionDate": -1
+            lastInteractionDate: -1
           };
         }
         break;
@@ -288,5 +288,31 @@ export const exportPeople = new ValidatedMethod({
       fields: Object.keys(header),
       data: flattened
     });
+  }
+});
+
+export const importPeople = new ValidatedMethod({
+  name: "people.import",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    fileInfo: {
+      type: Object,
+      blackbox: true
+    },
+    fileData: {
+      type: Object,
+      blackbox: true
+    }
+  }).validator(),
+  run({ campaignId, fileInfo, fileData }) {
+    // console.log(fileData);
+    // const wb = XLSX.read(fileData.data, { type: "binary" });
+    // const sheet = wb.Sheets[wb.SheetNames[0]];
+    // console.log(sheet);
+    // const json = XLSX.utils.sheet_to_json(sheet);
+    // console.log(json);
+    return;
   }
 });

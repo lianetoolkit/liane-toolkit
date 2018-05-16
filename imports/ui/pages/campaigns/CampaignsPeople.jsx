@@ -5,6 +5,7 @@ import { Alerts } from "/imports/ui/utils/Alerts.js";
 import PeopleTable from "/imports/ui/components/people/PeopleTable.jsx";
 import PeopleSearch from "/imports/ui/components/people/PeopleSearch.jsx";
 import PeopleSummary from "/imports/ui/components/people/PeopleSummary.jsx";
+import XLSX from "xlsx";
 
 import { Grid, Header, Menu, List, Button, Icon } from "semantic-ui-react";
 
@@ -15,6 +16,8 @@ export default class CampaignsPeople extends React.Component {
       isLoading: false
     };
     this._handleExport = this._handleExport.bind(this);
+    this._handleImportClick = this._handleImportClick.bind(this);
+    this._handleImport = this._handleImport.bind(this);
   }
   _handleExport(ev) {
     ev.preventDefault();
@@ -33,6 +36,49 @@ export default class CampaignsPeople extends React.Component {
         }
       }
     );
+  }
+  _handleImportClick(ev) {
+    ev.preventDefault();
+    this.importInput.click();
+  }
+  _handleImport(ev) {
+    const { campaign } = this.props;
+    this.setState({ loading: true });
+    let file = ev.currentTarget.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      let binary = "";
+      let bytes = new Uint8Array(reader.result);
+      for(let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const wb = XLSX.read(binary, { type: "binary" });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(sheet);
+      console.log(json);
+      // Meteor.call(
+      //   "people.import",
+      //   {
+      //     campaignId: campaign._id,
+      //     fileInfo: {
+      //       name: file.name,
+      //       size: file.size,
+      //       type: file.type
+      //     },
+      //     fileData: { data: reader.result }
+      //   },
+      //   (error, result) => {
+      //     this.setState({ loading: false });
+      //     if (error) {
+      //       console.log(error);
+      //       Alerts.error(error);
+      //     } else {
+      //       Alerts.success("Import has started");
+      //     }
+      //   }
+      // );
+    };
+    reader.readAsArrayBuffer(file);
   }
   render() {
     const { isLoading } = this.state;
@@ -78,7 +124,7 @@ export default class CampaignsPeople extends React.Component {
                         />{" "}
                         Export CSV
                       </Menu.Item>
-                      <Menu.Item>
+                      <Menu.Item onClick={this._handleImportClick}>
                         <Icon name="download" /> Import spreadsheet
                       </Menu.Item>
                     </Menu.Menu>
@@ -102,6 +148,12 @@ export default class CampaignsPeople extends React.Component {
               </Grid.Row>
             </Grid>
           )}
+          <input
+            type="file"
+            onChange={this._handleImport}
+            style={{ display: "none" }}
+            ref={input => (this.importInput = input)}
+          />
         </section>
       </div>
     );
