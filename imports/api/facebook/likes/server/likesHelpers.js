@@ -171,7 +171,7 @@ const LikesHelpers = {
 
     const _insertBulk = ({ data }) => {
       const bulk = Likes.rawCollection().initializeUnorderedBulkOp();
-      const likedPeople = [];
+      let likedPeople = [];
       for (const like of data) {
         like.facebookAccountId = facebookAccountId;
         const personId = like.id;
@@ -195,6 +195,18 @@ const LikesHelpers = {
       }
       bulk.execute(
         Meteor.bindEnvironment((e, result) => {
+          // If like date estimate is set, update people from upserted result so it doesnt update last interaction date for all people.
+          if (likeDateEstimate) {
+            const upsertedLikes = result.getRawResponse().upserted;
+            if (upsertedLikes.length) {
+              const likes = Likes.find({
+                _id: { $in: upsertedLikes.map(l => l._id) }
+              }).fetch();
+              likedPeople = likedPeople.filter(person =>
+                likes.find(l => l.personId == person.id)
+              );
+            }
+          }
           this.updatePeopleLikesCount({
             campaignId,
             facebookAccountId,
