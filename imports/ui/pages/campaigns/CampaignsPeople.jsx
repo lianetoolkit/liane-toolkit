@@ -2,6 +2,7 @@ import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
+import PeopleImport from "/imports/ui/components/people/PeopleImport.jsx";
 import PeopleTable from "/imports/ui/components/people/PeopleTable.jsx";
 import PeopleSearch from "/imports/ui/components/people/PeopleSearch.jsx";
 import PeopleSummary from "/imports/ui/components/people/PeopleSummary.jsx";
@@ -13,7 +14,8 @@ export default class CampaignsPeople extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false
+      isLoading: false,
+      importData: null
     };
     this._handleExport = this._handleExport.bind(this);
     this._handleImportClick = this._handleImportClick.bind(this);
@@ -49,13 +51,13 @@ export default class CampaignsPeople extends React.Component {
     reader.onload = () => {
       let binary = "";
       let bytes = new Uint8Array(reader.result);
-      for(let i = 0; i < bytes.byteLength; i++) {
+      for (let i = 0; i < bytes.byteLength; i++) {
         binary += String.fromCharCode(bytes[i]);
       }
       const wb = XLSX.read(binary, { type: "binary" });
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(sheet);
-      console.log(json);
+      this.setState({ importData: json });
       // Meteor.call(
       //   "people.import",
       //   {
@@ -81,7 +83,7 @@ export default class CampaignsPeople extends React.Component {
     reader.readAsArrayBuffer(file);
   }
   render() {
-    const { isLoading } = this.state;
+    const { isLoading, importData } = this.state;
     const { loading, facebookId, campaign, account } = this.props;
     const { accounts } = campaign;
     return (
@@ -154,6 +156,7 @@ export default class CampaignsPeople extends React.Component {
             style={{ display: "none" }}
             ref={input => (this.importInput = input)}
           />
+          <PeopleImport data={importData} />
         </section>
       </div>
     );
