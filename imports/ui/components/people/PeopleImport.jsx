@@ -28,9 +28,11 @@ class ItemConfig extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: null
+      value: null,
+      customField: null
     };
     this._handleChange = this._handleChange.bind(this);
+    this._handleCustomChange = this._handleCustomChange.bind(this);
   }
   componentDidMount() {
     const { header } = this.props;
@@ -40,9 +42,9 @@ class ItemConfig extends React.Component {
   }
   componentDidUpdate() {
     const { header, onChange } = this.props;
-    const { value } = this.state;
+    const { value, customField } = this.state;
     if (onChange) {
-      onChange(null, { name: header, value });
+      onChange(null, { name: header, value, customField });
     }
   }
   _getSuggestion() {
@@ -67,6 +69,9 @@ class ItemConfig extends React.Component {
   _handleChange(ev, { name, value }) {
     this.setState({ value });
   }
+  _handleCustomChange(ev, { name, value }) {
+    this.setState({ customField: value });
+  }
   _getOptions() {
     let keys = Object.keys(fields);
     let options = keys.map(k => {
@@ -85,7 +90,7 @@ class ItemConfig extends React.Component {
   }
   render() {
     const { header } = this.props;
-    const { value } = this.state;
+    const { value, customField } = this.state;
     const suggestion = this._getSuggestion();
     return (
       <Form.Group widths="equal">
@@ -97,6 +102,14 @@ class ItemConfig extends React.Component {
           options={this._getOptions()}
           onChange={this._handleChange}
         />
+        {value == "custom" ? (
+          <Form.Field
+            placeholder="Field name"
+            control={Input}
+            value={customField}
+            onChange={this._handleCustomChange}
+          />
+        ) : null}
       </Form.Group>
     );
   }
@@ -124,8 +137,8 @@ export default class PeopleImport extends React.Component {
       this.setState({ data });
     }
   }
-  _handleChange(ev, { name, value }) {
-    console.log({ name, value });
+  _handleChange(ev, { name, value, customField }) {
+    console.log({ name, value, customField });
   }
   _handleModalOpen() {}
   _handleModalClose() {
