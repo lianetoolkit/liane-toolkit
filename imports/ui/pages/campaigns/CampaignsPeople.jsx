@@ -20,6 +20,13 @@ export default class CampaignsPeople extends React.Component {
     this._handleExport = this._handleExport.bind(this);
     this._handleImportClick = this._handleImportClick.bind(this);
     this._handleImport = this._handleImport.bind(this);
+    this._handleImportSubmit = this._handleImportSubmit.bind(this);
+  }
+  componentWillReceiveProps(nextProps) {
+    const { importCount } = this.props;
+    if (importCount > 0 && nextProps.importCount === 0) {
+      Alerts.success("People import has finished");
+    }
   }
   _handleExport(ev) {
     ev.preventDefault();
@@ -58,33 +65,20 @@ export default class CampaignsPeople extends React.Component {
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(sheet);
       this.setState({ importData: json });
-      // Meteor.call(
-      //   "people.import",
-      //   {
-      //     campaignId: campaign._id,
-      //     fileInfo: {
-      //       name: file.name,
-      //       size: file.size,
-      //       type: file.type
-      //     },
-      //     fileData: { data: reader.result }
-      //   },
-      //   (error, result) => {
-      //     this.setState({ loading: false });
-      //     if (error) {
-      //       console.log(error);
-      //       Alerts.error(error);
-      //     } else {
-      //       Alerts.success("Import has started");
-      //     }
-      //   }
-      // );
     };
     reader.readAsArrayBuffer(file);
   }
+  _handleImportSubmit(err, res) {
+    if (!err) {
+      this.setState({ importData: null });
+      Alerts.success("Import has started");
+    } else {
+      Alerts.error(error);
+    }
+  }
   render() {
     const { isLoading, importData } = this.state;
-    const { loading, facebookId, campaign, account } = this.props;
+    const { loading, importCount, facebookId, campaign, account } = this.props;
     const { accounts } = campaign;
     return (
       <div>
@@ -126,9 +120,17 @@ export default class CampaignsPeople extends React.Component {
                         />{" "}
                         Export CSV
                       </Menu.Item>
-                      <Menu.Item onClick={this._handleImportClick}>
-                        <Icon name="download" /> Import spreadsheet
-                      </Menu.Item>
+                      {importCount ? (
+                        <Menu.Item disabled>
+                          <Icon name="spinner" loading /> Currently importing ({
+                            importCount
+                          })
+                        </Menu.Item>
+                      ) : (
+                        <Menu.Item onClick={this._handleImportClick}>
+                          <Icon name="download" /> Import spreadsheet
+                        </Menu.Item>
+                      )}
                     </Menu.Menu>
                   </Menu>
                 </Grid.Column>
@@ -156,7 +158,11 @@ export default class CampaignsPeople extends React.Component {
             style={{ display: "none" }}
             ref={input => (this.importInput = input)}
           />
-          <PeopleImport data={importData} />
+          <PeopleImport
+            data={importData}
+            campaignId={campaign._id}
+            onSubmit={this._handleImportSubmit}
+          />
         </section>
       </div>
     );

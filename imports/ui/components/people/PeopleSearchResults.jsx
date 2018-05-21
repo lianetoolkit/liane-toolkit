@@ -68,23 +68,6 @@ export default class PeopleSearchResults extends React.Component {
   _getLastInteraction(person) {
     const { facebookId } = this.props;
     let str = "--";
-    // if (
-    //   facebookId &&
-    //   person.lastInteractions &&
-    //   person.lastInteractions.length
-    // ) {
-    //   const lastInteraction = person.lastInteractions.find(
-    //     l => l.facebookId == facebookId
-    //   );
-    //   if (lastInteraction) {
-    //     const date = moment(lastInteraction.date).fromNow();
-    //     if(lastInteraction.estimate) {
-    //       str = `~${date}`;
-    //     } else {
-    //       str = date;
-    //     }
-    //   }
-    // }
     if (person.lastInteractionDate) {
       str = moment(person.lastInteractionDate).fromNow();
     }
@@ -110,12 +93,14 @@ export default class PeopleSearchResults extends React.Component {
               {people.map(person => (
                 <Table.Row key={`commenter-${person._id}`}>
                   <Table.Cell collapsing>
-                    <a
-                      target="_blank"
-                      href={`https://facebook.com/${person.facebookId}`}
-                    >
-                      <Icon name="facebook official" />
-                    </a>
+                    {person.facebookId ? (
+                      <a
+                        target="_blank"
+                        href={`https://facebook.com/${person.facebookId}`}
+                      >
+                        <Icon name="facebook official" />
+                      </a>
+                    ) : null}
                   </Table.Cell>
                   <Table.Cell singleLine collapsing>
                     <PeopleMetaButtons
@@ -134,44 +119,46 @@ export default class PeopleSearchResults extends React.Component {
                     </a>
                   </Table.Cell>
                   <Table.Cell>
-                    <Interactivity>
-                      <Grid
-                        className="interactivity"
-                        widths="equal"
-                        columns={7}
-                        verticalAlign="middle"
-                      >
-                        <Grid.Row>
-                          <Grid.Column>
-                            <Icon name="comment" />
-                            {person.counts[facebookId] ? (
-                              <span>
-                                {person.counts[facebookId].comments || 0}
-                              </span>
-                            ) : (
-                              <span>0</span>
-                            )}
-                          </Grid.Column>
-                          {reactions.map(reaction => (
-                            <Grid.Column key={reaction}>
-                              <Reaction size="tiny" reaction={reaction} />
-                              {person.counts[facebookId] &&
-                              person.counts[facebookId].reactions ? (
+                    {person.counts ? (
+                      <Interactivity>
+                        <Grid
+                          className="interactivity"
+                          widths="equal"
+                          columns={7}
+                          verticalAlign="middle"
+                        >
+                          <Grid.Row>
+                            <Grid.Column>
+                              <Icon name="comment" />
+                              {person.counts[facebookId] ? (
                                 <span>
-                                  {
-                                    person.counts[facebookId].reactions[
-                                      reaction
-                                    ]
-                                  }
+                                  {person.counts[facebookId].comments || 0}
                                 </span>
                               ) : (
                                 <span>0</span>
                               )}
                             </Grid.Column>
-                          ))}
-                        </Grid.Row>
-                      </Grid>
-                    </Interactivity>
+                            {reactions.map(reaction => (
+                              <Grid.Column key={reaction}>
+                                <Reaction size="tiny" reaction={reaction} />
+                                {person.counts[facebookId] &&
+                                person.counts[facebookId].reactions ? (
+                                  <span>
+                                    {
+                                      person.counts[facebookId].reactions[
+                                        reaction
+                                      ]
+                                    }
+                                  </span>
+                                ) : (
+                                  <span>0</span>
+                                )}
+                              </Grid.Column>
+                            ))}
+                          </Grid.Row>
+                        </Grid>
+                      </Interactivity>
+                    ) : null}
                   </Table.Cell>
                   <Table.Cell collapsing>
                     {person.lastInteractionDate

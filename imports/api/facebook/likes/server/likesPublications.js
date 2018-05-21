@@ -6,7 +6,7 @@ import { Likes } from "/imports/api/facebook/likes/likes.js";
 Meteor.publishComposite("likes.byPerson", function({ personId, campaignId }) {
   const userId = this.userId;
   const person = People.findOne(personId);
-  if (person) {
+  if (person && person.facebookId) {
     const campaign = Campaigns.findOne(person.campaignId);
     const allowed = _.findWhere(campaign.users, { userId });
     if (allowed) {

@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Form, Select, Input, Button } from "semantic-ui-react";
+import _ from "underscore";
 
 const fields = {
   name: {
@@ -13,6 +14,14 @@ const fields = {
   "campaignMeta.basic_info.age": {
     label: "Age",
     suggestions: ["age"]
+  },
+  "campaignMeta.social_networks.twitter": {
+    label: "Twitter",
+    suggestions: ["twitter"]
+  },
+  "campaignMeta.social_networks.instagram": {
+    label: "Instagram",
+    suggestions: ["instagram"]
   },
   "campaignMeta.basic_info.gender": {
     label: "Gender",
@@ -40,11 +49,13 @@ class ItemConfig extends React.Component {
       value: this._getSuggestion()
     });
   }
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     const { header, onChange } = this.props;
     const { value, customField } = this.state;
-    if (onChange) {
-      onChange(null, { name: header, value, customField });
+    if (value !== prevState.value || customField !== prevState.customField) {
+      if (onChange) {
+        onChange(null, { name: header, value, customField });
+      }
     }
   }
   _getSuggestion() {
@@ -81,10 +92,15 @@ class ItemConfig extends React.Component {
         value: k
       };
     });
-    options.push({
+    options.unshift({
       key: "custom",
       text: "Custom",
       value: "custom"
+    });
+    options.unshift({
+      key: "skip",
+      text: "Skip",
+      value: "skip"
     });
     return options;
   }
@@ -97,8 +113,9 @@ class ItemConfig extends React.Component {
         <Form.Field control={Input} disabled value={header} />
         <Form.Field
           placeholder="Skip"
+          search
           control={Select}
-          value={value || suggestion}
+          value={value || suggestion || "skip"}
           options={this._getOptions()}
           onChange={this._handleChange}
         />
@@ -121,9 +138,10 @@ export default class PeopleImport extends React.Component {
     this.state = {
       data: []
     };
-    this._handleChange = this._handleChange.bind(this);
     this._handleModalOpen = this._handleModalOpen.bind(this);
     this._handleModalClose = this._handleModalClose.bind(this);
+    this._handleChange = this._handleChange.bind(this);
+    this._handleSubmit = this._handleSubmit.bind(this);
   }
   componentDidMount() {
     const { data } = this.props;
@@ -135,11 +153,18 @@ export default class PeopleImport extends React.Component {
     const { data } = nextProps;
     if (data && data.length) {
       this.setState({ data });
+    } else {
+      this.setState({ data: [] });
     }
   }
-  _handleChange(ev, { name, value, customField }) {
-    console.log({ name, value, customField });
-  }
+  _handleChange = (ev, { name, value, customField }) => {
+    this.setState({
+      [name]: {
+        value,
+        customField
+      }
+    });
+  };
   _handleModalOpen() {}
   _handleModalClose() {
     if (confirm("Are you sure you'd like to cancel import?")) {
@@ -157,6 +182,21 @@ export default class PeopleImport extends React.Component {
   }
   _handleSubmit(ev) {
     ev.preventDefault();
+    const { campaignId, onSubmit } = this.props;
+    const { data, ...config } = this.state;
+    Meteor.call(
+      "people.import",
+      {
+        campaignId,
+        config,
+        data
+      },
+      (err, res) => {
+        if (onSubmit) {
+          onSubmit(err, res);
+        }
+      }
+    );
   }
   render() {
     const { data } = this.state;
