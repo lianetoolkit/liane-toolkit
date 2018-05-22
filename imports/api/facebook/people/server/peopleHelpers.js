@@ -136,7 +136,6 @@ const PeopleHelpers = {
         matches.push(People.find(query).fetch());
       }
     }
-    console.log(matches);
     return uniqBy(flatten(matches), "_id");
   },
   importPerson({ campaignId, person }) {

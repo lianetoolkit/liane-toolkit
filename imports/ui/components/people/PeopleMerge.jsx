@@ -1,5 +1,14 @@
 import React from "react";
-import { Modal, Form, Select, Input, Button, Icon } from "semantic-ui-react";
+import {
+  Modal,
+  Dimmer,
+  Loader,
+  Form,
+  Select,
+  Input,
+  Button,
+  Icon
+} from "semantic-ui-react";
 
 export default class PeopleMerge extends React.Component {
   constructor(props) {
@@ -26,12 +35,18 @@ export default class PeopleMerge extends React.Component {
       "people.findDuplicates",
       { campaignId, personId: person._id },
       (err, res) => {
-        console.log(res);
+        setTimeout(() => {
+          this.setState({
+            loading: false,
+            people: res
+          });
+        }, 1000);
       }
     );
   }
   render() {
     const { person } = this.props;
+    const { loading, people } = this.state;
     return (
       <Modal
         onOpen={this._handleModalOpen}
@@ -43,6 +58,19 @@ export default class PeopleMerge extends React.Component {
         }
       >
         <Modal.Header>Merging {person.name}</Modal.Header>
+        <Modal.Content>
+          <Dimmer active={loading} inverted>
+            <Loader />
+          </Dimmer>
+          {!loading && !people.length ? (
+            <p>No match was found for merging</p>
+          ) : null}
+          {!loading && people.length ? (
+            <div>
+              <p>Found {people.length} matches for merging.</p>
+            </div>
+          ) : null}
+        </Modal.Content>
       </Modal>
     );
   }
