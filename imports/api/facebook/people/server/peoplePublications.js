@@ -47,7 +47,8 @@ Meteor.publish("people.importJobCount", function({ campaignId }) {
       "people.importJobCount",
       Jobs.find({
         type: "people.importPerson",
-        "data.campaignId": campaignId
+        "data.campaignId": campaignId,
+        status: { $ne: "failed" }
       })
     );
     return;

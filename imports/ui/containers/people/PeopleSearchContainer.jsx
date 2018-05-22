@@ -9,6 +9,7 @@ const count = new ReactiveVar(0);
 const loading = new ReactiveVar(false);
 const loadingCount = new ReactiveVar(false);
 let current = null;
+let currentParams = null;
 let currentQueryParams = null;
 
 const getQueryParams = props => {
@@ -16,6 +17,13 @@ const getQueryParams = props => {
     search: { ...props.search },
     campaignId: props.campaignId,
     facebookId: props.facebookId
+  };
+};
+
+const getAllParams = props => {
+  return {
+    ...getQueryParams(props),
+    options: props.options
   };
 };
 
@@ -43,8 +51,11 @@ export default withTracker(props => {
     );
   }
   // Fetch people
-  if (!current || JSON.stringify(current) !== JSON.stringify(props)) {
-    current = { ...props };
+  if (
+    !currentParams ||
+    JSON.stringify(currentParams) !== JSON.stringify(getAllParams(props))
+  ) {
+    currentParams = getAllParams(props);
     loading.set(true);
     Meteor.call(
       "people.search",

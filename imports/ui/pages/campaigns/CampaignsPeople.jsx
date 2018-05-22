@@ -8,15 +8,25 @@ import PeopleSearch from "/imports/ui/components/people/PeopleSearch.jsx";
 import PeopleSummary from "/imports/ui/components/people/PeopleSummary.jsx";
 import XLSX from "xlsx";
 
-import { Grid, Header, Menu, List, Button, Icon } from "semantic-ui-react";
+import {
+  Grid,
+  Header,
+  Menu,
+  List,
+  Button,
+  Icon,
+  Checkbox
+} from "semantic-ui-react";
 
 export default class CampaignsPeople extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      editMode: false,
       isLoading: false,
       importData: null
     };
+    this._handleEditModeClick = this._handleEditModeClick.bind(this);
     this._handleExport = this._handleExport.bind(this);
     this._handleImportClick = this._handleImportClick.bind(this);
     this._handleImport = this._handleImport.bind(this);
@@ -27,6 +37,12 @@ export default class CampaignsPeople extends React.Component {
     if (importCount > 0 && nextProps.importCount === 0) {
       Alerts.success("People import has finished");
     }
+  }
+  _handleEditModeClick(ev) {
+    ev.preventDefault();
+    this.setState({
+      editMode: !this.state.editMode
+    });
   }
   _handleExport(ev) {
     ev.preventDefault();
@@ -77,7 +93,7 @@ export default class CampaignsPeople extends React.Component {
     }
   }
   render() {
-    const { isLoading, importData } = this.state;
+    const { isLoading, editMode, importData } = this.state;
     const { loading, importCount, facebookId, campaign, account } = this.props;
     const { accounts } = campaign;
     return (
@@ -109,7 +125,14 @@ export default class CampaignsPeople extends React.Component {
                         {acc.name}
                       </Menu.Item>
                     ))}
-                    <Menu.Menu position="right">
+                    <Menu.Menu position="right" size="tiny">
+                      <Menu.Item onClick={this._handleEditModeClick}>
+                        <Icon
+                          name={`toggle ${editMode ? "on" : "off"}`}
+                          color={editMode ? "green" : null}
+                        />{" "}
+                        Edit mode
+                      </Menu.Item>
                       <Menu.Item
                         onClick={this._handleExport}
                         disabled={isLoading}
@@ -141,6 +164,7 @@ export default class CampaignsPeople extends React.Component {
                     <PeopleSearch
                       campaignId={campaign._id}
                       facebookId={account.facebookId}
+                      editMode={editMode}
                     />
                   ) : null}
                   {/* <PeopleSummary

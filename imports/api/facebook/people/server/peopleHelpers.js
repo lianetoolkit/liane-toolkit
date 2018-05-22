@@ -1,6 +1,7 @@
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { Random } from "meteor/random";
+import { uniqBy, flatten, get, set } from "lodash";
 
 const PeopleHelpers = {
   updateFBUsers({ campaignId, facebookAccountId }) {
@@ -95,9 +96,12 @@ const PeopleHelpers = {
 
     return;
   },
-  importPerson({ campaignId, person }) {
-    const _find = person => {
-      let find = { campaignId, $or: [] };
+  findDuplicates({ campaignId, personId }) {
+    const person = People.findOne(personId);
+    let matches = [];
+    const _queries = () => {
+      let queries = [];
+      let defaultQuery = { _id: { $ne: person._id }, campaignId, $or: [] };
       // sorted by uniqueness importance
       const fieldGroups = [
         ["name"],
@@ -108,28 +112,115 @@ const PeopleHelpers = {
         ]
       ];
       for (const fieldGroup of fieldGroups) {
-        if (find.$or.length) find.$or = [];
+        let query = { ...defaultQuery };
+        query.$or = [];
+        for (const field of fieldGroup) {
+          const fieldVal = get(person, field);
+          // clear previous value
+          if (fieldVal) {
+            query.$or.push({ [field]: fieldVal });
+          }
+        }
+        if (query.$or.length) {
+          queries.push(query);
+        }
+      }
+      if (!queries.length) {
+        return false;
+      }
+      return queries;
+    };
+    const queries = _queries();
+    if (queries && queries.length) {
+      for (const query of queries) {
+        matches.push(People.find(query).fetch());
+      }
+    }
+    console.log(matches);
+    return uniqBy(flatten(matches), "_id");
+  },
+  importPerson({ campaignId, person }) {
+    let selector = { _id: Random.id(), campaignId };
+    let foundMatch = false;
+    const _queries = () => {
+      let queries = [];
+      let defaultQuery = { campaignId, $or: [] };
+      // sorted by uniqueness importance
+      const fieldGroups = [
+        ["name"],
+        [
+          "campaignMeta.contact.email",
+          "campaignMeta.social_networks.twitter",
+          "campaignMeta.social_networks.instagram"
+        ]
+      ];
+      for (const fieldGroup of fieldGroups) {
+        let query = { ...defaultQuery };
+        query.$or = [];
         for (const field of fieldGroup) {
           const fieldVal = person.$set[field];
           // clear previous value
           if (fieldVal) {
-            find.$or.push({ [field]: fieldVal });
+            query.$or.push({ [field]: fieldVal });
+          }
+        }
+        if (query.$or.length) {
+          queries.push(query);
+        }
+      }
+      if (!queries.length) {
+        return false;
+      }
+      return queries;
+    };
+
+    const _upsertAddToSet = () => {
+      const keys = Object.keys(person.$addToSet);
+      if (keys.length) {
+        for (const key of keys) {
+          for (const value of person.$addToSet[key].$each) {
+            switch (key) {
+              // Extra values
+              case "campaignMeta.extra.extra":
+                People.update(
+                  {
+                    ...selector,
+                    [`${key}.key`]: value.key
+                  },
+                  {
+                    $set: {
+                      ...person.$set,
+                      [`${key}.$.val`]: value.val
+                    }
+                  },
+                  { multi: false }
+                );
+                break;
+              default:
+            }
           }
         }
       }
-      if (!find.$or.length) {
-        return false;
-      }
-      return find;
     };
 
-    let matchQuery = _find(person);
-    let match = [];
-    let selector = { _id: Random.id() };
-    if (matchQuery) match = People.find(matchQuery).fetch();
-    if (match && match.length == 1) {
-      selector._id = match[0]._id;
+    const queries = _queries();
+    let matches = [];
+    if (queries) {
+      for (const query of queries) {
+        matches.push(People.find(query).fetch());
+      }
     }
+    for (const match of matches) {
+      if (match && match.length == 1) {
+        foundMatch = true;
+        selector._id = match[0]._id;
+      }
+    }
+
+    if (foundMatch) {
+      _upsertAddToSet();
+    }
+
     return People.upsert(selector, person, { multi: false });
   }
 };

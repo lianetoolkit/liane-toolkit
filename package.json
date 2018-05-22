@@ -7,10 +7,10 @@
     "test": "meteor npm install && meteor test -p 3100 --driver-package=practicalmeteor:mocha --settings=./.deploy/local/settings.json"
   },
   "dependencies": {
-    "@babel/runtime": "^7.0.0-beta.44",
+    "@babel/runtime": "^7.0.0-beta.47",
     "axios": "^0.17.1",
     "babel-runtime": "^6.26.0",
-    "chart.js": "^2.7.0",
+    "chart.js": "^2.7.2",
     "faker": "^4.1.0",
     "fb": "^2.0.0",
     "flat": "^4.0.0",
@@ -18,13 +18,13 @@
     "ioredis": "^3.2.2",
     "leaflet": "^1.3.1",
     "leaflet-geosearch": "^2.6.0",
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.10",
     "meteor-node-stubs": "~0.2.4",
-    "react": "^15.6.1",
+    "react": "^16.3.2",
     "react-addons-css-transition-group": "^15.6.2",
-    "react-chartjs-2": "^2.6.4",
-    "react-dom": "^15.6.1",
-    "react-leaflet": "^1.8.1",
+    "react-chartjs-2": "^2.7.2",
+    "react-dom": "^16.3.2",
+    "react-leaflet": "^1.9.1",
     "react-mounter": "^1.2.0",
     "react-simple-currency": "^1.0.16",
     "react-spinner": "^0.2.7",
@@ -33,10 +33,10 @@
     "simpl-schema": "^0.4.1",
     "simplify-geojson": "^1.0.3",
     "styled-components": "^2.4.0",
-    "underscore": "^1.8.3",
-    "winston": "^2.4.0",
-    "winston-mail": "^1.3.0",
-    "xlsx": "^0.12.6"
+    "underscore": "^1.9.0",
+    "winston": "^2.4.2",
+    "winston-mail": "^1.5.1",
+    "xlsx": "^0.12.13"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.1"

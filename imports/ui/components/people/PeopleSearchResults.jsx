@@ -1,10 +1,13 @@
 import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
+import { randomColor } from "/imports/ui/utils/utils.jsx";
 import styled from "styled-components";
-import { Table, Icon, Grid, Dimmer } from "semantic-ui-react";
+import { Table, Icon, Grid, Dimmer, Button } from "semantic-ui-react";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
+import PeopleMerge from "/imports/ui/components/people/PeopleMerge.jsx";
 import Reaction from "/imports/ui/components/entries/Reaction.jsx";
 import moment from "moment";
+import { get } from "lodash";
 
 const Wrapper = styled.div`
   .last-interaction {
@@ -34,7 +37,8 @@ export default class PeopleSearchResults extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      people: {}
+      people: [],
+      duplicates: []
     };
   }
   componentDidMount() {
@@ -44,11 +48,47 @@ export default class PeopleSearchResults extends React.Component {
       this.props.onChange(this.props);
     }
   }
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.onChange) {
-      nextProps.onChange(nextProps);
+  _idMap(people) {
+    if (people && people.length) {
+      return people.map(p => p._id);
     }
-    this.setState({ people: nextProps.people });
+    return [];
+  }
+  _duplicateNames(people) {
+    people = people || this.state.people;
+    let names = {};
+    let duplicates = [];
+    for (const person of people) {
+      if (!names[person.name]) names[person.name] = 0;
+      names[person.name]++;
+    }
+    for (const name in names) {
+      duplicates.push({
+        name,
+        count: names[name],
+        color: randomColor()
+      });
+    }
+    this.setState({ duplicates });
+  }
+  componentWillReceiveProps(nextProps) {
+    const { people } = this.state;
+    const { editMode } = this.props;
+    if (
+      JSON.stringify(this._idMap(people)) !=
+      JSON.stringify(this._idMap(nextProps.people))
+    ) {
+      if (nextProps.onChange) {
+        nextProps.onChange(nextProps);
+      }
+      this.setState({ people: nextProps.people });
+      if (nextProps.editMode) {
+        this._duplicateNames(nextProps.people);
+      }
+    }
+    if (editMode !== nextProps.editMode) {
+      this._duplicateNames(nextProps.people);
+    }
   }
   _handleMetaChange = data => {
     let people = [...this.state.people];
@@ -73,9 +113,19 @@ export default class PeopleSearchResults extends React.Component {
     }
     return <span className="last-interaction">{str}</span>;
   }
+  _getMeta(person, key) {
+    return get(person, "campaignMeta." + key);
+  }
   render() {
-    const { loading, loadingCount, facebookId, campaignId, count } = this.props;
-    const { people } = this.state;
+    const {
+      loading,
+      editMode,
+      loadingCount,
+      facebookId,
+      campaignId,
+      count
+    } = this.props;
+    const { people, duplicates } = this.state;
     if (!loadingCount && count == 0) {
       return <p>No people were found.</p>;
     } else if (loading) {
@@ -108,7 +158,7 @@ export default class PeopleSearchResults extends React.Component {
                       onChange={this._handleMetaChange}
                     />
                   </Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell collapsing>
                     <a
                       href={FlowRouter.path("App.campaignPeople.detail", {
                         campaignId,
@@ -118,53 +168,89 @@ export default class PeopleSearchResults extends React.Component {
                       {person.name}
                     </a>
                   </Table.Cell>
-                  <Table.Cell>
-                    {person.counts ? (
-                      <Interactivity>
-                        <Grid
-                          className="interactivity"
-                          widths="equal"
-                          columns={7}
-                          verticalAlign="middle"
+                  {editMode ? (
+                    <>
+                      <Table.Cell>
+                        {this._getMeta(person, "basic_info.age")}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {this._getMeta(person, "contact.email")}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {this._getMeta(person, "contact.cellphone")}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {this._getMeta(person, "contact.telephone")}
+                      </Table.Cell>
+                      <Table.Cell collapsing>
+                        <PeopleMerge
+                          campaignId={campaignId}
+                          duplicates={duplicates}
+                          person={person}
+                        />
+                      </Table.Cell>
+                      <Table.Cell collapsing>
+                        <a
+                          href={FlowRouter.path("App.campaignPeople.edit", {
+                            campaignId,
+                            personId: person._id
+                          })}
                         >
-                          <Grid.Row>
-                            <Grid.Column>
-                              <Icon name="comment" />
-                              {person.counts[facebookId] ? (
-                                <span>
-                                  {person.counts[facebookId].comments || 0}
-                                </span>
-                              ) : (
-                                <span>0</span>
-                              )}
-                            </Grid.Column>
-                            {reactions.map(reaction => (
-                              <Grid.Column key={reaction}>
-                                <Reaction size="tiny" reaction={reaction} />
-                                {person.counts[facebookId] &&
-                                person.counts[facebookId].reactions ? (
-                                  <span>
-                                    {
-                                      person.counts[facebookId].reactions[
-                                        reaction
-                                      ]
-                                    }
-                                  </span>
-                                ) : (
-                                  <span>0</span>
-                                )}
-                              </Grid.Column>
-                            ))}
-                          </Grid.Row>
-                        </Grid>
-                      </Interactivity>
-                    ) : null}
-                  </Table.Cell>
-                  <Table.Cell collapsing>
-                    {person.lastInteractionDate
-                      ? this._getLastInteraction(person)
-                      : ""}
-                  </Table.Cell>
+                          <Icon name="edit" /> Edit user
+                        </a>
+                      </Table.Cell>
+                    </>
+                  ) : (
+                    <>
+                      <Table.Cell>
+                        {person.counts ? (
+                          <Interactivity>
+                            <Grid
+                              className="interactivity"
+                              widths="equal"
+                              columns={7}
+                              verticalAlign="middle"
+                            >
+                              <Grid.Row>
+                                <Grid.Column>
+                                  <Icon name="comment" />
+                                  {person.counts[facebookId] ? (
+                                    <span>
+                                      {person.counts[facebookId].comments || 0}
+                                    </span>
+                                  ) : (
+                                    <span>0</span>
+                                  )}
+                                </Grid.Column>
+                                {reactions.map(reaction => (
+                                  <Grid.Column key={reaction}>
+                                    <Reaction size="tiny" reaction={reaction} />
+                                    {person.counts[facebookId] &&
+                                    person.counts[facebookId].reactions ? (
+                                      <span>
+                                        {
+                                          person.counts[facebookId].reactions[
+                                            reaction
+                                          ]
+                                        }
+                                      </span>
+                                    ) : (
+                                      <span>0</span>
+                                    )}
+                                  </Grid.Column>
+                                ))}
+                              </Grid.Row>
+                            </Grid>
+                          </Interactivity>
+                        ) : null}
+                      </Table.Cell>
+                      <Table.Cell collapsing>
+                        {person.lastInteractionDate
+                          ? this._getLastInteraction(person)
+                          : ""}
+                      </Table.Cell>
+                    </>
+                  )}
                 </Table.Row>
               ))}
             </Table.Body>

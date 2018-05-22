@@ -48,3 +48,7 @@ export const lightenDarkenColor = (col, amt) => {
 
   return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
 };
+
+export const randomColor = () => {
+  return "#" + Math.floor(Math.random() * 16777215).toString(16);
+};

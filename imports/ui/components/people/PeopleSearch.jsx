@@ -148,7 +148,7 @@ export default class PeopleSearch extends React.Component {
   }
   render() {
     const { activePage, search, options } = this.state;
-    const { campaignId, facebookId } = this.props;
+    const { campaignId, facebookId, editMode } = this.props;
     const pageCount = this._getPageCount();
     return (
       <Wrapper>
@@ -250,6 +250,7 @@ export default class PeopleSearch extends React.Component {
           search={search}
           options={options}
           onChange={this._handleDataChange}
+          editMode={editMode}
         />
         <Divider hidden />
         {pageCount ? (
