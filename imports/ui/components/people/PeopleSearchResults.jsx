@@ -105,6 +105,10 @@ export default class PeopleSearchResults extends React.Component {
     });
     this.setState({ people });
   };
+  _handleMergeSubmit = () => {
+    const { refresh } = this.props;
+    if(refresh) refresh();
+  }
   _getLastInteraction(person) {
     const { facebookId } = this.props;
     let str = "--";
@@ -187,6 +191,7 @@ export default class PeopleSearchResults extends React.Component {
                           campaignId={campaignId}
                           duplicates={duplicates}
                           person={person}
+                          onSubmit={this._handleMergeSubmit}
                         />
                       </Table.Cell>
                       <Table.Cell collapsing>

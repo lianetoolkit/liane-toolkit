@@ -1,10 +1,12 @@
 import SimpleSchema from "simpl-schema";
 import { performance } from "perf_hooks";
 import { People } from "../people.js";
+import peopleMetaModel from "/imports/api/facebook/people/model/meta";
 import { PeopleHelpers } from "./peopleHelpers.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
+import { get, merge, pick } from "lodash";
 
 const buildSearchQuery = ({ campaignId, query, options }) => {
   let queryOptions = {
@@ -355,5 +357,101 @@ export const findDuplicates = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     return PeopleHelpers.findDuplicates({ campaignId, personId });
+  }
+});
+
+export const mergePeople = new ValidatedMethod({
+  name: "people.merge",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    person: {
+      type: Object,
+      blackbox: true
+    },
+    from: {
+      type: Array
+    },
+    "from.$": {
+      type: String
+    },
+    remove: {
+      type: Boolean
+    }
+  }).validator(),
+  run({ campaignId, person, from, remove }) {
+    logger.debug("people.merge called", { campaignId, person, from, remove });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    const allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    const autoFields = [
+      "facebookId",
+      "counts",
+      "facebookAccounts",
+      "lastInteractionDate"
+    ];
+
+    const people = People.find({
+      campaignId,
+      _id: { $in: from }
+    }).fetch();
+
+    let $set = {};
+
+    merge(
+      $set,
+      ...people.map(p => pick(p, autoFields)),
+      pick(person, autoFields)
+    );
+
+    let mergeFields = ["name"];
+    for (const section of peopleMetaModel) {
+      for (const field of section.fields) {
+        mergeFields.push(`campaignMeta.${section.key}.${field.key}`);
+      }
+    }
+
+    for (const field of mergeFields) {
+      const value = get(person, field);
+      if (value) {
+        $set[field] = value;
+      }
+    }
+
+    People.upsert(
+      {
+        campaignId,
+        _id: person._id
+      },
+      {
+        $set
+      },
+      {
+        multi: false
+      }
+    );
+
+    if (remove) {
+      People.remove({
+        campaignId,
+        _id: { $in: from }
+      });
+    }
+
+    return;
   }
 });
