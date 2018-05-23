@@ -27,6 +27,10 @@ Comments.schema = new SimpleSchema({
     type: Date,
     index: true
   },
+  can_reply_privately: {
+    type: Boolean,
+    optional: true
+  },
   comment_count: {
     type: Number,
     optional: true

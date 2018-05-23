@@ -2,12 +2,25 @@ import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { randomColor } from "/imports/ui/utils/utils.jsx";
 import styled from "styled-components";
-import { Table, Icon, Grid, Dimmer, Button } from "semantic-ui-react";
+import {
+  Table,
+  Icon,
+  Grid,
+  Dimmer,
+  Button,
+  Header,
+  Loader
+} from "semantic-ui-react";
+import { Alerts } from "/imports/ui/utils/Alerts.js";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import PeopleMerge from "/imports/ui/components/people/PeopleMerge.jsx";
+import PrivateReply from "/imports/ui/components/people/PrivateReply.jsx";
 import Reaction from "/imports/ui/components/entries/Reaction.jsx";
+import Comment from "/imports/ui/components/entries/Comment.jsx";
 import moment from "moment";
 import { get } from "lodash";
+
+const Fragment = React.Fragment;
 
 const Wrapper = styled.div`
   .last-interaction {
@@ -37,6 +50,7 @@ export default class PeopleSearchResults extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loadingReply: false,
       people: [],
       duplicates: []
     };
@@ -90,6 +104,44 @@ export default class PeopleSearchResults extends React.Component {
       this._duplicateNames(nextProps.people);
     }
   }
+  _canReply(person) {
+    const { facebookId } = this.props;
+    return (
+      person.counts &&
+      person.counts[facebookId] &&
+      person.counts[facebookId].comments
+    );
+  }
+  _handleReplyClick = person => ev => {
+    ev.preventDefault();
+    const { facebookId } = this.props;
+    const { replying } = this.state;
+    if (replying && replying == person._id) {
+      this.setState({ replying: false });
+    } else {
+      this.setState({ loadingReply: true });
+      Meteor.call(
+        "people.getReplyComment",
+        { personId: person._id, facebookAccountId: facebookId },
+        (err, res) => {
+          if (res) {
+            this.setState({
+              loadingReply: false,
+              replying: person._id,
+              replyingComment: res
+            });
+          } else {
+            this.setState({
+              loadingReply: false
+            });
+            Alerts.error(
+              "There are no comments available for a private reply."
+            );
+          }
+        }
+      );
+    }
+  };
   _handleMetaChange = data => {
     let people = [...this.state.people];
     people.forEach((person, i) => {
@@ -107,8 +159,8 @@ export default class PeopleSearchResults extends React.Component {
   };
   _handleMergeSubmit = () => {
     const { refresh } = this.props;
-    if(refresh) refresh();
-  }
+    if (refresh) refresh();
+  };
   _getLastInteraction(person) {
     const { facebookId } = this.props;
     let str = "--";
@@ -129,7 +181,13 @@ export default class PeopleSearchResults extends React.Component {
       campaignId,
       count
     } = this.props;
-    const { people, duplicates } = this.state;
+    const {
+      people,
+      replying,
+      loadingReply,
+      replyingComment,
+      duplicates
+    } = this.state;
     if (!loadingCount && count == 0) {
       return <p>No people were found.</p>;
     } else if (loading) {
@@ -145,118 +203,160 @@ export default class PeopleSearchResults extends React.Component {
           <Table>
             <Table.Body>
               {people.map(person => (
-                <Table.Row key={`commenter-${person._id}`}>
-                  <Table.Cell collapsing>
-                    {person.facebookId ? (
-                      <a
-                        target="_blank"
-                        href={`https://facebook.com/${person.facebookId}`}
-                      >
-                        <Icon name="facebook official" />
-                      </a>
-                    ) : null}
-                  </Table.Cell>
-                  <Table.Cell singleLine collapsing>
-                    <PeopleMetaButtons
-                      person={person}
-                      onChange={this._handleMetaChange}
-                    />
-                  </Table.Cell>
-                  <Table.Cell collapsing>
-                    <a
-                      href={FlowRouter.path("App.campaignPeople.detail", {
-                        campaignId,
-                        personId: person._id
-                      })}
-                    >
-                      {person.name}
-                    </a>
-                  </Table.Cell>
-                  {editMode ? (
-                    <>
-                      <Table.Cell>
-                        {this._getMeta(person, "basic_info.age")}
-                      </Table.Cell>
-                      <Table.Cell>
-                        {this._getMeta(person, "contact.email")}
-                      </Table.Cell>
-                      <Table.Cell>
-                        {this._getMeta(person, "contact.cellphone")}
-                      </Table.Cell>
-                      <Table.Cell>
-                        {this._getMeta(person, "contact.telephone")}
-                      </Table.Cell>
-                      <Table.Cell collapsing>
-                        <PeopleMerge
-                          campaignId={campaignId}
-                          duplicates={duplicates}
-                          person={person}
-                          onSubmit={this._handleMergeSubmit}
-                        />
-                      </Table.Cell>
-                      <Table.Cell collapsing>
+                <Fragment key={`commenter-${person._id}`}>
+                  <Table.Row>
+                    <Table.Cell collapsing>
+                      {person.facebookId ? (
                         <a
-                          href={FlowRouter.path("App.campaignPeople.edit", {
-                            campaignId,
-                            personId: person._id
-                          })}
+                          target="_blank"
+                          href={`https://facebook.com/${person.facebookId}`}
                         >
-                          <Icon name="edit" /> Edit user
+                          <Icon name="facebook official" />
                         </a>
-                      </Table.Cell>
-                    </>
-                  ) : (
-                    <>
-                      <Table.Cell>
-                        {person.counts ? (
-                          <Interactivity>
-                            <Grid
-                              className="interactivity"
-                              widths="equal"
-                              columns={7}
-                              verticalAlign="middle"
-                            >
-                              <Grid.Row>
-                                <Grid.Column>
-                                  <Icon name="comment" />
-                                  {person.counts[facebookId] ? (
-                                    <span>
-                                      {person.counts[facebookId].comments || 0}
-                                    </span>
-                                  ) : (
-                                    <span>0</span>
-                                  )}
-                                </Grid.Column>
-                                {reactions.map(reaction => (
-                                  <Grid.Column key={reaction}>
-                                    <Reaction size="tiny" reaction={reaction} />
-                                    {person.counts[facebookId] &&
-                                    person.counts[facebookId].reactions ? (
+                      ) : null}
+                    </Table.Cell>
+                    <Table.Cell singleLine collapsing>
+                      <PeopleMetaButtons
+                        person={person}
+                        onChange={this._handleMetaChange}
+                      />
+                    </Table.Cell>
+                    <Table.Cell collapsing>
+                      <a
+                        href={FlowRouter.path("App.campaignPeople.detail", {
+                          campaignId,
+                          personId: person._id
+                        })}
+                      >
+                        {person.name}
+                      </a>
+                    </Table.Cell>
+                    {editMode ? (
+                      <Fragment>
+                        <Table.Cell>
+                          {this._getMeta(person, "basic_info.age")}
+                        </Table.Cell>
+                        <Table.Cell>
+                          {this._getMeta(person, "contact.email")}
+                        </Table.Cell>
+                        <Table.Cell>
+                          {this._getMeta(person, "contact.cellphone")}
+                        </Table.Cell>
+                        <Table.Cell>
+                          {this._getMeta(person, "contact.telephone")}
+                        </Table.Cell>
+                        <Table.Cell collapsing>
+                          <PeopleMerge
+                            campaignId={campaignId}
+                            duplicates={duplicates}
+                            person={person}
+                            onSubmit={this._handleMergeSubmit}
+                          />
+                        </Table.Cell>
+                        <Table.Cell collapsing>
+                          <a
+                            href={FlowRouter.path("App.campaignPeople.edit", {
+                              campaignId,
+                              personId: person._id
+                            })}
+                          >
+                            <Icon name="edit" /> Edit user
+                          </a>
+                        </Table.Cell>
+                      </Fragment>
+                    ) : (
+                      <Fragment>
+                        <Table.Cell>
+                          {person.counts ? (
+                            <Interactivity>
+                              <Grid
+                                className="interactivity"
+                                widths="equal"
+                                columns={7}
+                                verticalAlign="middle"
+                              >
+                                <Grid.Row>
+                                  <Grid.Column>
+                                    <Icon name="comment" />
+                                    {person.counts[facebookId] ? (
                                       <span>
-                                        {
-                                          person.counts[facebookId].reactions[
-                                            reaction
-                                          ]
-                                        }
+                                        {person.counts[facebookId].comments ||
+                                          0}
                                       </span>
                                     ) : (
                                       <span>0</span>
                                     )}
                                   </Grid.Column>
-                                ))}
-                              </Grid.Row>
-                            </Grid>
-                          </Interactivity>
-                        ) : null}
+                                  {reactions.map(reaction => (
+                                    <Grid.Column key={reaction}>
+                                      <Reaction
+                                        size="tiny"
+                                        reaction={reaction}
+                                      />
+                                      {person.counts[facebookId] &&
+                                      person.counts[facebookId].reactions ? (
+                                        <span>
+                                          {
+                                            person.counts[facebookId].reactions[
+                                              reaction
+                                            ]
+                                          }
+                                        </span>
+                                      ) : (
+                                        <span>0</span>
+                                      )}
+                                    </Grid.Column>
+                                  ))}
+                                </Grid.Row>
+                              </Grid>
+                            </Interactivity>
+                          ) : null}
+                        </Table.Cell>
+                        <Table.Cell collapsing>
+                          {person.lastInteractionDate
+                            ? this._getLastInteraction(person)
+                            : ""}
+                        </Table.Cell>
+                        <Table.Cell collapsing>
+                          {this._canReply(person) ? (
+                            <a
+                              href="javascript:void(0);"
+                              onClick={this._handleReplyClick(person)}
+                            >
+                              <Icon name="comments outline" /> Private reply
+                            </a>
+                          ) : null}
+                        </Table.Cell>
+                      </Fragment>
+                    )}
+                  </Table.Row>
+                  {!editMode && replying && replying == person._id ? (
+                    <Table.Row>
+                      <Table.Cell colSpan={6}>
+                        {loadingReply ? (
+                          <Loader />
+                        ) : (
+                          <Grid
+                            widths="equal"
+                            columns={2}
+                          >
+                            <Grid.Row>
+                              <Grid.Column>
+                                <Comment comment={replyingComment} />
+                              </Grid.Column>
+                              <Grid.Column>
+                                <PrivateReply
+                                  campaignId={campaignId}
+                                  comment={replyingComment}
+                                />
+                              </Grid.Column>
+                            </Grid.Row>
+                          </Grid>
+                        )}
                       </Table.Cell>
-                      <Table.Cell collapsing>
-                        {person.lastInteractionDate
-                          ? this._getLastInteraction(person)
-                          : ""}
-                      </Table.Cell>
-                    </>
-                  )}
-                </Table.Row>
+                    </Table.Row>
+                  ) : null}
+                </Fragment>
               ))}
             </Table.Body>
           </Table>

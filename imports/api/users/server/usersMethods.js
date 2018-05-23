@@ -1,18 +1,8 @@
 import SimpleSchema from "simpl-schema";
 import { UsersHelpers } from "./usersHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
+import { difference } from "lodash";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
-
-export const validatePermissions = new ValidatedMethod({
-  name: "users.validatePermissions",
-  validate() {},
-  run() {
-    this.unblock();
-    logger.debug("users.validatePermissions called");
-    const userId = Meteor.userId();
-    const permissions = UsersHelpers.getFacebookPermissions({ userId });
-  }
-});
 
 export const updateUser = new ValidatedMethod({
   name: "users.update",
@@ -51,6 +41,53 @@ export const updateUser = new ValidatedMethod({
         }
       }
     );
+    return;
+  }
+});
+
+const validatePermissions = scopes => {
+  const permissions = [
+    "user_friends",
+    "public_profile",
+    "email",
+    "manage_pages",
+    "pages_show_list",
+    "ads_management",
+    "ads_read",
+    "read_page_mailboxes"
+  ];
+  return !difference(permissions, scopes || []).length;
+};
+
+export const validateFBToken = new ValidatedMethod({
+  name: "users.validateToken",
+  validate: new SimpleSchema({
+    token: {
+      type: String
+    }
+  }).validator(),
+  run({ token }) {
+    const appToken = Promise.await(
+      FB.api("oauth/access_token", {
+        version: "v2.12",
+        client_id: Meteor.settings.facebook.clientId,
+        client_secret: Meteor.settings.facebook.clientSecret,
+        grant_type: "client_credentials"
+      })
+    );
+    const response = Promise.await(
+      FB.api("debug_token", {
+        input_token: token,
+        access_token: appToken.access_token
+      })
+    );
+    if (!response.data || (response.data && !response.data.is_valid)) {
+      throw new Meteor.Error(401, "Invalid access token");
+    }
+    if (response.data && !validatePermissions(response.data.scopes)) {
+      throw new Meteor.Error(401, "Missing scope permissions");
+    }
+    console.log(JSON.stringify(response));
     return;
   }
 });

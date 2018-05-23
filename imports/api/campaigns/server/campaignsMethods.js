@@ -86,6 +86,10 @@ export const campaignsUpdate = new ValidatedMethod({
     adAccountId: {
       type: String,
       optional: true
+    },
+    autoReplyMessage: {
+      type: String,
+      optional: true
     }
   }).validator(),
   run({ campaignId, ...data }) {

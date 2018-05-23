@@ -17,14 +17,12 @@ import ConfirmManager from "/imports/ui/components/confirm/ConfirmManager.jsx";
 
 import { Dimmer, Loader } from "semantic-ui-react";
 
+import { get } from "lodash";
+
 if (!Meteor.isTest) {
-  // import 'semantic-ui-css/semantic.css';
   require("./App.less");
   require("/imports/ui/stylesheets/styles.less");
 }
-
-// Pages
-const CONNECTION_ISSUE_TIMEOUT = 5000;
 
 export default class App extends React.Component {
   constructor(props) {
@@ -38,6 +36,11 @@ export default class App extends React.Component {
   }
 
   componentWillReceiveProps({ currentUser, loading }) {
+    const currentToken = get(currentUser, "services.facebook.accessToken");
+    const prevToken = get(
+      this.props.currentUser,
+      "services.facebook.accessToken"
+    );
     if (!loading && !currentUser) {
       const current = FlowRouter.current();
       let loginPath = "/signin";
@@ -46,6 +49,40 @@ export default class App extends React.Component {
         loginPath = `/signin?next=${next}`;
       }
       FlowRouter.go(loginPath);
+    } else if (currentToken && currentToken != prevToken) {
+      Meteor.call(
+        "users.validateToken",
+        { token: currentToken },
+        (err, res) => {
+          if (err) {
+            Meteor.linkWithFacebook(
+              {
+                requestPermissions: [
+                  "user_friends",
+                  "public_profile",
+                  "email",
+                  "manage_pages",
+                  "pages_show_list",
+                  "ads_management",
+                  "ads_read",
+                  "read_page_mailboxes"
+                ]
+              },
+              err => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  Meteor.call("users.exchangeFBToken", (err, data) => {
+                    if (err) {
+                      console.log(err);
+                    }
+                  });
+                }
+              }
+            );
+          }
+        }
+      );
     }
   }
 
@@ -59,10 +96,6 @@ export default class App extends React.Component {
 
   logout() {
     Meteor.logout(err => {
-      // callback
-      if (err) {
-        Bert.alert(err.reason, "danger");
-      }
       FlowRouter.go("/signin");
     });
   }
