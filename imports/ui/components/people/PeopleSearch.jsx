@@ -78,8 +78,10 @@ export default class PeopleSearch extends React.Component {
     const { options } = this.state;
     if (nextProps.facebookId !== facebookId) {
       this.setState({
+        activePage: 1,
         options: {
           ...options,
+          skip: 0,
           facebookId: nextProps.facebookId
         }
       });
