@@ -1,7 +1,7 @@
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { Random } from "meteor/random";
-import { uniqBy, flatten, get, set } from "lodash";
+import { uniqBy, groupBy, mapKeys, flatten, get, set } from "lodash";
 
 const PeopleHelpers = {
   updateFBUsers({ campaignId, facebookAccountId }) {
@@ -96,12 +96,27 @@ const PeopleHelpers = {
 
     return;
   },
-  findDuplicates({ campaignId, personId }) {
+  findDuplicates({ personId }) {
     const person = People.findOne(personId);
     let matches = [];
     const _queries = () => {
       let queries = [];
-      let defaultQuery = { _id: { $ne: person._id }, campaignId, $or: [] };
+      let defaultQuery = {
+        _id: { $ne: person._id },
+        campaignId: person.campaignId,
+        $or: []
+      };
+      // avoid matching person with different facebookId
+      if (person.facebookId) {
+        defaultQuery.$and = [
+          {
+            $or: [
+              { facebookId: { $exists: false } },
+              { facebookId: person.facebookId }
+            ]
+          }
+        ];
+      }
       // sorted by uniqueness importance
       const fieldGroups = [
         ["name"],
@@ -136,7 +151,17 @@ const PeopleHelpers = {
         matches.push(People.find(query).fetch());
       }
     }
-    return uniqBy(flatten(matches), "_id");
+
+    let grouped = groupBy(uniqBy(flatten(matches), "_id"), "facebookId");
+
+    return mapKeys(grouped, (value, key) => {
+      if (person.facebookId && key == person.facebookId) {
+        return "same";
+      } else if (key == "undefined") {
+        return "none";
+      }
+      return key;
+    });
   },
   importPerson({ campaignId, person }) {
     let selector = { _id: Random.id(), campaignId };

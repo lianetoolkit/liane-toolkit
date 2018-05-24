@@ -8,7 +8,7 @@ import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
 import moment from "moment";
-import { get, merge, pick } from "lodash";
+import { get, merge, pick, compact, uniq } from "lodash";
 
 const buildSearchQuery = ({ campaignId, query, options }) => {
   let queryOptions = {
@@ -493,21 +493,20 @@ export const importPeople = new ValidatedMethod({
 export const findDuplicates = new ValidatedMethod({
   name: "people.findDuplicates",
   validate: new SimpleSchema({
-    campaignId: {
-      type: String
-    },
     personId: {
       type: String
     }
   }).validator(),
-  run({ campaignId, personId }) {
-    logger.debug("people.findDuplicates called", { campaignId, personId });
+  run({ personId }) {
+    logger.debug("people.findDuplicates called", { personId });
     const userId = Meteor.userId();
     if (!userId) {
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
+    const person = People.findOne(personId);
+
+    const campaign = Campaigns.findOne(person.campaignId);
     if (!campaign) {
       throw new Meteor.Error(401, "This campaign does not exist");
     }
@@ -516,17 +515,17 @@ export const findDuplicates = new ValidatedMethod({
     if (!allowed) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
-    return PeopleHelpers.findDuplicates({ campaignId, personId });
+    return PeopleHelpers.findDuplicates({ personId });
   }
 });
 
 export const mergePeople = new ValidatedMethod({
   name: "people.merge",
   validate: new SimpleSchema({
-    campaignId: {
+    personId: {
       type: String
     },
-    person: {
+    merged: {
       type: Object,
       blackbox: true
     },
@@ -540,15 +539,17 @@ export const mergePeople = new ValidatedMethod({
       type: Boolean
     }
   }).validator(),
-  run({ campaignId, person, from, remove }) {
-    logger.debug("people.merge called", { campaignId, person, from, remove });
+  run({ personId, merged, from, remove }) {
+    logger.debug("people.merge called", { personId, merged, from, remove });
 
     const userId = Meteor.userId();
     if (!userId) {
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
+    const person = People.findOne(personId);
+
+    const campaign = Campaigns.findOne(person.campaignId);
     if (!campaign) {
       throw new Meteor.Error(401, "This campaign does not exist");
     }
@@ -556,6 +557,10 @@ export const mergePeople = new ValidatedMethod({
     const allowed = _.findWhere(campaign.users, { userId });
     if (!allowed) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    if (merged._id !== person._id) {
+      throw new Meteor.Error(401, "Merging object ID does not match");
     }
 
     const autoFields = [
@@ -566,16 +571,27 @@ export const mergePeople = new ValidatedMethod({
     ];
 
     const people = People.find({
-      campaignId,
+      campaignId: person.campaignId,
       _id: { $in: from }
     }).fetch();
+
+    const uniqFacebookIds = compact(
+      uniq([person.facebookId, ...people.map(p => p.facebookId)])
+    );
+
+    if (uniqFacebookIds.length > 1) {
+      throw new Meteor.Error(
+        401,
+        "You cannot merge people from different existing Facebook references"
+      );
+    }
 
     let $set = {};
 
     merge(
       $set,
       ...people.map(p => pick(p, autoFields)),
-      pick(person, autoFields)
+      pick(merged, autoFields)
     );
 
     let mergeFields = ["name"];
@@ -586,28 +602,24 @@ export const mergePeople = new ValidatedMethod({
     }
 
     for (const field of mergeFields) {
-      const value = get(person, field);
+      const value = get(merge, field);
       if (value) {
         $set[field] = value;
       }
     }
 
-    People.upsert(
+    People.update(
       {
-        campaignId,
         _id: person._id
       },
       {
         $set
-      },
-      {
-        multi: false
       }
     );
 
     if (remove) {
       People.remove({
-        campaignId,
+        campaignId: person.campaignId,
         _id: { $in: from }
       });
     }
