@@ -15,6 +15,7 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
     fields: {
       name: 1,
       facebookId: 1,
+      campaignId: 1,
       counts: 1,
       campaignMeta: 1,
       lastInteractionDate: 1
