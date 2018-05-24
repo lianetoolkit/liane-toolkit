@@ -101,7 +101,22 @@ const PeopleHelpers = {
     let matches = [];
     const _queries = () => {
       let queries = [];
-      let defaultQuery = { _id: { $ne: person._id }, campaignId, $or: [] };
+      let defaultQuery = {
+        _id: { $ne: person._id },
+        campaignId,
+        $or: []
+      };
+      // avoid matching person with different facebookId
+      if (person.facebookId) {
+        defaultQuery.$and = [
+          {
+            $or: [
+              { facebookId: { $exists: false } },
+              { facebookId: person.facebookId }
+            ]
+          }
+        ];
+      }
       // sorted by uniqueness importance
       const fieldGroups = [
         ["name"],
