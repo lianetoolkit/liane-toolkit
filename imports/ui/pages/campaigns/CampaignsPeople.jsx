@@ -3,7 +3,6 @@ import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import PeopleImport from "/imports/ui/components/people/PeopleImport.jsx";
-import PeopleTable from "/imports/ui/components/people/PeopleTable.jsx";
 import PeopleSearch from "/imports/ui/components/people/PeopleSearch.jsx";
 import PeopleSummary from "/imports/ui/components/people/PeopleSummary.jsx";
 import XLSX from "xlsx";
