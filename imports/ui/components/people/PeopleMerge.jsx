@@ -139,7 +139,12 @@ export default class PeopleMerge extends React.Component {
         const mergedVal = this._get(merged, field.key);
         const personVal = this._get(person, field.key);
         if (!res[field.key]) res[field.key] = [];
-        if (personVal && !res[field.key].find(d => d.value == personVal)) {
+        if (
+          personVal &&
+          !res[field.key].find(
+            d => JSON.stringify(d.value) == JSON.stringify(personVal)
+          )
+        ) {
           res[field.key].push({
             origin: person._id,
             value: personVal
