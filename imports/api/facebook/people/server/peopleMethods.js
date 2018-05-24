@@ -20,7 +20,8 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
       campaignId: 1,
       counts: 1,
       campaignMeta: 1,
-      lastInteractionDate: 1
+      lastInteractionDate: 1,
+      receivedAutoPrivateReply: 1
     }
   };
 
@@ -201,6 +202,9 @@ export const peopleSendPrivateReply = new ValidatedMethod({
     campaignId: {
       type: String
     },
+    personId: {
+      type: String
+    },
     commentId: {
       type: String
     },
@@ -213,7 +217,7 @@ export const peopleSendPrivateReply = new ValidatedMethod({
       type: String
     }
   }).validator(),
-  run({ campaignId, commentId, type, message }) {
+  run({ campaignId, personId, commentId, type, message }) {
     logger.debug("people.sendPrivateReply called", {
       campaignId,
       commentId,
@@ -251,6 +255,16 @@ export const peopleSendPrivateReply = new ValidatedMethod({
       );
     }
 
+    const person = People.findOne(personId);
+
+    if (!person) {
+      throw new Meteor.Error(401, "Person not found");
+    }
+
+    if (person.facebookId !== comment.personId) {
+      throw new Meteor.Error(401, "Person does not match comment author");
+    }
+
     let response;
 
     const closeComment = () => {
@@ -277,23 +291,38 @@ export const peopleSendPrivateReply = new ValidatedMethod({
         throw error;
       } else if (error.response) {
         const errorCode = error.response.error.code;
+        console.log(error.response);
         switch (errorCode) {
+          case 10903:
+            closeComment();
+            throw new Meteor.Error(400, "You cannot reply to this activity.");
           case 10900:
             closeComment();
             throw new Meteor.Error(
               400,
               "You already sent a private message for this comment."
             );
+          case 100:
           case 200:
             closeComment();
             throw new Meteor.Error(
               400,
-              "Cannot send message for this comment, probably too old."
+              "Cannot send message for this comment, probably too old or comment does not exist anymore."
             );
           default:
             throw new Meteor.Error(500, "Unexpected Facebook response.");
         }
       }
+    }
+    if (type == "auto") {
+      People.update(
+        { _id: person._id },
+        {
+          $set: {
+            receivedAutoPrivateReply: true
+          }
+        }
+      );
     }
     closeComment();
     return response;

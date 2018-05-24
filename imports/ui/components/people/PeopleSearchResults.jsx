@@ -230,7 +230,14 @@ export default class PeopleSearchResults extends React.Component {
                 href="javascript:void(0);"
                 onClick={this._handleReplyClick(person)}
               >
-                <Icon name="comments outline" /> Private reply
+                <Icon
+                  name={
+                    person.receivedAutoPrivateReply
+                      ? "checkmark"
+                      : "comments outline"
+                  }
+                />{" "}
+                Private reply
               </a>
             ) : null}
           </Table.Cell>
@@ -260,9 +267,15 @@ export default class PeopleSearchResults extends React.Component {
                   </Grid.Column>
                   <Grid.Column>
                     <PrivateReply
+                      received={person.receivedAutoPrivateReply}
+                      personId={person._id}
                       campaignId={person.campaignId}
                       comment={replyingComment}
                       defaultMessage={defaultReplyMessage}
+                      onSubmit={() => {
+                        this.setState({ replying: false });
+                        this.props.refresh();
+                      }}
                     />
                   </Grid.Column>
                 </Grid.Row>
