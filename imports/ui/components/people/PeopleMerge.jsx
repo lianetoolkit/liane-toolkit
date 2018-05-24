@@ -120,7 +120,7 @@ export default class PeopleMerge extends React.Component {
   };
   _handleSubmit = ev => {
     ev.preventDefault();
-    const { campaignId, onSubmit } = this.props;
+    const { campaignId, person, onSubmit } = this.props;
     const { merged, removeDuplicates, people } = this.state;
     Meteor.call(
       "people.merge",
@@ -134,7 +134,7 @@ export default class PeopleMerge extends React.Component {
         if (err) {
           Alerts.error(err.message);
         } else {
-          Alerts.success(`${merged.name} merged successfully.`);
+          Alerts.success(`${person.name} merged successfully.`);
           this.setState({
             open: false
           });
