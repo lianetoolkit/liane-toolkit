@@ -173,7 +173,7 @@ export default class PeopleSearchResults extends React.Component {
           <Table.Cell collapsing>
             <a
               href={FlowRouter.path("App.campaignPeople.edit", {
-                campaignId,
+                campaignId: person.campaignId,
                 personId: person._id
               })}
             >
