@@ -188,7 +188,10 @@ export const peopleReplyComment = new ValidatedMethod({
       { sort: { created_time: -1 } }
     );
 
-    return comment;
+    return {
+      comment,
+      defaultMessage: campaign.autoReplyMessage
+    };
   }
 });
 
@@ -201,20 +204,21 @@ export const peopleSendPrivateReply = new ValidatedMethod({
     commentId: {
       type: String
     },
+    type: {
+      type: String,
+      defaultValue: "custom",
+      allowedValues: ["auto", "custom"]
+    },
     message: {
       type: String
     }
   }).validator(),
-  run({ campaignId, commentId, message }) {
+  run({ campaignId, commentId, type, message }) {
     logger.debug("people.sendPrivateReply called", {
       campaignId,
       commentId,
       message
     });
-
-    if (!message) {
-      throw new Meteor.Error(401, "You must type a message");
-    }
 
     const userId = Meteor.userId();
 
@@ -226,6 +230,12 @@ export const peopleSendPrivateReply = new ValidatedMethod({
     const allowed = _.findWhere(campaign.users, { userId });
     if (!allowed) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    if (type == "auto") message = campaign.autoReplyMessage;
+
+    if (!message) {
+      throw new Meteor.Error(401, "You must type a message");
     }
 
     const comment = Comments.findOne(commentId);
@@ -244,11 +254,10 @@ export const peopleSendPrivateReply = new ValidatedMethod({
     let response;
 
     const closeComment = () => {
-      Comments.upsert(
+      Comments.update(
         { _id: comment._id },
         {
           $set: {
-            ...comment,
             can_reply_privately: false
           }
         }

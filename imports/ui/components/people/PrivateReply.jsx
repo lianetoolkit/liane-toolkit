@@ -6,20 +6,21 @@ export default class PrivateReply extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      messageType: "auto",
+      messageType: props.defaultMessage ? "auto" : "custom",
       message: ""
     };
   }
   _handleChange = (ev, { name, value }) => this.setState({ [name]: value });
   _handleSubmit = ev => {
     ev.preventDefault();
-    const { campaignId, comment } = this.props;
-    const { message } = this.state;
+    const { campaignId, comment, defaultMessage } = this.props;
+    const { message, messageType } = this.state;
     Meteor.call(
       "people.sendPrivateReply",
       {
         campaignId,
         message,
+        type: messageType,
         commentId: comment._id
       },
       (err, res) => {
@@ -33,32 +34,42 @@ export default class PrivateReply extends React.Component {
     );
   };
   render() {
+    const { campaignId, defaultMessage } = this.props;
     const { messageType, message } = this.state;
     return (
       <Form onSubmit={this._handleSubmit}>
-        <Form.Group>
-          <Form.Field
-            control={Radio}
-            name="messageType"
-            value="auto"
-            label="Send automatic message"
-            onChange={this._handleChange}
-            checked={messageType == "auto"}
-          />
-          <Form.Field
-            control={Radio}
-            name="messageType"
-            value="custom"
-            label="Send custom message"
-            onChange={this._handleChange}
-            checked={messageType == "custom"}
-          />
-        </Form.Group>
+        {defaultMessage ? (
+          <Form.Group>
+            <Form.Field
+              control={Radio}
+              name="messageType"
+              value="auto"
+              label="Send automatic message"
+              onChange={this._handleChange}
+              checked={messageType == "auto"}
+            />
+            <Form.Field
+              control={Radio}
+              name="messageType"
+              value="custom"
+              label="Send custom message"
+              onChange={this._handleChange}
+              checked={messageType == "custom"}
+            />
+          </Form.Group>
+        ) : (
+          <p>
+            You can set a{" "}
+            <a href={FlowRouter.path("App.campaignSettings", { campaignId })}>
+              default message on your campaign settings
+            </a>.
+          </p>
+        )}
         <Form.Field
           disabled={messageType == "auto"}
           control={TextArea}
           name="message"
-          value={message}
+          value={messageType == "auto" ? defaultMessage : message}
           onChange={this._handleChange}
         />
         <Button primary floated="right">

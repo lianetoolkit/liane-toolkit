@@ -3,7 +3,7 @@ import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { randomColor } from "/imports/ui/utils/utils.jsx";
 import styled from "styled-components";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
-import { Table, Icon, Grid, Dimmer, Button } from "semantic-ui-react";
+import { Table, Icon, Grid, Dimmer, Button, Loader } from "semantic-ui-react";
 import PeopleTable from "./PeopleTable.jsx";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import PeopleMerge from "/imports/ui/components/people/PeopleMerge.jsx";
@@ -110,11 +110,12 @@ export default class PeopleSearchResults extends React.Component {
         "people.getReplyComment",
         { personId: person._id, facebookAccountId: facebookId },
         (err, res) => {
-          if (res) {
+          if (res && res.comment) {
             this.setState({
               loadingReply: false,
               replying: person._id,
-              replyingComment: res
+              replyingComment: res.comment,
+              defaultReplyMessage: res.defaultMessage
             });
           } else {
             this.setState({
@@ -132,7 +133,9 @@ export default class PeopleSearchResults extends React.Component {
     this._updatePeople(nextProps);
   }
   _handleTableChange = props => {
-    this._updatePeople(props);
+    if (props.people) {
+      this._updatePeople(props);
+    }
   };
   _handleMergeSubmit = () => {
     const { refresh } = this.props;
@@ -150,7 +153,7 @@ export default class PeopleSearchResults extends React.Component {
     return get(person, "campaignMeta." + key);
   }
   _extraCells(person) {
-    const { editMode, facebookId, campaignId } = this.props;
+    const { editMode, facebookId } = this.props;
     const { duplicates, replying, loadingReply, replyingComment } = this.state;
     if (editMode) {
       return (
@@ -161,7 +164,7 @@ export default class PeopleSearchResults extends React.Component {
           <Table.Cell>{this._getMeta(person, "contact.telephone")}</Table.Cell>
           <Table.Cell collapsing>
             <PeopleMerge
-              campaignId={campaignId}
+              campaignId={person.campaignId}
               duplicates={duplicates}
               person={person}
               onSubmit={this._handleMergeSubmit}
@@ -236,8 +239,13 @@ export default class PeopleSearchResults extends React.Component {
     }
   }
   _extraRows(person) {
-    const { editMode, facebookId, campaignId } = this.props;
-    const { replying, loadingReply, replyingComment } = this.state;
+    const { editMode, facebookId } = this.props;
+    const {
+      replying,
+      loadingReply,
+      replyingComment,
+      defaultReplyMessage
+    } = this.state;
     if (!editMode && replying && replying == person._id) {
       return (
         <Table.Row>
@@ -252,8 +260,9 @@ export default class PeopleSearchResults extends React.Component {
                   </Grid.Column>
                   <Grid.Column>
                     <PrivateReply
-                      campaignId={campaignId}
+                      campaignId={person.campaignId}
                       comment={replyingComment}
+                      defaultMessage={defaultReplyMessage}
                     />
                   </Grid.Column>
                 </Grid.Row>

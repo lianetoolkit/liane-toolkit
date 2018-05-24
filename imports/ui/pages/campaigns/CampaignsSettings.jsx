@@ -87,7 +87,7 @@ export default class CampaignsSettings extends React.Component {
     const { section, formData } = this.state;
     let data = {};
     for (const key in formData[section]) {
-      if (formData[section][key]) {
+      if (typeof formData[section][key] !== "undefined") {
         data[key] = formData[section][key];
       }
     }
