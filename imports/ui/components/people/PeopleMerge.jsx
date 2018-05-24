@@ -1,6 +1,8 @@
 import React from "react";
 import {
   Modal,
+  Menu,
+  Table,
   Dimmer,
   Divider,
   Loader,
@@ -15,8 +17,19 @@ import {
   Message
 } from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
-import { pick, merge, isEmpty, get, unset, setWith, clone } from "lodash";
+import {
+  pick,
+  merge,
+  compact,
+  isEmpty,
+  uniq,
+  get,
+  unset,
+  setWith,
+  clone
+} from "lodash";
 import { objDiff } from "/imports/ui/utils/utils.jsx";
+import PeopleTable from "./PeopleTable.jsx";
 import peopleMetaModel from "/imports/api/facebook/people/model/meta";
 
 let mergeFields = [
@@ -42,6 +55,7 @@ export default class PeopleMerge extends React.Component {
       open: false,
       loading: false,
       people: [],
+      eligiblePeople: {},
       merged: null,
       options: {},
       diff: {},
@@ -66,6 +80,44 @@ export default class PeopleMerge extends React.Component {
       removeDuplicates: checked
     });
   };
+  _handleMergeSelection = (ev, { value }) => {
+    const { person } = this.props;
+    const { people, eligiblePeople } = this.state;
+    let newPeople = [...people];
+    let pulled = false;
+    people.forEach((p, i) => {
+      if (p._id == value) {
+        newPeople.splice(i, 1);
+        pulled = true;
+      }
+    });
+    if (!pulled) {
+      for (var key in eligiblePeople) {
+        eligiblePeople[key].forEach(p => {
+          if (p._id == value) {
+            newPeople.push(p);
+          }
+        });
+      }
+    }
+    if (compact(uniq(newPeople.map(p => p && p.facebookId))).length > 1) {
+      alert(
+        "You cannot select people from two different existing Facebook references"
+      );
+    } else {
+      // Merge with selected
+      let merged = {};
+      merge(merged, ...newPeople, person);
+      // Keep original id
+      merged._id = person._id;
+      this.setState({
+        people: newPeople,
+        merged,
+        options: this._buildOptions([person, ...newPeople], merged),
+        diff: this._getDiff(person, merged)
+      });
+    }
+  };
   _handleSubmit = ev => {
     ev.preventDefault();
     const { campaignId, onSubmit } = this.props;
@@ -73,8 +125,8 @@ export default class PeopleMerge extends React.Component {
     Meteor.call(
       "people.merge",
       {
-        campaignId,
-        person: merged,
+        personId: merged._id,
+        merged,
         from: people.map(p => p._id),
         remove: removeDuplicates
       },
@@ -132,6 +184,16 @@ export default class PeopleMerge extends React.Component {
     }
     return label;
   }
+  _eligibleNavLabel(key) {
+    switch (key) {
+      case "same":
+        return "Same facebook reference";
+      case "none":
+        return "No facebook reference found";
+      default:
+        return "Facebook reference: " + key;
+    }
+  }
   _buildOptions(people, merged) {
     let res = {};
     for (const person of people) {
@@ -157,7 +219,7 @@ export default class PeopleMerge extends React.Component {
   _hasDiffs() {
     let has = false;
     for (const field of mergeFields) {
-      if (this._hasDiff(field.key)) has = true;
+      if (!has && this._hasDiff(field.key)) has = true;
     }
     return has;
   }
@@ -177,25 +239,34 @@ export default class PeopleMerge extends React.Component {
     this.setState({ open: true, loading: true });
     Meteor.call(
       "people.findDuplicates",
-      { campaignId, personId: person._id },
+      { personId: person._id },
       (err, people) => {
-        let merged = {};
-        merge(merged, ...people, person);
-        // Keep original id
-        merged._id = person._id;
-        this.setState({
-          loading: false,
-          people,
-          merged,
-          options: this._buildOptions([person, ...people], merged),
-          diff: this._getDiff(person, merged)
-        });
+        if (err) {
+          this.setState({
+            loading: false
+          });
+          Alerts.error(err.message);
+        } else {
+          this.setState({
+            loading: false,
+            eligiblePeople: people,
+            eligibleNav: Object.keys(people)[0]
+          });
+        }
       }
     );
   }
   render() {
     const { person } = this.props;
-    const { open, loading, people, options, merged } = this.state;
+    const {
+      open,
+      loading,
+      eligiblePeople,
+      eligibleNav,
+      people,
+      options,
+      merged
+    } = this.state;
     return (
       <Modal
         open={open}
@@ -215,80 +286,133 @@ export default class PeopleMerge extends React.Component {
           <Dimmer active={loading} inverted>
             <Loader />
           </Dimmer>
-          {!loading && !people.length ? (
+          {!loading && isEmpty(eligiblePeople) ? (
             <p>No match was found for merging</p>
           ) : null}
-          {!loading && people.length ? (
+          {!loading && !isEmpty(eligiblePeople) ? (
             <Form onSubmit={this._handleSubmit}>
-              <p>Found {people.length} matches for merging.</p>
-              <Divider />
-              {this._hasDiffs() ? (
+              {Object.keys(eligiblePeople).length > 1 ? (
                 <>
                   <p>
-                    Some fields have different values, which must be manually
-                    resolved.
+                    Navigate below between different references found and select
+                    which people you'd like to merge.
                   </p>
-                  <p>
-                    Select below the fields to replace or add, or select "Skip"
-                    to not change its value.
-                  </p>
-                  <Segment.Group size="tiny">
-                    {mergeFields.map(
-                      field =>
-                        this._hasDiff(field.key) ? (
-                          <Segment key={field.key}>
-                            <Header size="tiny">
-                              {field.title}
-                              {!this._get(person, field.key) ? (
-                                <Label color="green" size="tiny">
-                                  New value
-                                </Label>
-                              ) : (
-                                <Label size="tiny">Has existing value</Label>
-                              )}
-                            </Header>
-                            <Form.Group key={field.key}>
-                              {options[field.key].map((option, i) => (
-                                <Form.Field
-                                  key={`${field.key}-${i}`}
-                                  name={field.key}
-                                  control={Radio}
-                                  label={this._label(option.value, field.key)}
-                                  value={option.value}
-                                  checked={
-                                    get(merged, field.key) == option.value
-                                  }
-                                  onChange={this._handleChange}
-                                />
-                              ))}
-                              <Form.Field
-                                name={field.key}
-                                control={Radio}
-                                label="Skip"
-                                value=""
-                                checked={!get(merged, field.key)}
-                                onChange={this._handleChange}
-                              />
-                            </Form.Group>
-                          </Segment>
-                        ) : null
-                    )}
-                  </Segment.Group>
+                  <Menu>
+                    {Object.keys(eligiblePeople).map(key => (
+                      <Menu.Item
+                        key={key}
+                        active={key == eligibleNav}
+                        onClick={() => this.setState({ eligibleNav: key })}
+                      >
+                        {this._eligibleNavLabel(key)}
+                      </Menu.Item>
+                    ))}
+                  </Menu>
                 </>
               ) : (
-                <p>No manual resolution needed, able to automatically merge.</p>
+                <p>
+                  We found eligible people for merge, select below which you'd
+                  like to merge.
+                </p>
               )}
-              <Message negative>
-                <Form.Field
-                  control={Checkbox}
-                  label="Delete other occurrences. This is not recoverable."
-                  onChange={this._handleDeleteChange}
-                  name="deleteDuplicates"
-                />
-              </Message>
-              <Button primary fluid>
-                Merge {person.name}
-              </Button>
+              <PeopleTable
+                people={eligiblePeople[eligibleNav]}
+                extraCells={person => (
+                  <>
+                    <Table.Cell />
+                    <Table.Cell collapsing>
+                      <Checkbox
+                        label="Select for merge"
+                        value={person._id}
+                        onChange={this._handleMergeSelection}
+                        checked={!!people.find(p => p._id == person._id)}
+                      />
+                    </Table.Cell>
+                  </>
+                )}
+              />
+              {people.length ? (
+                <>
+                  <p>
+                    Selected for merging:{" "}
+                    <Label as="span">{people.length}</Label>
+                  </p>
+                  {this._hasDiffs() ? (
+                    <>
+                      <p>
+                        Some fields have different values, which must be
+                        manually resolved.
+                      </p>
+                      <p>
+                        Select below the fields to replace or add, or select
+                        "Skip" to not change its value.
+                      </p>
+                      <Segment.Group size="tiny">
+                        {mergeFields.map(
+                          field =>
+                            this._hasDiff(field.key) ? (
+                              <Segment key={field.key}>
+                                <Header size="tiny">
+                                  {field.title}
+                                  {!this._get(person, field.key) ? (
+                                    <Label color="green" size="tiny">
+                                      New value
+                                    </Label>
+                                  ) : (
+                                    <Label size="tiny">
+                                      Has existing value
+                                    </Label>
+                                  )}
+                                </Header>
+                                <Form.Group key={field.key}>
+                                  {options[field.key].map((option, i) => (
+                                    <Form.Field
+                                      key={`${field.key}-${i}`}
+                                      name={field.key}
+                                      control={Radio}
+                                      label={this._label(
+                                        option.value,
+                                        field.key
+                                      )}
+                                      value={option.value}
+                                      checked={
+                                        get(merged, field.key) == option.value
+                                      }
+                                      onChange={this._handleChange}
+                                    />
+                                  ))}
+                                  <Form.Field
+                                    name={field.key}
+                                    control={Radio}
+                                    label="Skip"
+                                    value=""
+                                    checked={!get(merged, field.key)}
+                                    onChange={this._handleChange}
+                                  />
+                                </Form.Group>
+                              </Segment>
+                            ) : null
+                        )}
+                      </Segment.Group>
+                    </>
+                  ) : (
+                    <p>
+                      No manual resolution needed, able to automatically merge.
+                    </p>
+                  )}
+                  <Message negative>
+                    <Form.Field
+                      control={Checkbox}
+                      label="Delete other occurrences. This is not recoverable."
+                      onChange={this._handleDeleteChange}
+                      name="deleteDuplicates"
+                    />
+                  </Message>
+                  <Button primary fluid>
+                    Merge {person.name}
+                  </Button>
+                </>
+              ) : null}
             </Form>
           ) : null}
         </Modal.Content>
