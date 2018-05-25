@@ -42,6 +42,11 @@ People.schema = new SimpleSchema({
     optional: true,
     index: true
   },
+  source: {
+    type: String,
+    optional: true,
+    index: true
+  },
   // lastInteraction: {
   //   type: Object,
   //   optional: true,

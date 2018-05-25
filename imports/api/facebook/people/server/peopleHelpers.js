@@ -215,6 +215,9 @@ const PeopleHelpers = {
                     $set: {
                       ...person.$set,
                       [`${key}.$.val`]: value.val
+                    },
+                    $setOnInsert: {
+                      source: "import"
                     }
                   },
                   { multi: false }
@@ -245,7 +248,19 @@ const PeopleHelpers = {
       _upsertAddToSet();
     }
 
-    return People.upsert(selector, person, { multi: false });
+    res = People.upsert(
+      selector,
+      {
+        ...person,
+        $setOnInsert: {
+          source: "import"
+        }
+      },
+      { multi: false }
+    );
+
+    console.log(res);
+    return res;
   }
 };
 
