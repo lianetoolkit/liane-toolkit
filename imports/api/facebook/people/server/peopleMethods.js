@@ -175,6 +175,9 @@ export const updatePersonMeta = new ValidatedMethod({
 
     let doc = {};
     doc[`campaignMeta.${metaKey}`] = metaValue;
+
+    PeopleHelpers.generateFormId({ person });
+
     return People.update({ _id: person._id }, { $set: doc });
   }
 });
@@ -218,6 +221,18 @@ export const canvasFormUpdate = new ValidatedMethod({
     if (!allowed) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
+
+    const person = People.findOne(personId);
+
+    if (!person) {
+      throw new Meteor.Error(401, "Person not found");
+    }
+
+    if (person.campaignId !== campaignId) {
+      throw new Meteor.Error(401, "Not allowed");
+    }
+
+    PeopleHelpers.generateFormId({ person });
 
     return People.update(
       {

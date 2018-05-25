@@ -14,6 +14,8 @@ import DashboardPageContainer from "/imports/ui/containers/app/DashboardPageCont
 
 import AddCampaignPageContainer from "/imports/ui/containers/campaigns/AddCampaignPageContainer.jsx";
 
+import PeopleFormContainer from "/imports/ui/containers/people/PeopleFormContainer.jsx";
+
 import NotFoundPage from "/imports/ui/pages/NotFoundPage.jsx";
 
 import { APP_NAME, addTitle, trackRouteEntry } from "./utils.js";
@@ -93,6 +95,16 @@ appRoutes.route("/add-campaign", {
     addTitle(`${APP_NAME} | New Campaign`);
     return mount(AppContainer, {
       content: { component: AddCampaignPageContainer }
+    });
+  }
+});
+
+appRoutes.route("/f/:formId", {
+  name: "App.peopleForm",
+  action: function(params) {
+    addTitle(`${APP_NAME} | Help your candidate`);
+    return mount(PeopleFormContainer, {
+      formId: params.formId
     });
   }
 });

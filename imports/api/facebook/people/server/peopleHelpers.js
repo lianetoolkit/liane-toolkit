@@ -2,8 +2,29 @@ import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { Random } from "meteor/random";
 import { uniqBy, groupBy, mapKeys, flatten, get, set } from "lodash";
+import crypto from "crypto";
 
 const PeopleHelpers = {
+  getFormId({ personId }) {
+    const person = People.findOne(personId);
+    if (!person) {
+      throw new Meteor.Error(404, "Person not found");
+    }
+    return this.generateFormId({ person });
+  },
+  generateFormId({ person }) {
+    if (person.formId) {
+      return person.formId;
+    } else {
+      const formId = crypto
+        .createHash("sha1")
+        .update(person._id)
+        .digest("hex")
+        .substr(0, 7);
+      People.update(person._id, { $set: { formId } });
+      return formId;
+    }
+  },
   updateFBUsers({ campaignId, facebookAccountId }) {
     const collection = People.rawCollection();
     const aggregate = Meteor.wrapAsync(collection.aggregate, collection);

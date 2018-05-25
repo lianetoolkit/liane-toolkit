@@ -76,6 +76,11 @@ People.schema = new SimpleSchema({
     blackbox: true,
     optional: true
   },
+  formId: {
+    type: String,
+    index: true,
+    optional: true
+  },
   createdAt: {
     type: Date,
     index: true,

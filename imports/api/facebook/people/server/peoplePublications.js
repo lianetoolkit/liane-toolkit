@@ -78,6 +78,37 @@ Meteor.publish("people.detail", function({ personId }) {
   return this.ready();
 });
 
+Meteor.publishComposite("people.form.detail", function({ formId }) {
+  logger.debug("people.form.detail called", { formId });
+  const person = People.findOne({ formId });
+  return {
+    find: function() {
+      return People.find(
+        { formId },
+        {
+          fields: {
+            name: 1
+          }
+        }
+      );
+    },
+    children: [
+      {
+        find() {
+          return Campaigns.find(
+            { _id: person.campaignId },
+            {
+              fields: {
+                name: 1
+              }
+            }
+          );
+        }
+      }
+    ]
+  };
+});
+
 // Meteor.publish("people.byAccount", function({
 //   search,
 //   limit,
