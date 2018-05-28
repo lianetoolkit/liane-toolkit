@@ -183,18 +183,47 @@ export const peopleReplyComment = new ValidatedMethod({
       {
         personId: person.facebookId,
         facebookAccountId,
-        created_time: {
-          $gte: moment()
-            .subtract(4, "months")
-            .toISOString()
-        },
         $or: [
           { can_reply_privately: true },
-          { can_reply_privately: { $exists: false } }
+          {
+            can_reply_privately: { $exists: false },
+            created_time: {
+              $gte: moment()
+                .subtract(4, "months")
+                .toISOString()
+            }
+          }
         ]
       },
       { sort: { created_time: -1 } }
     );
+
+    // Recheck for reply availability
+    if(comment) {
+      const campaignAccount = campaign.accounts.find(
+        a => a.facebookId == facebookAccountId
+      );
+      if (campaignAccount) {
+        const access_token = campaignAccount.accessToken;
+        const res = Promise.await(
+          FB.api(comment._id, {
+            fields: ["can_reply_privately"],
+            access_token
+          })
+        );
+        Comments.update(
+          { _id: comment._id },
+          {
+            $set: {
+              can_reply_privately: res.can_reply_privately
+            }
+          }
+        );
+        if (!res.can_reply_privately) {
+          return;
+        }
+      }
+    }
 
     return {
       comment,
