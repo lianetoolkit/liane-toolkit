@@ -257,6 +257,7 @@ export default class CampaignsSettings extends React.Component {
     const { formData, section } = this.state;
     const { loading, campaign, currentUser } = this.props;
     const { accounts, users } = campaign;
+    console.log(this.props);
     return (
       <div>
         <PageHeader
@@ -305,6 +306,10 @@ export default class CampaignsSettings extends React.Component {
                   <Form onSubmit={this._handleSubmit}>
                     {section == "general" ? (
                       <div>
+                        <p>
+                          Your campaign is associated to the context{" "}
+                          <strong>{campaign.context.name}</strong>
+                        </p>
                         <Form.Field
                           control={Input}
                           label="Campaign name"

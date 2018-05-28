@@ -186,7 +186,7 @@ export default class PeopleSearch extends React.Component {
               </Button.Group>
             </Grid.Column>
             <Grid.Column>
-              <span className="filter-label">Filter by page</span>
+              <span className="filter-label">Filter</span>
               <Form.Field
                 control={Select}
                 value={search.accountFilter}
@@ -198,6 +198,11 @@ export default class PeopleSearch extends React.Component {
                     key: "all",
                     value: "all",
                     text: "Show all people"
+                  },
+                  {
+                    key: "import",
+                    value: "import",
+                    text: "Imported"
                   },
                   {
                     key: "account",

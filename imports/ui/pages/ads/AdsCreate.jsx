@@ -148,7 +148,7 @@ export default class AdsCreate extends React.Component {
     const data = {
       ...fields,
       campaignId,
-      audienceFacebookId,
+      facebookAccountId: audienceFacebookId,
       audienceCategoryId
     };
     Meteor.call("ads.create", data, error => {
@@ -159,12 +159,12 @@ export default class AdsCreate extends React.Component {
         Alerts.success(
           "Adset created successfully. Access your Facebook Business Manager to create and manage your ads."
         );
-        {
-          FlowRouter.go("App.campaignAudience", {
-            campaignId,
-            facebookId: audienceFacebookId
-          });
-        }
+        // {
+        //   FlowRouter.go("App.campaignAudience", {
+        //     campaignId,
+        //     facebookId: audienceFacebookId
+        //   });
+        // }
       }
     });
   }
