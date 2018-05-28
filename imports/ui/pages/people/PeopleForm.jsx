@@ -5,6 +5,7 @@ import {
   Loader,
   Container,
   Header,
+  Divider,
   Form,
   Input,
   Button,
@@ -18,6 +19,12 @@ const Wrapper = styled.div`
 `;
 
 export default class PeopleForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+    this._handleFacebookClick = this._handleFacebookClick.bind(this);
+  }
+  _handleFacebookClick() {}
   render() {
     const { loading, person, campaign } = this.props;
     if (loading) {
@@ -33,9 +40,18 @@ export default class PeopleForm extends React.Component {
           <Header size="large">
             Help {campaign.name} campaign by filling out this form.
           </Header>
+          <Button
+            fluid
+            color="facebook"
+            icon
+            onClick={this._handleFacebookClick}
+          >
+            <Icon name="facebook" /> Connect with your Facebook profile
+          </Button>
+          <Divider />
           <Form>
             <Form.Field control={Input} label="Your age" />
-            <Button primary fluid>Submit</Button>
+            <Button fluid>Submit</Button>
           </Form>
         </Wrapper>
       );
