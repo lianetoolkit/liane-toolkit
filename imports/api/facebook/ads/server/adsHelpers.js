@@ -118,7 +118,13 @@ const AdsHelpers = {
     );
 
     let targeting = {
-      geo_locations: FacebookAudiencesHelpers.buildLocations(geolocation)
+      geo_locations: FacebookAudiencesHelpers.buildLocations(geolocation),
+      interests: category.spec.interests.map(interest => {
+        return {
+          id: interest.id,
+          name: interest.name
+        };
+      })
     };
 
     if (useConnection) {

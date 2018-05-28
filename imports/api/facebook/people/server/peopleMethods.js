@@ -57,8 +57,15 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
   }
   delete query.q;
 
-  if (query.accountFilter == "account" && options.facebookId) {
-    query.facebookAccounts = options.facebookId;
+  switch (query.accountFilter) {
+    case "account":
+      if (options.facebookId) {
+        query.facebookAccounts = options.facebookId;
+      }
+      break;
+    case "import":
+      query.source = "import";
+      break;
   }
   delete query.accountFilter;
 

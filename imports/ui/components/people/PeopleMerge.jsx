@@ -128,7 +128,7 @@ export default class PeopleMerge extends React.Component {
         personId: merged._id,
         merged,
         from: people.map(p => p._id),
-        remove: removeDuplicates
+        remove: true // always remove duplicates
       },
       (err, res) => {
         if (err) {
@@ -400,14 +400,14 @@ export default class PeopleMerge extends React.Component {
                       No manual resolution needed, able to automatically merge.
                     </p>
                   )}
-                  <Message negative>
+                  {/* <Message negative>
                     <Form.Field
                       control={Checkbox}
                       label="Delete other occurrences. This is not recoverable."
                       onChange={this._handleDeleteChange}
                       name="deleteDuplicates"
                     />
-                  </Message>
+                  </Message> */}
                   <Button primary fluid>
                     Merge {person.name}
                   </Button>
