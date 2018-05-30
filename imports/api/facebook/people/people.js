@@ -4,6 +4,12 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 
 const People = new Mongo.Collection("people");
 
+People.lastInteractionsSchema = new SimpleSchema({
+  facebookId: { type: String },
+  date: { type: Date, optional: true },
+  estimate: { type: Boolean, defaultValue: false }
+});
+
 People.schema = new SimpleSchema({
   facebookId: {
     type: String,
@@ -31,6 +37,45 @@ People.schema = new SimpleSchema({
   "facebookAccounts.$": {
     type: String
   },
+  lastInteractionDate: {
+    type: Date,
+    optional: true,
+    index: true
+  },
+  source: {
+    type: String,
+    optional: true,
+    index: true
+  },
+  // lastInteraction: {
+  //   type: Object,
+  //   optional: true,
+  //   index: true
+  // },
+  // "lastInteraction.date": {
+  //   type: Date,
+  //   optional: true,
+  //   index: true
+  // },
+  // "lastInteraction.facebookId": {
+  //   type: String,
+  //   optional: true,
+  //   index: true
+  // },
+  // "lastInteraction.estimate": {
+  //   type: Boolean,
+  //   defaultValue: false,
+  //   optional: true,
+  //   index: true
+  // },
+  // lastInteractions: {
+  //   type: Array,
+  //   index: true,
+  //   optional: true
+  // },
+  // "lastInteractions.$": {
+  //   type: People.lastInteractionsSchema
+  // },
   counts: {
     type: Object,
     blackbox: true,
@@ -62,7 +107,6 @@ People.attachSchema(People.schema);
 
 Meteor.startup(() => {
   if (Meteor.isServer) {
-    // console.log(People.rawCollection().getIndexes());
     People.rawCollection().dropIndex("name_text");
     People.rawCollection().dropIndex(
       "campaignMeta.influencer_1_campaignMeta.voteIntent_1_campaignMeta.starred_1_campaignMeta.troll_1"

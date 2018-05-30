@@ -171,15 +171,17 @@ export default class PeopleSinglePage extends React.Component {
               <Segment size="small">
                 <Grid columns={3} verticalAlign="middle">
                   <Grid.Row>
-                    <Grid.Column width={3} textAlign="center">
-                      <a
-                        href={`https://facebook.com/${person.facebookId}`}
-                        target="_blank"
-                        rel="external"
-                      >
-                        <Icon name="facebook" /> Profile
-                      </a>
-                    </Grid.Column>
+                    {person.facebookId ? (
+                      <Grid.Column width={3} textAlign="center">
+                        <a
+                          href={`https://facebook.com/${person.facebookId}`}
+                          target="_blank"
+                          rel="external"
+                        >
+                          <Icon name="facebook" /> Profile
+                        </a>
+                      </Grid.Column>
+                    ) : null}
                     <Grid.Column width={3} textAlign="center">
                       <PeopleMetaButtons person={person} size="large" />
                     </Grid.Column>
@@ -203,68 +205,76 @@ export default class PeopleSinglePage extends React.Component {
                         </div>
                       ) : (
                         <div className="comment-history">
-                          <Header>Never commented</Header>
+                          {!person.facebookId ? (
+                            <Header>No Facebook account attached</Header>
+                          ) : (
+                            <Header>Never commented</Header>
+                          )}
                         </div>
                       )}
                     </Grid.Column>
                   </Grid.Row>
                 </Grid>
               </Segment>
-              <Segment size="small" className="interactions-summary">
-                {campaign.accounts.map(account => (
-                  <Grid
-                    key={account._id}
-                    widths="equal"
-                    columns={8}
-                    verticalAlign="middle"
-                  >
-                    <Grid.Row>
-                      <Grid.Column>
-                        <Header as="h4">{account.name}</Header>
-                      </Grid.Column>
-                      <Grid.Column>
-                        <Icon name="comment" />
-                        {person.counts[account.facebookId] ? (
-                          <span>
-                            {person.counts[account.facebookId].comments || 0}
-                          </span>
-                        ) : (
-                          <span>0</span>
-                        )}
-                      </Grid.Column>
-                      {reactions.map(reaction => (
-                        <Grid.Column key={reaction}>
-                          <Reaction size="small" reaction={reaction} />
-                          {person.counts[account.facebookId] &&
-                          person.counts[account.facebookId].reactions ? (
+              {person.counts ? (
+                <Segment size="small" className="interactions-summary">
+                  {campaign.accounts.map(account => (
+                    <Grid
+                      key={account._id}
+                      widths="equal"
+                      columns={8}
+                      verticalAlign="middle"
+                    >
+                      <Grid.Row>
+                        <Grid.Column>
+                          <Header as="h4">{account.name}</Header>
+                        </Grid.Column>
+                        <Grid.Column>
+                          <Icon name="comment" />
+                          {person.counts[account.facebookId] ? (
                             <span>
-                              {
-                                person.counts[account.facebookId].reactions[
-                                  reaction
-                                ]
-                              }
+                              {person.counts[account.facebookId].comments || 0}
                             </span>
                           ) : (
                             <span>0</span>
                           )}
                         </Grid.Column>
-                      ))}
-                    </Grid.Row>
-                  </Grid>
-                ))}
-              </Segment>
+                        {reactions.map(reaction => (
+                          <Grid.Column key={reaction}>
+                            <Reaction size="small" reaction={reaction} />
+                            {person.counts[account.facebookId] &&
+                            person.counts[account.facebookId].reactions ? (
+                              <span>
+                                {
+                                  person.counts[account.facebookId].reactions[
+                                    reaction
+                                  ]
+                                }
+                              </span>
+                            ) : (
+                              <span>0</span>
+                            )}
+                          </Grid.Column>
+                        ))}
+                      </Grid.Row>
+                    </Grid>
+                  ))}
+                </Segment>
+              ) : null}
             </Segment.Group>
             <div className="person-data">
               <Menu pointing attached="top">
                 <Menu.Item active={nav == "intro"} onClick={this._nav("intro")}>
                   Information
                 </Menu.Item>
-                <Menu.Item
-                  active={nav == "activity"}
-                  onClick={this._nav("activity")}
-                >
-                  Activity
-                </Menu.Item>
+                {entries && entries.length ? (
+                  <Menu.Item
+                    active={nav == "activity"}
+                    onClick={this._nav("activity")}
+                  >
+                    Activity
+                  </Menu.Item>
+                ) : null}
               </Menu>
               {nav == "intro" ? (
                 <Segment.Group>

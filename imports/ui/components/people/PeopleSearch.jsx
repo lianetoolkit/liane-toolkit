@@ -78,8 +78,10 @@ export default class PeopleSearch extends React.Component {
     const { options } = this.state;
     if (nextProps.facebookId !== facebookId) {
       this.setState({
+        activePage: 1,
         options: {
           ...options,
+          skip: 0,
           facebookId: nextProps.facebookId
         }
       });
@@ -148,7 +150,7 @@ export default class PeopleSearch extends React.Component {
   }
   render() {
     const { activePage, search, options } = this.state;
-    const { campaignId, facebookId } = this.props;
+    const { campaignId, facebookId, editMode } = this.props;
     const pageCount = this._getPageCount();
     return (
       <Wrapper>
@@ -184,7 +186,7 @@ export default class PeopleSearch extends React.Component {
               </Button.Group>
             </Grid.Column>
             <Grid.Column>
-              <span className="filter-label">Filter by page</span>
+              <span className="filter-label">Filter</span>
               <Form.Field
                 control={Select}
                 value={search.accountFilter}
@@ -196,6 +198,11 @@ export default class PeopleSearch extends React.Component {
                     key: "all",
                     value: "all",
                     text: "Show all people"
+                  },
+                  {
+                    key: "import",
+                    value: "import",
+                    text: "Imported"
                   },
                   {
                     key: "account",
@@ -217,6 +224,11 @@ export default class PeopleSearch extends React.Component {
                     key: "auto",
                     value: "auto",
                     text: "Auto"
+                  },
+                  {
+                    key: "lastInteraction",
+                    value: "lastInteraction",
+                    text: "Last interaction"
                   },
                   {
                     key: "name",
@@ -245,6 +257,7 @@ export default class PeopleSearch extends React.Component {
           search={search}
           options={options}
           onChange={this._handleDataChange}
+          editMode={editMode}
         />
         <Divider hidden />
         {pageCount ? (

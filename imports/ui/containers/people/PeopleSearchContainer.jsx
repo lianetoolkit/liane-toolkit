@@ -9,6 +9,7 @@ const count = new ReactiveVar(0);
 const loading = new ReactiveVar(false);
 const loadingCount = new ReactiveVar(false);
 let current = null;
+let currentParams = null;
 let currentQueryParams = null;
 
 const getQueryParams = props => {
@@ -19,13 +20,15 @@ const getQueryParams = props => {
   };
 };
 
+const getAllParams = props => {
+  return {
+    ...getQueryParams(props),
+    options: props.options
+  };
+};
+
 export default withTracker(props => {
-  // Fetch count
-  if (
-    !currentQueryParams ||
-    JSON.stringify(currentQueryParams) !== JSON.stringify(getQueryParams(props))
-  ) {
-    currentQueryParams = getQueryParams(props);
+  const doCount = () => {
     loadingCount.set(true);
     Meteor.call(
       "people.search.count",
@@ -41,10 +44,9 @@ export default withTracker(props => {
         }
       }
     );
-  }
-  // Fetch people
-  if (!current || JSON.stringify(current) !== JSON.stringify(props)) {
-    current = { ...props };
+  };
+
+  const doData = () => {
     loading.set(true);
     Meteor.call(
       "people.search",
@@ -60,11 +62,35 @@ export default withTracker(props => {
         }
       }
     );
+  };
+
+  // Fetch count
+  if (
+    !currentQueryParams ||
+    JSON.stringify(currentQueryParams) !== JSON.stringify(getQueryParams(props))
+  ) {
+    currentQueryParams = getQueryParams(props);
+    doCount();
   }
+  // Fetch people
+  if (
+    !currentParams ||
+    JSON.stringify(currentParams) !== JSON.stringify(getAllParams(props))
+  ) {
+    currentParams = getAllParams(props);
+    doData();
+  }
+
+  const refresh = () => {
+    doCount();
+    doData();
+  };
+
   return {
     loading: loading.get(),
     loadingCount: loadingCount.get(),
     people: people.get(),
-    count: count.get()
+    count: count.get(),
+    refresh
   };
 })(PeopleSearchResults);

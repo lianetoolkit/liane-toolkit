@@ -1,9 +1,12 @@
 import SimpleSchema from "simpl-schema";
 import { performance } from "perf_hooks";
 import { People } from "../people.js";
+import peopleMetaModel from "/imports/api/facebook/people/model/meta";
+import { PeopleHelpers } from "./peopleHelpers.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
+import { get, merge, pick, compact, uniq } from "lodash";
 
 const buildSearchQuery = ({ campaignId, query, options }) => {
   let queryOptions = {
@@ -12,8 +15,10 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
     fields: {
       name: 1,
       facebookId: 1,
+      campaignId: 1,
       counts: 1,
-      campaignMeta: 1
+      campaignMeta: 1,
+      lastInteractionDate: 1
     }
   };
 
@@ -30,6 +35,13 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
       case "name":
         queryOptions.sort = { name: 1 };
         break;
+      case "lastInteraction":
+        if (options.facebookId) {
+          queryOptions.sort = {
+            lastInteractionDate: -1
+          };
+        }
+        break;
       default:
     }
   }
@@ -45,8 +57,15 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
   }
   delete query.q;
 
-  if (query.accountFilter == "account" && options.facebookId) {
-    query.facebookAccounts = options.facebookId;
+  switch (query.accountFilter) {
+    case "account":
+      if (options.facebookId) {
+        query.facebookAccounts = options.facebookId;
+      }
+      break;
+    case "import":
+      query.source = "import";
+      break;
   }
   delete query.accountFilter;
 
@@ -78,14 +97,9 @@ export const peopleSearch = new ValidatedMethod({
 
     const searchQuery = buildSearchQuery({ campaignId, query, options });
 
-    // const t0 = performance.now();
-
     const cursor = People.find(searchQuery.query, searchQuery.options);
 
     const result = cursor.fetch();
-
-    // const t1 = performance.now();
-    // console.log("Search took " + (t1 - t0) + " ms.", searchQuery);
 
     return result;
   }
@@ -116,17 +130,9 @@ export const peopleSearchCount = new ValidatedMethod({
 
     const searchQuery = buildSearchQuery({ campaignId, query, options });
 
-    // const t0 = performance.now();
-
     const result = Promise.await(
       People.rawCollection().count(searchQuery.query)
     );
-
-    // const t1 = performance.now();
-    // console.log(
-    //   "Counted " + result + " and took " + (t1 - t0) + " ms.",
-    //   searchQuery
-    // );
 
     return result;
   }
@@ -293,5 +299,179 @@ export const exportPeople = new ValidatedMethod({
       fields: Object.keys(header),
       data: flattened
     });
+  }
+});
+
+export const importPeople = new ValidatedMethod({
+  name: "people.import",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    config: {
+      type: Object,
+      blackbox: true
+    },
+    data: {
+      type: Object,
+      blackbox: true
+    }
+  }).validator(),
+  run({ campaignId, config, data }) {
+    logger.debug("people.import called", { campaignId, config, data });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    const allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+    return PeopleHelpers.import({ campaignId, config, data });
+  }
+});
+
+export const findDuplicates = new ValidatedMethod({
+  name: "people.findDuplicates",
+  validate: new SimpleSchema({
+    personId: {
+      type: String
+    }
+  }).validator(),
+  run({ personId }) {
+    logger.debug("people.findDuplicates called", { personId });
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const person = People.findOne(personId);
+
+    const campaign = Campaigns.findOne(person.campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    const allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+    return PeopleHelpers.findDuplicates({ personId });
+  }
+});
+
+export const mergePeople = new ValidatedMethod({
+  name: "people.merge",
+  validate: new SimpleSchema({
+    personId: {
+      type: String
+    },
+    merged: {
+      type: Object,
+      blackbox: true
+    },
+    from: {
+      type: Array
+    },
+    "from.$": {
+      type: String
+    },
+    remove: {
+      type: Boolean
+    }
+  }).validator(),
+  run({ personId, merged, from, remove }) {
+    logger.debug("people.merge called", { personId, merged, from, remove });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const person = People.findOne(personId);
+
+    const campaign = Campaigns.findOne(person.campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    const allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    if (merged._id !== person._id) {
+      throw new Meteor.Error(401, "Merging object ID does not match");
+    }
+
+    const autoFields = [
+      "facebookId",
+      "counts",
+      "facebookAccounts",
+      "lastInteractionDate"
+    ];
+
+    const people = People.find({
+      campaignId: person.campaignId,
+      _id: { $in: from }
+    }).fetch();
+
+    const uniqFacebookIds = compact(
+      uniq([person.facebookId, ...people.map(p => p.facebookId)])
+    );
+
+    if (uniqFacebookIds.length > 1) {
+      throw new Meteor.Error(
+        401,
+        "You cannot merge people from different existing Facebook references"
+      );
+    }
+
+    let $set = {};
+
+    merge(
+      $set,
+      ...people.map(p => pick(p, autoFields)),
+      pick(merged, autoFields)
+    );
+
+    let mergeFields = ["name"];
+    for (const section of peopleMetaModel) {
+      for (const field of section.fields) {
+        mergeFields.push(`campaignMeta.${section.key}.${field.key}`);
+      }
+    }
+
+    for (const field of mergeFields) {
+      const value = get(merge, field);
+      if (value) {
+        $set[field] = value;
+      }
+    }
+
+    People.update(
+      {
+        _id: person._id
+      },
+      {
+        $set
+      }
+    );
+
+    if (remove) {
+      People.remove({
+        campaignId: person.campaignId,
+        _id: { $in: from }
+      });
+    }
+
+    return;
   }
 });

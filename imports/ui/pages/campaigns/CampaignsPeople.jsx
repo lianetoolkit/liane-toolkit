@@ -2,19 +2,46 @@ import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
-import PeopleTable from "/imports/ui/components/people/PeopleTable.jsx";
+import PeopleImport from "/imports/ui/components/people/PeopleImport.jsx";
 import PeopleSearch from "/imports/ui/components/people/PeopleSearch.jsx";
 import PeopleSummary from "/imports/ui/components/people/PeopleSummary.jsx";
+import XLSX from "xlsx";
 
-import { Grid, Header, Menu, List, Button, Icon } from "semantic-ui-react";
+import {
+  Grid,
+  Header,
+  Menu,
+  List,
+  Button,
+  Icon,
+  Checkbox
+} from "semantic-ui-react";
 
 export default class CampaignsPeople extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false
+      editMode: false,
+      isLoading: false,
+      importData: null
     };
+    this._handleEditModeClick = this._handleEditModeClick.bind(this);
     this._handleExport = this._handleExport.bind(this);
+    this._handleImportClick = this._handleImportClick.bind(this);
+    this._handleImport = this._handleImport.bind(this);
+    this._handleImportSubmit = this._handleImportSubmit.bind(this);
+  }
+  componentWillReceiveProps(nextProps) {
+    const { importCount } = this.props;
+    if (importCount > 0 && nextProps.importCount === 0) {
+      Alerts.success("People import has finished");
+    }
+  }
+  _handleEditModeClick(ev) {
+    ev.preventDefault();
+    this.setState({
+      editMode: !this.state.editMode
+    });
   }
   _handleExport(ev) {
     ev.preventDefault();
@@ -34,9 +61,39 @@ export default class CampaignsPeople extends React.Component {
       }
     );
   }
+  _handleImportClick(ev) {
+    ev.preventDefault();
+    this.importInput.click();
+  }
+  _handleImport(ev) {
+    const { campaign } = this.props;
+    this.setState({ loading: true });
+    let file = ev.currentTarget.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      let binary = "";
+      let bytes = new Uint8Array(reader.result);
+      for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const wb = XLSX.read(binary, { type: "binary" });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(sheet);
+      this.setState({ importData: json });
+    };
+    reader.readAsArrayBuffer(file);
+  }
+  _handleImportSubmit(err, res) {
+    if (!err) {
+      this.setState({ importData: null });
+      Alerts.success("Import has started");
+    } else {
+      Alerts.error(error);
+    }
+  }
   render() {
-    const { isLoading } = this.state;
-    const { loading, facebookId, campaign, account } = this.props;
+    const { isLoading, editMode, importData } = this.state;
+    const { loading, importCount, facebookId, campaign, account } = this.props;
     const { accounts } = campaign;
     return (
       <div>
@@ -67,17 +124,35 @@ export default class CampaignsPeople extends React.Component {
                         {acc.name}
                       </Menu.Item>
                     ))}
-                    <Menu.Menu position="right">
+                    <Menu.Menu position="right" size="tiny">
+                      <Menu.Item onClick={this._handleEditModeClick}>
+                        <Icon
+                          name={`toggle ${editMode ? "on" : "off"}`}
+                          color={editMode ? "green" : null}
+                        />{" "}
+                        Edit mode
+                      </Menu.Item>
                       <Menu.Item
                         onClick={this._handleExport}
                         disabled={isLoading}
                       >
                         <Icon
-                          name={isLoading ? "spinner" : "download"}
+                          name={isLoading ? "spinner" : "upload"}
                           loading={isLoading}
                         />{" "}
                         Export CSV
                       </Menu.Item>
+                      {importCount ? (
+                        <Menu.Item disabled>
+                          <Icon name="spinner" loading /> Currently importing ({
+                            importCount
+                          })
+                        </Menu.Item>
+                      ) : (
+                        <Menu.Item onClick={this._handleImportClick}>
+                          <Icon name="download" /> Import spreadsheet
+                        </Menu.Item>
+                      )}
                     </Menu.Menu>
                   </Menu>
                 </Grid.Column>
@@ -88,6 +163,7 @@ export default class CampaignsPeople extends React.Component {
                     <PeopleSearch
                       campaignId={campaign._id}
                       facebookId={account.facebookId}
+                      editMode={editMode}
                     />
                   ) : null}
                   {/* <PeopleSummary
@@ -99,6 +175,17 @@ export default class CampaignsPeople extends React.Component {
               </Grid.Row>
             </Grid>
           )}
+          <input
+            type="file"
+            onChange={this._handleImport}
+            style={{ display: "none" }}
+            ref={input => (this.importInput = input)}
+          />
+          <PeopleImport
+            data={importData}
+            campaignId={campaign._id}
+            onSubmit={this._handleImportSubmit}
+          />
         </section>
       </div>
     );

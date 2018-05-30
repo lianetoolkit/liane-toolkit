@@ -24,7 +24,8 @@ Comments.schema = new SimpleSchema({
     optional: true
   },
   created_time: {
-    type: Date
+    type: Date,
+    index: true
   },
   comment_count: {
     type: Number,
