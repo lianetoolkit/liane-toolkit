@@ -140,6 +140,7 @@ export default class FlexDataItem extends React.Component {
     const { field, data } = this.props;
     if (data && (data.value !== undefined && data.value !== null)) {
       switch (field.fieldType) {
+        case "date":
         case "textarea":
         case "text":
           return data.value;

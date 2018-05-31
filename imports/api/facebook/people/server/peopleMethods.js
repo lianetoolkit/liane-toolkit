@@ -184,7 +184,7 @@ export const updatePersonMeta = new ValidatedMethod({
     let doc = {};
     doc[`campaignMeta.${metaKey}`] = metaValue;
 
-    PeopleHelpers.generateFormId({ person });
+    if (!person.formId) PeopleHelpers.generateFormId({ person });
 
     return People.update({ _id: person._id }, { $set: doc });
   }
@@ -240,7 +240,7 @@ export const canvasFormUpdate = new ValidatedMethod({
       throw new Meteor.Error(401, "Not allowed");
     }
 
-    PeopleHelpers.generateFormId({ person });
+    if (!person.formId) PeopleHelpers.generateFormId({ person });
 
     return People.update(
       {
