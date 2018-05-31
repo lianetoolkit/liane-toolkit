@@ -1,6 +1,7 @@
 import SimpleSchema from "simpl-schema";
 import { performance } from "perf_hooks";
 import { People } from "../people.js";
+import { DeauthorizedPeople } from "../deauthorizedPeople.js";
 import peopleMetaModel from "/imports/api/facebook/people/model/meta";
 import { PeopleHelpers } from "./peopleHelpers.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
@@ -488,5 +489,80 @@ export const mergePeople = new ValidatedMethod({
     }
 
     return;
+  }
+});
+
+export const peopleFormAuthFacebook = new ValidatedMethod({
+  name: "peopleForm.authFacebook",
+  validate: new SimpleSchema({
+    token: {
+      type: String
+    },
+    secret: {
+      type: String
+    }
+  }).validator(),
+  run({ token, secret }) {
+    logger.debug("peopleForm.authFacebook called", { token, secret });
+
+    const credential = Facebook.retrieveCredential(token, secret);
+
+    if (credential.serviceData && credential.serviceData.accessToken) {
+      return Promise.await(
+        FB.api("me", {
+          fields: [
+            "id",
+            "name",
+            "email",
+            "location",
+            "birthday",
+            "link",
+            "gender"
+          ],
+          access_token: credential.serviceData.accessToken
+        })
+      );
+    }
+    throw new Meteor.Error(500, "Error fetching user data");
+  }
+});
+
+export const peopleFormSubmit = new ValidatedMethod({
+  name: "peopleForm.submit",
+  validate: new SimpleSchema({
+    formId: {
+      type: String
+    },
+    facebookLink: {
+      type: String,
+      optional: true
+    },
+    email: {
+      type: String,
+      optional: true
+    },
+    cellphone: {
+      type: String,
+      optional: true
+    },
+    birthday: {
+      type: String,
+      optional: true
+    }
+  }).validator(),
+  run({ formId, facebookLink, email, cellphone, birthday }) {
+    logger.debug("peopleForm.submit called", { formId });
+
+    const person = People.findOne({ formId });
+    if (!person) {
+      throw new Meteor.Error(400, "Unauthorized request");
+    }
+
+    const newFormId = PeopleHelpers.getFormId({
+      personId: person._id,
+      generate: true
+    });
+
+    return newFormId;
   }
 });

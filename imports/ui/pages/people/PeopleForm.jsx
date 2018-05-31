@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { OAuth } from "meteor/oauth";
 import {
   Dimmer,
   Loader,
@@ -21,12 +22,73 @@ const Wrapper = styled.div`
 export default class PeopleForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      formData: {}
+    };
     this._handleFacebookClick = this._handleFacebookClick.bind(this);
+    this._handleSubmit = this._handleSubmit.bind(this);
   }
-  _handleFacebookClick() {}
+  _handleChange = (ev, { name, value }) => {
+    this.setState({
+      ...this.state.formData,
+      formData: {
+        [name]: value
+      }
+    });
+  };
+  _handleFacebookClick() {
+    Facebook.requestCredential(
+      {
+        requestPermissions: [
+          "public_profile",
+          "email",
+          "user_birthday",
+          "user_location",
+          "user_gender",
+          "user_age_range",
+          "user_link"
+        ]
+      },
+      token => {
+        // console.log(OAuth);
+        // console.log(Accounts.oauth);
+        const secret = OAuth._retrieveCredentialSecret(token) || null;
+        Meteor.call(
+          "peopleForm.authFacebook",
+          { token, secret },
+          (err, res) => {
+            if (err) {
+              console.log(err);
+            } else {
+              this.setState({
+                formData: {
+                  ...this.state.formData,
+                  facebookLink: res.link,
+                  email: res.email
+                }
+              });
+            }
+          }
+        );
+      }
+    );
+  }
+  _handleDeleteDataClick() {
+    Facebook.requestCredential({
+      requestPermissions: []
+    });
+  }
+  _handleSubmit() {
+    const { formId } = this.props;
+    const { formData } = this.state;
+    Meteor.call("peopleForm.submit", { formId, ...formData }, (err, res) => {
+      console.log(err, res);
+      FlowRouter.go("/f/" + res);
+    });
+  }
   render() {
     const { loading, person, campaign } = this.props;
+    const { formData } = this.state;
     if (loading) {
       return (
         <Dimmer active>
@@ -46,11 +108,32 @@ export default class PeopleForm extends React.Component {
             icon
             onClick={this._handleFacebookClick}
           >
-            <Icon name="facebook" /> Connect with your Facebook profile
+            <Icon name="facebook" /> Autofill with your Facebook profile
           </Button>
           <Divider />
-          <Form>
-            <Form.Field control={Input} label="Your age" />
+          <Form onSubmit={this._handleSubmit}>
+            <Form.Field
+              name="email"
+              control={Input}
+              label="Email"
+              value={formData.email}
+              onChange={this._handleChange}
+            />
+            <Form.Field
+              name="cellphone"
+              control={Input}
+              label="Cellphone"
+              value={formData.cellphone}
+              onChange={this._handleChange}
+            />
+            <Form.Field
+              name="birthday"
+              control={Input}
+              label="Birthday"
+              type="date"
+              value={formData.birthday}
+              onChange={this._handleChange}
+            />
             <Button fluid>Submit</Button>
           </Form>
         </Wrapper>

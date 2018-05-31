@@ -99,7 +99,7 @@ appRoutes.route("/add-campaign", {
   }
 });
 
-appRoutes.route("/f/:formId", {
+appRoutes.route("/f/:formId?", {
   name: "App.peopleForm",
   action: function(params) {
     addTitle(`${APP_NAME} | Help your candidate`);

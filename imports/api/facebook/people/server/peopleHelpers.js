@@ -5,25 +5,25 @@ import { uniqBy, groupBy, mapKeys, flatten, get, set } from "lodash";
 import crypto from "crypto";
 
 const PeopleHelpers = {
-  getFormId({ personId }) {
+  getFormId({ personId, generate }) {
     const person = People.findOne(personId);
     if (!person) {
       throw new Meteor.Error(404, "Person not found");
     }
-    return this.generateFormId({ person });
+    if (generate || !person.formId) {
+      return this.generateFormId({ person });
+    } else {
+      return person.formId;
+    }
   },
   generateFormId({ person }) {
-    if (person.formId) {
-      return person.formId;
-    } else {
-      const formId = crypto
-        .createHash("sha1")
-        .update(person._id)
-        .digest("hex")
-        .substr(0, 7);
-      People.update(person._id, { $set: { formId } });
-      return formId;
-    }
+    const formId = crypto
+      .createHash("sha1")
+      .update(person._id + new Date().getTime())
+      .digest("hex")
+      .substr(0, 7);
+    People.update(person._id, { $set: { formId } });
+    return formId;
   },
   updateFBUsers({ campaignId, facebookAccountId }) {
     const collection = People.rawCollection();

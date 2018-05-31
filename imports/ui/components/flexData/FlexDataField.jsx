@@ -37,6 +37,7 @@ export default class FlexDataField extends React.Component {
     switch (config.fieldType) {
       case "boolean":
         return Checkbox;
+      case "date":
       case "text":
         return Input;
       case "textarea":
@@ -93,6 +94,9 @@ export default class FlexDataField extends React.Component {
       placeholder: config.placeholder || null,
       value: value
     };
+    if (config.fieldType == "date") {
+      fieldProps.type = "date";
+    }
     if (
       config.fieldType == "repeater" ||
       config.fieldType == "group" ||

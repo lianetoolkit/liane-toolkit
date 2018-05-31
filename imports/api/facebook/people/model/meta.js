@@ -6,9 +6,9 @@ export default [
     title: "Basic information",
     fields: [
       {
-        key: "age",
-        label: "Age",
-        fieldType: "text"
+        key: "birthday",
+        label: "Birthday",
+        fieldType: "date"
       },
       {
         key: "gender",
