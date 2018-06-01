@@ -5,6 +5,7 @@ import { Grid, Icon } from "semantic-ui-react";
 import EntryInteractivityCounts from "./EntryInteractivityCounts.jsx";
 
 const Wrapper = styled.div`
+  width: 100%;
   &:hover {
     .entry-interactivity {
       opacity: 1;

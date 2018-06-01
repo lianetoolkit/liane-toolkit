@@ -5,6 +5,7 @@ import { Alerts } from "/imports/ui/utils/Alerts.js";
 import PeopleImport from "/imports/ui/components/people/PeopleImport.jsx";
 import PeopleSearch from "/imports/ui/components/people/PeopleSearch.jsx";
 import PeopleSummary from "/imports/ui/components/people/PeopleSummary.jsx";
+import PeopleActivity from "/imports/ui/components/entries/Activity.jsx";
 import XLSX from "xlsx";
 
 import {
@@ -33,7 +34,7 @@ export default class CampaignsPeople extends React.Component {
   }
   componentWillReceiveProps(nextProps) {
     const { importCount } = this.props;
-    if (importCount > 0 && nextProps.importCount === 0) {
+    if (importCount && importCount > 0 && nextProps.importCount === 0) {
       Alerts.success("People import has finished");
     }
   }
@@ -93,7 +94,15 @@ export default class CampaignsPeople extends React.Component {
   }
   render() {
     const { isLoading, editMode, importData } = this.state;
-    const { loading, importCount, facebookId, campaign, account } = this.props;
+    const {
+      loading,
+      importCount,
+      facebookId,
+      campaign,
+      account,
+      isActivity,
+      activity
+    } = this.props;
     const { accounts } = campaign;
     return (
       <div>
@@ -103,76 +112,101 @@ export default class CampaignsPeople extends React.Component {
             campaignId: campaign ? campaign._id : ""
           })}
           subTitle="People"
+          nav={[
+            {
+              name: "Directory",
+              active: !isActivity,
+              href: FlowRouter.path("App.campaignPeople", {
+                campaignId: campaign._id
+              })
+            },
+            {
+              name: "Recent activity",
+              active: isActivity,
+              href: FlowRouter.path("App.campaignPeople.activity", {
+                campaignId: campaign._id
+              })
+            }
+          ]}
         />
         <section className="content">
           {loading ? (
             <Loading />
           ) : (
             <Grid>
-              <Grid.Row>
-                <Grid.Column>
-                  <Menu>
-                    {accounts.map(acc => (
-                      <Menu.Item
-                        key={`account-${acc._id}`}
-                        active={account && acc.facebookId == account.facebookId}
-                        href={FlowRouter.path("App.campaignPeople", {
-                          campaignId: campaign._id,
-                          facebookId: acc.facebookId
-                        })}
-                      >
-                        {acc.name}
-                      </Menu.Item>
-                    ))}
-                    <Menu.Menu position="right" size="tiny">
-                      <Menu.Item onClick={this._handleEditModeClick}>
-                        <Icon
-                          name={`toggle ${editMode ? "on" : "off"}`}
-                          color={editMode ? "green" : null}
-                        />{" "}
-                        Edit mode
-                      </Menu.Item>
-                      <Menu.Item
-                        onClick={this._handleExport}
-                        disabled={isLoading}
-                      >
-                        <Icon
-                          name={isLoading ? "spinner" : "upload"}
-                          loading={isLoading}
-                        />{" "}
-                        Export CSV
-                      </Menu.Item>
-                      {importCount ? (
-                        <Menu.Item disabled>
-                          <Icon name="spinner" loading /> Currently importing ({
-                            importCount
-                          })
-                        </Menu.Item>
-                      ) : (
-                        <Menu.Item onClick={this._handleImportClick}>
-                          <Icon name="download" /> Import spreadsheet
-                        </Menu.Item>
-                      )}
-                    </Menu.Menu>
-                  </Menu>
-                </Grid.Column>
-              </Grid.Row>
-              <Grid.Row>
-                <Grid.Column>
-                  {account ? (
-                    <PeopleSearch
-                      campaignId={campaign._id}
-                      facebookId={account.facebookId}
-                      editMode={editMode}
-                    />
-                  ) : null}
-                  {/* <PeopleSummary
-                    facebookId={facebookId}
-                    campaignId={campaign._id}
-                    peopleSummary={peopleSummary}
-                  /> */}
-                </Grid.Column>
-              </Grid.Row>
+              {isActivity ? (
+                <Grid.Row>
+                  <PeopleActivity campaign={campaign} activity={activity} />
+                </Grid.Row>
+              ) : (
+                <>
+                  <Grid.Row>
+                    <Grid.Column>
+                      <Menu>
+                        {accounts.map(acc => (
+                          <Menu.Item
+                            key={`account-${acc._id}`}
+                            active={
+                              account && acc.facebookId == account.facebookId
+                            }
+                            href={FlowRouter.path("App.campaignPeople", {
+                              campaignId: campaign._id,
+                              facebookId: acc.facebookId
+                            })}
+                          >
+                            {acc.name}
+                          </Menu.Item>
+                        ))}
+                        <Menu.Menu position="right" size="tiny">
+                          <Menu.Item onClick={this._handleEditModeClick}>
+                            <Icon
+                              name={`toggle ${editMode ? "on" : "off"}`}
+                              color={editMode ? "green" : null}
+                            />{" "}
+                            Edit mode
+                          </Menu.Item>
+                          <Menu.Item
+                            onClick={this._handleExport}
+                            disabled={isLoading}
+                          >
+                            <Icon
+                              name={isLoading ? "spinner" : "upload"}
+                              loading={isLoading}
+                            />{" "}
+                            Export CSV
+                          </Menu.Item>
+                          {importCount ? (
+                            <Menu.Item disabled>
+                              <Icon name="spinner" loading /> Currently
+                              importing ({importCount})
+                            </Menu.Item>
+                          ) : (
+                            <Menu.Item onClick={this._handleImportClick}>
+                              <Icon name="download" /> Import spreadsheet
+                            </Menu.Item>
+                          )}
+                        </Menu.Menu>
+                      </Menu>
+                    </Grid.Column>
+                  </Grid.Row>
+                  <Grid.Row>
+                    <Grid.Column>
+                      {account ? (
+                        <PeopleSearch
+                          campaignId={campaign._id}
+                          facebookId={account.facebookId}
+                          editMode={editMode}
+                        />
+                      ) : null}
+                      {/* <PeopleSummary
+                          facebookId={facebookId}
+                          campaignId={campaign._id}
+                          peopleSummary={peopleSummary}
+                        /> */}
+                    </Grid.Column>
+                  </Grid.Row>
+                </>
+              )}
             </Grid>
           )}
           <input
