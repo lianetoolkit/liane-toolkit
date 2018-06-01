@@ -11,6 +11,7 @@ import CanvasEditContainer from "/imports/ui/containers/canvas/CanvasEditContain
 
 import CampaignsSettingsContainer from "/imports/ui/containers/campaigns/CampaignsSettingsContainer.jsx";
 import CampaignsPeopleContainer from "/imports/ui/containers/campaigns/CampaignsPeopleContainer.jsx";
+import CampaignsActivityContainer from "/imports/ui/containers/campaigns/CampaignsActivityContainer.jsx";
 import PeopleSinglePageContainer from "/imports/ui/containers/people/PeopleSinglePageContainer.jsx";
 import PeopleEditContainer from "/imports/ui/containers/people/PeopleEditContainer.jsx";
 import CampaignsAudienceContainer from "/imports/ui/containers/campaigns/CampaignsAudienceContainer.jsx";
@@ -105,6 +106,22 @@ campaignRoutes.route("/people/edit/:personId/:sectionKey?", {
           campaignId: params.campaignId,
           personId: params.personId,
           sectionKey: params.sectionKey
+        }
+      }
+    });
+  }
+});
+campaignRoutes.route("/people/activity/:facebookId?", {
+  name: "App.campaignPeople.activity",
+  action: function(params) {
+    addTitle(`${APP_NAME} | Campaign`);
+    return _mount(params, {
+      content: {
+        component: CampaignsActivityContainer,
+        props: {
+          campaignId: params.campaignId,
+          facebookId: params.facebookId,
+          isActivity: true
         }
       }
     });
