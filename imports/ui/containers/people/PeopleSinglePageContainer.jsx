@@ -33,12 +33,32 @@ export default withTracker(props => {
 
   const person = personHandle.ready() ? People.findOne(props.personId) : null;
 
-  const likes = likesHandle.ready()
-    ? Likes.find({}, entriesOptions).fetch()
-    : null;
-  const comments = commentsHandle.ready()
-    ? Comments.find({}, entriesOptions).fetch()
-    : null;
+  const likes =
+    personHandle.ready() && likesHandle.ready()
+      ? Likes.find(
+          {
+            personId: person.facebookId,
+            facebookAccountId: {
+              $in: props.campaign.accounts.map(a => a.facebookId)
+            }
+          },
+          entriesOptions
+        ).fetch()
+      : null;
+  const comments =
+    personHandle.ready() && commentsHandle.ready()
+      ? Comments.find(
+          {
+            personId: person.facebookId,
+            facebookAccountId: {
+              $in: props.campaign.accounts.map(a => a.facebookId)
+            }
+          },
+          entriesOptions
+        ).fetch()
+      : null;
+
+  console.log({ likes, comments });
 
   return {
     loading,

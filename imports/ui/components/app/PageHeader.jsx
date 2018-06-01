@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Breadcrumb, Header, Divider } from "semantic-ui-react";
+import { Breadcrumb, Header, Divider, Menu } from "semantic-ui-react";
 import styled from "styled-components";
 
 const Wrapper = styled.section`
@@ -13,6 +13,15 @@ const Wrapper = styled.section`
     text-transform: uppercase;
     letter-spacing: 0.1rem;
   }
+  .ui.menu.secondary.pointing {
+    margin-bottom: -1.7rem;
+    margin-top: 1.7rem;
+    margin-left: -4rem;
+    margin-right: -4rem;
+    padding-left: 4rem;
+    padding-right: 4rem;
+    background: #f9f9f9;
+  }
 `;
 
 export default class PageHeader extends React.Component {
@@ -21,7 +30,7 @@ export default class PageHeader extends React.Component {
   }
 
   render() {
-    const { title, titleTo, subTitle } = this.props;
+    const { title, titleTo, subTitle, nav } = this.props;
     return (
       <Wrapper className="content-header">
         <Breadcrumb>
@@ -48,6 +57,18 @@ export default class PageHeader extends React.Component {
         <Header as="h1" size="small">
           {subTitle ? subTitle : title}
         </Header>
+        {nav && nav.length ? (
+          <Menu pointing secondary size="small">
+            {nav.map((item, key) => {
+              const { name, ...props } = item;
+              return (
+                <Menu.Item key={key} {...props}>
+                  {name}
+                </Menu.Item>
+              );
+            })}
+          </Menu>
+        ) : null}
       </Wrapper>
     );
   }
