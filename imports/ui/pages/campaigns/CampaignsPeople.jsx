@@ -136,7 +136,11 @@ export default class CampaignsPeople extends React.Component {
             <Grid>
               {isActivity ? (
                 <Grid.Row>
-                  <PeopleActivity campaign={campaign} activity={activity} />
+                  <PeopleActivity
+                    campaign={campaign}
+                    activity={activity}
+                    accounts={accounts}
+                  />
                 </Grid.Row>
               ) : (
                 <>
