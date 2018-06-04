@@ -69,6 +69,23 @@ export default class PeopleActivity extends React.Component {
       return <Reaction size="medium" reaction={item.type} />;
     }
   }
+  _getAccountLink(item) {
+    const { accounts } = this.props;
+    const account = accounts.find(
+      acc => item.facebookAccountId == acc.facebookId
+    );
+    if (account) {
+      return (
+        <a
+          rel="external"
+          target="_blank"
+          href={`https://facebook.com/${account.facebookId}`}
+        >
+          {account.name}
+        </a>
+      );
+    }
+  }
   _goToPerson = item => () => {
     const { campaign } = this.props;
     Meteor.call(
@@ -86,6 +103,7 @@ export default class PeopleActivity extends React.Component {
     );
   };
   render() {
+    console.log(this.props);
     const { activity } = this.props;
     if (activity && activity.length) {
       return (
@@ -99,7 +117,7 @@ export default class PeopleActivity extends React.Component {
                     <Feed.User onClick={this._goToPerson(item)}>
                       {item.name}
                     </Feed.User>{" "}
-                    {this._getAction(item)}
+                    {this._getAction(item)} on {this._getAccountLink(item)}
                     <Feed.Date>
                       {item.type == "comment" ? (
                         <a
