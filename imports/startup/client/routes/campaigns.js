@@ -134,61 +134,47 @@ campaignRoutes.route("/people/:facebookId?", {
     return _mount(params, {
       content: {
         component: CampaignsPeopleContainer,
-        props: { campaignId: params.campaignId, facebookId: params.facebookId }
+        props: {
+          campaignId: params.campaignId,
+          facebookId: params.facebookId
+        }
       }
     });
   }
 });
-campaignRoutes.route("/audience/:audienceFacebookId?", {
+campaignRoutes.route("/audience/:navTab?", {
   name: "App.campaignAudience",
-  action: function(params) {
+  action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Campaign`);
     return _mount(params, {
       content: {
         component: CampaignsAudienceContainer,
         props: {
+          navTab: params.navTab,
           campaignId: params.campaignId,
-          audienceFacebookId: params.audienceFacebookId
+          audienceFacebookId: queryParams.account
         }
       }
     });
   }
 });
-campaignRoutes.route("/audience/:audienceFacebookId/category/:categoryId", {
-  name: "App.campaignAudience.category",
-  action: function(params) {
+campaignRoutes.route("/audience/:navTab/geolocation/:geolocationId", {
+  name: "App.campaignAudience.geolocation",
+  action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Campaign`);
     return _mount(params, {
       content: {
         component: CampaignsAudienceContainer,
         props: {
+          navTab: params.navTab,
           campaignId: params.campaignId,
-          audienceFacebookId: params.audienceFacebookId,
-          categoryId: params.categoryId
+          geolocationId: params.geolocationId,
+          audienceFacebookId: queryParams.account
         }
       }
     });
   }
 });
-campaignRoutes.route(
-  "/audience/:audienceFacebookId/geolocation/:geolocationId",
-  {
-    name: "App.campaignAudience.geolocation",
-    action: function(params) {
-      addTitle(`${APP_NAME} | Campaign`);
-      return _mount(params, {
-        content: {
-          component: CampaignsAudienceContainer,
-          props: {
-            campaignId: params.campaignId,
-            audienceFacebookId: params.audienceFacebookId,
-            geolocationId: params.geolocationId
-          }
-        }
-      });
-    }
-  }
-);
 campaignRoutes.route("/entries/:facebookId?", {
   name: "App.campaignEntries",
   action: function(params) {

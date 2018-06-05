@@ -14,7 +14,7 @@ import {
   Icon
 } from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
-import SingleLineChart from "./SingleLineChart.jsx";
+import CompareLineChart from "./CompareLineChart.jsx";
 import AudienceInfo from "./AudienceInfo.jsx";
 import LocationChart from "./LocationChart.jsx";
 import DataAlert from "./DataAlert.jsx";
@@ -138,9 +138,12 @@ export default class AudienceGeolocation extends React.Component {
                           href={FlowRouter.path(
                             "App.campaignAudience.geolocation",
                             {
-                              navTab: "places",
+                              navTab: "explore",
                               campaignId: campaign._id,
                               geolocationId: geolocation.mainGeolocation._id
+                            },
+                            {
+                              account: facebookAccount.facebookId
                             }
                           )}
                         >
@@ -159,9 +162,12 @@ export default class AudienceGeolocation extends React.Component {
                               href={FlowRouter.path(
                                 "App.campaignAudience.geolocation",
                                 {
-                                  navTab: "places",
+                                  navTab: "explore",
                                   campaignId: campaign._id,
                                   geolocationId: gl._id
+                                },
+                                {
+                                  account: facebookAccount.facebookId
                                 }
                               )}
                             >
@@ -188,6 +194,28 @@ export default class AudienceGeolocation extends React.Component {
                       <Dimmer active={loading} inverted>
                         <Loader>Loading</Loader>
                       </Dimmer>
+                      <Header>
+                        Today's estimate: {this._getTotal()} active users
+                      </Header>
+                      {geolocation.mainGeolocation &&
+                      geolocation.geolocation._id !==
+                        geolocation.mainGeolocation._id ? (
+                        <p>
+                          {this._getPercentage()} of{" "}
+                          {geolocation.mainGeolocation.name} estimate
+                        </p>
+                      ) : (
+                        <p />
+                      )}
+                      {geolocation.audienceCategories[0] &&
+                      geolocation.audienceCategories[0].audiences &&
+                      geolocation.audienceCategories[0].audiences.length > 1 ? (
+                        <LocationChart
+                          audiences={
+                            geolocation.audienceCategories[0].audiences
+                          }
+                        />
+                      ) : null}
                       <Table selectable>
                         {geolocation.audienceCategories.map(item => {
                           const expanded = this._isExpanded(item.category._id);
@@ -205,10 +233,22 @@ export default class AudienceGeolocation extends React.Component {
                                 </Table.Cell>
                                 <Table.Cell>
                                   {!expanded ? (
-                                    <SingleLineChart
+                                    <CompareLineChart
                                       audience={this._latestAudience(item)}
                                     />
                                   ) : null}
+                                </Table.Cell>
+                                <Table.Cell collapsing>
+                                  <strong>
+                                    {AudienceUtils.getRatio(
+                                      this._latestAudience(item)
+                                    )}
+                                  </strong>
+                                </Table.Cell>
+                                <Table.Cell collapsing>
+                                  <DataAlert
+                                    audience={this._latestAudience(item)}
+                                  />
                                 </Table.Cell>
                                 <Table.Cell collapsing>
                                   <Button
@@ -232,10 +272,7 @@ export default class AudienceGeolocation extends React.Component {
                               {expanded ? (
                                 <Table.Row active>
                                   <Table.Cell colSpan="5">
-                                    <AudienceInfo
-                                      data={item}
-                                      single="location"
-                                    />
+                                    <AudienceInfo data={item} />
                                   </Table.Cell>
                                 </Table.Row>
                               ) : null}

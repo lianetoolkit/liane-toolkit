@@ -75,6 +75,7 @@ export default class AudienceChart extends React.Component {
     });
   }
   render() {
+    const { single } = this.props;
     let audiences = this.props.audiences.map(audience =>
       AudienceUtils.transformValues(audience)
     );
@@ -105,7 +106,7 @@ export default class AudienceChart extends React.Component {
             tickFormatter={tick => tick + "%"}
           />
           <Tooltip content={<AudienceTooltip />} />
-          {percentage ? (
+          {percentage && (!single || single !== "location") ? (
             <Line
               yAxisId="right"
               type="monotone"
