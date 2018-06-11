@@ -43,6 +43,8 @@ export default class CampaignsAudience extends React.Component {
       geolocations,
       categoryId,
       geolocationId,
+      audienceCategories,
+      audienceCategoryId,
       navTab
     } = this.props;
     const { audienceAccounts } = campaign;
@@ -111,7 +113,8 @@ export default class CampaignsAudience extends React.Component {
                     <AudienceGeolocationContainer
                       campaign={campaign}
                       facebookAccount={audienceAccount}
-                      geolocationId={geolocationId}
+                      audienceCategories={audienceCategories}
+                      audienceCategoryId={audienceCategoryId}
                       geolocations={geolocations}
                     />
                   </Grid.Column>

@@ -33,7 +33,7 @@ export default class AudienceGeolocation extends React.Component {
     super(props);
     this.state = {
       expanded: {},
-      geolocationListActive: true
+      categoryListActive: true
     };
     this._handleExpand = this._handleExpand.bind(this);
   }
@@ -66,17 +66,17 @@ export default class AudienceGeolocation extends React.Component {
     return item.audiences[item.audiences.length - 1];
   }
   _updateStickyMenu() {
-    const { contextRef, stickyRef, geolocationListActive } = this.state;
+    const { contextRef, stickyRef, categoryListActive } = this.state;
     if (stickyRef && contextRef) {
       const stickyHeight = stickyRef.offsetHeight;
       const contentHeight = contextRef.offsetHeight;
-      if (stickyHeight > contentHeight && geolocationListActive) {
+      if (stickyHeight > contentHeight && categoryListActive) {
         this.setState({
-          geolocationListActive: false
+          categoryListActive: false
         });
-      } else if (stickyHeight < contentHeight && !geolocationListActive) {
+      } else if (stickyHeight < contentHeight && !categoryListActive) {
         this.setState({
-          geolocationListActive: true
+          categoryListActive: true
         });
       }
     }
@@ -105,16 +105,17 @@ export default class AudienceGeolocation extends React.Component {
   _handleContextRef = contextRef => this.setState({ contextRef });
   _handleStickyRef = stickyRef => this.setState({ stickyRef });
   render() {
-    const { contextRef, stickyRef, geolocationListActive } = this.state;
+    const { contextRef, stickyRef, categoryListActive } = this.state;
     const {
       loading,
-      geolocation,
+      audienceCategory,
       campaign,
       geolocations,
+      audienceCategories,
       facebookAccount,
       geolocationId
     } = this.props;
-    if (loading && !geolocation) {
+    if (loading && !audienceCategory) {
       return <Loading />;
     } else {
       return (
@@ -123,65 +124,37 @@ export default class AudienceGeolocation extends React.Component {
             <Grid.Row>
               <Grid.Column width={4}>
                 <Sticky
-                  active={geolocationListActive}
+                  active={categoryListActive}
                   offset={50}
                   context={contextRef}
-                  // scrollContext={document.getElementById("app-content")}
                 >
                   <div ref={this._handleStickyRef}>
                     <Menu pointing vertical fluid>
-                      {geolocation.mainGeolocation ? (
+                      {audienceCategories.map(cat => (
                         <Menu.Item
-                          active={
-                            geolocation.mainGeolocation._id == geolocationId
-                          }
+                          key={cat._id}
+                          active={cat._id == geolocationId}
                           href={FlowRouter.path(
                             "App.campaignAudience.geolocation",
                             {
                               navTab: "places",
                               campaignId: campaign._id,
-                              geolocationId: geolocation.mainGeolocation._id
+                              audienceCategoryId: cat._id
                             }
                           )}
                         >
-                          {geolocation.mainGeolocation.name}
+                          {cat.title}
                         </Menu.Item>
-                      ) : null}
-                      {geolocations.map(gl => {
-                        if (
-                          !geolocation.mainGeolocation ||
-                          gl._id !== geolocation.mainGeolocation._id
-                        ) {
-                          return (
-                            <Menu.Item
-                              key={gl._id}
-                              active={gl._id == geolocationId}
-                              href={FlowRouter.path(
-                                "App.campaignAudience.geolocation",
-                                {
-                                  navTab: "places",
-                                  campaignId: campaign._id,
-                                  geolocationId: gl._id
-                                }
-                              )}
-                            >
-                              {gl.name}
-                            </Menu.Item>
-                          );
-                        } else {
-                          return null;
-                        }
-                      })}
+                      ))}
                     </Menu>
                   </div>
                 </Sticky>
               </Grid.Column>
               <Grid.Column width={12}>
                 <Sticky
-                  active={!geolocationListActive}
+                  active={!categoryListActive}
                   offset={50}
                   context={stickyRef}
-                  // scrollContext={document.getElementById("app-content")}
                 >
                   <div ref={this._handleContextRef}>
                     <Dimmer.Dimmable dimmed={loading}>
@@ -189,18 +162,22 @@ export default class AudienceGeolocation extends React.Component {
                         <Loader>Loading</Loader>
                       </Dimmer>
                       <Table selectable>
-                        {geolocation.audienceCategories.map(item => {
-                          const expanded = this._isExpanded(item.category._id);
+                        {audienceCategory.geolocations.map(item => {
+                          const expanded = this._isExpanded(
+                            item.geolocation._id
+                          );
                           return (
-                            <Table.Body key={item.category._id}>
+                            <Table.Body key={item.geolocation._id}>
                               <Table.Row
                                 className="selectable"
                                 active={expanded}
-                                onClick={this._handleExpand(item.category._id)}
+                                onClick={this._handleExpand(
+                                  item.geolocation._id
+                                )}
                               >
                                 <Table.Cell collapsing>
                                   <span className="category-title">
-                                    {item.category.title}
+                                    {item.geolocation.name}
                                   </span>
                                 </Table.Cell>
                                 <Table.Cell>
@@ -222,7 +199,9 @@ export default class AudienceGeolocation extends React.Component {
                                         audienceFacebookId:
                                           facebookAccount.facebookId
                                       },
-                                      { category: item.category._id }
+                                      {
+                                        category: audienceCategory.category._id
+                                      }
                                     )}
                                   >
                                     <Icon name="add" corner /> Adset

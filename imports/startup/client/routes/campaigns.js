@@ -158,7 +158,7 @@ campaignRoutes.route("/audience/:navTab?", {
     });
   }
 });
-campaignRoutes.route("/audience/:navTab/geolocation/:geolocationId", {
+campaignRoutes.route("/audience/:navTab/category/:audienceCategoryId", {
   name: "App.campaignAudience.geolocation",
   action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Campaign`);
@@ -168,7 +168,7 @@ campaignRoutes.route("/audience/:navTab/geolocation/:geolocationId", {
         props: {
           navTab: params.navTab,
           campaignId: params.campaignId,
-          geolocationId: params.geolocationId,
+          audienceCategoryId: params.audienceCategoryId,
           audienceFacebookId: queryParams.account
         }
       }
