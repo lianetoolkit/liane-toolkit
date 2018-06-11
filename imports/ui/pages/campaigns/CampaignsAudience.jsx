@@ -85,8 +85,8 @@ export default class CampaignsAudience extends React.Component {
             },
             {
               disabled: true, // TODO
-              name: "Themes",
-              active: navTab == "themes"
+              name: "Compare",
+              active: navTab == "compare"
               // href: FlowRouter.path("App.campaignAudience", {
               //   campaignId: campaign._id,
               //   navTab: "themes"
