@@ -112,8 +112,8 @@ export default class AudienceGeolocation extends React.Component {
       campaign,
       geolocations,
       audienceCategories,
-      facebookAccount,
-      geolocationId
+      audienceCategoryId,
+      facebookAccount
     } = this.props;
     if (loading && !audienceCategory) {
       return <Loading />;
@@ -133,7 +133,7 @@ export default class AudienceGeolocation extends React.Component {
                       {audienceCategories.map(cat => (
                         <Menu.Item
                           key={cat._id}
-                          active={cat._id == geolocationId}
+                          active={cat._id == audienceCategoryId}
                           href={FlowRouter.path(
                             "App.campaignAudience.geolocation",
                             {
@@ -161,6 +161,7 @@ export default class AudienceGeolocation extends React.Component {
                       <Dimmer active={loading} inverted>
                         <Loader>Loading</Loader>
                       </Dimmer>
+                      <Header>{audienceCategory.category.title}</Header>
                       <Table selectable>
                         {audienceCategory.geolocations.map(item => {
                           const expanded = this._isExpanded(
@@ -200,7 +201,7 @@ export default class AudienceGeolocation extends React.Component {
                                           facebookAccount.facebookId
                                       },
                                       {
-                                        category: audienceCategory.category._id
+                                        category: audienceCategoryId
                                       }
                                     )}
                                   >
