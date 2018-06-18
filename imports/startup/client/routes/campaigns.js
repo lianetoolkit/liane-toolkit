@@ -159,7 +159,7 @@ campaignRoutes.route("/audience/:navTab?", {
   }
 });
 campaignRoutes.route("/audience/:navTab/category/:audienceCategoryId", {
-  name: "App.campaignAudience.geolocation",
+  name: "App.campaignAudience.category",
   action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Campaign`);
     return _mount(params, {
@@ -169,6 +169,23 @@ campaignRoutes.route("/audience/:navTab/category/:audienceCategoryId", {
           navTab: params.navTab,
           campaignId: params.campaignId,
           audienceCategoryId: params.audienceCategoryId,
+          audienceFacebookId: queryParams.account
+        }
+      }
+    });
+  }
+});
+campaignRoutes.route("/audience/:navTab/geolocation/:geolocationId", {
+  name: "App.campaignAudience.geolocation",
+  action: function(params, queryParams) {
+    addTitle(`${APP_NAME} | Campaign`);
+    return _mount(params, {
+      content: {
+        component: CampaignsAudienceContainer,
+        props: {
+          navTab: params.navTab,
+          campaignId: params.campaignId,
+          geolocationId: params.geolocationId,
           audienceFacebookId: queryParams.account
         }
       }
