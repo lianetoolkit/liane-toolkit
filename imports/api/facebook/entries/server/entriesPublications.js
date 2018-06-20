@@ -3,10 +3,12 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
+import { People } from "/imports/api/facebook/people/people.js";
 
 Meteor.publishComposite("entries.campaignActivity", function({
   campaignId,
-  facebookId
+  facebookId,
+  queryParams
 }) {
   this.unblock();
   const userId = this.userId;
@@ -22,6 +24,10 @@ Meteor.publishComposite("entries.campaignActivity", function({
           return;
         }
       }
+      let query = { resolved: { $ne: true } };
+      if (queryParams.resolved == "true") {
+        query.resolved = true;
+      }
       return {
         find() {
           return FacebookAccounts.find({ facebookId: { $in: facebookIds } });
@@ -31,6 +37,7 @@ Meteor.publishComposite("entries.campaignActivity", function({
             find(account) {
               return Likes.find(
                 {
+                  ...query,
                   facebookAccountId: account.facebookId,
                   created_time: { $exists: true }
                 },
@@ -45,6 +52,11 @@ Meteor.publishComposite("entries.campaignActivity", function({
                 find: function(like) {
                   return Entries.find({ _id: like.entryId });
                 }
+              },
+              {
+                find: function(like) {
+                  return People.find({ facebookId: like.personId, campaignId });
+                }
               }
             ]
           },
@@ -52,6 +64,7 @@ Meteor.publishComposite("entries.campaignActivity", function({
             find(account) {
               return Comments.find(
                 {
+                  ...query,
                   facebookAccountId: account.facebookId,
                   created_time: { $exists: true }
                 },
@@ -65,6 +78,14 @@ Meteor.publishComposite("entries.campaignActivity", function({
               {
                 find: function(comment) {
                   return Entries.find({ _id: comment.entryId });
+                }
+              },
+              {
+                find: function(comment) {
+                  return People.find({
+                    facebookId: comment.personId,
+                    campaignId
+                  });
                 }
               }
             ]

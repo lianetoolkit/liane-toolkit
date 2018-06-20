@@ -95,13 +95,16 @@ export default class PeopleMetaButtons extends React.Component {
   }
   render() {
     const { person } = this.props;
-    return (
-      <span>
-        {this._metaButton(person.campaignMeta, "influencer")}
-        {this._metaButton(person.campaignMeta, "starred")}
-        {this._metaButton(person.campaignMeta, "voteIntent")}
-        {this._metaButton(person.campaignMeta, "troll")}
-      </span>
-    );
+    if(person) {
+      return (
+        <span>
+          {this._metaButton(person.campaignMeta || {}, "influencer")}
+          {this._metaButton(person.campaignMeta || {}, "starred")}
+          {this._metaButton(person.campaignMeta || {}, "voteIntent")}
+          {this._metaButton(person.campaignMeta || {}, "troll")}
+        </span>
+      );
+    }
+    return null;
   }
 }

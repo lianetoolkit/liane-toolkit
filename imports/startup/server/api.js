@@ -20,6 +20,7 @@ import "/imports/api/canvas/server/canvasPublications.js";
 
 // entries
 import "/imports/api/facebook/entries/server/entriesPublications.js";
+import "/imports/api/facebook/entries/server/entriesMethods.js";
 
 // likes
 import "/imports/api/facebook/likes/server/likesPublications.js";
