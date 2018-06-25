@@ -76,6 +76,7 @@ export default class PeopleMetaButtons extends React.Component {
     const iconLabel = this._metaIconLabel(key);
     const hasMeta = this._hasMeta(data, key);
     const style = {
+      cursor: "pointer",
       opacity: hasMeta ? 1 : 0.2
     };
     return (
@@ -94,10 +95,10 @@ export default class PeopleMetaButtons extends React.Component {
     );
   }
   render() {
-    const { person } = this.props;
-    if(person) {
+    const { person, ...props } = this.props;
+    if (person) {
       return (
-        <span>
+        <span {...props}>
           {this._metaButton(person.campaignMeta || {}, "influencer")}
           {this._metaButton(person.campaignMeta || {}, "starred")}
           {this._metaButton(person.campaignMeta || {}, "voteIntent")}

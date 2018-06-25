@@ -22,14 +22,14 @@ const Wrapper = styled.div`
 
 export default class PeopleInteractivityGrid extends React.Component {
   render() {
-    const { person, facebookId } = this.props;
+    const { person, facebookId, columns } = this.props;
     if (person && person.counts && facebookId) {
       return (
         <Wrapper>
           <Grid
             className="interactivity"
             widths="equal"
-            columns={7}
+            columns={columns || 7}
             verticalAlign="middle"
           >
             <Grid.Row>
