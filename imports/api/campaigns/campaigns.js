@@ -48,6 +48,10 @@ Campaigns.schema = new SimpleSchema({
   name: {
     type: String
   },
+  autoReplyMessage: {
+    type: String,
+    optional: true
+  },
   description: {
     type: String,
     optional: true

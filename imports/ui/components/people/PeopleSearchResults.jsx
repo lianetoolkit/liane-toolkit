@@ -2,13 +2,26 @@ import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { randomColor } from "/imports/ui/utils/utils.jsx";
 import styled from "styled-components";
+<<<<<<< HEAD
 import { Table, Icon, Dimmer, Button } from "semantic-ui-react";
+=======
+import { Alerts } from "/imports/ui/utils/Alerts.js";
+import { Table, Icon, Grid, Dimmer, Button, Loader } from "semantic-ui-react";
+>>>>>>> private-replies
 import PeopleTable from "./PeopleTable.jsx";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import PeopleInteractivityGrid from "/imports/ui/components/people/PeopleInteractivityGrid.jsx";
 import PeopleMerge from "/imports/ui/components/people/PeopleMerge.jsx";
+<<<<<<< HEAD
+=======
+import PrivateReply from "/imports/ui/components/people/PrivateReply.jsx";
+import Reaction from "/imports/ui/components/entries/Reaction.jsx";
+import Comment from "/imports/ui/components/entries/Comment.jsx";
+>>>>>>> private-replies
 import moment from "moment";
 import { get } from "lodash";
+
+const Fragment = React.Fragment;
 
 const Wrapper = styled.div`
   .last-interaction {
@@ -21,10 +34,12 @@ export default class PeopleSearchResults extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loadingReply: false,
       people: [],
       duplicates: []
     };
     this._extraCells = this._extraCells.bind(this);
+    this._extraRows = this._extraRows.bind(this);
   }
   componentDidMount() {
     const { people } = this.props;
@@ -66,11 +81,52 @@ export default class PeopleSearchResults extends React.Component {
       this._duplicateNames(props.people);
     }
   }
+  _canReply(person) {
+    const { facebookId } = this.props;
+    return (
+      person.counts &&
+      person.counts[facebookId] &&
+      person.counts[facebookId].comments
+    );
+  }
+  _handleReplyClick = person => ev => {
+    ev.preventDefault();
+    const { facebookId } = this.props;
+    const { replying } = this.state;
+    if (replying && replying == person._id) {
+      this.setState({ replying: false });
+    } else {
+      this.setState({ loadingReply: true });
+      Meteor.call(
+        "people.getReplyComment",
+        { personId: person._id, facebookAccountId: facebookId },
+        (err, res) => {
+          if (res && res.comment) {
+            this.setState({
+              loadingReply: false,
+              replying: person._id,
+              replyingComment: res.comment,
+              defaultReplyMessage: res.defaultMessage
+            });
+          } else {
+            this.setState({
+              loadingReply: false
+            });
+            Alerts.error(
+              "There are no comments available for a private reply."
+            );
+          }
+        }
+      );
+    }
+  };
   componentWillReceiveProps(nextProps) {
     this._updatePeople(nextProps);
   }
   _handleTableChange = props => {
-    this._updatePeople(props);
+    if (props.people) {
+      this._updatePeople(props);
+    }
   };
   _handleMergeSubmit = () => {
     const { refresh } = this.props;
@@ -88,8 +144,8 @@ export default class PeopleSearchResults extends React.Component {
     return get(person, "campaignMeta." + key);
   }
   _extraCells(person) {
-    const { editMode, facebookId, campaignId } = this.props;
-    const { duplicates } = this.state;
+    const { editMode, facebookId } = this.props;
+    const { duplicates, replying, loadingReply, replyingComment } = this.state;
     if (editMode) {
       return (
         <>
@@ -99,7 +155,7 @@ export default class PeopleSearchResults extends React.Component {
           <Table.Cell>{this._getMeta(person, "contact.telephone")}</Table.Cell>
           <Table.Cell collapsing>
             <PeopleMerge
-              campaignId={campaignId}
+              campaignId={person.campaignId}
               duplicates={duplicates}
               person={person}
               onSubmit={this._handleMergeSubmit}
@@ -108,7 +164,7 @@ export default class PeopleSearchResults extends React.Component {
           <Table.Cell collapsing>
             <a
               href={FlowRouter.path("App.campaignPeople.edit", {
-                campaignId,
+                campaignId: person.campaignId,
                 personId: person._id
               })}
             >
@@ -131,9 +187,68 @@ export default class PeopleSearchResults extends React.Component {
           <Table.Cell collapsing>
             {person.lastInteractionDate ? this._getLastInteraction(person) : ""}
           </Table.Cell>
+          <Table.Cell collapsing>
+            {this._canReply(person) ? (
+              <a
+                href="javascript:void(0);"
+                onClick={this._handleReplyClick(person)}
+              >
+                <Icon
+                  name={
+                    person.receivedAutoPrivateReply
+                      ? "checkmark"
+                      : "comments outline"
+                  }
+                />{" "}
+                Private reply
+              </a>
+            ) : null}
+          </Table.Cell>
         </>
       );
     }
+  }
+  _extraRows(person) {
+    const { editMode, facebookId } = this.props;
+    const {
+      replying,
+      loadingReply,
+      replyingComment,
+      defaultReplyMessage
+    } = this.state;
+    if (!editMode && replying && replying == person._id) {
+      return (
+        <Table.Row>
+          <Table.Cell colSpan={6}>
+            {loadingReply ? (
+              <Loader />
+            ) : (
+              <Grid widths="equal" columns={2}>
+                <Grid.Row>
+                  <Grid.Column>
+                    <Comment comment={replyingComment} />
+                  </Grid.Column>
+                  <Grid.Column>
+                    <PrivateReply
+                      received={person.receivedAutoPrivateReply}
+                      personId={person._id}
+                      campaignId={person.campaignId}
+                      comment={replyingComment}
+                      defaultMessage={defaultReplyMessage}
+                      onSubmit={() => {
+                        this.setState({ replying: false });
+                        this.props.refresh();
+                      }}
+                    />
+                  </Grid.Column>
+                </Grid.Row>
+              </Grid>
+            )}
+          </Table.Cell>
+        </Table.Row>
+      );
+    }
+    return null;
   }
   render() {
     const { loading, loadingCount, count } = this.props;
@@ -153,6 +268,7 @@ export default class PeopleSearchResults extends React.Component {
           <PeopleTable
             people={people}
             extraCells={this._extraCells}
+            extraRows={this._extraRows}
             onChange={this._handleTableChange}
           />
         </Wrapper>

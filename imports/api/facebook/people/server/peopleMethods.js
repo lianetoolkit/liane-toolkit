@@ -4,8 +4,10 @@ import { People } from "../people.js";
 import peopleMetaModel from "/imports/api/facebook/people/model/meta";
 import { PeopleHelpers } from "./peopleHelpers.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
+import moment from "moment";
 import { get, merge, pick, compact, uniq } from "lodash";
 
 const buildSearchQuery = ({ campaignId, query, options }) => {
@@ -18,7 +20,8 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
       campaignId: 1,
       counts: 1,
       campaignMeta: 1,
-      lastInteractionDate: 1
+      lastInteractionDate: 1,
+      receivedAutoPrivateReply: 1
     }
   };
 
@@ -135,6 +138,230 @@ export const peopleSearchCount = new ValidatedMethod({
     );
 
     return result;
+  }
+});
+
+export const peopleReplyComment = new ValidatedMethod({
+  name: "people.getReplyComment",
+  validate: new SimpleSchema({
+    personId: {
+      type: String
+    },
+    facebookAccountId: {
+      type: String
+    }
+  }).validator(),
+  run({ personId, facebookAccountId }) {
+    logger.debug("people.getLastComment called", {
+      personId,
+      facebookAccountId
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const person = People.findOne(personId);
+
+    if (!person) {
+      throw new Meteor.Error(401, "Person not found");
+    }
+
+    const campaign = Campaigns.findOne(person.campaignId);
+
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    const comment = Comments.findOne(
+      {
+        personId: person.facebookId,
+        facebookAccountId,
+        $or: [
+          { can_reply_privately: true },
+          {
+            can_reply_privately: { $exists: false },
+            created_time: {
+              $gte: moment()
+                .subtract(4, "months")
+                .toISOString()
+            }
+          }
+        ]
+      },
+      { sort: { created_time: -1 } }
+    );
+
+    // Recheck for reply availability
+    if(comment) {
+      const campaignAccount = campaign.accounts.find(
+        a => a.facebookId == facebookAccountId
+      );
+      if (campaignAccount) {
+        const access_token = campaignAccount.accessToken;
+        const res = Promise.await(
+          FB.api(comment._id, {
+            fields: ["can_reply_privately"],
+            access_token
+          })
+        );
+        Comments.update(
+          { _id: comment._id },
+          {
+            $set: {
+              can_reply_privately: res.can_reply_privately
+            }
+          }
+        );
+        if (!res.can_reply_privately) {
+          return;
+        }
+      }
+    }
+
+    return {
+      comment,
+      defaultMessage: campaign.autoReplyMessage
+    };
+  }
+});
+
+export const peopleSendPrivateReply = new ValidatedMethod({
+  name: "people.sendPrivateReply",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    personId: {
+      type: String
+    },
+    commentId: {
+      type: String
+    },
+    type: {
+      type: String,
+      defaultValue: "custom",
+      allowedValues: ["auto", "custom"]
+    },
+    message: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, personId, commentId, type, message }) {
+    logger.debug("people.sendPrivateReply called", {
+      campaignId,
+      commentId,
+      message
+    });
+
+    const userId = Meteor.userId();
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    const allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    if (type == "auto") message = campaign.autoReplyMessage;
+
+    if (!message) {
+      throw new Meteor.Error(401, "You must type a message");
+    }
+
+    const comment = Comments.findOne(commentId);
+
+    const campaignAccount = _.findWhere(campaign.accounts, {
+      facebookId: comment.facebookAccountId
+    });
+
+    if (!campaignAccount) {
+      throw new Meteor.Error(
+        401,
+        "Campaign does not have access to this Facebook Account"
+      );
+    }
+
+    const person = People.findOne(personId);
+
+    if (!person) {
+      throw new Meteor.Error(401, "Person not found");
+    }
+
+    if (person.facebookId !== comment.personId) {
+      throw new Meteor.Error(401, "Person does not match comment author");
+    }
+
+    let response;
+
+    const closeComment = () => {
+      Comments.update(
+        { _id: comment._id },
+        {
+          $set: {
+            can_reply_privately: false
+          }
+        }
+      );
+    };
+
+    try {
+      response = Promise.await(
+        FB.api(`${comment._id}/private_replies`, "POST", {
+          access_token: campaignAccount.accessToken,
+          id: comment._id,
+          message
+        })
+      );
+    } catch (error) {
+      if (error instanceof Meteor.Error) {
+        throw error;
+      } else if (error.response) {
+        const errorCode = error.response.error.code;
+        console.log(error.response);
+        switch (errorCode) {
+          case 10903:
+            closeComment();
+            throw new Meteor.Error(400, "You cannot reply to this activity.");
+          case 10900:
+            closeComment();
+            throw new Meteor.Error(
+              400,
+              "You already sent a private message for this comment."
+            );
+          case 100:
+          case 200:
+            closeComment();
+            throw new Meteor.Error(
+              400,
+              "Cannot send message for this comment, probably too old or comment does not exist anymore."
+            );
+          default:
+            throw new Meteor.Error(500, "Unexpected Facebook response.");
+        }
+      }
+    }
+    if (type == "auto") {
+      People.update(
+        { _id: person._id },
+        {
+          $set: {
+            receivedAutoPrivateReply: true
+          }
+        }
+      );
+    }
+    closeComment();
+    return response;
   }
 });
 

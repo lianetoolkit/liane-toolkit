@@ -16,6 +16,7 @@ import {
   Button,
   Form,
   Input,
+  TextArea,
   Select,
   Table,
   Menu,
@@ -86,13 +87,13 @@ export default class CampaignsSettings extends React.Component {
     const { section, formData } = this.state;
     let data = {};
     for (const key in formData[section]) {
-      if (formData[section][key]) {
+      if (typeof formData[section][key] !== "undefined") {
         data[key] = formData[section][key];
       }
     }
     switch (section) {
       case "general":
-        data = _.pick(data, ["name", "adAccountId"]);
+        data = _.pick(data, ["name", "adAccountId", "autoReplyMessage"]);
         Meteor.call(
           "campaigns.update",
           { ...data, campaignId: campaign._id },
@@ -320,6 +321,13 @@ export default class CampaignsSettings extends React.Component {
                           label="Ad Account"
                           name="adAccountId"
                           value={formData.general.adAccountId}
+                          onChange={this._handleChange}
+                        />
+                        <Form.Field
+                          control={TextArea}
+                          label="Automatic message for private replies"
+                          name="autoReplyMessage"
+                          value={formData.general.autoReplyMessage}
                           onChange={this._handleChange}
                         />
                         <Button fluid primary>

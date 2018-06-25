@@ -148,7 +148,8 @@ const CommentsHelpers = {
             "message_tags",
             "comment_count",
             "like_count",
-            "created_time"
+            "created_time",
+            "can_reply_privately"
           ],
           limit: 1000,
           access_token: accessToken

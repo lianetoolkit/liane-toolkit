@@ -76,6 +76,11 @@ People.schema = new SimpleSchema({
   // "lastInteractions.$": {
   //   type: People.lastInteractionsSchema
   // },
+  receivedAutoPrivateReply: {
+    type: Boolean,
+    defaultValue: false,
+    optional: true
+  },
   counts: {
     type: Object,
     blackbox: true,

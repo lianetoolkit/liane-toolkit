@@ -21,7 +21,8 @@ export default class AuthFacebook extends React.Component {
           "manage_pages",
           "pages_show_list",
           "ads_management",
-          "ads_read"
+          "ads_read",
+          "read_page_mailboxes"
         ]
       },
       err => {
