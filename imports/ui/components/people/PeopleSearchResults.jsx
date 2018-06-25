@@ -2,22 +2,15 @@ import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { randomColor } from "/imports/ui/utils/utils.jsx";
 import styled from "styled-components";
-<<<<<<< HEAD
-import { Table, Icon, Dimmer, Button } from "semantic-ui-react";
-=======
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import { Table, Icon, Grid, Dimmer, Button, Loader } from "semantic-ui-react";
->>>>>>> private-replies
 import PeopleTable from "./PeopleTable.jsx";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import PeopleInteractivityGrid from "/imports/ui/components/people/PeopleInteractivityGrid.jsx";
 import PeopleMerge from "/imports/ui/components/people/PeopleMerge.jsx";
-<<<<<<< HEAD
-=======
 import PrivateReply from "/imports/ui/components/people/PrivateReply.jsx";
 import Reaction from "/imports/ui/components/entries/Reaction.jsx";
 import Comment from "/imports/ui/components/entries/Comment.jsx";
->>>>>>> private-replies
 import moment from "moment";
 import { get } from "lodash";
 
