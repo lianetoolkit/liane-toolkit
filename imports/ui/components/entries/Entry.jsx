@@ -28,7 +28,7 @@ export default class Entry extends React.Component {
   _content() {
     const { entry } = this.props;
     if (entry.message) {
-      return entry.message.substring(0, 90) + "...";
+      return entry.message.substring(0, 120) + "...";
     }
     return "";
   }

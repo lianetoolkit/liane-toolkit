@@ -10,7 +10,7 @@ const Wrapper = styled.div`
 
 const Container = styled.div`
   float: left;
-  width: 50%;
+  width: 100%;
   box-sizing: border-box;
   text-align: right;
   position: relative;
@@ -82,7 +82,7 @@ const Label = styled.div`
     `};
 `;
 
-export default class CompareLine extends React.Component {
+export default class SingleLineChart extends React.Component {
   _getPercentage(type) {
     const audience = AudienceUtils.transformValues(this.props.audience);
     let cent = 0,
@@ -110,8 +110,7 @@ export default class CompareLine extends React.Component {
   render() {
     const { audience } = this.props;
     const diffs = [
-      this._getPercentage("location"),
-      this._getPercentage("account")
+      this._getPercentage("location")
     ];
     return (
       <Wrapper>
@@ -120,13 +119,6 @@ export default class CompareLine extends React.Component {
           <Label right>
             Location
             <span>{this._format(diffs[0])}</span>
-          </Label>
-        </Container>
-        <Container left>
-          <Bar left style={{ width: diffs[1] * 100 + "%" }} />
-          <Label left>
-            Page
-            <span>{this._format(diffs[1])}</span>
           </Label>
         </Container>
       </Wrapper>

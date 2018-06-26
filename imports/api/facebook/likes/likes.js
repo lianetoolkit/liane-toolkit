@@ -28,6 +28,11 @@ Likes.schema = new SimpleSchema({
     type: Date,
     optional: true,
     index: true
+  },
+  resolved: {
+    type: Boolean,
+    optional: true,
+    index: true
   }
 });
 

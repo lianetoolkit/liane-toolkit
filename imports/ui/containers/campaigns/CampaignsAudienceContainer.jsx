@@ -1,26 +1,37 @@
 import { Meteor } from "meteor/meteor";
 import { withTracker } from "meteor/react-meteor-data";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
+import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
 import CampaignsAudience from "/imports/ui/pages/campaigns/CampaignsAudience.jsx";
 import _ from "underscore";
 
-const GeolocationSubs = new SubsManager();
+const AudienceSubs = new SubsManager();
 
 export default withTracker(props => {
-  const geolocationsHandle = GeolocationSubs.subscribe(
-    "geolocations.byCampaign",
+  const geolocationsHandle = AudienceSubs.subscribe("geolocations.byCampaign", {
+    campaignId: props.campaignId
+  });
+  const audienceCategoriesHandle = AudienceSubs.subscribe(
+    "audienceCategories.byContext",
     {
-      campaignId: props.campaignId
+      contextId: props.campaign.contextId
     }
   );
 
-  const loading = !geolocationsHandle.ready();
+  const loading =
+    !geolocationsHandle.ready() || !audienceCategoriesHandle.ready();
 
   const context = props.campaign.context;
 
   const geolocations = geolocationsHandle.ready()
     ? Geolocations.find({
         _id: { $in: [...context.geolocations, context.mainGeolocationId] }
+      }).fetch()
+    : null;
+
+  const audienceCategories = audienceCategoriesHandle.ready()
+    ? AudienceCategories.find({
+        _id: { $in: context.audienceCategories }
       }).fetch()
     : null;
 
@@ -35,9 +46,20 @@ export default withTracker(props => {
     }
   }
 
+  let audienceCategoryId = props.audienceCategoryId;
+
+  if (!loading && !audienceCategoryId) {
+    const audienceCategory = audienceCategories[0];
+    if (audienceCategory) {
+      audienceCategoryId = audienceCategory._id;
+    }
+  }
+
   return {
     loading,
     geolocations,
-    geolocationId
+    geolocationId,
+    audienceCategories,
+    audienceCategoryId
   };
 })(CampaignsAudience);
