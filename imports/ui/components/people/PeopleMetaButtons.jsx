@@ -35,38 +35,50 @@ export default class PeopleMetaButtons extends React.Component {
   }
   _metaIconName(key) {
     switch (key) {
+      case "supporter":
+        return "star";
+      case "volunteer":
+        return "hand point up";
+      case "mobilizer":
+        return "users";
+      case "donor":
+        return "currency";
       case "influencer":
         return "certificate";
-      case "voteIntent":
-        return "thumbs up";
-      case "starred":
-        return "star";
       case "troll":
         return "dont";
     }
   }
   _metaIconColor(key) {
     switch (key) {
-      case "influencer":
-        return "green";
-      case "voteIntent":
+      case "supporter":
         return "blue";
-      case "starred":
+      case "volunteer":
+        return "orange";
+      case "mobilizer":
         return "yellow";
+      case "donor":
+        return "green";
+      case "influencer":
+        return "pink";
       case "troll":
         return "red";
     }
   }
   _metaIconLabel(key) {
     switch (key) {
+      case "supporter":
+        return "Up for sharing online content";
+      case "volunteer":
+        return "Willing to work on one-off tasks";
+      case "mobilizer":
+        return "Can take bigger responsibilities";
+      case "donor":
+        return "Donated or potential donors";
       case "influencer":
-        return "This person is an influencer";
-      case "voteIntent":
-        return "This person will vote for you";
-      case "starred":
-        return "Star this person";
+        return "Has a lot of followers";
       case "troll":
-        return "This person is a troll";
+        return "Not waste time responding";
     }
   }
   _metaButton(data = {}, key) {
@@ -99,9 +111,11 @@ export default class PeopleMetaButtons extends React.Component {
     if (person) {
       return (
         <span {...props}>
+          {this._metaButton(person.campaignMeta || {}, "supporter")}
+          {this._metaButton(person.campaignMeta || {}, "volunteer")}
+          {this._metaButton(person.campaignMeta || {}, "mobilizer")}
+          {this._metaButton(person.campaignMeta || {}, "donor")}
           {this._metaButton(person.campaignMeta || {}, "influencer")}
-          {this._metaButton(person.campaignMeta || {}, "starred")}
-          {this._metaButton(person.campaignMeta || {}, "voteIntent")}
           {this._metaButton(person.campaignMeta || {}, "troll")}
         </span>
       );

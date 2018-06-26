@@ -1,5 +1,4 @@
 import React from "react";
-import { getRoleColor } from "/imports/utils/common.js";
 import { Icon, Label } from "semantic-ui-react";
 import { transform, isEqual, isObject } from "lodash";
 
@@ -10,12 +9,6 @@ export const booleanToIcon = value => {
     return <Icon name="remove" color="red" />;
   }
   return;
-};
-
-export const getLabelForRole = role => {
-  const roleColor = getRoleColor(role);
-  // console.log({ role, roleColor });
-  return <Label color={roleColor}>{role}</Label>;
 };
 
 export const isFbLogged = user => {
