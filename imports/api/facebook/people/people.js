@@ -107,10 +107,6 @@ People.attachSchema(People.schema);
 
 Meteor.startup(() => {
   if (Meteor.isServer) {
-    People.rawCollection().dropIndex("name_text");
-    People.rawCollection().dropIndex(
-      "campaignMeta.influencer_1_campaignMeta.voteIntent_1_campaignMeta.starred_1_campaignMeta.troll_1"
-    );
     People.rawCollection().createIndex({
       name: "text",
       "campaignMeta.contact.email": "text"
