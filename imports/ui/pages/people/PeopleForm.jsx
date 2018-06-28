@@ -9,10 +9,13 @@ import {
   Divider,
   Form,
   Input,
+  Select,
+  Checkbox,
   Button,
   Message,
   Icon
 } from "semantic-ui-react";
+import AddressForm from "/imports/ui/components/people/AddressForm.jsx";
 
 const Wrapper = styled.div`
   max-width: 700px;
@@ -23,15 +26,38 @@ export default class PeopleForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      formData: {}
+      formData: {},
+      contribute: false,
+      skillOptions: [
+        "Design",
+        "Vídeo",
+        "Produção de eventos",
+        "Redator",
+        "Fotógrafo",
+        "Mídias sociais",
+        "Desenvolvimento Web",
+        "Panfletagem"
+      ]
     };
     this._handleFacebookClick = this._handleFacebookClick.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
   }
+  componentWillReceiveProps(nextProps) {
+    const { person } = this.props;
+    if (nextProps.person && (!person || nextProps.person._id !== person._id)) {
+      // Autofill with available data?
+      // this.setState({
+      //   formData: {
+      //     ...this.state.formData,
+      //     name: nextProps.person.name
+      //   }
+      // });
+    }
+  }
   _handleChange = (ev, { name, value }) => {
     this.setState({
-      ...this.state.formData,
       formData: {
+        ...this.state.formData,
         [name]: value
       }
     });
@@ -50,8 +76,6 @@ export default class PeopleForm extends React.Component {
         ]
       },
       token => {
-        // console.log(OAuth);
-        // console.log(Accounts.oauth);
         const secret = OAuth._retrieveCredentialSecret(token) || null;
         Meteor.call(
           "peopleForm.authFacebook",
@@ -81,15 +105,17 @@ export default class PeopleForm extends React.Component {
   _handleSubmit() {
     const { formId } = this.props;
     const { formData } = this.state;
-    Meteor.call("peopleForm.submit", { formId, ...formData }, (err, res) => {
-      console.log(err, res);
-      FlowRouter.go("/f/" + res);
-    });
+    console.log(formData);
+    // Meteor.call("peopleForm.submit", { formId, ...formData }, (err, res) => {
+    //   console.log(err, res);
+    //   FlowRouter.go("/f/" + res);
+    // });
   }
   render() {
-    const { loading, person, campaign } = this.props;
+    const { contribute, skillOptions } = this.state;
+    const { loading, person, campaign, context } = this.props;
     const { formData } = this.state;
-    if (loading) {
+    if (loading && !person) {
       return (
         <Dimmer active>
           <Loader />
@@ -98,20 +124,34 @@ export default class PeopleForm extends React.Component {
     } else if (person && campaign) {
       return (
         <Wrapper>
-          <Header size="huge">Hello {person.name}!</Header>
+          <Header size="huge">Olá {person.name}!</Header>
           <Header size="large">
-            Help {campaign.name} campaign by filling out this form.
+            Nós, da candidatura {campaign.name}, queremos pedir sua ajuda!
           </Header>
-          <Button
-            fluid
-            color="facebook"
-            icon
-            onClick={this._handleFacebookClick}
-          >
-            <Icon name="facebook" /> Autofill with your Facebook profile
-          </Button>
+          <p>
+            Preencha os dados abaixo que a gente possa saber mais sobre você.
+          </p>
+          {!person.facebookId ? (
+            <Button
+              fluid
+              color="facebook"
+              icon
+              onClick={this._handleFacebookClick}
+            >
+              <Icon name="facebook" /> Connect your Facebook profile
+            </Button>
+          ) : null}
           <Divider />
           <Form onSubmit={this._handleSubmit}>
+            {!person.name ? (
+              <Form.Field
+                name="name"
+                control={Input}
+                label="Nome"
+                value={formData.name}
+                onChange={this._handleChange}
+              />
+            ) : null}
             <Form.Field
               name="email"
               control={Input}
@@ -122,19 +162,94 @@ export default class PeopleForm extends React.Component {
             <Form.Field
               name="cellphone"
               control={Input}
-              label="Cellphone"
+              label="Telefone celular"
               value={formData.cellphone}
               onChange={this._handleChange}
             />
             <Form.Field
               name="birthday"
               control={Input}
-              label="Birthday"
+              label="Data de nascimento"
               type="date"
               value={formData.birthday}
               onChange={this._handleChange}
             />
-            <Button fluid>Submit</Button>
+            <AddressForm
+              country={context.country}
+              address={formData.address}
+              onChange={address => {
+                this._handleChange(null, { name: "address", value: address });
+              }}
+            />
+            <Divider />
+            <Button
+              color={contribute ? "grey" : "green"}
+              fluid
+              icon
+              onClick={ev => {
+                ev.preventDefault();
+                this.setState({ contribute: !contribute });
+              }}
+            >
+              <Icon name={contribute ? "cancel" : "checkmark"} /> Quero
+              participar da campanha!
+            </Button>
+            {contribute ? (
+              <div>
+                <Divider hidden />
+                <Form.Field
+                  name="skills"
+                  control={Select}
+                  multiple
+                  search
+                  allowAdditions={true}
+                  label="O que você sabe fazer?"
+                  value={formData.skills || []}
+                  onChange={this._handleChange}
+                  onAddItem={(ev, data) => {
+                    this.setState({
+                      skillOptions: [...skillOptions, data.value]
+                    });
+                  }}
+                  fluid
+                  options={skillOptions.map(skill => {
+                    return {
+                      key: skill,
+                      value: skill,
+                      text: skill
+                    };
+                  })}
+                />
+                <Form.Field
+                  name="supporter"
+                  control={Checkbox}
+                  label="Se a gente te mandar conteúdo, você compartilha nas suas redes?"
+                />
+                <Form.Field
+                  name="mobilizer"
+                  control={Checkbox}
+                  label="Você puxaria um evento no seu bairro ou trabalho?"
+                />
+                <Form.Field
+                  name="donor"
+                  control={Checkbox}
+                  label="Você doaria dinheiro para a campanha?"
+                />
+                <Divider />
+                <p>
+                  <strong>
+                    A sua participação vai fazer toda a diferença!
+                  </strong>
+                </p>
+                <p>
+                  <strong>Obrigado!</strong>
+                </p>
+              </div>
+            ) : null}
+            <Divider />
+            <Button primary fluid>
+              Enviar
+            </Button>
           </Form>
         </Wrapper>
       );

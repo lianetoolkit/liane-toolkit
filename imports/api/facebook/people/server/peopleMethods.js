@@ -1,5 +1,5 @@
 import SimpleSchema from "simpl-schema";
-import { performance } from "perf_hooks";
+import axios from "axios";
 import { People } from "../people.js";
 import { DeauthorizedPeople } from "../deauthorizedPeople.js";
 import peopleMetaModel from "/imports/api/facebook/people/model/meta";
@@ -8,6 +8,7 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
 import { get, merge, pick, compact, uniq } from "lodash";
+import cep from "cep-promise";
 
 const buildSearchQuery = ({ campaignId, query, options }) => {
   let queryOptions = {
@@ -72,6 +73,52 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
 
   return { query, options: queryOptions };
 };
+
+export const resolveZipcode = new ValidatedMethod({
+  name: "people.resolveZipcode",
+  validate: new SimpleSchema({
+    country: {
+      type: String
+    },
+    zipcode: {
+      type: String
+    }
+  }).validator(),
+  run({ country, zipcode }) {
+    this.unblock();
+
+    switch (country) {
+      case "BR":
+        const match = zipcode.match(/\d+/gi);
+        if (match && match.length) {
+          const code = match.join("");
+          if (code.length == 8) {
+            return Promise.await(cep(code));
+          }
+        }
+        return {};
+      default:
+        let res;
+        let data = {};
+        try {
+          res = Promise.await(
+            axios.get(`http://api.zippopotam.us/${country}/${zipcode}`)
+          );
+          data = res.data;
+        } catch (e) {
+          return data;
+        } finally {
+          if (data && data.places && data.places.length) {
+            return {
+              state: data.places[0]["state abbreviation"],
+              city: data.places[0]["place name"]
+            };
+          }
+          return data;
+        }
+    }
+  }
+});
 
 export const peopleSearch = new ValidatedMethod({
   name: "people.search",
