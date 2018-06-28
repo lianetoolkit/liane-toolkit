@@ -1,47 +1,5 @@
 import humanize from "humanize-plus";
 
-export const getStatusColor = status => {
-  if (status === "completed") {
-    return "green";
-  } else if (status === "running") {
-    return "aqua";
-  } else if (status === "ready") {
-    return "light-blue";
-  } else if (status === "waiting") {
-    return "grey";
-  } else if (status === "validating") {
-    return "yellow";
-  } else if (status === "rejected") {
-    return "red";
-  } else {
-    return "yellow";
-  }
-};
-
-export const getRoleColor = role => {
-  if (role === "free-trial") {
-    return "blue";
-  } else if (role === "unsubscribed") {
-    return "olive";
-  } else if (role === "subscribed") {
-    return "green";
-  } else if (role === "admin") {
-    return "red";
-  } else if (role === "staff") {
-    return "orange";
-  }
-};
-
-export const truncateText = (text, length) => {
-  if (text.length > length) {
-    let truncatedText = text.substring(0, length);
-    truncatedText += "...";
-    return truncatedText;
-  }
-
-  return text;
-};
-
 export const validateEmail = email => {
   const re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
   return re.test(email);

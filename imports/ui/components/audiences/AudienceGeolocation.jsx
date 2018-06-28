@@ -135,7 +135,7 @@ export default class AudienceGeolocation extends React.Component {
                           key={cat._id}
                           active={cat._id == audienceCategoryId}
                           href={FlowRouter.path(
-                            "App.campaignAudience.geolocation",
+                            "App.campaignAudience.category",
                             {
                               navTab: "places",
                               campaignId: campaign._id,

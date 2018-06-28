@@ -172,7 +172,7 @@ export default class PeopleSinglePage extends React.Component {
                 <Grid columns={3} verticalAlign="middle">
                   <Grid.Row>
                     {person.facebookId ? (
-                      <Grid.Column width={3} textAlign="center">
+                      <Grid.Column width={2} textAlign="center">
                         <a
                           href={`https://facebook.com/${person.facebookId}`}
                           target="_blank"
@@ -182,10 +182,10 @@ export default class PeopleSinglePage extends React.Component {
                         </a>
                       </Grid.Column>
                     ) : null}
-                    <Grid.Column width={3} textAlign="center">
+                    <Grid.Column width={5} textAlign="center">
                       <PeopleMetaButtons person={person} size="large" />
                     </Grid.Column>
-                    <Grid.Column width={10}>
+                    <Grid.Column width={9}>
                       {comments.length ? (
                         <div className="comment-history">
                           <Header>
