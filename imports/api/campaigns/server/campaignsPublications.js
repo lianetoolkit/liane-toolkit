@@ -73,6 +73,41 @@ Meteor.publish("campaigns.byUser", function() {
   }
 });
 
+Meteor.publishComposite("campaigns.publicDetail", function({ campaignId }) {
+  logger.debug("campaigns.publicDetail pub", { campaignId });
+  return {
+    find: function() {
+      return Campaigns.find(
+        {
+          _id: campaignId
+        },
+        {
+          fields: {
+            name: 1,
+            contextId: 1
+          }
+        }
+      );
+    },
+    children: [
+      {
+        find: function(campaign) {
+          return Contexts.find(
+            {
+              _id: campaign.contextId
+            },
+            {
+              fields: {
+                country: 1
+              }
+            }
+          );
+        }
+      }
+    ]
+  };
+});
+
 Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
   const currentUser = this.userId;
   logger.debug("campaigns.detail pub", { campaignId });

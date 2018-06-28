@@ -8,14 +8,25 @@ import PeopleForm from "/imports/ui/pages/people/PeopleForm.jsx";
 const PeopleFormSubs = new SubsManager();
 
 export default withTracker(props => {
-  const personHandle = PeopleFormSubs.subscribe("people.form.detail", {
-    formId: props.formId
-  });
-
-  const loading = !personHandle.ready();
-  const person = personHandle.ready() ? People.findOne() : null;
-  const campaign = personHandle.ready() ? Campaigns.findOne() : null;
-  const context = personHandle.ready() ? Contexts.findOne() : null;
+  let loading = true;
+  let person, campaign, context;
+  if (props.formId) {
+    const personHandle = PeopleFormSubs.subscribe("people.form.detail", {
+      formId: props.formId
+    });
+    loading = !personHandle.ready();
+    person = personHandle.ready() ? People.findOne() : null;
+    campaign = personHandle.ready() ? Campaigns.findOne() : null;
+    context = personHandle.ready() ? Contexts.findOne() : null;
+  } else if (props.campaignId) {
+    person = {};
+    const campaignHandle = PeopleFormSubs.subscribe("campaigns.publicDetail", {
+      campaignId: props.campaignId
+    });
+    loading = !campaignHandle.ready();
+    campaign = campaignHandle.ready() ? Campaigns.findOne() : null;
+    context = campaignHandle.ready() ? Contexts.findOne() : null;
+  }
 
   return {
     loading,

@@ -101,10 +101,11 @@ appRoutes.route("/add-campaign", {
 
 appRoutes.route("/f/:formId?", {
   name: "App.peopleForm",
-  action: function(params) {
+  action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Help your candidate`);
     return mount(PeopleFormContainer, {
-      formId: params.formId
+      formId: params.formId,
+      campaignId: queryParams.c
     });
   }
 });

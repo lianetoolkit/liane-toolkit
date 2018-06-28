@@ -63,34 +63,22 @@ export default class PeopleForm extends React.Component {
     });
   };
   _handleFacebookClick() {
+    const { campaign } = this.props;
     Facebook.requestCredential(
       {
-        requestPermissions: [
-          "public_profile",
-          "email",
-          "user_birthday",
-          "user_location",
-          "user_gender",
-          "user_age_range",
-          "user_link"
-        ]
+        requestPermissions: ["public_profile", "email"]
       },
       token => {
         const secret = OAuth._retrieveCredentialSecret(token) || null;
         Meteor.call(
-          "peopleForm.authFacebook",
-          { token, secret },
+          "peopleForm.connectFacebook",
+          { token, secret, campaignId: campaign._id },
           (err, res) => {
+            console.log(res);
             if (err) {
               console.log(err);
             } else {
-              this.setState({
-                formData: {
-                  ...this.state.formData,
-                  facebookLink: res.link,
-                  email: res.email
-                }
-              });
+              FlowRouter.go("/f/" + res);
             }
           }
         );
@@ -115,7 +103,8 @@ export default class PeopleForm extends React.Component {
     const { contribute, skillOptions } = this.state;
     const { loading, person, campaign, context } = this.props;
     const { formData } = this.state;
-    if (loading && !person) {
+    console.log(this.props);
+    if (loading) {
       return (
         <Dimmer active>
           <Loader />
@@ -124,7 +113,11 @@ export default class PeopleForm extends React.Component {
     } else if (person && campaign) {
       return (
         <Wrapper>
-          <Header size="huge">Olá {person.name}!</Header>
+          <Header size="huge">
+            Olá
+            {person.name ? <span> {person.name}</span> : null}
+            !
+          </Header>
           <Header size="large">
             Nós, da candidatura {campaign.name}, queremos pedir sua ajuda!
           </Header>

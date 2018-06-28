@@ -581,36 +581,51 @@ export const mergePeople = new ValidatedMethod({
   }
 });
 
-export const peopleFormAuthFacebook = new ValidatedMethod({
-  name: "peopleForm.authFacebook",
+export const peopleFormConnectFacebook = new ValidatedMethod({
+  name: "peopleForm.connectFacebook",
   validate: new SimpleSchema({
     token: {
       type: String
     },
     secret: {
       type: String
+    },
+    campaignId: {
+      type: String
     }
   }).validator(),
-  run({ token, secret }) {
-    logger.debug("peopleForm.authFacebook called", { token, secret });
+  run({ token, secret, campaignId }) {
+    logger.debug("peopleForm.connectFacebook called", {
+      token,
+      secret,
+      campaignId
+    });
 
     const credential = Facebook.retrieveCredential(token, secret);
 
     if (credential.serviceData && credential.serviceData.accessToken) {
-      return Promise.await(
+      const data = Promise.await(
         FB.api("me", {
-          fields: [
-            "id",
-            "name",
-            "email",
-            "location",
-            "birthday",
-            "link",
-            "gender"
-          ],
+          fields: ["id", "name", "email"],
           access_token: credential.serviceData.accessToken
         })
       );
+      if (data && data.id) {
+        People.upsert(
+          { campaignId, facebookId: data.id },
+          {
+            $set: {
+              campaignId,
+              name: data.name,
+              "campaignMeta.contact.email": data.email
+            }
+          }
+        );
+        const person = People.findOne({ campaignId, facebookId: data.id });
+        let formId = person.formId;
+        if (!formId) formId = PeopleHelpers.generateFormId({ person });
+        return formId;
+      }
     }
     throw new Meteor.Error(500, "Error fetching user data");
   }
@@ -622,7 +637,7 @@ export const peopleFormSubmit = new ValidatedMethod({
     formId: {
       type: String
     },
-    facebookLink: {
+    facebookId: {
       type: String,
       optional: true
     },
@@ -639,7 +654,7 @@ export const peopleFormSubmit = new ValidatedMethod({
       optional: true
     }
   }).validator(),
-  run({ formId, facebookLink, email, cellphone, birthday }) {
+  run({ formId, facebookId, email, cellphone, birthday }) {
     logger.debug("peopleForm.submit called", { formId });
 
     const person = People.findOne({ formId });
