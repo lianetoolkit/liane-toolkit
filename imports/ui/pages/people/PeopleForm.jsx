@@ -74,7 +74,6 @@ export default class PeopleForm extends React.Component {
           "peopleForm.connectFacebook",
           { token, secret, campaignId: campaign._id },
           (err, res) => {
-            console.log(res);
             if (err) {
               console.log(err);
             } else {
@@ -103,7 +102,6 @@ export default class PeopleForm extends React.Component {
     const { contribute, skillOptions } = this.state;
     const { loading, person, campaign, context } = this.props;
     const { formData } = this.state;
-    console.log(this.props);
     if (loading) {
       return (
         <Dimmer active>
