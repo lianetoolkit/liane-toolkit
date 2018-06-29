@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
+import { get } from "lodash";
 import { OAuth } from "meteor/oauth";
+import { Alerts } from "/imports/ui/utils/Alerts.js";
 import {
   Dimmer,
   Loader,
@@ -16,6 +18,9 @@ import {
   Icon
 } from "semantic-ui-react";
 import AddressForm from "/imports/ui/components/people/AddressForm.jsx";
+import Recaptcha from "react-recaptcha";
+
+const recaptchaSiteKey = Meteor.settings.public.recaptcha;
 
 const Wrapper = styled.div`
   max-width: 700px;
@@ -40,18 +45,23 @@ export default class PeopleForm extends React.Component {
       ]
     };
     this._handleFacebookClick = this._handleFacebookClick.bind(this);
+    this._handleRecaptcha = this._handleRecaptcha.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     const { person } = this.props;
     if (nextProps.person && (!person || nextProps.person._id !== person._id)) {
       // Autofill with available data?
-      // this.setState({
-      //   formData: {
-      //     ...this.state.formData,
-      //     name: nextProps.person.name
-      //   }
-      // });
+      this.setState({
+        formData: {
+          ...this.state.formData,
+          name: get(nextProps.person, "name"),
+          email: get(nextProps.person, "campaignMeta.contact.email"),
+          cellphone: get(nextProps.person, "campaignMeta.contact.cellphone"),
+          birthday: get(nextProps.person, "campaignMeta.basic_info.birthday"),
+          address: get(nextProps.person, "campaignMeta.basic_info.address")
+        }
+      });
     }
   }
   _handleChange = (ev, { name, value }) => {
@@ -59,6 +69,15 @@ export default class PeopleForm extends React.Component {
       formData: {
         ...this.state.formData,
         [name]: value
+      }
+    });
+  };
+  _handleCheckboxChange = (ev, { name, checked }) => {
+    console.log({ name, checked });
+    this.setState({
+      formData: {
+        ...this.state.formData,
+        [name]: checked
       }
     });
   };
@@ -75,7 +94,7 @@ export default class PeopleForm extends React.Component {
           { token, secret, campaignId: campaign._id },
           (err, res) => {
             if (err) {
-              console.log(err);
+              Alerts.error(err);
             } else {
               FlowRouter.go("/f/" + res);
             }
@@ -84,19 +103,36 @@ export default class PeopleForm extends React.Component {
       }
     );
   }
+  _handleRecaptcha(res) {
+    this.setState({
+      formData: {
+        ...this.state.formData,
+        recaptcha: res
+      }
+    });
+  }
   _handleDeleteDataClick() {
     Facebook.requestCredential({
       requestPermissions: []
     });
   }
   _handleSubmit() {
-    const { formId } = this.props;
+    const { formId, campaign } = this.props;
     const { formData } = this.state;
-    console.log(formData);
-    // Meteor.call("peopleForm.submit", { formId, ...formData }, (err, res) => {
-    //   console.log(err, res);
-    //   FlowRouter.go("/f/" + res);
-    // });
+    let data = { ...formData, campaignId: campaign._id };
+    if (formId) {
+      data.formId = formId;
+    }
+    Meteor.call("peopleForm.submit", data, (err, res) => {
+      if (err) {
+        Alerts.error(err);
+      } else {
+        Alerts.success("Obrigado por ajudar nossa campanha!");
+      }
+      if (res) {
+        FlowRouter.go("/f/" + res);
+      }
+    });
   }
   render() {
     const { contribute, skillOptions } = this.state;
@@ -141,6 +177,7 @@ export default class PeopleForm extends React.Component {
                 label="Nome"
                 value={formData.name}
                 onChange={this._handleChange}
+                required
               />
             ) : null}
             <Form.Field
@@ -149,6 +186,7 @@ export default class PeopleForm extends React.Component {
               label="Email"
               value={formData.email}
               onChange={this._handleChange}
+              required
             />
             <Form.Field
               name="cellphone"
@@ -214,16 +252,19 @@ export default class PeopleForm extends React.Component {
                 <Form.Field
                   name="supporter"
                   control={Checkbox}
+                  onChange={this._handleCheckboxChange}
                   label="Se a gente te mandar conteúdo, você compartilha nas suas redes?"
                 />
                 <Form.Field
                   name="mobilizer"
                   control={Checkbox}
+                  onChange={this._handleCheckboxChange}
                   label="Você puxaria um evento no seu bairro ou trabalho?"
                 />
                 <Form.Field
                   name="donor"
                   control={Checkbox}
+                  onChange={this._handleCheckboxChange}
                   label="Você doaria dinheiro para a campanha?"
                 />
                 <Divider />
@@ -238,6 +279,16 @@ export default class PeopleForm extends React.Component {
               </div>
             ) : null}
             <Divider />
+            {!person.facebookId && recaptchaSiteKey ? (
+              <div>
+                <Recaptcha
+                  sitekey={recaptchaSiteKey}
+                  render="explicit"
+                  verifyCallback={this._handleRecaptcha}
+                />
+                <Divider hidden />
+              </div>
+            ) : null}
             <Button primary fluid>
               Enviar
             </Button>

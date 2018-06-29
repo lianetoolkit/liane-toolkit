@@ -7,8 +7,11 @@ import { PeopleHelpers } from "./peopleHelpers.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
-import { get, merge, pick, compact, uniq } from "lodash";
+import { get, set, merge, pick, compact, uniq } from "lodash";
 import cep from "cep-promise";
+import { Random } from "meteor/random";
+
+const recaptchaSecret = Meteor.settings.recaptcha;
 
 const buildSearchQuery = ({ campaignId, query, options }) => {
   let queryOptions = {
@@ -634,16 +637,22 @@ export const peopleFormConnectFacebook = new ValidatedMethod({
 export const peopleFormSubmit = new ValidatedMethod({
   name: "peopleForm.submit",
   validate: new SimpleSchema({
-    formId: {
+    campaignId: {
       type: String
     },
-    facebookId: {
+    formId: {
       type: String,
       optional: true
     },
-    email: {
+    recaptcha: {
       type: String,
       optional: true
+    },
+    name: {
+      type: String
+    },
+    email: {
+      type: String
     },
     cellphone: {
       type: String,
@@ -652,21 +661,139 @@ export const peopleFormSubmit = new ValidatedMethod({
     birthday: {
       type: String,
       optional: true
+    },
+    address: {
+      type: Object,
+      optional: true
+    },
+    "address.zipcode": {
+      type: String,
+      optional: true
+    },
+    "address.region": {
+      type: String,
+      optional: true
+    },
+    "address.city": {
+      type: String,
+      optional: true
+    },
+    "address.neighbourhood": {
+      type: String,
+      optional: true
+    },
+    "address.street": {
+      type: String,
+      optional: true
+    },
+    "address.number": {
+      type: String,
+      optional: true
+    },
+    "address.complement": {
+      type: String,
+      optional: true
+    },
+    skills: {
+      type: Array,
+      optional: true
+    },
+    "skills.$": {
+      type: String
+    },
+    supporter: {
+      type: Boolean,
+      optional: true
+    },
+    mobilizer: {
+      type: Boolean,
+      optional: true
+    },
+    donor: {
+      type: Boolean,
+      optional: true
     }
   }).validator(),
-  run({ formId, facebookId, email, cellphone, birthday }) {
+  run(formData) {
+    const { campaignId, formId, recaptcha, ...data } = formData;
     logger.debug("peopleForm.submit called", { formId });
 
-    const person = People.findOne({ formId });
-    if (!person) {
-      throw new Meteor.Error(400, "Unauthorized request");
+    let $set = {
+      filledForm: true
+    };
+    for (const key in data) {
+      switch (key) {
+        case "email":
+        case "cellphone":
+          $set[`campaignMeta.contact.${key}`] = data[key];
+          break;
+        case "address":
+        case "birthday":
+        case "skills":
+          $set[`campaignMeta.basic_info.${key}`] = data[key];
+          break;
+        case "supporter":
+        case "mobilizer":
+        case "donor":
+          $set[`campaignMeta.${key}`] = data[key];
+        default:
+          $set[key] = data[key];
+      }
     }
 
-    const newFormId = PeopleHelpers.getFormId({
-      personId: person._id,
-      generate: true
-    });
+    if (!formId && recaptchaSecret) {
+      if (recaptcha) {
+        const res = Promise.await(
+          axios.request({
+            url: "https://www.google.com/recaptcha/api/siteverify",
+            headers: { "content-type": "application/x-www-form-urlencoded" },
+            method: "post",
+            params: {
+              secret: recaptchaSecret,
+              response: recaptcha
+            }
+          })
+        );
+        if (!res.data.success) {
+          throw new Meteor.Error(400, "Invalid recaptcha");
+        }
+      } else {
+        throw new Meteor.Error(400, "Make sure you are not a robot");
+      }
+    }
 
+    let newFormId;
+
+    if (formId) {
+      const person = People.findOne({ formId });
+      if (!person) {
+        throw new Meteor.Error(400, "Unauthorized request");
+      }
+      People.update({ formId }, { $set });
+      newFormId = PeopleHelpers.getFormId({
+        personId: person._id,
+        generate: true
+      });
+    } else {
+      console.log({ campaignId });
+      const id = Random.id();
+      People.upsert(
+        {
+          campaignId,
+          _id: id
+        },
+        {
+          $set: {
+            ...$set,
+            source: "form"
+          }
+        }
+      );
+      newFormId = PeopleHelpers.getFormId({
+        personId: id,
+        generate: true
+      });
+    }
     return newFormId;
   }
 });

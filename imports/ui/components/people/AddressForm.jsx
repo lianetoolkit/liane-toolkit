@@ -88,6 +88,7 @@ export default class AddressForm extends React.Component {
           control={Input}
           name="zipcode"
           label="CEP"
+          value={formData.zipcode}
           onChange={this._handleZipcodeChange}
         />
         <Form.Group widths="equal">

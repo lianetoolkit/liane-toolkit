@@ -39,6 +39,11 @@ People.schema = new SimpleSchema({
     optional: true,
     index: true
   },
+  filledForm: {
+    type: Boolean,
+    optional: true,
+    index: true
+  },
   counts: {
     type: Object,
     blackbox: true,
