@@ -1,14 +1,6 @@
 import SimpleSchema from "simpl-schema";
-import { Index, MongoDBEngine } from "meteor/easy:search";
-import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 
 const People = new Mongo.Collection("people");
-
-People.lastInteractionsSchema = new SimpleSchema({
-  facebookId: { type: String },
-  date: { type: Date, optional: true },
-  estimate: { type: Boolean, defaultValue: false }
-});
 
 People.schema = new SimpleSchema({
   facebookId: {
@@ -81,9 +73,19 @@ People.schema = new SimpleSchema({
     defaultValue: false,
     optional: true
   },
+  filledForm: {
+    type: Boolean,
+    optional: true,
+    index: true
+  },
   counts: {
     type: Object,
     blackbox: true,
+    optional: true
+  },
+  formId: {
+    type: String,
+    index: true,
     optional: true
   },
   createdAt: {

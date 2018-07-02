@@ -6,9 +6,9 @@ export default [
     title: "Basic information",
     fields: [
       {
-        key: "age",
-        label: "Age",
-        fieldType: "text"
+        key: "birthday",
+        label: "Birthday",
+        fieldType: "date"
       },
       {
         key: "gender",
@@ -17,9 +17,14 @@ export default [
         options: genderOptions
       },
       {
-        key: "location",
-        label: "Location",
-        fieldType: "facebook_location"
+        key: "address",
+        label: "Address",
+        fieldType: "address"
+      },
+      {
+        key: "skills",
+        label: "Skills",
+        fieldType: "skill"
       },
       {
         key: "occupation",

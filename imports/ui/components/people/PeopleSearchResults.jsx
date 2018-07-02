@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import { Table, Icon, Grid, Dimmer, Button, Loader } from "semantic-ui-react";
 import PeopleTable from "./PeopleTable.jsx";
-import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import PeopleInteractivityGrid from "/imports/ui/components/people/PeopleInteractivityGrid.jsx";
 import PeopleMerge from "/imports/ui/components/people/PeopleMerge.jsx";
 import PrivateReply from "/imports/ui/components/people/PrivateReply.jsx";

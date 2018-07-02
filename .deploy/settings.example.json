@@ -3,8 +3,10 @@
     "deployMode": "local",
     "domain": "localhost:3000",
     "appName": "Liane",
-    "appEmail": "contact@example.com"
+    "appEmail": "contact@example.com",
+    "recaptcha": "<SITE KEY>"
   },
+  "recaptcha": "<SECRET KEY>",
   "private": false,
   "facebook": {
     "clientId": "<YOUR APP ID>",
