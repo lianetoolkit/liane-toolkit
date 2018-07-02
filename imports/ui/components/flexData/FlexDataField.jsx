@@ -12,6 +12,8 @@ import {
 import styled from "styled-components";
 import LocationField from "/imports/ui/components/facebook/LocationField.jsx";
 import SelectGeolocationFacebook from "/imports/ui/components/geolocations/SelectGeolocationFacebook.jsx";
+import AddressField from "/imports/ui/components/people/AddressField.jsx";
+import SkillField from "/imports/ui/components/people/SkillField.jsx";
 import FacebookInterestsField from "/imports/ui/components/audiences/FacebookInterestsField.jsx";
 import RepeaterField from "./RepeaterField.jsx";
 import GroupField from "./GroupField.jsx";
@@ -48,6 +50,10 @@ export default class FlexDataField extends React.Component {
         return GroupField;
       case "repeater":
         return RepeaterField;
+      case "address":
+        return AddressField;
+      case "skill":
+        return SkillField;
       case "facebook_location":
         return LocationField;
       case "facebook_interests":

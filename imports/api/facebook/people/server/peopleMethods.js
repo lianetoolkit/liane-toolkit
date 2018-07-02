@@ -666,6 +666,9 @@ export const peopleFormSubmit = new ValidatedMethod({
       type: Object,
       optional: true
     },
+    "address.country": {
+      type: String
+    },
     "address.zipcode": {
       type: String,
       optional: true
@@ -716,7 +719,7 @@ export const peopleFormSubmit = new ValidatedMethod({
   }).validator(),
   run(formData) {
     const { campaignId, formId, recaptcha, ...data } = formData;
-    logger.debug("peopleForm.submit called", { formId });
+    logger.debug("peopleForm.submit called", { campaignId, formId });
 
     let $set = {
       filledForm: true
@@ -775,7 +778,6 @@ export const peopleFormSubmit = new ValidatedMethod({
         generate: true
       });
     } else {
-      console.log({ campaignId });
       const id = Random.id();
       People.upsert(
         {

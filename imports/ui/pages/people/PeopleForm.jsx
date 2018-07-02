@@ -17,7 +17,8 @@ import {
   Message,
   Icon
 } from "semantic-ui-react";
-import AddressForm from "/imports/ui/components/people/AddressForm.jsx";
+import AddressField from "/imports/ui/components/people/AddressField.jsx";
+import SkillField from "/imports/ui/components/people/SkillField.jsx";
 import Recaptcha from "react-recaptcha";
 
 const recaptchaSiteKey = Meteor.settings.public.recaptcha;
@@ -73,7 +74,6 @@ export default class PeopleForm extends React.Component {
     });
   };
   _handleCheckboxChange = (ev, { name, checked }) => {
-    console.log({ name, checked });
     this.setState({
       formData: {
         ...this.state.formData,
@@ -203,12 +203,11 @@ export default class PeopleForm extends React.Component {
               value={formData.birthday}
               onChange={this._handleChange}
             />
-            <AddressForm
+            <AddressField
+              name="address"
               country={context.country}
-              address={formData.address}
-              onChange={address => {
-                this._handleChange(null, { name: "address", value: address });
-              }}
+              value={formData.address}
+              onChange={this._handleChange}
             />
             <Divider />
             <Button
@@ -226,28 +225,11 @@ export default class PeopleForm extends React.Component {
             {contribute ? (
               <div>
                 <Divider hidden />
-                <Form.Field
+                <SkillField
                   name="skills"
-                  control={Select}
-                  multiple
-                  search
-                  allowAdditions={true}
                   label="O que você sabe fazer?"
                   value={formData.skills || []}
                   onChange={this._handleChange}
-                  onAddItem={(ev, data) => {
-                    this.setState({
-                      skillOptions: [...skillOptions, data.value]
-                    });
-                  }}
-                  fluid
-                  options={skillOptions.map(skill => {
-                    return {
-                      key: skill,
-                      value: skill,
-                      text: skill
-                    };
-                  })}
                 />
                 <Form.Field
                   name="supporter"
