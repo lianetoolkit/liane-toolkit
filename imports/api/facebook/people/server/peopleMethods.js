@@ -282,6 +282,51 @@ export const getPersonIdFromFacebook = new ValidatedMethod({
   }
 });
 
+export const peopleFormId = new ValidatedMethod({
+  name: "people.formId",
+  validate: new SimpleSchema({
+    personId: {
+      type: String
+    },
+    regenerate: {
+      type: Boolean,
+      optional: true
+    }
+  }).validator(),
+  run({ personId, regenerate }) {
+    logger.debug("people.formId called", { personId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const person = People.findOne(personId);
+
+    if (!person) {
+      throw new Meteor.Error(400, "Person not found");
+    }
+    const campaignId = person.campaignId;
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    const allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    let formId = person.formId;
+
+    if (!formId || regenerate)
+      formId = PeopleHelpers.generateFormId({ person });
+
+    return formId;
+  }
+});
+
 export const canvasFormUpdate = new ValidatedMethod({
   name: "people.metaUpdate",
   validate: new SimpleSchema({

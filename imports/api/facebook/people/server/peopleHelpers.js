@@ -280,7 +280,6 @@ const PeopleHelpers = {
       { multi: false }
     );
 
-    console.log(res);
     return res;
   }
 };
