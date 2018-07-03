@@ -14,6 +14,52 @@ import { Random } from "meteor/random";
 
 const recaptchaSecret = Meteor.settings.recaptcha;
 
+export const resolveZipcode = new ValidatedMethod({
+  name: "people.resolveZipcode",
+  validate: new SimpleSchema({
+    country: {
+      type: String
+    },
+    zipcode: {
+      type: String
+    }
+  }).validator(),
+  run({ country, zipcode }) {
+    this.unblock();
+
+    switch (country) {
+      case "BR":
+        const match = zipcode.match(/\d+/gi);
+        if (match && match.length) {
+          const code = match.join("");
+          if (code.length == 8) {
+            return Promise.await(cep(code));
+          }
+        }
+        return {};
+      default:
+        let res;
+        let data = {};
+        try {
+          res = Promise.await(
+            axios.get(`http://api.zippopotam.us/${country}/${zipcode}`)
+          );
+          data = res.data;
+        } catch (e) {
+          return data;
+        } finally {
+          if (data && data.places && data.places.length) {
+            return {
+              state: data.places[0]["state abbreviation"],
+              city: data.places[0]["place name"]
+            };
+          }
+          return data;
+        }
+    }
+  }
+});
+
 const buildSearchQuery = ({ campaignId, query, options }) => {
   let queryOptions = {
     skip: options.skip || 0,
@@ -25,7 +71,9 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
       counts: 1,
       campaignMeta: 1,
       lastInteractionDate: 1,
-      receivedAutoPrivateReply: 1
+      receivedAutoPrivateReply: 1,
+      filledForm: 1,
+      formId: 1
     }
   };
 
@@ -78,52 +126,6 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
 
   return { query, options: queryOptions };
 };
-
-export const resolveZipcode = new ValidatedMethod({
-  name: "people.resolveZipcode",
-  validate: new SimpleSchema({
-    country: {
-      type: String
-    },
-    zipcode: {
-      type: String
-    }
-  }).validator(),
-  run({ country, zipcode }) {
-    this.unblock();
-
-    switch (country) {
-      case "BR":
-        const match = zipcode.match(/\d+/gi);
-        if (match && match.length) {
-          const code = match.join("");
-          if (code.length == 8) {
-            return Promise.await(cep(code));
-          }
-        }
-        return {};
-      default:
-        let res;
-        let data = {};
-        try {
-          res = Promise.await(
-            axios.get(`http://api.zippopotam.us/${country}/${zipcode}`)
-          );
-          data = res.data;
-        } catch (e) {
-          return data;
-        } finally {
-          if (data && data.places && data.places.length) {
-            return {
-              state: data.places[0]["state abbreviation"],
-              city: data.places[0]["place name"]
-            };
-          }
-          return data;
-        }
-    }
-  }
-});
 
 export const peopleSearch = new ValidatedMethod({
   name: "people.search",
@@ -249,7 +251,7 @@ export const peopleReplyComment = new ValidatedMethod({
     );
 
     // Recheck for reply availability
-    if(comment) {
+    if (comment) {
       const campaignAccount = campaign.accounts.find(
         a => a.facebookId == facebookAccountId
       );
@@ -377,7 +379,6 @@ export const peopleSendPrivateReply = new ValidatedMethod({
         throw error;
       } else if (error.response) {
         const errorCode = error.response.error.code;
-        console.log(error.response);
         switch (errorCode) {
           case 10903:
             closeComment();
@@ -549,7 +550,10 @@ export const peopleFormId = new ValidatedMethod({
     if (!formId || regenerate)
       formId = PeopleHelpers.generateFormId({ person });
 
-    return formId;
+    return {
+      formId,
+      filledForm: person.filledForm
+    };
   }
 });
 

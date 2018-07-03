@@ -223,7 +223,7 @@ export default class PeopleActivity extends React.Component {
                     {item.person ? (
                       <PeopleFormButton
                         floated="right"
-                        personId={item.person._id}
+                        person={item.person}
                       />
                     ) : null}
                     <p>

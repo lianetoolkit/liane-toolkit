@@ -65,7 +65,7 @@ export default class PeopleTable extends React.Component {
                     ) : null}
                   </Table.Cell>
                   <Table.Cell singleLine collapsing>
-                    <PeopleFormButton personId={person._id} iconOnly={true} />
+                    <PeopleFormButton person={person} iconOnly={true} />
                   </Table.Cell>
                   <Table.Cell singleLine collapsing>
                     <PeopleMetaButtons

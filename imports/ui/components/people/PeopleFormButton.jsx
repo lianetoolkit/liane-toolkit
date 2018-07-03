@@ -13,6 +13,16 @@ const Wrapper = styled.div`
     display: block;
     margin: 0 0 1rem;
   }
+  p.status {
+    font-size: 0.8em;
+    margin: 0;
+    padding: .25rem 0 0;
+    color: #999;
+    font-weight: bold;
+    &.filled {
+      color: green;
+    }
+  }
 `;
 
 export default class PeopleFormButton extends React.Component {
@@ -23,35 +33,41 @@ export default class PeopleFormButton extends React.Component {
     };
   }
   _handlePopupOpen = () => {
-    const { personId } = this.props;
+    const { person } = this.props;
     this.setState({
       loading: true
     });
-    Meteor.call("people.formId", { personId }, (err, res) => {
+    Meteor.call("people.formId", { personId: person._id }, (err, res) => {
       if (err) {
         Alerts.error(err);
       }
       this.setState({
         loading: false,
-        formId: res
+        formId: res.formId,
+        filledForm: res.filledForm
       });
     });
   };
   _handleRegenClick = ev => {
     ev.preventDefault();
-    const { personId } = this.props;
+    const { person } = this.props;
     this.setState({
       loading: true
     });
-    Meteor.call("people.formId", { personId, regenerate: true }, (err, res) => {
-      if (err) {
-        Alerts.error(err);
+    Meteor.call(
+      "people.formId",
+      { personId: person._id, regenerate: true },
+      (err, res) => {
+        if (err) {
+          Alerts.error(err);
+        }
+        this.setState({
+          loading: false,
+          formId: res.formId,
+          filledForm: res.filledForm
+        });
       }
-      this.setState({
-        loading: false,
-        formId: res
-      });
-    });
+    );
   };
   _handleCopyClick = ev => {
     this.textInput.focus();
@@ -59,17 +75,24 @@ export default class PeopleFormButton extends React.Component {
     document.execCommand("copy");
   };
   render() {
-    const { formId, loading } = this.state;
-    const { size, personId, iconOnly, ...props } = this.props;
+    const { formId, filledForm, loading } = this.state;
+    const { size, person, iconOnly, ...props } = this.props;
     const url = `${location.protocol}//${
       Meteor.settings.public.domain
     }/f/${formId}`;
+    let filled = person.filledForm || filledForm;
     return (
       <Popup
         on="click"
         onOpen={this._handlePopupOpen}
         trigger={
-          <Button basic size={size || "mini"} {...props} icon={iconOnly}>
+          <Button
+            // basic
+            size={size || "mini"}
+            {...props}
+            icon={iconOnly}
+            color={filled ? "green" : null}
+          >
             <Icon name="align left" />
             {!iconOnly ? <span> Form</span> : null}
           </Button>
@@ -101,6 +124,9 @@ export default class PeopleFormButton extends React.Component {
                 title="Regenerate link"
               />
             </Button.Group>
+            <p className={`status ${filled ? "filled" : ""}`}>
+              {filled ? "Filled form" : "Not filled"}
+            </p>
           </Wrapper>
         ) : (
           <p>Erro</p>
