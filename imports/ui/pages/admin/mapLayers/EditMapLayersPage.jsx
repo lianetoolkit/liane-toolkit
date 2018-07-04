@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
-import { Form, Input, Select, Grid, Button, Icon } from "semantic-ui-react";
+import { Form, Input, TextArea, Grid, Button, Icon } from "semantic-ui-react";
 import LayerCategoryField from "/imports/ui/components/mapLayers/LayerCategoryField.jsx";
 import LayerTagsField from "/imports/ui/components/mapLayers/LayerTagsField.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
@@ -26,12 +26,21 @@ export default class EditMapLayersPage extends React.Component {
     const { mapLayer } = this.props;
     if (mapLayer && mapLayer._id) {
       const { fields } = this.state;
-      const { _id, title, category, tags, tilelayer, tilejson } = mapLayer;
+      const {
+        _id,
+        title,
+        description,
+        category,
+        tags,
+        tilelayer,
+        tilejson
+      } = mapLayer;
       this.setState({
         fields: {
           ...fields,
           _id,
           title,
+          description,
           category,
           tags,
           tilelayer,
@@ -47,6 +56,7 @@ export default class EditMapLayersPage extends React.Component {
         const {
           _id,
           title,
+          description,
           category,
           tags,
           tilelayer,
@@ -57,6 +67,7 @@ export default class EditMapLayersPage extends React.Component {
             ...fields,
             _id,
             title,
+            description,
             category,
             tags,
             tilelayer,
@@ -151,6 +162,14 @@ export default class EditMapLayersPage extends React.Component {
                       name="title"
                       onChange={this._handleChange}
                       value={fields.title}
+                    />
+                    <Form.Field
+                      control={TextArea}
+                      label="Description"
+                      placeholder="Write a description for this layer"
+                      name="description"
+                      onChange={this._handleChange}
+                      value={fields.description}
                     />
                     <Form.Field
                       control={LayerCategoryField}
