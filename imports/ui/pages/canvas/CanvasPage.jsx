@@ -43,7 +43,7 @@ const CanvasItems = styled.div`
   }
 `;
 
-export default class CanvasEdit extends React.Component {
+export default class CanvasPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
