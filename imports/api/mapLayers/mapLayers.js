@@ -13,7 +13,8 @@ MapLayers.schema = new SimpleSchema({
     optional: true
   },
   tilelayer: {
-    type: String
+    type: String,
+    optional: true
   },
   tilejson: {
     type: String,
@@ -28,6 +29,24 @@ MapLayers.schema = new SimpleSchema({
   },
   "tags.$": {
     type: String
+  },
+  domegisUrl: {
+    type: String,
+    optional: true
+  },
+  domegisId: {
+    type: String,
+    optional: true
+  },
+  bbox: {
+    type: Array,
+    optional: true
+  },
+  "bbox.$": {
+    type: Array
+  },
+  "bbox.$.$": {
+    type: Number
   },
   createdAt: {
     type: Date,

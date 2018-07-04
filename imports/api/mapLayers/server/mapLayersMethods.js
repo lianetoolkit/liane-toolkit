@@ -4,6 +4,7 @@ import {
   MapLayersCategories,
   MapLayersTags
 } from "/imports/api/mapLayers/mapLayers.js";
+import axios from "axios";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 
 const schemaConfig = {
@@ -30,6 +31,28 @@ const schemaConfig = {
   },
   "tags.$": {
     type: String
+  },
+  domegisUrl: {
+    type: String,
+    optional: true
+  },
+  domegisId: {
+    type: String,
+    optional: true
+  },
+  domegisId: {
+    type: String,
+    optional: true
+  },
+  bbox: {
+    type: Array,
+    optional: true
+  },
+  "bbox.$": {
+    type: Array
+  },
+  "bbox.$.$": {
+    type: Number
   }
 };
 
@@ -51,10 +74,78 @@ const taxValidateUpdate = new SimpleSchema({
   _id: { type: String }
 }).validator();
 
+const parseDomeGISExtents = extents => {
+  let bbox = extents
+    .replace("BOX(", "")
+    .replace(")", "")
+    .split(",");
+
+  return [
+    bbox[1]
+      .split(" ")
+      .reverse()
+      .map(coord => parseFloat(coord)),
+    bbox[0]
+      .split(" ")
+      .reverse()
+      .map(coord => parseFloat(coord))
+  ];
+};
+
+const fetchDomeGIS = (url, id) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(`${url}/settings`)
+      .then(res => {
+        const templates = res.data.tiles.urlTemplates;
+
+        axios
+          .get(`${url}/views/${id}`)
+          .then(viewRes => {
+            const { layerId, layergroupId } = viewRes.data;
+            axios
+              .get(`${url}/layers/${layerId}`)
+              .then(layerRes => {
+                resolve({
+                  tilelayer: templates.tile.replace(
+                    "{layergroupId}",
+                    layergroupId
+                  ),
+                  tilejson: templates.grid.replace(
+                    "{layergroupId}",
+                    layergroupId
+                  ),
+                  bbox: parseDomeGISExtents(layerRes.data.extents)
+                });
+              })
+              .catch(err => {
+                reject(err);
+              });
+          })
+          .catch(err => {
+            reject(err);
+          });
+      })
+      .catch(err => {
+        reject(err);
+      });
+  });
+};
+
 export const createMapLayer = new ValidatedMethod({
   name: "mapLayers.create",
   validate: validateCreate,
-  run({ title, description, tilelayer, tilejson, category, tags }) {
+  run({
+    title,
+    description,
+    tilelayer,
+    tilejson,
+    category,
+    tags,
+    domegisUrl,
+    domegisId,
+    bbox
+  }) {
     logger.debug("mapLayers.create called", { title });
 
     const userId = Meteor.userId();
@@ -66,14 +157,25 @@ export const createMapLayer = new ValidatedMethod({
       throw new Meteor.Error(403, "Access denied");
     }
 
-    const insertDoc = {
+    let insertDoc = {
       title,
       description,
       tilelayer,
       tilejson,
       category,
-      tags
+      tags,
+      domegisUrl,
+      domegisId,
+      bbox
     };
+
+    if (domegisUrl && domegisId) {
+      let domegis = Promise.await(fetchDomeGIS(domegisUrl, domegisId));
+      insertDoc = {
+        ...insertDoc,
+        ...domegis
+      };
+    }
     return MapLayers.insert(insertDoc);
   }
 });
@@ -117,8 +219,19 @@ export const createCategory = new ValidatedMethod({
 export const updateMapLayer = new ValidatedMethod({
   name: "mapLayers.update",
   validate: validateUpdate,
-  run({ _id, title, description, tilelayer, tilejson, category, tags }) {
-    logger.debug("mapLayers.update called", { title });
+  run({
+    _id,
+    title,
+    description,
+    tilelayer,
+    tilejson,
+    category,
+    tags,
+    domegisUrl,
+    domegisId,
+    bbox
+  }) {
+    logger.debug("mapLayers.update called", { _id, title });
 
     const userId = Meteor.userId();
     if (!userId) {
@@ -129,14 +242,25 @@ export const updateMapLayer = new ValidatedMethod({
       throw new Meteor.Error(403, "Access denied");
     }
 
-    const insertDoc = {
+    let insertDoc = {
       title,
       description,
       tilelayer,
       tilejson,
       category,
-      tags
+      tags,
+      domegisUrl,
+      domegisId,
+      bbox
     };
+
+    if (domegisUrl && domegisId) {
+      let domegis = Promise.await(fetchDomeGIS(domegisUrl, domegisId));
+      insertDoc = {
+        ...insertDoc,
+        ...domegis
+      };
+    }
 
     MapLayers.update({ _id }, { $set: insertDoc });
     return;
