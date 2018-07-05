@@ -1,3 +1,4 @@
+import axios from "axios";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { Random } from "meteor/random";
@@ -24,6 +25,50 @@ const PeopleHelpers = {
       .substr(0, 7);
     People.update(person._id, { $set: { formId } });
     return formId;
+  },
+  geocode({ address }) {
+    let str = "";
+    if (address.country) {
+      str = address.country + " " + str;
+    }
+    if (address.zipcode) {
+      str = address.zipcode + " " + str;
+    }
+    if (address.region) {
+      str = address.region + " " + str;
+    }
+    if (address.city) {
+      str = address.city + " " + str;
+    }
+    if (address.neighbourhood) {
+      str = address.neighbourhood + " " + str;
+    }
+    if (address.street) {
+      if (address.number) {
+        str = address.number + " " + str;
+      }
+      str = address.street + " " + str;
+    }
+    return new Promise((resolve, reject) => {
+      if (str) {
+        axios
+          .get("http://maps.googleapis.com/maps/api/geocode/json", {
+            params: {
+              address: str
+            }
+          })
+          .then(res => {
+            const data = res.data.results[0];
+            console.log(data);
+            resolve(data);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      } else {
+        reject();
+      }
+    });
   },
   updateFBUsers({ campaignId, facebookAccountId }) {
     const collection = People.rawCollection();

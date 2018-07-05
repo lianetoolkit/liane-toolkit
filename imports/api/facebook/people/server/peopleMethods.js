@@ -815,6 +815,12 @@ export const peopleFormSubmit = new ValidatedMethod({
       }
     }
 
+    if (data.address) {
+      const geocode = Promise.await(
+        PeopleHelpers.geocode({ address: data.address })
+      );
+    }
+
     let newFormId;
 
     if (formId) {
