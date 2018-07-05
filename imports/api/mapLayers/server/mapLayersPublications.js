@@ -25,3 +25,13 @@ Meteor.publish("mapLayers.detail", function({ mapLayerId }) {
     return this.ready();
   }
 });
+
+Meteor.publish("mapLayers.categories", function() {
+  this.unblock();
+  return MapLayersCategories.find();
+});
+
+Meteor.publish("mapLayers.tags", function() {
+  this.unblock();
+  return MapLayersTags.find();
+})

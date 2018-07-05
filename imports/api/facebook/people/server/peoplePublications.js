@@ -3,6 +3,21 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 const { Jobs } = require("/imports/api/jobs/jobs.js");
 import _ from "underscore";
 
+Meteor.publish("people.map", function({ campaignId }) {
+  this.unblock();
+  check(campaignId, String);
+  const userId = this.userId;
+  const campaign = Campaigns.findOne(campaignId);
+  const allowed = _.findWhere(campaign.users, { userId });
+  if (allowed) {
+    return People.find({
+      campaignId,
+      "location.coordinates": { $exists: true }
+    });
+  }
+  return this.ready();
+});
+
 Meteor.publish("people.search", function({ search, options }) {
   logger.debug("people.search called", {
     search,
