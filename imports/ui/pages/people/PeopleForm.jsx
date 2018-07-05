@@ -33,17 +33,7 @@ export default class PeopleForm extends React.Component {
     super(props);
     this.state = {
       formData: {},
-      contribute: false,
-      skillOptions: [
-        "Design",
-        "Vídeo",
-        "Produção de eventos",
-        "Redator",
-        "Fotógrafo",
-        "Mídias sociais",
-        "Desenvolvimento Web",
-        "Panfletagem"
-      ]
+      contribute: false
     };
     this._handleFacebookClick = this._handleFacebookClick.bind(this);
     this._handleRecaptcha = this._handleRecaptcha.bind(this);
@@ -135,7 +125,7 @@ export default class PeopleForm extends React.Component {
     });
   }
   render() {
-    const { contribute, skillOptions } = this.state;
+    const { contribute } = this.state;
     const { loading, person, campaign, context } = this.props;
     const { formData } = this.state;
     if (loading) {

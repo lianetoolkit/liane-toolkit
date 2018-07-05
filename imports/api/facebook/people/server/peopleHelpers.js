@@ -1,8 +1,11 @@
+import axios from "axios";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { Random } from "meteor/random";
 import { uniqBy, groupBy, mapKeys, flatten, get, set } from "lodash";
 import crypto from "crypto";
+
+const googleMapsKey = Meteor.settings.googleMaps;
 
 const PeopleHelpers = {
   getFormId({ personId, generate }) {
@@ -24,6 +27,60 @@ const PeopleHelpers = {
       .substr(0, 7);
     People.update(person._id, { $set: { formId } });
     return formId;
+  },
+  geocode({ address }) {
+    let str = "";
+    if (address.country) {
+      str = address.country + " " + str;
+    }
+    if (address.zipcode) {
+      str = address.zipcode + " " + str;
+    }
+    if (address.region) {
+      str = address.region + " " + str;
+    }
+    if (address.city) {
+      str = address.city + " " + str;
+    }
+    if (address.neighbourhood) {
+      str = address.neighbourhood + " " + str;
+    }
+    if (address.street) {
+      if (address.number) {
+        str = address.number + " " + str;
+      }
+      str = address.street + " " + str;
+    }
+    return new Promise((resolve, reject) => {
+      if (str && googleMapsKey) {
+        axios
+          .get("https://maps.googleapis.com/maps/api/geocode/json", {
+            params: {
+              address: str,
+              key: googleMapsKey
+            }
+          })
+          .then(res => {
+            if (res.data.results && res.data.results.length) {
+              const data = res.data.results[0];
+              resolve({
+                formattedAddress: data.formatted_address,
+                coordinates: [
+                  data.geometry.location.lat,
+                  data.geometry.location.lng
+                ]
+              });
+            } else {
+              reject();
+            }
+          })
+          .catch(err => {
+            reject(err);
+          });
+      } else {
+        reject();
+      }
+    });
   },
   updateFBUsers({ campaignId, facebookAccountId }) {
     const collection = People.rawCollection();

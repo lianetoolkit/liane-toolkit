@@ -88,6 +88,23 @@ People.schema = new SimpleSchema({
     index: true,
     optional: true
   },
+  location: {
+    type: Object,
+    optional: true
+  },
+  "location.formattedAddress": {
+    type: String,
+    optional: true
+  },
+  "location.coordinates": {
+    type: Array,
+    minCount: 2,
+    maxCount: 2,
+    optional: true
+  },
+  "location.coordinates.$": {
+    type: Number
+  },
   createdAt: {
     type: Date,
     index: true,
