@@ -173,9 +173,7 @@ export default class AppMenu extends React.Component {
                 >
                   <Icon name="cubes" /> Audience Categories
                 </Menu.Item>
-                <Menu.Item
-                  href={FlowRouter.path("App.admin.mapLayers")}
-                >
+                <Menu.Item href={FlowRouter.path("App.admin.mapLayers")}>
                   <Icon name="map" /> Map Layers
                 </Menu.Item>
               </div>
@@ -243,6 +241,15 @@ export default class AppMenu extends React.Component {
                   })}
                 >
                   <Icon name="star" /> Audience
+                </Menu.Item>
+                <Menu.Item
+                  name="campaignMaps"
+                  active={currentRoute.indexOf("App.campaignMaps") === 0}
+                  href={FlowRouter.path("App.campaignMaps", {
+                    campaignId: currentCampaign._id
+                  })}
+                >
+                  <Icon name="map" /> Maps
                 </Menu.Item>
                 {/* <Menu.Item
                   name="campaignEntries"

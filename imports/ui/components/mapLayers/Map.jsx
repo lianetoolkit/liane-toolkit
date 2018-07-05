@@ -12,10 +12,22 @@ import {
   GeoJSON
 } from "react-leaflet";
 
+const imagePath = "/";
+L.Icon.Default.imagePath = imagePath;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "images/map/marker-icon-2x.png",
+  iconUrl: "images/map/marker-icon.png",
+  shadowUrl: "images/map/marker-shadow.png"
+});
+
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
-  height: 400px;
+  height: ${props => props.height || "400px"};
+  .leaflet-container {
+    width: 100%;
+    height: 100%;
+  }
   .grid-data {
     position: absolute;
     top: 0;
@@ -48,6 +60,9 @@ class GridItem extends React.Component {
 }
 
 export default class LayersMap extends React.Component {
+  static defaultProps = {
+    layers: []
+  };
   constructor(props) {
     super(props);
     this.state = {
@@ -130,10 +145,10 @@ export default class LayersMap extends React.Component {
     return bounds;
   }
   render() {
-    const { layers, ...props } = this.props;
+    const { layers, children, height, ...props } = this.props;
     const { grid } = this.state;
     return (
-      <Wrapper>
+      <Wrapper height={height}>
         <div className="grid-data">
           {grid.map((item, i) => (
             <div key={i} className="grid-item">
@@ -147,10 +162,6 @@ export default class LayersMap extends React.Component {
           zoom={2}
           scrollWheelZoom={false}
           bounds={this._bounds()}
-          style={{
-            width: "100%",
-            height: "400px"
-          }}
           {...props}
         >
           <TileLayer
@@ -161,6 +172,7 @@ export default class LayersMap extends React.Component {
           {layers.map(layer => (
             <TileLayer key={layer._id} url={layer.tilelayer} />
           ))}
+          {children}
         </Map>
       </Wrapper>
     );

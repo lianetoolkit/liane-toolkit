@@ -6,6 +6,8 @@ import CampaignContainer from "/imports/ui/containers/campaigns/CampaignContaine
 
 import CampaignsPageContainer from "/imports/ui/containers/campaigns/CampaignsPageContainer.jsx";
 
+import MapsPageContainer from "/imports/ui/containers/maps/MapsPageContainer.jsx";
+
 import CanvasContainer from "/imports/ui/containers/canvas/CanvasContainer.jsx";
 import CanvasEditContainer from "/imports/ui/containers/canvas/CanvasEditContainer.jsx";
 
@@ -54,6 +56,18 @@ campaignRoutes.route("/settings", {
     return _mount(params, {
       content: {
         component: CampaignsSettingsContainer,
+        props: { campaignId: params.campaignId }
+      }
+    });
+  }
+});
+campaignRoutes.route("/maps", {
+  name: "App.campaignMaps",
+  action: function(params) {
+    addTitle(`${APP_NAME} | Campaign`);
+    return _mount(params, {
+      content: {
+        component: MapsPageContainer,
         props: { campaignId: params.campaignId }
       }
     });

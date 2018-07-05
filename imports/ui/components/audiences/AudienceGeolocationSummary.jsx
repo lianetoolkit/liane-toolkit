@@ -64,17 +64,6 @@ const Wrapper = styled.div`
 `;
 
 import L from "leaflet";
-// const imagePath = "/";
-// L.Icon.Default.imagePath = imagePath;
-// L.Icon.Default.mergeOptions({
-//   iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png").split(
-//     imagePath
-//   )[1],
-//   iconUrl: require("leaflet/dist/images/marker-icon.png").split(imagePath)[1],
-//   shadowUrl: require("leaflet/dist/images/marker-shadow.png").split(
-//     imagePath
-//   )[1]
-// });
 
 export default class AudienceGeolocationSummary extends React.Component {
   features = [];
