@@ -357,6 +357,8 @@ export const canvasFormUpdate = new ValidatedMethod({
       data
     });
 
+    let $set = {};
+
     const userId = Meteor.userId();
     if (!userId) {
       throw new Meteor.Error(401, "You need to login");
@@ -384,6 +386,21 @@ export const canvasFormUpdate = new ValidatedMethod({
 
     if (!person.formId) PeopleHelpers.generateFormId({ person });
 
+    if (data.address) {
+      let location;
+      try {
+        location = Promise.await(
+          PeopleHelpers.geocode({ address: data.address })
+        );
+      } catch (e) {
+        logger.debug("people.metaUpdate - Not able to fetch location");
+      } finally {
+        if (location) {
+          $set.location = location;
+        }
+      }
+    }
+
     return People.update(
       {
         campaignId,
@@ -391,6 +408,7 @@ export const canvasFormUpdate = new ValidatedMethod({
       },
       {
         $set: {
+          ...$set,
           [`campaignMeta.${sectionKey}`]: data
         }
       }
@@ -816,9 +834,18 @@ export const peopleFormSubmit = new ValidatedMethod({
     }
 
     if (data.address) {
-      const geocode = Promise.await(
-        PeopleHelpers.geocode({ address: data.address })
-      );
+      let location;
+      try {
+        location = Promise.await(
+          PeopleHelpers.geocode({ address: data.address })
+        );
+      } catch (e) {
+        logger.debug("peopleForm.submit - Not able to fetch location");
+      } finally {
+        if (location) {
+          $set.location = location;
+        }
+      }
     }
 
     let newFormId;

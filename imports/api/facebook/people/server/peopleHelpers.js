@@ -5,6 +5,8 @@ import { Random } from "meteor/random";
 import { uniqBy, groupBy, mapKeys, flatten, get, set } from "lodash";
 import crypto from "crypto";
 
+const googleMapsKey = Meteor.settings.googleMaps;
+
 const PeopleHelpers = {
   getFormId({ personId, generate }) {
     const person = People.findOne(personId);
@@ -50,17 +52,17 @@ const PeopleHelpers = {
       str = address.street + " " + str;
     }
     return new Promise((resolve, reject) => {
-      if (str) {
+      if (str && googleMapsKey) {
         axios
-          .get("http://maps.googleapis.com/maps/api/geocode/json", {
+          .get("https://maps.googleapis.com/maps/api/geocode/json", {
             params: {
-              address: str
+              address: str,
+              key: googleMapsKey
             }
           })
           .then(res => {
             if (res.data.results && res.data.results.length) {
               const data = res.data.results[0];
-              console.log(data);
               resolve({
                 formattedAddress: data.formatted_address,
                 coordinates: [
@@ -68,6 +70,8 @@ const PeopleHelpers = {
                   data.geometry.location.lng
                 ]
               });
+            } else {
+              reject();
             }
           })
           .catch(err => {

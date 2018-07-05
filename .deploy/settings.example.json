@@ -8,6 +8,7 @@
   },
   "recaptcha": "<SECRET KEY>",
   "private": false,
+  "googleMaps": "<GOOGLE GEOCODING API KEY>",
   "facebook": {
     "clientId": "<YOUR APP ID>",
     "clientSecret": "<YOUR APP SECRET>"
