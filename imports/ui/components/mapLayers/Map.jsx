@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import L from "leaflet";
 import { Table } from "semantic-ui-react";
-import "Leaflet.utfgrid";
+import "leaflet.utfgrid";
 import {
   Map,
   Marker,
