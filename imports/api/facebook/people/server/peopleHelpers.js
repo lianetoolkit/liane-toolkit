@@ -58,9 +58,17 @@ const PeopleHelpers = {
             }
           })
           .then(res => {
-            const data = res.data.results[0];
-            console.log(data);
-            resolve(data);
+            if (res.data.results && res.data.results.length) {
+              const data = res.data.results[0];
+              console.log(data);
+              resolve({
+                formattedAddress: data.formatted_address,
+                coordinates: [
+                  data.geometry.location.lat,
+                  data.geometry.location.lng
+                ]
+              });
+            }
           })
           .catch(err => {
             reject(err);
