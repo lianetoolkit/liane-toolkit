@@ -105,6 +105,7 @@ export default class App extends React.Component {
     const {
       campaigns,
       campaign,
+      tags,
       account,
       audienceAccount,
       currentFacebookId,
@@ -143,6 +144,7 @@ export default class App extends React.Component {
                     <content.component
                       {...content.props}
                       campaign={campaign}
+                      tags={tags}
                       account={account}
                       audienceAccount={audienceAccount}
                       currentFacebookId={currentFacebookId}

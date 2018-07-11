@@ -1,6 +1,7 @@
 import SimpleSchema from "simpl-schema";
 
 const People = new Mongo.Collection("people");
+const PeopleTags = new Mongo.Collection("people_tags");
 
 People.schema = new SimpleSchema({
   facebookId: {
@@ -127,7 +128,19 @@ People.schema = new SimpleSchema({
   }
 });
 
+PeopleTags.schema = new SimpleSchema({
+  name: {
+    type: String,
+    index: true
+  },
+  campaignId: {
+    type: String,
+    index: true
+  }
+});
+
 People.attachSchema(People.schema);
+PeopleTags.attachSchema(PeopleTags.schema);
 
 Meteor.startup(() => {
   if (Meteor.isServer) {
@@ -169,7 +182,14 @@ Meteor.startup(() => {
       },
       { sparse: true }
     );
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.basic_info.tags": 1
+      },
+      { sparse: true }
+    );
   }
 });
 
 exports.People = People;
+exports.PeopleTags = PeopleTags;

@@ -1,6 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import { withTracker } from "meteor/react-meteor-data";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+import { PeopleTags } from "/imports/api/facebook/people/people.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import App from "/imports/ui/layouts/app/App.jsx";
@@ -20,6 +21,10 @@ export default withTracker(props => {
       : null;
 
   const campaignHandle = CampaignSubs.subscribe("campaigns.detail", {
+    campaignId: props.campaignId
+  });
+
+  const peopleTagsHandle = CampaignSubs.subscribe("people.tags", {
     campaignId: props.campaignId
   });
 
@@ -44,6 +49,10 @@ export default withTracker(props => {
   const campaign = campaignHandle.ready()
     ? Campaigns.findOne(props.campaignId, campaignOptions)
     : null;
+
+  const tags = peopleTagsHandle.ready()
+    ? PeopleTags.find({ campaignId: props.campaignId }).fetch()
+    : [];
 
   let currentFacebookId = props.content.props.facebookId;
   if (
@@ -91,6 +100,7 @@ export default withTracker(props => {
     currentUser,
     loading,
     campaigns,
+    tags,
     currentCampaign: FlowRouter.getParam("campaignId"),
     connected: Meteor.status().connected,
     campaign,
