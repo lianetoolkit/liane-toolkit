@@ -249,30 +249,6 @@ export default class PeopleSearch extends React.Component {
             </Grid.Column>
             <Grid.Column width={3}>
               <span className="filter-label">Filter</span>
-              {/* <Form.Field
-                control={Select}
-                value={search.accountFilter}
-                name="accountFilter"
-                onChange={this._handleSearchChange}
-                fluid
-                options={[
-                  {
-                    key: "all",
-                    value: "all",
-                    text: "Show all people"
-                  },
-                  {
-                    key: "import",
-                    value: "import",
-                    text: "Imported"
-                  },
-                  {
-                    key: "account",
-                    value: "account",
-                    text: "Only from this page"
-                  }
-                ]}
-              /> */}
               <Dropdown
                 text="Select a filter"
                 icon="filter"
@@ -291,18 +267,22 @@ export default class PeopleSearch extends React.Component {
                       onClick={this._handleFilterClick()}
                     />
                   ) : null}
-                  <Dropdown.Header icon="tags" content="Tags" />
-                  {tags.map(tag => (
-                    <Dropdown.Item
-                      key={tag._id}
-                      icon={`${
-                        this._isFilter("tag", tag._id) ? "check" : ""
-                      } circle outline`}
-                      text={tag.name}
-                      onClick={this._handleFilterClick("tag", tag._id)}
-                    />
-                  ))}
-                  <Dropdown.Divider />
+                  {tags.length ? (
+                    <>
+                      <Dropdown.Header icon="tags" content="Tags" />
+                      {tags.map(tag => (
+                        <Dropdown.Item
+                          key={tag._id}
+                          icon={`${
+                            this._isFilter("tag", tag._id) ? "check" : ""
+                          } circle outline`}
+                          text={tag.name}
+                          onClick={this._handleFilterClick("tag", tag._id)}
+                        />
+                      ))}
+                      <Dropdown.Divider />
+                    </>
+                  ) : null}
                   <Dropdown.Header content="Other filters" />
                   <Dropdown.Item
                     onClick={this._handleFilterClick("other", "import")}
