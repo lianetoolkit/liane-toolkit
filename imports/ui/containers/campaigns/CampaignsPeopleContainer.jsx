@@ -1,23 +1,34 @@
 import { Meteor } from "meteor/meteor";
 import { withTracker } from "meteor/react-meteor-data";
-import { People } from "/imports/api/facebook/people/people.js";
+import { People, PeopleTags } from "/imports/api/facebook/people/people.js";
 import CampaignsPeople from "/imports/ui/pages/campaigns/CampaignsPeople.jsx";
 
-const ImportCountSubs = new SubsManager();
+const CampaignPeopleSubs = new SubsManager();
 
 export default withTracker(props => {
-  const importCountHandle = ImportCountSubs.subscribe("people.importJobCount", {
+  const importCountHandle = CampaignPeopleSubs.subscribe(
+    "people.importJobCount",
+    {
+      campaignId: props.campaignId
+    }
+  );
+  const peopleTagsHandle = CampaignPeopleSubs.subscribe("people.tags", {
     campaignId: props.campaignId
   });
 
-  const loading = !importCountHandle.ready();
+  const loading = !importCountHandle.ready() || !peopleTagsHandle.ready();
 
   const importCount = importCountHandle.ready()
     ? Counts.get("people.importJobCount")
     : null;
 
+  const tags = peopleTagsHandle.ready()
+    ? PeopleTags.find({ campaignId: props.campaignId }).fetch()
+    : [];
+
   return {
     loading,
-    importCount
+    importCount,
+    tags
   };
 })(CampaignsPeople);
