@@ -267,7 +267,7 @@ export default class PeopleSearch extends React.Component {
                       onClick={this._handleFilterClick()}
                     />
                   ) : null}
-                  {tags.length ? (
+                  {tags && tags.length ? (
                     <>
                       <Dropdown.Header icon="tags" content="Tags" />
                       {tags.map(tag => (
@@ -281,9 +281,9 @@ export default class PeopleSearch extends React.Component {
                         />
                       ))}
                       <Dropdown.Divider />
+                      <Dropdown.Header content="Other filters" />
                     </>
                   ) : null}
-                  <Dropdown.Header content="Other filters" />
                   <Dropdown.Item
                     onClick={this._handleFilterClick("other", "import")}
                     icon={`${

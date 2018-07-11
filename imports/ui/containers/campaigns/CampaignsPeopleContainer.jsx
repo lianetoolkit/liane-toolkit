@@ -12,23 +12,15 @@ export default withTracker(props => {
       campaignId: props.campaignId
     }
   );
-  const peopleTagsHandle = CampaignPeopleSubs.subscribe("people.tags", {
-    campaignId: props.campaignId
-  });
 
-  const loading = !importCountHandle.ready() || !peopleTagsHandle.ready();
+  const loading = !importCountHandle.ready();
 
   const importCount = importCountHandle.ready()
     ? Counts.get("people.importJobCount")
     : null;
 
-  const tags = peopleTagsHandle.ready()
-    ? PeopleTags.find({ campaignId: props.campaignId }).fetch()
-    : [];
-
   return {
     loading,
-    importCount,
-    tags
+    importCount
   };
 })(CampaignsPeople);
