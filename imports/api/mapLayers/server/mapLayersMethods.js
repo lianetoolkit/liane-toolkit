@@ -16,7 +16,8 @@ const schemaConfig = {
     optional: true
   },
   tilelayer: {
-    type: String
+    type: String,
+    optional: true
   },
   tilejson: {
     type: String,
