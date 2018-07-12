@@ -33,7 +33,8 @@ export default class EditContextsPage extends React.Component {
         name,
         mainGeolocationId,
         geolocations,
-        audienceCategories
+        audienceCategories,
+        mapLayers
       } = context;
       this.setState({
         fields: {
@@ -42,7 +43,8 @@ export default class EditContextsPage extends React.Component {
           name,
           mainGeolocationId,
           geolocations,
-          audienceCategories
+          audienceCategories,
+          mapLayers
         }
       });
     }
@@ -56,7 +58,8 @@ export default class EditContextsPage extends React.Component {
           name,
           mainGeolocationId,
           geolocations,
-          audienceCategories
+          audienceCategories,
+          mapLayers
         } = nextProps.context;
         this.setState({
           fields: {
@@ -65,7 +68,8 @@ export default class EditContextsPage extends React.Component {
             name,
             mainGeolocationId,
             geolocations,
-            audienceCategories
+            audienceCategories,
+            mapLayers
           }
         });
       } else {
@@ -158,6 +162,14 @@ export default class EditContextsPage extends React.Component {
         value: audienceCategory._id
       });
     });
+    const mapLayersOptions = [];
+    available.mapLayers.forEach(mapLayer => {
+      mapLayersOptions.push({
+        key: mapLayer._id,
+        text: mapLayer.title,
+        value: mapLayer._id
+      });
+    });
     return (
       <div>
         <PageHeader
@@ -218,6 +230,19 @@ export default class EditContextsPage extends React.Component {
                       value={fields.audienceCategories}
                       onChange={this._handleChange}
                       searchQuery={searchQueries.audienceCategories}
+                      onSearchChange={this._handleSearchChange}
+                    />
+                    <Form.Dropdown
+                      options={mapLayersOptions}
+                      placeholder="Choose map layers"
+                      name="mapLayers"
+                      search
+                      selection
+                      fluid
+                      multiple
+                      value={fields.mapLayers}
+                      onChange={this._handleChange}
+                      searchQuery={searchQueries.mapLayers}
                       onSearchChange={this._handleSearchChange}
                     />
                     {contextId ? (

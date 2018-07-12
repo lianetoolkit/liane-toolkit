@@ -24,6 +24,13 @@ Contexts.schema = new SimpleSchema({
   "audienceCategories.$": {
     type: String
   },
+  mapLayers: {
+    type: Array,
+    optional: true
+  },
+  "mapLayers.$": {
+    type: String
+  },
   createdAt: {
     type: Date,
     autoValue() {
