@@ -5,7 +5,6 @@ import { Marker, Popup, TileLayer, LayerGroup, GeoJSON } from "react-leaflet";
 export default class PeopleMapLayer extends React.Component {
   render() {
     const { people } = this.props;
-    console.log(people);
     if (people && people.length) {
       return (
         <LayerGroup>
@@ -18,6 +17,8 @@ export default class PeopleMapLayer extends React.Component {
           ))}
         </LayerGroup>
       );
+    } else {
+      return null;
     }
   }
 }

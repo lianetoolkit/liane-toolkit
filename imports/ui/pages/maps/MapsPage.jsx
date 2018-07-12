@@ -38,7 +38,7 @@ export default class MapsPage extends React.Component {
   }
   componentDidMount() {}
   render() {
-    const { loading, campaign, categories, tags, people } = this.props;
+    const { loading, layers, campaign, categories, tags, people } = this.props;
     return (
       <div>
         <PageHeader
@@ -54,7 +54,7 @@ export default class MapsPage extends React.Component {
           ) : (
             <Wrapper>
               <Grid>
-                <Grid.Row>
+                {/* <Grid.Row>
                   <Grid.Column>
                     <Form>
                       <Form.Group widths="equal">
@@ -96,10 +96,13 @@ export default class MapsPage extends React.Component {
                       </Form.Group>
                     </Form>
                   </Grid.Column>
-                </Grid.Row>
+                </Grid.Row> */}
                 <Grid.Row>
                   <Grid.Column width="4">
-                    <Header>Layers</Header>
+                    {/* <Header>Layers</Header> */}
+                    <p>People</p>
+                    <p>Audience</p>
+                    {layers.map(layer => <p key={layer._id}>{layer.title}</p>)}
                     <Divider />
                     {/* <Header size="medium">Categories</Header>
                   <Menu vertical>
@@ -115,7 +118,7 @@ export default class MapsPage extends React.Component {
                   </Menu> */}
                   </Grid.Column>
                   <Grid.Column width="12">
-                    <Map height="500px">
+                    <Map layers={layers} height="500px">
                       <PeopleMapLayer people={people} />
                     </Map>
                   </Grid.Column>
