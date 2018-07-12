@@ -11,14 +11,26 @@ import MapsPage from "/imports/ui/pages/maps/MapsPage.jsx";
 const MapsSubs = new SubsManager();
 
 export default withTracker(props => {
+  const layersHandle = MapsSubs.subscribe("mapLayers.byCampaign", {
+    campaignId: props.campaignId
+  });
   const categoriesHandle = MapsSubs.subscribe("mapLayers.categories");
   const tagsHandle = MapsSubs.subscribe("mapLayers.tags");
   const peopleHandle = MapsSubs.subscribe("people.map", {
     campaignId: props.campaignId
   });
   const loading =
-    !categoriesHandle.ready() || !tagsHandle.ready() || !peopleHandle.ready();
+    !layersHandle.ready() ||
+    !categoriesHandle.ready() ||
+    !tagsHandle.ready() ||
+    !peopleHandle.ready();
 
+  const layers =
+    layersHandle.ready() && !!props.campaign.context.mapLayers
+      ? MapLayers.find({
+          _id: { $in: props.campaign.context.mapLayers }
+        }).fetch()
+      : [];
   const categories = categoriesHandle.ready()
     ? MapLayersCategories.find().fetch()
     : [];
@@ -32,6 +44,7 @@ export default withTracker(props => {
 
   return {
     loading,
+    layers,
     categories,
     people,
     tags
