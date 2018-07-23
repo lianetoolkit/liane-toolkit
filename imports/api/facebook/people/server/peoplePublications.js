@@ -90,7 +90,9 @@ Meteor.publishComposite("people.form.detail", function({ formId }) {
         {
           fields: {
             name: 1,
-            facebookId: 1
+            facebookId: 1,
+            "campaignMeta.contact": 1,
+            "campaignMeta.basic_info": 1
           }
         }
       );

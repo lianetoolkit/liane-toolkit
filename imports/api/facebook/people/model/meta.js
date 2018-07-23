@@ -17,9 +17,14 @@ export default [
         options: genderOptions
       },
       {
-        key: "location",
-        label: "Location",
-        fieldType: "facebook_location"
+        key: "address",
+        label: "Address",
+        fieldType: "address"
+      },
+      {
+        key: "skills",
+        label: "Skills",
+        fieldType: "skill"
       },
       {
         key: "occupation",

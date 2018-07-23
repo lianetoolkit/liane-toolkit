@@ -39,6 +39,11 @@ People.schema = new SimpleSchema({
     optional: true,
     index: true
   },
+  filledForm: {
+    type: Boolean,
+    optional: true,
+    index: true
+  },
   counts: {
     type: Object,
     blackbox: true,
@@ -48,6 +53,23 @@ People.schema = new SimpleSchema({
     type: String,
     index: true,
     optional: true
+  },
+  location: {
+    type: Object,
+    optional: true
+  },
+  "location.formattedAddress": {
+    type: String,
+    optional: true
+  },
+  "location.coordinates": {
+    type: Array,
+    minCount: 2,
+    maxCount: 2,
+    optional: true
+  },
+  "location.coordinates.$": {
+    type: Number
   },
   createdAt: {
     type: Date,
