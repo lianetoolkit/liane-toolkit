@@ -84,7 +84,8 @@ Meteor.publishComposite("campaigns.publicDetail", function({ campaignId }) {
         {
           fields: {
             name: 1,
-            contextId: 1
+            contextId: 1,
+            "forms.crm": 1
           }
         }
       );
@@ -126,7 +127,8 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
               name: 1,
               description: 1,
               contextId: 1,
-              status: 1
+              status: 1,
+              forms: 1
             }
           }
         );
