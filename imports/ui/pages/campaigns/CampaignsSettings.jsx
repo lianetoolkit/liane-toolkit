@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { setWith, clone } from "lodash";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
@@ -31,6 +32,9 @@ export default class CampaignsSettings extends React.Component {
     this.state = {
       formData: {
         general: {},
+        forms: {
+          crm: {}
+        },
         accounts: {},
         team: {}
       },
@@ -51,7 +55,8 @@ export default class CampaignsSettings extends React.Component {
       this.setState({
         formData: {
           ...this.state.formData,
-          general: campaign
+          general: campaign,
+          forms: campaign.forms ? campaign.forms : { crm: {} }
         }
       });
     }
@@ -63,14 +68,18 @@ export default class CampaignsSettings extends React.Component {
         this.setState({
           formData: {
             ...this.state.formData,
-            general: nextProps.campaign
+            general: nextProps.campaign,
+            forms: nextProps.campaign.forms
+              ? nextProps.campaign.forms
+              : { crm: {} }
           }
         });
       } else {
         this.setState({
           formData: {
             ...this.state.formData,
-            general: {}
+            general: {},
+            forms: { crm: {} }
           }
         });
       }
@@ -102,6 +111,22 @@ export default class CampaignsSettings extends React.Component {
               Alerts.error(error);
             } else {
               Alerts.success("Campaign updated successfully.");
+            }
+          }
+        );
+        break;
+      case "forms":
+        Meteor.call(
+          "campaigns.update",
+          {
+            forms: { ...data },
+            campaignId: campaign._id
+          },
+          (error, result) => {
+            if (error) {
+              Alerts.error(error);
+            } else {
+              Alerts.success("Form settings updated successfully");
             }
           }
         );
@@ -149,14 +174,15 @@ export default class CampaignsSettings extends React.Component {
   }
   _handleChange(ev, { name, value }) {
     const { formData, section } = this.state;
+    let newFormData = Object.assign({}, this.state.formData);
+    newFormData[section] = setWith(
+      clone(newFormData[section]),
+      name,
+      value,
+      clone
+    );
     this.setState({
-      formData: {
-        ...formData,
-        [section]: {
-          ...formData[section],
-          [name]: value
-        }
-      }
+      formData: newFormData
     });
   }
   _handleRemove(e) {
@@ -257,7 +283,9 @@ export default class CampaignsSettings extends React.Component {
     const { formData, section } = this.state;
     const { loading, campaign, currentUser } = this.props;
     const { accounts, users } = campaign;
-    console.log(this.props);
+    const formUrl = `${location.protocol}//${
+      Meteor.settings.public.domain
+    }/f/?c=${campaign._id}`;
     return (
       <div>
         <PageHeader
@@ -278,6 +306,12 @@ export default class CampaignsSettings extends React.Component {
                   onClick={this._handleNav("general")}
                 >
                   General Settings
+                </Menu.Item>
+                <Menu.Item
+                  active={section == "forms"}
+                  onClick={this._handleNav("forms")}
+                >
+                  Forms Settings
                 </Menu.Item>
                 <Menu.Item
                   active={section == "accounts"}
@@ -431,6 +465,38 @@ export default class CampaignsSettings extends React.Component {
                           disabled={!formData.accounts.audienceAccount}
                         >
                           Add audience account
+                        </Button>
+                      </div>
+                    ) : null}
+                    {section == "forms" ? (
+                      <div>
+                        <Header as="h3">CRM Form</Header>
+                        <p>
+                          Your generic form URL is:{" "}
+                          <strong>
+                            <a href={formUrl} target="_blank">
+                              {formUrl}
+                            </a>
+                          </strong>
+                        </p>
+                        <Form.Field
+                          control={Input}
+                          name="crm.header"
+                          label="Header text"
+                          placeholder="Type an introduction header"
+                          onChange={this._handleChange}
+                          value={formData.forms.crm.header}
+                        />
+                        <Form.Field
+                          control={TextArea}
+                          name="crm.text"
+                          label="Introduction text"
+                          placeholder="Type an introcution text"
+                          onChange={this._handleChange}
+                          value={formData.forms.crm.text}
+                        />
+                        <Button fluid primary>
+                          Save
                         </Button>
                       </div>
                     ) : null}

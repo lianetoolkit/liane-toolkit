@@ -90,6 +90,20 @@ export const campaignsUpdate = new ValidatedMethod({
     autoReplyMessage: {
       type: String,
       optional: true
+    },
+    forms: {
+      type: Object,
+      optional: true
+    },
+    "forms.crm": {
+      type: Object,
+      optional: true
+    },
+    "forms.crm.header": {
+      type: String
+    },
+    "forms.crm.text": {
+      type: String
     }
   }).validator(),
   run({ campaignId, ...data }) {
@@ -113,23 +127,34 @@ export const campaignsUpdate = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
+    let $set = {};
+
     let runJobs = {};
 
-    if (campaign.adAccountId !== data.adAccountId) {
+    if (data.name) {
+      $set.name = data.name;
+    }
+
+    if (data.adAccountId && campaign.adAccountId !== data.adAccountId) {
       const user = Meteor.users.findOne(userId);
       const token = user.services.facebook.accessToken;
       AdAccountsHelpers.update({ adAccountId: data.adAccountId, token });
-      data.status = "ok";
+      $set.adAccountId = data.adAccountId;
+      $set.status = "ok";
       runJobs["audiences"] = true;
+    }
+
+    if (data.forms) {
+      if (data.forms.crm) {
+        $set["forms.crm"] = data.forms.crm;
+      }
     }
 
     Campaigns.update(
       {
         _id: campaignId
       },
-      {
-        $set: data
-      }
+      { $set }
     );
 
     if (Object.keys(runJobs).length) {

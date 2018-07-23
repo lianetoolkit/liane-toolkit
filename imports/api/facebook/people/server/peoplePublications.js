@@ -131,7 +131,8 @@ Meteor.publishComposite("people.form.detail", function({ formId }) {
             { _id: person.campaignId },
             {
               fields: {
-                name: 1
+                name: 1,
+                "forms.crm": 1
               }
             }
           );

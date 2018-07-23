@@ -143,10 +143,23 @@ export default class PeopleForm extends React.Component {
             !
           </Header>
           <Header size="large">
-            Nós, da candidatura {campaign.name}, queremos pedir sua ajuda!
+            {campaign.forms && campaign.forms.crm ? (
+              <span>{campaign.forms.crm.header}</span>
+            ) : (
+              <span>
+                Nós, da candidatura {campaign.name}, queremos pedir sua ajuda!
+              </span>
+            )}
           </Header>
           <p>
-            Preencha os dados abaixo que a gente possa saber mais sobre você.
+            {campaign.forms && campaign.forms.crm ? (
+              <span>{campaign.forms.crm.text}</span>
+            ) : (
+              <span>
+                Preencha os dados abaixo que a gente possa saber mais sobre
+                você.
+              </span>
+            )}
           </p>
           {!person.facebookId ? (
             <Button
