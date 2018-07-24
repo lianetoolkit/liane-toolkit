@@ -7,6 +7,7 @@ import styled from "styled-components";
 
 import Map from "/imports/ui/components/mapLayers/Map.jsx";
 import PeopleMapLayer from "/imports/ui/components/people/PeopleMapLayer.jsx";
+import AudienceLayer from "/imports/ui/components/mapLayers/AudienceLayer.jsx";
 
 const Wrapper = styled.div`
   .ui.form {
@@ -35,10 +36,23 @@ import {
 export default class MapsPage extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {};
   }
-  componentDidMount() {}
+  componentDidMount() {
+    const { campaignId } = this.props;
+    Meteor.call("audiences.campaignSummary", { campaignId }, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        this.setState({
+          audience: result
+        });
+      }
+    });
+  }
   render() {
     const { loading, layers, campaign, categories, tags, people } = this.props;
+    const { audience } = this.state;
     return (
       <div>
         <PageHeader
@@ -120,6 +134,7 @@ export default class MapsPage extends React.Component {
                   <Grid.Column width="12">
                     <Map layers={layers} height="500px">
                       <PeopleMapLayer people={people} />
+                      <AudienceLayer audience={audience} />
                     </Map>
                   </Grid.Column>
                 </Grid.Row>
