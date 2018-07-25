@@ -37,6 +37,7 @@ export default class MapsPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this._handleGridItem = this._handleGridItem.bind(this);
   }
   componentDidMount() {
     const { campaignId } = this.props;
@@ -50,9 +51,12 @@ export default class MapsPage extends React.Component {
       }
     });
   }
+  _handleGridItem(grid) {
+    this.setState({ grid });
+  }
   render() {
     const { loading, layers, campaign, categories, tags, people } = this.props;
-    const { audience } = this.state;
+    const { audience, grid } = this.state;
     return (
       <div>
         <PageHeader
@@ -112,7 +116,7 @@ export default class MapsPage extends React.Component {
                   </Grid.Column>
                 </Grid.Row> */}
                 <Grid.Row>
-                  <Grid.Column width="4">
+                  <Grid.Column width="3">
                     {/* <Header>Layers</Header> */}
                     <p>People</p>
                     <p>Audience</p>
@@ -131,10 +135,13 @@ export default class MapsPage extends React.Component {
                     ))}
                   </Menu> */}
                   </Grid.Column>
-                  <Grid.Column width="12">
-                    <Map layers={layers} height="500px">
+                  <Grid.Column width="13">
+                    <Map layers={layers} defaultGrid={grid} height="600px">
                       <PeopleMapLayer people={people} />
-                      <AudienceLayer audience={audience} />
+                      <AudienceLayer
+                        audience={audience}
+                        onGrid={this._handleGridItem}
+                      />
                     </Map>
                   </Grid.Column>
                 </Grid.Row>

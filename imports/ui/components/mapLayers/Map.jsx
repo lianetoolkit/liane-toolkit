@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import L from "leaflet";
-import { Table } from "semantic-ui-react";
+import { Header, Table } from "semantic-ui-react";
 import "leaflet.utfgrid";
 import {
   Map,
@@ -38,24 +38,76 @@ const Wrapper = styled.div`
     .grid-item {
       background: #fff;
       margin: 0 0 0.5rem;
+      h3,
+      h4 {
+        font-weight: 600;
+        padding: 1rem 0 0 0;
+        margin: 1rem 0.5rem;
+        line-height: 1;
+      }
+      h3 {
+        font-size: 1.2em;
+      }
+      h4 {
+        font-size: 1em;
+      }
+      .ui.table {
+        color: #444;
+      }
+      .ui.definition.table tr td:first-child:not(.ignored),
+      .ui.definition.table tr td.definition {
+        color: #777;
+      }
     }
   }
 `;
 
 class GridItem extends React.Component {
-  render() {
-    const { data } = this.props;
+  _value(val) {
+    if (typeof val == "string" || !isNaN(val)) {
+      return val;
+    } else if (Array.isArray(val)) {
+      return val.join(", ");
+    } else {
+      return "";
+    }
+  }
+  _table(obj) {
+    const { name, ...data } = obj;
     const keys = Object.keys(data);
     return (
-      <Table definition compact="very">
-        {keys.map(key => (
-          <Table.Row key={key}>
-            <Table.Cell collapsing>{key}</Table.Cell>
-            <Table.Cell>{data[key]}</Table.Cell>
-          </Table.Row>
-        ))}
-      </Table>
+      <div>
+        {name ? <Header as="h4">{name}</Header> : null}
+        <Table definition compact="very">
+          <Table.Body>
+            {keys.map(key => (
+              <Table.Row key={key}>
+                <Table.Cell collapsing>{key}</Table.Cell>
+                <Table.Cell>{this._value(data[key])}</Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </div>
     );
+  }
+  render() {
+    const { grid } = this.props;
+    if (grid.type == "table") {
+      return (
+        <div>
+          {grid.name ? <Header as="h3">{grid.name}</Header> : null}
+          {this._table(grid.data)}
+        </div>
+      );
+    } else if (grid.type == "list") {
+      return (
+        <div>
+          {grid.name ? <Header as="h3">{grid.name}</Header> : null}
+          {grid.data.map((item, i) => <div key={i}>{this._table(item)}</div>)}
+        </div>
+      );
+    }
   }
 }
 
@@ -92,10 +144,18 @@ export default class LayersMap extends React.Component {
         this.grids.push(utfgrid);
         utfgrid.addTo(map);
         utfgrid.on("mouseover", e => {
-          this._addGridItem(e.data);
+          this._addGridItem({
+            type: "table",
+            name: layer.title,
+            data: e.data
+          });
         });
         utfgrid.on("mouseout", e => {
-          this._removeGridItem(e.data);
+          this._removeGridItem({
+            type: "table",
+            name: layer.title,
+            data: e.data
+          });
         });
       }
     }
@@ -145,14 +205,23 @@ export default class LayersMap extends React.Component {
     return bounds;
   }
   render() {
-    const { layers, children, height, ...props } = this.props;
+    const { layers, children, height, defaultGrid, ...props } = this.props;
     const { grid } = this.state;
     return (
       <Wrapper height={height}>
         <div className="grid-data">
+          {defaultGrid && defaultGrid.length ? (
+            <>
+              {defaultGrid.map((item, i) => (
+                <div key={i} className="grid-item">
+                  <GridItem grid={item} />
+                </div>
+              ))}
+            </>
+          ) : null}
           {grid.map((item, i) => (
             <div key={i} className="grid-item">
-              <GridItem data={item} />
+              <GridItem grid={item} />
             </div>
           ))}
         </div>
