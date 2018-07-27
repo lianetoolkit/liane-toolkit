@@ -120,6 +120,7 @@ export default class MapsPage extends React.Component {
                     {/* <Header>Layers</Header> */}
                     <p>People</p>
                     <p>Audience</p>
+                    <Divider />
                     {layers.map(layer => <p key={layer._id}>{layer.title}</p>)}
                     <Divider />
                     {/* <Header size="medium">Categories</Header>

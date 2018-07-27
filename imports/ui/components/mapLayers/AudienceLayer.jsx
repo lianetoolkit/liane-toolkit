@@ -1,11 +1,14 @@
 import React from "react";
 import { GeoJSON } from "react-leaflet";
 import AudienceUtils from "/imports/ui/components/audiences/Utils.js";
+import leafletPip from "@mapbox/leaflet-pip";
 
 export default class AudienceLayer extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      grid: []
+    };
     this._getAudience = this._getAudience.bind(this);
     this._onEachFeature = this._onEachFeature.bind(this);
     this._buildGrid = this._buildGrid.bind(this);
@@ -123,13 +126,7 @@ export default class AudienceLayer extends React.Component {
   _onEachFeature(feature, layer) {
     const { onGrid } = this.props;
     if (!feature.properties.main) {
-      const grid = this._buildGrid(feature.properties._id);
-      layer.on("mouseover", e => {
-        this._addGridItem(grid);
-      });
-      layer.on("mouseout", e => {
-        this._removeGridItem(grid);
-      });
+      layer._grid = this._buildGrid(feature.properties._id);
     }
   }
   _addGridItem = data => {
@@ -161,6 +158,34 @@ export default class AudienceLayer extends React.Component {
       });
     }
   };
+  _move = ev => {
+    const { grid } = this.state;
+    const layers = leafletPip.pointInLayer(ev.latlng, this._layer);
+    let toRemove = [...grid];
+    layers.forEach(layer => {
+      toRemove = toRemove.filter(
+        item => JSON.stringify(item) != JSON.stringify(layer._grid)
+      );
+      if (layer._grid) {
+        this._addGridItem(layer._grid);
+      }
+    });
+    if (toRemove && toRemove.length) {
+      toRemove.forEach(grid => {
+        if (grid) {
+          this._removeGridItem(grid);
+        }
+      });
+    }
+  };
+  _handleAdd = ev => {
+    this._layer = ev.target;
+    const map = ev.target._map;
+    map.on("mousemove", this._move);
+  };
+  _handleRemove = ev => {
+    map.off("mousemove", this._move);
+  };
   render() {
     const { audience } = this.props;
     if (audience) {
@@ -171,6 +196,8 @@ export default class AudienceLayer extends React.Component {
           style={this._style}
           pointToLayer={this._pointToLayer}
           onEachFeature={this._onEachFeature}
+          onAdd={this._handleAdd}
+          onRemove={this._handleRemove}
         />
       );
     } else {
