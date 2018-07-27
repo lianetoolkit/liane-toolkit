@@ -127,8 +127,11 @@ export default class LayersMap extends React.Component {
     const { layers } = this.props;
     this._updateGrids(layers);
   }
-  componentWillReceivesProps(nextProps) {
-    this._updateGrids(nextProps.layers);
+  componentWillReceiveProps(nextProps) {
+    const { layers } = this.props;
+    if (JSON.stringify(layers) !== JSON.stringify(nextProps.layers)) {
+      this._updateGrids(nextProps.layers);
+    }
   }
   _updateGrids(layers) {
     const map = this.refs.map.leafletElement;
@@ -142,7 +145,7 @@ export default class LayersMap extends React.Component {
           useJsonP: false
         });
         this.grids.push(utfgrid);
-        utfgrid.addTo(map);
+        map.addLayer(utfgrid);
         utfgrid.on("mouseover", e => {
           this._addGridItem({
             type: "table",
