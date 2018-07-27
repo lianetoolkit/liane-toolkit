@@ -3,9 +3,12 @@
     "deployMode": "local",
     "domain": "localhost:3000",
     "appName": "Liane",
-    "appEmail": "contact@example.com"
+    "appEmail": "contact@example.com",
+    "recaptcha": "<SITE KEY>"
   },
+  "recaptcha": "<SECRET KEY>",
   "private": false,
+  "googleMaps": "<GOOGLE GEOCODING API KEY>",
   "facebook": {
     "clientId": "<YOUR APP ID>",
     "clientSecret": "<YOUR APP SECRET>"

@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Form, Grid, Button, Icon } from "semantic-ui-react";
+import { CountryDropdown } from "react-country-region-selector";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 
 const initialFields = {
@@ -31,6 +32,7 @@ export default class EditContextsPage extends React.Component {
       const {
         _id,
         name,
+        country,
         mainGeolocationId,
         geolocations,
         audienceCategories,
@@ -41,6 +43,7 @@ export default class EditContextsPage extends React.Component {
           ...fields,
           _id,
           name,
+          country,
           mainGeolocationId,
           geolocations,
           audienceCategories,
@@ -56,6 +59,7 @@ export default class EditContextsPage extends React.Component {
         const {
           _id,
           name,
+          country,
           mainGeolocationId,
           geolocations,
           audienceCategories,
@@ -66,6 +70,7 @@ export default class EditContextsPage extends React.Component {
             ...fields,
             _id,
             name,
+            country,
             mainGeolocationId,
             geolocations,
             audienceCategories,
@@ -193,6 +198,15 @@ export default class EditContextsPage extends React.Component {
                       name="name"
                       onChange={this._handleChange}
                       value={fields.name}
+                    />
+                    <Form.Field
+                      control={CountryDropdown}
+                      label="Country"
+                      value={fields.country}
+                      valueType="short"
+                      onChange={value =>
+                        this._handleChange(null, { name: "country", value })
+                      }
                     />
                     <Form.Dropdown
                       options={geolocationOptions}

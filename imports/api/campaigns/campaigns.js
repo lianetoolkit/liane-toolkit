@@ -74,6 +74,20 @@ Campaigns.schema = new SimpleSchema({
   "audienceAccounts.$": {
     type: Campaigns.audienceAccountsSchema
   },
+  forms: {
+    type: Object,
+    optional: true
+  },
+  "forms.crm": {
+    type: Object,
+    optional: true
+  },
+  "forms.crm.header": {
+    type: String
+  },
+  "forms.crm.text": {
+    type: String
+  },
   createdAt: {
     type: Date,
     autoValue() {

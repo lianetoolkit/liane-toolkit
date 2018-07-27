@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { Feed, Icon, Message, Grid, Button } from "semantic-ui-react";
+import { Feed, Icon, Message, Grid, Button, Divider } from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import moment from "moment";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
+import PeopleFormButton from "/imports/ui/components/people/PeopleFormButton.jsx";
 import PeopleInteractivityGrid from "/imports/ui/components/people/PeopleInteractivityGrid.jsx";
 
 import Reaction from "./Reaction.jsx";
@@ -27,7 +28,7 @@ const Wrapper = styled.div`
       }
       .extra {
         p {
-          margin: 0 0 0.5rem;
+          margin: 0 0 1rem;
         }
         .meta-buttons {
           display: block;
@@ -41,7 +42,7 @@ const Wrapper = styled.div`
         width: 200px;
         background: #fcfcfc;
         border: 1px solid #ddd;
-        padding: 0.5rem 0.85rem;
+        padding: 0.5rem;
         margin: 0 0 0.5rem 1rem;
       }
     }
@@ -219,6 +220,12 @@ export default class PeopleActivity extends React.Component {
                 <Feed.Label>{this._getIcon(item)}</Feed.Label>
                 <Feed.Content>
                   <Feed.Extra className="aligned">
+                    {item.person ? (
+                      <PeopleFormButton
+                        floated="right"
+                        person={item.person}
+                      />
+                    ) : null}
                     <p>
                       <strong>
                         <a
@@ -271,26 +278,6 @@ export default class PeopleActivity extends React.Component {
                       )}
                     </Feed.Date>
                   </Feed.Summary>
-                  {/* <Feed.Extra>
-                    <UserMetaWrapper>
-                      <Grid columns={2} verticalAlign="middle">
-                        <Grid.Row>
-                          <Grid.Column width={5}>
-                            <PeopleMetaButtons
-                              person={item.person}
-                              // onChange={this._handleMetaChange}
-                            />
-                          </Grid.Column>
-                          <Grid.Column width={11}>
-                            <PeopleInteractivityGrid
-                              person={item.person}
-                              facebookId={item.facebookAccountId}
-                            />
-                          </Grid.Column>
-                        </Grid.Row>
-                      </Grid>
-                    </UserMetaWrapper>
-                  </Feed.Extra> */}
                   {item.type == "comment" ? (
                     <CommentWrapper>
                       <Feed.Extra text>{item.message}</Feed.Extra>

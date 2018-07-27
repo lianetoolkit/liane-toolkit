@@ -6,6 +6,9 @@ Contexts.schema = new SimpleSchema({
   name: {
     type: String
   },
+  country: {
+    type: String
+  },
   mainGeolocationId: {
     type: String,
     optional: true

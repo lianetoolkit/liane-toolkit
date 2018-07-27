@@ -4,7 +4,6 @@ import { randomColor } from "/imports/ui/utils/utils.jsx";
 import styled from "styled-components";
 import { Table, Icon, Dimmer, Button } from "semantic-ui-react";
 import PeopleTable from "./PeopleTable.jsx";
-import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import PeopleInteractivityGrid from "/imports/ui/components/people/PeopleInteractivityGrid.jsx";
 import PeopleMerge from "/imports/ui/components/people/PeopleMerge.jsx";
 import moment from "moment";

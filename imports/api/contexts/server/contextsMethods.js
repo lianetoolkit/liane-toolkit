@@ -9,6 +9,9 @@ const schemaConfig = {
   name: {
     type: String
   },
+  country: {
+    type: String
+  },
   mainGeolocationId: {
     type: String
   },
@@ -43,6 +46,7 @@ export const createContext = new ValidatedMethod({
   validate: validateCreate,
   run({
     name,
+    country,
     mainGeolocationId,
     geolocations,
     audienceCategories,
@@ -61,6 +65,7 @@ export const createContext = new ValidatedMethod({
 
     const insertDoc = {
       name,
+      country,
       mainGeolocationId,
       geolocations,
       audienceCategories,
@@ -76,6 +81,7 @@ export const updateContext = new ValidatedMethod({
   run({
     _id,
     name,
+    country,
     mainGeolocationId,
     geolocations,
     audienceCategories,
@@ -94,13 +100,14 @@ export const updateContext = new ValidatedMethod({
 
     const insertDoc = {
       name,
+      country,
       mainGeolocationId,
       geolocations,
       audienceCategories,
       mapLayers
     };
 
-    Contexts.upsert({ _id }, { $set: insertDoc });
+    Contexts.update({ _id }, { $set: insertDoc });
 
     return true;
   }
