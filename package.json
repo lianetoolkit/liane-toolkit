@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0-beta.47",
+    "@mapbox/leaflet-pip": "^1.1.0",
     "axios": "^0.17.1",
     "babel-runtime": "^6.26.0",
     "cep-promise": "^3.0.0",
