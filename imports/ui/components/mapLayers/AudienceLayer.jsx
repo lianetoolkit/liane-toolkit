@@ -7,7 +7,7 @@ export default class AudienceLayer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      grid: [],
+      grid: []
     };
     this._getAudience = this._getAudience.bind(this);
     this._onEachFeature = this._onEachFeature.bind(this);
@@ -188,6 +188,7 @@ export default class AudienceLayer extends React.Component {
     }
   };
   _handleRemove = ev => {
+    const map = ev.target._map;
     map.off("mousemove", this._move);
   };
   render() {
