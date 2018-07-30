@@ -9,6 +9,8 @@ import Map from "/imports/ui/components/mapLayers/Map.jsx";
 import PeopleMapLayer from "/imports/ui/components/people/PeopleMapLayer.jsx";
 import AudienceLayer from "/imports/ui/components/mapLayers/AudienceLayer.jsx";
 
+import { compact } from "lodash";
+
 const Wrapper = styled.div`
   .ui.form {
     position: relative;
@@ -39,6 +41,8 @@ export default class MapsPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      grid: [],
+      bounds: [],
       layerVisibility: {
         people: true,
         audience: true,
@@ -62,6 +66,14 @@ export default class MapsPage extends React.Component {
   _handleGridItem(grid) {
     this.setState({ grid });
   }
+  _handleBounds = index => layerBounds => {
+    const { bounds } = this.state;
+    const newBounds = [...bounds];
+    newBounds[index] = layerBounds;
+    this.setState({
+      bounds: compact(newBounds)
+    });
+  };
   _handleVisibilityChange = (ev, { name, value, checked }) => {
     const { layerVisibility } = this.state;
     if (name == "context") {
@@ -73,6 +85,7 @@ export default class MapsPage extends React.Component {
       });
     } else {
       this.setState({
+        grid: [],
         layerVisibility: {
           ...layerVisibility,
           [name]: !!checked
@@ -90,7 +103,7 @@ export default class MapsPage extends React.Component {
   };
   render() {
     const { loading, layers, campaign, categories, tags, people } = this.props;
-    const { layerVisibility, audience, grid } = this.state;
+    const { layerVisibility, audience, grid, bounds } = this.state;
     const contextLayers = this._layers();
     return (
       <div>
@@ -212,15 +225,20 @@ export default class MapsPage extends React.Component {
                     <Map
                       layers={contextLayers}
                       defaultGrid={grid}
+                      defaultBounds={bounds}
                       height="600px"
                     >
                       {layerVisibility.people ? (
-                        <PeopleMapLayer people={people} />
+                        <PeopleMapLayer
+                          people={people}
+                          onBounds={this._handleBounds(0)}
+                        />
                       ) : null}
                       {layerVisibility.audience ? (
                         <AudienceLayer
                           audience={audience}
                           onGrid={this._handleGridItem}
+                          onBounds={this._handleBounds(1)}
                         />
                       ) : null}
                     </Map>

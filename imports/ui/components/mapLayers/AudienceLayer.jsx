@@ -7,7 +7,7 @@ export default class AudienceLayer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      grid: []
+      grid: [],
     };
     this._getAudience = this._getAudience.bind(this);
     this._onEachFeature = this._onEachFeature.bind(this);
@@ -27,13 +27,13 @@ export default class AudienceLayer extends React.Component {
       features: []
     };
     if (audience.mainGeolocation && audience.mainGeolocation.geojson) {
-      geojson.features.push({
-        ...audience.mainGeolocation.geojson,
-        properties: {
-          _id: audience.mainGeolocation._id,
-          main: true
-        }
-      });
+      // geojson.features.push({
+      //   ...audience.mainGeolocation.geojson,
+      //   properties: {
+      //     _id: audience.mainGeolocation._id,
+      //     main: true
+      //   }
+      // });
     }
     audience.geolocations.forEach(geolocation => {
       if (geolocation.geojson) {
@@ -179,9 +179,13 @@ export default class AudienceLayer extends React.Component {
     }
   };
   _handleAdd = ev => {
+    const { onBounds } = this.props;
     this._layer = ev.target;
     const map = ev.target._map;
     map.on("mousemove", this._move);
+    if (onBounds) {
+      onBounds(this._layer.getBounds());
+    }
   };
   _handleRemove = ev => {
     map.off("mousemove", this._move);

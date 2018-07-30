@@ -139,6 +139,7 @@ export default class LayersMap extends React.Component {
       map.removeLayer(grid);
     }
     this.grids = [];
+    this.setState({ grid: [] });
     for (const layer of layers) {
       if (layer.tilejson) {
         const utfgrid = new L.UtfGrid(layer.tilejson, {
@@ -193,7 +194,7 @@ export default class LayersMap extends React.Component {
     }
   };
   _bounds() {
-    const { layers } = this.props;
+    const { layers, defaultBounds } = this.props;
     let latlngs = [];
     let bounds;
     for (const layer of layers) {
@@ -202,6 +203,15 @@ export default class LayersMap extends React.Component {
           bounds.extend(L.latLngBounds(layer.bbox[0], layer.bbox[1]));
         } else {
           bounds = L.latLngBounds(layer.bbox[0], layer.bbox[1]);
+        }
+      }
+    }
+    if (defaultBounds) {
+      for (const bound of defaultBounds) {
+        if (bounds) {
+          bounds.extend(bound);
+        } else {
+          bounds = bound;
         }
       }
     }
