@@ -34,7 +34,7 @@ const Wrapper = styled.div`
     right: 0;
     width: 250px;
     z-index: 9999;
-    margin: 10px;
+    margin: 0 10px;
     .grid-item {
       background: #fff;
       margin: 0 0 0.5rem;
@@ -57,6 +57,14 @@ const Wrapper = styled.div`
       .ui.definition.table tr td:first-child:not(.ignored),
       .ui.definition.table tr td.definition {
         color: #777;
+      }
+      .grid-list-item {
+        font-size: 0.9em;
+        h3,
+        h4 {
+          padding: 0;
+          margin: 1rem 0.5rem;
+        }
       }
     }
   }
@@ -95,16 +103,20 @@ class GridItem extends React.Component {
     const { grid } = this.props;
     if (grid.type == "table") {
       return (
-        <div>
+        <div className="grid-table">
           {grid.name ? <Header as="h3">{grid.name}</Header> : null}
           {this._table(grid.data)}
         </div>
       );
     } else if (grid.type == "list") {
       return (
-        <div>
+        <div className="grid-list">
           {grid.name ? <Header as="h3">{grid.name}</Header> : null}
-          {grid.data.map((item, i) => <div key={i}>{this._table(item)}</div>)}
+          {grid.data.map((item, i) => (
+            <div className="grid-list-item" key={i}>
+              {this._table(item)}
+            </div>
+          ))}
         </div>
       );
     }
@@ -124,13 +136,21 @@ export default class LayersMap extends React.Component {
   }
   componentDidMount() {
     const map = this.refs.map.leafletElement;
-    const { layers } = this.props;
+    const { layers, defaultBounds } = this.props;
     this._updateGrids(layers);
+    if (defaultBounds) {
+      this._bounds();
+    }
   }
   componentWillReceiveProps(nextProps) {
-    const { layers } = this.props;
+    const { layers, defaultBounds } = this.props;
     if (JSON.stringify(layers) !== JSON.stringify(nextProps.layers)) {
       this._updateGrids(nextProps.layers);
+    }
+    if (
+      JSON.stringify(defaultBounds) !== JSON.stringify(nextProps.defaultBounds)
+    ) {
+      this._bounds(nextProps.defaultBounds);
     }
   }
   _updateGrids(layers) {
@@ -163,6 +183,7 @@ export default class LayersMap extends React.Component {
         });
       }
     }
+    this._bounds();
   }
   _addGridItem = data => {
     const { grid } = this.state;
@@ -193,8 +214,9 @@ export default class LayersMap extends React.Component {
       });
     }
   };
-  _bounds() {
-    const { layers, defaultBounds } = this.props;
+  _bounds(defaultBounds) {
+    const { layers } = this.props;
+    defaultBounds = defaultBounds || this.props.defaultBounds;
     let latlngs = [];
     let bounds;
     for (const layer of layers) {
@@ -215,7 +237,13 @@ export default class LayersMap extends React.Component {
         }
       }
     }
-    return bounds;
+    this.setState({ bounds });
+    if (bounds) {
+      const map = this.refs.map.leafletElement;
+      if (map) {
+        map.fitBounds(bounds);
+      }
+    }
   }
   render() {
     const { layers, children, height, defaultGrid, ...props } = this.props;
@@ -243,7 +271,6 @@ export default class LayersMap extends React.Component {
           center={[0, 0]}
           zoom={2}
           scrollWheelZoom={false}
-          bounds={this._bounds()}
           {...props}
         >
           <TileLayer
