@@ -22,10 +22,10 @@ export default class SkillField extends React.Component {
     const { skillOptions } = this.state;
     if (Array.isArray(options) && options.length) {
       this.setState({
-        skillOptions: [
+        skillOptions: uniq([
           ...skillOptions,
           ...uniq([...skillOptions, ...options])
-        ]
+        ])
       });
     }
   }
