@@ -47,7 +47,7 @@ export const flattenObject = function(data) {
     if (Object(cur) !== cur) {
       result[prop] = cur;
     } else if (Array.isArray(cur)) {
-      for (const i = 0, l = cur.length; i < l; i++)
+      for (let i = 0, l = cur.length; i < l; i++)
         recurse(cur[i], prop + "[" + i + "]");
       if (l == 0) result[prop] = [];
     } else if (

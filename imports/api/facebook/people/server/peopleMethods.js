@@ -674,7 +674,6 @@ export const exportPeople = new ValidatedMethod({
         fields: {
           name: 1,
           facebookId: 1,
-          counts: 1,
           campaignMeta: 1
         }
       }
@@ -686,13 +685,13 @@ export const exportPeople = new ValidatedMethod({
 
     for (let person of people) {
       if (person.campaignMeta) {
-        for (const key in person.campaignMeta) {
+        for (let key in person.campaignMeta) {
           person[key] = person.campaignMeta[key];
         }
         delete person.campaignMeta;
       }
       const flattenedPerson = flattenObject(person);
-      for (const key in flattenedPerson) {
+      for (let key in flattenedPerson) {
         header[key] = true;
       }
       flattened.push(flattenObject(person));
