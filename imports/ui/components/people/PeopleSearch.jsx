@@ -54,6 +54,11 @@ const flags = [
     prop: "influencer"
   },
   {
+    name: "Non voters",
+    icon: "calendar times",
+    prop: "non-voter"
+  },
+  {
     name: "Trolls",
     icon: "dont",
     prop: "troll"
