@@ -11,6 +11,7 @@ import _ from "underscore";
 import { get, set, merge, pick, compact, uniq } from "lodash";
 import cep from "cep-promise";
 import { Random } from "meteor/random";
+import moment from "moment";
 
 const recaptchaSecret = Meteor.settings.recaptcha;
 
