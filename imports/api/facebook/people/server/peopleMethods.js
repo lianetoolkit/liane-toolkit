@@ -73,7 +73,8 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
       lastInteractionDate: 1,
       receivedAutoPrivateReply: 1,
       filledForm: 1,
-      formId: 1
+      formId: 1,
+      createdAt: 1
     }
   };
 
