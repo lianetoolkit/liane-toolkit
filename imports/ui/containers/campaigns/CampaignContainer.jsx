@@ -45,6 +45,11 @@ export default withTracker(props => {
     ? Campaigns.findOne(props.campaignId, campaignOptions)
     : null;
 
+  // Store campaign in Meteor Session
+  if (campaign) {
+    Session.set("campaign", campaign);
+  }
+
   let currentFacebookId = props.content.props.facebookId;
   if (
     !currentFacebookId &&
