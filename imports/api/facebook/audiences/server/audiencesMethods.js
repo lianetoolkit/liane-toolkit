@@ -481,6 +481,78 @@ export const accountAudienceByCategory = new ValidatedMethod({
   }
 });
 
+export const audiencePagesByCategory = new ValidatedMethod({
+  name: "audiences.pagesByCategory",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    audienceCategoryId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, audienceCategoryId }) {
+    this.unblock();
+    logger.debug("audiences.pagesByCategory called", {
+      campaignId,
+      audienceCategoryId
+    });
+
+    const userId = Meteor.userId();
+
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!_.findWhere(campaign.users, { userId })) {
+      throw new Meteor.Error(401, "You are not part of this campaign");
+    }
+
+    // Cache setup
+    const hash = crypto
+      .createHash("sha1")
+      .update(campaignId + audienceCategoryId)
+      .digest("hex");
+    const redisKey = `audiences::result::${hash}::compareByCategory`;
+
+    let result = redisClient.getSync(redisKey);
+
+    if (result) {
+      return JSON.parse(result);
+    } else {
+      const context = Contexts.findOne(campaign.contextId);
+      const category = AudienceCategories.findOne(audienceCategoryId);
+      if (!context.mainGeolocationId) {
+        throw new Meteor.Error(
+          500,
+          "Context must have a main geolocation for this analysis."
+        );
+      }
+      const mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
+      result = { category, mainGeolocation, accounts: [] };
+      campaign.audienceAccounts.forEach(account => {
+        const audiences = FacebookAudiences.find(
+          {
+            campaignId,
+            audienceCategoryId,
+            facebookAccountId: account.facebookId,
+            geolocationId: context.mainGeolocationId
+          },
+          { sort: { createdAt: 1 } }
+        ).fetch();
+        result.accounts.push({
+          account,
+          audiences
+        });
+      });
+      // redisClient.setSync(redisKey, JSON.stringify(result));
+      return result;
+    }
+  }
+});
+
 export const accountAudienceByGeolocation = new ValidatedMethod({
   name: "audiences.byGeolocation",
   validate: new SimpleSchema({
@@ -496,7 +568,7 @@ export const accountAudienceByGeolocation = new ValidatedMethod({
   }).validator(),
   run({ campaignId, facebookAccountId, geolocationId }) {
     this.unblock();
-    logger.debug("audiences.byCategory", {
+    logger.debug("audiences.byGeolocation", {
       campaignId,
       facebookAccountId,
       geolocationId
