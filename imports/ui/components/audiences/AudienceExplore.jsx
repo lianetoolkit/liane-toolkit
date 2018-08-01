@@ -240,7 +240,7 @@ export default class AudienceGeolocation extends React.Component {
                                 </Table.Cell>
                                 <Table.Cell collapsing>
                                   <strong>
-                                    {AudienceUtils.getRatio(
+                                    {AudienceUtils.getAudienceRatio(
                                       this._latestAudience(item)
                                     )}
                                   </strong>
