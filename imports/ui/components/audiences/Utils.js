@@ -49,14 +49,21 @@ export const getRatio = function(compareTo, target) {
   }
 };
 
-export const getPercentage = function(audience) {
+export const getRawPercentage = function(audience) {
   if (!audience) return "";
   audience = transformValues(audience);
   if (audience.total <= 1500) {
-    return "";
+    return 0;
   }
-  let dif = Math.min(audience.estimate / audience.total, 0.99);
-  return (dif * 100).toFixed(2) + "%";
+  return Math.min(audience.estimate / audience.total, 0.99);
+};
+
+export const getPercentage = function(audience) {
+  const percentage = getRawPercentage(audience);
+  if (percentage) {
+    return (percentage * 100).toFixed(2) + "%";
+  }
+  return "";
 };
 
 export default {
@@ -64,5 +71,6 @@ export default {
   transformValues,
   getAudienceRatio,
   getRatio,
+  getRawPercentage,
   getPercentage
 };

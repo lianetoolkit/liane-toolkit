@@ -4,6 +4,7 @@ import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
 import AudienceCategoryContainer from "/imports/ui/containers/audiences/AudienceCategoryContainer.jsx";
 import AudienceGeolocationContainer from "/imports/ui/containers/audiences/AudienceGeolocationContainer.jsx";
+import AudiencePagesContainer from "/imports/ui/containers/audiences/AudiencePagesContainer.jsx";
 import AudienceExploreContainer from "/imports/ui/containers/audiences/AudienceExploreContainer.jsx";
 
 import {
@@ -63,11 +64,11 @@ export default class CampaignsAudience extends React.Component {
           titleTo={FlowRouter.path("App.campaignDetail", {
             campaignId: campaign ? campaign._id : ""
           })}
-          subTitle="Audience - Daily Active Users Estimates"
+          subTitle="Audience"
           nav={[
             {
               disabled: true, // TODO
-              name: "Audience Summary",
+              name: "Audience Summary (soon)",
               active: navTab == "summary"
               // href: FlowRouter.path("App.campaignAudience", {
               //   campaignId: campaign._id,
@@ -83,13 +84,13 @@ export default class CampaignsAudience extends React.Component {
               })
             },
             {
-              disabled: true, // TODO
-              name: "Compare",
-              active: navTab == "compare"
-              // href: FlowRouter.path("App.campaignAudience", {
-              //   campaignId: campaign._id,
-              //   navTab: "themes"
-              // })
+              // disabled: true, // TODO
+              name: "Pages",
+              active: navTab == "pages",
+              href: FlowRouter.path("App.campaignAudience", {
+                campaignId: campaign._id,
+                navTab: "pages"
+              })
             },
             {
               name: "Explore",
@@ -115,6 +116,17 @@ export default class CampaignsAudience extends React.Component {
                       audienceCategories={audienceCategories}
                       audienceCategoryId={audienceCategoryId}
                       geolocations={geolocations}
+                    />
+                  </Grid.Column>
+                </Grid.Row>
+              ) : null}
+              {navTab == "pages" ? (
+                <Grid.Row>
+                  <Grid.Column>
+                    <AudiencePagesContainer
+                      campaign={campaign}
+                      audienceCategories={audienceCategories}
+                      audienceCategoryId={audienceCategoryId}
                     />
                   </Grid.Column>
                 </Grid.Row>
