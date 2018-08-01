@@ -44,6 +44,7 @@ const pluralize = function(n, thing) {
 export const flattenObject = function(data) {
   let result = {};
   function recurse(cur, prop) {
+    let l;
     if (Object(cur) !== cur) {
       result[prop] = cur;
     } else if (Array.isArray(cur)) {
