@@ -5,6 +5,8 @@ import {
   Grid,
   Sticky,
   Header,
+  Card,
+  Label,
   Divider,
   Table,
   Menu,
@@ -18,6 +20,7 @@ import SingleLineChart from "./SingleLineChart.jsx";
 import AudienceInfo from "./AudienceInfo.jsx";
 import LocationChart from "./LocationChart.jsx";
 import DataAlert from "./DataAlert.jsx";
+import { sum, maxBy, minBy } from "lodash";
 
 const Wrapper = styled.div`
   .selectable td {
@@ -40,31 +43,68 @@ export default class AudienceGeolocation extends React.Component {
   componentDidUpdate() {
     this._updateStickyMenu();
   }
-  _latest() {
-    const { geolocation } = this.props;
-    return (audience = AudienceUtils.transformValues(
-      this._latestAudience(geolocation.audienceCategories[0])
-    ));
-  }
-  _getPercentage() {
-    const { facebookAccount, geolocation } = this.props;
-    const audience = this._latest();
-    let total = facebookAccount.fanCount;
-    if (geolocation.mainGeolocation) {
-      total = AudienceUtils.getValue(
-        geolocation.mainGeolocation.audience.estimate
-      );
-    }
-    let cent = Math.min(audience.total / total, 0.99);
-    return (cent * 100).toFixed(2) + "%";
-  }
-  _getTotal() {
-    const audience = this._latest();
-    return audience.total;
-  }
   _latestAudience(item) {
     return item.audiences[item.audiences.length - 1];
   }
+  _getAverage = () => {
+    const { audienceCategory } = this.props;
+    let percentages = [];
+    audienceCategory.geolocations.forEach(g => {
+      const latestAudience = this._latestAudience(g);
+      percentages.push(
+        latestAudience.location_estimate.dau / latestAudience.location_total.dau
+      );
+    });
+    return sum(percentages) / audienceCategory.geolocations.length;
+  };
+  _getHighest = () => {
+    const { audienceCategory } = this.props;
+    if (audienceCategory) {
+      const average = this._getAverage();
+      const highest = maxBy(audienceCategory.geolocations, g => {
+        const latestAudience = this._latestAudience(g);
+        return (
+          latestAudience.location_estimate.dau /
+          latestAudience.location_total.dau
+        );
+      });
+      const latestAudience = this._latestAudience(highest);
+      const percentage =
+        latestAudience.location_estimate.dau /
+        latestAudience.location_total.dau;
+
+      return {
+        ...highest,
+        average,
+        percentage: (percentage * 100).toFixed(2) + "%",
+        ratio: AudienceUtils.getRatio(average, percentage)
+      };
+    }
+  };
+  _getLowest = () => {
+    const { audienceCategory } = this.props;
+    if (audienceCategory) {
+      const average = this._getAverage();
+      const lowest = minBy(audienceCategory.geolocations, g => {
+        const latestAudience = this._latestAudience(g);
+        return (
+          latestAudience.location_estimate.dau /
+          latestAudience.location_total.dau
+        );
+      });
+      const latestAudience = this._latestAudience(lowest);
+      const percentage =
+        latestAudience.location_estimate.dau /
+        latestAudience.location_total.dau;
+
+      return {
+        ...lowest,
+        average,
+        percentage: (percentage * 100).toFixed(2) + "%",
+        ratio: AudienceUtils.getRatio(average, percentage)
+      };
+    }
+  };
   _updateStickyMenu() {
     const { contextRef, stickyRef, categoryListActive } = this.state;
     if (stickyRef && contextRef) {
@@ -115,6 +155,8 @@ export default class AudienceGeolocation extends React.Component {
       audienceCategoryId,
       facebookAccount
     } = this.props;
+    const highest = this._getHighest();
+    const lowest = this._getLowest();
     if (loading && !audienceCategory) {
       return <Loading />;
     } else {
@@ -162,6 +204,54 @@ export default class AudienceGeolocation extends React.Component {
                         <Loader>Loading</Loader>
                       </Dimmer>
                       <Header>{audienceCategory.category.title}</Header>
+                      {audienceCategory.geolocations.length > 1 ? (
+                        <>
+                          <Grid columns={2} widths="equal">
+                            <Grid.Row>
+                              <Grid.Column>
+                                <Header as="h5">
+                                  <strong>Most</strong> interested in{" "}
+                                  {audienceCategory.category.title}
+                                </Header>
+                                <Card className="big" fluid color="green">
+                                  <Card.Content>
+                                    <Card.Header>
+                                      {highest.geolocation.name}
+                                    </Card.Header>
+                                    <Card.Meta>
+                                      <Label>{highest.percentage}</Label>
+                                    </Card.Meta>
+                                    <Card.Description>
+                                      {highest.ratio} above average
+                                    </Card.Description>
+                                  </Card.Content>
+                                </Card>
+                              </Grid.Column>
+                              <Grid.Column>
+                                <Header as="h5">
+                                  <strong>Least</strong> interested in{" "}
+                                  {audienceCategory.category.title}
+                                </Header>
+                                <Card className="big" fluid color="red">
+                                  <Card.Content>
+                                    <Card.Header>
+                                      {lowest.geolocation.name}
+                                    </Card.Header>
+                                    <Card.Meta>
+                                      <Label>{lowest.percentage}</Label>
+                                    </Card.Meta>
+                                    <Card.Description>
+                                      {lowest.ratio} below average
+                                    </Card.Description>
+                                  </Card.Content>
+                                </Card>
+                              </Grid.Column>
+                            </Grid.Row>
+                          </Grid>
+                          <Divider hidden />
+                          <Header as="h5">All places</Header>
+                        </>
+                      ) : null}
                       <Table selectable>
                         {audienceCategory.geolocations.map(item => {
                           const expanded = this._isExpanded(

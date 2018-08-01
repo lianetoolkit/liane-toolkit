@@ -22,21 +22,25 @@ export const transformValues = function(audience, users) {
   return transformed;
 };
 
-export const getRatio = function(audience) {
+export const getAudienceRatio = function(audience) {
   if (!audience) return "";
   audience = transformValues(audience);
   if (audience.total <= 1500) {
     return "--";
   }
-  let prefix, ratio;
   const local = audience.estimate / audience.total;
   const location = audience.location_estimate / audience.location_total;
-  if (local > location) {
+  return getRatio(location, local);
+};
+
+export const getRatio = function(compareTo, target) {
+  let prefix, ratio;
+  if (target > compareTo) {
     prefix = "+";
-    ratio = local / location;
+    ratio = target / compareTo;
   } else {
     prefix = "-";
-    ratio = location / local;
+    ratio = compareTo / target;
   }
   if (isFinite(ratio)) {
     return prefix + ratio.toFixed(2) + "x";
@@ -58,6 +62,7 @@ export const getPercentage = function(audience) {
 export default {
   getValue,
   transformValues,
+  getAudienceRatio,
   getRatio,
   getPercentage
 };
