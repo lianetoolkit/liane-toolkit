@@ -2,7 +2,6 @@ import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
-import AudienceGeolocationSummaryContainer from "/imports/ui/containers/audiences/AudienceGeolocationSummaryContainer.jsx";
 import AudienceCategoryContainer from "/imports/ui/containers/audiences/AudienceCategoryContainer.jsx";
 import AudienceGeolocationContainer from "/imports/ui/containers/audiences/AudienceGeolocationContainer.jsx";
 import AudienceExploreContainer from "/imports/ui/containers/audiences/AudienceExploreContainer.jsx";
@@ -156,12 +155,6 @@ export default class CampaignsAudience extends React.Component {
                   ) : null}
                   <Grid.Row>
                     <Grid.Column>
-                      <AudienceGeolocationSummaryContainer
-                        campaignId={campaign._id}
-                        facebookAccountId={audienceAccount.facebookId}
-                        geolocationId={geolocationId}
-                      />
-                      <Divider hidden />
                       <AudienceExploreContainer
                         campaign={campaign}
                         facebookAccount={audienceAccount}
