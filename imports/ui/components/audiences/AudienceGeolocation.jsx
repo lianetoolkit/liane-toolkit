@@ -13,6 +13,7 @@ import {
   Dimmer,
   Loader,
   Button,
+  Dropdown,
   Icon
 } from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
@@ -29,6 +30,9 @@ const Wrapper = styled.div`
   .active .category-title {
     font-weight: 600;
   }
+  .ui.dropdown.icon {
+    float: right;
+  }
 `;
 
 export default class AudienceGeolocation extends React.Component {
@@ -36,12 +40,61 @@ export default class AudienceGeolocation extends React.Component {
     super(props);
     this.state = {
       expanded: {},
+      sort: "name",
+      geolocations: [],
       categoryListActive: true
     };
     this._handleExpand = this._handleExpand.bind(this);
   }
+  componentDidMount() {
+    const { audienceCategory } = this.props;
+    const { sort } = this.state;
+    if (audienceCategory) {
+      this.setState({
+        geolocations: this._doSort(audienceCategory.geolocations, sort)
+      });
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    const { geolocations, sort } = this.state;
+    if (
+      JSON.stringify(nextProps.audienceCategory.geolocations) !==
+      JSON.stringify(geolocations)
+    ) {
+      this.setState({
+        geolocations: this._doSort(
+          nextProps.audienceCategory.geolocations,
+          sort
+        )
+      });
+    }
+  }
   componentDidUpdate() {
     this._updateStickyMenu();
+  }
+  _handleSort = (ev, { value }) => {
+    const { sort, geolocations } = this.state;
+    if (sort !== value) {
+      this.setState({
+        geolocations: this._doSort(geolocations, value),
+        sort: value
+      });
+    }
+  };
+  _doSort(geolocations, sort) {
+    return sortBy(geolocations, item => {
+      switch (sort) {
+        case "name":
+          return item.geolocation.name;
+        case "size":
+          const audience = this._latestAudience(item);
+          return -(
+            audience.location_estimate.dau / audience.location_total.dau
+          );
+        default:
+          return item.geolocation.name;
+      }
+    });
   }
   _latestAudience(item) {
     return item.audiences[item.audiences.length - 1];
@@ -84,54 +137,6 @@ export default class AudienceGeolocation extends React.Component {
     }
     return result;
   };
-  _getHighest = () => {
-    const { audienceCategory } = this.props;
-    if (audienceCategory) {
-      const average = this._getAverage();
-      const highest = maxBy(audienceCategory.geolocations, g => {
-        const latestAudience = this._latestAudience(g);
-        return (
-          latestAudience.location_estimate.dau /
-          latestAudience.location_total.dau
-        );
-      });
-      const latestAudience = this._latestAudience(highest);
-      const percentage =
-        latestAudience.location_estimate.dau /
-        latestAudience.location_total.dau;
-
-      return {
-        ...highest,
-        average,
-        percentage: (percentage * 100).toFixed(2) + "%",
-        ratio: AudienceUtils.getRatio(average, percentage)
-      };
-    }
-  };
-  _getLowest = () => {
-    const { audienceCategory } = this.props;
-    if (audienceCategory) {
-      const average = this._getAverage();
-      const lowest = minBy(audienceCategory.geolocations, g => {
-        const latestAudience = this._latestAudience(g);
-        return (
-          latestAudience.location_estimate.dau /
-          latestAudience.location_total.dau
-        );
-      });
-      const latestAudience = this._latestAudience(lowest);
-      const percentage =
-        latestAudience.location_estimate.dau /
-        latestAudience.location_total.dau;
-
-      return {
-        ...lowest,
-        average,
-        percentage: (percentage * 100).toFixed(2) + "%",
-        ratio: AudienceUtils.getRatio(average, percentage)
-      };
-    }
-  };
   _updateStickyMenu() {
     const { contextRef, stickyRef, categoryListActive } = this.state;
     if (stickyRef && contextRef) {
@@ -172,20 +177,22 @@ export default class AudienceGeolocation extends React.Component {
   _handleContextRef = contextRef => this.setState({ contextRef });
   _handleStickyRef = stickyRef => this.setState({ stickyRef });
   render() {
-    const { contextRef, stickyRef, categoryListActive } = this.state;
+    const {
+      contextRef,
+      stickyRef,
+      sort,
+      geolocations,
+      categoryListActive
+    } = this.state;
     const {
       loading,
       audienceCategory,
       campaign,
-      geolocations,
       audienceCategories,
       audienceCategoryId,
       facebookAccount
     } = this.props;
     const topPlaces = this._getTop();
-    const highest = this._getHighest();
-    const lowest = this._getLowest();
-    console.log(topPlaces);
     if (loading && !audienceCategory) {
       return <Loading />;
     } else {
@@ -261,11 +268,33 @@ export default class AudienceGeolocation extends React.Component {
                             </Grid.Row>
                           </Grid>
                           <Divider hidden />
-                          <Header as="h5">All places</Header>
                         </>
                       ) : null}
+                      <Dropdown
+                        floating
+                        labeled
+                        button
+                        className="icon"
+                        icon="sort"
+                        text="Sort"
+                        value={sort}
+                        onChange={this._handleSort}
+                        options={[
+                          {
+                            key: "name",
+                            value: "name",
+                            text: "Name"
+                          },
+                          {
+                            key: "size",
+                            value: "size",
+                            text: "Size"
+                          }
+                        ]}
+                      />
+                      <Header as="h5">All places</Header>
                       <Table selectable>
-                        {audienceCategory.geolocations.map(item => {
+                        {geolocations.map(item => {
                           const expanded = this._isExpanded(
                             item.geolocation._id
                           );
