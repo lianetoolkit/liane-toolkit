@@ -50,9 +50,9 @@ const Wrapper = styled.div`
   .ui.list {
     > .item {
       font-size: 0.85rem;
-      width: 30%;
+      width: 27.5%;
       &:first-child {
-        width: 40%;
+        width: 45%;
         font-size: 1.2rem;
       }
       .header {

@@ -20,7 +20,7 @@ import SingleLineChart from "./SingleLineChart.jsx";
 import AudienceInfo from "./AudienceInfo.jsx";
 import LocationChart from "./LocationChart.jsx";
 import DataAlert from "./DataAlert.jsx";
-import { sum, maxBy, minBy } from "lodash";
+import { sum, maxBy, minBy, sortBy } from "lodash";
 
 const Wrapper = styled.div`
   .selectable td {
@@ -56,6 +56,33 @@ export default class AudienceGeolocation extends React.Component {
       );
     });
     return sum(percentages) / audienceCategory.geolocations.length;
+  };
+  _getTop = () => {
+    const { audienceCategory } = this.props;
+    let result = [];
+    if (audienceCategory) {
+      const average = this._getAverage();
+      const top = sortBy(audienceCategory.geolocations, g => {
+        const latestAudience = this._latestAudience(g);
+        return -(
+          latestAudience.location_estimate.dau /
+          latestAudience.location_total.dau
+        );
+      }).slice(0, 3);
+      top.forEach(item => {
+        const latestAudience = this._latestAudience(item);
+        const percentage =
+          latestAudience.location_estimate.dau /
+          latestAudience.location_total.dau;
+        result.push({
+          ...item,
+          average,
+          percentage: (percentage * 100).toFixed(2) + "%",
+          ratio: AudienceUtils.getRatio(average, percentage)
+        });
+      });
+    }
+    return result;
   };
   _getHighest = () => {
     const { audienceCategory } = this.props;
@@ -155,8 +182,10 @@ export default class AudienceGeolocation extends React.Component {
       audienceCategoryId,
       facebookAccount
     } = this.props;
+    const topPlaces = this._getTop();
     const highest = this._getHighest();
     const lowest = this._getLowest();
+    console.log(topPlaces);
     if (loading && !audienceCategory) {
       return <Loading />;
     } else {
@@ -206,46 +235,29 @@ export default class AudienceGeolocation extends React.Component {
                       <Header>{audienceCategory.category.title}</Header>
                       {audienceCategory.geolocations.length > 1 ? (
                         <>
-                          <Grid columns={2} widths="equal">
+                          <Header as="h5">
+                            Places <strong>most</strong> interested in{" "}
+                            {audienceCategory.category.title}
+                          </Header>
+                          <Grid columns={1} widths="equal">
                             <Grid.Row>
-                              <Grid.Column>
-                                <Header as="h5">
-                                  <strong>Most</strong> interested in{" "}
-                                  {audienceCategory.category.title}
-                                </Header>
-                                <Card className="big" fluid color="green">
-                                  <Card.Content>
-                                    <Card.Header>
-                                      {highest.geolocation.name}
-                                    </Card.Header>
-                                    <Card.Meta>
-                                      <Label>{highest.percentage}</Label>
-                                    </Card.Meta>
-                                    <Card.Description>
-                                      {highest.ratio} above average
-                                    </Card.Description>
-                                  </Card.Content>
-                                </Card>
-                              </Grid.Column>
-                              <Grid.Column>
-                                <Header as="h5">
-                                  <strong>Least</strong> interested in{" "}
-                                  {audienceCategory.category.title}
-                                </Header>
-                                <Card className="big" fluid color="red">
-                                  <Card.Content>
-                                    <Card.Header>
-                                      {lowest.geolocation.name}
-                                    </Card.Header>
-                                    <Card.Meta>
-                                      <Label>{lowest.percentage}</Label>
-                                    </Card.Meta>
-                                    <Card.Description>
-                                      {lowest.ratio} below average
-                                    </Card.Description>
-                                  </Card.Content>
-                                </Card>
-                              </Grid.Column>
+                              {topPlaces.map(item => (
+                                <Grid.Column key={item.geolocation._id}>
+                                  <Card className="big" fluid color="green">
+                                    <Card.Content>
+                                      <Card.Header>
+                                        {item.geolocation.name}
+                                      </Card.Header>
+                                      <Card.Meta>
+                                        <Label>{item.percentage}</Label>
+                                      </Card.Meta>
+                                      <Card.Description>
+                                        {item.ratio} above average
+                                      </Card.Description>
+                                    </Card.Content>
+                                  </Card>
+                                </Grid.Column>
+                              ))}
                             </Grid.Row>
                           </Grid>
                           <Divider hidden />
