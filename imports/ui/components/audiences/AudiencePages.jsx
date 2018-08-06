@@ -13,6 +13,7 @@ import {
   Dimmer,
   Loader,
   Button,
+  Dropdown,
   Icon
 } from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
@@ -20,7 +21,7 @@ import SingleLineChart from "./SingleLineChart.jsx";
 import AudienceInfo from "./AudienceInfo.jsx";
 import LocationChart from "./LocationChart.jsx";
 import DataAlert from "./DataAlert.jsx";
-import { sum, maxBy, minBy } from "lodash";
+import { sum, maxBy, minBy, sortBy } from "lodash";
 
 const Wrapper = styled.div`
   .selectable td {
@@ -29,6 +30,9 @@ const Wrapper = styled.div`
   .active .category-title {
     font-weight: 600;
   }
+  .ui.dropdown.icon {
+    float: right;
+  }
 `;
 
 export default class AudiencePages extends React.Component {
@@ -36,12 +40,56 @@ export default class AudiencePages extends React.Component {
     super(props);
     this.state = {
       expanded: {},
+      sort: "name",
+      accounts: [],
       categoryListActive: true
     };
     this._handleExpand = this._handleExpand.bind(this);
   }
+  componentDidMount() {
+    const { audienceCategory } = this.props;
+    const { sort } = this.state;
+    if (audienceCategory) {
+      this.setState({
+        accounts: this._doSort(audienceCategory.accounts, sort)
+      });
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    const { accounts, sort } = this.state;
+    if (
+      JSON.stringify(nextProps.audienceCategory.accounts) !==
+      JSON.stringify(accounts)
+    ) {
+      this.setState({
+        accounts: this._doSort(nextProps.audienceCategory.accounts, sort)
+      });
+    }
+  }
   componentDidUpdate() {
     this._updateStickyMenu();
+  }
+  _handleSort = (ev, { value }) => {
+    const { sort, accounts } = this.state;
+    if (sort !== value) {
+      this.setState({
+        accounts: this._doSort(accounts, value),
+        sort: value
+      });
+    }
+  };
+  _doSort(accounts, sort) {
+    return sortBy(accounts, item => {
+      switch (sort) {
+        case "name":
+          return item.account.name;
+        case "size":
+          const audience = this._latestAudience(item);
+          return -(audience.estimate.dau / audience.total.dau);
+        default:
+          return item.account.name;
+      }
+    });
   }
   _latestAudience(item) {
     return item.audiences[item.audiences.length - 1];
@@ -133,7 +181,13 @@ export default class AudiencePages extends React.Component {
   _handleContextRef = contextRef => this.setState({ contextRef });
   _handleStickyRef = stickyRef => this.setState({ stickyRef });
   render() {
-    const { contextRef, stickyRef, categoryListActive } = this.state;
+    const {
+      contextRef,
+      stickyRef,
+      sort,
+      accounts,
+      categoryListActive
+    } = this.state;
     const {
       loading,
       audienceCategory,
@@ -232,9 +286,31 @@ export default class AudiencePages extends React.Component {
                         </Grid.Row>
                       </Grid>
                       <Divider hidden />
+                      <Dropdown
+                        floating
+                        labeled
+                        button
+                        className="icon"
+                        icon="sort"
+                        text="Sort"
+                        value={sort}
+                        onChange={this._handleSort}
+                        options={[
+                          {
+                            key: "name",
+                            value: "name",
+                            text: "Name"
+                          },
+                          {
+                            key: "size",
+                            value: "size",
+                            text: "Size"
+                          }
+                        ]}
+                      />
                       <Header as="h5">All pages</Header>
                       <Table selectable>
-                        {audienceCategory.accounts.map(item => {
+                        {accounts.map(item => {
                           const expanded = this._isExpanded(
                             item.account.facebookId
                           );
