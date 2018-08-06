@@ -232,7 +232,7 @@ export default class AudiencePages extends React.Component {
                         </Grid.Row>
                       </Grid>
                       <Divider hidden />
-                      <Header as="h5">All places</Header>
+                      <Header as="h5">All pages</Header>
                       <Table selectable>
                         {audienceCategory.accounts.map(item => {
                           const expanded = this._isExpanded(
