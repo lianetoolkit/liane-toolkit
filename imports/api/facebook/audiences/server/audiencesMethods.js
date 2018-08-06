@@ -93,64 +93,130 @@ export const campaignAudienceSummary = new ValidatedMethod({
     const accounts = campaign.audienceAccounts;
     const context = Contexts.findOne(campaign.contextId);
     const mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
+    const account = accounts.find(acc => acc.facebookId == facebookAccountId);
+
+    const getCategoryAudience = (facebookAccountId, audienceCategoryId) => {
+      return FacebookAudiences.findOne(
+        {
+          campaignId,
+          facebookAccountId,
+          audienceCategoryId,
+          geolocationId: context.mainGeolocationId
+        },
+        {
+          sort: { createdAt: -1 },
+          fields: {
+            audienceCategoryId: 1,
+            estimate: 1,
+            total: 1,
+            location_estimate: 1,
+            location_total: 1
+          }
+        }
+      );
+    };
 
     let result = [];
 
-    accounts.forEach(account => {
-      // Audience categories
-      let categories = [];
-      context.audienceCategories.forEach(audienceCategoryId => {
-        const audience = FacebookAudiences.findOne(
-          {
-            campaignId,
-            facebookAccountId: account.facebookId,
-            audienceCategoryId,
-            geolocationId: context.mainGeolocationId
-          },
-          {
-            sort: { createdAt: -1 },
-            fields: {
-              audienceCategoryId: 1,
-              estimate: 1,
-              total: 1,
-              location_estimate: 1,
-              location_total: 1
+    let categoriesComparison = {};
+
+    // Audience categories
+    let categories = [];
+    context.audienceCategories.forEach(audienceCategoryId => {
+      const category = AudienceCategories.findOne(audienceCategoryId);
+      const audience = getCategoryAudience(
+        account.facebookId,
+        audienceCategoryId
+      );
+      if (audience) {
+        const page = audience.estimate.dau / audience.total.dau;
+        const location =
+          audience.location_estimate.dau / audience.location_total.dau;
+        let ratio;
+        if (page > location) {
+          ratio = page / location;
+        } else {
+          ratio = -(location / page);
+        }
+        accounts.forEach(compareAccount => {
+          if (compareAccount.facebookId !== account.facebookId) {
+            const compareAudience = getCategoryAudience(
+              compareAccount.facebookId,
+              audienceCategoryId
+            );
+            if (compareAudience) {
+              const comparePage =
+                compareAudience.estimate.dau / compareAudience.total.dau;
+              let pageRatio;
+              if (page > comparePage) {
+                pageRatio = page / comparePage;
+              } else {
+                pageRatio = -(comparePage / page);
+              }
+              if (!categoriesComparison[compareAccount.facebookId])
+                categoriesComparison[compareAccount.facebookId] = [];
+              categoriesComparison[compareAccount.facebookId].push({
+                category,
+                ratio: pageRatio
+              });
             }
           }
-        );
-        if (audience) {
-          const page = audience.estimate / audience.total;
-          const location = audience.location_estimate / audience.location_total;
+        });
+        categories.push({
+          category,
+          audience,
+          ratio,
+          page,
+          location
+        });
+      }
+    });
+    const mainGeolocationAudience = categories[0].audience.total.dau;
+    // Geolocations
+    let geolocations = [];
+    context.geolocations.forEach(geolocationId => {
+      const geolocation = Geolocations.findOne(geolocationId);
+      const audience = FacebookAudiences.findOne(
+        {
+          campaignId,
+          facebookAccountId: account.facebookId,
+          geolocationId: geolocationId
+        },
+        {
+          sort: { createdAt: -1 },
+          fields: {
+            geolocationId: 1,
+            total: 1
+          }
         }
-      });
-      // Geolocations
-      let geolocations = [];
-      context.geolocations.forEach(geolocationId => {
-        geolocations.push(
-          FacebookAudiences.findOne(
-            {
-              campaignId,
-              facebookAccountId: account.facebookId,
-              geolocationId: geolocationId
-            },
-            {
-              sort: { createdAt: -1 },
-              fields: {
-                geolocationId: 1,
-                total: 1
-              }
-            }
-          )
-        );
-      });
-      result.push({
-        account,
-        categories,
-        geolocations
-        // mainGeolocation: categories[0].total
+      );
+      geolocations.push({
+        geolocation,
+        audience,
+        percentage: audience.total.dau / mainGeolocationAudience
       });
     });
-    return result;
+
+    let comparison = [];
+    accounts.forEach(account => {
+      if (
+        account.facebookId !== facebookAccountId &&
+        categoriesComparison[account.facebookId]
+      ) {
+        comparison.push({
+          account,
+          categories: categoriesComparison[account.facebookId]
+        });
+      }
+    });
+    return {
+      account,
+      categories,
+      geolocations,
+      comparison,
+      mainGeolocation: mainGeolocationAudience
+    };
+    // return result;
   }
 });
 

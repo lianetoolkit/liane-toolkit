@@ -21,11 +21,16 @@ import SingleLineChart from "./SingleLineChart.jsx";
 import AudienceInfo from "./AudienceInfo.jsx";
 import LocationChart from "./LocationChart.jsx";
 import DataAlert from "./DataAlert.jsx";
-import { sum, maxBy, minBy } from "lodash";
+import { sum, maxBy, minBy, sortBy } from "lodash";
 
 const Wrapper = styled.div`
   h2.ui.header {
     font-weight: bold;
+  }
+  h3.ui.header {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 1em;
   }
   h4.ui.header {
     color: #999;
@@ -86,6 +91,30 @@ export default class AudiencePages extends React.Component {
   _latestAudience(item) {
     return item.audiences[item.audiences.length - 1];
   }
+  _getTop(collection, property) {
+    if (collection && collection.length) {
+      return sortBy(collection, property)
+        .reverse()
+        .slice(0, 3);
+    }
+    return [];
+  }
+  _getBottom(collection, property) {
+    if (collection && collection.length) {
+      return sortBy(collection, property).slice(0, 3);
+    }
+    return [];
+  }
+  _formatRatio(val) {
+    if (val >= 0) {
+      return "+" + val.toFixed(2) + "x";
+    } else {
+      return val.toFixed(2) + "x";
+    }
+  }
+  _formatPercentage(val) {
+    return (val * 100).toFixed(2) + "%";
+  }
   render() {
     const {
       loading,
@@ -96,11 +125,13 @@ export default class AudiencePages extends React.Component {
     } = this.props;
     const sample = ["Politics", "Culture", "Education"];
     const samplePlaces = ["São Paulo", "Rio de Janeiro", "Brasília"];
-    console.log(facebookAccount);
-    console.log(summary);
     if (loading && !summary) {
       return <Loading />;
     } else {
+      const topInterests = this._getTop(summary.categories, "ratio");
+      const bottomInterests = this._getBottom(summary.categories, "ratio");
+      const topPlaces = this._getTop(summary.geolocations, "percentage");
+      const bottomPlaces = this._getBottom(summary.geolocations, "percentage");
       return (
         <Wrapper>
           <Dimmer.Dimmable dimmed={loading}>
@@ -116,13 +147,13 @@ export default class AudiencePages extends React.Component {
                   <Grid.Column>
                     <Header as="h4">Top interests</Header>
                     <List horizontal verticalAlign="middle">
-                      {sample.map((item, i) => (
+                      {topInterests.map((item, i) => (
                         <ListItem
                           key={i}
                           icon={i == 0 ? "star" : false}
                           color="orange"
-                          name={item}
-                          label={`+${10 - i}.0x`}
+                          name={item.category.title}
+                          label={this._formatRatio(item.ratio)}
                         />
                       ))}
                     </List>
@@ -130,13 +161,13 @@ export default class AudiencePages extends React.Component {
                   <Grid.Column>
                     <Header as="h4">Bottom interests</Header>
                     <List horizontal verticalAlign="middle">
-                      {sample.map((item, i) => (
+                      {bottomInterests.map((item, i) => (
                         <ListItem
                           key={i}
                           icon={i == 0 ? "star" : false}
                           color="red"
-                          name={item}
-                          label={`${i - 10}.0x`}
+                          name={item.category.title}
+                          label={this._formatRatio(item.ratio)}
                         />
                       ))}
                     </List>
@@ -146,13 +177,13 @@ export default class AudiencePages extends React.Component {
                   <Grid.Column>
                     <Header as="h4">Top places</Header>
                     <List horizontal verticalAlign="middle">
-                      {samplePlaces.map((item, i) => (
+                      {topPlaces.map((item, i) => (
                         <ListItem
                           key={i}
                           icon={i == 0 ? "map" : false}
                           color="orange"
-                          name={item}
-                          label={`${50 - i}%`}
+                          name={item.geolocation.name}
+                          label={this._formatPercentage(item.percentage)}
                         />
                       ))}
                     </List>
@@ -160,13 +191,13 @@ export default class AudiencePages extends React.Component {
                   <Grid.Column>
                     <Header as="h4">Bottom places</Header>
                     <List horizontal verticalAlign="middle">
-                      {samplePlaces.map((item, i) => (
+                      {bottomPlaces.map((item, i) => (
                         <ListItem
                           key={i}
                           icon={i == 0 ? "map" : false}
                           color="red"
-                          name={item}
-                          label={`${10 + i}%`}
+                          name={item.geolocation.name}
+                          label={this._formatPercentage(item.percentage)}
                         />
                       ))}
                     </List>
@@ -174,6 +205,50 @@ export default class AudiencePages extends React.Component {
                 </Grid.Row>
               </Grid>
             </Segment>
+            {summary.comparison.map(item => {
+              const comparisonTop = this._getTop(item.categories, "ratio");
+              const comparisonBottom = this._getBottom(
+                item.categories,
+                "ratio"
+              );
+              return (
+                <Segment key={item.account.facebookId}>
+                  <Header as="h3">Comparing to {item.account.name}</Header>
+                  <Grid columns={2} widths="equal" stretched>
+                    <Grid.Row>
+                      <Grid.Column>
+                        <Header as="h4">Your highlights</Header>
+                        <List horizontal verticalAlign="middle">
+                          {comparisonTop.map((item, i) => (
+                            <ListItem
+                              key={i}
+                              icon={i == 0 ? "star" : false}
+                              color="orange"
+                              name={item.category.title}
+                              label={this._formatRatio(item.ratio)}
+                            />
+                          ))}
+                        </List>
+                      </Grid.Column>
+                      <Grid.Column>
+                        <Header as="h4">Their highlights</Header>
+                        <List horizontal verticalAlign="middle">
+                          {comparisonBottom.map((item, i) => (
+                            <ListItem
+                              key={i}
+                              icon={i == 0 ? "star" : false}
+                              color="red"
+                              name={item.category.title}
+                              label={this._formatRatio(item.ratio)}
+                            />
+                          ))}
+                        </List>
+                      </Grid.Column>
+                    </Grid.Row>
+                  </Grid>
+                </Segment>
+              );
+            })}
           </Segment.Group>
         </Wrapper>
       );
