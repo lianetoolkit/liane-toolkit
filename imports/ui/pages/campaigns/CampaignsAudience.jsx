@@ -2,6 +2,7 @@ import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
+import AudienceSummaryContainer from "/imports/ui/containers/audiences/AudienceSummaryContainer.jsx";
 import AudienceCategoryContainer from "/imports/ui/containers/audiences/AudienceCategoryContainer.jsx";
 import AudienceGeolocationContainer from "/imports/ui/containers/audiences/AudienceGeolocationContainer.jsx";
 import AudiencePagesContainer from "/imports/ui/containers/audiences/AudiencePagesContainer.jsx";
@@ -19,7 +20,7 @@ import {
 
 export default class CampaignsAudience extends React.Component {
   static defaultProps = {
-    navTab: "places"
+    navTab: "summary"
   };
   constructor(props) {
     super(props);
@@ -67,13 +68,13 @@ export default class CampaignsAudience extends React.Component {
           subTitle="Audience"
           nav={[
             {
-              disabled: true, // TODO
-              name: "Audience Summary (soon)",
-              active: navTab == "summary"
-              // href: FlowRouter.path("App.campaignAudience", {
-              //   campaignId: campaign._id,
-              //   navTab: "summary"
-              // })
+              // disabled: true, // TODO
+              name: "Audience Summary",
+              active: navTab == "summary",
+              href: FlowRouter.path("App.campaignAudience", {
+                campaignId: campaign._id,
+                navTab: "summary"
+              })
             },
             {
               name: "Places",
@@ -107,6 +108,50 @@ export default class CampaignsAudience extends React.Component {
             <Loading />
           ) : (
             <Grid>
+              {navTab == "summary" ? (
+                <>
+                  {audienceAccounts && audienceAccounts.length ? (
+                    <Grid.Row style={{ zIndex: 100 }}>
+                      <Grid.Column>
+                        <Sticky offset={0} context={contextRef}>
+                          <Menu>
+                            {audienceAccounts.map(acc => (
+                              <Menu.Item
+                                key={`audienceAccount-${acc.facebookId}`}
+                                active={
+                                  acc.facebookId == audienceAccount.facebookId
+                                }
+                                href={FlowRouter.path(
+                                  "App.campaignAudience",
+                                  {
+                                    navTab,
+                                    campaignId: campaign._id
+                                  },
+                                  {
+                                    account: acc.facebookId
+                                  }
+                                )}
+                              >
+                                {acc.name}
+                              </Menu.Item>
+                            ))}
+                          </Menu>
+                        </Sticky>
+                      </Grid.Column>
+                    </Grid.Row>
+                  ) : null}
+                  <Grid.Row>
+                    <Grid.Column>
+                      <AudienceSummaryContainer
+                        campaign={campaign}
+                        facebookAccount={audienceAccount}
+                        audienceCategories={audienceCategories}
+                        geolocations={geolocations}
+                      />
+                    </Grid.Column>
+                  </Grid.Row>
+                </>
+              ) : null}
               {navTab == "places" && geolocationId ? (
                 <Grid.Row>
                   <Grid.Column>

@@ -62,6 +62,98 @@ export const accountAudienceItem = new ValidatedMethod({
   }
 });
 
+export const campaignAudienceSummary = new ValidatedMethod({
+  name: "audiences.campaignSummary",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    facebookAccountId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, facebookAccountId }) {
+    this.unblock();
+    logger.debug("audiences.campaignSummary called", {
+      campaignId,
+      facebookAccountId
+    });
+
+    const userId = Meteor.userId();
+
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!_.findWhere(campaign.users, { userId })) {
+      throw new Meteor.Error(401, "You are not part of this campaign");
+    }
+
+    const accounts = campaign.audienceAccounts;
+    const context = Contexts.findOne(campaign.contextId);
+    const mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
+
+    let result = [];
+
+    accounts.forEach(account => {
+      // Audience categories
+      let categories = [];
+      context.audienceCategories.forEach(audienceCategoryId => {
+        const audience = FacebookAudiences.findOne(
+          {
+            campaignId,
+            facebookAccountId: account.facebookId,
+            audienceCategoryId,
+            geolocationId: context.mainGeolocationId
+          },
+          {
+            sort: { createdAt: -1 },
+            fields: {
+              audienceCategoryId: 1,
+              estimate: 1,
+              total: 1,
+              location_estimate: 1,
+              location_total: 1
+            }
+          }
+        );
+        if (audience) {
+          const page = audience.estimate / audience.total;
+          const location = audience.location_estimate / audience.location_total;
+        }
+      });
+      // Geolocations
+      let geolocations = [];
+      context.geolocations.forEach(geolocationId => {
+        geolocations.push(
+          FacebookAudiences.findOne(
+            {
+              campaignId,
+              facebookAccountId: account.facebookId,
+              geolocationId: geolocationId
+            },
+            {
+              sort: { createdAt: -1 },
+              fields: {
+                geolocationId: 1,
+                total: 1
+              }
+            }
+          )
+        );
+      });
+      result.push({
+        account,
+        categories,
+        geolocations
+        // mainGeolocation: categories[0].total
+      });
+    });
+    return result;
+  }
+});
+
 export const accountAudienceGeolocationSummary = new ValidatedMethod({
   name: "audiences.accountGeolocationSummary",
   validate: new SimpleSchema({
@@ -432,7 +524,7 @@ export const audiencePagesByCategory = new ValidatedMethod({
           audiences
         });
       });
-      // redisClient.setSync(redisKey, JSON.stringify(result));
+      redisClient.setSync(redisKey, JSON.stringify(result));
       return result;
     }
   }
