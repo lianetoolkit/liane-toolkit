@@ -1,5 +1,6 @@
 import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
+import { Form, Input } from "semantic-ui-react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import styled from "styled-components";
@@ -38,33 +39,58 @@ export default class PeopleEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      sectionKey: null
+      sectionKey: null,
+      formData: {}
     };
     this._handleSubmit = this._handleSubmit.bind(this);
   }
   componentDidMount() {
+    const { person } = this.props;
     const sectionKey = this.props.sectionKey || PeopleMetaModel[0].key;
     this.setState({
-      sectionKey
+      sectionKey,
+      formData: {
+        name: person ? person.name : ""
+      }
     });
   }
   componentWillReceiveProps(nextProps) {
-    const { sectionKey } = this.props;
+    const { sectionKey, person } = this.props;
     if (nextProps.sectionKey !== sectionKey) {
       this.setState({
         sectionKey: nextProps.sectionKey || PeopleMetaModel[0].key
       });
     }
+    if (
+      nextProps.person &&
+      JSON.stringify(nextProps.person) !== JSON.stringify(person)
+    ) {
+      this.setState({
+        formData: {
+          ...this.state.formData,
+          name: nextProps.person.name
+        }
+      });
+    }
   }
   _handleContextRef = contextRef => this.setState({ contextRef });
+  _handleChange = (ev, { name, value }) => {
+    this.setState({
+      formData: {
+        ...this.state.formData,
+        [name]: value
+      }
+    });
+  };
   _handleSubmit(data, cb) {
     const { campaignId, person } = this.props;
-    const { sectionKey } = this.state;
+    const { sectionKey, formData } = this.state;
     Meteor.call(
       "people.metaUpdate",
       {
         campaignId,
         personId: person._id,
+        ...formData,
         sectionKey,
         data
       },
@@ -94,7 +120,7 @@ export default class PeopleEdit extends React.Component {
     return data;
   }
   render() {
-    const { sectionKey, contextRef } = this.state;
+    const { sectionKey, formData, contextRef } = this.state;
     const { loading, campaign, person } = this.props;
     const section = PeopleMetaModel.find(section => section.key == sectionKey);
     return (
@@ -110,55 +136,68 @@ export default class PeopleEdit extends React.Component {
           {loading ? (
             <Loading />
           ) : (
-            <Grid columns={2}>
-              <Grid.Row>
-                <Grid.Column width={5}>
-                  <div className="test">
-                    <Sticky
-                      offset={20}
-                      context={contextRef}
-                      // scrollContext={document.getElementById("app-content")}
-                    >
-                      <Step.Group fluid ordered vertical size="mini">
-                        {PeopleMetaModel.map(section => (
-                          <Step
-                            key={section.key}
-                            active={sectionKey == section.key}
-                            href={FlowRouter.path("App.campaignPeople.edit", {
-                              sectionKey: section.key,
-                              personId: person._id,
-                              campaignId: campaign._id
-                            })}
-                          >
-                            <Step.Content>
-                              <Step.Title>{section.title}</Step.Title>
-                            </Step.Content>
-                          </Step>
-                        ))}
-                      </Step.Group>
-                    </Sticky>
-                  </div>
-                </Grid.Column>
-                {sectionKey && section ? (
-                  <Grid.Column width={11}>
-                    <div ref={this._handleContextRef}>
-                      {section.description ? (
-                        <Description
-                          dangerouslySetInnerHTML={{
-                            __html: section.description
-                          }}
-                        />
-                      ) : null}
-                      <FlexDataForm
-                        config={section}
-                        data={this._flexData()}
-                        onSubmit={this._handleSubmit}
-                      />
+            <>
+              <Form>
+                <Form.Field
+                  label="Name"
+                  name="name"
+                  value={formData.name}
+                  control={Input}
+                  type="text"
+                  onChange={this._handleChange}
+                />
+              </Form>
+              <Divider />
+              <Grid columns={2}>
+                <Grid.Row>
+                  <Grid.Column width={5}>
+                    <div className="test">
+                      <Sticky
+                        offset={20}
+                        context={contextRef}
+                        // scrollContext={document.getElementById("app-content")}
+                      >
+                        <Step.Group fluid ordered vertical size="mini">
+                          {PeopleMetaModel.map(section => (
+                            <Step
+                              key={section.key}
+                              active={sectionKey == section.key}
+                              href={FlowRouter.path("App.campaignPeople.edit", {
+                                sectionKey: section.key,
+                                personId: person._id,
+                                campaignId: campaign._id
+                              })}
+                            >
+                              <Step.Content>
+                                <Step.Title>{section.title}</Step.Title>
+                              </Step.Content>
+                            </Step>
+                          ))}
+                        </Step.Group>
+                      </Sticky>
                     </div>
                   </Grid.Column>
-                ) : null}
-              </Grid.Row>
-            </Grid>
+                  {sectionKey && section ? (
+                    <Grid.Column width={11}>
+                      <div ref={this._handleContextRef}>
+                        {section.description ? (
+                          <Description
+                            dangerouslySetInnerHTML={{
+                              __html: section.description
+                            }}
+                          />
+                        ) : null}
+                        <FlexDataForm
+                          config={section}
+                          data={this._flexData()}
+                          onSubmit={this._handleSubmit}
+                        />
+                      </div>
+                    </Grid.Column>
+                  ) : null}
+                </Grid.Row>
+              </Grid>
+            </>
           )}
         </section>
       </Wrapper>
