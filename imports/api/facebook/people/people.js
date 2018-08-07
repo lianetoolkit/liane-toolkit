@@ -40,35 +40,6 @@ People.schema = new SimpleSchema({
     optional: true,
     index: true
   },
-  // lastInteraction: {
-  //   type: Object,
-  //   optional: true,
-  //   index: true
-  // },
-  // "lastInteraction.date": {
-  //   type: Date,
-  //   optional: true,
-  //   index: true
-  // },
-  // "lastInteraction.facebookId": {
-  //   type: String,
-  //   optional: true,
-  //   index: true
-  // },
-  // "lastInteraction.estimate": {
-  //   type: Boolean,
-  //   defaultValue: false,
-  //   optional: true,
-  //   index: true
-  // },
-  // lastInteractions: {
-  //   type: Array,
-  //   index: true,
-  //   optional: true
-  // },
-  // "lastInteractions.$": {
-  //   type: People.lastInteractionsSchema
-  // },
   receivedAutoPrivateReply: {
     type: Boolean,
     defaultValue: false,

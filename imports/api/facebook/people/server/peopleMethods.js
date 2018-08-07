@@ -8,6 +8,7 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
+import moment from "moment";
 import { get, set, merge, pick, compact, uniq } from "lodash";
 import cep from "cep-promise";
 import { Random } from "meteor/random";
@@ -206,7 +207,7 @@ export const peopleReplyComment = new ValidatedMethod({
     }
   }).validator(),
   run({ personId, facebookAccountId }) {
-    logger.debug("people.getLastComment called", {
+    logger.debug("people.getReplyComment called", {
       personId,
       facebookAccountId
     });
