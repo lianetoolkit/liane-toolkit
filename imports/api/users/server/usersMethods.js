@@ -55,6 +55,7 @@ const validatePermissions = scopes => {
     "ads_read",
     "read_page_mailboxes"
   ];
+  console.log({ permissions, scopes });
   return !difference(permissions, scopes || []).length;
 };
 
@@ -84,6 +85,7 @@ export const validateFBToken = new ValidatedMethod({
       throw new Meteor.Error(401, "Invalid access token");
     }
     if (response.data && !validatePermissions(response.data.scopes)) {
+      console.log("ERRORING");
       throw new Meteor.Error(401, "Missing scope permissions");
     }
     console.log(JSON.stringify(response));
