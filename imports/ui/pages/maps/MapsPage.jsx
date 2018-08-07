@@ -53,7 +53,7 @@ export default class MapsPage extends React.Component {
   }
   componentDidMount() {
     const { campaignId } = this.props;
-    Meteor.call("audiences.campaignSummary", { campaignId }, (err, result) => {
+    Meteor.call("audiences.map", { campaignId }, (err, result) => {
       if (err) {
         console.log(err);
       } else {
