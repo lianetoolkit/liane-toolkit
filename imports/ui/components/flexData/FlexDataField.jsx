@@ -18,6 +18,7 @@ import FacebookInterestsField from "/imports/ui/components/audiences/FacebookInt
 import RepeaterField from "./RepeaterField.jsx";
 import GroupField from "./GroupField.jsx";
 import KeyValField from "./KeyValField.jsx";
+import ReactMarkdown from "react-markdown";
 
 const Wrapper = styled.div`
   margin: 0 0 1em;
@@ -133,7 +134,9 @@ export default class FlexDataField extends React.Component {
     return (
       <Wrapper className="field">
         {label ? <label>{label}</label> : null}
-        {description ? <p className="description">{description}</p> : null}
+        {description ? (
+          <ReactMarkdown className="description" source={description} />
+        ) : null}
         <Form.Field {...this._props(config)} />
       </Wrapper>
     );

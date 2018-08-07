@@ -5,6 +5,7 @@ import { Alerts } from "/imports/ui/utils/Alerts.js";
 import styled from "styled-components";
 import CanvasModel from "/imports/api/canvas/model/canvas";
 import FlexDataForm from "/imports/ui/components/flexData/FlexDataForm.jsx";
+import ReactMarkdown from "react-markdown";
 
 import {
   Step,
@@ -126,11 +127,9 @@ export default class CanvasEdit extends React.Component {
                   <Grid.Column width={11}>
                     <div ref={this._handleContextRef}>
                       {section.description ? (
-                        <Description
-                          dangerouslySetInnerHTML={{
-                            __html: section.description
-                          }}
-                        />
+                        <Description>
+                          <ReactMarkdown source={section.description} />
+                        </Description>
                       ) : null}
                       <FlexDataForm
                         config={section}
