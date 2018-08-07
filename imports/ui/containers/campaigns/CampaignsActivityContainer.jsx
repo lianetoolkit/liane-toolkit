@@ -10,9 +10,12 @@ import { sortBy } from "lodash";
 const ActivitySubs = new SubsManager();
 
 export default withTracker(props => {
+  const queryParams = FlowRouter.current().queryParams;
+
   const activityHandle = ActivitySubs.subscribe("entries.campaignActivity", {
     campaignId: props.campaignId,
-    facebookId: props.facebookId
+    facebookId: props.facebookId,
+    queryParams
   });
 
   const loading = !activityHandle.ready();
@@ -22,25 +25,48 @@ export default withTracker(props => {
     facebookIds = [props.facebookId];
   }
 
+  let query = { resolved: { $ne: true } };
+  if (queryParams.resolved == "true") {
+    query.resolved = true;
+  }
+
   const entriesOptions = {
     transform: function(item) {
       item.entry = Entries.findOne(item.entryId);
+      item.person = People.findOne({
+        facebookId: item.personId,
+        campaignId: props.campaignId
+      });
       return item;
     }
   };
 
-  const likes = activityHandle.ready()
-    ? Likes.find({
-        facebookAccountId: { $in: facebookIds },
-        created_time: { $exists: true }
-      }, entriesOptions).fetch()
-    : [];
-  const comments = activityHandle.ready()
-    ? Comments.find({
-        facebookAccountId: { $in: facebookIds },
-        created_time: { $exists: true }
-      }, entriesOptions).fetch()
-    : [];
+  let likes = [];
+  if (queryParams.type !== "comment") {
+    likes = activityHandle.ready()
+      ? Likes.find(
+          {
+            ...query,
+            facebookAccountId: { $in: facebookIds },
+            created_time: { $exists: true }
+          },
+          entriesOptions
+        ).fetch()
+      : [];
+  }
+  let comments = [];
+  if (queryParams.type !== "reaction") {
+    comments = activityHandle.ready()
+      ? Comments.find(
+          {
+            ...query,
+            facebookAccountId: { $in: facebookIds },
+            created_time: { $exists: true }
+          },
+          entriesOptions
+        ).fetch()
+      : [];
+  }
 
   let activity = [];
 
@@ -55,6 +81,7 @@ export default withTracker(props => {
 
   return {
     loading,
-    activity
+    activity,
+    query
   };
 })(CampaignsPeople);

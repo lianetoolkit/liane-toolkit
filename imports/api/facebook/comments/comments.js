@@ -38,6 +38,11 @@ Comments.schema = new SimpleSchema({
   like_count: {
     type: Number,
     optional: true
+  },
+  resolved: {
+    type: Boolean,
+    optional: true,
+    index: true
   }
 });
 

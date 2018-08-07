@@ -1,6 +1,7 @@
 import React from "react";
 import { Table, Icon } from "semantic-ui-react";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
+import PeopleFormButton from "/imports/ui/components/people/PeopleFormButton.jsx";
 
 const Fragment = React.Fragment;
 
@@ -62,6 +63,9 @@ export default class PeopleTable extends React.Component {
                         <Icon name="facebook official" />
                       </a>
                     ) : null}
+                  </Table.Cell>
+                  <Table.Cell singleLine collapsing>
+                    <PeopleFormButton person={person} iconOnly={true} />
                   </Table.Cell>
                   <Table.Cell singleLine collapsing>
                     <PeopleMetaButtons

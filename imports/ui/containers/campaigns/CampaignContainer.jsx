@@ -45,7 +45,7 @@ export default withTracker(props => {
     ? Campaigns.findOne(props.campaignId, campaignOptions)
     : null;
 
-  let currentFacebookId = FlowRouter.getParam("facebookId");
+  let currentFacebookId = props.content.props.facebookId;
   if (
     !currentFacebookId &&
     campaign &&
@@ -62,7 +62,7 @@ export default withTracker(props => {
     );
   }
 
-  let currentAudienceFacebookId = FlowRouter.getParam("audienceFacebookId");
+  let currentAudienceFacebookId = props.content.props.audienceFacebookId;
   if (
     !currentAudienceFacebookId &&
     campaign &&

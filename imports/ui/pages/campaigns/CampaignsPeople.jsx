@@ -5,6 +5,7 @@ import { Alerts } from "/imports/ui/utils/Alerts.js";
 import PeopleImport from "/imports/ui/components/people/PeopleImport.jsx";
 import PeopleSearch from "/imports/ui/components/people/PeopleSearch.jsx";
 import PeopleSummary from "/imports/ui/components/people/PeopleSummary.jsx";
+import PeopleActivityFilter from "/imports/ui/components/entries/ActivityFilter.jsx";
 import PeopleActivity from "/imports/ui/components/entries/Activity.jsx";
 import XLSX from "xlsx";
 
@@ -15,7 +16,8 @@ import {
   List,
   Button,
   Icon,
-  Checkbox
+  Checkbox,
+  Divider
 } from "semantic-ui-react";
 
 export default class CampaignsPeople extends React.Component {
@@ -24,7 +26,8 @@ export default class CampaignsPeople extends React.Component {
     this.state = {
       editMode: false,
       isLoading: false,
-      importData: null
+      importData: null,
+      activityQuery: {}
     };
     this._handleEditModeClick = this._handleEditModeClick.bind(this);
     this._handleExport = this._handleExport.bind(this);
@@ -93,7 +96,7 @@ export default class CampaignsPeople extends React.Component {
     }
   }
   render() {
-    const { isLoading, editMode, importData } = this.state;
+    const { isLoading, editMode, importData, activityQuery } = this.state;
     const {
       loading,
       importCount,
@@ -136,11 +139,15 @@ export default class CampaignsPeople extends React.Component {
             <Grid>
               {isActivity ? (
                 <Grid.Row>
-                  <PeopleActivity
-                    campaign={campaign}
-                    activity={activity}
-                    accounts={accounts}
-                  />
+                  <Grid.Column>
+                    <PeopleActivityFilter />
+                    <Divider hidden />
+                    <PeopleActivity
+                      campaign={campaign}
+                      activity={activity}
+                      accounts={accounts}
+                    />
+                  </Grid.Column>
                 </Grid.Row>
               ) : (
                 <>

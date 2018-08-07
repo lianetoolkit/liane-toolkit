@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import { Table, Icon, Grid, Dimmer, Button, Loader } from "semantic-ui-react";
 import PeopleTable from "./PeopleTable.jsx";
-import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
+import PeopleInteractivityGrid from "/imports/ui/components/people/PeopleInteractivityGrid.jsx";
 import PeopleMerge from "/imports/ui/components/people/PeopleMerge.jsx";
 import PrivateReply from "/imports/ui/components/people/PrivateReply.jsx";
 import Reaction from "/imports/ui/components/entries/Reaction.jsx";
@@ -21,23 +21,6 @@ const Wrapper = styled.div`
     color: #999;
   }
 `;
-
-const Interactivity = styled.div`
-  opacity: 0.75;
-  .grid {
-    text-align: center;
-    color: #999;
-    img,
-    .icon {
-      display: inline-block;
-      float: left;
-      margin-right: 0.5rem;
-      color: #333;
-    }
-  }
-`;
-
-const reactions = ["like", "love", "wow", "haha", "sad", "angry"];
 
 export default class PeopleSearchResults extends React.Component {
   constructor(props) {
@@ -187,38 +170,10 @@ export default class PeopleSearchResults extends React.Component {
         <>
           <Table.Cell>
             {person.counts ? (
-              <Interactivity>
-                <Grid
-                  className="interactivity"
-                  widths="equal"
-                  columns={7}
-                  verticalAlign="middle"
-                >
-                  <Grid.Row>
-                    <Grid.Column>
-                      <Icon name="comment" />
-                      {person.counts[facebookId] ? (
-                        <span>{person.counts[facebookId].comments || 0}</span>
-                      ) : (
-                        <span>0</span>
-                      )}
-                    </Grid.Column>
-                    {reactions.map(reaction => (
-                      <Grid.Column key={reaction}>
-                        <Reaction size="tiny" reaction={reaction} />
-                        {person.counts[facebookId] &&
-                        person.counts[facebookId].reactions ? (
-                          <span>
-                            {person.counts[facebookId].reactions[reaction]}
-                          </span>
-                        ) : (
-                          <span>0</span>
-                        )}
-                      </Grid.Column>
-                    ))}
-                  </Grid.Row>
-                </Grid>
-              </Interactivity>
+              <PeopleInteractivityGrid
+                facebookId={facebookId}
+                person={person}
+              />
             ) : null}
           </Table.Cell>
           <Table.Cell collapsing>
