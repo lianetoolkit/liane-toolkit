@@ -205,7 +205,7 @@ export const peopleReplyComment = new ValidatedMethod({
     }
   }).validator(),
   run({ personId, facebookAccountId }) {
-    logger.debug("people.getLastComment called", {
+    logger.debug("people.getReplyComment called", {
       personId,
       facebookAccountId
     });
@@ -252,7 +252,7 @@ export const peopleReplyComment = new ValidatedMethod({
     );
 
     // Recheck for reply availability
-    if(comment) {
+    if (comment) {
       const campaignAccount = campaign.accounts.find(
         a => a.facebookId == facebookAccountId
       );
