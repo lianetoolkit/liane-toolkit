@@ -7,7 +7,7 @@
     "test": "meteor npm install && meteor test -p 3100 --driver-package=practicalmeteor:mocha --settings=./.deploy/local/settings.json"
   },
   "dependencies": {
-    "@babel/runtime": "^7.0.0-beta.55",
+    "@babel/runtime": "7.0.0-beta.55",
     "axios": "^0.17.1",
     "babel-runtime": "^6.26.0",
     "cep-promise": "^3.0.0",
