@@ -69,7 +69,8 @@ export const campaignAudienceSummary = new ValidatedMethod({
       type: String
     },
     facebookAccountId: {
-      type: String
+      type: String,
+      optional: true
     }
   }).validator(),
   run({ campaignId, facebookAccountId }) {
@@ -91,6 +92,7 @@ export const campaignAudienceSummary = new ValidatedMethod({
     }
 
     const accounts = campaign.audienceAccounts;
+    facebookAccountId = facebookAccountId || accounts[0].facebookId;
     const context = Contexts.findOne(campaign.contextId);
     const mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
     const account = accounts.find(acc => acc.facebookId == facebookAccountId);

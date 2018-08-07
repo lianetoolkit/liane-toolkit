@@ -9,7 +9,6 @@ let current = null;
 
 export default withTracker(props => {
   // Reset vars when route has changed (ReactiveVar set without a check will cause state change)
-  console.log(props);
   if (
     !current ||
     current.params.campaignId !== FlowRouter.current().params.campaignId ||
