@@ -58,7 +58,6 @@ export default class App extends React.Component {
             Meteor.linkWithFacebook(
               {
                 requestPermissions: [
-                  "user_friends",
                   "public_profile",
                   "email",
                   "manage_pages",

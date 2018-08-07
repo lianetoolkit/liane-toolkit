@@ -47,7 +47,6 @@ export const updateUser = new ValidatedMethod({
 
 const validatePermissions = scopes => {
   const permissions = [
-    "user_friends",
     "public_profile",
     "email",
     "manage_pages",
