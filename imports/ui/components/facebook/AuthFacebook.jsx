@@ -21,6 +21,7 @@ export default class AuthFacebook extends React.Component {
           "pages_show_list",
           "ads_management",
           "ads_read",
+          "business_management",
           "read_page_mailboxes"
         ]
       },
@@ -28,8 +29,8 @@ export default class AuthFacebook extends React.Component {
         if (err) {
           console.log(err);
         } else {
-          Meteor.call('users.exchangeFBToken', (err, data) => {
-            if(err) {
+          Meteor.call("users.exchangeFBToken", (err, data) => {
+            if (err) {
               console.log(err);
             }
           });

@@ -40,6 +40,7 @@ export default class SignInPage extends React.Component {
           "pages_show_list",
           "ads_management",
           "ads_read",
+          "business_management",
           "read_page_mailboxes"
         ]
       },
