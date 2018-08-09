@@ -211,7 +211,7 @@ export default class PeopleSearchResults extends React.Component {
     if (!editMode && replying && replying == person._id) {
       return (
         <Table.Row>
-          <Table.Cell colSpan={6}>
+          <Table.Cell colSpan={7}>
             {loadingReply ? (
               <Loader />
             ) : (
