@@ -357,6 +357,24 @@ export const peopleSendPrivateReply = new ValidatedMethod({
 
     let response;
 
+    const getFormUrl = () => {
+      let formUrl = "";
+      const baseUrl = process.env.ROOT_URL;
+      const formId = PeopleHelpers.getFormId({ personId });
+      formUrl = baseUrl;
+      if (!baseUrl.endsWith("/")) formUrl += "/";
+      formUrl += `f/${formId}`;
+      return formUrl;
+    };
+
+    const parseMessage = message => {
+      // Replace [form] for the form url
+      message = message.replace("[form]", getFormUrl());
+      // Replace [name] for the person name
+      message = message.replace("[name]", person.name);
+      return message;
+    };
+
     const closeComment = () => {
       Comments.update(
         { _id: comment._id },
@@ -373,7 +391,7 @@ export const peopleSendPrivateReply = new ValidatedMethod({
         FB.api(`${comment._id}/private_replies`, "POST", {
           access_token: campaignAccount.accessToken,
           id: comment._id,
-          message
+          message: parseMessage(message)
         })
       );
     } catch (error) {

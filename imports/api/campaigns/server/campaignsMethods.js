@@ -135,6 +135,10 @@ export const campaignsUpdate = new ValidatedMethod({
       $set.name = data.name;
     }
 
+    if (data.autoReplyMessage) {
+      $set.autoReplyMessage = data.autoReplyMessage;
+    }
+
     if (data.adAccountId && campaign.adAccountId !== data.adAccountId) {
       const user = Meteor.users.findOne(userId);
       const token = user.services.facebook.accessToken;

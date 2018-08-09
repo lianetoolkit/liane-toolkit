@@ -364,6 +364,19 @@ export default class CampaignsSettings extends React.Component {
                           value={formData.general.autoReplyMessage}
                           onChange={this._handleChange}
                         />
+                        <p
+                          style={{
+                            marginTop: "-.6rem",
+                            color: "#999",
+                            fontSize: ".9em"
+                          }}
+                        >
+                          You can use <code>[form]</code> shortcode for
+                          automatic placement of the form url and{" "}
+                          <code>[name]</code> for automatic name replacement.<br />
+                          Example: Hi [name], thank you for your comment! Help
+                          the campaign by filling out this form: [form]
+                        </p>
                         <Button fluid primary>
                           Save
                         </Button>

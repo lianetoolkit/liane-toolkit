@@ -53,6 +53,7 @@ const validatePermissions = scopes => {
     "pages_show_list",
     "ads_management",
     "ads_read",
+    "business_management",
     "read_page_mailboxes"
   ];
   return !difference(permissions, scopes || []).length;
@@ -68,7 +69,6 @@ export const validateFBToken = new ValidatedMethod({
   run({ token }) {
     const appToken = Promise.await(
       FB.api("oauth/access_token", {
-        version: "v2.12",
         client_id: Meteor.settings.facebook.clientId,
         client_secret: Meteor.settings.facebook.clientSecret,
         grant_type: "client_credentials"

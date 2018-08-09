@@ -85,6 +85,20 @@ export default class PrivateReply extends React.Component {
           value={messageType == "auto" ? defaultMessage : message}
           onChange={this._handleChange}
         />
+        {messageType !== "auto" ? (
+          <p
+            style={{
+              marginTop: "-.6rem",
+              color: "#999",
+              fontSize: ".9em"
+            }}
+          >
+            You can use <code>[form]</code> shortcode for automatic placement of
+            the form url and <code>[name]</code> for automatic name replacement.<br />
+            Example: Hi [name], thank you for your comment! Help the campaign by
+            filling out this form: [form]
+          </p>
+        ) : null}
         <Button primary floated="right" icon disabled={loading}>
           <Icon loading={loading} name={loading ? "spinner" : "comments"} />{" "}
           Send private reply

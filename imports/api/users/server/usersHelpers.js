@@ -41,7 +41,6 @@ const UsersHelpers = {
             fb_exchange_token: token
           },
           {
-            version: "v2.12",
             client_id: Meteor.settings.facebook.clientId,
             client_secret: Meteor.settings.facebook.clientSecret
           }
