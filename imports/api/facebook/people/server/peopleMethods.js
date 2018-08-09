@@ -367,8 +367,10 @@ export const peopleSendPrivateReply = new ValidatedMethod({
     };
 
     const parseMessage = message => {
-      // Replace [form] to person form url
+      // Replace [form] for the form url
       message = message.replace("[form]", getFormUrl());
+      // Replace [name] for the person name
+      message = message.replace("[name]", person.name);
       return message;
     };
 
