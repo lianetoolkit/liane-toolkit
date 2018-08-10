@@ -135,6 +135,22 @@ export default class PeopleSearchResults extends React.Component {
   _getMeta(person, key) {
     return get(person, "campaignMeta." + key);
   }
+  _handleRemoveClick = personId => () => {
+    if (confirm("Are you sure?")) {
+      Meteor.call("people.remove", { personId }, (err, res) => {
+        if (err) {
+          Alerts.error(err);
+        } else {
+          const { people } = this.state;
+          const newPeople = [...people].filter(p => p._id !== personId);
+          this.setState({
+            people: newPeople
+          });
+          Alerts.success("Person removed successfully");
+        }
+      });
+    }
+  };
   _extraCells(person) {
     const { editMode, facebookId } = this.props;
     const { duplicates, replying, loadingReply, replyingComment } = this.state;
@@ -154,14 +170,19 @@ export default class PeopleSearchResults extends React.Component {
             />
           </Table.Cell>
           <Table.Cell collapsing>
-            <a
-              href={FlowRouter.path("App.campaignPeople.edit", {
-                campaignId: person.campaignId,
-                personId: person._id
-              })}
-            >
-              <Icon name="edit" /> Edit user
-            </a>
+            <Button.Group size="mini" basic>
+              <Button
+                href={FlowRouter.path("App.campaignPeople.edit", {
+                  campaignId: person.campaignId,
+                  personId: person._id
+                })}
+              >
+                <Icon name="edit" /> Edit
+              </Button>
+              <Button onClick={this._handleRemoveClick(person._id)}>
+                <Icon name="close" /> Remove
+              </Button>
+            </Button.Group>
           </Table.Cell>
         </>
       );

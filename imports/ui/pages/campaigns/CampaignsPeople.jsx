@@ -75,12 +75,8 @@ export default class CampaignsPeople extends React.Component {
     let file = ev.currentTarget.files[0];
     const reader = new FileReader();
     reader.onload = () => {
-      let binary = "";
       let bytes = new Uint8Array(reader.result);
-      for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const wb = XLSX.read(binary, { type: "binary" });
+      const wb = XLSX.read(bytes, { type: "array" });
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(sheet);
       this.setState({ importData: json });

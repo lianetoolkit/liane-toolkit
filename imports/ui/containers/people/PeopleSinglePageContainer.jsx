@@ -34,7 +34,7 @@ export default withTracker(props => {
   const person = personHandle.ready() ? People.findOne(props.personId) : null;
 
   const likes =
-    personHandle.ready() && likesHandle.ready()
+    personHandle.ready() && likesHandle.ready() && person
       ? Likes.find(
           {
             personId: person.facebookId,
@@ -46,7 +46,7 @@ export default withTracker(props => {
         ).fetch()
       : null;
   const comments =
-    personHandle.ready() && commentsHandle.ready()
+    personHandle.ready() && commentsHandle.ready() && person
       ? Comments.find(
           {
             personId: person.facebookId,
@@ -57,8 +57,6 @@ export default withTracker(props => {
           entriesOptions
         ).fetch()
       : null;
-
-  console.log({ likes, comments });
 
   return {
     loading,
