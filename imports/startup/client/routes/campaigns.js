@@ -11,6 +11,7 @@ import CanvasEditContainer from "/imports/ui/containers/canvas/CanvasEditContain
 
 import CampaignsSettingsContainer from "/imports/ui/containers/campaigns/CampaignsSettingsContainer.jsx";
 import CampaignsPeopleContainer from "/imports/ui/containers/campaigns/CampaignsPeopleContainer.jsx";
+import CampaignsActivityContainer from "/imports/ui/containers/campaigns/CampaignsActivityContainer.jsx";
 import PeopleSinglePageContainer from "/imports/ui/containers/people/PeopleSinglePageContainer.jsx";
 import PeopleEditContainer from "/imports/ui/containers/people/PeopleEditContainer.jsx";
 import CampaignsAudienceContainer from "/imports/ui/containers/campaigns/CampaignsAudienceContainer.jsx";
@@ -110,6 +111,22 @@ campaignRoutes.route("/people/edit/:personId/:sectionKey?", {
     });
   }
 });
+campaignRoutes.route("/people/activity/:facebookId?", {
+  name: "App.campaignPeople.activity",
+  action: function(params) {
+    addTitle(`${APP_NAME} | Campaign`);
+    return _mount(params, {
+      content: {
+        component: CampaignsActivityContainer,
+        props: {
+          campaignId: params.campaignId,
+          facebookId: params.facebookId,
+          isActivity: true
+        }
+      }
+    });
+  }
+});
 campaignRoutes.route("/people/:facebookId?", {
   name: "App.campaignPeople",
   action: function(params) {
@@ -117,61 +134,64 @@ campaignRoutes.route("/people/:facebookId?", {
     return _mount(params, {
       content: {
         component: CampaignsPeopleContainer,
-        props: { campaignId: params.campaignId, facebookId: params.facebookId }
+        props: {
+          campaignId: params.campaignId,
+          facebookId: params.facebookId
+        }
       }
     });
   }
 });
-campaignRoutes.route("/audience/:audienceFacebookId?", {
+campaignRoutes.route("/audience/:navTab?", {
   name: "App.campaignAudience",
-  action: function(params) {
+  action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Campaign`);
     return _mount(params, {
       content: {
         component: CampaignsAudienceContainer,
         props: {
+          navTab: params.navTab,
           campaignId: params.campaignId,
-          audienceFacebookId: params.audienceFacebookId
+          audienceFacebookId: queryParams.account
         }
       }
     });
   }
 });
-campaignRoutes.route("/audience/:audienceFacebookId/category/:categoryId", {
+campaignRoutes.route("/audience/:navTab/category/:audienceCategoryId", {
   name: "App.campaignAudience.category",
-  action: function(params) {
+  action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Campaign`);
     return _mount(params, {
       content: {
         component: CampaignsAudienceContainer,
         props: {
+          navTab: params.navTab,
           campaignId: params.campaignId,
-          audienceFacebookId: params.audienceFacebookId,
-          categoryId: params.categoryId
+          audienceCategoryId: params.audienceCategoryId,
+          audienceFacebookId: queryParams.account
         }
       }
     });
   }
 });
-campaignRoutes.route(
-  "/audience/:audienceFacebookId/geolocation/:geolocationId",
-  {
-    name: "App.campaignAudience.geolocation",
-    action: function(params) {
-      addTitle(`${APP_NAME} | Campaign`);
-      return _mount(params, {
-        content: {
-          component: CampaignsAudienceContainer,
-          props: {
-            campaignId: params.campaignId,
-            audienceFacebookId: params.audienceFacebookId,
-            geolocationId: params.geolocationId
-          }
+campaignRoutes.route("/audience/:navTab/geolocation/:geolocationId", {
+  name: "App.campaignAudience.geolocation",
+  action: function(params, queryParams) {
+    addTitle(`${APP_NAME} | Campaign`);
+    return _mount(params, {
+      content: {
+        component: CampaignsAudienceContainer,
+        props: {
+          navTab: params.navTab,
+          campaignId: params.campaignId,
+          geolocationId: params.geolocationId,
+          audienceFacebookId: queryParams.account
         }
-      });
-    }
+      }
+    });
   }
-);
+});
 campaignRoutes.route("/entries/:facebookId?", {
   name: "App.campaignEntries",
   action: function(params) {

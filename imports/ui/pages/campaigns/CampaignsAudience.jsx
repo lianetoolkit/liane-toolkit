@@ -2,11 +2,10 @@ import React from "react";
 import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import Alerts from "/imports/ui/utils/Alerts.js";
-import AudiencesIndexTable from "/imports/ui/components/audiences/AudiencesIndexTable.jsx";
 import AudienceGeolocationSummaryContainer from "/imports/ui/containers/audiences/AudienceGeolocationSummaryContainer.jsx";
-import AudienceCategoriesListContainer from "/imports/ui/containers/audiences/AudienceCategoriesListContainer.jsx";
 import AudienceCategoryContainer from "/imports/ui/containers/audiences/AudienceCategoryContainer.jsx";
 import AudienceGeolocationContainer from "/imports/ui/containers/audiences/AudienceGeolocationContainer.jsx";
+import AudienceExploreContainer from "/imports/ui/containers/audiences/AudienceExploreContainer.jsx";
 
 import {
   Grid,
@@ -19,6 +18,9 @@ import {
 } from "semantic-ui-react";
 
 export default class CampaignsAudience extends React.Component {
+  static defaultProps = {
+    navTab: "places"
+  };
   constructor(props) {
     super(props);
     this.state = {};
@@ -40,7 +42,10 @@ export default class CampaignsAudience extends React.Component {
       audienceAccount,
       geolocations,
       categoryId,
-      geolocationId
+      geolocationId,
+      audienceCategories,
+      audienceCategoryId,
+      navTab
     } = this.props;
     const { audienceAccounts } = campaign;
 
@@ -60,67 +65,122 @@ export default class CampaignsAudience extends React.Component {
             campaignId: campaign ? campaign._id : ""
           })}
           subTitle="Audience - Daily Active Users Estimates"
+          nav={[
+            {
+              disabled: true, // TODO
+              name: "Audience Summary",
+              active: navTab == "summary"
+              // href: FlowRouter.path("App.campaignAudience", {
+              //   campaignId: campaign._id,
+              //   navTab: "summary"
+              // })
+            },
+            {
+              name: "Places",
+              active: navTab == "places",
+              href: FlowRouter.path("App.campaignAudience", {
+                campaignId: campaign._id,
+                navTab: "places"
+              })
+            },
+            {
+              disabled: true, // TODO
+              name: "Compare",
+              active: navTab == "compare"
+              // href: FlowRouter.path("App.campaignAudience", {
+              //   campaignId: campaign._id,
+              //   navTab: "themes"
+              // })
+            },
+            {
+              name: "Explore",
+              active: navTab == "explore",
+              href: FlowRouter.path("App.campaignAudience", {
+                campaignId: campaign._id,
+                navTab: "explore"
+              })
+            }
+          ]}
         />
         <section className="content">
           {loading ? (
             <Loading />
           ) : (
             <Grid>
-              {audienceAccounts && audienceAccounts.length ? (
-                <Grid.Row style={{ zIndex: 100 }}>
+              {navTab == "places" && geolocationId ? (
+                <Grid.Row>
                   <Grid.Column>
-                    <Sticky offset={0} context={contextRef}>
-                      <Menu>
-                        {audienceAccounts.map(acc => (
-                          <Menu.Item
-                            key={`audienceAccount-${acc.facebookId}`}
-                            active={
-                              acc.facebookId == audienceAccount.facebookId
-                            }
-                            href={FlowRouter.path(path, {
-                              campaignId: campaign._id,
-                              audienceFacebookId: acc.facebookId,
-                              categoryId: categoryId,
-                              geolocationId: geolocationId
-                            })}
-                          >
-                            {acc.name}
-                          </Menu.Item>
-                        ))}
-                      </Menu>
-                    </Sticky>
+                    <AudienceGeolocationContainer
+                      campaign={campaign}
+                      facebookAccount={audienceAccount}
+                      audienceCategories={audienceCategories}
+                      audienceCategoryId={audienceCategoryId}
+                      geolocations={geolocations}
+                    />
                   </Grid.Column>
                 </Grid.Row>
               ) : null}
-              <Grid.Row>
-                <Grid.Column>
-                  {audienceAccount ? (
-                    <div>
+              {navTab == "explore" && geolocationId ? (
+                <>
+                  {audienceAccounts && audienceAccounts.length ? (
+                    <Grid.Row style={{ zIndex: 100 }}>
+                      <Grid.Column>
+                        <Sticky offset={0} context={contextRef}>
+                          <Menu>
+                            {audienceAccounts.map(acc => (
+                              <Menu.Item
+                                key={`audienceAccount-${acc.facebookId}`}
+                                active={
+                                  acc.facebookId == audienceAccount.facebookId
+                                }
+                                href={FlowRouter.path(
+                                  path,
+                                  {
+                                    navTab,
+                                    campaignId: campaign._id,
+                                    categoryId: categoryId,
+                                    geolocationId: geolocationId
+                                  },
+                                  {
+                                    account: acc.facebookId
+                                  }
+                                )}
+                              >
+                                {acc.name}
+                              </Menu.Item>
+                            ))}
+                          </Menu>
+                        </Sticky>
+                      </Grid.Column>
+                    </Grid.Row>
+                  ) : null}
+                  <Grid.Row>
+                    <Grid.Column>
                       <AudienceGeolocationSummaryContainer
                         campaignId={campaign._id}
                         facebookAccountId={audienceAccount.facebookId}
                         geolocationId={geolocationId}
                       />
                       <Divider hidden />
+                      <AudienceExploreContainer
+                        campaign={campaign}
+                        facebookAccount={audienceAccount}
+                        geolocationId={geolocationId}
+                        geolocations={geolocations}
+                      />
+                    </Grid.Column>
+                  </Grid.Row>
+                </>
+              ) : null}
+              <Grid.Row>
+                <Grid.Column>
+                  {audienceAccount ? (
+                    <div>
                       {categoryId ? (
                         <AudienceCategoryContainer
                           campaignId={campaign._id}
                           facebookAccountId={audienceAccount.facebookId}
                           audienceCategoryId={categoryId}
-                        />
-                      ) : null}
-                      {geolocationId ? (
-                        <AudienceGeolocationContainer
-                          campaign={campaign}
-                          facebookAccount={audienceAccount}
-                          geolocationId={geolocationId}
-                          geolocations={geolocations}
-                        />
-                      ) : null}
-                      {!categoryId && !geolocationId ? (
-                        <AudienceCategoriesListContainer
-                          campaignId={campaign._id}
-                          facebookAccountId={audienceAccount.facebookId}
                         />
                       ) : null}
                     </div>

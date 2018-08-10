@@ -1,9 +1,9 @@
 import { Meteor } from "meteor/meteor";
 import { ReactiveVar } from "meteor/reactive-var";
 import { withTracker } from "meteor/react-meteor-data";
-import AudienceGeolocation from "/imports/ui/components/audiences/AudienceGeolocation.jsx";
+import AudienceExplore from "/imports/ui/components/audiences/AudienceExplore.jsx";
 
-const audienceCategory = new ReactiveVar(null);
+const geolocation = new ReactiveVar(null);
 const loading = new ReactiveVar(false);
 let current = null;
 
@@ -12,29 +12,25 @@ export default withTracker(props => {
   if (
     !current ||
     current.params.campaignId !== FlowRouter.current().params.campaignId ||
-    current.params.audienceFacebookId !==
-      FlowRouter.current().params.audienceFacebookId ||
-    current.params.geolocationId !==
-      FlowRouter.current().params.geolocationId ||
-    current.params.audienceCategoryId !==
-      FlowRouter.current().params.audienceCategoryId
+    current.queryParams.account !== FlowRouter.current().queryParams.account ||
+    current.params.geolocationId !== FlowRouter.current().params.geolocationId
   ) {
     current = FlowRouter.current();
     loading.set(true);
     Meteor.call(
-      "audiences.byCategory",
+      "audiences.byGeolocation",
       {
         campaignId: props.campaign._id,
         facebookAccountId: props.facebookAccount.facebookId,
-        audienceCategoryId: props.audienceCategoryId
+        geolocationId: props.geolocationId
       },
       (error, data) => {
         if (error) {
           console.warn(error);
         }
         loading.set(false);
-        if (JSON.stringify(audienceCategory.get()) !== JSON.stringify(data)) {
-          audienceCategory.set(data);
+        if (JSON.stringify(geolocation.get()) !== JSON.stringify(data)) {
+          geolocation.set(data);
         }
       }
     );
@@ -43,6 +39,6 @@ export default withTracker(props => {
   return {
     ...props,
     loading: loading.get(),
-    audienceCategory: audienceCategory.get()
+    geolocation: geolocation.get()
   };
-})(AudienceGeolocation);
+})(AudienceExplore);

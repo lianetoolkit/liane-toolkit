@@ -5,6 +5,7 @@ import { Grid, Icon } from "semantic-ui-react";
 import EntryInteractivityCounts from "./EntryInteractivityCounts.jsx";
 
 const Wrapper = styled.div`
+  width: 100%;
   &:hover {
     .entry-interactivity {
       opacity: 1;
@@ -27,7 +28,7 @@ export default class Entry extends React.Component {
   _content() {
     const { entry } = this.props;
     if (entry.message) {
-      return entry.message.substring(0, 90) + "...";
+      return entry.message.substring(0, 120) + "...";
     }
     return "";
   }

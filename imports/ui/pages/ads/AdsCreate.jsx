@@ -77,6 +77,8 @@ export default class AdsCreate extends React.Component {
       fields: Object.assign({}, initialFields)
     };
     this._handleChange = this._handleChange.bind(this);
+    this._handleBidAmountChange = this._handleBidAmountChange.bind(this);
+    this._handleDailyBudgetChange = this._handleDailyBudgetChange.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
   }
   componentDidMount() {
@@ -115,6 +117,28 @@ export default class AdsCreate extends React.Component {
       );
     }
   }
+  _handleBidAmountChange(value) {
+    this.setState({
+      fields: {
+        ...this.state.fields,
+        adConfig: {
+          ...this.state.fields.adConfig,
+          bid_amount: value
+        }
+      }
+    });
+  }
+  _handleDailyBudgetChange(value) {
+    this.setState({
+      fields: {
+        ...this.state.fields,
+        adConfig: {
+          ...this.state.fields.adConfig,
+          daily_budget: value
+        }
+      }
+    });
+  }
   _handleChange = (e, { name, value }) => {
     if (name.indexOf("adConfig.") === 0) {
       this.setState({
@@ -148,7 +172,7 @@ export default class AdsCreate extends React.Component {
     const data = {
       ...fields,
       campaignId,
-      audienceFacebookId,
+      facebookAccountId: audienceFacebookId,
       audienceCategoryId
     };
     Meteor.call("ads.create", data, error => {
@@ -159,12 +183,12 @@ export default class AdsCreate extends React.Component {
         Alerts.success(
           "Adset created successfully. Access your Facebook Business Manager to create and manage your ads."
         );
-        {
-          FlowRouter.go("App.campaignAudience", {
-            campaignId,
-            facebookId: audienceFacebookId
-          });
-        }
+        // {
+        //   FlowRouter.go("App.campaignAudience", {
+        //     campaignId,
+        //     facebookId: audienceFacebookId
+        //   });
+        // }
       }
     });
   }
@@ -297,7 +321,9 @@ export default class AdsCreate extends React.Component {
                           checked={fields.useConnection}
                           onChange={this._handleCheckbox}
                           name="useConnection"
-                          label={`Target people connected to ${audienceAccount.name}`}
+                          label={`Target people connected to ${
+                            audienceAccount.name
+                          }`}
                         />
                         <Divider />
                         <Form.Field
@@ -324,7 +350,7 @@ export default class AdsCreate extends React.Component {
                           name="adConfig.bid_amount"
                           label="Bid amount"
                           unit={adAccount.currency}
-                          onChange={this._handleChange}
+                          onInputChange={this._handleBidAmountChange}
                           value={fields.adConfig.bid_amount}
                         />
                         <Form.Field
@@ -332,7 +358,7 @@ export default class AdsCreate extends React.Component {
                           name="adConfig.daily_budget"
                           label="Daily budget"
                           unit={adAccount.currency}
-                          onChange={this._handleChange}
+                          onInputChange={this._handleDailyBudgetChange}
                           value={fields.adConfig.daily_budget}
                         />
                         {estimate ? (

@@ -1,5 +1,4 @@
 import SimpleSchema from "simpl-schema";
-import { Promise } from "meteor/promise";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";

@@ -34,7 +34,6 @@ export default class SignInPage extends React.Component {
     Meteor.loginWithFacebook(
       {
         requestPermissions: [
-          "user_friends",
           "public_profile",
           "email",
           "manage_pages",

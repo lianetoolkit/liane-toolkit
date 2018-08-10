@@ -1,10 +1,22 @@
 import React from "react";
 import { Message, Divider } from "semantic-ui-react";
+import { difference } from "lodash";
 
 export default class AppAlerts extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      alerts: {},
+      permissions: [
+        "public_profile",
+        "email",
+        "manage_pages",
+        "pages_show_list",
+        "ads_management",
+        "ads_read",
+        "read_page_mailboxes"
+      ]
+    };
     this._handlePermissionsClick = this._handlePermissionsClick.bind(this);
   }
   componentDidMount() {
@@ -15,15 +27,22 @@ export default class AppAlerts extends React.Component {
   }
   _validateUser() {
     const { currentUser } = this.props;
+    const { permissions } = this.state;
     if (currentUser) {
       const fbData = currentUser.services
         ? currentUser.services.facebook
         : false;
       if (fbData) {
         if (fbData.declined_permissions && fbData.declined_permissions.length) {
-          this.setState({
-            facebook_permissions: fbData.declined_permissions
-          });
+          const diff = difference(permissions, fbData.declined_permissions);
+          if (diff.length != permissions.length) {
+            this.setState({
+              alerts: {
+                ...this.state.alerts,
+                facebook_permissions: permissions
+              }
+            });
+          }
         }
       }
     }
@@ -66,7 +85,7 @@ export default class AppAlerts extends React.Component {
     }
   }
   render() {
-    const alerts = Object.keys(this.state);
+    const alerts = Object.keys(this.state.alerts);
     const { currentUser } = this.props;
     if (alerts && alerts.length) {
       return (

@@ -29,19 +29,29 @@ const Wrapper = styled.div`
 
 const flags = [
   {
+    name: "Supporters",
+    icon: "star",
+    prop: "supporter"
+  },
+  {
+    name: "Volunteers",
+    icon: "hand point up",
+    prop: "volunteer"
+  },
+  {
+    name: "Mobilizers",
+    icon: "users",
+    prop: "mobilizer"
+  },
+  {
+    name: "Donors",
+    icon: "currency",
+    prop: "donor"
+  },
+  {
     name: "Incluencers",
     icon: "certificate",
     prop: "influencer"
-  },
-  {
-    name: "Starred",
-    icon: "star",
-    prop: "starred"
-  },
-  {
-    name: "Electorate",
-    icon: "thumbs up",
-    prop: "voteIntent"
   },
   {
     name: "Trolls",
@@ -78,8 +88,10 @@ export default class PeopleSearch extends React.Component {
     const { options } = this.state;
     if (nextProps.facebookId !== facebookId) {
       this.setState({
+        activePage: 1,
         options: {
           ...options,
+          skip: 0,
           facebookId: nextProps.facebookId
         }
       });
@@ -153,9 +165,9 @@ export default class PeopleSearch extends React.Component {
     return (
       <Wrapper>
         <h3>Find people</h3>
-        <Grid columns={4} widths="equal" verticalAlign="middle">
+        <Grid columns={4} verticalAlign="middle">
           <Grid.Row>
-            <Grid.Column>
+            <Grid.Column width={4}>
               <span className="filter-label">Text search</span>
               <Form.Field
                 fluid
@@ -165,7 +177,7 @@ export default class PeopleSearch extends React.Component {
                 onChange={this._handleSearchChange}
               />
             </Grid.Column>
-            <Grid.Column>
+            <Grid.Column width={6}>
               <span className="filter-label">Filter marked as</span>
               <Button.Group basic fluid>
                 {flags.map(flag => (
@@ -183,8 +195,8 @@ export default class PeopleSearch extends React.Component {
                 ))}
               </Button.Group>
             </Grid.Column>
-            <Grid.Column>
-              <span className="filter-label">Filter by page</span>
+            <Grid.Column width={3}>
+              <span className="filter-label">Filter</span>
               <Form.Field
                 control={Select}
                 value={search.accountFilter}
@@ -198,6 +210,11 @@ export default class PeopleSearch extends React.Component {
                     text: "Show all people"
                   },
                   {
+                    key: "import",
+                    value: "import",
+                    text: "Imported"
+                  },
+                  {
                     key: "account",
                     value: "account",
                     text: "Only from this page"
@@ -205,7 +222,7 @@ export default class PeopleSearch extends React.Component {
                 ]}
               />
             </Grid.Column>
-            <Grid.Column>
+            <Grid.Column width={3}>
               <span className="filter-label">Sorting</span>
               <Form.Field
                 control={Select}

@@ -1,9 +1,87 @@
+import axios from "axios";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { Random } from "meteor/random";
-import { uniqBy, flatten, get, set } from "lodash";
+import { uniqBy, groupBy, mapKeys, flatten, get, set } from "lodash";
+import crypto from "crypto";
+
+const googleMapsKey = Meteor.settings.googleMaps;
 
 const PeopleHelpers = {
+  getFormId({ personId, generate }) {
+    const person = People.findOne(personId);
+    if (!person) {
+      throw new Meteor.Error(404, "Person not found");
+    }
+    if (generate || !person.formId) {
+      return this.generateFormId({ person });
+    } else {
+      return person.formId;
+    }
+  },
+  generateFormId({ person }) {
+    const formId = crypto
+      .createHash("sha1")
+      .update(person._id + new Date().getTime())
+      .digest("hex")
+      .substr(0, 7);
+    People.update(person._id, { $set: { formId } });
+    return formId;
+  },
+  geocode({ address }) {
+    let str = "";
+    if (address.country) {
+      str = address.country + " " + str;
+    }
+    if (address.zipcode) {
+      str = address.zipcode + " " + str;
+    }
+    if (address.region) {
+      str = address.region + " " + str;
+    }
+    if (address.city) {
+      str = address.city + " " + str;
+    }
+    if (address.neighbourhood) {
+      str = address.neighbourhood + " " + str;
+    }
+    if (address.street) {
+      if (address.number) {
+        str = address.number + " " + str;
+      }
+      str = address.street + " " + str;
+    }
+    return new Promise((resolve, reject) => {
+      if (str && googleMapsKey) {
+        axios
+          .get("https://maps.googleapis.com/maps/api/geocode/json", {
+            params: {
+              address: str,
+              key: googleMapsKey
+            }
+          })
+          .then(res => {
+            if (res.data.results && res.data.results.length) {
+              const data = res.data.results[0];
+              resolve({
+                formattedAddress: data.formatted_address,
+                coordinates: [
+                  data.geometry.location.lat,
+                  data.geometry.location.lng
+                ]
+              });
+            } else {
+              reject();
+            }
+          })
+          .catch(err => {
+            reject(err);
+          });
+      } else {
+        reject();
+      }
+    });
+  },
   updateFBUsers({ campaignId, facebookAccountId }) {
     const collection = People.rawCollection();
     const aggregate = Meteor.wrapAsync(collection.aggregate, collection);
@@ -96,12 +174,27 @@ const PeopleHelpers = {
 
     return;
   },
-  findDuplicates({ campaignId, personId }) {
+  findDuplicates({ personId }) {
     const person = People.findOne(personId);
     let matches = [];
     const _queries = () => {
       let queries = [];
-      let defaultQuery = { _id: { $ne: person._id }, campaignId, $or: [] };
+      let defaultQuery = {
+        _id: { $ne: person._id },
+        campaignId: person.campaignId,
+        $or: []
+      };
+      // avoid matching person with different facebookId
+      if (person.facebookId) {
+        defaultQuery.$and = [
+          {
+            $or: [
+              { facebookId: { $exists: false } },
+              { facebookId: person.facebookId }
+            ]
+          }
+        ];
+      }
       // sorted by uniqueness importance
       const fieldGroups = [
         ["name"],
@@ -136,7 +229,17 @@ const PeopleHelpers = {
         matches.push(People.find(query).fetch());
       }
     }
-    return uniqBy(flatten(matches), "_id");
+
+    let grouped = groupBy(uniqBy(flatten(matches), "_id"), "facebookId");
+
+    return mapKeys(grouped, (value, key) => {
+      if (person.facebookId && key == person.facebookId) {
+        return "same";
+      } else if (key == "undefined") {
+        return "none";
+      }
+      return key;
+    });
   },
   importPerson({ campaignId, person }) {
     let selector = { _id: Random.id(), campaignId };
@@ -190,6 +293,9 @@ const PeopleHelpers = {
                     $set: {
                       ...person.$set,
                       [`${key}.$.val`]: value.val
+                    },
+                    $setOnInsert: {
+                      source: "import"
                     }
                   },
                   { multi: false }
@@ -220,7 +326,18 @@ const PeopleHelpers = {
       _upsertAddToSet();
     }
 
-    return People.upsert(selector, person, { multi: false });
+    res = People.upsert(
+      selector,
+      {
+        ...person,
+        $setOnInsert: {
+          source: "import"
+        }
+      },
+      { multi: false }
+    );
+
+    return res;
   }
 };
 

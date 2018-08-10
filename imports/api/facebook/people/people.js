@@ -1,14 +1,6 @@
 import SimpleSchema from "simpl-schema";
-import { Index, MongoDBEngine } from "meteor/easy:search";
-import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 
 const People = new Mongo.Collection("people");
-
-People.lastInteractionsSchema = new SimpleSchema({
-  facebookId: { type: String },
-  date: { type: Date, optional: true },
-  estimate: { type: Boolean, defaultValue: false }
-});
 
 People.schema = new SimpleSchema({
   facebookId: {
@@ -42,39 +34,42 @@ People.schema = new SimpleSchema({
     optional: true,
     index: true
   },
-  // lastInteraction: {
-  //   type: Object,
-  //   optional: true,
-  //   index: true
-  // },
-  // "lastInteraction.date": {
-  //   type: Date,
-  //   optional: true,
-  //   index: true
-  // },
-  // "lastInteraction.facebookId": {
-  //   type: String,
-  //   optional: true,
-  //   index: true
-  // },
-  // "lastInteraction.estimate": {
-  //   type: Boolean,
-  //   defaultValue: false,
-  //   optional: true,
-  //   index: true
-  // },
-  // lastInteractions: {
-  //   type: Array,
-  //   index: true,
-  //   optional: true
-  // },
-  // "lastInteractions.$": {
-  //   type: People.lastInteractionsSchema
-  // },
+  source: {
+    type: String,
+    optional: true,
+    index: true
+  },
+  filledForm: {
+    type: Boolean,
+    optional: true,
+    index: true
+  },
   counts: {
     type: Object,
     blackbox: true,
     optional: true
+  },
+  formId: {
+    type: String,
+    index: true,
+    optional: true
+  },
+  location: {
+    type: Object,
+    optional: true
+  },
+  "location.formattedAddress": {
+    type: String,
+    optional: true
+  },
+  "location.coordinates": {
+    type: Array,
+    minCount: 2,
+    maxCount: 2,
+    optional: true
+  },
+  "location.coordinates.$": {
+    type: Number
   },
   createdAt: {
     type: Date,
@@ -102,10 +97,6 @@ People.attachSchema(People.schema);
 
 Meteor.startup(() => {
   if (Meteor.isServer) {
-    People.rawCollection().dropIndex("name_text");
-    People.rawCollection().dropIndex(
-      "campaignMeta.influencer_1_campaignMeta.voteIntent_1_campaignMeta.starred_1_campaignMeta.troll_1"
-    );
     People.rawCollection().createIndex({
       name: "text",
       "campaignMeta.contact.email": "text"
