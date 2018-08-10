@@ -5,15 +5,11 @@ import _ from "underscore";
 const fields = {
   name: {
     label: "Name",
-    suggestions: ["name", "fullname", "full name"]
+    suggestions: ["name", "fullname", "full name", "nome"]
   },
   "campaignMeta.contact.email": {
     label: "Email",
     suggestions: ["email", "e mail", "email address", "e mail address"]
-  },
-  "campaignMeta.basic_info.age": {
-    label: "Age",
-    suggestions: ["age"]
   },
   "campaignMeta.social_networks.twitter": {
     label: "Twitter",
@@ -30,6 +26,38 @@ const fields = {
   "campaignMeta.basic_info.occupation": {
     label: "Job/Occupation",
     suggestions: ["job", "occupation"]
+  },
+  "campaignMeta.basic_info.address.zipcode": {
+    label: "Address - Zipcode",
+    suggestions: ["zipcode", "cep"]
+  },
+  "campaignMeta.basic_info.address.country": {
+    label: "Address - Country",
+    suggestions: ["country", "país", "pais"]
+  },
+  "campaignMeta.basic_info.address.region": {
+    label: "Address - Region/State",
+    suggestions: ["state", "region", "estado", "uf"]
+  },
+  "campaignMeta.basic_info.address.city": {
+    label: "Address - City",
+    suggestions: ["city", "cidade", "municipio", "município"]
+  },
+  "campaignMeta.basic_info.address.street": {
+    label: "Address - Street",
+    suggestions: ["address", "street", "rua", "endereço"]
+  },
+  "campaignMeta.basic_info.address.neighbourhood": {
+    label: "Address - Neighbourhood",
+    suggestions: ["neighbourhood", "neighborhood", "bairro"]
+  },
+  "campaignMeta.basic_info.address.number": {
+    label: "Address - Number",
+    suggestions: ["number", "número", "numero"]
+  },
+  "campaignMeta.basic_info.address.complement": {
+    label: "Address - Complement",
+    suggestions: ["complement", "complemento"]
   }
 };
 
