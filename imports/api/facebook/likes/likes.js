@@ -16,10 +16,16 @@ Likes.schema = new SimpleSchema({
     index: true
   },
   name: {
-    type: String
+    type: String,
+    index: true
   },
   type: {
     type: String,
+    optional: true,
+    index: true
+  },
+  created_time: {
+    type: Date,
     optional: true,
     index: true
   }

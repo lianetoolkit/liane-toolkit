@@ -64,5 +64,16 @@ export default [
         fieldType: "text"
       }
     ]
+  },
+  {
+    key: "extra",
+    title: "Extra fields",
+    fields: [
+      {
+        key: "extra",
+        label: "Extra fields",
+        fieldType: "keyval"
+      }
+    ]
   }
 ];

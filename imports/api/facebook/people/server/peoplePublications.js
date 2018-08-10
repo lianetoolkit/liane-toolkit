@@ -1,5 +1,6 @@
 import { People } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+const { Jobs } = require("/imports/api/jobs/jobs.js");
 import _ from "underscore";
 
 Meteor.publish("people.search", function({ search, options }) {
@@ -32,6 +33,30 @@ Meteor.publish("people.search", function({ search, options }) {
         );
       }
     }
+  }
+  return this.ready();
+});
+
+Meteor.publish("people.importJobCount", function({ campaignId }) {
+  this.unblock();
+  logger.debug("people.importJobs called", { campaignId });
+  const currentUser = this.userId;
+  if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
+    Counts.publish(
+      this,
+      "people.importJobCount",
+      Jobs.find({
+        type: "people.importPerson",
+        "data.campaignId": campaignId,
+        status: { $ne: "failed" }
+      })
+    );
+    return;
+  }
+
+  const userId = this.userId;
+  if (userId) {
+    const campaign = Campaigns.findOne(campaignId);
   }
   return this.ready();
 });

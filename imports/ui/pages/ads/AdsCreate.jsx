@@ -16,6 +16,7 @@ import {
 } from "semantic-ui-react";
 import SimpleCurrencyInput from "react-simple-currency";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
+import AudienceUtils from "/imports/ui/components/audiences/Utils.js";
 import _ from "underscore";
 
 const initialFields = {
@@ -92,14 +93,14 @@ export default class AdsCreate extends React.Component {
   }
   componentDidUpdate(prevProps, prevState) {
     const { fields } = this.state;
-    const { campaignId, audienceCategoryId, facebookAccountId } = this.props;
+    const { campaignId, audienceCategoryId, audienceFacebookId } = this.props;
     if (prevState.fields.geolocationId !== fields.geolocationId) {
       Meteor.call(
         "audiences.accountAudienceItem",
         {
           campaignId,
           audienceCategoryId,
-          facebookAccountId,
+          facebookAccountId: audienceFacebookId,
           geolocationId: fields.geolocationId
         },
         (error, result) => {
@@ -141,13 +142,13 @@ export default class AdsCreate extends React.Component {
     });
   };
   _handleSubmit(e) {
-    const { audienceCategoryId, campaignId, facebookAccountId } = this.props;
+    const { audienceCategoryId, campaignId, audienceFacebookId } = this.props;
     const { fields } = this.state;
     this.setState({ isLoading: true });
     const data = {
       ...fields,
       campaignId,
-      facebookAccountId,
+      audienceFacebookId,
       audienceCategoryId
     };
     Meteor.call("ads.create", data, error => {
@@ -161,7 +162,7 @@ export default class AdsCreate extends React.Component {
         {
           FlowRouter.go("App.campaignAudience", {
             campaignId,
-            facebookId: facebookAccountId
+            facebookId: audienceFacebookId
           });
         }
       }
@@ -171,9 +172,9 @@ export default class AdsCreate extends React.Component {
     const { estimate, fields } = this.state;
     if (estimate) {
       if (fields.useConnection) {
-        return estimate.estimate;
+        return AudienceUtils.getValue(estimate.estimate);
       } else {
-        return estimate.location_estimate;
+        return AudienceUtils.getValue(estimate.location_estimate);
       }
     }
     return false;
@@ -214,10 +215,11 @@ export default class AdsCreate extends React.Component {
   render() {
     const {
       loading,
+      audienceAccount,
       adAccount,
       audienceCategory,
       campaignId,
-      facebookAccountId,
+      audienceFacebookId,
       geolocations
     } = this.props;
     const { estimate, adCampaigns, fields, isLoading } = this.state;
@@ -227,7 +229,7 @@ export default class AdsCreate extends React.Component {
           title="Audience"
           titleTo={FlowRouter.path("App.campaignAudience", {
             campaignId: campaignId,
-            facebookId: facebookAccountId
+            facebookId: audienceFacebookId
           })}
           subTitle={!loading ? `Adset targeting ${audienceCategory.title}` : ""}
         />
@@ -295,7 +297,7 @@ export default class AdsCreate extends React.Component {
                           checked={fields.useConnection}
                           onChange={this._handleCheckbox}
                           name="useConnection"
-                          label="Target only people who likes your page"
+                          label={`Target people connected to ${audienceAccount.name}`}
                         />
                         <Divider />
                         <Form.Field

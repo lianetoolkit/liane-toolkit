@@ -4,19 +4,25 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 
 const People = new Mongo.Collection("people");
 
+People.lastInteractionsSchema = new SimpleSchema({
+  facebookId: { type: String },
+  date: { type: Date, optional: true },
+  estimate: { type: Boolean, defaultValue: false }
+});
+
 People.schema = new SimpleSchema({
   facebookId: {
     type: String,
-    index: 1,
+    index: true,
     optional: true
   },
   name: {
     type: String,
-    index: "text"
+    index: true
   },
   campaignId: {
     type: String,
-    index: 1
+    index: true
   },
   campaignMeta: {
     type: Object,
@@ -26,11 +32,45 @@ People.schema = new SimpleSchema({
   facebookAccounts: {
     type: Array,
     optional: true,
-    index: 1
+    index: true
   },
   "facebookAccounts.$": {
     type: String
   },
+  lastInteractionDate: {
+    type: Date,
+    optional: true,
+    index: true
+  },
+  // lastInteraction: {
+  //   type: Object,
+  //   optional: true,
+  //   index: true
+  // },
+  // "lastInteraction.date": {
+  //   type: Date,
+  //   optional: true,
+  //   index: true
+  // },
+  // "lastInteraction.facebookId": {
+  //   type: String,
+  //   optional: true,
+  //   index: true
+  // },
+  // "lastInteraction.estimate": {
+  //   type: Boolean,
+  //   defaultValue: false,
+  //   optional: true,
+  //   index: true
+  // },
+  // lastInteractions: {
+  //   type: Array,
+  //   index: true,
+  //   optional: true
+  // },
+  // "lastInteractions.$": {
+  //   type: People.lastInteractionsSchema
+  // },
   counts: {
     type: Object,
     blackbox: true,
@@ -38,7 +78,7 @@ People.schema = new SimpleSchema({
   },
   createdAt: {
     type: Date,
-    index: 1,
+    index: true,
     autoValue() {
       if (this.isInsert) {
         return new Date();
@@ -51,7 +91,7 @@ People.schema = new SimpleSchema({
   },
   updatedAt: {
     type: Date,
-    index: 1,
+    index: true,
     autoValue() {
       return new Date();
     }
@@ -60,10 +100,51 @@ People.schema = new SimpleSchema({
 
 People.attachSchema(People.schema);
 
-if (Meteor.isServer) {
-  People._ensureIndex({
-    name: "text"
-  });
-}
+Meteor.startup(() => {
+  if (Meteor.isServer) {
+    People.rawCollection().dropIndex("name_text");
+    People.rawCollection().dropIndex(
+      "campaignMeta.influencer_1_campaignMeta.voteIntent_1_campaignMeta.starred_1_campaignMeta.troll_1"
+    );
+    People.rawCollection().createIndex({
+      name: "text",
+      "campaignMeta.contact.email": "text"
+    });
+    People.rawCollection().createIndex({
+      facebookAccounts: 1
+    });
+    People.rawCollection().createIndex(
+      {
+        campaignId: 1,
+        facebookAccounts: 1
+      },
+      { background: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.influencer": 1
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.voteIntent": 1
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.starred": 1
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.troll": 1
+      },
+      { sparse: true }
+    );
+  }
+});
 
 exports.People = People;

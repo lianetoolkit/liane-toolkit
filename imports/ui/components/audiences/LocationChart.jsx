@@ -64,7 +64,6 @@ export default class LocationChart extends React.Component {
     let audiences = this.props.audiences.map(audience =>
       AudienceUtils.transformValues(audience)
     );
-    console.log(audiences);
     audiences = this.populatePercentages(audiences);
     return (
       <ResponsiveContainer width="100%" height={100}>

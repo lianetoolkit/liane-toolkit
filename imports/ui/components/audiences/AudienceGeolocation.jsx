@@ -9,7 +9,9 @@ import {
   Table,
   Menu,
   Dimmer,
-  Loader
+  Loader,
+  Button,
+  Icon
 } from "semantic-ui-react";
 import AudienceUtils from "./Utils.js";
 import CompareLine from "./CompareLine.jsx";
@@ -243,10 +245,28 @@ export default class AudienceGeolocation extends React.Component {
                                     audience={this._latestAudience(item)}
                                   />
                                 </Table.Cell>
+                                <Table.Cell collapsing>
+                                  <Button
+                                    size="tiny"
+                                    basic
+                                    icon
+                                    href={FlowRouter.path(
+                                      "App.campaignAds.create",
+                                      {
+                                        campaignId: campaign._id,
+                                        audienceFacebookId:
+                                          facebookAccount.facebookId
+                                      },
+                                      { category: item.category._id }
+                                    )}
+                                  >
+                                    <Icon name="add" corner /> Adset
+                                  </Button>
+                                </Table.Cell>
                               </Table.Row>
                               {expanded ? (
                                 <Table.Row active>
-                                  <Table.Cell colSpan="4">
+                                  <Table.Cell colSpan="5">
                                     <AudienceInfo data={item} />
                                   </Table.Cell>
                                 </Table.Row>

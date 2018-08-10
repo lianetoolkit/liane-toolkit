@@ -78,7 +78,7 @@ export default class LocationField extends React.Component {
   }
   _parseValueInput(value) {
     const { types } = this.props;
-    if (!value) return defaultProps.value;
+    if (!value) value = { ...LocationField.defaultProps.value };
     let input = {};
     for (const type of types) {
       input[type] = value[type] ? JSON.stringify(value[type]) : "";
@@ -87,7 +87,7 @@ export default class LocationField extends React.Component {
   }
   _parseValueOutput(value) {
     const { types } = this.props;
-    if (!value) return defaultProps.value;
+    if (!value) value = { ...LocationField.defaultProps.value };
     let output = {};
     for (const type of types) {
       output[type] = value[type] ? JSON.parse(value[type]) : "";

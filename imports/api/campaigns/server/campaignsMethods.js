@@ -10,6 +10,8 @@ import { AdAccountsHelpers } from "/imports/api/facebook/adAccounts/server/adAcc
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 import _ from "underscore";
 
+const PRIVATE = Meteor.settings.private;
+
 export const campaignsCreate = new ValidatedMethod({
   name: "campaigns.create",
   validate: new SimpleSchema({
@@ -43,6 +45,11 @@ export const campaignsCreate = new ValidatedMethod({
     if (!userId) {
       throw new Meteor.Error(401, "You need to login");
     }
+
+    if (PRIVATE && !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "Campaign creation is currently disabled.");
+    }
+
     const users = [{ userId, role: "owner" }];
     const insertDoc = { users, name, description, contextId, adAccountId };
 
@@ -105,6 +112,9 @@ export const campaignsUpdate = new ValidatedMethod({
     let runJobs = {};
 
     if (campaign.adAccountId !== data.adAccountId) {
+      const user = Meteor.users.findOne(userId);
+      const token = user.services.facebook.accessToken;
+      AdAccountsHelpers.update({ adAccountId: data.adAccountId, token });
       data.status = "ok";
       runJobs["audiences"] = true;
     }
@@ -382,6 +392,66 @@ export const removeSelfAccount = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     CampaignsHelpers.removeAccount({ campaignId, facebookId });
+    return;
+  }
+});
+
+export const findAndAddSelfAudienceAccount = new ValidatedMethod({
+  name: "campaigns.findAndAddSelfAudienceAccount",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    address: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, address }) {
+    this.unblock();
+    logger.debug("campaigns.findAndAddSelfAudienceAccount called", {
+      campaignId,
+      address
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "This campaign does not exists");
+    }
+
+    if (campaign.status == "suspended") {
+      throw new Meteor.Error(401, "This campaign is suspended");
+    }
+
+    allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    let account;
+
+    try {
+      account = FacebookAccountsHelpers.fetchFBAccount({ userId, address });
+      CampaignsHelpers.addAudienceAccount({ campaignId, account });
+    } catch (error) {
+      if (error instanceof Meteor.Error) {
+        throw error;
+      } else if (error.response) {
+        const errorCode = error.response.error.code;
+        if (errorCode == 803) {
+          throw new Meteor.Error(404, "Facebook account not found");
+        } else {
+          throw new Meteor.Error(500, "Unexpected error occurred");
+        }
+      } else {
+        throw new Meteor.Error(500, "Unexpected error occurred");
+      }
+    }
+
     return;
   }
 });

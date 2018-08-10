@@ -44,16 +44,21 @@ export default class FlexDataForm extends React.Component {
     }
   }
   _handleChange = (e, { name, value }) => {
-    let newFormData = Object.assign({}, this.state.formData);
-    this.setState({
-      formData: setWith(clone(newFormData), name, value, clone)
-    });
+    if (JSON.stringify(this.state.formData[name]) != JSON.stringify(value)) {
+      Session.set("unsavedChanges", true);
+      let newFormData = Object.assign({}, this.state.formData);
+      this.setState({
+        formData: setWith(clone(newFormData), name, value, clone)
+      });
+    }
   };
   _handleSubmit(ev) {
     const { onSubmit } = this.props;
     ev.preventDefault();
     if (onSubmit) {
-      onSubmit(this.state.formData);
+      onSubmit(this.state.formData, () => {
+        Session.set("unsavedChanges", false);
+      });
     }
   }
   render() {

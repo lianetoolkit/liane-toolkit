@@ -1,4 +1,5 @@
 const { EntriesHelpers } = require("./entriesHelpers.js");
+// import moment from "moment";
 const {
   LikesHelpers
 } = require("/imports/api/facebook/likes/server/likesHelpers.js");
@@ -15,12 +16,18 @@ const EntriesJobs = {
       const campaignId = job.data.campaignId;
       const facebookId = job.data.facebookId;
       const accessToken = job.data.accessToken;
+      const createdTs = new Date(job._doc.created).getTime();
+      const todayTs = new Date().getTime();
+      const DAY_IN_MS = 24 * 60 * 60 * 1000;
+      const isRecent = todayTs - createdTs < DAY_IN_MS;
+      const likeDateEstimate = job._doc.repeated > 0 && isRecent;
       let errored = false;
       try {
         EntriesHelpers.updateAccountEntries({
           campaignId,
           facebookId,
-          accessToken
+          accessToken,
+          likeDateEstimate
         });
       } catch (error) {
         errored = true;
@@ -57,12 +64,14 @@ const EntriesJobs = {
       check(job && job.data && job.data.facebookAccountId, String);
       check(job && job.data && job.data.entryId, String);
       check(job && job.data && job.data.accessToken, String);
+      check(job && job.data && job.data.likeDateEstimate, Boolean);
 
       const interactionTypes = job.data.interactionTypes;
       const facebookAccountId = job.data.facebookAccountId;
       const accessToken = job.data.accessToken;
       const entryId = job.data.entryId;
       const campaignId = job.data.campaignId;
+      const likeDateEstimate = job.data.likeDateEstimate;
 
       let errored = false;
       try {
@@ -71,7 +80,8 @@ const EntriesJobs = {
           facebookAccountId,
           accessToken,
           entryId,
-          campaignId
+          campaignId,
+          likeDateEstimate
         });
       } catch (error) {
         errored = true;
@@ -105,7 +115,11 @@ const EntriesJobs = {
       check(job && job.data && job.data.campaignId, String);
       check(job && job.data && job.data.facebookAccountId, String);
       check(job && job.data && job.data.entryId, String);
-      const { campaignId, facebookAccountId, entryId } = job.data;
+      const {
+        campaignId,
+        facebookAccountId,
+        entryId
+      } = job.data;
       LikesHelpers.updatePeopleLikesCountByEntry({
         campaignId,
         facebookAccountId,

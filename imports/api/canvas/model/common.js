@@ -1,22 +1,40 @@
 export const genderOptions = {
-  cis_woman: "Cis woman",
-  cis_man: "Cis man",
-  trans_wman: "Trans woman",
-  cis_male: "Trans man",
+  cis_woman: "Mulher Cis",
+  cis_man: "Homem Cis",
+  trans_woman: "Mulher Trans",
+  cis_male: "Homem Trans",
   travesti: "Travesti",
-  non_binary: "Non binary"
+  non_binary: "Não binario"
+};
+
+export const raceOptions = {
+  asian: "Amarelo",
+  white: "Branco",
+  indigenous: "Indigena",
+  brown: "Pardo",
+  black: "Negro"
 };
 
 export const educationOptions = {
-  option_1: "Option 1",
-  option_2: "Option 2",
-  option_3: "Option 3"
+  none: "Nenhum",
+  high: "Médio",
+  college: "Superior",
+  middle: "Básico"
 };
+
+export const socialClassOptions = {
+  low: "Baixa",
+  medium_low: "Média Baixa",
+  medium: "Média",
+  medium_high: "Média Alta",
+  high: "Alta"
+};
+
 
 export const personFields = [
   {
     key: "name",
-    label: "Name",
+    label: "Nome",
     fieldType: "text"
   },
   {
@@ -26,22 +44,17 @@ export const personFields = [
   },
   {
     key: "location",
-    label: "Location",
+    label: "Local",
     fieldType: "facebook_location"
   },
   {
     key: "facebook_url",
-    label: "Facebook URL",
+    label: "Link facebook",
     fieldType: "text"
   },
   {
     key: "cellphone",
-    label: "Cellphone",
-    fieldType: "text"
-  },
-  {
-    key: "telephone",
-    label: "Telephone",
+    label: "Celular",
     fieldType: "text"
   }
 ];
