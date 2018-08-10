@@ -30,6 +30,11 @@ export default [
         key: "occupation",
         label: "Job/Education",
         fieldType: "text"
+      },
+      {
+        key: "tags",
+        label: "Tags",
+        fieldType: "peopleTags"
       }
     ]
   },

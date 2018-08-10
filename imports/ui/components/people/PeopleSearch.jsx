@@ -5,6 +5,7 @@ import PeopleSearchContainer from "/imports/ui/containers/people/PeopleSearchCon
 import {
   Segment,
   Form,
+  Dropdown,
   Input,
   Checkbox,
   Select,
@@ -68,7 +69,7 @@ export default class PeopleSearch extends React.Component {
       count: 0,
       search: {
         q: "",
-        accountFilter: "account"
+        accountFilter: "all"
       },
       options: {
         limit: 15,
@@ -138,6 +139,38 @@ export default class PeopleSearch extends React.Component {
       options: { ...options, sort: value, skip: 0 }
     });
   }, 250);
+  _handleFilterClick = (type, value) => ev => {
+    ev.preventDefault();
+    const { search, options } = this.state;
+    let newSearch = {};
+    switch (type) {
+      case "other":
+        newSearch = {
+          ...search,
+          accountFilter: this._isFilter("other", value) ? "all" : value
+        };
+        break;
+      case "tag":
+        if (!this._isFilter("tag", value)) {
+          newSearch = {
+            ...search,
+            "campaignMeta.basic_info.tags": { $in: [value] }
+          };
+        } else {
+          newSearch = { ...search };
+          delete newSearch["campaignMeta.basic_info.tags"];
+        }
+        break;
+      default:
+        newSearch = { ...search, accountFilter: "all" };
+        delete newSearch["campaignMeta.basic_info.tags"];
+    }
+    this.setState({
+      activePage: 1,
+      search: newSearch,
+      options: { ...options, skip: 0 }
+    });
+  };
   _handleDataChange = data => {
     this.setState({ count: data.count });
   };
@@ -158,9 +191,28 @@ export default class PeopleSearch extends React.Component {
     }
     return 0;
   }
+  _isFilter = (type, value) => {
+    const { search } = this.state;
+    switch (type) {
+      case "other":
+        return search.accountFilter && search.accountFilter == value;
+        break;
+      case "tag":
+        return (
+          search["campaignMeta.basic_info.tags"] &&
+          search["campaignMeta.basic_info.tags"].$in[0] == value
+        );
+        break;
+      default:
+        return (
+          search.accountFilter !== "all" ||
+          !!search["campaignMeta.basic_info.tags"]
+        );
+    }
+  };
   render() {
     const { activePage, search, options } = this.state;
-    const { campaignId, facebookId, editMode } = this.props;
+    const { campaignId, facebookId, tags, editMode } = this.props;
     const pageCount = this._getPageCount();
     return (
       <Wrapper>
@@ -197,30 +249,57 @@ export default class PeopleSearch extends React.Component {
             </Grid.Column>
             <Grid.Column width={3}>
               <span className="filter-label">Filter</span>
-              <Form.Field
-                control={Select}
-                value={search.accountFilter}
-                name="accountFilter"
-                onChange={this._handleSearchChange}
+              <Dropdown
+                text="Select a filter"
+                icon="filter"
                 fluid
-                options={[
-                  {
-                    key: "all",
-                    value: "all",
-                    text: "Show all people"
-                  },
-                  {
-                    key: "import",
-                    value: "import",
-                    text: "Imported"
-                  },
-                  {
-                    key: "account",
-                    value: "account",
-                    text: "Only from this page"
-                  }
-                ]}
-              />
+                button
+                labeled
+                basic
+                color="white"
+                className="icon"
+              >
+                <Dropdown.Menu>
+                  {this._isFilter() ? (
+                    <Dropdown.Item
+                      icon="cancel"
+                      text="Clear all filters"
+                      onClick={this._handleFilterClick()}
+                    />
+                  ) : null}
+                  {tags && tags.length ? (
+                    <>
+                      <Dropdown.Header icon="tags" content="Tags" />
+                      {tags.map(tag => (
+                        <Dropdown.Item
+                          key={tag._id}
+                          icon={`${
+                            this._isFilter("tag", tag._id) ? "check" : ""
+                          } circle outline`}
+                          text={tag.name}
+                          onClick={this._handleFilterClick("tag", tag._id)}
+                        />
+                      ))}
+                      <Dropdown.Divider />
+                      <Dropdown.Header content="Other filters" />
+                    </>
+                  ) : null}
+                  <Dropdown.Item
+                    onClick={this._handleFilterClick("other", "import")}
+                    icon={`${
+                      this._isFilter("other", "import") ? "check" : ""
+                    } circle outline`}
+                    text="Imported people"
+                  />
+                  <Dropdown.Item
+                    icon={`${
+                      this._isFilter("other", "account") ? "check" : ""
+                    } circle outline`}
+                    text="Only people from this page"
+                    onClick={this._handleFilterClick("other", "account")}
+                  />
+                </Dropdown.Menu>
+              </Dropdown>
             </Grid.Column>
             <Grid.Column width={3}>
               <span className="filter-label">Sorting</span>
