@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, Form, Select, Input, Button } from "semantic-ui-react";
 import PeopleTagsField from "/imports/ui/components/people/PeopleTagsField.jsx";
+import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import _ from "underscore";
 
 const fields = {
@@ -215,6 +216,9 @@ export default class PeopleImport extends React.Component {
       tags: value
     });
   };
+  _handleMetaButtons = key => {
+    console.log(key);
+  };
   _handleSubmit(ev) {
     ev.preventDefault();
     const { campaignId, onSubmit } = this.props;
@@ -260,6 +264,12 @@ export default class PeopleImport extends React.Component {
               onChange={this._handleTagChange}
               value={tags}
               label="Default tags for this import"
+            />
+            <Form.Field
+              control={PeopleMetaButtons}
+              size="big"
+              onChange={this._handleMetaButtons}
+              label="Default labels for this import"
             />
             <Button primary fluid>
               Start import
