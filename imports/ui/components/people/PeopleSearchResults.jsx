@@ -2,6 +2,7 @@ import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { randomColor } from "/imports/ui/utils/utils.jsx";
 import styled from "styled-components";
+import { Alerts } from "/imports/ui/utils/Alerts.js";
 import { Table, Icon, Dimmer, Button } from "semantic-ui-react";
 import PeopleTable from "./PeopleTable.jsx";
 import PeopleInteractivityGrid from "/imports/ui/components/people/PeopleInteractivityGrid.jsx";
