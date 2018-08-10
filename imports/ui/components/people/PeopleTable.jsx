@@ -2,6 +2,7 @@ import React from "react";
 import { Table, Icon } from "semantic-ui-react";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import PeopleFormButton from "/imports/ui/components/people/PeopleFormButton.jsx";
+import PersonNewFlag from "/imports/ui/components/people/NewFlag.jsx";
 
 const Fragment = React.Fragment;
 
@@ -47,6 +48,7 @@ export default class PeopleTable extends React.Component {
   };
   render() {
     const { people, extraCells, extraRows, ...props } = this.props;
+    const campaign = Session.get("campaign");
     if (people && people.length) {
       return (
         <Table {...props}>
@@ -80,7 +82,7 @@ export default class PeopleTable extends React.Component {
                         personId: person._id
                       })}
                     >
-                      {person.name}
+                      {person.name} <PersonNewFlag person={person} />
                     </a>
                   </Table.Cell>
                   {extraCells ? extraCells(person) : <Table.Cell />}
