@@ -88,7 +88,7 @@ export default class CampaignsPeople extends React.Component {
       this.setState({ importData: null });
       Alerts.success("Import has started");
     } else {
-      Alerts.error(error);
+      Alerts.error(err);
     }
   }
   render() {

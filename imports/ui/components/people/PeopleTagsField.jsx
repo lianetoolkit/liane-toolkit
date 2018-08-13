@@ -29,7 +29,6 @@ export default class PeopleTagsField extends React.Component {
     let { campaignId } = this.props;
     const { options } = this.state;
     campaignId = campaignId || FlowRouter.getParam("campaignId");
-    console.log({ campaignId, data });
     Meteor.call(
       "people.createTag",
       { name: data.value, campaignId },

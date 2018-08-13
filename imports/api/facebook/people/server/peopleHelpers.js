@@ -135,10 +135,33 @@ const PeopleHelpers = {
       peopleBulk.execute();
     }
   },
-  import({ campaignId, config, data }) {
+  import({ campaignId, config, data, defaultValues }) {
     let importData = [];
+
+    // Build default person
+    let defaultPerson = {
+      $set: {
+        campaignId
+      },
+      $addToSet: {}
+    };
+
+    if (defaultValues) {
+      if (defaultValues.tags && defaultValues.tags.length) {
+        defaultPerson.$set["campaignMeta.basic_info.tags"] = defaultValues.tags;
+      }
+      if (defaultValues.labels) {
+        for (let key in defaultValues.labels) {
+          if (defaultValues.labels[key]) {
+            defaultPerson.$set[`campaignMeta.${key}`] = true;
+          }
+        }
+      }
+    }
+
+    // Add data
     for (const item of data) {
-      let obj = { $set: { campaignId }, $addToSet: {} };
+      let obj = { ...defaultPerson };
       let customFields = [];
       for (const key in item) {
         const itemConfig = config[key];

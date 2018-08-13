@@ -1,5 +1,7 @@
 import React from "react";
 import { Modal, Form, Select, Input, Button } from "semantic-ui-react";
+import PeopleTagsField from "/imports/ui/components/people/PeopleTagsField.jsx";
+import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import _ from "underscore";
 
 const fields = {
@@ -164,7 +166,9 @@ export default class PeopleImport extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: []
+      data: [],
+      tags: [],
+      labels: {}
     };
     this._handleModalOpen = this._handleModalOpen.bind(this);
     this._handleModalClose = this._handleModalClose.bind(this);
@@ -208,16 +212,33 @@ export default class PeopleImport extends React.Component {
     }
     return [];
   }
+  _handleTagChange = (ev, { name, value }) => {
+    this.setState({
+      tags: value
+    });
+  };
+  _handleMetaButtons = key => {
+    this.setState({
+      labels: {
+        ...this.state.labels,
+        [key]: !this.state.labels[key]
+      }
+    });
+  };
   _handleSubmit(ev) {
     ev.preventDefault();
     const { campaignId, onSubmit } = this.props;
-    const { data, ...config } = this.state;
+    const { data, tags, labels, ...config } = this.state;
     Meteor.call(
       "people.import",
       {
         campaignId,
         config,
-        data
+        data,
+        defaultValues: {
+          tags,
+          labels
+        }
       },
       (err, res) => {
         if (onSubmit) {
@@ -227,7 +248,7 @@ export default class PeopleImport extends React.Component {
     );
   }
   render() {
-    const { data } = this.state;
+    const { data, tags, labels } = this.state;
     const headers = this._getHeaders();
     return (
       <Modal
@@ -246,6 +267,18 @@ export default class PeopleImport extends React.Component {
                 onChange={this._handleChange}
               />
             ))}
+            <PeopleTagsField
+              onChange={this._handleTagChange}
+              value={tags}
+              label="Default tags for this import"
+            />
+            <Form.Field
+              control={PeopleMetaButtons}
+              size="big"
+              onChange={this._handleMetaButtons}
+              active={labels}
+              label="Default labels for this import"
+            />
             <Button primary fluid>
               Start import
             </Button>
