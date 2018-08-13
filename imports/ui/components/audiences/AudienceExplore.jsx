@@ -42,9 +42,9 @@ export default class AudienceGeolocation extends React.Component {
   }
   _latest() {
     const { geolocation } = this.props;
-    return (audience = AudienceUtils.transformValues(
+    return AudienceUtils.transformValues(
       this._latestAudience(geolocation.audienceCategories[0])
-    ));
+    );
   }
   _getPercentage() {
     const { facebookAccount, geolocation } = this.props;
