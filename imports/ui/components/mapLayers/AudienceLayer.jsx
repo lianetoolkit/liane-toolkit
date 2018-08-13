@@ -99,8 +99,13 @@ export default class AudienceLayer extends React.Component {
     if (mainGeolocationAudience) {
       total = AudienceUtils.getValue(mainGeolocationAudience.estimate);
     }
-    let cent = Math.min(AudienceUtils.getValue(data.estimate) / total, 0.99);
-    return (cent * 100).toFixed(2) + "%";
+    const value = AudienceUtils.getValue(data.estimate);
+    if (value >= 1050) {
+      let cent = Math.min(AudienceUtils.getValue(data.estimate) / total, 0.99);
+      return (cent * 100).toFixed(2) + "%";
+    } else {
+      return "--";
+    }
   }
   _buildGrid(geolocationId) {
     const { audience } = this.props;
