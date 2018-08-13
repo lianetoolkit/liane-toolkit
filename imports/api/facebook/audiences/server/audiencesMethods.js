@@ -571,7 +571,7 @@ export const audiencePagesByCategory = new ValidatedMethod({
       if (!context.mainGeolocationId) {
         throw new Meteor.Error(
           500,
-          "Context must have a main geolocation for this analysis."
+          "Context must have a main geolocation for this analysis"
         );
       }
       const mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
