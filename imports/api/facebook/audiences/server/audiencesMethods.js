@@ -118,8 +118,6 @@ export const campaignAudienceSummary = new ValidatedMethod({
       );
     };
 
-    let result = [];
-
     let categoriesComparison = {};
 
     // Audience categories
@@ -130,7 +128,7 @@ export const campaignAudienceSummary = new ValidatedMethod({
         account.facebookId,
         audienceCategoryId
       );
-      if (audience) {
+      if (audience && audience.estimate.dau >= 1050) {
         const page = audience.estimate.dau / audience.total.dau;
         const location =
           audience.location_estimate.dau / audience.location_total.dau;
@@ -146,7 +144,7 @@ export const campaignAudienceSummary = new ValidatedMethod({
               compareAccount.facebookId,
               audienceCategoryId
             );
-            if (compareAudience) {
+            if (compareAudience && compareAudience.estimate.dau >= 1050) {
               const comparePage =
                 compareAudience.estimate.dau / compareAudience.total.dau;
               let pageRatio;
@@ -192,11 +190,13 @@ export const campaignAudienceSummary = new ValidatedMethod({
           }
         }
       );
-      geolocations.push({
-        geolocation,
-        audience,
-        percentage: audience.total.dau / mainGeolocationAudience
-      });
+      if (audience && audience.total.dau >= 1050) {
+        geolocations.push({
+          geolocation,
+          audience,
+          percentage: audience.total.dau / mainGeolocationAudience
+        });
+      }
     });
 
     let comparison = [];
@@ -218,7 +218,6 @@ export const campaignAudienceSummary = new ValidatedMethod({
       comparison,
       mainGeolocation: mainGeolocationAudience
     };
-    // return result;
   }
 });
 
@@ -687,7 +686,7 @@ export const audiencePagesByCategory = new ValidatedMethod({
       if (!context.mainGeolocationId) {
         throw new Meteor.Error(
           500,
-          "Context must have a main geolocation for this analysis."
+          "Context must have a main geolocation for this analysis"
         );
       }
       const mainGeolocation = Geolocations.findOne(context.mainGeolocationId);

@@ -84,8 +84,7 @@ export default class AudiencePages extends React.Component {
         case "name":
           return item.account.name;
         case "size":
-          const audience = this._latestAudience(item);
-          return -(audience.estimate.dau / audience.total.dau);
+          return -AudienceUtils.getRawPercentage(this._latestAudience(item));
         default:
           return item.account.name;
       }
@@ -98,18 +97,21 @@ export default class AudiencePages extends React.Component {
     const { audienceCategory } = this.props;
     let percentages = [];
     audienceCategory.accounts.forEach(g => {
-      const latestAudience = this._latestAudience(g);
-      percentages.push(AudienceUtils.getRawPercentage(latestAudience));
+      const percentage = AudienceUtils.getRawPercentage(
+        this._latestAudience(g)
+      );
+      if (percentage) {
+        percentages.push(percentage);
+      }
     });
-    return sum(percentages) / audienceCategory.accounts.length;
+    return sum(percentages) / percentages.length;
   };
   _getHighest = () => {
     const { audienceCategory } = this.props;
     if (audienceCategory) {
       const average = this._getAverage();
       const highest = maxBy(audienceCategory.accounts, g => {
-        const latestAudience = this._latestAudience(g);
-        return latestAudience.estimate.dau / latestAudience.total.dau;
+        return AudienceUtils.getRawPercentage(this._latestAudience(g));
       });
       const latestAudience = this._latestAudience(highest);
       const percentage = AudienceUtils.getRawPercentage(latestAudience);
@@ -127,11 +129,11 @@ export default class AudiencePages extends React.Component {
     if (audienceCategory) {
       const average = this._getAverage();
       const lowest = minBy(audienceCategory.accounts, g => {
-        const latestAudience = this._latestAudience(g);
-        return latestAudience.estimate.dau / latestAudience.total.dau;
+        return AudienceUtils.getRawPercentage(this._latestAudience(g)) || 100;
       });
-      const latestAudience = this._latestAudience(lowest);
-      const percentage = latestAudience.estimate.dau / latestAudience.total.dau;
+      const percentage = AudienceUtils.getRawPercentage(
+        this._latestAudience(lowest)
+      );
 
       return {
         ...lowest,
@@ -339,6 +341,11 @@ export default class AudiencePages extends React.Component {
                                   ) : null}
                                 </Table.Cell>
                                 <Table.Cell collapsing>
+                                  <DataAlert
+                                    audience={this._latestAudience(item)}
+                                  />
+                                </Table.Cell>
+                                <Table.Cell collapsing>
                                   <Button
                                     size="tiny"
                                     basic
@@ -361,7 +368,7 @@ export default class AudiencePages extends React.Component {
                               </Table.Row>
                               {expanded ? (
                                 <Table.Row active>
-                                  <Table.Cell colSpan="5">
+                                  <Table.Cell colSpan="6">
                                     <AudienceInfo data={item} />
                                   </Table.Cell>
                                 </Table.Row>

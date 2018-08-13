@@ -30,7 +30,13 @@ const Wrapper = styled.div`
   h3.ui.header {
     font-weight: bold;
     text-transform: uppercase;
-    font-size: 1em;
+    font-size: 0.8em;
+    color: #666;
+    .page-title {
+      background: #333;
+      color: #f0f0f0;
+      padding: 0.2rem 0.6rem;
+    }
   }
   h4.ui.header {
     color: #999;
@@ -123,11 +129,9 @@ export default class AudiencePages extends React.Component {
       campaign,
       audienceCategories
     } = this.props;
-    const sample = ["Politics", "Culture", "Education"];
-    const samplePlaces = ["São Paulo", "Rio de Janeiro", "Brasília"];
     if (loading && !summary) {
       return <Loading />;
-    } else {
+    } else if (summary) {
       const topInterests = this._getTop(summary.categories, "ratio");
       const bottomInterests = this._getBottom(summary.categories, "ratio");
       const topPlaces = this._getTop(summary.geolocations, "percentage");
@@ -213,7 +217,10 @@ export default class AudiencePages extends React.Component {
               );
               return (
                 <Segment key={item.account.facebookId}>
-                  <Header as="h3">Comparing to {item.account.name}</Header>
+                  <Header as="h3">
+                    <span className="page-title">{item.account.name}</span>{" "}
+                    comparison
+                  </Header>
                   <Grid columns={2} widths="equal" stretched>
                     <Grid.Row>
                       <Grid.Column>

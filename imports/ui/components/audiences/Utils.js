@@ -25,7 +25,7 @@ export const transformValues = function(audience, users) {
 export const getAudienceRatio = function(audience) {
   if (!audience) return "";
   audience = transformValues(audience);
-  if (audience.total <= 1500) {
+  if (audience.total <= 1050) {
     return "--";
   }
   const local = audience.estimate / audience.total;
@@ -52,7 +52,7 @@ export const getRatio = function(compareTo, target) {
 export const getRawPercentage = function(audience) {
   if (!audience) return "";
   audience = transformValues(audience);
-  if (audience.total <= 1500) {
+  if (audience.estimate <= 1050) {
     return 0;
   }
   return Math.min(audience.estimate / audience.total, 0.99);
