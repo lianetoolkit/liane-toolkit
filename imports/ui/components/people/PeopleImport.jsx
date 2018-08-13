@@ -167,7 +167,8 @@ export default class PeopleImport extends React.Component {
     super(props);
     this.state = {
       data: [],
-      tags: []
+      tags: [],
+      labels: {}
     };
     this._handleModalOpen = this._handleModalOpen.bind(this);
     this._handleModalClose = this._handleModalClose.bind(this);
@@ -217,12 +218,17 @@ export default class PeopleImport extends React.Component {
     });
   };
   _handleMetaButtons = key => {
-    console.log(key);
+    this.setState({
+      labels: {
+        ...this.state.labels,
+        [key]: !this.state.labels[key]
+      }
+    });
   };
   _handleSubmit(ev) {
     ev.preventDefault();
     const { campaignId, onSubmit } = this.props;
-    const { data, tags, ...config } = this.state;
+    const { data, tags, labels, ...config } = this.state;
     Meteor.call(
       "people.import",
       {
@@ -230,7 +236,8 @@ export default class PeopleImport extends React.Component {
         config,
         data,
         defaultValues: {
-          tags
+          tags,
+          labels
         }
       },
       (err, res) => {
@@ -241,7 +248,7 @@ export default class PeopleImport extends React.Component {
     );
   }
   render() {
-    const { data, tags } = this.state;
+    const { data, tags, labels } = this.state;
     const headers = this._getHeaders();
     return (
       <Modal
@@ -269,6 +276,7 @@ export default class PeopleImport extends React.Component {
               control={PeopleMetaButtons}
               size="big"
               onChange={this._handleMetaButtons}
+              active={labels}
               label="Default labels for this import"
             />
             <Button primary fluid>

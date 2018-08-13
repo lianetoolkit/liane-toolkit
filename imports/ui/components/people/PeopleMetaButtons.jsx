@@ -31,11 +31,14 @@ export default class PeopleMetaButtons extends React.Component {
         });
       };
     } else {
-      onChange(key);
+      return () => {
+        onChange(key);
+      };
     }
   }
   _hasMeta(data = {}, key) {
-    return !!data[key];
+    const { active } = this.props;
+    return (active && active[key]) || !!data[key];
   }
   _metaIconName(key) {
     switch (key) {

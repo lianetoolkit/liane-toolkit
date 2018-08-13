@@ -538,6 +538,11 @@ export const importPeople = new ValidatedMethod({
     },
     "defaultValues.tags.$": {
       type: String
+    },
+    "defaultValues.labels": {
+      type: Object,
+      optional: true,
+      blackbox: true
     }
   }).validator(),
   run({ campaignId, config, data, defaultValues }) {

@@ -150,6 +150,13 @@ const PeopleHelpers = {
       if (defaultValues.tags && defaultValues.tags.length) {
         defaultPerson.$set["campaignMeta.basic_info.tags"] = defaultValues.tags;
       }
+      if (defaultValues.labels) {
+        for (let key in defaultValues.labels) {
+          if (defaultValues.labels[key]) {
+            defaultPerson.$set[`campaignMeta.${key}`] = true;
+          }
+        }
+      }
     }
 
     // Add data
