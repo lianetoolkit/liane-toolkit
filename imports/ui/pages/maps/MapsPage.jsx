@@ -46,7 +46,7 @@ export default class MapsPage extends React.Component {
       layerVisibility: {
         people: true,
         audience: true,
-        context: false
+        context: {}
       }
     };
     this._handleGridItem = this._handleGridItem.bind(this);
@@ -80,7 +80,10 @@ export default class MapsPage extends React.Component {
       this.setState({
         layerVisibility: {
           ...layerVisibility,
-          context: value
+          context: {
+            ...layerVisibility.context,
+            [value]: !!checked
+          }
         }
       });
     } else {
@@ -97,7 +100,7 @@ export default class MapsPage extends React.Component {
     const { layers } = this.props;
     const { layerVisibility } = this.state;
     if (layerVisibility.context) {
-      return [layers.find(l => l._id == layerVisibility.context)];
+      return layers.filter(l => layerVisibility.context[l._id]);
     }
     return [];
   };
@@ -120,53 +123,9 @@ export default class MapsPage extends React.Component {
           ) : (
             <Wrapper>
               <Grid>
-                {/* <Grid.Row>
-                  <Grid.Column>
-                    <Form>
-                      <Form.Group widths="equal">
-                        <Form.Field label="Search layers" control={Input} />
-                        <Form.Field
-                          control={Select}
-                          search
-                          label="Select a layer category"
-                          placeholder="Search categories"
-                          options={[
-                            {
-                              key: "",
-                              value: "",
-                              text: "All"
-                            },
-                            ...categories.map(cat => {
-                              return {
-                                key: cat._id,
-                                value: cat._id,
-                                text: cat.name
-                              };
-                            })
-                          ]}
-                        />
-                        <Form.Field
-                          control={Select}
-                          search
-                          multiple
-                          label="Select layer tags"
-                          placeholder="Search tags"
-                          options={tags.map(tag => {
-                            return {
-                              key: tag._id,
-                              value: tag._id,
-                              text: tag.name
-                            };
-                          })}
-                        />
-                      </Form.Group>
-                    </Form>
-                  </Grid.Column>
-                </Grid.Row> */}
                 <Grid.Row>
                   <Grid.Column width="3">
                     <Form>
-                      {/* <Header>Layers</Header> */}
                       <Form.Field
                         control={Checkbox}
                         label="People"
@@ -185,22 +144,14 @@ export default class MapsPage extends React.Component {
                       {layers && layers.length ? (
                         <div>
                           <Header as="h4">Context layers</Header>
-                          <Form.Field
-                            control={Radio}
-                            label="None"
-                            name="context"
-                            value={false}
-                            checked={!layerVisibility.context}
-                            onChange={this._handleVisibilityChange}
-                          />
                           {layers.map(layer => (
                             <Form.Field
                               key={layer._id}
-                              control={Radio}
+                              control={Checkbox}
                               label={layer.title}
                               name="context"
                               value={layer._id}
-                              checked={layerVisibility.context == layer._id}
+                              checked={layerVisibility.context[layer._id]}
                               onChange={this._handleVisibilityChange}
                             />
                           ))}
@@ -208,18 +159,6 @@ export default class MapsPage extends React.Component {
                         </div>
                       ) : null}
                     </Form>
-                    {/* <Header size="medium">Categories</Header>
-                  <Menu vertical>
-                    {categories.map(cat => (
-                      <Menu.Item key={cat._id}>{cat.name}</Menu.Item>
-                    ))}
-                  </Menu>
-                  <Header size="medium">Tags</Header>
-                  <Menu vertical>
-                    {tags.map(tag => (
-                      <Menu.Item key={tag._id}>{tag.name}</Menu.Item>
-                    ))}
-                  </Menu> */}
                   </Grid.Column>
                   <Grid.Column width="13">
                     <Map
