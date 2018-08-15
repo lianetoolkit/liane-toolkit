@@ -30,7 +30,7 @@ export default withTracker(props => {
         }
         loading.set(false);
         if (JSON.stringify(geolocation.get()) !== JSON.stringify(data)) {
-          // geolocation.set(data);
+          geolocation.set(data);
         }
       }
     );
