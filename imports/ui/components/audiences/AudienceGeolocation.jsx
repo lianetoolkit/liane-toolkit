@@ -58,8 +58,9 @@ export default class AudienceGeolocation extends React.Component {
   componentWillReceiveProps(nextProps) {
     const { geolocations, sort } = this.state;
     if (
+      nextProps.audienceCategory &&
       JSON.stringify(nextProps.audienceCategory.geolocations) !==
-      JSON.stringify(geolocations)
+        JSON.stringify(geolocations)
     ) {
       this.setState({
         geolocations: this._doSort(
@@ -195,7 +196,7 @@ export default class AudienceGeolocation extends React.Component {
     const topPlaces = this._getTop();
     if (loading && !audienceCategory) {
       return <Loading />;
-    } else {
+    } else if (audienceCategory) {
       return (
         <Wrapper>
           <Grid columns={2} relaxed>
@@ -360,6 +361,16 @@ export default class AudienceGeolocation extends React.Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
+        </Wrapper>
+      );
+    } else {
+      return (
+        <Wrapper>
+          <Header>No data is available.</Header>
+          <p>
+            If you just created your campaign it may take a while to gather
+            audience data.
+          </p>
         </Wrapper>
       );
     }

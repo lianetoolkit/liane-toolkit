@@ -259,6 +259,16 @@ export default class AudiencePages extends React.Component {
           </Segment.Group>
         </Wrapper>
       );
+    } else {
+      return (
+        <Wrapper>
+          <Header>No summary data is available.</Header>
+          <p>
+            If you just added this page it may take a while to gather audience
+            data.
+          </p>
+        </Wrapper>
+      );
     }
   }
 }
