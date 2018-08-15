@@ -99,6 +99,7 @@ export default class CampaignsPeople extends React.Component {
     const { isLoading, editMode, importData, activityQuery } = this.state;
     const {
       loading,
+      tags,
       importCount,
       facebookId,
       campaign,
@@ -207,6 +208,7 @@ export default class CampaignsPeople extends React.Component {
                           campaignId={campaign._id}
                           facebookId={account.facebookId}
                           editMode={editMode}
+                          tags={tags}
                         />
                       ) : null}
                       {/* <PeopleSummary
