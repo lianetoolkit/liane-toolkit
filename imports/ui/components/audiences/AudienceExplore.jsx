@@ -116,7 +116,7 @@ export default class AudienceGeolocation extends React.Component {
     } = this.props;
     if (loading && !geolocation) {
       return <Loading />;
-    } else {
+    } else if (geolocation) {
       return (
         <Wrapper>
           <Grid columns={2} relaxed>
@@ -286,6 +286,16 @@ export default class AudienceGeolocation extends React.Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
+        </Wrapper>
+      );
+    } else {
+      return (
+        <Wrapper>
+          <Header>No data is available.</Header>
+          <p>
+            If you just created your campaign it may take a while to gather
+            audience data.
+          </p>
         </Wrapper>
       );
     }

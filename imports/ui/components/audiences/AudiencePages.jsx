@@ -58,8 +58,9 @@ export default class AudiencePages extends React.Component {
   componentWillReceiveProps(nextProps) {
     const { accounts, sort } = this.state;
     if (
+      nextProps.audienceCategory &&
       JSON.stringify(nextProps.audienceCategory.accounts) !==
-      JSON.stringify(accounts)
+        JSON.stringify(accounts)
     ) {
       this.setState({
         accounts: this._doSort(nextProps.audienceCategory.accounts, sort)
@@ -202,7 +203,7 @@ export default class AudiencePages extends React.Component {
     const lowest = this._getLowest();
     if (loading && !audienceCategory) {
       return <Loading />;
-    } else {
+    } else if (audienceCategory) {
       return (
         <Wrapper>
           <Grid columns={2} relaxed>
@@ -383,6 +384,16 @@ export default class AudiencePages extends React.Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
+        </Wrapper>
+      );
+    } else {
+      return (
+        <Wrapper>
+          <Header>No data is available.</Header>
+          <p>
+            If you just created your campaign it may take a while to gather
+            audience data.
+          </p>
         </Wrapper>
       );
     }
