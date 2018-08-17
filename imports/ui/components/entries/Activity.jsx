@@ -4,10 +4,6 @@ import { Feed, Icon, Message, Grid, Button, Divider } from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import moment from "moment";
 import PeopleCard from "/imports/ui/components/people/PeopleCard.jsx";
-import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
-import PeopleFormButton from "/imports/ui/components/people/PeopleFormButton.jsx";
-import PeopleInteractivityGrid from "/imports/ui/components/people/PeopleInteractivityGrid.jsx";
-
 import Reaction from "./Reaction.jsx";
 import Entry from "./Entry.jsx";
 
@@ -213,6 +209,7 @@ export default class PeopleActivity extends React.Component {
                       person={this._person(item)}
                       onMetaChange={this._handleMetaChange}
                       facebookId={item.facebookAccountId}
+                      displayReply={true}
                     />
                   </Feed.Extra>
                   <Button
