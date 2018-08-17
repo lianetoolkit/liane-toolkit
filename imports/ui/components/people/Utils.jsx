@@ -6,9 +6,9 @@ export const getFormUrl = (campaign, formId) => {
   }
   if (formId) {
     if (!path) {
-      path += "f/";
+      path += "f";
     }
-    path += formId;
+    path += "/" + formId;
   }
   if (!path) {
     path += "f/?c=" + campaign._id;
