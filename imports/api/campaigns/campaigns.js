@@ -78,6 +78,11 @@ Campaigns.schema = new SimpleSchema({
     type: Object,
     optional: true
   },
+  "forms.slug": {
+    type: String,
+    optional: true,
+    index: 1
+  },
   "forms.crm": {
     type: Object,
     optional: true
