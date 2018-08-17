@@ -3,9 +3,7 @@ import styled from "styled-components";
 import { Feed, Icon, Message, Grid, Button, Divider } from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import moment from "moment";
-import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
-import PeopleFormButton from "/imports/ui/components/people/PeopleFormButton.jsx";
-import PeopleInteractivityGrid from "/imports/ui/components/people/PeopleInteractivityGrid.jsx";
+import PeopleCard from "/imports/ui/components/people/PeopleCard.jsx";
 
 import Reaction from "./Reaction.jsx";
 import Entry from "./Entry.jsx";
@@ -26,20 +24,8 @@ const Wrapper = styled.div`
           }
         }
       }
-      .extra {
-        p {
-          margin: 0 0 1rem;
-        }
-        .meta-buttons {
-          display: block;
-          margin-bottom: 0.5rem;
-          position: relative;
-          z-index: 2;
-        }
-      }
       .extra.aligned {
         float: right;
-        width: 200px;
         background: #fcfcfc;
         border: 1px solid #ddd;
         padding: 0.5rem;
@@ -220,31 +206,11 @@ export default class PeopleActivity extends React.Component {
                 <Feed.Label>{this._getIcon(item)}</Feed.Label>
                 <Feed.Content>
                   <Feed.Extra className="aligned">
-                    {item.person ? (
-                      <PeopleFormButton
-                        floated="right"
-                        person={item.person}
-                      />
-                    ) : null}
-                    <p>
-                      <strong>
-                        <a
-                          href="javascript:void(0);"
-                          onClick={this._goToPerson(item)}
-                        >
-                          {item.name}
-                        </a>
-                      </strong>
-                    </p>
-                    <PeopleMetaButtons
+                    <PeopleCard
                       person={this._person(item)}
-                      className="meta-buttons"
-                      onChange={this._handleMetaChange}
-                    />
-                    <PeopleInteractivityGrid
-                      person={this._person(item)}
+                      onMetaChange={this._handleMetaChange}
                       facebookId={item.facebookAccountId}
-                      columns={3}
+                      displayReply={true}
                     />
                   </Feed.Extra>
                   <Button
