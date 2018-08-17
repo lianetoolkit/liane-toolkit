@@ -104,11 +104,15 @@ Meteor.publish("people.tags", function({ campaignId }) {
       return PeopleTags.find({ campaignId });
     }
   }
+  return this.ready();
 });
 
 Meteor.publishComposite("people.form.detail", function({ formId }) {
   logger.debug("people.form.detail called", { formId });
   const person = People.findOne({ formId });
+  if (!person) {
+    return this.ready();
+  }
   const campaign = Campaigns.findOne({ _id: person.campaignId });
   return {
     find: function() {

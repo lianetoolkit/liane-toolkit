@@ -7,6 +7,7 @@ import { Alerts } from "/imports/ui/utils/Alerts.js";
 import AdAccountField from "/imports/ui/components/facebook/AdAccountField.jsx";
 import FacebookAccountField from "/imports/ui/components/facebook/FacebookAccountField.jsx";
 import SelectFacebookAccount from "/imports/ui/components/facebook/SelectFacebookAccount.jsx";
+import { getFormUrl } from "/imports/ui/components/people/Utils.jsx";
 import _ from "underscore";
 
 import {
@@ -283,9 +284,7 @@ export default class CampaignsSettings extends React.Component {
     const { formData, section } = this.state;
     const { loading, campaign, currentUser } = this.props;
     const { accounts, users } = campaign;
-    const formUrl = `${location.protocol}//${
-      Meteor.settings.public.domain
-    }/f/?c=${campaign._id}`;
+    const formUrl = getFormUrl(campaign);
     return (
       <div>
         <PageHeader
@@ -492,6 +491,14 @@ export default class CampaignsSettings extends React.Component {
                             </a>
                           </strong>
                         </p>
+                        <Form.Field
+                          control={Input}
+                          name="slug"
+                          label="Form slug (name in URL)"
+                          placeholder="my-campaign"
+                          onChange={this._handleChange}
+                          value={formData.forms.slug}
+                        />
                         <Form.Field
                           control={Input}
                           name="crm.header"
