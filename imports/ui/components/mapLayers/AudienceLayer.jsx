@@ -120,12 +120,19 @@ export default class AudienceLayer extends React.Component {
       name: geolocation.name,
       data: []
     };
-    for (const accountAudience of audience.data) {
+    const ratios = audience.topCategories[geolocationId];
+    if (ratios) {
       grid.data.push({
-        name: accountAudience.name,
-        Audience: this._getAudience(accountAudience, geolocationId)
+        name: "Top interest",
+        [ratios[0].name]: "+" + ratios[0].ratio.toFixed(2) + "x above average"
       });
     }
+    // for (const accountAudience of audience.data) {
+    //   grid.data.push({
+    //     name: accountAudience.name,
+    //     Audience: this._getAudience(accountAudience, geolocationId)
+    //   });
+    // }
     return grid;
   }
   _onEachFeature(feature, layer) {
