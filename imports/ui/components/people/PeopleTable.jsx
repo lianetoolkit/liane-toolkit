@@ -74,7 +74,7 @@ export default class PeopleTable extends React.Component {
             {people.map(person => (
               <Fragment key={person._id}>
                 <Table.Row>
-                  <Table.Cell collapsing>
+                  {/* <Table.Cell collapsing>
                     {person.facebookId ? (
                       <a
                         target="_blank"
@@ -83,7 +83,7 @@ export default class PeopleTable extends React.Component {
                         <Icon name="facebook official" />
                       </a>
                     ) : null}
-                  </Table.Cell>
+                  </Table.Cell> */}
                   <Table.Cell singleLine collapsing>
                     <PeopleFormButton person={person} iconOnly={true} />
                   </Table.Cell>
