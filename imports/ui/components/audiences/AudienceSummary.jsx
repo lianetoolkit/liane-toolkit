@@ -74,15 +74,47 @@ const Wrapper = styled.div`
   }
 `;
 
-const ListItem = ({ name, label, icon, color }) => {
+const ListItemName = ({ name }) => {
+  const display = name.substr(0, 18);
+  let ellipsis = false;
+  if (display.length != name.length) {
+    ellipsis = true;
+  }
+  if (name) {
+    return (
+      <span title={name}>
+        {display}
+        {ellipsis ? "..." : ""}
+      </span>
+    );
+  } else {
+    return null;
+  }
+};
+
+const ListItem = ({ name, label, icon, color, adsetConfig }) => {
   return (
     <List.Item>
       {icon ? <List.Icon name={icon} color={color} /> : null}
       <List.Content>
-        <List.Header>{name}</List.Header>
+        <List.Header>
+          <ListItemName name={name} />
+        </List.Header>
         <Label size="small" color={color}>
           {label}
         </Label>
+        {adsetConfig ? (
+          <Button
+            size="mini"
+            icon
+            basic
+            href={FlowRouter.path("App.campaignAds.create", adsetConfig, {
+              category: adsetConfig.category
+            })}
+          >
+            <Icon name="add" corner size="small" /> Ad
+          </Button>
+        ) : null}
       </List.Content>
     </List.Item>
   );
@@ -146,7 +178,7 @@ export default class AudiencePages extends React.Component {
           <Segment.Group>
             <Segment key={facebookAccount.facebookId}>
               {/* <Header as="h2">{facebookAccount.name}</Header> */}
-              <Grid columns={2} widths="equal" stretched>
+              <Grid columns={2} widths="equal" stretched relaxed>
                 <Grid.Row>
                   <Grid.Column>
                     <Header as="h4">Top interests</Header>
@@ -158,6 +190,11 @@ export default class AudiencePages extends React.Component {
                           color="orange"
                           name={item.category.title}
                           label={this._formatRatio(item.ratio)}
+                          adsetConfig={{
+                            category: item.category._id,
+                            campaignId: campaign._id,
+                            audienceFacebookId: facebookAccount.facebookId
+                          }}
                         />
                       ))}
                     </List>
@@ -172,6 +209,11 @@ export default class AudiencePages extends React.Component {
                           color="red"
                           name={item.category.title}
                           label={this._formatRatio(item.ratio)}
+                          adsetConfig={{
+                            category: item.category._id,
+                            campaignId: campaign._id,
+                            audienceFacebookId: facebookAccount.facebookId
+                          }}
                         />
                       ))}
                     </List>
@@ -221,7 +263,7 @@ export default class AudiencePages extends React.Component {
                     <span className="page-title">{item.account.name}</span>{" "}
                     comparison
                   </Header>
-                  <Grid columns={2} widths="equal" stretched>
+                  <Grid columns={2} widths="equal" stretched relaxed>
                     <Grid.Row>
                       <Grid.Column>
                         <Header as="h4">Your highlights</Header>
@@ -233,6 +275,11 @@ export default class AudiencePages extends React.Component {
                               color="orange"
                               name={item.category.title}
                               label={this._formatRatio(item.ratio)}
+                              adsetConfig={{
+                                category: item.category._id,
+                                campaignId: campaign._id,
+                                audienceFacebookId: facebookAccount.facebookId
+                              }}
                             />
                           ))}
                         </List>
@@ -247,6 +294,11 @@ export default class AudiencePages extends React.Component {
                               color="red"
                               name={item.category.title}
                               label={this._formatRatio(item.ratio)}
+                              adsetConfig={{
+                                category: item.category._id,
+                                campaignId: campaign._id,
+                                audienceFacebookId: facebookAccount.facebookId
+                              }}
                             />
                           ))}
                         </List>
