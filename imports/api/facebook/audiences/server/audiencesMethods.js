@@ -247,7 +247,7 @@ export const audiencesMap = new ValidatedMethod({
     // Cache setup
     const hash = crypto
       .createHash("sha1")
-      .update(campaignId + JSON.stringify(campaign.audienceAccounts))
+      .update(campaignId)
       .digest("hex");
     const redisKey = `audiences::result::${hash}::campaignSummary`;
 
@@ -258,6 +258,10 @@ export const audiencesMap = new ValidatedMethod({
       const accounts = campaign.audienceAccounts;
 
       const context = Contexts.findOne(campaign.contextId);
+
+      const categories = AudienceCategories.find({
+        _id: { $in: context.audienceCategories }
+      }).fetch();
 
       let mainGeolocation;
       if (context.mainGeolocationId) {
@@ -288,8 +292,54 @@ export const audiencesMap = new ValidatedMethod({
       let result = {
         mainGeolocation,
         geolocations,
-        data: []
+        data: [],
+        topCategories: {}
       };
+
+      let geolocationsAverage = {};
+      let categoriesAverage = {};
+
+      categories.forEach(category => {
+        let sumArray = [];
+        geolocations.forEach(geolocation => {
+          const audience = FacebookAudiences.findOne(
+            {
+              geolocationId: geolocation._id,
+              audienceCategoryId: category._id
+            },
+            { sort: { createdAt: -1 } }
+          );
+          const average =
+            audience.location_estimate.dau / audience.location_total.dau;
+          if (!geolocationsAverage[geolocation._id]) {
+            geolocationsAverage[geolocation._id] = {};
+          }
+          geolocationsAverage[geolocation._id][category._id] = average;
+          sumArray.push(average);
+        });
+        categoriesAverage[category._id] =
+          _.reduce(sumArray, (mem, num) => mem + num) / sumArray.length;
+      });
+
+      let ratios = {};
+      for (let geolocationId in geolocationsAverage) {
+        for (let categoryId in geolocationsAverage[geolocationId]) {
+          if (!ratios[geolocationId]) ratios[geolocationId] = [];
+          ratios[geolocationId].push({
+            categoryId,
+            name: categories.find(c => c._id == categoryId).title,
+            ratio:
+              geolocationsAverage[geolocationId][categoryId] /
+              categoriesAverage[categoryId]
+          });
+        }
+      }
+      for (let geolocationId in ratios) {
+        result.topCategories[geolocationId] = _.sortBy(
+          ratios[geolocationId],
+          obj => -obj.ratio
+        );
+      }
 
       accounts.forEach(account => {
         let accResult = { ...account, audience: [] };
