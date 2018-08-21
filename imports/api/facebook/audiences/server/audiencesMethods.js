@@ -179,8 +179,9 @@ export const campaignAudienceSummary = new ValidatedMethod({
     });
     // Geolocations
     let geolocations = [];
+    let mainGeolocationAudience;
     if (categories.length) {
-      const mainGeolocationAudience = categories[0].audience.total.dau;
+      mainGeolocationAudience = categories[0].audience.total.dau;
       context.geolocations.forEach(geolocationId => {
         const geolocation = Geolocations.findOne(geolocationId);
         const audience = FacebookAudiences.findOne(
