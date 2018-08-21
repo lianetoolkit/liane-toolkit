@@ -6,6 +6,24 @@ import PersonNewFlag from "/imports/ui/components/people/NewFlag.jsx";
 
 const Fragment = React.Fragment;
 
+const PersonName = ({ name }) => {
+  const display = name.substr(0, 16);
+  let ellipsis = false;
+  if (display.length != name.length) {
+    ellipsis = true;
+  }
+  if (name) {
+    return (
+      <span title={name}>
+        {display}
+        {ellipsis ? "..." : ""}
+      </span>
+    );
+  } else {
+    return null;
+  }
+};
+
 export default class PeopleTable extends React.Component {
   constructor(props) {
     super(props);
@@ -51,12 +69,12 @@ export default class PeopleTable extends React.Component {
     const campaign = Session.get("campaign");
     if (people && people.length) {
       return (
-        <Table {...props}>
+        <Table basic="very" compact="very" {...props}>
           <Table.Body>
             {people.map(person => (
               <Fragment key={person._id}>
                 <Table.Row>
-                  <Table.Cell collapsing>
+                  {/* <Table.Cell collapsing>
                     {person.facebookId ? (
                       <a
                         target="_blank"
@@ -65,7 +83,7 @@ export default class PeopleTable extends React.Component {
                         <Icon name="facebook official" />
                       </a>
                     ) : null}
-                  </Table.Cell>
+                  </Table.Cell> */}
                   <Table.Cell singleLine collapsing>
                     <PeopleFormButton person={person} iconOnly={true} />
                   </Table.Cell>
@@ -82,7 +100,8 @@ export default class PeopleTable extends React.Component {
                         personId: person._id
                       })}
                     >
-                      {person.name} <PersonNewFlag person={person} />
+                      <PersonName name={person.name} />{" "}
+                      <PersonNewFlag person={person} />
                     </a>
                   </Table.Cell>
                   {extraCells ? extraCells(person) : <Table.Cell />}
