@@ -253,6 +253,7 @@ export const audiencesMap = new ValidatedMethod({
       };
 
       let geolocationsAverage = {};
+      let geolocationsTotal = {};
       let categoriesAverage = {};
 
       categories.forEach(category => {
@@ -270,6 +271,11 @@ export const audiencesMap = new ValidatedMethod({
           if (!geolocationsAverage[geolocation._id]) {
             geolocationsAverage[geolocation._id] = {};
           }
+          if (!geolocationsTotal[geolocation._id]) {
+            geolocationsTotal[geolocation._id] = {};
+          }
+          geolocationsTotal[geolocation._id][category._id] =
+            audience.location_estimate.dau;
           geolocationsAverage[geolocation._id][category._id] = average;
           sumArray.push(average);
         });
@@ -284,9 +290,11 @@ export const audiencesMap = new ValidatedMethod({
           ratios[geolocationId].push({
             categoryId,
             name: categories.find(c => c._id == categoryId).title,
+            percentage: geolocationsAverage[geolocationId][categoryId],
             ratio:
               geolocationsAverage[geolocationId][categoryId] /
-              categoriesAverage[categoryId]
+              categoriesAverage[categoryId],
+            total: geolocationsTotal[geolocationId][categoryId]
           });
         }
       }
