@@ -227,13 +227,14 @@ export default class PeopleImport extends React.Component {
   };
   _handleSubmit(ev) {
     ev.preventDefault();
-    const { campaignId, onSubmit } = this.props;
+    const { campaignId, filename, onSubmit } = this.props;
     const { data, tags, labels, ...config } = this.state;
     Meteor.call(
       "people.import",
       {
         campaignId,
         config,
+        filename,
         data,
         defaultValues: {
           tags,

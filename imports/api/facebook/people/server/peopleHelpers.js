@@ -1,6 +1,6 @@
 import axios from "axios";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
-import { People } from "/imports/api/facebook/people/people.js";
+import { People, PeopleLists } from "/imports/api/facebook/people/people.js";
 import { Random } from "meteor/random";
 import { uniqBy, groupBy, mapKeys, flatten, get, set } from "lodash";
 import crypto from "crypto";
@@ -135,8 +135,10 @@ const PeopleHelpers = {
       peopleBulk.execute();
     }
   },
-  import({ campaignId, config, data, defaultValues }) {
+  import({ campaignId, config, filename, data, defaultValues }) {
     let importData = [];
+
+    const listId = PeopleLists.insert({ name: filename, campaignId });
 
     // Build default person
     let defaultPerson = {
@@ -190,6 +192,7 @@ const PeopleHelpers = {
         jobType: "people.importPerson",
         jobData: {
           campaignId,
+          listId,
           person: JSON.stringify(person)
         }
       });
@@ -264,7 +267,7 @@ const PeopleHelpers = {
       return key;
     });
   },
-  importPerson({ campaignId, person }) {
+  importPerson({ campaignId, listId, person }) {
     let selector = { _id: Random.id(), campaignId };
     let foundMatch = false;
     const _queries = () => {
@@ -318,7 +321,8 @@ const PeopleHelpers = {
                       [`${key}.$.val`]: value.val
                     },
                     $setOnInsert: {
-                      source: "import"
+                      source: "import",
+                      listId
                     }
                   },
                   { multi: false }
@@ -354,7 +358,8 @@ const PeopleHelpers = {
       {
         ...person,
         $setOnInsert: {
-          source: "import"
+          source: "import",
+          listId
         }
       },
       { multi: false }
