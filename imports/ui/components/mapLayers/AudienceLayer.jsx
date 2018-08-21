@@ -123,8 +123,10 @@ export default class AudienceLayer extends React.Component {
     const ratios = audience.topCategories[geolocationId];
     if (ratios) {
       grid.data.push({
-        name: "Top interest",
-        [ratios[0].name]: "+" + ratios[0].ratio.toFixed(2) + "x above average"
+        name: `Top interest: ${ratios[0].name}`,
+        Comparison: `+${ratios[0].ratio.toFixed(2)}x above average`,
+        Percentage: `${(ratios[0].percentage * 100).toFixed(2)}%`,
+        Total: `${ratios[0].total} estimate people`
       });
     }
     // for (const accountAudience of audience.data) {
