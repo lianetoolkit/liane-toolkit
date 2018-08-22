@@ -777,6 +777,9 @@ export const importPeople = new ValidatedMethod({
       type: Object,
       blackbox: true
     },
+    filename: {
+      type: String
+    },
     data: {
       type: Object,
       blackbox: true
@@ -798,7 +801,7 @@ export const importPeople = new ValidatedMethod({
       blackbox: true
     }
   }).validator(),
-  run({ campaignId, config, data, defaultValues }) {
+  run({ campaignId, config, filename, data, defaultValues }) {
     logger.debug("people.import called", {
       campaignId,
       config,
@@ -820,7 +823,13 @@ export const importPeople = new ValidatedMethod({
     if (!allowed) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
-    return PeopleHelpers.import({ campaignId, config, data, defaultValues });
+    return PeopleHelpers.import({
+      campaignId,
+      config,
+      filename,
+      data,
+      defaultValues
+    });
   }
 });
 

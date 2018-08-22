@@ -44,13 +44,16 @@ const PeopleJobs = {
     run({ job }) {
       logger.debug("people.importPerson job: called");
       check(job && job.data && job.data.campaignId, String);
+      check(job && job.data && job.data.listId, String);
       check(job && job.data && job.data.person, String);
       const campaignId = job.data.campaignId;
+      const listId = job.data.listId;
       const person = JSON.parse(job.data.person);
       let errored = false;
       try {
         PeopleHelpers.importPerson({
           campaignId,
+          listId,
           person
         });
       } catch (error) {
