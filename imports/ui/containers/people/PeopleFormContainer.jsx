@@ -8,7 +8,6 @@ import PeopleForm from "/imports/ui/pages/people/PeopleForm.jsx";
 const PeopleFormSubs = new SubsManager();
 
 export default withTracker(props => {
-  console.log(props);
   let loading = true;
   let person, campaign, context;
   if (props.formId) {

@@ -21,6 +21,8 @@ import EditGeolocationsPageContainer from "/imports/ui/containers/geolocations/E
 import UsersContainer from "/imports/ui/containers/users/UsersContainer.jsx";
 import EditUsersContainer from "/imports/ui/containers/users/EditUsersContainer.jsx";
 
+import OptionsContainer from "/imports/ui/containers/admin/OptionsContainer.jsx";
+
 import { APP_NAME, addTitle, trackRouteEntry } from "./utils.js";
 
 // app routes
@@ -29,7 +31,6 @@ const adminRoutes = FlowRouter.group({
   prefix: "/admin",
   triggersEnter: [trackRouteEntry]
 });
-
 
 adminRoutes.route("/jobs", {
   name: "App.admin.jobs",
@@ -144,6 +145,18 @@ adminRoutes.route("/users/edit/:userId?", {
       content: {
         component: EditUsersContainer,
         props: { userId: params.userId }
+      }
+    });
+  }
+});
+
+adminRoutes.route("/options", {
+  name: "App.admin.options",
+  action: function() {
+    addTitle(`${APP_NAME} | Options`);
+    return mount(AppContainer, {
+      content: {
+        component: OptionsContainer
       }
     });
   }

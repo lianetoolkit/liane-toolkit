@@ -19,6 +19,7 @@ import {
 } from "semantic-ui-react";
 import AddressField from "/imports/ui/components/people/AddressField.jsx";
 import SkillField from "/imports/ui/components/people/SkillField.jsx";
+import PeoplePrivacyPolicy from "/imports/ui/components/people/PeoplePrivacyPolicy.jsx";
 import Recaptcha from "react-recaptcha";
 
 const recaptchaSiteKey = Meteor.settings.public.recaptcha;
@@ -50,7 +51,10 @@ export default class PeopleForm extends React.Component {
           email: get(nextProps.person, "campaignMeta.contact.email"),
           cellphone: get(nextProps.person, "campaignMeta.contact.cellphone"),
           birthday: get(nextProps.person, "campaignMeta.basic_info.birthday"),
-          address: get(nextProps.person, "campaignMeta.basic_info.address")
+          address: get(nextProps.person, "campaignMeta.basic_info.address"),
+          supporter: get(nextProps.person, "campaignMeta.supporter"),
+          mobilizer: get(nextProps.person, "campaignMeta.mobilizer"),
+          donor: get(nextProps.person, "campaignMeta.donor")
         }
       });
     }
@@ -67,7 +71,7 @@ export default class PeopleForm extends React.Component {
     this.setState({
       formData: {
         ...this.state.formData,
-        [name]: checked
+        [name]: !!checked
       }
     });
   };
@@ -238,18 +242,21 @@ export default class PeopleForm extends React.Component {
                   name="supporter"
                   control={Checkbox}
                   onChange={this._handleCheckboxChange}
+                  checked={formData.supporter}
                   label="Se a gente te mandar conteúdo, você compartilha nas suas redes?"
                 />
                 <Form.Field
                   name="mobilizer"
                   control={Checkbox}
                   onChange={this._handleCheckboxChange}
+                  checked={formData.mobilizer}
                   label="Você puxaria um evento no seu bairro ou trabalho?"
                 />
                 <Form.Field
                   name="donor"
                   control={Checkbox}
                   onChange={this._handleCheckboxChange}
+                  checked={formData.donor}
                   label="Você doaria dinheiro para a campanha?"
                 />
                 <Divider />
@@ -274,6 +281,7 @@ export default class PeopleForm extends React.Component {
                 <Divider hidden />
               </div>
             ) : null}
+            <PeoplePrivacyPolicy />
             <Button primary fluid>
               Enviar
             </Button>
