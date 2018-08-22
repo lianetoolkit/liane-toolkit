@@ -342,6 +342,10 @@ export const canvasFormUpdate = new ValidatedMethod({
     personId: {
       type: String
     },
+    name: {
+      type: String,
+      optional: true
+    },
     sectionKey: {
       type: String
     },
@@ -350,10 +354,11 @@ export const canvasFormUpdate = new ValidatedMethod({
       blackbox: true
     }
   }).validator(),
-  run({ campaignId, personId, sectionKey, data }) {
+  run({ campaignId, personId, name, sectionKey, data }) {
     logger.debug("people.metaUpdate called", {
       campaignId,
       personId,
+      name,
       sectionKey,
       data
     });
@@ -400,6 +405,10 @@ export const canvasFormUpdate = new ValidatedMethod({
           $set.location = location;
         }
       }
+    }
+
+    if (name) {
+      $set.name = name;
     }
 
     return People.update(
