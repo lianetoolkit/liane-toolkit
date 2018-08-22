@@ -22,21 +22,25 @@ export const transformValues = function(audience, users) {
   return transformed;
 };
 
-export const getRatio = function(audience) {
+export const getAudienceRatio = function(audience) {
   if (!audience) return "";
   audience = transformValues(audience);
-  if (audience.total <= 1500) {
+  if (audience.total <= 1050) {
     return "--";
   }
-  let prefix, ratio;
   const local = audience.estimate / audience.total;
   const location = audience.location_estimate / audience.location_total;
-  if (local > location) {
+  return getRatio(location, local);
+};
+
+export const getRatio = function(compareTo, target) {
+  let prefix, ratio;
+  if (target > compareTo) {
     prefix = "+";
-    ratio = local / location;
+    ratio = target / compareTo;
   } else {
     prefix = "-";
-    ratio = location / local;
+    ratio = compareTo / target;
   }
   if (isFinite(ratio)) {
     return prefix + ratio.toFixed(2) + "x";
@@ -45,19 +49,28 @@ export const getRatio = function(audience) {
   }
 };
 
-export const getPercentage = function(audience) {
+export const getRawPercentage = function(audience) {
   if (!audience) return "";
   audience = transformValues(audience);
-  if (audience.total <= 1500) {
-    return "";
+  if (audience.estimate <= 1050) {
+    return 0;
   }
-  let dif = Math.min(audience.estimate / audience.total, 0.99);
-  return (dif * 100).toFixed(2) + "%";
+  return Math.min(audience.estimate / audience.total, 0.99);
+};
+
+export const getPercentage = function(audience) {
+  const percentage = getRawPercentage(audience);
+  if (percentage) {
+    return (percentage * 100).toFixed(2) + "%";
+  }
+  return "";
 };
 
 export default {
   getValue,
   transformValues,
+  getAudienceRatio,
   getRatio,
+  getRawPercentage,
   getPercentage
 };

@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Form, Input, Button, Popup, Icon } from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
+import { getFormUrl } from "/imports/ui/components/people/Utils.jsx";
 
 const Wrapper = styled.div`
   input[type="text"] {
@@ -16,7 +17,7 @@ const Wrapper = styled.div`
   p.status {
     font-size: 0.8em;
     margin: 0;
-    padding: .25rem 0 0;
+    padding: 0.25rem 0 0;
     color: #999;
     font-weight: bold;
     &.filled {
@@ -77,9 +78,7 @@ export default class PeopleFormButton extends React.Component {
   render() {
     const { formId, filledForm, loading } = this.state;
     const { size, person, iconOnly, ...props } = this.props;
-    const url = `${location.protocol}//${
-      Meteor.settings.public.domain
-    }/f/${formId}`;
+    const url = getFormUrl(Session.get("campaign"), formId);
     let filled = person.filledForm || filledForm;
     return (
       <Popup

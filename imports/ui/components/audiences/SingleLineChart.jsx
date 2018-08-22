@@ -95,7 +95,7 @@ export default class SingleLineChart extends React.Component {
         keys = ["location_estimate", "location_total"];
         break;
     }
-    if (audience[keys[1]] > 1500) {
+    if (audience[keys[0]] > 1050) {
       cent = audience[keys[0]] / audience[keys[1]];
     }
     return Math.min(cent, 0.99);
@@ -109,15 +109,19 @@ export default class SingleLineChart extends React.Component {
   }
   render() {
     const { audience } = this.props;
-    const diffs = [
-      this._getPercentage("location")
-    ];
+    const type = this.props.type || "location";
+    const label = this.props.label || "Location";
+    const color = this.props.color || "#8884d8";
+    const diffs = [this._getPercentage(type)];
     return (
       <Wrapper>
         <Container right>
-          <Bar right style={{ width: diffs[0] * 100 + "%" }} />
+          <Bar
+            right
+            style={{ width: diffs[0] * 100 + "%", backgroundColor: color }}
+          />
           <Label right>
-            Location
+            {label}
             <span>{this._format(diffs[0])}</span>
           </Label>
         </Container>

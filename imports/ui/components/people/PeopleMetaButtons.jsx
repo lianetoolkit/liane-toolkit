@@ -9,29 +9,36 @@ export default class PeopleMetaButtons extends React.Component {
   }
   _handleClick(key) {
     let { person, onChange } = this.props;
-    person.campaignMeta = person.campaignMeta || {};
-    const personId = person.personId || person.__originalId || person._id;
-    return ev => {
-      const data = {
-        personId,
-        metaKey: key,
-        metaValue: person.campaignMeta[key] ? false : true
-      };
-      Meteor.call("facebook.people.updatePersonMeta", data, error => {
-        if (error) {
-          Alerts.error(error);
-        } else {
-          if (onChange) {
-            onChange(data);
+    if (person) {
+      person.campaignMeta = person.campaignMeta || {};
+      const personId = person.personId || person.__originalId || person._id;
+      return ev => {
+        const data = {
+          personId,
+          metaKey: key,
+          metaValue: person.campaignMeta[key] ? false : true
+        };
+        Meteor.call("facebook.people.updatePersonMeta", data, error => {
+          if (error) {
+            Alerts.error(error);
+          } else {
+            if (onChange) {
+              onChange(data);
+            }
+            person.campaignMeta[key] = data.metaValue;
+            Alerts.success("Person updated successfully");
           }
-          person.campaignMeta[key] = data.metaValue;
-          Alerts.success("Person updated successfully");
-        }
-      });
-    };
+        });
+      };
+    } else {
+      return () => {
+        onChange(key);
+      };
+    }
   }
   _hasMeta(data = {}, key) {
-    return !!data[key];
+    const { active } = this.props;
+    return (active && active[key]) || !!data[key];
   }
   _metaIconName(key) {
     switch (key) {
@@ -45,6 +52,8 @@ export default class PeopleMetaButtons extends React.Component {
         return "currency";
       case "influencer":
         return "certificate";
+      case "non-voter":
+        return "calendar times";
       case "troll":
         return "dont";
     }
@@ -61,6 +70,8 @@ export default class PeopleMetaButtons extends React.Component {
         return "green";
       case "influencer":
         return "pink";
+      case "non-voter":
+        return "purple";
       case "troll":
         return "red";
     }
@@ -77,6 +88,8 @@ export default class PeopleMetaButtons extends React.Component {
         return "Donated or potential donors";
       case "influencer":
         return "Has a lot of followers";
+      case "non-voter":
+        return "Can't vote for you";
       case "troll":
         return "Not waste time responding";
     }
@@ -108,18 +121,16 @@ export default class PeopleMetaButtons extends React.Component {
   }
   render() {
     const { person, ...props } = this.props;
-    if (person) {
-      return (
-        <span {...props}>
-          {this._metaButton(person.campaignMeta || {}, "supporter")}
-          {this._metaButton(person.campaignMeta || {}, "volunteer")}
-          {this._metaButton(person.campaignMeta || {}, "mobilizer")}
-          {this._metaButton(person.campaignMeta || {}, "donor")}
-          {this._metaButton(person.campaignMeta || {}, "influencer")}
-          {this._metaButton(person.campaignMeta || {}, "troll")}
-        </span>
-      );
-    }
-    return null;
+    return (
+      <span {...props}>
+        {this._metaButton(person ? person.campaignMeta : false, "supporter")}
+        {this._metaButton(person ? person.campaignMeta : false, "volunteer")}
+        {this._metaButton(person ? person.campaignMeta : false, "mobilizer")}
+        {this._metaButton(person ? person.campaignMeta : false, "donor")}
+        {this._metaButton(person ? person.campaignMeta : false, "influencer")}
+        {this._metaButton(person ? person.campaignMeta : false, "non-voter")}
+        {this._metaButton(person ? person.campaignMeta : false, "troll")}
+      </span>
+    );
   }
 }

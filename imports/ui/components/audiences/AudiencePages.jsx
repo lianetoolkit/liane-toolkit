@@ -35,13 +35,13 @@ const Wrapper = styled.div`
   }
 `;
 
-export default class AudienceGeolocation extends React.Component {
+export default class AudiencePages extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       expanded: {},
       sort: "name",
-      geolocations: [],
+      accounts: [],
       categoryListActive: true
     };
     this._handleExpand = this._handleExpand.bind(this);
@@ -51,22 +51,19 @@ export default class AudienceGeolocation extends React.Component {
     const { sort } = this.state;
     if (audienceCategory) {
       this.setState({
-        geolocations: this._doSort(audienceCategory.geolocations, sort)
+        accounts: this._doSort(audienceCategory.accounts, sort)
       });
     }
   }
   componentWillReceiveProps(nextProps) {
-    const { geolocations, sort } = this.state;
+    const { accounts, sort } = this.state;
     if (
       nextProps.audienceCategory &&
-      JSON.stringify(nextProps.audienceCategory.geolocations) !==
-        JSON.stringify(geolocations)
+      JSON.stringify(nextProps.audienceCategory.accounts) !==
+        JSON.stringify(accounts)
     ) {
       this.setState({
-        geolocations: this._doSort(
-          nextProps.audienceCategory.geolocations,
-          sort
-        )
+        accounts: this._doSort(nextProps.audienceCategory.accounts, sort)
       });
     }
   }
@@ -74,26 +71,23 @@ export default class AudienceGeolocation extends React.Component {
     this._updateStickyMenu();
   }
   _handleSort = (ev, { value }) => {
-    const { sort, geolocations } = this.state;
+    const { sort, accounts } = this.state;
     if (sort !== value) {
       this.setState({
-        geolocations: this._doSort(geolocations, value),
+        accounts: this._doSort(accounts, value),
         sort: value
       });
     }
   };
-  _doSort(geolocations, sort) {
-    return sortBy(geolocations, item => {
+  _doSort(accounts, sort) {
+    return sortBy(accounts, item => {
       switch (sort) {
         case "name":
-          return item.geolocation.name;
+          return item.account.name;
         case "size":
-          const audience = this._latestAudience(item);
-          return -(
-            audience.location_estimate.dau / audience.location_total.dau
-          );
+          return -AudienceUtils.getRawPercentage(this._latestAudience(item));
         default:
-          return item.geolocation.name;
+          return item.account.name;
       }
     });
   }
@@ -103,40 +97,52 @@ export default class AudienceGeolocation extends React.Component {
   _getAverage = () => {
     const { audienceCategory } = this.props;
     let percentages = [];
-    audienceCategory.geolocations.forEach(g => {
-      const latestAudience = this._latestAudience(g);
-      percentages.push(
-        latestAudience.location_estimate.dau / latestAudience.location_total.dau
+    audienceCategory.accounts.forEach(g => {
+      const percentage = AudienceUtils.getRawPercentage(
+        this._latestAudience(g)
       );
+      if (percentage) {
+        percentages.push(percentage);
+      }
     });
-    return sum(percentages) / audienceCategory.geolocations.length;
+    return sum(percentages) / percentages.length;
   };
-  _getTop = () => {
+  _getHighest = () => {
     const { audienceCategory } = this.props;
-    let result = [];
     if (audienceCategory) {
       const average = this._getAverage();
-      const top = sortBy(audienceCategory.geolocations, g => {
-        const latestAudience = this._latestAudience(g);
-        return -(
-          latestAudience.location_estimate.dau /
-          latestAudience.location_total.dau
-        );
-      }).slice(0, 3);
-      top.forEach(item => {
-        const latestAudience = this._latestAudience(item);
-        const percentage =
-          latestAudience.location_estimate.dau /
-          latestAudience.location_total.dau;
-        result.push({
-          ...item,
-          average,
-          percentage: (percentage * 100).toFixed(2) + "%",
-          ratio: AudienceUtils.getRatio(average, percentage)
-        });
+      const highest = maxBy(audienceCategory.accounts, g => {
+        return AudienceUtils.getRawPercentage(this._latestAudience(g));
       });
+      const latestAudience = this._latestAudience(highest);
+      const percentage = AudienceUtils.getRawPercentage(latestAudience);
+
+      return {
+        ...highest,
+        average,
+        percentage: AudienceUtils.getPercentage(latestAudience),
+        ratio: AudienceUtils.getRatio(average, percentage)
+      };
     }
-    return result;
+  };
+  _getLowest = () => {
+    const { audienceCategory } = this.props;
+    if (audienceCategory) {
+      const average = this._getAverage();
+      const lowest = minBy(audienceCategory.accounts, g => {
+        return AudienceUtils.getRawPercentage(this._latestAudience(g)) || 100;
+      });
+      const percentage = AudienceUtils.getRawPercentage(
+        this._latestAudience(lowest)
+      );
+
+      return {
+        ...lowest,
+        average,
+        percentage: (percentage * 100).toFixed(2) + "%",
+        ratio: AudienceUtils.getRatio(average, percentage)
+      };
+    }
   };
   _updateStickyMenu() {
     const { contextRef, stickyRef, categoryListActive } = this.state;
@@ -182,7 +188,7 @@ export default class AudienceGeolocation extends React.Component {
       contextRef,
       stickyRef,
       sort,
-      geolocations,
+      accounts,
       categoryListActive
     } = this.state;
     const {
@@ -193,7 +199,8 @@ export default class AudienceGeolocation extends React.Component {
       audienceCategoryId,
       facebookAccount
     } = this.props;
-    const topPlaces = this._getTop();
+    const highest = this._getHighest();
+    const lowest = this._getLowest();
     if (loading && !audienceCategory) {
       return <Loading />;
     } else if (audienceCategory) {
@@ -216,7 +223,7 @@ export default class AudienceGeolocation extends React.Component {
                           href={FlowRouter.path(
                             "App.campaignAudience.category",
                             {
-                              navTab: "places",
+                              navTab: "pages",
                               campaignId: campaign._id,
                               audienceCategoryId: cat._id
                             }
@@ -241,36 +248,47 @@ export default class AudienceGeolocation extends React.Component {
                         <Loader>Loading</Loader>
                       </Dimmer>
                       <Header>{audienceCategory.category.title}</Header>
-                      {audienceCategory.geolocations.length > 1 ? (
-                        <>
-                          <Header as="h5">
-                            Places <strong>most</strong> interested in{" "}
-                            {audienceCategory.category.title}
-                          </Header>
-                          <Grid columns={1} widths="equal">
-                            <Grid.Row>
-                              {topPlaces.map(item => (
-                                <Grid.Column key={item.geolocation._id}>
-                                  <Card className="big" fluid color="green">
-                                    <Card.Content>
-                                      <Card.Header>
-                                        {item.geolocation.name}
-                                      </Card.Header>
-                                      <Card.Meta>
-                                        <Label>{item.percentage}</Label>
-                                      </Card.Meta>
-                                      <Card.Description>
-                                        {item.ratio} above average
-                                      </Card.Description>
-                                    </Card.Content>
-                                  </Card>
-                                </Grid.Column>
-                              ))}
-                            </Grid.Row>
-                          </Grid>
-                          <Divider hidden />
-                        </>
-                      ) : null}
+                      <Grid columns={2} widths="equal">
+                        <Grid.Row>
+                          <Grid.Column>
+                            <Header as="h5">
+                              <strong>Most</strong> interested in{" "}
+                              {audienceCategory.category.title}
+                            </Header>
+                            <Card className="big" fluid color="green">
+                              <Card.Content>
+                                <Card.Header>
+                                  {highest.account.name}
+                                </Card.Header>
+                                <Card.Meta>
+                                  <Label>{highest.percentage}</Label>
+                                </Card.Meta>
+                                <Card.Description>
+                                  {highest.ratio} above average
+                                </Card.Description>
+                              </Card.Content>
+                            </Card>
+                          </Grid.Column>
+                          <Grid.Column>
+                            <Header as="h5">
+                              <strong>Least</strong> interested in{" "}
+                              {audienceCategory.category.title}
+                            </Header>
+                            <Card className="big" fluid color="red">
+                              <Card.Content>
+                                <Card.Header>{lowest.account.name}</Card.Header>
+                                <Card.Meta>
+                                  <Label>{lowest.percentage}</Label>
+                                </Card.Meta>
+                                <Card.Description>
+                                  {lowest.ratio} below average
+                                </Card.Description>
+                              </Card.Content>
+                            </Card>
+                          </Grid.Column>
+                        </Grid.Row>
+                      </Grid>
+                      <Divider hidden />
                       <Dropdown
                         floating
                         labeled
@@ -293,32 +311,40 @@ export default class AudienceGeolocation extends React.Component {
                           }
                         ]}
                       />
-                      <Header as="h5">All places</Header>
+                      <Header as="h5">All pages</Header>
                       <Table selectable>
-                        {geolocations.map(item => {
+                        {accounts.map(item => {
                           const expanded = this._isExpanded(
-                            item.geolocation._id
+                            item.account.facebookId
                           );
                           return (
-                            <Table.Body key={item.geolocation._id}>
+                            <Table.Body key={item.account.facebookId}>
                               <Table.Row
                                 className="selectable"
                                 active={expanded}
                                 onClick={this._handleExpand(
-                                  item.geolocation._id
+                                  item.account.facebookId
                                 )}
                               >
                                 <Table.Cell collapsing>
                                   <span className="category-title">
-                                    {item.geolocation.name}
+                                    {item.account.name}
                                   </span>
                                 </Table.Cell>
                                 <Table.Cell>
                                   {!expanded ? (
                                     <SingleLineChart
+                                      type="account"
+                                      label="Page"
+                                      color="#82ca9d"
                                       audience={this._latestAudience(item)}
                                     />
                                   ) : null}
+                                </Table.Cell>
+                                <Table.Cell collapsing>
+                                  <DataAlert
+                                    audience={this._latestAudience(item)}
+                                  />
                                 </Table.Cell>
                                 <Table.Cell collapsing>
                                   <Button
@@ -330,7 +356,7 @@ export default class AudienceGeolocation extends React.Component {
                                       {
                                         campaignId: campaign._id,
                                         audienceFacebookId:
-                                          facebookAccount.facebookId
+                                          item.account.facebookId
                                       },
                                       {
                                         category: audienceCategoryId
@@ -343,11 +369,8 @@ export default class AudienceGeolocation extends React.Component {
                               </Table.Row>
                               {expanded ? (
                                 <Table.Row active>
-                                  <Table.Cell colSpan="5">
-                                    <AudienceInfo
-                                      data={item}
-                                      single="location"
-                                    />
+                                  <Table.Cell colSpan="6">
+                                    <AudienceInfo data={item} />
                                   </Table.Cell>
                                 </Table.Row>
                               ) : null}

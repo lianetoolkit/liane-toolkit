@@ -1,4 +1,4 @@
-import { People } from "../people.js";
+import { People, PeopleTags } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 const { Jobs } = require("/imports/api/jobs/jobs.js");
@@ -79,9 +79,25 @@ Meteor.publish("people.detail", function({ personId }) {
   return this.ready();
 });
 
+Meteor.publish("people.tags", function({ campaignId }) {
+  logger.debug("people.tags called", { campaignId });
+  const userId = this.userId;
+  if (userId) {
+    const campaign = Campaigns.findOne(campaignId);
+    const allowed = _.findWhere(campaign.users, { userId });
+    if (allowed) {
+      return PeopleTags.find({ campaignId });
+    }
+  }
+  return this.ready();
+});
+
 Meteor.publishComposite("people.form.detail", function({ formId }) {
   logger.debug("people.form.detail called", { formId });
   const person = People.findOne({ formId });
+  if (!person) {
+    return this.ready();
+  }
   const campaign = Campaigns.findOne({ _id: person.campaignId });
   return {
     find: function() {

@@ -88,6 +88,25 @@ const RepeaterItem = ({ field, data }) => {
   );
 };
 
+class PeopleTagsItem extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { campaignTags: [] };
+  }
+  componentDidMount() {
+    let { campaignId } = this.props;
+    campaignId = campaignId || FlowRouter.getParam("campaignId");
+    Meteor.call("people.getTags", { campaignId }, (err, res) => {
+      this.setState({ campaignTags: res });
+    });
+  }
+  render() {
+    const { field, data } = this.props;
+    const { campaignTags } = this.state;
+    const tags = campaignTags.filter(tag => data.value.indexOf(tag._id) !== -1);
+    return tags.map(tag => tag.name).join(", ");
+  }
+}
 const BooleanItem = ({ field, data }) => {
   return <Checkbox disabled checked={!!data.value} />;
 };
@@ -156,6 +175,8 @@ export default class FlexDataItem extends React.Component {
           return <KeyValItem field={field} data={data} />;
         case "boolean":
           return <BooleanItem field={field} data={data} />;
+        case "peopleTags":
+          return <PeopleTagsItem field={field} data={data} />;
         default:
           return null;
       }

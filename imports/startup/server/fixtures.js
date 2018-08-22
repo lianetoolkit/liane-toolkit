@@ -102,6 +102,7 @@ if (AudienceCategories.find().count() == 0) {
 if (Contexts.find().count() == 0) {
   const insertContext = {
     name: "São Paulo 2018",
+    country: "BR",
     geolocations: _.pluck(Geolocations.find().fetch(), "_id"),
     audienceCategories: _.pluck(AudienceCategories.find().fetch(), "_id")
   };
