@@ -2,6 +2,7 @@ import React from "react";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { randomColor } from "/imports/ui/utils/utils.jsx";
 import styled from "styled-components";
+import { Alerts } from "/imports/ui/utils/Alerts.js";
 import { Table, Icon, Dimmer, Button } from "semantic-ui-react";
 import PeopleTable from "./PeopleTable.jsx";
 import PeopleInteractivityGrid from "/imports/ui/components/people/PeopleInteractivityGrid.jsx";
@@ -86,6 +87,22 @@ export default class PeopleSearchResults extends React.Component {
   _getMeta(person, key) {
     return get(person, "campaignMeta." + key);
   }
+  _handleRemoveClick = personId => () => {
+    if (confirm("Are you sure?")) {
+      Meteor.call("people.remove", { personId }, (err, res) => {
+        if (err) {
+          Alerts.error(err);
+        } else {
+          const { people } = this.state;
+          const newPeople = [...people].filter(p => p._id !== personId);
+          this.setState({
+            people: newPeople
+          });
+          Alerts.success("Person removed successfully");
+        }
+      });
+    }
+  };
   _extraCells(person) {
     const { editMode, facebookId, campaignId } = this.props;
     const { duplicates } = this.state;
@@ -105,14 +122,19 @@ export default class PeopleSearchResults extends React.Component {
             />
           </Table.Cell>
           <Table.Cell collapsing>
-            <a
-              href={FlowRouter.path("App.campaignPeople.edit", {
-                campaignId,
-                personId: person._id
-              })}
-            >
-              <Icon name="edit" /> Edit user
-            </a>
+            <Button.Group size="mini" basic>
+              <Button
+                href={FlowRouter.path("App.campaignPeople.edit", {
+                  campaignId,
+                  personId: person._id
+                })}
+              >
+                <Icon name="edit" /> Edit
+              </Button>
+              <Button onClick={this._handleRemoveClick(person._id)}>
+                <Icon name="close" /> Remove
+              </Button>
+            </Button.Group>
           </Table.Cell>
         </>
       );

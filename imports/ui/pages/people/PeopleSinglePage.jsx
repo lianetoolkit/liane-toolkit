@@ -3,6 +3,7 @@ import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import styled from "styled-components";
 import { pick, sortBy, minBy, maxBy } from "lodash";
+import { Alerts } from "/imports/ui/utils/Alerts.js";
 import {
   Segment,
   Grid,
@@ -151,10 +152,23 @@ export default class PeopleSinglePage extends React.Component {
       entries: sortBy(Object.values(entries), e => -e.createdTime)
     });
   }
+  _handleRemoveClick = () => {
+    const { person, campaign } = this.props;
+    if (confirm("Are you sure?")) {
+      Meteor.call("people.remove", { personId: person._id }, (err, res) => {
+        if (err) {
+          Alerts.error(err);
+        } else {
+          Alerts.success("Person removed successfully");
+          FlowRouter.go("App.campaignPeople", { campaignId: campaign._id });
+        }
+      });
+    }
+  };
   render() {
     const { entries, nav } = this.state;
     const { loading, campaign, person, likes, comments } = this.props;
-    if (loading) {
+    if (loading || !person) {
       return <Loading />;
     } else {
       return (
@@ -171,7 +185,7 @@ export default class PeopleSinglePage extends React.Component {
               <Segment size="small">
                 <Grid columns={3} verticalAlign="middle">
                   <Grid.Row>
-                    {person.facebookId ? (
+                    {/* {person.facebookId ? (
                       <Grid.Column width={2} textAlign="center">
                         <a
                           href={`https://facebook.com/${person.facebookId}`}
@@ -181,11 +195,11 @@ export default class PeopleSinglePage extends React.Component {
                           <Icon name="facebook" /> Profile
                         </a>
                       </Grid.Column>
-                    ) : null}
-                    <Grid.Column width={5} textAlign="center">
+                    ) : null} */}
+                    <Grid.Column width={4}>
                       <PeopleMetaButtons person={person} size="large" />
                     </Grid.Column>
-                    <Grid.Column width={9}>
+                    <Grid.Column width={12}>
                       {comments.length ? (
                         <div className="comment-history">
                           <Header>
@@ -323,6 +337,10 @@ export default class PeopleSinglePage extends React.Component {
               ) : null}
             </div>
           </section>
+          <Divider hidden />
+          <Button negative onClick={this._handleRemoveClick}>
+            <Icon name="close" /> Remove this person from the database
+          </Button>
         </Wrapper>
       );
     }

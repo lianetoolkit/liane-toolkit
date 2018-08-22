@@ -342,6 +342,10 @@ export const canvasFormUpdate = new ValidatedMethod({
     personId: {
       type: String
     },
+    name: {
+      type: String,
+      optional: true
+    },
     sectionKey: {
       type: String
     },
@@ -350,10 +354,11 @@ export const canvasFormUpdate = new ValidatedMethod({
       blackbox: true
     }
   }).validator(),
-  run({ campaignId, personId, sectionKey, data }) {
+  run({ campaignId, personId, name, sectionKey, data }) {
     logger.debug("people.metaUpdate called", {
       campaignId,
       personId,
+      name,
       sectionKey,
       data
     });
@@ -402,6 +407,10 @@ export const canvasFormUpdate = new ValidatedMethod({
       }
     }
 
+    if (name) {
+      $set.name = name;
+    }
+
     return People.update(
       {
         campaignId,
@@ -414,6 +423,42 @@ export const canvasFormUpdate = new ValidatedMethod({
         }
       }
     );
+  }
+});
+
+export const removePeople = new ValidatedMethod({
+  name: "people.remove",
+  validate: new SimpleSchema({
+    personId: {
+      type: String
+    }
+  }).validator(),
+  run({ personId }) {
+    logger.debug("people.remove called", { personId });
+
+    const userId = Meteor.userId();
+
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const person = People.findOne(personId);
+
+    if (!person) {
+      throw new Meteor.Error(404, "Person not found");
+    }
+
+    const campaign = Campaigns.findOne(person.campaignId);
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    if (!_.findWhere(campaign.users, { userId })) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    People.remove(personId);
   }
 });
 
@@ -488,13 +533,37 @@ export const importPeople = new ValidatedMethod({
       type: Object,
       blackbox: true
     },
+    filename: {
+      type: String
+    },
     data: {
       type: Object,
       blackbox: true
+    },
+    defaultValues: {
+      type: Object,
+      optional: true
+    },
+    "defaultValues.tags": {
+      type: Array,
+      optional: true
+    },
+    "defaultValues.tags.$": {
+      type: String
+    },
+    "defaultValues.labels": {
+      type: Object,
+      optional: true,
+      blackbox: true
     }
   }).validator(),
-  run({ campaignId, config, data }) {
-    logger.debug("people.import called", { campaignId, config, data });
+  run({ campaignId, config, filename, data, defaultValues }) {
+    logger.debug("people.import called", {
+      campaignId,
+      config,
+      data,
+      defaultValues
+    });
 
     const userId = Meteor.userId();
     if (!userId) {
@@ -510,7 +579,13 @@ export const importPeople = new ValidatedMethod({
     if (!allowed) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
-    return PeopleHelpers.import({ campaignId, config, data });
+    return PeopleHelpers.import({
+      campaignId,
+      config,
+      filename,
+      data,
+      defaultValues
+    });
   }
 });
 

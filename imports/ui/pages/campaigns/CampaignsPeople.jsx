@@ -75,15 +75,11 @@ export default class CampaignsPeople extends React.Component {
     let file = ev.currentTarget.files[0];
     const reader = new FileReader();
     reader.onload = () => {
-      let binary = "";
       let bytes = new Uint8Array(reader.result);
-      for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const wb = XLSX.read(binary, { type: "binary" });
+      const wb = XLSX.read(bytes, { type: "array" });
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(sheet);
-      this.setState({ importData: json });
+      this.setState({ importData: json, importFilename: file.name });
     };
     reader.readAsArrayBuffer(file);
   }
@@ -92,11 +88,17 @@ export default class CampaignsPeople extends React.Component {
       this.setState({ importData: null });
       Alerts.success("Import has started");
     } else {
-      Alerts.error(error);
+      Alerts.error(err);
     }
   }
   render() {
-    const { isLoading, editMode, importData, activityQuery } = this.state;
+    const {
+      isLoading,
+      editMode,
+      importData,
+      importFilename,
+      activityQuery
+    } = this.state;
     const {
       loading,
       tags,
@@ -230,6 +232,7 @@ export default class CampaignsPeople extends React.Component {
           />
           <PeopleImport
             data={importData}
+            filename={importFilename}
             campaignId={campaign._id}
             onSubmit={this._handleImportSubmit}
           />

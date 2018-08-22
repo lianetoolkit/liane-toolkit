@@ -19,9 +19,9 @@ export default class DataAlert extends React.Component {
       color = "yellow";
       message = "Data is relatively small, not enough for accurate analysis.";
     }
-    if (transformed.estimate < 1100) {
+    if (transformed.estimate < 1050) {
       color = "red";
-      message = "Sample is too small, data not trustworthy";
+      message = "Sample is too small, data not available.";
     }
     return (
       <Popup trigger={<Icon name={icon} color={color} />} content={message} />
