@@ -113,7 +113,7 @@ campaignRoutes.route("/people/edit/:personId/:sectionKey?", {
 });
 campaignRoutes.route("/people/activity/:facebookId?", {
   name: "App.campaignPeople.activity",
-  action: function(params) {
+  action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Campaign`);
     return _mount(params, {
       content: {
@@ -121,6 +121,7 @@ campaignRoutes.route("/people/activity/:facebookId?", {
         props: {
           campaignId: params.campaignId,
           facebookId: params.facebookId,
+          limit: queryParams.limit || 10,
           isActivity: true
         }
       }

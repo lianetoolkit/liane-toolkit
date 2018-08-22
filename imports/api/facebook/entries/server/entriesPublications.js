@@ -8,7 +8,8 @@ import { People } from "/imports/api/facebook/people/people.js";
 Meteor.publishComposite("entries.campaignActivity", function({
   campaignId,
   facebookId,
-  queryParams
+  queryParams,
+  limit
 }) {
   this.unblock();
   const userId = this.userId;
@@ -43,7 +44,7 @@ Meteor.publishComposite("entries.campaignActivity", function({
                 },
                 {
                   sort: { created_time: -1 },
-                  limit: 10
+                  limit: Math.min(limit || 10, 1000)
                 }
               );
             },
@@ -70,7 +71,7 @@ Meteor.publishComposite("entries.campaignActivity", function({
                 },
                 {
                   sort: { created_time: -1 },
-                  limit: 10
+                  limit: Math.min(limit || 10, 1000)
                 }
               );
             },

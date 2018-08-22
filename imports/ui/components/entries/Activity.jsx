@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Feed, Icon, Message, Grid, Button, Divider } from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
+import Loading from "/imports/ui/components/utils/Loading.jsx";
 import moment from "moment";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import PeopleFormButton from "/imports/ui/components/people/PeopleFormButton.jsx";
@@ -77,9 +78,22 @@ export default class PeopleActivity extends React.Component {
   }
   componentDidMount() {
     this._updatePeople();
+    if (this.props.activity) this._updateActivity(this.props.activity);
   }
   componentWillReceiveProps(nextProps) {
+    const { activity } = this.state;
     this._updatePeople(nextProps);
+    if (
+      nextProps.activity &&
+      nextProps.activity.length &&
+      JSON.stringify(nextProps.activity) &&
+      JSON.stringify(activity)
+    ) {
+      this._updateActivity(nextProps.activity);
+    }
+  }
+  _updateActivity(activity) {
+    this.setState({ activity });
   }
   _updatePeople(props) {
     props = props || this.props;
@@ -209,8 +223,13 @@ export default class PeopleActivity extends React.Component {
       );
     }
   };
+  _handleLoadMoreClick = () => {
+    const { limit } = this.props;
+    FlowRouter.setQueryParams({ limit: parseInt(limit) + 10 });
+  };
   render() {
-    const { activity } = this.props;
+    const { loading } = this.props;
+    const { activity } = this.state;
     if (activity && activity.length) {
       return (
         <Wrapper>
@@ -221,10 +240,7 @@ export default class PeopleActivity extends React.Component {
                 <Feed.Content>
                   <Feed.Extra className="aligned">
                     {item.person ? (
-                      <PeopleFormButton
-                        floated="right"
-                        person={item.person}
-                      />
+                      <PeopleFormButton floated="right" person={item.person} />
                     ) : null}
                     <p>
                       <strong>
@@ -292,8 +308,17 @@ export default class PeopleActivity extends React.Component {
               </Feed.Event>
             ))}
           </Feed>
+          <Button onClick={this._handleLoadMoreClick} disabled={loading}>
+            <Icon
+              name={loading ? "spinner" : "ellipsis horizontal"}
+              loading={loading}
+            />
+            Load more
+          </Button>
         </Wrapper>
       );
+    } else if (loading) {
+      return <Loading />;
     } else {
       return <Message>No activity was found</Message>;
     }

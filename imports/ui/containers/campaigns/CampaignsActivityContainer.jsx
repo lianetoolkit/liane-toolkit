@@ -15,7 +15,8 @@ export default withTracker(props => {
   const activityHandle = ActivitySubs.subscribe("entries.campaignActivity", {
     campaignId: props.campaignId,
     facebookId: props.facebookId,
-    queryParams
+    queryParams,
+    limit: props.limit || 10
   });
 
   const loading = !activityHandle.ready();
@@ -80,6 +81,7 @@ export default withTracker(props => {
   activity = sortBy(activity, item => -new Date(item.created_time));
 
   return {
+    limit: props.limit || 10,
     loading,
     activity,
     query
