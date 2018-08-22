@@ -123,7 +123,10 @@ Meteor.publishComposite("people.form.detail", function({ formId }) {
             name: 1,
             facebookId: 1,
             "campaignMeta.contact": 1,
-            "campaignMeta.basic_info": 1
+            "campaignMeta.basic_info": 1,
+            "campaignMeta.donor": 1,
+            "campaignMeta.supporter": 1,
+            "campaignMeta.mobilizer": 1
           }
         }
       );

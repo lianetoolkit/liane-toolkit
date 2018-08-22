@@ -2,6 +2,10 @@
 import "/imports/api/users/server/usersMethods.js";
 import "/imports/api/users/server/usersPublications.js";
 
+// options
+import "/imports/api/options/server/optionsMethods.js";
+import "/imports/api/options/server/optionsPublications.js";
+
 // contexts
 import "/imports/api/contexts/server/contextsMethods.js";
 import "/imports/api/contexts/server/contextsPublications.js";

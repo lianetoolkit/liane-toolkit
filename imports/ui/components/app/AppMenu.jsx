@@ -176,6 +176,9 @@ export default class AppMenu extends React.Component {
                 <Menu.Item href={FlowRouter.path("App.admin.mapLayers")}>
                   <Icon name="map" /> Map Layers
                 </Menu.Item>
+                <Menu.Item href={FlowRouter.path("App.admin.options")}>
+                  <Icon name="cogs" /> Site options
+                </Menu.Item>
               </div>
             }
           />
