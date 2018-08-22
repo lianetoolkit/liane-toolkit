@@ -136,7 +136,7 @@ export default class CampaignsPeople extends React.Component {
           ]}
         />
         <section className="content">
-          {loading ? (
+          {!isActivity && loading ? (
             <Loading />
           ) : (
             <Grid>
@@ -146,9 +146,11 @@ export default class CampaignsPeople extends React.Component {
                     <PeopleActivityFilter />
                     <Divider hidden />
                     <PeopleActivity
+                      loading={loading}
                       campaign={campaign}
                       activity={activity}
                       accounts={accounts}
+                      limit={this.props.limit || 10}
                     />
                   </Grid.Column>
                 </Grid.Row>
@@ -213,11 +215,6 @@ export default class CampaignsPeople extends React.Component {
                           tags={tags}
                         />
                       ) : null}
-                      {/* <PeopleSummary
-                          facebookId={facebookId}
-                          campaignId={campaign._id}
-                          peopleSummary={peopleSummary}
-                        /> */}
                     </Grid.Column>
                   </Grid.Row>
                 </>
