@@ -26,6 +26,13 @@ const schemaConfig = {
   },
   "audienceCategories.$": {
     type: String
+  },
+  mapLayers: {
+    type: Array,
+    optional: true
+  },
+  "mapLayers.$": {
+    type: String
   }
 };
 
@@ -37,7 +44,14 @@ const validateUpdate = new SimpleSchema(
 export const createContext = new ValidatedMethod({
   name: "contexts.create",
   validate: validateCreate,
-  run({ name, country, mainGeolocationId, geolocations, audienceCategories }) {
+  run({
+    name,
+    country,
+    mainGeolocationId,
+    geolocations,
+    audienceCategories,
+    mapLayers
+  }) {
     logger.debug("contexts.create called", { name });
 
     const userId = Meteor.userId();
@@ -54,7 +68,8 @@ export const createContext = new ValidatedMethod({
       country,
       mainGeolocationId,
       geolocations,
-      audienceCategories
+      audienceCategories,
+      mapLayers
     };
     return Contexts.insert(insertDoc);
   }
@@ -69,7 +84,8 @@ export const updateContext = new ValidatedMethod({
     country,
     mainGeolocationId,
     geolocations,
-    audienceCategories
+    audienceCategories,
+    mapLayers
   }) {
     logger.debug("contexts.update called", { name });
 
@@ -87,7 +103,8 @@ export const updateContext = new ValidatedMethod({
       country,
       mainGeolocationId,
       geolocations,
-      audienceCategories
+      audienceCategories,
+      mapLayers
     };
 
     Contexts.update({ _id }, { $set: insertDoc });

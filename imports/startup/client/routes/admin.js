@@ -18,6 +18,9 @@ import EditAudienceCategoriesPageContainer from "/imports/ui/containers/audience
 import GeolocationsPageContainer from "/imports/ui/containers/geolocations/GeolocationsPageContainer.jsx";
 import EditGeolocationsPageContainer from "/imports/ui/containers/geolocations/EditGeolocationsPageContainer.jsx";
 
+import MapLayersContainer from "/imports/ui/containers/mapLayers/MapLayersContainer.jsx";
+import EditMapLayersContainer from "/imports/ui/containers/mapLayers/EditMapLayersContainer.jsx";
+
 import UsersContainer from "/imports/ui/containers/users/UsersContainer.jsx";
 import EditUsersContainer from "/imports/ui/containers/users/EditUsersContainer.jsx";
 
@@ -125,10 +128,35 @@ adminRoutes.route("/geolocations/edit/:geolocationId?", {
   }
 });
 
+adminRoutes.route("/layers", {
+  name: "App.admin.mapLayers",
+  action: function() {
+    addTitle(`${APP_NAME} | Map Layers`);
+    return mount(AppContainer, {
+      content: {
+        component: MapLayersContainer
+      }
+    });
+  }
+});
+
+adminRoutes.route("/layers/edit/:mapLayerId?", {
+  name: "App.admin.mapLayers.edit",
+  action: function(params) {
+    addTitle(`${APP_NAME} | Map Layers`);
+    return mount(AppContainer, {
+      content: {
+        component: EditMapLayersContainer,
+        props: { mapLayerId: params.mapLayerId }
+      }
+    });
+  }
+});
+
 adminRoutes.route("/users", {
   name: "App.admin.users",
   action: function() {
-    addTitle(`${APP_NAME} | Geolocations`);
+    addTitle(`${APP_NAME} | Users`);
     return mount(AppContainer, {
       content: {
         component: UsersContainer
@@ -140,7 +168,7 @@ adminRoutes.route("/users", {
 adminRoutes.route("/users/edit/:userId?", {
   name: "App.admin.users.edit",
   action: function(params) {
-    addTitle(`${APP_NAME} | Geolocations`);
+    addTitle(`${APP_NAME} | Users`);
     return mount(AppContainer, {
       content: {
         component: EditUsersContainer,

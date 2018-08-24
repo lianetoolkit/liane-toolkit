@@ -3,6 +3,7 @@ import { withTracker } from "meteor/react-meteor-data";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { AudienceCategories } from "/imports/api/audienceCategories/audienceCategories.js";
+import { MapLayers } from "/imports/api/mapLayers/mapLayers.js";
 import EditContextsPage from "/imports/ui/pages/admin/contexts/EditContextsPage.jsx";
 
 const EditContextSubs = new SubsManager();
@@ -15,6 +16,7 @@ export default withTracker(props => {
   const audienceCategoriesHandle = EditContextSubs.subscribe(
     "audienceCategories.all"
   );
+  const mapLayersHandle = EditContextSubs.subscribe("mapLayers.all");
 
   const loading =
     !contextHandle.ready() &&
@@ -34,12 +36,17 @@ export default withTracker(props => {
     ? AudienceCategories.find().fetch()
     : [];
 
+  const mapLayers = mapLayersHandle.ready()
+    ? MapLayers.find().fetch()
+    : [];
+
   return {
     loading,
     context,
     available: {
       geolocations,
-      audienceCategories
+      audienceCategories,
+      mapLayers
     }
   };
 })(EditContextsPage);
