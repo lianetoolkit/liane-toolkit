@@ -52,6 +52,8 @@ export default class PeopleMetaButtons extends React.Component {
         return "currency";
       case "influencer":
         return "certificate";
+      case "voter":
+        return "thumbs up";
       case "non-voter":
         return "calendar times";
       case "troll":
@@ -70,6 +72,8 @@ export default class PeopleMetaButtons extends React.Component {
         return "green";
       case "influencer":
         return "pink";
+      case "voter":
+        return "teal";
       case "non-voter":
         return "purple";
       case "troll":
@@ -88,6 +92,8 @@ export default class PeopleMetaButtons extends React.Component {
         return "Donated or potential donors";
       case "influencer":
         return "Has a lot of followers";
+      case "voter":
+        return "Will vote for you";
       case "non-voter":
         return "Can't vote for you";
       case "troll":
@@ -128,6 +134,7 @@ export default class PeopleMetaButtons extends React.Component {
         {this._metaButton(person ? person.campaignMeta : false, "mobilizer")}
         {this._metaButton(person ? person.campaignMeta : false, "donor")}
         {this._metaButton(person ? person.campaignMeta : false, "influencer")}
+        {this._metaButton(person ? person.campaignMeta : false, "voter")}
         {this._metaButton(person ? person.campaignMeta : false, "non-voter")}
         {this._metaButton(person ? person.campaignMeta : false, "troll")}
       </span>
