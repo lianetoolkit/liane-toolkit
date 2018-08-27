@@ -25,7 +25,7 @@ export const transformValues = function(audience, users) {
 export const getAudienceRatio = function(audience) {
   if (!audience) return "";
   audience = transformValues(audience);
-  if (audience.total <= 1050) {
+  if (audience.estimate <= 1050) {
     return "--";
   }
   const local = audience.estimate / audience.total;
