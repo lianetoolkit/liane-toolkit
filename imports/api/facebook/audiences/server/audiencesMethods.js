@@ -230,6 +230,179 @@ export const campaignAudienceSummary = new ValidatedMethod({
   }
 });
 
+export const audiencesMap = new ValidatedMethod({
+  name: "audiences.map",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId }) {
+    this.unblock();
+    logger.debug("audiences.map", { campaignId });
+
+    const userId = Meteor.userId();
+
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!_.findWhere(campaign.users, { userId })) {
+      throw new Meteor.Error(401, "You are not part of this campaign");
+    }
+
+    // Cache setup
+    const hash = crypto
+      .createHash("sha1")
+      .update(campaignId)
+      .digest("hex");
+    const redisKey = `audiences::result::${hash}::campaignSummary`;
+
+    let result = redisClient.getSync(redisKey);
+    if (result) {
+      return JSON.parse(result);
+    } else {
+      const accounts = campaign.audienceAccounts;
+
+      const context = Contexts.findOne(campaign.contextId);
+
+      const categories = AudienceCategories.find({
+        _id: { $in: context.audienceCategories }
+      }).fetch();
+
+      let mainGeolocation;
+      if (context.mainGeolocationId) {
+        mainGeolocation = Geolocations.findOne(context.mainGeolocationId, {
+          fields: {
+            ...geolocationFields,
+            center: 1,
+            geojson: 1,
+            type: 1
+          }
+        });
+      }
+
+      const geolocations = Geolocations.find(
+        {
+          _id: { $in: context.geolocations }
+        },
+        {
+          fields: {
+            ...geolocationFields,
+            center: 1,
+            geojson: 1,
+            type: 1
+          }
+        }
+      ).fetch();
+
+      let result = {
+        mainGeolocation,
+        geolocations,
+        data: [],
+        topCategories: {}
+      };
+
+      let geolocationsAverage = {};
+      let geolocationsTotal = {};
+      let categoriesAverage = {};
+
+      categories.forEach(category => {
+        let sumArray = [];
+        geolocations.forEach(geolocation => {
+          const audience = FacebookAudiences.findOne(
+            {
+              geolocationId: geolocation._id,
+              audienceCategoryId: category._id
+            },
+            { sort: { createdAt: -1 } }
+          );
+          const average =
+            audience.location_estimate.dau / audience.location_total.dau;
+          if (!geolocationsAverage[geolocation._id]) {
+            geolocationsAverage[geolocation._id] = {};
+          }
+          if (!geolocationsTotal[geolocation._id]) {
+            geolocationsTotal[geolocation._id] = {};
+          }
+          geolocationsTotal[geolocation._id][category._id] =
+            audience.location_estimate.dau;
+          geolocationsAverage[geolocation._id][category._id] = average;
+          sumArray.push(average);
+        });
+        categoriesAverage[category._id] =
+          _.reduce(sumArray, (mem, num) => mem + num) / sumArray.length;
+      });
+
+      let ratios = {};
+      for (let geolocationId in geolocationsAverage) {
+        for (let categoryId in geolocationsAverage[geolocationId]) {
+          if (!ratios[geolocationId]) ratios[geolocationId] = [];
+          ratios[geolocationId].push({
+            categoryId,
+            name: categories.find(c => c._id == categoryId).title,
+            percentage: geolocationsAverage[geolocationId][categoryId],
+            ratio:
+              geolocationsAverage[geolocationId][categoryId] /
+              categoriesAverage[categoryId],
+            total: geolocationsTotal[geolocationId][categoryId]
+          });
+        }
+      }
+      for (let geolocationId in ratios) {
+        result.topCategories[geolocationId] = _.sortBy(
+          ratios[geolocationId],
+          obj => -obj.ratio
+        );
+      }
+
+      accounts.forEach(account => {
+        let accResult = { ...account, audience: [] };
+        const facebookAccountId = account.facebookId;
+        if (mainGeolocation) {
+          const mainLocAudience = FacebookAudiences.findOne(
+            {
+              campaignId,
+              facebookAccountId,
+              geolocationId: context.mainGeolocationId
+            },
+            { sort: { createdAt: -1 } }
+          );
+          if (mainLocAudience) {
+            accResult.audience.push({
+              geolocationId: context.mainGeolocationId,
+              estimate: mainLocAudience.total,
+              fanCount: mainLocAudience.fan_count
+            });
+          }
+        }
+        geolocations.forEach(geolocation => {
+          const audience = FacebookAudiences.findOne(
+            {
+              campaignId,
+              facebookAccountId,
+              geolocationId: geolocation._id
+            },
+            { sort: { createdAt: -1 } }
+          );
+          if (audience) {
+            accResult.audience.push({
+              geolocationId: geolocation._id,
+              estimate: audience.total,
+              fanCount: audience.fan_count
+            });
+          }
+        });
+        result.data.push(accResult);
+      });
+
+      return result;
+    }
+  }
+});
+
 export const accountAudienceGeolocationSummary = new ValidatedMethod({
   name: "audiences.accountGeolocationSummary",
   validate: new SimpleSchema({
