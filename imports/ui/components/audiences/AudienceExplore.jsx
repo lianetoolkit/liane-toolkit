@@ -126,7 +126,6 @@ export default class AudienceGeolocation extends React.Component {
                   active={geolocationListActive}
                   offset={50}
                   context={contextRef}
-                  // scrollContext={document.getElementById("app-content")}
                 >
                   <div ref={this._handleStickyRef}>
                     <Menu pointing vertical fluid>
@@ -187,7 +186,6 @@ export default class AudienceGeolocation extends React.Component {
                   active={!geolocationListActive}
                   offset={50}
                   context={stickyRef}
-                  // scrollContext={document.getElementById("app-content")}
                 >
                   <div ref={this._handleContextRef}>
                     <Dimmer.Dimmable dimmed={loading}>
