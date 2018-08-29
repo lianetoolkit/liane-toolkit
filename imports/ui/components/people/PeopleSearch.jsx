@@ -141,6 +141,15 @@ export default class PeopleSearch extends React.Component {
       });
     }
   }
+  componentDidUpdate(prevProps, prevState) {
+    const { onQuery } = this.props;
+    const { search, options } = this.state;
+    if (JSON.stringify(search) != JSON.stringify(prevState.search)) {
+      if (onQuery) {
+        onQuery(search, options);
+      }
+    }
+  }
   _toggleMeta = prop => {
     return () => {
       const { search } = this.state;

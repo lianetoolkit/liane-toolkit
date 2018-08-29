@@ -50,10 +50,15 @@ export default class CampaignsPeople extends React.Component {
   _handleExport(ev) {
     ev.preventDefault();
     const { campaign } = this.props;
+    const { query } = this.state;
     this.setState({ isLoading: true });
     Meteor.call(
       "people.export",
-      { campaignId: campaign._id },
+      {
+        campaignId: campaign._id,
+        rawQuery: query ? query.query : {},
+        options: query ? query.options : {}
+      },
       (error, result) => {
         this.setState({ isLoading: false });
         if (error) {
@@ -91,6 +96,9 @@ export default class CampaignsPeople extends React.Component {
       Alerts.error(err);
     }
   }
+  _handleSearchQueryChange = (query, options) => {
+    this.setState({ query: { query, options } });
+  };
   render() {
     const {
       isLoading,
@@ -213,6 +221,7 @@ export default class CampaignsPeople extends React.Component {
                           facebookId={account.facebookId}
                           editMode={editMode}
                           tags={tags}
+                          onQuery={this._handleSearchQueryChange}
                         />
                       ) : null}
                     </Grid.Column>

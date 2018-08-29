@@ -730,10 +730,26 @@ export const exportPeople = new ValidatedMethod({
   validate: new SimpleSchema({
     campaignId: {
       type: String
+    },
+    rawQuery: {
+      type: Object,
+      blackbox: true,
+      optional: true
+    },
+    options: {
+      type: Object,
+      blackbox: true,
+      optional: true
     }
   }).validator(),
-  run({ campaignId }) {
-    logger.debug("people.export called", { campaignId });
+  run({ campaignId, rawQuery, options }) {
+    logger.debug("people.export called", { campaignId, rawQuery, options });
+
+    const searchQuery = buildSearchQuery({
+      campaignId,
+      rawQuery: rawQuery || {},
+      options: options || {}
+    });
 
     const userId = Meteor.userId();
     if (!userId) {
@@ -750,16 +766,16 @@ export const exportPeople = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    const people = People.find(
-      { campaignId },
-      {
+    const people = People.find(searchQuery.query, {
+      ...searchQuery.options,
+      ...{
         fields: {
           name: 1,
           facebookId: 1,
           campaignMeta: 1
         }
       }
-    ).fetch();
+    }).fetch();
 
     let flattened = [];
 
