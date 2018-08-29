@@ -184,6 +184,7 @@ export default class PeopleSearch extends React.Component {
   }, 250);
   _handleFilterClick = (type, value) => ev => {
     ev.preventDefault();
+    const { facebookId } = this.props;
     const { search, options } = this.state;
     let newSearch = {};
     switch (type) {
@@ -203,6 +204,26 @@ export default class PeopleSearch extends React.Component {
           newSearch = { ...search };
           delete newSearch["campaignMeta.basic_info.tags"];
         }
+        break;
+      case "filledForm":
+        if (!this._isFilter("filledForm")) {
+          newSearch = { ...search, filledForm: true };
+        } else {
+          newSearch = { ...search };
+          delete newSearch["filledForm"];
+        }
+        break;
+      case "hasComments":
+        if (!this._isFilter("hasComments")) {
+          newSearch = {
+            ...search,
+            [`counts.${facebookId}.comments`]: { $gte: 1 }
+          };
+        } else {
+          newSearch = { ...search };
+          delete newSearch[`counts.${facebookId}.comments`];
+        }
+        break;
         break;
       default:
         newSearch = { ...search, accountFilter: "all" };
@@ -241,6 +262,7 @@ export default class PeopleSearch extends React.Component {
     return 0;
   }
   _isFilter = (type, value) => {
+    const { facebookId } = this.props;
     const { search } = this.state;
     switch (type) {
       case "other":
@@ -252,6 +274,10 @@ export default class PeopleSearch extends React.Component {
           search["campaignMeta.basic_info.tags"].$in[0] == value
         );
         break;
+      case "filledForm":
+        return search.filledForm;
+      case "hasComments":
+        return search[`counts.${facebookId}.comments`];
       default:
         return (
           search.accountFilter !== "all" ||
@@ -346,6 +372,20 @@ export default class PeopleSearch extends React.Component {
                     } circle outline`}
                     text="Only people from this page"
                     onClick={this._handleFilterClick("other", "account")}
+                  />
+                  <Dropdown.Item
+                    icon={`${
+                      this._isFilter("filledForm") ? "check" : ""
+                    } circle outline`}
+                    text="Filled form"
+                    onClick={this._handleFilterClick("filledForm")}
+                  />
+                  <Dropdown.Item
+                    icon={`${
+                      this._isFilter("hasComments") ? "check" : ""
+                    } circle outline`}
+                    text="Has comments"
+                    onClick={this._handleFilterClick("hasComments")}
                   />
                 </Dropdown.Menu>
               </Dropdown>
