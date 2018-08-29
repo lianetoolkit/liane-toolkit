@@ -59,7 +59,8 @@ export const resolveZipcode = new ValidatedMethod({
   }
 });
 
-const buildSearchQuery = ({ campaignId, query, options }) => {
+const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
+  const { dateStart, dateEnd, ...query } = rawQuery;
   let queryOptions = {
     skip: options.skip || 0,
     limit: Math.min(options.limit || 10, 50),
@@ -101,6 +102,16 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
   }
 
   query.campaignId = campaignId;
+
+  if (dateStart || dateEnd) {
+    if (!query.createdAt) query.createdAt = {};
+    if (dateStart) {
+      query.createdAt["$gte"] = dateStart;
+    }
+    if (dateEnd) {
+      query.createdAt["$lt"] = dateEnd;
+    }
+  }
 
   if (query.q) {
     query.$text = { $search: query.q };
@@ -149,7 +160,11 @@ export const peopleSearch = new ValidatedMethod({
       options
     });
 
-    const searchQuery = buildSearchQuery({ campaignId, query, options });
+    const searchQuery = buildSearchQuery({
+      campaignId,
+      rawQuery: query,
+      options
+    });
 
     const cursor = People.find(searchQuery.query, searchQuery.options);
 
@@ -182,7 +197,11 @@ export const peopleSearchCount = new ValidatedMethod({
       options
     });
 
-    const searchQuery = buildSearchQuery({ campaignId, query, options });
+    const searchQuery = buildSearchQuery({
+      campaignId,
+      rawQuery: query,
+      options
+    });
 
     const result = Promise.await(
       People.rawCollection().count(searchQuery.query)
