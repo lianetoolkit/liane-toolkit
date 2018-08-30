@@ -12,6 +12,7 @@
     "axios": "^0.17.1",
     "babel-runtime": "^6.26.0",
     "cep-promise": "^3.0.0",
+    "circle-to-polygon": "^1.0.2",
     "faker": "^4.1.0",
     "fb": "^2.0.0",
     "flat": "^4.0.0",
