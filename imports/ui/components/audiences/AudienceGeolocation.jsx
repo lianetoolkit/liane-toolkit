@@ -89,9 +89,11 @@ export default class AudienceGeolocation extends React.Component {
           return item.geolocation.name;
         case "size":
           const audience = this._latestAudience(item);
-          return -(
-            audience.location_estimate.dau / audience.location_total.dau
-          );
+          if (audience && audience.location_estimate) {
+            return -(
+              audience.location_estimate.dau / audience.location_total.dau
+            );
+          }
         default:
           return item.geolocation.name;
       }
@@ -105,9 +107,12 @@ export default class AudienceGeolocation extends React.Component {
     let percentages = [];
     audienceCategory.geolocations.forEach(g => {
       const latestAudience = this._latestAudience(g);
-      percentages.push(
-        latestAudience.location_estimate.dau / latestAudience.location_total.dau
-      );
+      if (latestAudience && latestAudience.location_estimate) {
+        percentages.push(
+          latestAudience.location_estimate.dau /
+            latestAudience.location_total.dau
+        );
+      }
     });
     return sum(percentages) / audienceCategory.geolocations.length;
   };
@@ -118,22 +123,26 @@ export default class AudienceGeolocation extends React.Component {
       const average = this._getAverage();
       const top = sortBy(audienceCategory.geolocations, g => {
         const latestAudience = this._latestAudience(g);
-        return -(
-          latestAudience.location_estimate.dau /
-          latestAudience.location_total.dau
-        );
+        if (latestAudience && latestAudience.location_estimate) {
+          return -(
+            latestAudience.location_estimate.dau /
+            latestAudience.location_total.dau
+          );
+        }
       }).slice(0, 3);
       top.forEach(item => {
         const latestAudience = this._latestAudience(item);
-        const percentage =
-          latestAudience.location_estimate.dau /
-          latestAudience.location_total.dau;
-        result.push({
-          ...item,
-          average,
-          percentage: (percentage * 100).toFixed(2) + "%",
-          ratio: AudienceUtils.getRatio(average, percentage)
-        });
+        if (latestAudience && latestAudience.location_estimate) {
+          const percentage =
+            latestAudience.location_estimate.dau /
+            latestAudience.location_total.dau;
+          result.push({
+            ...item,
+            average,
+            percentage: (percentage * 100).toFixed(2) + "%",
+            ratio: AudienceUtils.getRatio(average, percentage)
+          });
+        }
       });
     }
     return result;

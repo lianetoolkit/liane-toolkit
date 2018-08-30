@@ -1,6 +1,7 @@
 import React from "react";
 import { GeoJSON } from "react-leaflet";
 import AudienceUtils from "/imports/ui/components/audiences/Utils.js";
+import circleToPolygon from "circle-to-polygon";
 import leafletPip from "@mapbox/leaflet-pip";
 
 export default class AudienceLayer extends React.Component {
@@ -44,19 +45,18 @@ export default class AudienceLayer extends React.Component {
           }
         });
       } else if (geolocation.center) {
+        const geometry = circleToPolygon(
+          [geolocation.center.center[1], geolocation.center.center[0]],
+          geolocation.center.radius * 1000,
+          32
+        );
         geojson.features.push({
           type: "Feature",
           properties: {
             _id: geolocation._id,
             radius: geolocation.center.radius
           },
-          geometry: {
-            type: "Point",
-            coordinates: [
-              geolocation.center.center[1],
-              geolocation.center.center[0]
-            ]
-          }
+          geometry
         });
       }
     });
@@ -79,12 +79,11 @@ export default class AudienceLayer extends React.Component {
     return style;
   }
   _pointToLayer(feature, latlng) {
-    const circle = L.circle(latlng, {
+    return L.circle(latlng, {
       radius: feature.properties.radius * 1000,
-      stroke: false,
+      stroke: 1,
       color: "#000"
     });
-    return circle;
   }
   _getAudience(accountAudience, geolocationId) {
     const { audience } = this.props;
@@ -213,7 +212,7 @@ export default class AudienceLayer extends React.Component {
         <GeoJSON
           data={geojson}
           style={this._style}
-          pointToLayer={this._pointToLayer}
+          // pointToLayer={this._pointToLayer}
           onEachFeature={this._onEachFeature}
           onAdd={this._handleAdd}
           onRemove={this._handleRemove}
