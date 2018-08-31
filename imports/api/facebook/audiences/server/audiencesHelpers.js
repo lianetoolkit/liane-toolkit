@@ -522,6 +522,9 @@ const FacebookAudiencesHelpers = {
 
     // Clean up methods cache
     const keys = [
+      campaignId,
+      campaignId + geolocationId,
+      campaignId + audienceCategoryId,
       campaignId + facebookAccountId,
       campaignId + facebookAccountId + audienceCategoryId,
       campaignId + facebookAccountId + geolocationId

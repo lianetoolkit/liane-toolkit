@@ -4,6 +4,21 @@ import { Contexts } from "/imports/api/contexts/contexts.js";
 const { Jobs } = require("/imports/api/jobs/jobs.js");
 import _ from "underscore";
 
+Meteor.publish("people.map", function({ campaignId }) {
+  this.unblock();
+  check(campaignId, String);
+  const userId = this.userId;
+  const campaign = Campaigns.findOne(campaignId);
+  const allowed = _.findWhere(campaign.users, { userId });
+  if (allowed) {
+    return People.find({
+      campaignId,
+      "location.coordinates": { $exists: true }
+    });
+  }
+  return this.ready();
+});
+
 Meteor.publish("people.search", function({ search, options }) {
   logger.debug("people.search called", {
     search,
@@ -89,11 +104,15 @@ Meteor.publish("people.tags", function({ campaignId }) {
       return PeopleTags.find({ campaignId });
     }
   }
+  return this.ready();
 });
 
 Meteor.publishComposite("people.form.detail", function({ formId }) {
   logger.debug("people.form.detail called", { formId });
   const person = People.findOne({ formId });
+  if (!person) {
+    return this.ready();
+  }
   const campaign = Campaigns.findOne({ _id: person.campaignId });
   return {
     find: function() {
@@ -104,7 +123,10 @@ Meteor.publishComposite("people.form.detail", function({ formId }) {
             name: 1,
             facebookId: 1,
             "campaignMeta.contact": 1,
-            "campaignMeta.basic_info": 1
+            "campaignMeta.basic_info": 1,
+            "campaignMeta.donor": 1,
+            "campaignMeta.supporter": 1,
+            "campaignMeta.mobilizer": 1
           }
         }
       );

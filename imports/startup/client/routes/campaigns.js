@@ -6,6 +6,8 @@ import CampaignContainer from "/imports/ui/containers/campaigns/CampaignContaine
 
 import CampaignsPageContainer from "/imports/ui/containers/campaigns/CampaignsPageContainer.jsx";
 
+import MapsPageContainer from "/imports/ui/containers/maps/MapsPageContainer.jsx";
+
 import CanvasContainer from "/imports/ui/containers/canvas/CanvasContainer.jsx";
 import CanvasEditContainer from "/imports/ui/containers/canvas/CanvasEditContainer.jsx";
 
@@ -54,6 +56,18 @@ campaignRoutes.route("/settings", {
     return _mount(params, {
       content: {
         component: CampaignsSettingsContainer,
+        props: { campaignId: params.campaignId }
+      }
+    });
+  }
+});
+campaignRoutes.route("/maps", {
+  name: "App.campaignMaps",
+  action: function(params) {
+    addTitle(`${APP_NAME} | Campaign`);
+    return _mount(params, {
+      content: {
+        component: MapsPageContainer,
         props: { campaignId: params.campaignId }
       }
     });
@@ -113,7 +127,7 @@ campaignRoutes.route("/people/edit/:personId/:sectionKey?", {
 });
 campaignRoutes.route("/people/activity/:facebookId?", {
   name: "App.campaignPeople.activity",
-  action: function(params) {
+  action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Campaign`);
     return _mount(params, {
       content: {
@@ -121,6 +135,7 @@ campaignRoutes.route("/people/activity/:facebookId?", {
         props: {
           campaignId: params.campaignId,
           facebookId: params.facebookId,
+          limit: queryParams.limit || 10,
           isActivity: true
         }
       }

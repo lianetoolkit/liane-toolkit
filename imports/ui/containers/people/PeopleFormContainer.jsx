@@ -18,16 +18,22 @@ export default withTracker(props => {
     person = personHandle.ready() ? People.findOne() : null;
     campaign = personHandle.ready() ? Campaigns.findOne() : null;
     context = personHandle.ready() ? Contexts.findOne() : null;
-  } else if (props.campaignId) {
+  } else if (props.campaignId || props.campaignSlug) {
     person = {};
-    const campaignHandle = PeopleFormSubs.subscribe("campaigns.publicDetail", {
-      campaignId: props.campaignId
-    });
+    let subsProps;
+    if (props.campaignId) {
+      subsProps = { campaignId: props.campaignId };
+    } else if (props.campaignSlug) {
+      subsProps = { slug: props.campaignSlug };
+    }
+    const campaignHandle = PeopleFormSubs.subscribe(
+      "campaigns.publicDetail",
+      subsProps
+    );
     loading = !campaignHandle.ready();
     campaign = campaignHandle.ready() ? Campaigns.findOne() : null;
     context = campaignHandle.ready() ? Contexts.findOne() : null;
   }
-
   return {
     loading,
     person,

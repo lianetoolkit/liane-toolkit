@@ -8,6 +8,7 @@ import { Jobs } from "/imports/api/jobs/jobs.js";
 import _ from "underscore";
 
 Meteor.publishComposite("campaigns.all", function() {
+  this.unblock();
   const currentUser = this.userId;
   if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
     return {
@@ -63,6 +64,7 @@ Meteor.publishComposite("campaigns.all", function() {
 });
 
 Meteor.publish("campaigns.byUser", function() {
+  this.unblock();
   const currentUser = this.userId;
   if (currentUser) {
     return Campaigns.find({
@@ -73,22 +75,31 @@ Meteor.publish("campaigns.byUser", function() {
   }
 });
 
-Meteor.publishComposite("campaigns.publicDetail", function({ campaignId }) {
-  logger.debug("campaigns.publicDetail pub", { campaignId });
+Meteor.publishComposite("campaigns.publicDetail", function({
+  campaignId,
+  slug
+}) {
+  this.unblock();
+  if (!campaignId && !slug) {
+    return this.ready();
+  }
+  let selector = {};
+  if (campaignId) {
+    selector = { _id: campaignId };
+  } else if (slug) {
+    selector = { "forms.slug": slug };
+  }
+  logger.debug("campaigns.publicDetail pub", { selector: campaignId || slug });
   return {
     find: function() {
-      return Campaigns.find(
-        {
-          _id: campaignId
-        },
-        {
-          fields: {
-            name: 1,
-            contextId: 1,
-            "forms.crm": 1
-          }
+      return Campaigns.find(selector, {
+        fields: {
+          name: 1,
+          contextId: 1,
+          "forms.slug": 1,
+          "forms.crm": 1
         }
-      );
+      });
     },
     children: [
       {
@@ -110,6 +121,7 @@ Meteor.publishComposite("campaigns.publicDetail", function({ campaignId }) {
 });
 
 Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
+  this.unblock();
   const currentUser = this.userId;
   logger.debug("campaigns.detail pub", { campaignId });
   if (currentUser) {

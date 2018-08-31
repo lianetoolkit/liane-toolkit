@@ -1,19 +1,17 @@
 import React from "react";
 import { Modal, Form, Select, Input, Button } from "semantic-ui-react";
+import PeopleTagsField from "/imports/ui/components/people/PeopleTagsField.jsx";
+import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import _ from "underscore";
 
 const fields = {
   name: {
     label: "Name",
-    suggestions: ["name", "fullname", "full name"]
+    suggestions: ["name", "fullname", "full name", "nome"]
   },
   "campaignMeta.contact.email": {
     label: "Email",
     suggestions: ["email", "e mail", "email address", "e mail address"]
-  },
-  "campaignMeta.basic_info.age": {
-    label: "Age",
-    suggestions: ["age"]
   },
   "campaignMeta.social_networks.twitter": {
     label: "Twitter",
@@ -30,6 +28,38 @@ const fields = {
   "campaignMeta.basic_info.occupation": {
     label: "Job/Occupation",
     suggestions: ["job", "occupation"]
+  },
+  "campaignMeta.basic_info.address.zipcode": {
+    label: "Address - Zipcode",
+    suggestions: ["zipcode", "cep"]
+  },
+  "campaignMeta.basic_info.address.country": {
+    label: "Address - Country",
+    suggestions: ["country", "país", "pais"]
+  },
+  "campaignMeta.basic_info.address.region": {
+    label: "Address - Region/State",
+    suggestions: ["state", "region", "estado", "uf"]
+  },
+  "campaignMeta.basic_info.address.city": {
+    label: "Address - City",
+    suggestions: ["city", "cidade", "municipio", "município"]
+  },
+  "campaignMeta.basic_info.address.street": {
+    label: "Address - Street",
+    suggestions: ["address", "street", "rua", "endereço"]
+  },
+  "campaignMeta.basic_info.address.neighbourhood": {
+    label: "Address - Neighbourhood",
+    suggestions: ["neighbourhood", "neighborhood", "bairro"]
+  },
+  "campaignMeta.basic_info.address.number": {
+    label: "Address - Number",
+    suggestions: ["number", "número", "numero"]
+  },
+  "campaignMeta.basic_info.address.complement": {
+    label: "Address - Complement",
+    suggestions: ["complement", "complemento"]
   }
 };
 
@@ -136,7 +166,9 @@ export default class PeopleImport extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: []
+      data: [],
+      tags: [],
+      labels: {}
     };
     this._handleModalOpen = this._handleModalOpen.bind(this);
     this._handleModalClose = this._handleModalClose.bind(this);
@@ -180,16 +212,34 @@ export default class PeopleImport extends React.Component {
     }
     return [];
   }
+  _handleTagChange = (ev, { name, value }) => {
+    this.setState({
+      tags: value
+    });
+  };
+  _handleMetaButtons = key => {
+    this.setState({
+      labels: {
+        ...this.state.labels,
+        [key]: !this.state.labels[key]
+      }
+    });
+  };
   _handleSubmit(ev) {
     ev.preventDefault();
-    const { campaignId, onSubmit } = this.props;
-    const { data, ...config } = this.state;
+    const { campaignId, filename, onSubmit } = this.props;
+    const { data, tags, labels, ...config } = this.state;
     Meteor.call(
       "people.import",
       {
         campaignId,
         config,
-        data
+        filename,
+        data,
+        defaultValues: {
+          tags,
+          labels
+        }
       },
       (err, res) => {
         if (onSubmit) {
@@ -199,7 +249,7 @@ export default class PeopleImport extends React.Component {
     );
   }
   render() {
-    const { data } = this.state;
+    const { data, tags, labels } = this.state;
     const headers = this._getHeaders();
     return (
       <Modal
@@ -218,6 +268,18 @@ export default class PeopleImport extends React.Component {
                 onChange={this._handleChange}
               />
             ))}
+            <PeopleTagsField
+              onChange={this._handleTagChange}
+              value={tags}
+              label="Default tags for this import"
+            />
+            <Form.Field
+              control={PeopleMetaButtons}
+              size="big"
+              onChange={this._handleMetaButtons}
+              active={labels}
+              label="Default labels for this import"
+            />
             <Button primary fluid>
               Start import
             </Button>

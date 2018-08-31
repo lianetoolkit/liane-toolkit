@@ -95,7 +95,7 @@ export default class CompareLineChart extends React.Component {
         keys = ["location_estimate", "location_total"];
         break;
     }
-    if (audience[keys[1]] > 1500) {
+    if (audience[keys[0]] > 1050) {
       cent = audience[keys[0]] / audience[keys[1]];
     }
     return Math.min(cent, 0.99);

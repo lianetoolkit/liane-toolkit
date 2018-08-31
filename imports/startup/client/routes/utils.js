@@ -4,7 +4,10 @@ export const addTitle = function(title) {
   DocHead.setTitle(title);
 };
 
-const routesToMaintain = ["App.campaignAudience"];
+const routesToMaintain = [
+  "App.campaignAudience",
+  "App.campaignPeople.activity"
+];
 
 const shouldScrollTop = context => {
   const old = context.oldRoute ? context.oldRoute.name : "";

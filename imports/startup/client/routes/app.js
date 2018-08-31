@@ -109,3 +109,15 @@ appRoutes.route("/f/:formId?", {
     });
   }
 });
+
+appRoutes.route("/:campaignSlug/:formId?", {
+  name: "App.campaignForm",
+  action: function(params, queryParams) {
+    addTitle(`${APP_NAME}`);
+    console.log(params, queryParams);
+    return mount(PeopleFormContainer, {
+      campaignSlug: params.campaignSlug,
+      formId: params.formId
+    });
+  }
+});

@@ -95,6 +95,11 @@ export const campaignsUpdate = new ValidatedMethod({
       type: Object,
       optional: true
     },
+    "forms.slug": {
+      type: String,
+      optional: true,
+      unique: true
+    },
     "forms.crm": {
       type: Object,
       optional: true
@@ -149,6 +154,19 @@ export const campaignsUpdate = new ValidatedMethod({
     }
 
     if (data.forms) {
+      if (data.forms.slug) {
+        const minimumLength = 5;
+        const reservedSlugs = ["admin", "campaign", "f"];
+        if (
+          data.forms.slug.length < minimumLength ||
+          reservedSlugs.indexOf(data.forms.slug) !== -1
+        ) {
+          throw new Meteor.Error(400, "Form slug is not valid.");
+        }
+        $set["forms.slug"] = data.forms.slug;
+      } else {
+        $set["forms.slug"] = "";
+      }
       if (data.forms.crm) {
         $set["forms.crm"] = data.forms.crm;
       }

@@ -15,9 +15,6 @@ export default class AddressField extends React.Component {
   componentDidMount() {
     const { value, country } = this.props;
     let formData = {};
-    if (country) {
-      formData.country = country;
-    }
     if (value) {
       formData = {
         ...formData,
@@ -38,21 +35,20 @@ export default class AddressField extends React.Component {
     ) {
       newFormData = nextProps.value;
     }
-    if (country != nextProps.country) {
-      newFormData = { ...newFormData, country: nextProps.country };
-    }
     this.setState({
       formData: newFormData
     });
   }
   componentDidUpdate(prevProps, prevState) {
-    const { onChange, name } = this.props;
+    const { country, onChange, name } = this.props;
     const { formData } = this.state;
+    let value = { ...formData };
+    if (!value.country) value.country = country;
     if (
       onChange &&
       JSON.stringify(prevState.formData) != JSON.stringify(formData)
     ) {
-      onChange(null, { name, value: formData });
+      onChange(null, { name, value });
     }
   }
   _handleChange = (ev, { name, value }) => {
@@ -98,20 +94,21 @@ export default class AddressField extends React.Component {
     this._updateFromZipcodeData(formData.country, zipcode);
   };
   render() {
-    const { country, formData } = this.state;
+    const { country } = this.props;
+    const { formData } = this.state;
     return (
       <div>
         <Form.Field
           control={CountryDropdown}
           label="País"
           defaultOptionLabel="Selecione um país"
-          value={formData.country}
+          value={formData.country || country}
           valueType="short"
           onChange={value => {
             this._handleChange(null, { name: "country", value });
           }}
         />
-        {formData.country ? (
+        {country || formData.country ? (
           <Fragment>
             <Form.Field
               control={Input}
@@ -123,7 +120,7 @@ export default class AddressField extends React.Component {
             <Form.Group widths="equal">
               <Form.Field
                 control={RegionDropdown}
-                country={formData.country}
+                country={formData.country || country}
                 defaultOptionLabel="Selecione uma região"
                 countryValueType="short"
                 valueType="short"
@@ -131,7 +128,7 @@ export default class AddressField extends React.Component {
                 name="region"
                 value={formData.region}
                 onChange={value => {
-                  this._handleCange(null, { name: "region", value });
+                  this._handleChange(null, { name: "region", value });
                 }}
               />
               <Form.Field

@@ -76,14 +76,14 @@ export default [
       {
         key: "positive_characteristic",
         label: "Característica positiva",
-        description: "Liste aqui uma característica positiva que te diferencie, algo que - do ponto de vista eleitoral - você acredite que é um valor que vá atrair os eleitores:\n'Eu votaria na candidata por que ela é__________'",
+        description: "Liste aqui uma característica positiva que te diferencie, algo que - do ponto de vista eleitoral - você acredite que é um valor que vá atrair os eleitores:\n\n'Eu votaria na candidata por que ela é__________'",
         fieldType: "text",
         print: true
       },
       {
         key: "negative_characteristic",
         label: "Característica negativa",
-        description: "Liste aqui uma característica negativa, algo que - do ponto de vista eleitoral - você acredite que vá afastar os eleitores:\n'Eu não votaria na candidata por que ela é _________'\n'Eu até votaria na candidata mas ela é _________'",
+        description: "Liste aqui uma característica negativa, algo que - do ponto de vista eleitoral - você acredite que vá afastar os eleitores:\n\n'Eu não votaria na candidata por que ela é _________'\n\n'Eu até votaria na candidata mas ela é _________'",
         fieldType: "text",
         print: true
       },
@@ -203,7 +203,7 @@ export default [
     key: "potential_voter",
     title: "Eleitoras em potencial",
     description:
-      "A ideia é você descrever um eleitor ou eleitora real, alguém com nome e sobrenome que você sabia que vai votar em você e depois generalizar as características dessa pessoa para encontrar perfis de eleitores.\n'Rodrigo, branco, 26 anos, morador de Pinheiros, é estudante universitário da PUC e cursa administração pública vai votar em mim porque acredita que eu tenho experiência de gestão pública'\n'Flávia, negra, 33 anos, mora na Lapa, é mãe solo e trabalha com comunicação, vai votar em mim porque reconhece em mim uma feminista preocupada com a infância'",
+      "A ideia é você descrever um eleitor ou eleitora real, alguém com nome e sobrenome que você sabia que vai votar em você e depois generalizar as características dessa pessoa para encontrar perfis de eleitores.\n\n'Rodrigo, branco, 26 anos, morador de Pinheiros, é estudante universitário da PUC e cursa administração pública vai votar em mim porque acredita que eu tenho experiência de gestão pública'\n\nFlávia, negra, 33 anos, mora na Lapa, é mãe solo e trabalha com comunicação, vai votar em mim porque reconhece em mim uma feminista preocupada com a infância'",
     fields: [
       {
         key: "profiles",
@@ -319,7 +319,7 @@ export default [
           {
             key: "tag",
             label: "Nome do perfil",
-            description: "Use um nome que identifique genericamente esse tipo de eleitor.\nJovem universitário ativista.",
+            description: "Use um nome que identifique genericamente esse tipo de eleitor.\n\nJovem universitário ativista.",
             fieldType: "text"
           }
         ]
@@ -430,7 +430,7 @@ export default [
     key: "team",
     title: "Equipe",
     description:
-      "Liste aqui qual é a sua estrutura de campanha, quais são os cargos e quem vai ocupar esses cargos.\nNão tem problema se você não tiver os nomes ainda, mas é importante então você identificar esses perfis para justamente poder buscar.\nAcesse [aqui https://docs.google.com/document/d/14w9e0ZoLnA7FSoXTkoZLrQJYksb3Fv6Dz6hEagawQFU/edit?usp=sharing] uma sugestão de estrutura de campanha.",
+      "Liste aqui qual é a sua estrutura de campanha, quais são os cargos e quem vai ocupar esses cargos.\n\nNão tem problema se você não tiver os nomes ainda, mas é importante então você identificar esses perfis para justamente poder buscar.\n\nAcesse [aqui](https://docs.google.com/document/d/14w9e0ZoLnA7FSoXTkoZLrQJYksb3Fv6Dz6hEagawQFU/edit?usp=sharing) uma sugestão de estrutura de campanha.",
     fields: [
       {
         key: "team",

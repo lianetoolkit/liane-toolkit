@@ -2,6 +2,8 @@ import _ from "underscore";
 import React from "react";
 import styled from "styled-components";
 import PeopleSearchContainer from "/imports/ui/containers/people/PeopleSearchContainer.jsx";
+import moment from "moment";
+import DatePicker from "react-datepicker";
 import {
   Segment,
   Form,
@@ -17,6 +19,8 @@ import {
   Pagination
 } from "semantic-ui-react";
 
+import "react-datepicker/dist/react-datepicker.css";
+
 const Wrapper = styled.div`
   .filter-label {
     text-transform: uppercase;
@@ -25,6 +29,35 @@ const Wrapper = styled.div`
     font-size: 0.8em;
     display: block;
     margin-bottom: 0.5rem;
+  }
+  .more-options {
+    margin-top: 1rem;
+  }
+  .react-datepicker-wrapper {
+    display: block;
+    > div {
+      display: block;
+    }
+    input[type="text"] {
+      margin: 0em;
+      width: 100%;
+      box-sizing: border-box;
+      max-width: 100%;
+      -ms-flex: 1 0 auto;
+      flex: 1 0 auto;
+      outline: none;
+      -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+      text-align: left;
+      line-height: 1.21428571em;
+      font-family: "Roboto", "Helvetica Neue", Arial, Helvetica, sans-serif;
+      padding: 0.67857143em 1em;
+      background: #ffffff;
+      border: 1px solid rgba(34, 36, 38, 0.11);
+      color: #212121;
+      border-radius: 0;
+      transition: box-shadow 0.1s ease, border-color 0.1s ease;
+      box-shadow: none;
+    }
   }
 `;
 
@@ -53,6 +86,11 @@ const flags = [
     name: "Incluencers",
     icon: "certificate",
     prop: "influencer"
+  },
+  {
+    name: "Voters",
+    icon: "thumbs up",
+    prop: "voter"
   },
   {
     name: "Non voters",
@@ -103,6 +141,15 @@ export default class PeopleSearch extends React.Component {
       });
     }
   }
+  componentDidUpdate(prevProps, prevState) {
+    const { onQuery } = this.props;
+    const { search, options } = this.state;
+    if (JSON.stringify(search) != JSON.stringify(prevState.search)) {
+      if (onQuery) {
+        onQuery(search, options);
+      }
+    }
+  }
   _toggleMeta = prop => {
     return () => {
       const { search } = this.state;
@@ -146,6 +193,7 @@ export default class PeopleSearch extends React.Component {
   }, 250);
   _handleFilterClick = (type, value) => ev => {
     ev.preventDefault();
+    const { facebookId } = this.props;
     const { search, options } = this.state;
     let newSearch = {};
     switch (type) {
@@ -165,6 +213,26 @@ export default class PeopleSearch extends React.Component {
           newSearch = { ...search };
           delete newSearch["campaignMeta.basic_info.tags"];
         }
+        break;
+      case "filledForm":
+        if (!this._isFilter("filledForm")) {
+          newSearch = { ...search, filledForm: true };
+        } else {
+          newSearch = { ...search };
+          delete newSearch["filledForm"];
+        }
+        break;
+      case "hasComments":
+        if (!this._isFilter("hasComments")) {
+          newSearch = {
+            ...search,
+            [`counts.${facebookId}.comments`]: { $gte: 1 }
+          };
+        } else {
+          newSearch = { ...search };
+          delete newSearch[`counts.${facebookId}.comments`];
+        }
+        break;
         break;
       default:
         newSearch = { ...search, accountFilter: "all" };
@@ -189,6 +257,12 @@ export default class PeopleSearch extends React.Component {
       }
     });
   };
+  _handleMoreOptionsClick = () => {
+    const { moreOptions } = this.state;
+    this.setState({
+      moreOptions: !moreOptions
+    });
+  };
   _getPageCount() {
     const { count, options } = this.state;
     if (count) {
@@ -197,6 +271,7 @@ export default class PeopleSearch extends React.Component {
     return 0;
   }
   _isFilter = (type, value) => {
+    const { facebookId } = this.props;
     const { search } = this.state;
     switch (type) {
       case "other":
@@ -208,6 +283,10 @@ export default class PeopleSearch extends React.Component {
           search["campaignMeta.basic_info.tags"].$in[0] == value
         );
         break;
+      case "filledForm":
+        return search.filledForm;
+      case "hasComments":
+        return search[`counts.${facebookId}.comments`];
       default:
         return (
           search.accountFilter !== "all" ||
@@ -216,7 +295,7 @@ export default class PeopleSearch extends React.Component {
     }
   };
   render() {
-    const { activePage, search, options } = this.state;
+    const { activePage, search, moreOptions, options } = this.state;
     const { campaignId, facebookId, tags, editMode } = this.props;
     const pageCount = this._getPageCount();
     return (
@@ -303,6 +382,20 @@ export default class PeopleSearch extends React.Component {
                     text="Only people from this page"
                     onClick={this._handleFilterClick("other", "account")}
                   />
+                  <Dropdown.Item
+                    icon={`${
+                      this._isFilter("filledForm") ? "check" : ""
+                    } circle outline`}
+                    text="Filled form"
+                    onClick={this._handleFilterClick("filledForm")}
+                  />
+                  <Dropdown.Item
+                    icon={`${
+                      this._isFilter("hasComments") ? "check" : ""
+                    } circle outline`}
+                    text="Has comments"
+                    onClick={this._handleFilterClick("hasComments")}
+                  />
                 </Dropdown.Menu>
               </Dropdown>
             </Grid.Column>
@@ -343,7 +436,94 @@ export default class PeopleSearch extends React.Component {
               />
             </Grid.Column>
           </Grid.Row>
+          {moreOptions ? (
+            <Grid.Row columns={2} widths="equal">
+              <Grid.Column>
+                <span className="filter-label">Creation date</span>
+                <Grid>
+                  <Grid.Row columns={2} widths="equal">
+                    <Grid.Column>
+                      <Form.Field
+                        control={DatePicker}
+                        minDate={moment(Session.get("campaign").createdAt)}
+                        maxDate={moment()}
+                        selected={
+                          search.dateStart ? moment(search.dateStart) : null
+                        }
+                        selectsStart
+                        startDate={
+                          search.dateStart ? moment(search.dateStart) : null
+                        }
+                        endDate={search.dateEnd ? moment(search.dateEnd) : null}
+                        onChange={value => {
+                          if (value && value._isAMomentObject) {
+                            this._handleSearchChange(null, {
+                              name: "dateStart",
+                              value: value.toDate()
+                            });
+                          } else {
+                            this._handleSearchChange(null, {
+                              name: "dateStart",
+                              value: false
+                            });
+                          }
+                        }}
+                        placeholderText="From date"
+                        name="dateStart"
+                      />
+                    </Grid.Column>
+                    <Grid.Column>
+                      <Form.Field
+                        control={DatePicker}
+                        minDate={moment(Session.get("campaign").createdAt)}
+                        maxDate={moment()}
+                        selected={
+                          search.dateEnd ? moment(search.dateEnd) : null
+                        }
+                        selectsEnd
+                        startDate={
+                          search.dateStart ? moment(search.dateStart) : null
+                        }
+                        endDate={search.dateEnd ? moment(search.dateEnd) : null}
+                        onChange={value => {
+                          if (value && value._isAMomentObject) {
+                            this._handleSearchChange(null, {
+                              name: "dateEnd",
+                              value: value.toDate()
+                            });
+                          } else {
+                            this._handleSearchChange(null, {
+                              name: "dateEnd",
+                              value: false
+                            });
+                          }
+                        }}
+                        placeholderText="To date"
+                        name="dateEnd"
+                      />
+                    </Grid.Column>
+                  </Grid.Row>
+                </Grid>
+              </Grid.Column>
+              <Grid.Column />
+            </Grid.Row>
+          ) : null}
         </Grid>
+        <p className="more-options">
+          <a href="javascript:void(0);" onClick={this._handleMoreOptionsClick}>
+            {moreOptions ? (
+              <span>
+                <Icon name="chevron up" />
+                Less Options
+              </span>
+            ) : (
+              <span>
+                <Icon name="chevron down" />
+                More Options
+              </span>
+            )}
+          </a>
+        </p>
         <Divider hidden />
         <PeopleSearchContainer
           campaignId={campaignId}

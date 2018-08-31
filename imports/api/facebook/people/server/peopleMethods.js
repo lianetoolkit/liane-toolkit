@@ -61,7 +61,8 @@ export const resolveZipcode = new ValidatedMethod({
   }
 });
 
-const buildSearchQuery = ({ campaignId, query, options }) => {
+const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
+  const { dateStart, dateEnd, ...query } = rawQuery;
   let queryOptions = {
     skip: options.skip || 0,
     limit: Math.min(options.limit || 10, 50),
@@ -104,6 +105,16 @@ const buildSearchQuery = ({ campaignId, query, options }) => {
   }
 
   query.campaignId = campaignId;
+
+  if (dateStart || dateEnd) {
+    if (!query.createdAt) query.createdAt = {};
+    if (dateStart) {
+      query.createdAt["$gte"] = dateStart;
+    }
+    if (dateEnd) {
+      query.createdAt["$lt"] = dateEnd;
+    }
+  }
 
   if (query.q) {
     query.$text = { $search: query.q };
@@ -152,7 +163,11 @@ export const peopleSearch = new ValidatedMethod({
       options
     });
 
-    const searchQuery = buildSearchQuery({ campaignId, query, options });
+    const searchQuery = buildSearchQuery({
+      campaignId,
+      rawQuery: query,
+      options
+    });
 
     const cursor = People.find(searchQuery.query, searchQuery.options);
 
@@ -185,7 +200,11 @@ export const peopleSearchCount = new ValidatedMethod({
       options
     });
 
-    const searchQuery = buildSearchQuery({ campaignId, query, options });
+    const searchQuery = buildSearchQuery({
+      campaignId,
+      rawQuery: query,
+      options
+    });
 
     const result = Promise.await(
       People.rawCollection().count(searchQuery.query)
@@ -587,6 +606,10 @@ export const canvasFormUpdate = new ValidatedMethod({
     personId: {
       type: String
     },
+    name: {
+      type: String,
+      optional: true
+    },
     sectionKey: {
       type: String
     },
@@ -595,10 +618,11 @@ export const canvasFormUpdate = new ValidatedMethod({
       blackbox: true
     }
   }).validator(),
-  run({ campaignId, personId, sectionKey, data }) {
+  run({ campaignId, personId, name, sectionKey, data }) {
     logger.debug("people.metaUpdate called", {
       campaignId,
       personId,
+      name,
       sectionKey,
       data
     });
@@ -647,6 +671,10 @@ export const canvasFormUpdate = new ValidatedMethod({
       }
     }
 
+    if (name) {
+      $set.name = name;
+    }
+
     return People.update(
       {
         campaignId,
@@ -662,15 +690,67 @@ export const canvasFormUpdate = new ValidatedMethod({
   }
 });
 
+export const removePeople = new ValidatedMethod({
+  name: "people.remove",
+  validate: new SimpleSchema({
+    personId: {
+      type: String
+    }
+  }).validator(),
+  run({ personId }) {
+    logger.debug("people.remove called", { personId });
+
+    const userId = Meteor.userId();
+
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const person = People.findOne(personId);
+
+    if (!person) {
+      throw new Meteor.Error(404, "Person not found");
+    }
+
+    const campaign = Campaigns.findOne(person.campaignId);
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    if (!_.findWhere(campaign.users, { userId })) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    People.remove(personId);
+  }
+});
+
 export const exportPeople = new ValidatedMethod({
   name: "people.export",
   validate: new SimpleSchema({
     campaignId: {
       type: String
+    },
+    rawQuery: {
+      type: Object,
+      blackbox: true,
+      optional: true
+    },
+    options: {
+      type: Object,
+      blackbox: true,
+      optional: true
     }
   }).validator(),
-  run({ campaignId }) {
-    logger.debug("people.export called", { campaignId });
+  run({ campaignId, rawQuery, options }) {
+    logger.debug("people.export called", { campaignId, rawQuery, options });
+
+    const searchQuery = buildSearchQuery({
+      campaignId,
+      rawQuery: rawQuery || {},
+      options: options || {}
+    });
 
     const userId = Meteor.userId();
     if (!userId) {
@@ -687,16 +767,16 @@ export const exportPeople = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    const people = People.find(
-      { campaignId },
-      {
+    const people = People.find(searchQuery.query, {
+      ...searchQuery.options,
+      ...{
         fields: {
           name: 1,
           facebookId: 1,
           campaignMeta: 1
         }
       }
-    ).fetch();
+    }).fetch();
 
     let flattened = [];
 
@@ -733,13 +813,37 @@ export const importPeople = new ValidatedMethod({
       type: Object,
       blackbox: true
     },
+    filename: {
+      type: String
+    },
     data: {
       type: Object,
       blackbox: true
+    },
+    defaultValues: {
+      type: Object,
+      optional: true
+    },
+    "defaultValues.tags": {
+      type: Array,
+      optional: true
+    },
+    "defaultValues.tags.$": {
+      type: String
+    },
+    "defaultValues.labels": {
+      type: Object,
+      optional: true,
+      blackbox: true
     }
   }).validator(),
-  run({ campaignId, config, data }) {
-    logger.debug("people.import called", { campaignId, config, data });
+  run({ campaignId, config, filename, data, defaultValues }) {
+    logger.debug("people.import called", {
+      campaignId,
+      config,
+      data,
+      defaultValues
+    });
 
     const userId = Meteor.userId();
     if (!userId) {
@@ -755,7 +859,13 @@ export const importPeople = new ValidatedMethod({
     if (!allowed) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
-    return PeopleHelpers.import({ campaignId, config, data });
+    return PeopleHelpers.import({
+      campaignId,
+      config,
+      filename,
+      data,
+      defaultValues
+    });
   }
 });
 
