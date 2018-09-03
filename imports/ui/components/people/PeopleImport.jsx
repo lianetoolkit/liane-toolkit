@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Form, Select, Input, Button } from "semantic-ui-react";
+import { Modal, Form, Select, Input, Button, Icon } from "semantic-ui-react";
 import PeopleTagsField from "/imports/ui/components/people/PeopleTagsField.jsx";
 import PeopleMetaButtons from "/imports/ui/components/people/PeopleMetaButtons.jsx";
 import _ from "underscore";
@@ -229,6 +229,9 @@ export default class PeopleImport extends React.Component {
     ev.preventDefault();
     const { campaignId, filename, onSubmit } = this.props;
     const { data, tags, labels, ...config } = this.state;
+    this.setState({
+      loading: true
+    });
     Meteor.call(
       "people.import",
       {
@@ -242,6 +245,9 @@ export default class PeopleImport extends React.Component {
         }
       },
       (err, res) => {
+        this.setState({
+          loading: false
+        });
         if (onSubmit) {
           onSubmit(err, res);
         }
@@ -249,7 +255,7 @@ export default class PeopleImport extends React.Component {
     );
   }
   render() {
-    const { data, tags, labels } = this.state;
+    const { data, tags, labels, loading } = this.state;
     const headers = this._getHeaders();
     return (
       <Modal
@@ -280,7 +286,8 @@ export default class PeopleImport extends React.Component {
               active={labels}
               label="Default labels for this import"
             />
-            <Button primary fluid>
+            <Button primary fluid disabled={loading} icon>
+              <Icon name={loading ? "spinner" : "download"} loading={loading} />{" "}
               Start import
             </Button>
           </Form>

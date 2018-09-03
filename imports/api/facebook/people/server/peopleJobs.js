@@ -75,8 +75,8 @@ const PeopleJobs = {
     jobOptions() {
       const options = {
         retry: {
-          retries: 5,
-          wait: 60 * 1000
+          retries: 0,
+          wait: 5 * 1000
         }
       };
       return options;

@@ -4,9 +4,9 @@ import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import PeopleImport from "/imports/ui/components/people/PeopleImport.jsx";
 import PeopleSearch from "/imports/ui/components/people/PeopleSearch.jsx";
-import PeopleSummary from "/imports/ui/components/people/PeopleSummary.jsx";
 import PeopleActivityFilter from "/imports/ui/components/entries/ActivityFilter.jsx";
 import PeopleActivity from "/imports/ui/components/entries/Activity.jsx";
+import PeopleManageImports from "/imports/ui/components/people/PeopleManageImports.jsx";
 import XLSX from "xlsx";
 
 import {
@@ -39,6 +39,9 @@ export default class CampaignsPeople extends React.Component {
     const { importCount } = this.props;
     if (importCount && importCount > 0 && nextProps.importCount === 0) {
       Alerts.success("People import has finished");
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
     }
   }
   _handleEditModeClick(ev) {
@@ -114,8 +117,9 @@ export default class CampaignsPeople extends React.Component {
       facebookId,
       campaign,
       account,
-      isActivity,
-      activity
+      navTab,
+      activity,
+      lists
     } = this.props;
     const { accounts } = campaign;
     return (
@@ -129,26 +133,40 @@ export default class CampaignsPeople extends React.Component {
           nav={[
             {
               name: "Directory",
-              active: !isActivity,
+              active: navTab == "directory",
               href: FlowRouter.path("App.campaignPeople", {
                 campaignId: campaign._id
               })
             },
             {
               name: "Recent activity",
-              active: isActivity,
+              active: navTab == "activity",
               href: FlowRouter.path("App.campaignPeople.activity", {
+                campaignId: campaign._id
+              })
+            },
+            {
+              name: "Manage Imports",
+              active: navTab == "imports",
+              href: FlowRouter.path("App.campaignPeople.imports", {
                 campaignId: campaign._id
               })
             }
           ]}
         />
         <section className="content">
-          {!isActivity && loading ? (
+          {navTab !== "activity" && loading ? (
             <Loading />
           ) : (
             <Grid>
-              {isActivity ? (
+              {navTab == "imports" ? (
+                <Grid.Row>
+                  <Grid.Column>
+                    <PeopleManageImports lists={lists} />
+                  </Grid.Column>
+                </Grid.Row>
+              ) : null}
+              {navTab == "activity" ? (
                 <Grid.Row>
                   <Grid.Column>
                     <PeopleActivityFilter />
@@ -162,7 +180,8 @@ export default class CampaignsPeople extends React.Component {
                     />
                   </Grid.Column>
                 </Grid.Row>
-              ) : (
+              ) : null}
+              {navTab == "directory" ? (
                 <>
                   <Grid.Row>
                     <Grid.Column>
@@ -227,7 +246,7 @@ export default class CampaignsPeople extends React.Component {
                     </Grid.Column>
                   </Grid.Row>
                 </>
-              )}
+              ) : null}
             </Grid>
           )}
           <input

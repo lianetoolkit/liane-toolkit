@@ -14,11 +14,10 @@ import CanvasEditContainer from "/imports/ui/containers/canvas/CanvasEditContain
 import CampaignsSettingsContainer from "/imports/ui/containers/campaigns/CampaignsSettingsContainer.jsx";
 import CampaignsPeopleContainer from "/imports/ui/containers/campaigns/CampaignsPeopleContainer.jsx";
 import CampaignsActivityContainer from "/imports/ui/containers/campaigns/CampaignsActivityContainer.jsx";
+import PeopleImportsContainer from "/imports/ui/containers/people/PeopleImportsContainer.jsx";
 import PeopleSinglePageContainer from "/imports/ui/containers/people/PeopleSinglePageContainer.jsx";
 import PeopleEditContainer from "/imports/ui/containers/people/PeopleEditContainer.jsx";
 import CampaignsAudienceContainer from "/imports/ui/containers/campaigns/CampaignsAudienceContainer.jsx";
-import CampaignsEntriesContainer from "/imports/ui/containers/campaigns/CampaignsEntriesContainer.jsx";
-import CampaignsListsContainer from "/imports/ui/containers/campaigns/CampaignsListsContainer.jsx";
 import AdsCreateContainer from "/imports/ui/containers/ads/AdsCreateContainer.jsx";
 
 import { APP_NAME, addTitle, trackRouteEntry } from "./utils.js";
@@ -100,7 +99,7 @@ campaignRoutes.route("/canvas/edit/:sectionKey?", {
 campaignRoutes.route("/people/view/:personId", {
   name: "App.campaignPeople.detail",
   action: function(params) {
-    addTitle(`${APP_NAME} | Campaign`);
+    addTitle(`${APP_NAME} | Person`);
     return _mount(params, {
       content: {
         component: PeopleSinglePageContainer,
@@ -112,7 +111,7 @@ campaignRoutes.route("/people/view/:personId", {
 campaignRoutes.route("/people/edit/:personId/:sectionKey?", {
   name: "App.campaignPeople.edit",
   action: function(params) {
-    addTitle(`${APP_NAME} | Campaign`);
+    addTitle(`${APP_NAME} | Edit person`);
     return _mount(params, {
       content: {
         component: PeopleEditContainer,
@@ -128,7 +127,7 @@ campaignRoutes.route("/people/edit/:personId/:sectionKey?", {
 campaignRoutes.route("/people/activity/:facebookId?", {
   name: "App.campaignPeople.activity",
   action: function(params, queryParams) {
-    addTitle(`${APP_NAME} | Campaign`);
+    addTitle(`${APP_NAME} | People Activity`);
     return _mount(params, {
       content: {
         component: CampaignsActivityContainer,
@@ -136,7 +135,22 @@ campaignRoutes.route("/people/activity/:facebookId?", {
           campaignId: params.campaignId,
           facebookId: params.facebookId,
           limit: queryParams.limit || 10,
-          isActivity: true
+          navTab: "activity"
+        }
+      }
+    });
+  }
+});
+campaignRoutes.route("/people/imports", {
+  name: "App.campaignPeople.imports",
+  action: function(params, queryParams) {
+    addTitle(`${APP_NAME} | People Imports`);
+    return _mount(params, {
+      content: {
+        component: PeopleImportsContainer,
+        props: {
+          campaignId: params.campaignId,
+          navTab: "imports"
         }
       }
     });
@@ -145,13 +159,14 @@ campaignRoutes.route("/people/activity/:facebookId?", {
 campaignRoutes.route("/people/:facebookId?", {
   name: "App.campaignPeople",
   action: function(params) {
-    addTitle(`${APP_NAME} | Campaign`);
+    addTitle(`${APP_NAME} | Campaign People`);
     return _mount(params, {
       content: {
         component: CampaignsPeopleContainer,
         props: {
           campaignId: params.campaignId,
-          facebookId: params.facebookId
+          facebookId: params.facebookId,
+          navTab: "directory"
         }
       }
     });
@@ -160,7 +175,7 @@ campaignRoutes.route("/people/:facebookId?", {
 campaignRoutes.route("/audience/:navTab?", {
   name: "App.campaignAudience",
   action: function(params, queryParams) {
-    addTitle(`${APP_NAME} | Campaign`);
+    addTitle(`${APP_NAME} | Campaign Audience`);
     return _mount(params, {
       content: {
         component: CampaignsAudienceContainer,
@@ -176,7 +191,7 @@ campaignRoutes.route("/audience/:navTab?", {
 campaignRoutes.route("/audience/:navTab/category/:audienceCategoryId", {
   name: "App.campaignAudience.category",
   action: function(params, queryParams) {
-    addTitle(`${APP_NAME} | Campaign`);
+    addTitle(`${APP_NAME} | Campaign Audience`);
     return _mount(params, {
       content: {
         component: CampaignsAudienceContainer,
@@ -193,7 +208,7 @@ campaignRoutes.route("/audience/:navTab/category/:audienceCategoryId", {
 campaignRoutes.route("/audience/:navTab/geolocation/:geolocationId", {
   name: "App.campaignAudience.geolocation",
   action: function(params, queryParams) {
-    addTitle(`${APP_NAME} | Campaign`);
+    addTitle(`${APP_NAME} | Campaign Audience`);
     return _mount(params, {
       content: {
         component: CampaignsAudienceContainer,
@@ -203,30 +218,6 @@ campaignRoutes.route("/audience/:navTab/geolocation/:geolocationId", {
           geolocationId: params.geolocationId,
           audienceFacebookId: queryParams.account
         }
-      }
-    });
-  }
-});
-campaignRoutes.route("/entries/:facebookId?", {
-  name: "App.campaignEntries",
-  action: function(params) {
-    addTitle(`${APP_NAME} | Campaign`);
-    return _mount(params, {
-      content: {
-        component: CampaignsEntriesContainer,
-        props: { campaignId: params.campaignId, facebookId: params.facebookId }
-      }
-    });
-  }
-});
-campaignRoutes.route("/lists", {
-  name: "App.campaignLists",
-  action: function(params) {
-    addTitle(`${APP_NAME} | Campaign`);
-    return _mount(params, {
-      content: {
-        component: CampaignsListsContainer,
-        props: { campaignId: params.campaignId }
       }
     });
   }
@@ -247,7 +238,7 @@ campaignRoutes.route("/account/:facebookId", {
 campaignRoutes.route("/ads/create/:audienceFacebookId", {
   name: "App.campaignAds.create",
   action: function(params, queryParams) {
-    addTitle(`${APP_NAME} | Campaign`);
+    addTitle(`${APP_NAME} | Create Adset`);
     return _mount(params, {
       content: {
         component: AdsCreateContainer,
