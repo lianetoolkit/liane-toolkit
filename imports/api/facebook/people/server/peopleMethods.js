@@ -1,6 +1,6 @@
 import SimpleSchema from "simpl-schema";
 import axios from "axios";
-import { People, PeopleTags } from "../people.js";
+import { People, PeopleTags, PeopleLists } from "../people.js";
 import { DeauthorizedPeople } from "../deauthorizedPeople.js";
 import peopleMetaModel from "/imports/api/facebook/people/model/meta";
 import { PeopleHelpers } from "./peopleHelpers.js";
@@ -1288,5 +1288,63 @@ export const peopleCreateTag = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     return PeopleTags.insert({ campaignId, name });
+  }
+});
+
+export const peopleListsCount = new ValidatedMethod({
+  name: "peopleLists.peopleCount",
+  validate: new SimpleSchema({
+    listId: {
+      type: String
+    }
+  }).validator(),
+  run({ listId }) {
+    logger.debug("peopleLists.peopleCount called", { listId });
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+    const list = PeopleLists.findOne(listId);
+    if (!list) {
+      throw new Meteor.Error(404, "List not found");
+    }
+    const campaign = Campaigns.findOne(list.campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+    if (!_.findWhere(campaign.users, { userId })) {
+      throw new Meteor.Error(401, "Not authorized");
+    }
+    return People.find({ listId }).count();
+  }
+});
+
+export const peopleListsRemove = new ValidatedMethod({
+  name: "peopleLists.remove",
+  validate: new SimpleSchema({
+    listId: {
+      type: String
+    }
+  }).validator(),
+  run({ listId }) {
+    logger.debug("peopleLists.peopleCount called", { listId });
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+    const list = PeopleLists.findOne(listId);
+    if (!list) {
+      throw new Meteor.Error(404, "List not found");
+    }
+    const campaign = Campaigns.findOne(list.campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+    if (!_.findWhere(campaign.users, { userId })) {
+      throw new Meteor.Error(401, "Not authorized");
+    }
+
+    People.remove({ listId });
+    return PeopleLists.remove(listId);
   }
 });

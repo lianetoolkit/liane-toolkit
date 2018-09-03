@@ -1,4 +1,4 @@
-import { People, PeopleTags } from "../people.js";
+import { People, PeopleLists, PeopleTags } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 const { Jobs } = require("/imports/api/jobs/jobs.js");
@@ -161,6 +161,16 @@ Meteor.publishComposite("people.form.detail", function({ formId }) {
       }
     ]
   };
+});
+
+Meteor.publish("peopleLists.byCampaign", function({ campaignId }) {
+  this.unblock();
+  const userId = this.userId;
+  const campaign = Campaigns.findOne(campaignId);
+  if (campaign && _.findWhere(campaign.users, { userId })) {
+    return PeopleLists.find({ campaignId });
+  }
+  return this.ready();
 });
 
 // Meteor.publish("people.byAccount", function({

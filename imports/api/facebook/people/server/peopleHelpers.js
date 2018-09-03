@@ -2,7 +2,7 @@ import axios from "axios";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { People, PeopleLists } from "/imports/api/facebook/people/people.js";
 import { Random } from "meteor/random";
-import { uniqBy, groupBy, mapKeys, flatten, get, set } from "lodash";
+import { uniqBy, groupBy, mapKeys, flatten, get, set, cloneDeep } from "lodash";
 import crypto from "crypto";
 
 const googleMapsKey = Meteor.settings.googleMaps;
@@ -162,10 +162,10 @@ const PeopleHelpers = {
     }
 
     // Add data
-    for (const item of data) {
-      let obj = { ...defaultPerson };
+    data.forEach(function(item) {
+      let obj = cloneDeep(defaultPerson);
       let customFields = [];
-      for (const key in item) {
+      for (let key in item) {
         const itemConfig = config[key];
         if (itemConfig && itemConfig.value) {
           let modelKey = itemConfig.value;
@@ -185,9 +185,9 @@ const PeopleHelpers = {
         obj.$addToSet["campaignMeta.extra.extra"] = { $each: customFields };
       }
       importData.push(obj);
-    }
+    });
     // add job per person
-    for (const person of importData) {
+    for (let person of importData) {
       JobsHelpers.addJob({
         jobType: "people.importPerson",
         jobData: {
