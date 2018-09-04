@@ -83,12 +83,20 @@ export default class PeopleCard extends React.Component {
     }
   };
   render() {
-    const { onMetaChange, person, facebookId, displayReply } = this.props;
+    const {
+      onMetaChange,
+      person,
+      facebookId,
+      displayReply,
+      hideFormButton
+    } = this.props;
     const { replying, replyingComment, defaultReplyMessage } = this.state;
     if (!person) return null;
     return (
       <Wrapper>
-        {person ? <PeopleFormButton floated="right" person={person} /> : null}
+        {!hideFormButton && person ? (
+          <PeopleFormButton floated="right" person={person} />
+        ) : null}
         <p>
           <strong>
             <a href="javascript:void(0);" onClick={this._goToPerson}>
