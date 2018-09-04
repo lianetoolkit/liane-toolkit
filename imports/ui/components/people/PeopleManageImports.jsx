@@ -48,6 +48,9 @@ export default class PeopleManageImports extends React.Component {
             Alerts.success("List and all its people removed successfully");
           }
           this.context.confirmStore.hide();
+          setTimeout(() => {
+            location.reload();
+          }, 1000);
         });
       }
     });

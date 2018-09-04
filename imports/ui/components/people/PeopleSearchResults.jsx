@@ -45,8 +45,10 @@ export default class PeopleSearchResults extends React.Component {
     let names = {};
     let duplicates = [];
     for (const person of people) {
-      if (!names[person.name]) names[person.name] = 0;
-      names[person.name]++;
+      if (person.name) {
+        if (!names[person.name]) names[person.name] = 0;
+        names[person.name]++;
+      }
     }
     for (const name in names) {
       duplicates.push({
@@ -173,7 +175,7 @@ export default class PeopleSearchResults extends React.Component {
             <Button.Group size="mini" basic>
               <Button
                 href={FlowRouter.path("App.campaignPeople.edit", {
-                  campaignId,
+                  campaignId: person.campaignId,
                   personId: person._id
                 })}
               >
