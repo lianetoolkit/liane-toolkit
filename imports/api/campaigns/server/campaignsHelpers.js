@@ -223,6 +223,13 @@ const CampaignsHelpers = {
           facebookAccountId: facebookAccountId
         };
         break;
+      case "fbUsers":
+        jobType = "people.updateFBUsers";
+        jobData = {
+          campaignId,
+          facebookAccountId
+        };
+        break;
     }
 
     const query = {

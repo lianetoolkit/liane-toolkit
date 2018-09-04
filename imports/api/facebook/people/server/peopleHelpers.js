@@ -1,3 +1,4 @@
+import { Promise } from "meteor/promise";
 import axios from "axios";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { People, PeopleLists } from "/imports/api/facebook/people/people.js";
@@ -84,30 +85,32 @@ const PeopleHelpers = {
   },
   updateFBUsers({ campaignId, facebookAccountId }) {
     const collection = People.rawCollection();
-    const aggregate = Meteor.wrapAsync(collection.aggregate, collection);
-
-    const data = aggregate([
-      {
-        $match: {
-          facebookAccounts: { $in: [facebookAccountId] }
-        }
-      },
-      {
-        $group: {
-          _id: "$facebookId",
-          name: { $first: "$name" },
-          counts: { $first: `$counts.${facebookAccountId}` }
-        }
-      },
-      {
-        $project: {
-          _id: null,
-          facebookId: "$_id",
-          name: "$name",
-          [`counts.${facebookAccountId}`]: "$counts"
-        }
-      }
-    ]);
+    const data = Promise.await(
+      collection
+        .aggregate([
+          {
+            $match: {
+              facebookAccounts: { $in: [facebookAccountId] }
+            }
+          },
+          {
+            $group: {
+              _id: "$facebookId",
+              name: { $first: "$name" },
+              counts: { $first: `$counts.${facebookAccountId}` }
+            }
+          },
+          {
+            $project: {
+              _id: null,
+              facebookId: "$_id",
+              name: "$name",
+              [`counts.${facebookAccountId}`]: "$counts"
+            }
+          }
+        ])
+        .toArray()
+    );
 
     if (data.length) {
       const peopleBulk = collection.initializeUnorderedBulkOp();
@@ -121,7 +124,7 @@ const PeopleHelpers = {
           .update({
             $setOnInsert: {
               _id: Random.id(),
-              createdAt: new Date()
+              createdAt: person.createdAt
             },
             $set: {
               name: person.name,
