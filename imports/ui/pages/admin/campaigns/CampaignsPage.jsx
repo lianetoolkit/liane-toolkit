@@ -31,6 +31,8 @@ class JobButton extends React.Component {
         return "entries.updateAccountEntries";
       case "audiences":
         return "audiences.updateAccountAudience";
+      case "fbUsers":
+        return "people.updateFBUsers";
     }
   }
   _getJob() {
@@ -212,6 +214,13 @@ export default class CampaignsPage extends React.Component {
                                           type="entries"
                                         >
                                           Entries
+                                        </JobButton>
+                                        <JobButton
+                                          campaign={campaign}
+                                          account={acc}
+                                          type="fbUsers"
+                                        >
+                                          Facebook Users
                                         </JobButton>
                                       </Table.Cell>
                                     </Table.Row>
