@@ -7,12 +7,12 @@ import PersonNewFlag from "/imports/ui/components/people/NewFlag.jsx";
 const Fragment = React.Fragment;
 
 const PersonName = ({ name }) => {
-  const display = name.substr(0, 16);
-  let ellipsis = false;
-  if (display.length != name.length) {
-    ellipsis = true;
-  }
   if (name) {
+    const display = name.substr(0, 16);
+    let ellipsis = false;
+    if (display.length != name.length) {
+      ellipsis = true;
+    }
     return (
       <span title={name}>
         {display}
@@ -20,7 +20,7 @@ const PersonName = ({ name }) => {
       </span>
     );
   } else {
-    return null;
+    return "Unknown";
   }
 };
 
