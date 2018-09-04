@@ -21,6 +21,7 @@ import AddressField from "/imports/ui/components/people/AddressField.jsx";
 import SkillField from "/imports/ui/components/people/SkillField.jsx";
 import PeoplePrivacyPolicy from "/imports/ui/components/people/PeoplePrivacyPolicy.jsx";
 import Recaptcha from "react-recaptcha";
+import { getFormUrl } from "/imports/ui/components/people/Utils.jsx";
 
 const recaptchaSiteKey = Meteor.settings.public.recaptcha;
 
@@ -146,6 +147,11 @@ export default class PeopleForm extends React.Component {
             {person.name ? <span> {person.name}</span> : null}
             !
           </Header>
+          {person._id ? (
+            <p>
+              Não é você? <a href={getFormUrl(campaign)}>Clique aqui</a>.
+            </p>
+          ) : null}
           <Header size="large">
             {campaign.forms && campaign.forms.crm ? (
               <span>{campaign.forms.crm.header}</span>
