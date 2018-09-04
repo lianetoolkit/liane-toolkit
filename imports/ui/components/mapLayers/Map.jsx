@@ -65,6 +65,10 @@ const Wrapper = styled.div`
           padding: 0;
           margin: 1rem 0.5rem;
         }
+        p {
+          margin: 0 0.5rem 1rem;
+          padding: 0;
+        }
       }
     }
   }
@@ -81,21 +85,24 @@ class GridItem extends React.Component {
     }
   }
   _table(obj) {
-    const { name, ...data } = obj;
+    const { name, text, ...data } = obj;
     const keys = Object.keys(data);
     return (
       <div>
         {name ? <Header as="h4">{name}</Header> : null}
-        <Table definition compact="very">
-          <Table.Body>
-            {keys.map(key => (
-              <Table.Row key={key}>
-                <Table.Cell collapsing>{key}</Table.Cell>
-                <Table.Cell>{this._value(data[key])}</Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
+        {text ? <p>{text}</p> : null}
+        {keys && keys.length ? (
+          <Table definition compact="very">
+            <Table.Body>
+              {keys.map(key => (
+                <Table.Row key={key}>
+                  <Table.Cell collapsing>{key}</Table.Cell>
+                  <Table.Cell>{this._value(data[key])}</Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
+        ) : null}
       </div>
     );
   }
