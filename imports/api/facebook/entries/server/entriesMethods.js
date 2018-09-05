@@ -16,13 +16,19 @@ export const resolveInteraction = new ValidatedMethod({
     },
     type: {
       type: String
+    },
+    undo: {
+      type: Boolean,
+      optional: true,
+      defaultValue: false
     }
   }).validator(),
-  run({ campaignId, id, type }) {
+  run({ campaignId, id, type, undo }) {
     logger.debug("entries.resolveInteraction called", {
       campaignId,
       id,
-      type
+      type,
+      undo
     });
 
     const userId = Meteor.userId();
@@ -61,7 +67,7 @@ export const resolveInteraction = new ValidatedMethod({
 
     InteractionModel.update(interaction._id, {
       $set: {
-        resolved: true
+        resolved: !undo
       }
     });
 
