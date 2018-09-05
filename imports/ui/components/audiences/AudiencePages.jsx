@@ -342,6 +342,13 @@ export default class AudiencePages extends React.Component {
                                   ) : null}
                                 </Table.Cell>
                                 <Table.Cell collapsing>
+                                  <strong>
+                                    {AudienceUtils.getAudienceRatio(
+                                      this._latestAudience(item)
+                                    )}
+                                  </strong>
+                                </Table.Cell>
+                                <Table.Cell collapsing>
                                   <DataAlert
                                     audience={this._latestAudience(item)}
                                   />
