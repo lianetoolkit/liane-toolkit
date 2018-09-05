@@ -70,8 +70,7 @@ export default class PeopleActivity extends React.Component {
     const { activity } = this.state;
     this._updatePeople(nextProps);
     if (
-      nextProps.activity &&
-      nextProps.activity.length &&
+      Array.isArray(nextProps.activity) &&
       JSON.stringify(nextProps.activity) &&
       JSON.stringify(activity)
     ) {
@@ -188,26 +187,28 @@ export default class PeopleActivity extends React.Component {
   };
   _handleResolveClick = interaction => () => {
     const { campaign } = this.props;
-    if (interaction.resolved) {
-      Alerts.error("This activity is already marked as resolved");
-    } else {
-      Meteor.call(
-        "entries.resolveInteraction",
-        {
-          campaignId: campaign._id,
-          id: interaction._id,
-          type: interaction.type == "comment" ? "comment" : "reaction"
-        },
-        (err, res) => {
-          if (err) {
-            console.log(err);
-            Alerts.error(err);
+    const undo = !!interaction.resolved;
+    Meteor.call(
+      "entries.resolveInteraction",
+      {
+        campaignId: campaign._id,
+        id: interaction._id,
+        type: interaction.type == "comment" ? "comment" : "reaction",
+        undo
+      },
+      (err, res) => {
+        if (err) {
+          console.log(err);
+          Alerts.error(err);
+        } else {
+          if (undo) {
+            Alerts.success("Activity marked as unresolved");
           } else {
             Alerts.success("Activity marked as resolved");
           }
         }
-      );
-    }
+      }
+    );
   };
   _handleLoadMoreClick = () => {
     const { limit } = this.props;
@@ -277,7 +278,7 @@ export default class PeopleActivity extends React.Component {
               </Feed.Event>
             ))}
           </Feed>
-          <Button onClick={this._handleLoadMoreClick} disabled={loading}>
+          <Button onClick={this._handleLoadMoreClick} disabled={loading} fluid>
             <Icon
               name={loading ? "spinner" : "ellipsis horizontal"}
               loading={loading}
