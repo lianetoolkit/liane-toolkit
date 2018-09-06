@@ -60,46 +60,52 @@ const CommentsHelpers = {
     if (commentedPeople.length) {
       const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
       for (const commentedPerson of commentedPeople) {
-        const commentsCount = Comments.find({
+        const query = {
           personId: commentedPerson.id,
           facebookAccountId: facebookAccountId
-        }).count();
+        };
+        const commentsCount = Comments.find(query).count();
+        const hasPrivateReply = !!Comments.findOne({
+          ...query,
+          can_reply_privately: true
+        });
         let set = {
           updatedAt: new Date()
         };
-        // let lastInteraction = {
-        //   facebookId: facebookAccountId
-        // };
-        // if (commentedPerson.comment.created_time) {
-        //   lastInteraction["date"] = {
-        //     $max: commentedPerson.comment.created_time
-        //   };
-        //   lastInteraction["estimate"] = false;
-        // }
         set["name"] = commentedPerson.name;
         set[`counts.${facebookAccountId}.comments`] = commentsCount;
-        // set["lastInteraction"] = lastInteraction;
+
+        let addToSet = {
+          facebookAccounts: facebookAccountId
+        };
+        let pull = {};
+
+        if (hasPrivateReply) {
+          addToSet["canReceivePrivateReply"] = facebookAccountId;
+        } else {
+          pull["canReceivePrivateReply"] = facebookAccountId;
+        }
+
+        // Build update obj
+        let updateObj = {
+          $setOnInsert: {
+            createdAt: new Date()
+          },
+          $set: set,
+          $max: {
+            lastInteractionDate: new Date(
+              commentedPerson.comment.created_time || 0
+            )
+          }
+        };
+        if (Object.keys(addToSet).length) {
+          updateObj.$addToSet = addToSet;
+        }
+        if (Object.keys(pull).length) {
+          updateObj.$pull = pull;
+        }
 
         for (const campaign of accountCampaigns) {
-          // Person has the last interaction populated
-          // peopleBulk
-          //   .find({
-          //     campaignId: campaign._id,
-          //     facebookId: commentedPerson.id,
-          //     "lastInteractions.facebookId": facebookAccountId
-          //   })
-          //   .update({
-          //     $setOnInsert: {
-          //       _id: Random.id(),
-          //       createdAt: new Date()
-          //     },
-          //     $set: { ...set, "lastInteractions.$": lastInteraction },
-          //     $addToSet: {
-          //       facebookAccounts: facebookAccountId
-          //     }
-          //   });
-
-          // Person does not have the last interaction populated
           peopleBulk
             .find({
               campaignId: campaign._id,
@@ -107,19 +113,10 @@ const CommentsHelpers = {
             })
             .upsert()
             .update({
+              ...updateObj,
               $setOnInsert: {
-                _id: Random.id(),
-                createdAt: new Date()
-              },
-              $set: set,
-              $max: {
-                lastInteractionDate: new Date(
-                  commentedPerson.comment.created_time || 0
-                )
-              },
-              $addToSet: {
-                facebookAccounts: facebookAccountId
-                // lastInteractions: lastInteraction
+                ...updateObj.$setOnInsert,
+                _id: Random.id()
               }
             });
         }

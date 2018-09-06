@@ -42,10 +42,19 @@ People.schema = new SimpleSchema({
     optional: true,
     index: true
   },
+  canReceivePrivateReply: {
+    type: Array,
+    optional: true,
+    index: true
+  },
+  "canReceivePrivateReply.$": {
+    type: String
+  },
   receivedAutoPrivateReply: {
     type: Boolean,
     defaultValue: false,
-    optional: true
+    optional: true,
+    index: true
   },
   listId: {
     type: String,

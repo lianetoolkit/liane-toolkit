@@ -40,11 +40,13 @@ const EntriesHelpers = {
     campaignId,
     facebookId,
     accessToken,
-    likeDateEstimate
+    likeDateEstimate,
+    forceUpdate
   }) {
     check(campaignId, String);
     check(facebookId, String);
     check(accessToken, String);
+    check(forceUpdate, Boolean);
 
     let campaign;
     let isCampaignAccount = false;
@@ -133,13 +135,14 @@ const EntriesHelpers = {
         if (currentEntry) {
           if (
             vals.counts.comment &&
-            currentEntry.counts.comment !== vals.counts.comment
+            (currentEntry.counts.comment !== vals.counts.comment || forceUpdate)
           ) {
             updateInteractions.push("comments");
           }
           if (
             vals.counts.reaction &&
-            currentEntry.counts.reaction !== vals.counts.reaction
+            (currentEntry.counts.reaction !== vals.counts.reaction ||
+              forceUpdate)
           ) {
             updateInteractions.push("likes");
           }

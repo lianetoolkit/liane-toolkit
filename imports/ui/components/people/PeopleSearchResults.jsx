@@ -78,9 +78,8 @@ export default class PeopleSearchResults extends React.Component {
   _canReply(person) {
     const { facebookId } = this.props;
     return (
-      person.counts &&
-      person.counts[facebookId] &&
-      person.counts[facebookId].comments
+      person.hasOwnProperty("canReceivePrivateReply") &&
+      person.canReceivePrivateReply.indexOf(facebookId) !== -1
     );
   }
   _handleReplyClick = person => ev => {
