@@ -27,7 +27,8 @@ const EntriesJobs = {
           campaignId,
           facebookId,
           accessToken,
-          likeDateEstimate
+          likeDateEstimate,
+          forceUpdate: false
         });
       } catch (error) {
         errored = true;
@@ -53,6 +54,49 @@ const EntriesJobs = {
         },
         repeat: {
           wait: 2 * 60 * 60 * 1000
+        }
+      };
+      return options;
+    }
+  },
+  "entries.refetchAccountEntries": {
+    run({ job }) {
+      logger.debug("entries.refetchAccountEntries job: called");
+      check(job && job.data && job.data.facebookId, String);
+      check(job && job.data && job.data.accessToken, String);
+      const campaignId = job.data.campaignId;
+      const facebookId = job.data.facebookId;
+      const accessToken = job.data.accessToken;
+      let errored = false;
+      try {
+        EntriesHelpers.updateAccountEntries({
+          campaignId,
+          facebookId,
+          accessToken,
+          likeDateEstimate: false,
+          forceUpdate: true
+        });
+      } catch (error) {
+        errored = true;
+        return job.fail(error.message);
+      } finally {
+        if (!errored) {
+          job.done();
+          return job.remove();
+        }
+      }
+    },
+
+    workerOptions: {
+      concurrency: 2,
+      pollInterval: 2500
+    },
+
+    jobOptions() {
+      const options = {
+        retry: {
+          retries: 1,
+          wait: 5 * 60 * 1000
         }
       };
       return options;
@@ -115,11 +159,7 @@ const EntriesJobs = {
       check(job && job.data && job.data.campaignId, String);
       check(job && job.data && job.data.facebookAccountId, String);
       check(job && job.data && job.data.entryId, String);
-      const {
-        campaignId,
-        facebookAccountId,
-        entryId
-      } = job.data;
+      const { campaignId, facebookAccountId, entryId } = job.data;
       LikesHelpers.updatePeopleLikesCountByEntry({
         campaignId,
         facebookAccountId,

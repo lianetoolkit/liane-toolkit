@@ -1,6 +1,10 @@
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
-import { People } from "/imports/api/facebook/people/people.js";
+import {
+  People,
+  PeopleTags,
+  PeopleLists
+} from "/imports/api/facebook/people/people.js";
 import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js";
 import { Canvas } from "/imports/api/canvas/canvas.js";
 import { Jobs } from "/imports/api/jobs/jobs.js";
@@ -216,6 +220,14 @@ const CampaignsHelpers = {
           campaignId: campaign._id
         };
         break;
+      case "refetch":
+        jobType = "entries.refetchAccountEntries";
+        jobData = {
+          facebookId: facebookAccountId,
+          accessToken: account.accessToken,
+          campaignId: campaign._id
+        };
+        break;
       case "audiences":
         jobType = "audiences.updateAccountAudience";
         jobData = {
@@ -267,6 +279,8 @@ const CampaignsHelpers = {
     this.clearCampaignJobs({ campaignId });
 
     People.remove({ campaignId });
+    PeopleLists.remove({ campaignId });
+    PeopleTags.remove({ campaignId });
     Canvas.remove({ campaignId });
     FacebookAudiences.remove({ campaignId });
 

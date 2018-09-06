@@ -29,6 +29,7 @@ Meteor.publishComposite("campaigns.all", function() {
                 $in: [
                   "audiences.updateAccountAudience",
                   "entries.updateAccountEntries",
+                  "entries.refetchAccountEntries",
                   "people.updateFBUsers"
                 ]
               }

@@ -219,7 +219,7 @@ export default class PeopleSearch extends React.Component {
           newSearch = { ...search, filledForm: true };
         } else {
           newSearch = { ...search };
-          delete newSearch["filledForm"];
+          delete newSearch.filledForm;
         }
         break;
       case "hasComments":
@@ -233,10 +233,23 @@ export default class PeopleSearch extends React.Component {
           delete newSearch[`counts.${facebookId}.comments`];
         }
         break;
+      case "canReceivePrivateReply":
+        if (!this._isFilter("canReceivePrivateReply")) {
+          newSearch = {
+            ...search,
+            canReceivePrivateReply: { $in: [facebookId] }
+          };
+        } else {
+          newSearch = { ...search };
+          delete newSearch["canReceivePrivateReply"];
+        }
         break;
       default:
         newSearch = { ...search, accountFilter: "all" };
         delete newSearch["campaignMeta.basic_info.tags"];
+        delete newSearch[`counts.${facebookId}.comments`];
+        delete newSearch.filledForm;
+        delete newSearch.canReceivePrivateReply;
     }
     this.setState({
       activePage: 1,
@@ -287,8 +300,13 @@ export default class PeopleSearch extends React.Component {
         return search.filledForm;
       case "hasComments":
         return search[`counts.${facebookId}.comments`];
+      case "canReceivePrivateReply":
+        return search.canReceivePrivateReply;
       default:
         return (
+          search.filledForm ||
+          search.canReceivePrivateReply ||
+          search[`counts.${facebookId}.comments`] ||
           search.accountFilter !== "all" ||
           !!search["campaignMeta.basic_info.tags"]
         );
@@ -395,6 +413,13 @@ export default class PeopleSearch extends React.Component {
                     } circle outline`}
                     text="Has comments"
                     onClick={this._handleFilterClick("hasComments")}
+                  />
+                  <Dropdown.Item
+                    icon={`${
+                      this._isFilter("canReceivePrivateReply") ? "check" : ""
+                    } circle outline`}
+                    text="Can receive private reply"
+                    onClick={this._handleFilterClick("canReceivePrivateReply")}
                   />
                 </Dropdown.Menu>
               </Dropdown>

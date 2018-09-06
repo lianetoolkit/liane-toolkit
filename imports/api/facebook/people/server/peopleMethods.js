@@ -73,6 +73,7 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
       counts: 1,
       campaignMeta: 1,
       lastInteractionDate: 1,
+      canReceivePrivateReply: 1,
       receivedAutoPrivateReply: 1,
       filledForm: 1,
       formId: 1,
@@ -293,6 +294,9 @@ export const peopleReplyComment = new ValidatedMethod({
           }
         );
         if (!res.can_reply_privately) {
+          People.update(person._id, {
+            $pull: { canReceivePrivateReply: facebookAccountId }
+          });
           return;
         }
       }

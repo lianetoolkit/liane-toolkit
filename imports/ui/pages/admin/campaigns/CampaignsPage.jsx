@@ -29,6 +29,8 @@ class JobButton extends React.Component {
     switch (type) {
       case "entries":
         return "entries.updateAccountEntries";
+      case "refetch":
+        return "entries.refetchAccountEntries";
       case "audiences":
         return "audiences.updateAccountAudience";
       case "fbUsers":
@@ -48,7 +50,7 @@ class JobButton extends React.Component {
   _getJobStatus() {
     const job = this._getJob();
     if (!job) {
-      return "failed";
+      return "missing";
     }
     return job.status;
   }
@@ -63,6 +65,8 @@ class JobButton extends React.Component {
         return "remove";
       case "running":
         return "play";
+      case "missing":
+        return "question circle";
       default:
         return "play";
     }
@@ -99,7 +103,7 @@ class JobButton extends React.Component {
     return (
       <Popup
         trigger={
-          <Button size="tiny" onClick={this._handleJob} icon>
+          <Button size="mini" onClick={this._handleJob} icon>
             <Icon name={this._getJobIcon()} /> {children}
           </Button>
         }
@@ -214,6 +218,13 @@ export default class CampaignsPage extends React.Component {
                                           type="entries"
                                         >
                                           Entries
+                                        </JobButton>
+                                        <JobButton
+                                          campaign={campaign}
+                                          account={acc}
+                                          type="refetch"
+                                        >
+                                          Refetch all interactions
                                         </JobButton>
                                         <JobButton
                                           campaign={campaign}
