@@ -119,6 +119,9 @@ export default class CampaignsPage extends React.Component {
   };
   constructor(props) {
     super(props);
+    this.state = {
+      refreshing: false
+    };
   }
   _handleRemove = campaignId => ev => {
     ev.preventDefault();
@@ -154,8 +157,32 @@ export default class CampaignsPage extends React.Component {
       }
     });
   };
+  _handleResetClick = ev => {
+    ev.preventDefault();
+    this.context.confirmStore.show({
+      text:
+        "Are you sure? This will remove all existing jobs and recreate according to the each campaign setup.",
+      callback: () => {
+        this.setState({
+          refreshing: true
+        });
+        Meteor.call("campaigns.refreshAllJobs", {}, error => {
+          this.setState({
+            refreshing: false
+          });
+          if (!error) {
+            Alerts.success("Jobs refreshed successfully");
+          } else {
+            Alerts.error(error);
+          }
+          this.context.confirmStore.hide();
+        });
+      }
+    });
+  };
   render() {
     const { loading, campaigns, currentUser } = this.props;
+    const { refreshing } = this.state;
     return (
       <div>
         <PageHeader title="Campaigns" />
@@ -166,6 +193,17 @@ export default class CampaignsPage extends React.Component {
             <Grid>
               <Grid.Row>
                 <Grid.Column>
+                  <Button
+                    onClick={this._handleResetClick}
+                    icon
+                    disabled={refreshing}
+                  >
+                    <Icon
+                      name={refreshing ? "spinner" : "refresh"}
+                      loading={refreshing}
+                    />{" "}
+                    Reset all campaign jobs
+                  </Button>
                   <Table>
                     <Table.Header>
                       <Table.Row>
@@ -236,8 +274,8 @@ export default class CampaignsPage extends React.Component {
                                       </Table.Cell>
                                     </Table.Row>
                                   ))}
-                                {campaign.audienceAccounts &&
-                                  campaign.audienceAccounts.map(acc => (
+                                {campaign.accounts &&
+                                  campaign.accounts.map(acc => (
                                     <Table.Row key={acc.facebookId}>
                                       <Table.Cell>{acc.name}</Table.Cell>
                                       <Table.Cell>

@@ -66,7 +66,7 @@ export const campaignsCreate = new ValidatedMethod({
         facebookAccountId
       });
       CampaignsHelpers.addAccount({ campaignId, account });
-      CampaignsHelpers.addAudienceAccount({ campaignId, account });
+      // CampaignsHelpers.addAudienceAccount({ campaignId, account });
     }
 
     return { result: campaignId };
@@ -267,6 +267,38 @@ export const campaignsSuspend = new ValidatedMethod({
   }
 });
 
+export const campaignsRefreshJobs = new ValidatedMethod({
+  name: "campaigns.refreshAllJobs",
+  validate: new SimpleSchema({
+    type: {
+      type: String,
+      optional: true
+    }
+  }).validator(),
+  run() {
+    logger.debug("campaigns.refreshAllJobs called");
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    if (!Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(403, "Permission denied");
+    }
+
+    Jobs.remove({});
+
+    const campaigns = Campaigns.find({ status: { $ne: "suspended" } }).fetch();
+
+    for (let campaign of campaigns) {
+      CampaignsHelpers.refreshCampaignJobs({ campaignId: campaign._id });
+    }
+
+    return;
+  }
+});
+
 export const addUser = new ValidatedMethod({
   name: "campaigns.addUser",
   validate: new SimpleSchema({
@@ -447,6 +479,7 @@ export const removeSelfAccount = new ValidatedMethod({
   }
 });
 
+// DEPRECATED
 export const findAndAddSelfAudienceAccount = new ValidatedMethod({
   name: "campaigns.findAndAddSelfAudienceAccount",
   validate: new SimpleSchema({
@@ -463,6 +496,8 @@ export const findAndAddSelfAudienceAccount = new ValidatedMethod({
       campaignId,
       address
     });
+
+    throw new Meteor.Error(500, "This method is unavailable");
 
     const userId = Meteor.userId();
     if (!userId) {
@@ -507,6 +542,7 @@ export const findAndAddSelfAudienceAccount = new ValidatedMethod({
   }
 });
 
+// DEPRECATED
 export const addSelfAudienceAccount = new ValidatedMethod({
   name: "campaigns.addSelfAudienceAccount",
   validate: new SimpleSchema({
@@ -524,6 +560,8 @@ export const addSelfAudienceAccount = new ValidatedMethod({
       campaignId,
       account
     });
+
+    throw new Meteor.Error(500, "This method is unavailable");
 
     const userId = Meteor.userId();
     if (!userId) {

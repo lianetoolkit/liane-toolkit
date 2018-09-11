@@ -80,20 +80,20 @@ export default withTracker(props => {
   if (
     !currentAudienceFacebookId &&
     campaign &&
-    campaign.audienceAccounts &&
-    campaign.audienceAccounts.length
+    campaign.accounts &&
+    campaign.accounts.length
   ) {
-    currentAudienceFacebookId = campaign.audienceAccounts[0].facebookId;
+    currentAudienceFacebookId = campaign.accounts[0].facebookId;
   }
 
   let audienceAccount;
   if (
     currentAudienceFacebookId &&
     campaign &&
-    campaign.audienceAccounts &&
-    campaign.audienceAccounts.length
+    campaign.accounts &&
+    campaign.accounts.length
   ) {
-    audienceAccount = campaign.audienceAccounts.find(
+    audienceAccount = campaign.accounts.find(
       acc => acc.facebookId == currentAudienceFacebookId
     );
   }

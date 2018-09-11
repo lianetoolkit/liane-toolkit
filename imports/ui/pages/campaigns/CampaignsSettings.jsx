@@ -428,56 +428,6 @@ export default class CampaignsSettings extends React.Component {
                             </Grid.Column>
                           </Grid.Row>
                         </Grid>
-                        <Divider />
-                        <Header as="h3">Audience Monitoring Accounts</Header>
-                        {campaign.audienceAccounts &&
-                        campaign.audienceAccounts.length ? (
-                          <Table>
-                            <Table.Body>
-                              {campaign.audienceAccounts.map(account => (
-                                <Table.Row key={account.facebookId}>
-                                  <Table.Cell>
-                                    <Icon name="facebook square" />{" "}
-                                    <strong>{account.name}</strong>
-                                  </Table.Cell>
-                                  <Table.Cell>{account.facebookId}</Table.Cell>
-                                  <Table.Cell>
-                                    {account.fanCount} fans
-                                  </Table.Cell>
-                                  <Table.Cell collapsing>
-                                    <Button
-                                      onClick={this._handleRemoveAudienceAccount(
-                                        account.facebookId
-                                      )}
-                                      negative
-                                    >
-                                      Remove
-                                    </Button>
-                                  </Table.Cell>
-                                </Table.Row>
-                              ))}
-                            </Table.Body>
-                          </Table>
-                        ) : null}
-                        {/* <FacebookAccountField
-                          label="Add a new audience account"
-                          name="audienceAccount"
-                          onChange={this._handleChange}
-                        /> */}
-                        <Form.Field
-                          control={Input}
-                          label="Add account"
-                          placeholder="Paste URL, ID or slug"
-                          name="audienceAccount"
-                          onChange={this._handleChange}
-                          value={formData.accounts.audienceAccount}
-                        />
-                        <Button
-                          primary
-                          disabled={!formData.accounts.audienceAccount}
-                        >
-                          Add audience account
-                        </Button>
                       </div>
                     ) : null}
                     {section == "forms" ? (

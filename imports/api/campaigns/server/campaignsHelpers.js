@@ -50,6 +50,13 @@ const CampaignsHelpers = {
       }
     });
     JobsHelpers.addJob({
+      jobType: "audiences.updateAccountAudience",
+      jobData: {
+        campaignId,
+        facebookAccountId: account.id
+      }
+    });
+    JobsHelpers.addJob({
       jobType: "people.updateFBUsers",
       jobData: {
         campaignId,
@@ -73,22 +80,18 @@ const CampaignsHelpers = {
       account = campaign.accounts.find(acc => acc.facebookId == facebookId);
     }
 
+    FacebookAudiences.remove({
+      campaignId,
+      facebookAccountId: facebookId
+    });
+
     // Remove entry jobs
     Jobs.remove({
       $or: [
         { "data.facebookId": facebookId },
         { "data.facebookAccountId": facebookId }
       ],
-      "data.campaignId": campaignId,
-      type: {
-        $in: [
-          "entries.updateAccountEntries",
-          "entries.updateEntryInteractions",
-          "entries.updatePeopleLikesCount",
-          "entries.updatePeopleCommentsCount",
-          "people.updateFBUsers"
-        ]
-      }
+      "data.campaignId": campaignId
     });
 
     if (account) {
@@ -104,6 +107,8 @@ const CampaignsHelpers = {
       campaignId,
       account
     });
+
+    throw new Meteor.Error(500, "This method is unavailable");
 
     let updateObj = {
       facebookId: account.id,
@@ -167,15 +172,16 @@ const CampaignsHelpers = {
   },
   refreshCampaignJobs({ campaignId }) {
     check(campaignId, String);
-    if (campaign.audienceAccounts && campaign.audienceAccounts.length) {
-      for (const account of campaign.audienceAccounts) {
-        this.refreshAccountJob({
-          campaignId,
-          facebookAccountId: account.facebookId,
-          type: "audiences"
-        });
-      }
-    }
+    const campaign = Campaigns.findOne(campaignId);
+    // if (campaign.audienceAccounts && campaign.audienceAccounts.length) {
+    //   for (const account of campaign.audienceAccounts) {
+    //     this.refreshAccountJob({
+    //       campaignId,
+    //       facebookAccountId: account.facebookId,
+    //       type: "audiences"
+    //     });
+    //   }
+    // }
     if (campaign.accounts && campaign.accounts.length) {
       const accounts = FacebookAccounts.find({
         facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
