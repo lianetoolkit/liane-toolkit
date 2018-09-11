@@ -91,7 +91,9 @@ export const campaignAudienceSummary = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not part of this campaign");
     }
 
-    const accounts = campaign.audienceAccounts;
+    const accounts = FacebookAccounts.find({
+      facebookId: { $in: campaign.accounts.map(acc => acc.facebookId) }
+    }).fetch();
     facebookAccountId = facebookAccountId || accounts[0].facebookId;
     const context = Contexts.findOne(campaign.contextId);
     const mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
@@ -264,7 +266,9 @@ export const audiencesMap = new ValidatedMethod({
     if (result) {
       return JSON.parse(result);
     } else {
-      const accounts = campaign.audienceAccounts;
+      const accounts = FacebookAccounts.find({
+        facebookId: { $in: campaign.accounts.map(acc => acc.facebookId) }
+      }).fetch();
 
       const context = Contexts.findOne(campaign.contextId);
 
@@ -447,7 +451,7 @@ export const accountAudienceGeolocationSummary = new ValidatedMethod({
       });
 
       if (!facebookAccount) {
-        facebookAccount = campaign.audienceAccounts.find(
+        facebookAccount = campaign.accounts.find(
           acc => acc.facebookId == facebookAccountId
         );
       }
@@ -748,6 +752,9 @@ export const audiencePagesByCategory = new ValidatedMethod({
     if (result) {
       return JSON.parse(result);
     } else {
+      const accounts = FacebookAccounts.find({
+        facebookId: { $in: campaign.accounts.map(acc => acc.facebookId) }
+      }).fetch();
       const context = Contexts.findOne(campaign.contextId);
       const category = AudienceCategories.findOne(audienceCategoryId);
       if (!context.mainGeolocationId) {
@@ -758,7 +765,7 @@ export const audiencePagesByCategory = new ValidatedMethod({
       }
       const mainGeolocation = Geolocations.findOne(context.mainGeolocationId);
       result = { category, mainGeolocation, accounts: [] };
-      campaign.audienceAccounts.forEach(account => {
+      accounts.forEach(account => {
         const audiences = FacebookAudiences.find(
           {
             campaignId,

@@ -48,7 +48,7 @@ export default class CampaignsAudience extends React.Component {
       audienceCategoryId,
       navTab
     } = this.props;
-    const { audienceAccounts } = campaign;
+    const { accounts } = campaign;
 
     const { contextRef } = this.state;
 
@@ -58,6 +58,46 @@ export default class CampaignsAudience extends React.Component {
     } else if (geolocationId) {
       path += ".geolocation";
     }
+
+    let nav = [];
+
+    nav.push({
+      name: "Audience Summary",
+      active: navTab == "summary",
+      href: FlowRouter.path("App.campaignAudience", {
+        campaignId: campaign._id,
+        navTab: "summary"
+      })
+    });
+
+    nav.push({
+      name: "Places",
+      active: navTab == "places",
+      href: FlowRouter.path("App.campaignAudience", {
+        campaignId: campaign._id,
+        navTab: "places"
+      })
+    });
+
+    if (campaign.accounts.length > 1) {
+      nav.push({
+        name: "Pages",
+        active: navTab == "pages",
+        href: FlowRouter.path("App.campaignAudience", {
+          campaignId: campaign._id,
+          navTab: "pages"
+        })
+      });
+    }
+
+    nav.push({
+      name: "Explore",
+      active: navTab == "explore",
+      href: FlowRouter.path("App.campaignAudience", {
+        campaignId: campaign._id,
+        navTab: "explore"
+      })
+    });
     return (
       <div ref={this._handleContextRef}>
         <PageHeader
@@ -66,42 +106,7 @@ export default class CampaignsAudience extends React.Component {
             campaignId: campaign ? campaign._id : ""
           })}
           subTitle="Audience"
-          nav={[
-            {
-              // disabled: true, // TODO
-              name: "Audience Summary",
-              active: navTab == "summary",
-              href: FlowRouter.path("App.campaignAudience", {
-                campaignId: campaign._id,
-                navTab: "summary"
-              })
-            },
-            {
-              name: "Places",
-              active: navTab == "places",
-              href: FlowRouter.path("App.campaignAudience", {
-                campaignId: campaign._id,
-                navTab: "places"
-              })
-            },
-            {
-              // disabled: true, // TODO
-              name: "Pages",
-              active: navTab == "pages",
-              href: FlowRouter.path("App.campaignAudience", {
-                campaignId: campaign._id,
-                navTab: "pages"
-              })
-            },
-            {
-              name: "Explore",
-              active: navTab == "explore",
-              href: FlowRouter.path("App.campaignAudience", {
-                campaignId: campaign._id,
-                navTab: "explore"
-              })
-            }
-          ]}
+          nav={nav}
         />
         <section className="content">
           {loading ? (
@@ -110,12 +115,12 @@ export default class CampaignsAudience extends React.Component {
             <Grid>
               {navTab == "summary" ? (
                 <>
-                  {audienceAccounts && audienceAccounts.length ? (
+                  {accounts && accounts.length > 1 ? (
                     <Grid.Row style={{ zIndex: 100 }}>
                       <Grid.Column>
                         <Sticky offset={0} context={contextRef}>
                           <Menu>
-                            {audienceAccounts.map(acc => (
+                            {accounts.map(acc => (
                               <Menu.Item
                                 key={`audienceAccount-${acc.facebookId}`}
                                 active={
@@ -178,12 +183,12 @@ export default class CampaignsAudience extends React.Component {
               ) : null}
               {navTab == "explore" && geolocationId ? (
                 <>
-                  {audienceAccounts && audienceAccounts.length ? (
+                  {accounts && accounts.length > 1 ? (
                     <Grid.Row style={{ zIndex: 100 }}>
                       <Grid.Column>
                         <Sticky offset={0} context={contextRef}>
                           <Menu>
-                            {audienceAccounts.map(acc => (
+                            {accounts.map(acc => (
                               <Menu.Item
                                 key={`audienceAccount-${acc.facebookId}`}
                                 active={
