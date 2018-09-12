@@ -323,18 +323,20 @@ export const audiencesMap = new ValidatedMethod({
             },
             { sort: { createdAt: -1 } }
           );
-          const average =
-            audience.location_estimate.dau / audience.location_total.dau;
-          if (!geolocationsAverage[geolocation._id]) {
-            geolocationsAverage[geolocation._id] = {};
+          if (audience) {
+            const average =
+              audience.location_estimate.dau / audience.location_total.dau;
+            if (!geolocationsAverage[geolocation._id]) {
+              geolocationsAverage[geolocation._id] = {};
+            }
+            if (!geolocationsTotal[geolocation._id]) {
+              geolocationsTotal[geolocation._id] = {};
+            }
+            geolocationsTotal[geolocation._id][category._id] =
+              audience.location_estimate.dau;
+            geolocationsAverage[geolocation._id][category._id] = average;
+            sumArray.push(average);
           }
-          if (!geolocationsTotal[geolocation._id]) {
-            geolocationsTotal[geolocation._id] = {};
-          }
-          geolocationsTotal[geolocation._id][category._id] =
-            audience.location_estimate.dau;
-          geolocationsAverage[geolocation._id][category._id] = average;
-          sumArray.push(average);
         });
         categoriesAverage[category._id] =
           _.reduce(sumArray, (mem, num) => mem + num) / sumArray.length;
