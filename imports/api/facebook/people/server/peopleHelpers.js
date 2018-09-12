@@ -53,7 +53,7 @@ const PeopleHelpers = {
       str = address.street + " " + str;
     }
     return new Promise((resolve, reject) => {
-      if (str && googleMapsKey) {
+      if (str && Object.keys(address).length > 1 && googleMapsKey) {
         axios
           .get("https://maps.googleapis.com/maps/api/geocode/json", {
             params: {

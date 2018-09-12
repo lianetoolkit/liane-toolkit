@@ -132,6 +132,49 @@ const LocationItem = ({ data }) => {
   return <span>{text}</span>;
 };
 
+const AddressItem = ({ data }) => {
+  data = data.value;
+  let text = "";
+  if (data.street) {
+    text += data.street;
+  }
+  if (text) {
+    text += ", ";
+  }
+  if (data.number) {
+    text += data.number;
+  }
+  if (text) {
+    text += " - ";
+  }
+  if (data.neighbourhood) {
+    text += data.neighbourhood;
+  }
+  if (text) {
+    text += " - ";
+  }
+  if (data.city) {
+    text += data.city;
+  }
+  if (text) {
+    text += ", ";
+  }
+  if (data.region) {
+    text += data.region;
+  }
+  if (text) {
+    text += ", ";
+  }
+  if (data.country) {
+    text += data.country;
+  }
+  return text;
+};
+
+const SkillsItem = ({ data }) => {
+  return data.value.join(", ");
+};
+
 const KeyValWrapper = styled.div`
   p {
     margin: 0;
@@ -165,6 +208,10 @@ export default class FlexDataItem extends React.Component {
           return data.value;
         case "facebook_location":
           return <LocationItem data={data} />;
+        case "address":
+          return <AddressItem data={data} />;
+        case "skill":
+          return <SkillsItem data={data} />;
         case "select":
           return field.options[data.value];
         case "group":

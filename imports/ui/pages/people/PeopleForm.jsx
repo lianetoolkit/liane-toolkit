@@ -53,6 +53,7 @@ export default class PeopleForm extends React.Component {
           cellphone: get(nextProps.person, "campaignMeta.contact.cellphone"),
           birthday: get(nextProps.person, "campaignMeta.basic_info.birthday"),
           address: get(nextProps.person, "campaignMeta.basic_info.address"),
+          skills: get(nextProps.person, "campaignMeta.basic_info.skills"),
           supporter: get(nextProps.person, "campaignMeta.supporter"),
           mobilizer: get(nextProps.person, "campaignMeta.mobilizer"),
           donor: get(nextProps.person, "campaignMeta.donor")
