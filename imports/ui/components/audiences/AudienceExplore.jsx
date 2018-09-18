@@ -6,6 +6,7 @@ import {
   Sticky,
   Header,
   Divider,
+  Dropdown,
   Table,
   Menu,
   Dimmer,
@@ -18,6 +19,7 @@ import CompareLineChart from "./CompareLineChart.jsx";
 import AudienceInfo from "./AudienceInfo.jsx";
 import LocationChart from "./LocationChart.jsx";
 import DataAlert from "./DataAlert.jsx";
+import { sortBy } from "lodash";
 
 const Wrapper = styled.div`
   .selectable td {
@@ -26,6 +28,9 @@ const Wrapper = styled.div`
   .active .category-title {
     font-weight: 600;
   }
+  .ui.dropdown.icon {
+    float: right;
+  }
 `;
 
 export default class AudienceGeolocation extends React.Component {
@@ -33,12 +38,50 @@ export default class AudienceGeolocation extends React.Component {
     super(props);
     this.state = {
       expanded: {},
-      geolocationListActive: true
+      geolocationListActive: true,
+      categories: [],
+      sort: "name"
     };
     this._handleExpand = this._handleExpand.bind(this);
   }
+  componentWillReceiveProps(nextProps) {
+    const { categories, sort } = this.state;
+    if (
+      nextProps.geolocation &&
+      nextProps.geolocation.audienceCategories &&
+      JSON.stringify(nextProps.geolocation.audienceCategories) !==
+        JSON.stringify(categories)
+    ) {
+      this.setState({
+        categories: this._doSort(nextProps.geolocation.audienceCategories, sort)
+      });
+    }
+  }
   componentDidUpdate() {
     this._updateStickyMenu();
+  }
+  _handleSort = (ev, { value }) => {
+    const { sort, categories } = this.state;
+    if (sort !== value) {
+      this.setState({
+        categories: this._doSort(categories, value),
+        sort: value
+      });
+    }
+  };
+  _doSort(categories, sort) {
+    return sortBy(categories, item => {
+      switch (sort) {
+        case "name":
+          return item.category.title;
+        case "relevance":
+          return -AudienceUtils.getAudienceRawRatio(this._latestAudience(item));
+        case "size":
+          return -AudienceUtils.getRawPercentage(this._latestAudience(item));
+        default:
+          return item.category.title;
+      }
+    });
   }
   _latest() {
     const { geolocation } = this.props;
@@ -105,7 +148,13 @@ export default class AudienceGeolocation extends React.Component {
   _handleContextRef = contextRef => this.setState({ contextRef });
   _handleStickyRef = stickyRef => this.setState({ stickyRef });
   render() {
-    const { contextRef, stickyRef, geolocationListActive } = this.state;
+    const {
+      contextRef,
+      stickyRef,
+      geolocationListActive,
+      sort,
+      categories
+    } = this.state;
     const {
       loading,
       geolocation,
@@ -214,8 +263,37 @@ export default class AudienceGeolocation extends React.Component {
                           }
                         />
                       ) : null}
+                      <Divider hidden />
+                      <Dropdown
+                        floating
+                        labeled
+                        button
+                        className="icon"
+                        icon="sort"
+                        text="Sort"
+                        value={sort}
+                        onChange={this._handleSort}
+                        options={[
+                          {
+                            key: "name",
+                            value: "name",
+                            text: "Name"
+                          },
+                          {
+                            key: "relevance",
+                            value: "relevance",
+                            text: "Relevance"
+                          },
+                          {
+                            key: "size",
+                            value: "size",
+                            text: "Size"
+                          }
+                        ]}
+                      />
+                      <Header as="h5">Themes</Header>
                       <Table selectable>
-                        {geolocation.audienceCategories.map(item => {
+                        {categories.map(item => {
                           const expanded = this._isExpanded(item.category._id);
                           return (
                             <Table.Body key={item.category._id}>
