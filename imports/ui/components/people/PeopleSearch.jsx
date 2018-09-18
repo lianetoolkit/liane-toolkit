@@ -9,6 +9,7 @@ import {
   Form,
   Dropdown,
   Input,
+  Label,
   Checkbox,
   Select,
   Grid,
@@ -112,7 +113,11 @@ export default class PeopleSearch extends React.Component {
       count: 0,
       search: {
         q: "",
-        accountFilter: "all"
+        accountFilter: "all",
+        reactionCount: {
+          amount: "",
+          type: "all"
+        }
       },
       options: {
         limit: 15,
@@ -269,6 +274,33 @@ export default class PeopleSearch extends React.Component {
         skip: (activePage - 1) * options.limit
       }
     });
+  };
+  _handleReactionCountChange = (ev, { name, value }) => {
+    const { search } = this.state;
+    switch (name) {
+      case "amount":
+        this.setState({
+          search: {
+            ...search,
+            reactionCount: {
+              ...search.reactionCount,
+              amount: parseInt(value)
+            }
+          }
+        });
+        break;
+      case "type":
+        this.setState({
+          search: {
+            ...search,
+            reactionCount: {
+              ...search.reactionCount,
+              type: value
+            }
+          }
+        });
+        break;
+    }
   };
   _handleMoreOptionsClick = () => {
     const { moreOptions } = this.state;
@@ -530,7 +562,64 @@ export default class PeopleSearch extends React.Component {
                   </Grid.Row>
                 </Grid>
               </Grid.Column>
-              <Grid.Column />
+              <Grid.Column>
+                <span className="filter-label">Reaction count</span>
+                <Form.Field
+                  control={Input}
+                  name="amount"
+                  type="number"
+                  label="at least "
+                  placeholder="Amount"
+                  onChange={this._handleReactionCountChange}
+                  value={search.reactionCount.amount}
+                  action={
+                    <Select
+                      basic
+                      floating
+                      name="type"
+                      onChange={this._handleReactionCountChange}
+                      value={search.reactionCount.type}
+                      options={[
+                        {
+                          key: "all",
+                          text: "All reactions",
+                          value: "all"
+                        },
+                        {
+                          key: "Like",
+                          text: "Like",
+                          value: "like"
+                        },
+                        {
+                          key: "love",
+                          text: "Love",
+                          value: "love"
+                        },
+                        {
+                          key: "haha",
+                          text: "Haha",
+                          value: "haha"
+                        },
+                        {
+                          key: "wow",
+                          text: "Wow",
+                          value: "wow"
+                        },
+                        {
+                          key: "sad",
+                          text: "Sad",
+                          value: "sad"
+                        },
+                        {
+                          key: "angry",
+                          text: "Angry",
+                          value: "angry"
+                        }
+                      ]}
+                    />
+                  }
+                />
+              </Grid.Column>
             </Grid.Row>
           ) : null}
         </Grid>
