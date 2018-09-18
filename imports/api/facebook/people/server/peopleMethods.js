@@ -62,7 +62,7 @@ export const resolveZipcode = new ValidatedMethod({
 });
 
 const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
-  const { dateStart, dateEnd, ...query } = rawQuery;
+  const { dateStart, dateEnd, reactionCount, ...query } = rawQuery;
   let queryOptions = {
     skip: options.skip || 0,
     limit: Math.min(options.limit || 10, 50),
@@ -114,6 +114,18 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
     }
     if (dateEnd) {
       query.createdAt["$lt"] = dateEnd;
+    }
+  }
+
+  if (reactionCount && reactionCount.amount && options.facebookId) {
+    if (reactionCount.type == "all" || !reactionCount.type) {
+      query[`counts.${options.facebookId}.likes`] = {
+        $gte: parseInt(reactionCount.amount)
+      };
+    } else {
+      query[`counts.${options.facebookId}.reactions.${reactionCount.type}`] = {
+        $gte: parseInt(reactionCount.amount)
+      };
     }
   }
 
