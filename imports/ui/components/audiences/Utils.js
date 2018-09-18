@@ -50,10 +50,10 @@ export const getRatio = function(compareTo, target) {
 };
 
 export const getAudienceRawRatio = function(audience) {
-  if (!audience) return Infinity;
+  if (!audience) return -Infinity;
   audience = transformValues(audience);
   if (audience.estimate <= 1050) {
-    return Infinity;
+    return -Infinity;
   }
   const local = audience.estimate / audience.total;
   const location = audience.location_estimate / audience.location_total;
