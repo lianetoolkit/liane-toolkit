@@ -644,6 +644,7 @@ export const canvasFormUpdate = new ValidatedMethod({
     });
 
     let $set = {};
+    let $unset = {};
 
     const userId = Meteor.userId();
     if (!userId) {
@@ -680,6 +681,7 @@ export const canvasFormUpdate = new ValidatedMethod({
         );
       } catch (e) {
         logger.debug("people.metaUpdate - Not able to fetch location");
+        $unset.location = "";
       } finally {
         if (location) {
           $set.location = location;
@@ -691,17 +693,27 @@ export const canvasFormUpdate = new ValidatedMethod({
       $set.name = name;
     }
 
+    let update = {};
+
+    $set = {
+      ...$set,
+      [`campaignMeta.${sectionKey}`]: data
+    };
+
+    if (Object.keys($set).length) {
+      update.$set = $set;
+    }
+
+    if (Object.keys($unset).length) {
+      update.$unset = $unset;
+    }
+
     return People.update(
       {
         campaignId,
         _id: personId
       },
-      {
-        $set: {
-          ...$set,
-          [`campaignMeta.${sectionKey}`]: data
-        }
-      }
+      update
     );
   }
 });
@@ -1163,6 +1175,8 @@ export const peopleFormSubmit = new ValidatedMethod({
     let $set = {
       filledForm: true
     };
+    let $unset = {};
+
     for (const key in data) {
       switch (key) {
         case "email":
@@ -1211,7 +1225,7 @@ export const peopleFormSubmit = new ValidatedMethod({
           PeopleHelpers.geocode({ address: data.address })
         );
       } catch (e) {
-        logger.debug("peopleForm.submit - Not able to fetch location");
+        $unset.location = "";
       } finally {
         if (location) {
           $set.location = location;
@@ -1221,12 +1235,21 @@ export const peopleFormSubmit = new ValidatedMethod({
 
     let newFormId;
 
+    let update = {};
+
+    if (Object.keys($set).length) {
+      update.$set = $set;
+    }
+    if (Object.keys($unset).length) {
+      update.$unset = $unset;
+    }
+
     if (formId) {
       const person = People.findOne({ formId });
       if (!person) {
         throw new Meteor.Error(400, "Unauthorized request");
       }
-      People.update({ formId }, { $set });
+      People.update({ formId }, update);
       newFormId = PeopleHelpers.getFormId({
         personId: person._id,
         generate: true
@@ -1239,8 +1262,8 @@ export const peopleFormSubmit = new ValidatedMethod({
           _id: id
         },
         {
-          $set: {
-            ...$set,
+          ...update,
+          $setOnInsert: {
             source: "form"
           }
         }
