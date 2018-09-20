@@ -176,6 +176,22 @@ export const peopleSearch = new ValidatedMethod({
       options
     });
 
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
     const searchQuery = buildSearchQuery({
       campaignId,
       rawQuery: query,
@@ -213,6 +229,22 @@ export const peopleSearchCount = new ValidatedMethod({
       options
     });
 
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
     const searchQuery = buildSearchQuery({
       campaignId,
       rawQuery: query,
@@ -224,6 +256,58 @@ export const peopleSearchCount = new ValidatedMethod({
     );
 
     return result;
+  }
+});
+
+export const peopleSummaryCounts = new ValidatedMethod({
+  name: "people.summaryCounts",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    facebookId: {
+      type: String,
+      optional: true
+    },
+    queries: {
+      type: Array
+    },
+    "queries.$": {
+      type: Object,
+      blackbox: true
+    }
+  }).validator(),
+  run({ campaignId, facebookId, queries }) {
+    logger.debug("peole.summaryCounts called", { queries });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    allowed = _.findWhere(campaign.users, { userId });
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    let results = [];
+
+    for (let rawQuery of queries) {
+      const query = buildSearchQuery({
+        campaignId,
+        rawQuery,
+        options: {}
+      });
+      results.push(Promise.await(People.rawCollection().count(query.query)));
+    }
+
+    return results;
   }
 });
 

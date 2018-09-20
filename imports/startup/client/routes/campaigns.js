@@ -15,6 +15,7 @@ import CampaignsSettingsContainer from "/imports/ui/containers/campaigns/Campaig
 import CampaignsPeopleContainer from "/imports/ui/containers/campaigns/CampaignsPeopleContainer.jsx";
 import CampaignsActivityContainer from "/imports/ui/containers/campaigns/CampaignsActivityContainer.jsx";
 import PeopleImportsContainer from "/imports/ui/containers/people/PeopleImportsContainer.jsx";
+import PeopleInfoContainer from "/imports/ui/containers/people/PeopleInfoContainer.jsx";
 import PeopleSinglePageContainer from "/imports/ui/containers/people/PeopleSinglePageContainer.jsx";
 import PeopleEditContainer from "/imports/ui/containers/people/PeopleEditContainer.jsx";
 import CampaignsAudienceContainer from "/imports/ui/containers/campaigns/CampaignsAudienceContainer.jsx";
@@ -151,6 +152,21 @@ campaignRoutes.route("/people/imports", {
         props: {
           campaignId: params.campaignId,
           navTab: "imports"
+        }
+      }
+    });
+  }
+});
+campaignRoutes.route("/people/info", {
+  name: "App.campaignPeople.info",
+  action: function(params, queryParams) {
+    addTitle(`${APP_NAME} | People Informations`);
+    return _mount(params, {
+      content: {
+        component: PeopleInfoContainer,
+        props: {
+          campaignId: params.campaignId,
+          navTab: "info"
         }
       }
     });
