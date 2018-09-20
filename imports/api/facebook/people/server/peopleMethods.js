@@ -797,6 +797,7 @@ export const exportPeople = new ValidatedMethod({
     const people = People.find(searchQuery.query, {
       ...searchQuery.options,
       ...{
+        limit: 0,
         fields: {
           name: 1,
           facebookId: 1,
