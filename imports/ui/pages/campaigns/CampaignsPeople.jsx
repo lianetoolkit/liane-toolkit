@@ -3,6 +3,7 @@ import PageHeader from "/imports/ui/components/app/PageHeader.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import PeopleImport from "/imports/ui/components/people/PeopleImport.jsx";
+import PeopleSummary from "/imports/ui/components/people/PeopleSummary.jsx";
 import PeopleSearch from "/imports/ui/components/people/PeopleSearch.jsx";
 import PeopleActivityFilter from "/imports/ui/components/entries/ActivityFilter.jsx";
 import PeopleActivity from "/imports/ui/components/entries/Activity.jsx";
@@ -151,6 +152,13 @@ export default class CampaignsPeople extends React.Component {
               href: FlowRouter.path("App.campaignPeople.imports", {
                 campaignId: campaign._id
               })
+            },
+            {
+              name: "Info",
+              active: navTab == "info",
+              href: FlowRouter.path("App.campaignPeople.info", {
+                campaignId: campaign._id
+              })
             }
           ]}
         />
@@ -159,6 +167,16 @@ export default class CampaignsPeople extends React.Component {
             <Loading />
           ) : (
             <Grid>
+              {navTab == "info" ? (
+                <Grid.Row>
+                  <Grid.Column>
+                    <PeopleSummary
+                      campaignId={campaign._id}
+                      facebookId={account.facebookId}
+                    />
+                  </Grid.Column>
+                </Grid.Row>
+              ) : null}
               {navTab == "imports" ? (
                 <Grid.Row>
                   <Grid.Column>
