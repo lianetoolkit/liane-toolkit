@@ -30,11 +30,11 @@ export default class PeopleSummary extends React.Component {
   componentWillReceiveProps(nextProps) {
     const { facebookId } = this.props;
     if (nextProps.facebookId && facebookId !== nextProps.facebookId) {
-      this._fetch();
+      this._fetch(nextProps.facebookId);
     }
   }
-  _queries = () => {
-    const { facebookId } = this.props;
+  _queries = facebookId => {
+    facebookId = facebookId || this.props.facebookId;
     return {
       general: [
         {
@@ -89,12 +89,13 @@ export default class PeopleSummary extends React.Component {
     };
     return [];
   };
-  _fetch() {
-    const { campaignId, facebookId } = this.props;
+  _fetch(facebookId) {
+    const { campaignId } = this.props;
+    facebookId = facebookId || this.props.facebookId;
     this.setState({
       loading: true
     });
-    const queries = this._queries();
+    const queries = this._queries(facebookId);
     for (let key in queries) {
       Meteor.call(
         "people.summaryCounts",
