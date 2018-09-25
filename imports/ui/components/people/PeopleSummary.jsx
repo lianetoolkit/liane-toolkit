@@ -1,4 +1,5 @@
 import React from "react";
+import Loading from "/imports/ui/components/utils/Loading.jsx";
 import { Header, Statistic } from "semantic-ui-react";
 import styled from "styled-components";
 
@@ -19,11 +20,18 @@ export default class PeopleSummary extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      infos: []
+      infos: [],
+      loading: false
     };
   }
   componentDidMount() {
     this._fetch();
+  }
+  componentWillReceiveProps(nextProps) {
+    const { facebookId } = this.props;
+    if (nextProps.facebookId && facebookId !== nextProps.facebookId) {
+      this._fetch();
+    }
   }
   _queries = () => {
     const { facebookId } = this.props;
@@ -78,34 +86,40 @@ export default class PeopleSummary extends React.Component {
   };
   _fetch() {
     const { campaignId, facebookId } = this.props;
+    this.setState({
+      loading: true
+    });
     Meteor.call(
       "people.summaryCounts",
       { campaignId, facebookId, queries: this._queries().map(q => q.query) },
       (err, res) => {
-        if (!err) {
-          this.setState({ infos: res });
-        } else {
-          console.log(err);
-        }
+        this.setState({
+          infos: err ? [] : res,
+          loading: false
+        });
       }
     );
   }
   render() {
-    const { infos } = this.state;
+    const { infos, loading } = this.state;
     const queries = this._queries();
     return (
       <Wrapper>
         <Header as="h2">People Data Summary</Header>
-        {infos.length ? (
+        {loading ? (
+          <Loading />
+        ) : (
           <Statistic.Group horizontal>
             {queries.map((q, i) => (
-              <Statistic>
-                <Statistic.Value>{infos[i]}</Statistic.Value>
+              <Statistic key={i}>
+                <Statistic.Value>
+                  {isNaN(infos[i]) ? "--" : infos[i]}
+                </Statistic.Value>
                 <Statistic.Label>{q.title}</Statistic.Label>
               </Statistic>
             ))}
           </Statistic.Group>
-        ) : null}
+        )}
       </Wrapper>
     );
   }

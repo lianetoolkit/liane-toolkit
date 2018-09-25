@@ -167,6 +167,65 @@ export default class CampaignsPeople extends React.Component {
             <Loading />
           ) : (
             <Grid>
+              {navTab == "directory" || navTab == "info" ? (
+                <Grid.Row>
+                  <Grid.Column>
+                    <Menu>
+                      <Menu.Menu position="left">
+                        {accounts.map(acc => (
+                          <Menu.Item
+                            key={`account-${acc._id}`}
+                            active={
+                              account && acc.facebookId == account.facebookId
+                            }
+                            href={FlowRouter.path(
+                              `App.campaignPeople.${navTab}`,
+                              {
+                                campaignId: campaign._id,
+                                facebookId: acc.facebookId,
+                                navTab
+                              }
+                            )}
+                          >
+                            {acc.name}
+                          </Menu.Item>
+                        ))}
+                      </Menu.Menu>
+                      {navTab == "directory" ? (
+                        <Menu.Menu position="right" size="tiny">
+                          <Menu.Item onClick={this._handleEditModeClick}>
+                            <Icon
+                              name={`toggle ${editMode ? "on" : "off"}`}
+                              color={editMode ? "green" : null}
+                            />{" "}
+                            Edit mode
+                          </Menu.Item>
+                          <Menu.Item
+                            onClick={this._handleExport}
+                            disabled={isLoading}
+                          >
+                            <Icon
+                              name={isLoading ? "spinner" : "upload"}
+                              loading={isLoading}
+                            />{" "}
+                            Export CSV
+                          </Menu.Item>
+                          {importCount ? (
+                            <Menu.Item disabled>
+                              <Icon name="spinner" loading /> Currently
+                              importing ({importCount})
+                            </Menu.Item>
+                          ) : (
+                            <Menu.Item onClick={this._handleImportClick}>
+                              <Icon name="download" /> Import spreadsheet
+                            </Menu.Item>
+                          )}
+                        </Menu.Menu>
+                      ) : null}
+                    </Menu>
+                  </Grid.Column>
+                </Grid.Row>
+              ) : null}
               {navTab == "info" ? (
                 <Grid.Row>
                   <Grid.Column>
@@ -201,55 +260,6 @@ export default class CampaignsPeople extends React.Component {
               ) : null}
               {navTab == "directory" ? (
                 <>
-                  <Grid.Row>
-                    <Grid.Column>
-                      <Menu>
-                        {accounts.map(acc => (
-                          <Menu.Item
-                            key={`account-${acc._id}`}
-                            active={
-                              account && acc.facebookId == account.facebookId
-                            }
-                            href={FlowRouter.path("App.campaignPeople", {
-                              campaignId: campaign._id,
-                              facebookId: acc.facebookId
-                            })}
-                          >
-                            {acc.name}
-                          </Menu.Item>
-                        ))}
-                        <Menu.Menu position="right" size="tiny">
-                          <Menu.Item onClick={this._handleEditModeClick}>
-                            <Icon
-                              name={`toggle ${editMode ? "on" : "off"}`}
-                              color={editMode ? "green" : null}
-                            />{" "}
-                            Edit mode
-                          </Menu.Item>
-                          <Menu.Item
-                            onClick={this._handleExport}
-                            disabled={isLoading}
-                          >
-                            <Icon
-                              name={isLoading ? "spinner" : "upload"}
-                              loading={isLoading}
-                            />{" "}
-                            Export CSV
-                          </Menu.Item>
-                          {importCount ? (
-                            <Menu.Item disabled>
-                              <Icon name="spinner" loading /> Currently
-                              importing ({importCount})
-                            </Menu.Item>
-                          ) : (
-                            <Menu.Item onClick={this._handleImportClick}>
-                              <Icon name="download" /> Import spreadsheet
-                            </Menu.Item>
-                          )}
-                        </Menu.Menu>
-                      </Menu>
-                    </Grid.Column>
-                  </Grid.Row>
                   <Grid.Row>
                     <Grid.Column>
                       {account ? (
