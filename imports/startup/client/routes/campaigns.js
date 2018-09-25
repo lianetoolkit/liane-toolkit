@@ -157,7 +157,7 @@ campaignRoutes.route("/people/imports", {
     });
   }
 });
-campaignRoutes.route("/people/info", {
+campaignRoutes.route("/people/info/:facebookId?", {
   name: "App.campaignPeople.info",
   action: function(params, queryParams) {
     addTitle(`${APP_NAME} | People Informations`);
@@ -166,6 +166,7 @@ campaignRoutes.route("/people/info", {
         component: PeopleInfoContainer,
         props: {
           campaignId: params.campaignId,
+          facebookId: params.facebookId,
           navTab: "info"
         }
       }
@@ -174,6 +175,22 @@ campaignRoutes.route("/people/info", {
 });
 campaignRoutes.route("/people/:facebookId?", {
   name: "App.campaignPeople",
+  action: function(params) {
+    addTitle(`${APP_NAME} | Campaign People`);
+    return _mount(params, {
+      content: {
+        component: CampaignsPeopleContainer,
+        props: {
+          campaignId: params.campaignId,
+          facebookId: params.facebookId,
+          navTab: "directory"
+        }
+      }
+    });
+  }
+});
+campaignRoutes.route("/people/:facebookId?", {
+  name: "App.campaignPeople.directory",
   action: function(params) {
     addTitle(`${APP_NAME} | Campaign People`);
     return _mount(params, {
