@@ -7,6 +7,7 @@ import AudienceCategoryContainer from "/imports/ui/containers/audiences/Audience
 import AudienceGeolocationContainer from "/imports/ui/containers/audiences/AudienceGeolocationContainer.jsx";
 import AudiencePagesContainer from "/imports/ui/containers/audiences/AudiencePagesContainer.jsx";
 import AudienceExploreContainer from "/imports/ui/containers/audiences/AudienceExploreContainer.jsx";
+import AccountsMenu from "/imports/ui/components/facebook/AccountsMenu.jsx";
 
 import {
   Grid,
@@ -36,6 +37,40 @@ export default class CampaignsAudience extends React.Component {
     return null;
   }
   _handleContextRef = contextRef => this.setState({ contextRef });
+  _handleAccountsClick = (ev, { value }) => {
+    const { campaign, navTab } = this.props;
+    FlowRouter.go(
+      "App.campaignAudience",
+      {
+        navTab,
+        campaignId: campaign._id
+      },
+      {
+        account: value
+      }
+    );
+  };
+  _handleExploreAccountsClick = (ev, { value }) => {
+    const { categoryId, geolocationId, campaign, navTab } = this.props;
+    let path = "App.campaignAudience";
+    if (categoryId) {
+      path += ".category";
+    } else if (geolocationId) {
+      path += ".geolocation";
+    }
+    FlowRouter.go(
+      path,
+      {
+        navTab,
+        campaignId: campaign._id,
+        categoryId: categoryId,
+        geolocationId: geolocationId
+      },
+      {
+        account: value
+      }
+    );
+  };
   render() {
     const {
       loading,
@@ -120,26 +155,13 @@ export default class CampaignsAudience extends React.Component {
                       <Grid.Column>
                         <Sticky offset={0} context={contextRef}>
                           <Menu>
-                            {accounts.map(acc => (
-                              <Menu.Item
-                                key={`audienceAccount-${acc.facebookId}`}
-                                active={
-                                  acc.facebookId == audienceAccount.facebookId
-                                }
-                                href={FlowRouter.path(
-                                  "App.campaignAudience",
-                                  {
-                                    navTab,
-                                    campaignId: campaign._id
-                                  },
-                                  {
-                                    account: acc.facebookId
-                                  }
-                                )}
-                              >
-                                {acc.name}
-                              </Menu.Item>
-                            ))}
+                            <AccountsMenu
+                              item
+                              simple
+                              accounts={accounts}
+                              onClick={this._handleAccountsClick}
+                              selected={audienceAccount.facebookId}
+                            />
                           </Menu>
                         </Sticky>
                       </Grid.Column>
@@ -188,28 +210,13 @@ export default class CampaignsAudience extends React.Component {
                       <Grid.Column>
                         <Sticky offset={0} context={contextRef}>
                           <Menu>
-                            {accounts.map(acc => (
-                              <Menu.Item
-                                key={`audienceAccount-${acc.facebookId}`}
-                                active={
-                                  acc.facebookId == audienceAccount.facebookId
-                                }
-                                href={FlowRouter.path(
-                                  path,
-                                  {
-                                    navTab,
-                                    campaignId: campaign._id,
-                                    categoryId: categoryId,
-                                    geolocationId: geolocationId
-                                  },
-                                  {
-                                    account: acc.facebookId
-                                  }
-                                )}
-                              >
-                                {acc.name}
-                              </Menu.Item>
-                            ))}
+                            <AccountsMenu
+                              item
+                              simple
+                              accounts={accounts}
+                              onClick={this._handleExploreAccountsClick}
+                              selected={audienceAccount.facebookId}
+                            />
                           </Menu>
                         </Sticky>
                       </Grid.Column>
