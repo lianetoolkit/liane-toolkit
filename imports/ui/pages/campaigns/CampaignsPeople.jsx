@@ -8,6 +8,7 @@ import PeopleSearch from "/imports/ui/components/people/PeopleSearch.jsx";
 import PeopleActivityFilter from "/imports/ui/components/entries/ActivityFilter.jsx";
 import PeopleActivity from "/imports/ui/components/entries/Activity.jsx";
 import PeopleManageImports from "/imports/ui/components/people/PeopleManageImports.jsx";
+import AccountsMenu from "/imports/ui/components/facebook/AccountsMenu.jsx";
 import XLSX from "xlsx";
 
 import {
@@ -103,6 +104,14 @@ export default class CampaignsPeople extends React.Component {
   _handleSearchQueryChange = (query, options) => {
     this.setState({ query: { query, options } });
   };
+  _handleAccountsClick = (ev, { value }) => {
+    const { campaign, navTab } = this.props;
+    FlowRouter.go(`App.campaignPeople.${navTab}`, {
+      campaignId: campaign._id,
+      facebookId: value,
+      navTab
+    });
+  };
   render() {
     const {
       isLoading,
@@ -171,26 +180,13 @@ export default class CampaignsPeople extends React.Component {
                 <Grid.Row>
                   <Grid.Column>
                     <Menu>
-                      <Menu.Menu position="left">
-                        {accounts.map(acc => (
-                          <Menu.Item
-                            key={`account-${acc._id}`}
-                            active={
-                              account && acc.facebookId == account.facebookId
-                            }
-                            href={FlowRouter.path(
-                              `App.campaignPeople.${navTab}`,
-                              {
-                                campaignId: campaign._id,
-                                facebookId: acc.facebookId,
-                                navTab
-                              }
-                            )}
-                          >
-                            {acc.name}
-                          </Menu.Item>
-                        ))}
-                      </Menu.Menu>
+                      <AccountsMenu
+                        item
+                        simple
+                        accounts={accounts}
+                        onClick={this._handleAccountsClick}
+                        selected={account.facebookId}
+                      />
                       {navTab == "directory" ? (
                         <Menu.Menu position="right" size="tiny">
                           <Menu.Item onClick={this._handleEditModeClick}>
