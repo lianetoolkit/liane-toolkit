@@ -6,7 +6,17 @@ export default class AccountsMenu extends React.Component {
     super(props);
   }
   _options(accounts, onClick, selected) {
+    const { showEmpty, emptyLabel } = this.props;
     let options = [];
+    if (showEmpty) {
+      options.push({
+        key: "empty",
+        text: emptyLabel || "None",
+        value: undefined,
+        onClick: onClick,
+        selected: !selected
+      });
+    }
     for (let acc of accounts) {
       options.push({
         key: acc.facebookId,

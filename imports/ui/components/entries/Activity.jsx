@@ -74,11 +74,13 @@ export default class PeopleActivity extends React.Component {
       JSON.stringify(nextProps.activity) &&
       JSON.stringify(activity)
     ) {
-      this._updateActivity(nextProps.activity);
+      this._updateActivity(nextProps.activity, nextProps.loading);
     }
   }
-  _updateActivity(activity) {
-    this.setState({ activity });
+  _updateActivity(activity, loading) {
+    if (!loading) {
+      this.setState({ activity });
+    }
   }
   _updatePeople(props) {
     props = props || this.props;

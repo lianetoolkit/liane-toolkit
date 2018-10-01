@@ -242,7 +242,10 @@ export default class CampaignsPeople extends React.Component {
               {navTab == "activity" ? (
                 <Grid.Row>
                   <Grid.Column>
-                    <PeopleActivityFilter />
+                    <PeopleActivityFilter
+                      accounts={accounts}
+                      facebookId={facebookId}
+                    />
                     <Divider hidden />
                     <PeopleActivity
                       loading={loading}
