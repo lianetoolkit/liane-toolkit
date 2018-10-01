@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Menu, Form, Input, Radio } from "semantic-ui-react";
+import AccountsMenu from "/imports/ui/components/facebook/AccountsMenu.jsx";
 
 const Wrapper = styled.div`
   .ui.form .ui.menu .fields {
@@ -16,7 +17,15 @@ export default class ActivityFilter extends React.Component {
   _handleChange(ev, { name, value }) {
     FlowRouter.setQueryParams({ [name]: value });
   }
+  _handleAccountsClick = (ev, { value }) => {
+    const campaign = Session.get("campaign");
+    FlowRouter.go("App.campaignPeople.activity", {
+      campaignId: campaign._id,
+      facebookId: value
+    });
+  };
   render() {
+    const { accounts, facebookId } = this.props;
     const query = {
       type: "all",
       resolved: false,
@@ -26,6 +35,15 @@ export default class ActivityFilter extends React.Component {
       <Wrapper>
         <Form>
           <Menu>
+            <AccountsMenu
+              item
+              simple
+              accounts={accounts}
+              onClick={this._handleAccountsClick}
+              selected={facebookId}
+              showEmpty={true}
+              emptyLabel={"All"}
+            />
             <Menu.Item>
               <Form.Group>
                 <Form.Field
