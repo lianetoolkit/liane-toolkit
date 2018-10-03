@@ -14,6 +14,30 @@ import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import _ from "underscore";
 
 const CampaignsHelpers = {
+  refreshCampaignAccountsTokens({ campaignId }) {
+    const campaign = Campaigns.findOne(campaignId);
+    const accounts = campaign.accounts;
+    const users = campaign.users;
+    let tokens = {};
+    for (let campaignUser of users) {
+      const userAccounts = FacebookAccountsHelpers.getUserAccounts({
+        userId: campaignUser.userId
+      });
+      if (userAccounts && userAccounts.result.length) {
+        userAccounts.result.forEach(acc => {
+          tokens[acc.id] = acc.access_token;
+        });
+      }
+    }
+    let update = [];
+    for (let account of accounts) {
+      if (tokens[account.facebookId]) {
+        account.accessToken = tokens[account.facebookId];
+      }
+      update.push(account);
+    }
+    Campaigns.update({ _id: campaign._id }, { $set: { accounts: update } });
+  },
   addAccount({ campaignId, account }) {
     check(campaignId, String);
     check(account, Object);
