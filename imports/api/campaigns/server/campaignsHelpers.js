@@ -32,7 +32,12 @@ const CampaignsHelpers = {
     let update = [];
     for (let account of accounts) {
       if (tokens[account.facebookId]) {
-        account.accessToken = tokens[account.facebookId];
+        const longToken = FacebookAccountsHelpers.exchangeFBToken({
+          token: tokens[account.facebookId]
+        });
+        if (longToken) {
+          account.accessToken = longToken.result;
+        }
       }
       update.push(account);
     }
