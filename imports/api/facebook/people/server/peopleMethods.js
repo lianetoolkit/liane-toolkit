@@ -375,25 +375,36 @@ export const peopleReplyComment = new ValidatedMethod({
       );
       if (campaignAccount) {
         const access_token = campaignAccount.accessToken;
-        const res = Promise.await(
-          FB.api(comment._id, {
-            fields: ["can_reply_privately"],
-            access_token
-          })
-        );
-        Comments.update(
-          { _id: comment._id },
-          {
-            $set: {
-              can_reply_privately: res.can_reply_privately
-            }
+        let res;
+        try {
+          res = Promise.await(
+            FB.api(comment._id, {
+              fields: ["can_reply_privately"],
+              access_token
+            })
+          );
+        } catch (e) {
+          if (e.response && e.response.error.code == 190) {
+            throw new Meteor.Error(500, "Invalid facebook token");
+          } else {
+            throw new Meteor.Error(500);
           }
-        );
-        if (!res.can_reply_privately) {
-          People.update(person._id, {
-            $pull: { canReceivePrivateReply: facebookAccountId }
-          });
-          return;
+        }
+        if (res) {
+          Comments.update(
+            { _id: comment._id },
+            {
+              $set: {
+                can_reply_privately: res.can_reply_privately
+              }
+            }
+          );
+          if (!res.can_reply_privately) {
+            People.update(person._id, {
+              $pull: { canReceivePrivateReply: facebookAccountId }
+            });
+            return;
+          }
         }
       }
     }

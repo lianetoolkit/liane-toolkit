@@ -1,6 +1,7 @@
 import { Promise } from "meteor/promise";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
+import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { CommentsHelpers } from "/imports/api/facebook/comments/server/commentsHelpers.js";
 import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
@@ -39,14 +40,14 @@ const EntriesHelpers = {
   updateAccountEntries({
     campaignId,
     facebookId,
-    accessToken,
     likeDateEstimate,
     forceUpdate
   }) {
     check(campaignId, String);
     check(facebookId, String);
-    check(accessToken, String);
     check(forceUpdate, Boolean);
+
+    CampaignsHelpers.refreshCampaignAccountsTokens({ campaignId });
 
     let campaign;
     let isCampaignAccount = false;
@@ -57,6 +58,10 @@ const EntriesHelpers = {
         account => account.facebookId == facebookId
       );
     }
+
+    const accessToken = campaign.accounts.find(
+      acc => acc.facebookId == facebookId
+    ).accessToken;
 
     const accountPath = isCampaignAccount ? "me" : facebookId;
 

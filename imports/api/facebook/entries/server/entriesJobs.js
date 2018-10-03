@@ -11,11 +11,10 @@ const EntriesJobs = {
   "entries.updateAccountEntries": {
     run({ job }) {
       logger.debug("entries.updateAccountEntries job: called");
+      check(job && job.data && job.data.campaignId, String);
       check(job && job.data && job.data.facebookId, String);
-      check(job && job.data && job.data.accessToken, String);
       const campaignId = job.data.campaignId;
       const facebookId = job.data.facebookId;
-      const accessToken = job.data.accessToken;
       const createdTs = new Date(job._doc.created).getTime();
       const todayTs = new Date().getTime();
       const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -26,7 +25,6 @@ const EntriesJobs = {
         EntriesHelpers.updateAccountEntries({
           campaignId,
           facebookId,
-          accessToken,
           likeDateEstimate,
           forceUpdate: false
         });
@@ -63,16 +61,13 @@ const EntriesJobs = {
     run({ job }) {
       logger.debug("entries.refetchAccountEntries job: called");
       check(job && job.data && job.data.facebookId, String);
-      check(job && job.data && job.data.accessToken, String);
       const campaignId = job.data.campaignId;
       const facebookId = job.data.facebookId;
-      const accessToken = job.data.accessToken;
       let errored = false;
       try {
         EntriesHelpers.updateAccountEntries({
           campaignId,
           facebookId,
-          accessToken,
           likeDateEstimate: false,
           forceUpdate: true
         });
