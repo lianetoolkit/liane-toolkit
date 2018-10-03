@@ -30,6 +30,27 @@ const UsersHelpers = {
       })
     );
   },
+  debugFBToken({ token }) {
+    check(token, String);
+    const appToken = Promise.await(
+      FB.api("oauth/access_token", {
+        client_id: Meteor.settings.facebook.clientId,
+        client_secret: Meteor.settings.facebook.clientSecret,
+        grant_type: "client_credentials"
+      })
+    );
+    const response = Promise.await(
+      FB.api("debug_token", {
+        input_token: token,
+        access_token: appToken.access_token
+      })
+    );
+    if (response.data) {
+      return response.data;
+    } else {
+      return false;
+    }
+  },
   exchangeFBToken({ token }) {
     check(token, String);
     const response = Promise.await(
