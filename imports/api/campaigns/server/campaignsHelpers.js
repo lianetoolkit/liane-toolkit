@@ -10,6 +10,7 @@ import { Canvas } from "/imports/api/canvas/canvas.js";
 import { Jobs } from "/imports/api/jobs/jobs.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { FacebookAudiencesHelpers } from "/imports/api/facebook/audiences/server/audiencesHelpers.js";
+import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import _ from "underscore";
 
@@ -25,7 +26,14 @@ const CampaignsHelpers = {
       });
       if (userAccounts && userAccounts.result.length) {
         userAccounts.result.forEach(acc => {
-          tokens[acc.id] = acc.access_token;
+          if (accounts.find(account => acc.id == account.facebookId)) {
+            const tokenDebug = UsersHelpers.debugFBToken({
+              token: acc.access_token
+            });
+            if (tokenDebug && tokenDebug.is_valid) {
+              tokens[acc.id] = acc.access_token;
+            }
+          }
         });
       }
     }
