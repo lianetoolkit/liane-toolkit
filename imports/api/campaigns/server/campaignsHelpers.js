@@ -21,10 +21,15 @@ const CampaignsHelpers = {
     const users = campaign.users;
     let tokens = {};
     for (let campaignUser of users) {
-      const userAccounts = FacebookAccountsHelpers.getUserAccounts({
-        userId: campaignUser.userId
-      });
-      if (userAccounts && userAccounts.result.length) {
+      let userAccounts = {};
+      try {
+        userAccounts = FacebookAccountsHelpers.getUserAccounts({
+          userId: campaignUser.userId
+        });
+      } catch (e) {
+        console.log(e);
+      }
+      if (userAccounts && userAccounts.result && userAccounts.result.length) {
         userAccounts.result.forEach(acc => {
           if (accounts.find(account => acc.id == account.facebookId)) {
             const tokenDebug = UsersHelpers.debugFBToken({
