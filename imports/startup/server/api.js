@@ -58,9 +58,6 @@ import "/imports/api/facebook/accounts/server/accountsMethods.js";
 import "/imports/api/mapLayers/server/mapLayersMethods.js";
 import "/imports/api/mapLayers/server/mapLayersPublications.js";
 
-// account lists
-import "/imports/api/facebook/accountLists/server/accountListsMethods.js";
-
 // jobs
 import "/imports/api/jobs/server/jobs.js";
 import "/imports/api/jobs/server/jobsMethods.js";
