@@ -14,13 +14,7 @@ export const getNormalized = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
-    if (!campaign) {
-      throw new Meteor.Error(401, "This campaign does not exist");
-    }
-
-    const allowed = _.findWhere(campaign.users, { userId });
-    if (!allowed) {
+    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -63,13 +57,7 @@ export const canvasFormUpdate = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
-    if (!campaign) {
-      throw new Meteor.Error(401, "This campaign does not exist");
-    }
-
-    const allowed = _.findWhere(campaign.users, { userId });
-    if (!allowed) {
+    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
