@@ -12,6 +12,33 @@ import _ from "underscore";
 
 const PRIVATE = Meteor.settings.private;
 
+export const canManageCampaign = new ValidatedMethod({
+  name: "campaigns.canManage",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    userId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, userId }) {
+    check(campaignId, String);
+    check(userId, String);
+
+    const user = Meteor.users.findOne(userId);
+    if (!user) {
+      throw new Meteor.Error(401, "User does not exist");
+    }
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    return !!_.findWhere(campaign.users, { userId });
+  }
+});
+
 export const campaignsCreate = new ValidatedMethod({
   name: "campaigns.create",
   validate: new SimpleSchema({
@@ -122,14 +149,14 @@ export const campaignsUpdate = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    campaign = Campaigns.findOne(campaignId);
+    const campaign = Campaigns.findOne(campaignId);
+
     if (!campaign) {
-      throw new Meteor.Error(401, "This campaign does not exists");
+      throw new Meteor.Error(404, "Campaign not found");
     }
 
-    allowed = _.findWhere(campaign.users, { userId });
-    if (!allowed) {
-      throw new Meteor.Error(401, "You are not allowed to do this action");
+    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+      throw new Meteor.Error(401, "Not allowed");
     }
 
     let $set = {};
@@ -212,13 +239,13 @@ export const campaignsRemove = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    campaign = Campaigns.findOne(campaignId);
+    const campaign = Campaigns.findOne(campaignId);
     if (!campaign) {
-      throw new Meteor.Error(401, "This campaign does not exists");
+      throw new Meteor.Error(401, "This campaign does not exist");
     }
 
-    allowed =
-      _.findWhere(campaign.users, { userId }) ||
+    const allowed =
+      Meteor.call("campaigns.canManage", { userId, campaignId }) ||
       Roles.userIsInRole(userId, ["admin"]);
 
     if (!allowed) {
@@ -248,14 +275,12 @@ export const campaignsSuspend = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    campaign = Campaigns.findOne(campaignId);
+    const campaign = Campaigns.findOne(campaignId);
     if (!campaign) {
-      throw new Meteor.Error(401, "This campaign does not exists");
+      throw new Meteor.Error(401, "This campaign does not exist");
     }
 
-    allowed = Roles.userIsInRole(userId, ["admin"]);
-
-    if (!allowed) {
+    if (!Roles.userIsInRole(userId, ["admin"])) {
       throw new Meteor.Error(403, "Permission denied");
     }
 
@@ -320,17 +345,16 @@ export const addUser = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    campaign = Campaigns.findOne(campaignId);
+    const campaign = Campaigns.findOne(campaignId);
     if (!campaign) {
-      throw new Meteor.Error(404, "This campaign does not exists");
+      throw new Meteor.Error(404, "This campaign does not exist");
     }
 
     if (campaign.status == "suspended") {
       throw new Meteor.Error(401, "This campaign is suspended");
     }
 
-    allowed = _.findWhere(campaign.users, { userId });
-    if (!allowed) {
+    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -373,13 +397,12 @@ export const removeUser = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    campaign = Campaigns.findOne(campaignId);
+    const campaign = Campaigns.findOne(campaignId);
     if (!campaign) {
-      throw new Meteor.Error(401, "This campaign does not exists");
+      throw new Meteor.Error(401, "This campaign does not exist");
     }
 
-    allowed = _.findWhere(campaign.users, { userId });
-    if (!allowed) {
+    if (Meteor.call("campaigns.canManage", { userId, campaignId })) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -425,7 +448,7 @@ export const addSelfAccount = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    campaign = Campaigns.findOne(campaignId);
+    const campaign = Campaigns.findOne(campaignId);
     if (!campaign) {
       throw new Meteor.Error(404, "This campaign does not exist");
     }
@@ -434,8 +457,7 @@ export const addSelfAccount = new ValidatedMethod({
       throw new Meteor.Error(401, "This campaign is suspended");
     }
 
-    allowed = _.findWhere(campaign.users, { userId });
-    if (!allowed) {
+    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     CampaignsHelpers.addAccount({ campaignId, account });
@@ -465,13 +487,12 @@ export const removeSelfAccount = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    campaign = Campaigns.findOne(campaignId);
+    const campaign = Campaigns.findOne(campaignId);
     if (!campaign) {
-      throw new Meteor.Error(404, "This campaign does not exists");
+      throw new Meteor.Error(404, "This campaign does not exist");
     }
 
-    allowed = _.findWhere(campaign.users, { userId });
-    if (!allowed) {
+    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     CampaignsHelpers.removeAccount({ campaignId, facebookId });
@@ -504,17 +525,16 @@ export const findAndAddSelfAudienceAccount = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    campaign = Campaigns.findOne(campaignId);
+    const campaign = Campaigns.findOne(campaignId);
     if (!campaign) {
-      throw new Meteor.Error(404, "This campaign does not exists");
+      throw new Meteor.Error(404, "This campaign does not exist");
     }
 
     if (campaign.status == "suspended") {
       throw new Meteor.Error(401, "This campaign is suspended");
     }
 
-    allowed = _.findWhere(campaign.users, { userId });
-    if (!allowed) {
+    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -568,17 +588,16 @@ export const addSelfAudienceAccount = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    campaign = Campaigns.findOne(campaignId);
+    const campaign = Campaigns.findOne(campaignId);
     if (!campaign) {
-      throw new Meteor.Error(404, "This campaign does not exists");
+      throw new Meteor.Error(404, "This campaign does not exist");
     }
 
     if (campaign.status == "suspended") {
       throw new Meteor.Error(401, "This campaign is suspended");
     }
 
-    allowed = _.findWhere(campaign.users, { userId });
-    if (!allowed) {
+    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     CampaignsHelpers.addAudienceAccount({ campaignId, account });
@@ -608,17 +627,16 @@ export const removeSelfAudienceAccount = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    campaign = Campaigns.findOne(campaignId);
+    const campaign = Campaigns.findOne(campaignId);
     if (!campaign) {
-      throw new Meteor.Error(404, "This campaign does not exists");
+      throw new Meteor.Error(404, "This campaign does not exist");
     }
 
     if (campaign.status == "suspended") {
       throw new Meteor.Error(401, "This campaign is suspended");
     }
 
-    allowed = _.findWhere(campaign.users, { userId });
-    if (!allowed) {
+    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     CampaignsHelpers.removeAudienceAccount({ campaignId, facebookId });
