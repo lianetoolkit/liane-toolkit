@@ -7,9 +7,8 @@ Meteor.publishComposite("comments.byPerson", function({ personId }) {
   const userId = this.userId;
   const person = People.findOne(personId);
   if (person && person.facebookId) {
-    const campaign = Campaigns.findOne(person.campaignId);
-    const allowed = _.findWhere(campaign.users, { userId });
-    if (allowed) {
+    if (Meteor.call("campaigns.canManage", { campaignId, userId })) {
+      const campaign = Campaigns.findOne(person.campaignId);
       return {
         find: function() {
           return Comments.find({

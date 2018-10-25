@@ -1,8 +1,5 @@
 import SimpleSchema from "simpl-schema";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
-
-import { Campaigns } from "/imports/api/campaigns/campaigns.js";
-
 import { AdsHelpers } from "./adsHelpers.js";
 
 export const getAdCampaigns = new ValidatedMethod({
@@ -20,14 +17,11 @@ export const getAdCampaigns = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
-
-    if (!_.findWhere(campaign.users, { userId })) {
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not part of this campaign");
     }
 
     return AdsHelpers.getAdCampaigns({ campaignId });
-
   }
 });
 
@@ -83,9 +77,7 @@ export const createAd = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
-
-    if (!_.findWhere(campaign.users, { userId })) {
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not part of this campaign");
     }
 

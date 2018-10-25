@@ -32,8 +32,7 @@ Meteor.publish("audiences.byCampaignAccount", function({
 }) {
   const userId = this.userId;
   if (userId) {
-    const campaign = Campaigns.findOne(campaignId);
-    if (!_.findWhere(campaign.users, { userId })) {
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       return this.ready();
     }
     return FacebookAudiences.find(
@@ -55,8 +54,7 @@ Meteor.publishComposite("audiences.byCategory", function({
 }) {
   const userId = this.userId;
   if (userId) {
-    const campaign = Campaigns.findOne(campaignId);
-    if (!_.findWhere(campaign.users, { userId })) {
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       return this.ready();
     }
     return {
@@ -85,71 +83,5 @@ Meteor.publishComposite("audiences.byCategory", function({
     };
   } else {
     return this.ready();
-  }
-});
-
-Meteor.publishComposite("audiences.byAccount", function({
-  search,
-  limit,
-  orderBy,
-  fields
-}) {
-  this.unblock();
-  // Meteor._sleepForMs 2000
-  const currentUser = this.userId;
-  if (currentUser) {
-    const options = {
-      sort: {},
-      limit: Math.min(limit, 1000),
-      fields
-    };
-    options["sort"][orderBy.field] = orderBy.ordering;
-
-    return {
-      find: function() {
-        return FacebookAudiences.find(search, options);
-      },
-      children: [
-        {
-          find: function(fbAudience) {
-            return AudienceCategories.find(
-              {
-                _id: fbAudience.audienceCategoryId
-              },
-              { fields: { title: 1 } }
-            );
-          }
-        },
-        {
-          find: function(fbAudience) {
-            return Geolocations.find(
-              {
-                _id: fbAudience.geolocationId
-              },
-              { fields: { name: 1 } }
-            );
-          }
-        }
-      ]
-    };
-  } else {
-    this.stop();
-    return;
-  }
-});
-
-Meteor.publish("audiences.byAccount.counter", function({ search }) {
-  this.unblock();
-  const currentUser = this.userId;
-  if (currentUser) {
-    Counts.publish(
-      this,
-      "audiences.byAccount.counter",
-      FacebookAudiences.find(search)
-    );
-    return;
-  } else {
-    this.stop();
-    return;
   }
 });

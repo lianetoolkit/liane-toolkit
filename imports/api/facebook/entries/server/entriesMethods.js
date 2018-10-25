@@ -36,11 +36,11 @@ export const resolveInteraction = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
-
-    if (!_.findWhere(campaign.users, { userId })) {
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not part of this campaign");
     }
+
+    const campaign = Campaigns.findOne(campaignId);
 
     let InteractionModel;
 

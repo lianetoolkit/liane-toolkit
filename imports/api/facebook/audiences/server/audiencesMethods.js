@@ -42,9 +42,7 @@ export const accountAudienceItem = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
-
-    if (!_.findWhere(campaign.users, { userId })) {
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not part of this campaign");
     }
 
@@ -86,10 +84,11 @@ export const campaignAudienceSummary = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
-    if (!_.findWhere(campaign.users, { userId })) {
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not part of this campaign");
     }
+
+    const campaign = Campaigns.findOne(campaignId);
 
     const accounts = FacebookAccounts.find({
       facebookId: { $in: campaign.accounts.map(acc => acc.facebookId) }
@@ -249,11 +248,11 @@ export const audiencesMap = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
-
-    if (!_.findWhere(campaign.users, { userId })) {
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not part of this campaign");
     }
+
+    const campaign = Campaigns.findOne(campaignId);
 
     // Cache setup
     const hash = crypto
@@ -431,11 +430,11 @@ export const accountAudienceGeolocationSummary = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
-
-    if (!_.findWhere(campaign.users, { userId })) {
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not part of this campaign");
     }
+
+    const campaign = Campaigns.findOne(campaignId);
 
     // Cache setup
     const hash = crypto
@@ -552,11 +551,11 @@ export const accountAudienceSummary = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
-
-    if (!_.findWhere(campaign.users, { userId })) {
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not part of this campaign");
     }
+
+    const campaign = Campaigns.findOne(campaignId);
 
     // Cache setup
     const hash = crypto
@@ -647,11 +646,11 @@ export const accountAudienceByCategory = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
-
-    if (!_.findWhere(campaign.users, { userId })) {
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not part of this campaign");
     }
+
+    const campaign = Campaigns.findOne(campaignId);
 
     // Cache setup
     const hash = crypto
@@ -736,11 +735,11 @@ export const audiencePagesByCategory = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
-
-    if (!_.findWhere(campaign.users, { userId })) {
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not part of this campaign");
     }
+
+    const campaign = Campaigns.findOne(campaignId);
 
     // Cache setup
     const hash = crypto
@@ -814,11 +813,11 @@ export const accountAudienceByGeolocation = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    const campaign = Campaigns.findOne(campaignId);
-
-    if (!_.findWhere(campaign.users, { userId })) {
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not part of this campaign");
     }
+
+    const campaign = Campaigns.findOne(campaignId);
 
     // Cache setup
     const hash = crypto

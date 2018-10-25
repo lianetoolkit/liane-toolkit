@@ -23,9 +23,6 @@ export const canManageCampaign = new ValidatedMethod({
     }
   }).validator(),
   run({ campaignId, userId }) {
-    check(campaignId, String);
-    check(userId, String);
-
     const user = Meteor.users.findOne(userId);
     if (!user) {
       throw new Meteor.Error(401, "User does not exist");
@@ -36,6 +33,22 @@ export const canManageCampaign = new ValidatedMethod({
     }
 
     return !!_.findWhere(campaign.users, { userId });
+  }
+});
+
+export const campaignHasAccount = new ValidatedMethod({
+  name: "campaigns.hasAccount",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    facebookId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, facebookId }) {
+    const campaign = Campaigns.findOne(campaignId);
+    return !!_.findWhere(campaign.accounts, { facebookId });
   }
 });
 
