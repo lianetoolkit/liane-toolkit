@@ -3,9 +3,10 @@ import { People } from "/imports/api/facebook/people/people.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 
-Meteor.publishComposite("likes.byPerson", function({ personId, campaignId }) {
+Meteor.publishComposite("likes.byPerson", function({ personId }) {
   const userId = this.userId;
   const person = People.findOne(personId);
+  const campaignId = person.campaignId;
   if (person && person.facebookId) {
     if (Meteor.call("campaigns.canManage", { campaignId, userId })) {
       const campaign = Campaigns.findOne(person.campaignId);

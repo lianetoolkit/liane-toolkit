@@ -6,6 +6,7 @@ import { Comments } from "/imports/api/facebook/comments/comments.js";
 Meteor.publishComposite("comments.byPerson", function({ personId }) {
   const userId = this.userId;
   const person = People.findOne(personId);
+  const campaignId = person.campaignId;
   if (person && person.facebookId) {
     if (Meteor.call("campaigns.canManage", { campaignId, userId })) {
       const campaign = Campaigns.findOne(person.campaignId);
