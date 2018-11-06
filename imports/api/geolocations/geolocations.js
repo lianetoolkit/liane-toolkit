@@ -8,7 +8,8 @@ Geolocations.schema = new SimpleSchema({
   },
   type: {
     type: String,
-    allowedValues: ["location", "center"]
+    allowedValues: ["location", "center"],
+    index: true
   },
   parentId: {
     type: String,
