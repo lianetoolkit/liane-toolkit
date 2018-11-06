@@ -9,15 +9,22 @@ export default withTracker(props => {
   const subsHandle = EditGeolocationSubs.subscribe("geolocations.detail", {
     geolocationId: props.geolocationId
   });
+  const geolocationsHandle = EditGeolocationSubs.subscribe("geolocations.all");
 
-  const loading = !subsHandle.ready();
+  const loading = !subsHandle.ready() || !geolocationsHandle.ready();
 
-  const geolocation = subsHandle.ready() && props.geolocationId
-    ? Geolocations.findOne(props.geolocationId)
-    : null;
+  const geolocation =
+    subsHandle.ready() && props.geolocationId
+      ? Geolocations.findOne(props.geolocationId)
+      : null;
+
+  const geolocations = geolocationsHandle.ready()
+    ? Geolocations.find().fetch()
+    : [];
 
   return {
     loading,
-    geolocation
+    geolocation,
+    geolocations
   };
 })(EditGeolocationsPage);

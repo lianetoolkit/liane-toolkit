@@ -94,6 +94,7 @@ export default class SelectGeolocationNominatim extends React.Component {
     const geolocationOptions = Object.values(availableGeolocations);
     return (
       <Form.Field
+        label="OpenStreetMap Geolocation Data"
         control={Dropdown}
         options={geolocationOptions}
         placeholder="Search a location on the OSM database"

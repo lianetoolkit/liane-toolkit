@@ -5,12 +5,21 @@ import Loading from "/imports/ui/components/utils/Loading.jsx";
 import SelectGeolocationFacebook from "/imports/ui/components/geolocations/SelectGeolocationFacebook.jsx";
 import SelectGeolocationNominatim from "/imports/ui/components/geolocations/SelectGeolocationNominatim.jsx";
 import SelectGeolocationCoordinates from "/imports/ui/components/geolocations/SelectGeolocationCoordinates.jsx";
-import { Form, Grid, Button, Icon, Radio, Divider } from "semantic-ui-react";
+import {
+  Form,
+  Grid,
+  Button,
+  Icon,
+  Radio,
+  Select,
+  Divider
+} from "semantic-ui-react";
 import { Alerts } from "/imports/ui/utils/Alerts.js";
 import _ from "underscore";
 
 const initialFields = {
   name: "",
+  parentId: "",
   type: "location",
   facebook: "",
   osm: ""
@@ -62,6 +71,7 @@ export default class EditGeolocationsPage extends React.Component {
     let data = {
       _id: geolocationId,
       name: fields.name,
+      parentId: fields.parentId,
       type: fields.type
     };
     if (data.type == "center") {
@@ -116,6 +126,28 @@ export default class EditGeolocationsPage extends React.Component {
       }
     });
   }
+  _getParentOptions() {
+    const { geolocation, geolocations } = this.props;
+    let options = [];
+    if (geolocations && geolocations.length) {
+      options = geolocations.map(geolocation => {
+        return {
+          key: geolocation._id,
+          value: geolocation._id,
+          text: geolocation.name
+        };
+      });
+      if (geolocation) {
+        options = options.filter(option => option.value != geolocation._id);
+      }
+    }
+    options.unshift({
+      key: "",
+      value: "",
+      text: "None"
+    });
+    return options;
+  }
   render() {
     const { geolocation, geolocationId, loading, currentUser } = this.props;
     const { fields, isLoading } = this.state;
@@ -140,7 +172,8 @@ export default class EditGeolocationsPage extends React.Component {
                   <Form onSubmit={this._handleSubmit}>
                     <Form.Input
                       size="big"
-                      placeholder="Name"
+                      placeholder="Type a name"
+                      label="Geolocation name"
                       name="name"
                       loading={isLoading}
                       value={fields.name}
@@ -164,7 +197,7 @@ export default class EditGeolocationsPage extends React.Component {
                       />
                     </Form.Field>
                     {fields.type == "location" ? (
-                      <div>
+                      <>
                         <Form.Field>
                           <SelectGeolocationFacebook
                             name="facebook"
@@ -180,7 +213,7 @@ export default class EditGeolocationsPage extends React.Component {
                             onChange={this._handleChange}
                           />
                         </Form.Field>
-                      </div>
+                      </>
                     ) : null}
                     {fields.type == "center" ? (
                       <Form.Field>
@@ -191,6 +224,15 @@ export default class EditGeolocationsPage extends React.Component {
                         />
                       </Form.Field>
                     ) : null}
+                    <Form.Field
+                      control={Select}
+                      options={this._getParentOptions()}
+                      name="parentId"
+                      label="Parent geolocation"
+                      placeholder="Select a parent geolocation"
+                      value={fields.parentId}
+                      onChange={this._handleChange}
+                    />
                     <Divider hidden />
                     {geolocationId ? (
                       <Button onClick={this._handleRemove} negative>

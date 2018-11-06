@@ -8,6 +8,10 @@ const schemaConfig = {
   name: {
     type: String
   },
+  parentId: {
+    type: String,
+    optional: true
+  },
   type: {
     type: String,
     allowedValues: ["location", "center"]
@@ -40,7 +44,7 @@ const validateUpdate = new SimpleSchema(
 export const createGeolocation = new ValidatedMethod({
   name: "geolocations.create",
   validate: validateCreate,
-  run({ name, facebook, osm, type, center }) {
+  run({ name, parentId, facebook, osm, type, center }) {
     logger.debug("geolocations.create called", { name });
 
     const userId = Meteor.userId();
@@ -60,6 +64,7 @@ export const createGeolocation = new ValidatedMethod({
 
     const insertDoc = GeolocationsHelpers.parse({
       name,
+      parentId,
       facebook,
       osm,
       type,
@@ -96,7 +101,7 @@ export const removeGeolocation = new ValidatedMethod({
 export const updateGeolocation = new ValidatedMethod({
   name: "geolocations.update",
   validate: validateUpdate,
-  run({ _id, name, facebook, osm, type, center }) {
+  run({ _id, name, parentId, facebook, osm, type, center }) {
     logger.debug("geolocations.update called", { name });
 
     const userId = Meteor.userId();
@@ -117,6 +122,7 @@ export const updateGeolocation = new ValidatedMethod({
     const insertDoc = GeolocationsHelpers.parse({
       _id,
       name,
+      parentId,
       facebook,
       osm,
       type,

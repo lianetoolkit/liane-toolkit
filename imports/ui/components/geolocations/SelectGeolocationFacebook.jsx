@@ -136,6 +136,7 @@ export default class SelectGeolocationFacebook extends React.Component {
     }
     return (
       <Form.Field
+        label="Facebook Geolocation Data"
         control={Dropdown}
         options={geolocationOptions}
         placeholder="Search a Facebook geolocation"
