@@ -12,7 +12,8 @@ Geolocations.schema = new SimpleSchema({
   },
   parentId: {
     type: String,
-    optional: true
+    optional: true,
+    index: true
   },
   facebook: {
     type: Array,
