@@ -19,17 +19,14 @@ Meteor.publish("mapLayers.all", function() {
 Meteor.publish("mapLayers.byCampaign", function({ campaignId }) {
   this.unblock();
   const userId = this.userId;
-  const campaign = Campaigns.findOne(campaignId);
-  if (userId && campaign) {
-    if (!_.findWhere(campaign.users, { userId })) {
-      return this.ready();
-    }
+  if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    return this.ready();
+  } else {
+    const campaign = Campaigns.findOne(campaignId);
     const context = Contexts.findOne(campaign.contextId);
     return MapLayers.find({
       _id: { $in: context.mapLayers }
     });
-  } else {
-    return this.ready();
   }
 });
 
