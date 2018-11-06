@@ -19,12 +19,11 @@ Meteor.publish("geolocations.all", function() {
 });
 
 Meteor.publish("geolocations.byCampaign", function({ campaignId }) {
-  const currentUser = this.userId;
-  if (currentUser) {
+  const userId = this.userId;
+  if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    return this.ready();
+  } else {
     const campaign = Campaigns.findOne(campaignId);
-    if (!_.findWhere(campaign.users, { userId: currentUser })) {
-      return this.ready();
-    }
     const context = Contexts.findOne(campaign.contextId);
     return Geolocations.find(
       {
@@ -36,8 +35,6 @@ Meteor.publish("geolocations.byCampaign", function({ campaignId }) {
         }
       }
     );
-  } else {
-    return this.ready();
   }
 });
 
