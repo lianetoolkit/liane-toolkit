@@ -7,6 +7,8 @@ import moment from "moment";
 import PeopleCard from "/imports/ui/components/people/PeopleCard.jsx";
 import Reaction from "./Reaction.jsx";
 import Entry from "./Entry.jsx";
+import CommentCategoryField from "./CommentCategoryField.jsx";
+import CommentMentions from "./CommentMentions.jsx";
 
 const Wrapper = styled.div`
   .ui.feed {
@@ -268,6 +270,11 @@ export default class PeopleActivity extends React.Component {
                   {item.type == "comment" ? (
                     <CommentWrapper>
                       <Feed.Extra text>{item.message}</Feed.Extra>
+                      {item.message_tags && item.message_tags.length ? (
+                        <Feed.Extra>
+                          <CommentMentions tags={item.message_tags} />
+                        </Feed.Extra>
+                      ) : null}
                     </CommentWrapper>
                   ) : null}
                   <Feed.Extra>
@@ -275,6 +282,11 @@ export default class PeopleActivity extends React.Component {
                       <Entry entry={item.entry} />
                     </EntryWrapper>
                   </Feed.Extra>
+                  {item.type == "comment" ? (
+                    <Feed.Extra>
+                      <CommentCategoryField commentId={item._id} />
+                    </Feed.Extra>
+                  ) : null}
                 </Feed.Content>
               </Feed.Event>
             ))}
