@@ -6,11 +6,7 @@ import AppContainer from "/imports/ui/components/app/AppContainer.jsx";
 import AppHeader from "/imports/ui/components/app/AppHeader.jsx";
 import AppAlerts from "/imports/ui/components/app/AppAlerts.jsx";
 import AppContent from "/imports/ui/components/app/AppContent.jsx";
-import AppFooter from "/imports/ui/components/app/AppFooter.jsx";
 import Loading from "/imports/ui/components/utils/Loading.jsx";
-
-import ModalsStore from "/imports/ui/stores/modalsStore.js";
-import ModalManager from "/imports/ui/components/modals/ModalManager.jsx";
 
 import ConfirmStore from "/imports/ui/stores/confirmStore.js";
 import ConfirmManager from "/imports/ui/components/confirm/ConfirmManager.jsx";
@@ -28,7 +24,6 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.logout = this.logout.bind(this);
-    this.modalsStore = new ModalsStore();
     this.confirmStore = new ConfirmStore();
     this.state = {
       showConnectionIssue: false
@@ -88,7 +83,6 @@ export default class App extends React.Component {
 
   getChildContext() {
     return {
-      modalsStore: this.modalsStore,
       confirmStore: this.confirmStore,
       currentUser: this.props.currentUser
     };
@@ -132,7 +126,6 @@ export default class App extends React.Component {
               campaigns={campaigns}
               logout={this.logout}
             />
-            <ModalManager />
             <ConfirmManager />
             <AppContent>
               <AppAlerts currentUser={currentUser} />
@@ -180,7 +173,6 @@ App.propTypes = {
 // };
 
 App.childContextTypes = {
-  modalsStore: PropTypes.object,
   confirmStore: PropTypes.object,
   currentUser: PropTypes.object
 };
