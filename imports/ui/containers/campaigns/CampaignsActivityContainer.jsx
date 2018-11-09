@@ -57,15 +57,17 @@ export default withTracker(props => {
   }
   let comments = [];
   if (queryParams.type !== "reaction") {
+    let commentsQuery = {
+      ...query,
+      facebookAccountId: { $in: facebookIds },
+      created_time: { $exists: true }
+    };
+    if (queryParams.message_tags) {
+      commentsQuery.message_tags = { $exists: true };
+    }
+    console.log(commentsQuery);
     comments = activityHandle.ready()
-      ? Comments.find(
-          {
-            ...query,
-            facebookAccountId: { $in: facebookIds },
-            created_time: { $exists: true }
-          },
-          entriesOptions
-        ).fetch()
+      ? Comments.find(commentsQuery, entriesOptions).fetch()
       : [];
   }
 

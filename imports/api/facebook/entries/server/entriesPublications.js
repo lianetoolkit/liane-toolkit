@@ -32,6 +32,11 @@ Meteor.publishComposite("entries.campaignActivity", function({
     if (queryParams.resolved == "true") {
       query.resolved = true;
     }
+    if (queryParams.type == "comment") {
+      if (queryParams.message_tags) {
+        query.message_tags = { $exists: true };
+      }
+    }
     return {
       find() {
         return FacebookAccounts.find({ facebookId: { $in: facebookIds } });

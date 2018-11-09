@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Menu, Form, Input, Radio } from "semantic-ui-react";
+import { Menu, Form, Input, Radio, Checkbox } from "semantic-ui-react";
 import AccountsMenu from "/imports/ui/components/facebook/AccountsMenu.jsx";
 
 const Wrapper = styled.div`
@@ -16,6 +16,9 @@ export default class ActivityFilter extends React.Component {
   }
   _handleChange(ev, { name, value }) {
     FlowRouter.setQueryParams({ [name]: value });
+  }
+  _handleCheckboxChange(ev, { name, checked }) {
+    FlowRouter.setQueryParams({ [name]: checked ? true : null });
   }
   _handleAccountsClick = (ev, { value }) => {
     const campaign = Session.get("campaign");
@@ -93,6 +96,21 @@ export default class ActivityFilter extends React.Component {
               </Form.Group>
             </Menu.Item>
           </Menu>
+          {query.type == "comment" ? (
+            <Menu>
+              <Menu.Item>
+                <Form.Group>
+                  <Form.Field
+                    control={Checkbox}
+                    name="message_tags"
+                    label="Comments with mentions"
+                    onChange={this._handleCheckboxChange}
+                    checked={!!query.message_tags}
+                  />
+                </Form.Group>
+              </Menu.Item>
+            </Menu>
+          ) : null}
         </Form>
       </Wrapper>
     );
