@@ -284,7 +284,7 @@ export default class PeopleActivity extends React.Component {
                   </Feed.Extra>
                   {item.type == "comment" ? (
                     <Feed.Extra>
-                      <CommentCategoryField commentId={item._id} />
+                      <CommentCategoryField comment={item} />
                     </Feed.Extra>
                   ) : null}
                 </Feed.Content>

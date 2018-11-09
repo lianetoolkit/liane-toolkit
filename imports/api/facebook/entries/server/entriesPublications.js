@@ -36,6 +36,9 @@ Meteor.publishComposite("entries.campaignActivity", function({
       if (queryParams.message_tags) {
         query.message_tags = { $exists: true };
       }
+      if (queryParams.categories) {
+        query.categories = { $in: [queryParams.categories] };
+      }
     }
     return {
       find() {

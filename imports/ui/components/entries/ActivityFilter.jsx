@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Menu, Form, Input, Radio, Checkbox } from "semantic-ui-react";
+import { Menu, Form, Input, Radio, Select, Checkbox } from "semantic-ui-react";
 import AccountsMenu from "/imports/ui/components/facebook/AccountsMenu.jsx";
 
 const Wrapper = styled.div`
@@ -106,6 +106,30 @@ export default class ActivityFilter extends React.Component {
                     label="Comments with mentions"
                     onChange={this._handleCheckboxChange}
                     checked={!!query.message_tags}
+                  />
+                  <Form.Field
+                    control={Select}
+                    name="categories"
+                    onChange={this._handleChange}
+                    value={query.categories}
+                    placeholder="Filter by category"
+                    options={[
+                      {
+                        key: "all",
+                        value: "",
+                        text: "All"
+                      },
+                      {
+                        key: "question",
+                        value: "question",
+                        text: "Question"
+                      },
+                      {
+                        key: "vote",
+                        value: "vote",
+                        text: "Vote declaration"
+                      }
+                    ]}
                   />
                 </Form.Group>
               </Menu.Item>

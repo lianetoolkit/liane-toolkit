@@ -43,6 +43,15 @@ Comments.schema = new SimpleSchema({
     type: Boolean,
     optional: true,
     index: true
+  },
+  categories: {
+    type: Array,
+    index: true,
+    optional: true
+  },
+  "categories.$": {
+    type: String,
+    allowedValues: ["question", "vote"]
   }
 });
 

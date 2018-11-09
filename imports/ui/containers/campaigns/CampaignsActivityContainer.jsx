@@ -65,7 +65,9 @@ export default withTracker(props => {
     if (queryParams.message_tags) {
       commentsQuery.message_tags = { $exists: true };
     }
-    console.log(commentsQuery);
+    if (queryParams.categories) {
+      commentsQuery.categories = { $in: [queryParams.categories] };
+    }
     comments = activityHandle.ready()
       ? Comments.find(commentsQuery, entriesOptions).fetch()
       : [];

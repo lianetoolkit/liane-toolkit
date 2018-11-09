@@ -30,6 +30,7 @@ import "/imports/api/facebook/entries/server/entriesMethods.js";
 import "/imports/api/facebook/likes/server/likesPublications.js";
 
 // comments
+import "/imports/api/facebook/comments/server/commentsMethods.js";
 import "/imports/api/facebook/comments/server/commentsPublications.js";
 
 // people
