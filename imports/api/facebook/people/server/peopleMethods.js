@@ -327,9 +327,9 @@ export const peopleReplyComment = new ValidatedMethod({
       { sort: { created_time: -1 } }
     );
 
+    const campaign = Campaigns.findOne(person.campaignId);
     // Recheck for reply availability
     if (comment) {
-      const campaign = Campaigns.findOne(campaignId);
       const campaignAccount = campaign.accounts.find(
         a => a.facebookId == facebookAccountId
       );
