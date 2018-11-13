@@ -6,13 +6,15 @@ import PeopleEdit from "/imports/ui/pages/people/PeopleEdit.jsx";
 const PeopleEditSubs = new SubsManager();
 
 export default withTracker(props => {
-  const personHandle = PeopleEditSubs.subscribe("people.detail", {
-    personId: props.personId
-  });
-
-  const loading = !personHandle.ready();
-
-  const person = personHandle.ready() ? People.findOne(props.personId) : null;
+  let loading = false;
+  let person = {};
+  if (props.personId) {
+    const personHandle = PeopleEditSubs.subscribe("people.detail", {
+      personId: props.personId
+    });
+    loading = !personHandle.ready();
+    person = personHandle.ready() ? People.findOne(props.personId) : null;
+  }
 
   return {
     loading,

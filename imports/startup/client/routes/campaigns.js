@@ -109,9 +109,9 @@ campaignRoutes.route("/people/view/:personId", {
     });
   }
 });
-campaignRoutes.route("/people/edit/:personId/:sectionKey?", {
+campaignRoutes.route("/people/edit/:personId?", {
   name: "App.campaignPeople.edit",
-  action: function(params) {
+  action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Edit person`);
     return _mount(params, {
       content: {
@@ -119,7 +119,7 @@ campaignRoutes.route("/people/edit/:personId/:sectionKey?", {
         props: {
           campaignId: params.campaignId,
           personId: params.personId,
-          sectionKey: params.sectionKey
+          sectionKey: queryParams.section
         }
       }
     });

@@ -82,23 +82,56 @@ export default class PeopleEdit extends React.Component {
       }
     });
   };
-  _handleSubmit(data, cb) {
+  _handleSubmit(data) {
     const { campaignId, person } = this.props;
+    const { formData } = this.state;
+    if (person && person._id) {
+      this._submitMeta(data, person._id);
+    } else {
+      if (formData.name) {
+        Meteor.call(
+          "people.create",
+          { campaignId, name: formData.name },
+          (err, res) => {
+            const personId = res;
+            if (err) {
+              Alerts.error(err);
+            } else {
+              Session.set("unsavedChanges", false);
+              Alerts.success("Person created successfully");
+              this._submitMeta(data, personId, err => {
+                FlowRouter.go("App.campaignPeople.edit", {
+                  campaignId,
+                  personId
+                });
+              });
+            }
+          }
+        );
+      } else {
+        Alerts.error("You must type a name");
+      }
+    }
+
+    return false;
+  }
+  _submitMeta(data, personId, cb) {
+    const { campaignId } = this.props;
     const { sectionKey, formData } = this.state;
     Meteor.call(
       "people.metaUpdate",
       {
         campaignId,
-        personId: person._id,
+        personId,
         ...formData,
         sectionKey,
         data
       },
       (error, result) => {
+        if (cb) cb(error, result);
         if (error) {
           Alerts.error(error);
         } else {
-          cb();
           Alerts.success("Person updated successfully");
         }
       }
@@ -130,7 +163,9 @@ export default class PeopleEdit extends React.Component {
           titleTo={FlowRouter.path("App.campaignDetail", {
             campaignId: campaign ? campaign._id : ""
           })}
-          subTitle={person ? person.name : ""}
+          subTitle={
+            person && person._id ? `Editing ${person.name}` : "New person"
+          }
         />
         <section className="content">
           {loading ? (
@@ -162,11 +197,16 @@ export default class PeopleEdit extends React.Component {
                             <Step
                               key={section.key}
                               active={sectionKey == section.key}
-                              href={FlowRouter.path("App.campaignPeople.edit", {
-                                sectionKey: section.key,
-                                personId: person._id,
-                                campaignId: campaign._id
-                              })}
+                              href={FlowRouter.path(
+                                "App.campaignPeople.edit",
+                                {
+                                  personId: person._id,
+                                  campaignId: campaign._id
+                                },
+                                {
+                                  section: section.key
+                                }
+                              )}
                             >
                               <Step.Content>
                                 <Step.Title>{section.title}</Step.Title>
