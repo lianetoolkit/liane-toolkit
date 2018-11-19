@@ -245,7 +245,7 @@ export default class LayersMap extends React.Component {
       }
     }
     this.setState({ bounds });
-    if (bounds) {
+    if (bounds && bounds.isValid()) {
       const map = this.refs.map.leafletElement;
       if (map) {
         map.fitBounds(bounds);
