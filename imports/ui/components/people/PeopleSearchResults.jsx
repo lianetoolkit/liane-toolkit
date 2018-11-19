@@ -265,7 +265,7 @@ export default class PeopleSearchResults extends React.Component {
     return null;
   }
   render() {
-    const { loading, loadingCount, count } = this.props;
+    const { campaignId, loading, loadingCount, count } = this.props;
     const { people } = this.state;
     if (!loadingCount && count == 0) {
       return <p>No people were found.</p>;
@@ -274,6 +274,16 @@ export default class PeopleSearchResults extends React.Component {
     } else if (people && people.length) {
       return (
         <Wrapper>
+          <Button
+            primary
+            size="mini"
+            floated="right"
+            href={FlowRouter.path("App.campaignPeople.edit", {
+              campaignId
+            })}
+          >
+            + New person
+          </Button>
           {loadingCount ? (
             <p>Calculating people count...</p>
           ) : (
