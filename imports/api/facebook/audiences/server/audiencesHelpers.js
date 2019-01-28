@@ -15,6 +15,7 @@ import redisClient, { deleteByPattern } from "/imports/startup/server/redis";
 import crypto from "crypto";
 import _ from "underscore";
 import moment from "moment";
+import demographicsConfig from "./demographicsConfig.js";
 
 const FacebookAudiencesHelpers = {
   async getFanCount(facebookId, token) {
@@ -212,6 +213,18 @@ const FacebookAudiencesHelpers = {
         }
       ]
     };
+  },
+  _buildDemographics() {
+    // const keys = Object.keys(demographicsConfig.config);
+    // let specs = [];
+    // for(let key of keys) {
+    //   // demographicsConfig[key].map
+    // }
+    // console.log(demographicsConfig.specs);
+    // return Object.getOwnPropertyNames(demographicsConfig.specs);
+    const specs = demographicsConfig.specs;
+    console.log(specs);
+    return specs;
   },
   fetchContextAudiences({
     contextId,
