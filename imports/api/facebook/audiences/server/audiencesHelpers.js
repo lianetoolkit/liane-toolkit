@@ -15,6 +15,7 @@ import redisClient, { deleteByPattern } from "/imports/startup/server/redis";
 import crypto from "crypto";
 import _ from "underscore";
 import moment from "moment";
+import { FacebookDemographicsHelpers } from "./demographicsHelpers.js";
 
 const FacebookAudiencesHelpers = {
   async getFanCount(facebookId, token) {
@@ -424,7 +425,7 @@ const FacebookAudiencesHelpers = {
 
     let validateResultByAvg = this.validateResultByAvg;
 
-    const fetch = async function(spec, key) {
+    const fetch = async function(spec, key, skipValidation) {
       const hash = crypto
         .createHash("sha1")
         .update(JSON.stringify(spec) + fetchDate)
@@ -432,7 +433,8 @@ const FacebookAudiencesHelpers = {
       const redisKey = `audiences::fetch::${hash}`;
       try {
         let ready = false;
-        let res = redisClient.getSync(redisKey);
+        // let res = redisClient.getSync(redisKey);
+        let res = false;
         if (res) {
           const data = JSON.parse(res).data;
           return {
@@ -462,13 +464,15 @@ const FacebookAudiencesHelpers = {
               dau: res.data[0].estimate_dau,
               mau: res.data[0].estimate_mau
             };
-            validateResultByAvg({
-              facebookAccountId,
-              audienceCategoryId,
-              geolocationId,
-              data: data,
-              key
-            });
+            if (skipValidation !== true) {
+              validateResultByAvg({
+                facebookAccountId,
+                audienceCategoryId,
+                geolocationId,
+                data: data,
+                key
+              });
+            }
             redisClient.setSync(
               redisKey,
               JSON.stringify(res),
@@ -488,6 +492,7 @@ const FacebookAudiencesHelpers = {
       }
     };
 
+    // describe reqs by omission of specs
     const reqs = {
       estimate: [],
       total: ["interests"],
@@ -497,6 +502,7 @@ const FacebookAudiencesHelpers = {
 
     let result = {};
 
+    // fetch audience data
     for (const key in reqs) {
       let req;
       if (reqs[key].length) {
@@ -505,6 +511,22 @@ const FacebookAudiencesHelpers = {
         req = spec;
       }
       result[key] = await fetch(req, key);
+    }
+
+    // fetch demographics
+    const demographicsSpecs = FacebookDemographicsHelpers.build();
+    result.demographics = [];
+    for (const demographicSpec of demographicsSpecs) {
+      const req = _.omit(spec, ["connections"]); // do not use connections for demographics
+      const estimateReq = { ...req, ...demographicSpec };
+      const totalReq = _.omit(estimateReq, ["interests"]);
+      const estimate = await fetch(estimateReq, null, true);
+      const total = await fetch(_.omit(totalReq, ["interests"]), null, true);
+      result.demographics.push({
+        spec: demographicSpec,
+        estimate: estimate.dau,
+        total: total.dau
+      });
     }
 
     const _getFanCount = async () => {

@@ -35,6 +35,23 @@ FacebookAudiences.schema = new SimpleSchema({
     type: Match.OneOf(Number, { type: Object, blackbox: true }),
     blackbox: true
   },
+  demographics: {
+    type: Array,
+    optional: true
+  },
+  "demographics.$": {
+    type: Object
+  },
+  "demographics.$.estimate": {
+    type: Number // dau
+  },
+  "demographics.$.total": {
+    type: Number // dau
+  },
+  "demographics.$.spec": {
+    type: Object,
+    blackbox: true
+  },
   fetch_date: {
     type: String,
     label: "YYYY-MM-DD",

@@ -8,6 +8,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.2.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.13",
+    "@fortawesome/free-solid-svg-icons": "^5.7.0",
+    "@fortawesome/react-fontawesome": "^0.1.4",
     "@mapbox/leaflet-pip": "^1.1.0",
     "axios": "^0.17.1",
     "babel-runtime": "^6.26.0",
@@ -26,6 +29,7 @@
     "lodash": "^4.17.11",
     "meteor-node-stubs": "~0.2.4",
     "moment": "^2.23.0",
+    "normalize.css": "^8.0.1",
     "react": "^16.7.0",
     "react-addons-css-transition-group": "^15.6.2",
     "react-country-region-selector": "^1.4.3",
