@@ -28,7 +28,7 @@ const Container = styled.div`
   }
   .popup {
     position: absolute;
-    top: 70px;
+    top: 60px;
     right: -25px;
     width: 380px;
     height: 300px;
