@@ -5,10 +5,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import NotificationsPopup from "./NotificationsPopup.jsx";
 
 const Container = styled.nav`
+  flex: 0;
   background: #fff;
   padding: 1rem 0;
   font-size: 0.8em;
   box-shadow: 0 0 2rem rgba(0, 0, 0, 0.125);
+  border-bottom: 1px solid #ddd;
   .link-group > * {
     display: inline-block;
     color: #333;
@@ -27,6 +29,10 @@ const Container = styled.nav`
     &:focus {
       color: #000;
       border-color: #333;
+    }
+    &.active {
+      background: #fc0;
+      border-color: #fc0;
     }
   }
   .nav-content {
@@ -50,7 +56,9 @@ export default class AppNav extends Component {
       <Container>
         <div className="nav-content">
           <div className="features link-group">
-            <a href="#">Campanha</a>
+            <a href="#" className="active">
+              Campanha
+            </a>
             <a href="#">Temas</a>
             <a href="#">Pessoas</a>
             <a href="#">Locais</a>

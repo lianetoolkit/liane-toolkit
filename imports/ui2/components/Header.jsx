@@ -7,6 +7,7 @@ const Container = styled.header`
   background: #222;
   padding: 2rem 0 1rem;
   font-size: 0.8em;
+  flex: 0;
   .header-content {
     max-width: 960px;
     margin: 0 auto;

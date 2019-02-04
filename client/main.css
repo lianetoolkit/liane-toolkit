@@ -23,7 +23,7 @@ button {
 }
 
 body {
-  background-color: #f0f0f0;
+  background-color: #f7f7f7;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -35,4 +35,8 @@ h2,
 h3 {
   font-family: "Unica One", monospace;
   font-weight: normal;
+}
+
+p {
+  margin: 0 0 1rem;
 }
