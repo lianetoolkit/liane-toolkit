@@ -8,6 +8,7 @@ const Container = styled.div`
   position: relative;
   display: inline-block;
   font-weight: 400;
+  z-index: 2;
   .trigger {
     cursor: pointer;
   }
@@ -28,25 +29,26 @@ const Container = styled.div`
   }
   .popup {
     position: absolute;
-    top: 60px;
+    top: 46px;
     right: -25px;
     width: 380px;
     height: 300px;
     background: #fff;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.07);
-    border-radius: 1rem;
+    border-radius: 0 0 1rem 1rem;
     display: flex;
     flex-direction: column;
     border: 1px solid #ccc;
     &:before {
       content: "";
-      background: #fff;
+      background: #f0f0f0;
       position: absolute;
       width: 16px;
       height: 16px;
-      top: -8px;
+      top: -6px;
       right: 32px;
       transform: rotate(45deg);
+      border: 1px solid #ccc;
     }
     .popup-tools {
       flex-grow: 0;
@@ -54,6 +56,9 @@ const Container = styled.div`
       border-bottom: 1px solid #dedede;
       text-align: right;
       font-size: 0.7em;
+      background: #f0f0f0;
+      position: relative;
+      z-index: 2;
       a {
         display: inline-block;
         margin-left: 0.75rem;
