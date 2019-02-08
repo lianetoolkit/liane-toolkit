@@ -50,18 +50,40 @@ const Container = styled.nav`
   }
 `;
 
+class NavItem extends Component {
+  render() {
+    const { active, children, href } = this.props;
+    let className = "";
+    if (active) className += " active";
+    return (
+      <a href={href} className={className}>
+        {children}
+      </a>
+    );
+  }
+}
+
 export default class AppNav extends Component {
   render() {
+    const currentRoute = FlowRouter.current().route.name;
     return (
       <Container>
         <div className="nav-content">
           <div className="features link-group">
-            <a href="#" className="active">
+            <NavItem
+              href={FlowRouter.path("App.dashboard")}
+              active={currentRoute.indexOf("App.dashboard") === 0}
+            >
               Campanha
-            </a>
-            <a href="#">Temas</a>
-            <a href="#">Pessoas</a>
-            <a href="#">Locais</a>
+            </NavItem>
+            <NavItem href="#">Temas</NavItem>
+            <NavItem href="#">Pessoas</NavItem>
+            <NavItem
+              href={FlowRouter.path("App.map")}
+              active={currentRoute.indexOf("App.map") === 0}
+            >
+              Locais
+            </NavItem>
           </div>
           <div className="meta link-group">
             <a href="#" title="Settings" className="icon-link">

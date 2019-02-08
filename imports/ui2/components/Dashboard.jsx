@@ -2,9 +2,7 @@ import React, { Component } from "react";
 import styled, { css } from "styled-components";
 
 const Container = styled.div`
-  flex: 1 1 100%;
   padding: 2rem 0 0;
-  overflow: auto;
 `;
 
 const RowContainer = styled.div`

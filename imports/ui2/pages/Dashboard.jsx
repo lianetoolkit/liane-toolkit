@@ -1,17 +1,12 @@
 import React, { Component } from "react";
 
 import Page from "../components/Page.jsx";
-import Header from "../components/Header.jsx";
-import Footer from "../components/Footer.jsx";
-import AppNav from "../components/AppNav.jsx";
 import Dashboard from "../components/Dashboard.jsx";
 
 export default class DashboardPage extends Component {
   render() {
     return (
       <Page>
-        <Header />
-        <AppNav />
         <Dashboard>
           <Dashboard.Row>
             <Dashboard.Box grow="2">
@@ -99,7 +94,6 @@ export default class DashboardPage extends Component {
             </Dashboard.Box>
           </Dashboard.Row>
         </Dashboard>
-        <Footer />
       </Page>
     );
   }
