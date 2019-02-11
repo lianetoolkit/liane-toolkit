@@ -10,6 +10,7 @@ export default class DashboardPage extends Component {
         <Dashboard>
           <Dashboard.Row>
             <Dashboard.Box grow="2">
+              <Dashboard.Title>Teste</Dashboard.Title>
               <p>Teste</p>
             </Dashboard.Box>
             <Dashboard.Box grow="1">

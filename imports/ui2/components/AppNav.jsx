@@ -34,6 +34,14 @@ const Container = styled.nav`
       background: #fc0;
       border-color: #fc0;
     }
+    &.featured {
+      font-weight: 600;
+    }
+    .fa-chevron-down {
+      margin-left: 0.5rem;
+      font-weight: normal;
+      font-size: 0.9em;
+    }
   }
   .nav-content {
     max-width: 960px;
@@ -52,9 +60,10 @@ const Container = styled.nav`
 
 class NavItem extends Component {
   render() {
-    const { active, children, href } = this.props;
+    const { active, featured, children, href } = this.props;
     let className = "";
     if (active) className += " active";
+    if (featured) className += " featured";
     return (
       <a href={href} className={className}>
         {children}
@@ -73,11 +82,18 @@ export default class AppNav extends Component {
             <NavItem
               href={FlowRouter.path("App.dashboard")}
               active={currentRoute.indexOf("App.dashboard") === 0}
+              featured={true}
             >
               Campanha
+              <FontAwesomeIcon icon="chevron-down" />
             </NavItem>
             <NavItem href="#">Temas</NavItem>
-            <NavItem href="#">Pessoas</NavItem>
+            <NavItem
+              href={FlowRouter.path("App.people")}
+              active={currentRoute.indexOf("App.people") === 0}
+            >
+              Pessoas
+            </NavItem>
             <NavItem
               href={FlowRouter.path("App.map")}
               active={currentRoute.indexOf("App.map") === 0}

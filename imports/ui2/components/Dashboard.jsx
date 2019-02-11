@@ -6,10 +6,9 @@ const Container = styled.div`
 `;
 
 const RowContainer = styled.div`
-  max-width: 1280px;
-  margin: 0 auto;
+  ${"" /* max-width: 1280px; */} margin: 0 auto;
   display: flex;
-  padding: 0 0.5rem 1rem 0.5rem;
+  padding: 0 1.5rem 1rem 1.5rem;
   flex-grow: 1;
   box-sizing: border-box;
   width: 100%;
@@ -19,7 +18,7 @@ const BoxContainer = styled.div`
   flex: 1;
   background: #fff;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 7px;
   margin: 0 0.5rem;
   padding: 1rem 1.5rem;
   box-sizing: border-box;
@@ -31,6 +30,15 @@ const BoxContainer = styled.div`
       border-color: #63c;
       color: #fff;
     `};
+`;
+
+const BoxTitle = styled.h3`
+  margin: 0 0 1rem;
+  padding: 0 0 1rem;
+  border-bottom: 1px solid #ddd;
+  line-height: 1;
+  font-size: 0.8em;
+  color: #666;
 `;
 
 class Row extends Component {
@@ -59,6 +67,7 @@ class Box extends Component {
 class Dashboard extends Component {
   static Row = Row;
   static Box = Box;
+  static Title = BoxTitle;
   render() {
     return <Container>{this.props.children}</Container>;
   }
