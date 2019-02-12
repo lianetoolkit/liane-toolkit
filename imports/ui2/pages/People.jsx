@@ -7,22 +7,20 @@ import Table from "../components/Table.jsx";
 export default class PeoplePage extends Component {
   render() {
     return (
-      <Page>
-        <Content full={true}>
-          <Table>
-            <tbody>
-              <tr>
-                <td>Fulano</td>
-                <td>De tal</td>
-              </tr>
-              <tr>
-                <td>Fulano</td>
-                <td>De tal</td>
-              </tr>
-            </tbody>
-          </Table>
-        </Content>
-      </Page>
+      <Content full={true}>
+        <Table>
+          <tbody>
+            <tr>
+              <td>Fulano</td>
+              <td>De tal</td>
+            </tr>
+            <tr>
+              <td>Fulano</td>
+              <td>De tal</td>
+            </tr>
+          </tbody>
+        </Table>
+      </Content>
     );
   }
 }
