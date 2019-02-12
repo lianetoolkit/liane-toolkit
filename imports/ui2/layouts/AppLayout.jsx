@@ -6,9 +6,13 @@ export default class AppLayout extends Component {
     if (connected && !isLoggedIn && routeName !== "App.auth") {
       FlowRouter.go("App.auth");
     }
+    if (connected && isLoggedIn && routeName == "App.auth") {
+      FlowRouter.go("App.dashboard");
+    }
   }
   render() {
     const { content, connected } = this.props;
+    console.log(this.props.campaigns);
     if (connected) {
       return (
         <Page>

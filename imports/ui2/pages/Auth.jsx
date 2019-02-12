@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Page from "../components/Page.jsx";
 
@@ -68,19 +69,19 @@ const ButtonGroup = styled.nav`
 const LoginFormContainer = styled.form`
   max-width: 500px;
   margin: -3rem auto 6rem;
-  background: #fff;
+  ${"" /* background: #fff;
   padding: 4rem;
-  box-sizing: border-box;
   border-radius: 1rem;
-  position: relative;
-  z-index: 2;
+  box-sizing: border-box;
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15);
-  border: 1px solid #999;
+  border: 1px solid #999; */} position: relative;
+  z-index: 2;
   p,
   h3 {
     margin: 0 0 2rem;
   }
-  input {
+  input,
+  .button {
     display: block;
     width: 100%;
     box-sizing: border-box;
@@ -98,7 +99,8 @@ const LoginFormContainer = styled.form`
       background: #fff;
     }
   }
-  input[type="submit"] {
+  input[type="submit"],
+  .facebook-button {
     background: transparent;
     color: #333;
     font-size: 0.8em;
@@ -114,11 +116,18 @@ const LoginFormContainer = styled.form`
     font-family: "Unica One", monospace;
     outline: none;
     border: 0;
+    text-align: center;
     &:focus,
     &:hover {
       background: #333;
       color: #fff;
     }
+  }
+  .facebook-button {
+    margin-top: 1rem;
+    background: #3b5998;
+    color: #fff;
+    box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
   }
   nav {
     display: flex;
@@ -140,6 +149,37 @@ const LoginFormContainer = styled.form`
 `;
 
 export default class AuthPage extends Component {
+  _facebookAuth = () => ev => {
+    ev.preventDefault();
+    Meteor.loginWithFacebook(
+      {
+        requestPermissions: [
+          "public_profile",
+          "email",
+          "manage_pages",
+          "pages_show_list",
+          "ads_management",
+          "ads_read",
+          "business_management",
+          "read_page_mailboxes",
+          "pages_messaging",
+          "pages_messaging_phone_number",
+          "pages_messaging_subscriptions"
+        ]
+      },
+      err => {
+        if (err) {
+          console.log(err);
+        } else {
+          Meteor.call("users.exchangeFBToken", (err, data) => {
+            if (err) {
+              console.log(err);
+            }
+          });
+        }
+      }
+    );
+  };
   render() {
     return (
       <Page>
@@ -154,15 +194,18 @@ export default class AuthPage extends Component {
           </ButtonGroup>
         </HighlightContainer>
         <LoginFormContainer>
-          <h3>Acesse sua conta</h3>
-          <input type="email" placeholder="Email" />
+          {/* <h3>Acesse sua conta</h3> */}
+          <a className="facebook-button button" onClick={this._facebookAuth()}>
+            <FontAwesomeIcon icon="facebook-square" /> Conecte-se com Facebook
+          </a>
+          {/* <input type="email" placeholder="Email" />
           <input type="password" placeholder="Senha" />
           <input type="submit" value="Acessar painel" />
           <nav>
             &middot; <a href="#">Esqueci meu email</a>
             &middot; <a href="#">Esqueci minha senha</a>
             &middot;
-          </nav>
+          </nav> */}
         </LoginFormContainer>
       </Page>
     );

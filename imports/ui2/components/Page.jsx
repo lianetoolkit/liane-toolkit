@@ -23,10 +23,11 @@ const PageContent = styled.div`
 export default class Page extends Component {
   render() {
     const { children } = this.props;
+    const user = Meteor.user();
     return (
       <Container>
         <Header />
-        <AppNav />
+        {user ? <AppNav /> : null}
         <PageContent>{children}</PageContent>
         <Footer />
       </Container>
