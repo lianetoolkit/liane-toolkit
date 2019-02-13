@@ -56,14 +56,17 @@ class NotificationsPopup extends Component {
         {...props}
         trigger={children}
         triggerCount={2}
+        tools={
+          <div>
+            <a href="javascript:void(0);">Ver tudo</a>
+            <a href="javascript:void(0);">Marcar tudo como lido</a>
+            <a href="javascript:void(0);">
+              <FontAwesomeIcon icon="times" className="close" />
+            </a>
+          </div>
+        }
       >
-        <AppNavDropdown.Tools>
-          <a href="javascript:void(0);">Ver tudo</a>
-          <a href="javascript:void(0);">Marcar tudo como lido</a>
-          <a href="javascript:void(0);">
-            <FontAwesomeIcon icon="times" className="close" />
-          </a>
-        </AppNavDropdown.Tools>
+        {/* <AppNavDropdown.Tools /> */}
         <AppNavDropdown.Content>
           <NotificationItem unread={true} date={new Date()}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi

@@ -20,17 +20,32 @@ const Container = styled.div`
     border-radius: 0 0 1rem 1rem;
     display: flex;
     flex-direction: column;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     &:before {
       content: "";
-      background: #f0f0f0;
+      background: #fff;
       position: absolute;
       width: 16px;
       height: 16px;
       top: -6px;
       right: 32px;
       transform: rotate(45deg);
-      border: 1px solid #ccc;
+      border: 1px solid #ddd;
+    }
+    &:after {
+      content: "";
+      background: #fff;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 20px;
+      z-index: 1;
+    }
+  }
+  &.has-tools {
+    .dropdown:before {
+      background: #f0f0f0;
     }
   }
 `;
@@ -81,11 +96,36 @@ const Content = styled.div`
   overflow: auto;
   box-sizing: border-box;
   font-size: 0.8em;
+  position: relative;
+  z-index: 2;
+`;
+
+const Separator = styled.div`
+  width: 100%;
+  height: 1px;
+  background: #aaa;
+`;
+
+const NavItem = styled.a`
+  display: block;
+  padding: 0.4rem 1rem;
+  color: #666;
+  text-decoration: none;
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 600;
+  &:hover {
+    color: #111;
+  }
+  &:last-child {
+    border: 0;
+  }
 `;
 
 export default class AppNavDropdown extends Component {
   static Tools = Tools;
   static Content = Content;
+  static Separator = Separator;
+  static NavItem = NavItem;
   constructor(props) {
     super(props);
     this.state = {
@@ -100,14 +140,41 @@ export default class AppNavDropdown extends Component {
   };
   render() {
     const { open } = this.state;
-    const { trigger, triggerCount, children, ...props } = this.props;
+    const {
+      width,
+      height,
+      tools,
+      trigger,
+      triggerCount,
+      children,
+      className,
+      ...props
+    } = this.props;
+    let classes = className || "";
+    if (tools) {
+      classes += " has-tools";
+    }
+    let style = {};
+    if (width) {
+      style["width"] = width;
+    }
+    if (height) {
+      style["height"] = height;
+    }
     return (
-      <Container {...props}>
+      <Container className={classes} {...props}>
         <span className="trigger" onClick={this.toggle()}>
           {trigger}
         </span>
         {triggerCount ? <TriggerCount>{triggerCount}</TriggerCount> : null}
-        {open ? <div className="dropdown">{children}</div> : null}
+        {open ? (
+          <div className="dropdown" style={style}>
+            {tools ? (
+              <AppNavDropdown.Tools>{tools}</AppNavDropdown.Tools>
+            ) : null}
+            {children}
+          </div>
+        ) : null}
       </Container>
     );
   }

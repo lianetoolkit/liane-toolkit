@@ -9,17 +9,21 @@ const Container = styled.table`
   border-radius: 7px;
   tr {
     &:hover {
-      box-shadow: 0 0.1rem 0.5rem rgba(0, 0, 0, 0.07);
+      box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.07);
       position: relative;
       z-index: 2;
       td {
-        border-color: #ddd;
+        border-bottom-color: #ddd;
       }
     }
     td {
       padding: 1rem;
       line-height: 1;
       border-bottom: 1px solid #f7f7f7;
+      border-right: 1px solid #f7f7f7;
+      &:last-child {
+        border-right: 0;
+      }
     }
     &:last-child {
       td {

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import AppNavDropdown from "./AppNavDropdown.jsx";
+import Dropdown from "./AppNavDropdown.jsx";
 import NotificationsPopup from "./NotificationsPopup.jsx";
 
 const Container = styled.nav`
@@ -78,25 +78,34 @@ class NavItem extends Component {
 }
 
 class SettingsNav extends Component {
+  _logout = () => ev => {
+    ev.preventDefault();
+    Meteor.logout();
+  };
   render() {
     return (
-      <AppNavDropdown
+      <Dropdown
+        width="200px"
+        height="auto"
         className="icon-link"
         trigger={<FontAwesomeIcon icon="cog" />}
       >
-        <AppNavDropdown.Content>
-          <p>Soon</p>
-        </AppNavDropdown.Content>
-      </AppNavDropdown>
+        <Dropdown.Content>
+          <Dropdown.NavItem href="#">
+            Configurações da campanha
+          </Dropdown.NavItem>
+          <Dropdown.Separator />
+          <Dropdown.NavItem href="#">Minha conta</Dropdown.NavItem>
+          <Dropdown.NavItem href="javascript:void(0);" onClick={this._logout()}>
+            Sair
+          </Dropdown.NavItem>
+        </Dropdown.Content>
+      </Dropdown>
     );
   }
 }
 
 export default class AppNav extends Component {
-  _logout = () => ev => {
-    ev.preventDefault();
-    Meteor.logout();
-  };
   render() {
     const currentRoute = FlowRouter.current().route.name;
     return (
@@ -130,14 +139,6 @@ export default class AppNav extends Component {
             <NotificationsPopup className="icon-link">
               <FontAwesomeIcon icon="bell" />
             </NotificationsPopup>
-            <NavItem
-              clean={true}
-              href="javascript:void(0);"
-              onClick={this._logout()}
-              title="Logout"
-            >
-              Sair
-            </NavItem>
           </div>
         </div>
       </Container>

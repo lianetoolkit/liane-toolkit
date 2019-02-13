@@ -12,9 +12,25 @@ export default class PeoplePage extends Component {
           <tbody>
             <tr>
               <td>Fulano</td>
+              <td>Fulano</td>
+              <td>Fulano</td>
               <td>De tal</td>
             </tr>
             <tr>
+              <td>Fulano</td>
+              <td>Fulano</td>
+              <td>Fulano</td>
+              <td>De tal</td>
+            </tr>
+            <tr>
+              <td>Fulano</td>
+              <td>Fulano</td>
+              <td>Fulano</td>
+              <td>De tal</td>
+            </tr>
+            <tr>
+              <td>Fulano</td>
+              <td>Fulano</td>
               <td>Fulano</td>
               <td>De tal</td>
             </tr>
