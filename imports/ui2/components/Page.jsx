@@ -15,12 +15,41 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-const PageContent = styled.div`
+const PageBody = styled.div`
+  flex: 1 1 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+`;
+
+const ContentContainer = styled.div`
   flex: 1 1 100%;
   overflow: auto;
 `;
 
+const ContentBody = styled.div`
+  max-width: 640px;
+  margin: 4rem 0;
+  padding: 0 4rem;
+  @media (min-width: 1280px) {
+    margin: 4rem auto;
+  }
+`;
+
+class Content extends Component {
+  render() {
+    const { children } = this.props;
+    return (
+      <ContentContainer>
+        <ContentBody>{children}</ContentBody>
+      </ContentContainer>
+    );
+  }
+}
+
 export default class Page extends Component {
+  static Content = Content;
   render() {
     const { children } = this.props;
     const user = Meteor.user();
@@ -28,7 +57,7 @@ export default class Page extends Component {
       <Container>
         <Header />
         {user ? <AppNav /> : null}
-        <PageContent>{children}</PageContent>
+        <PageBody>{children}</PageBody>
         <Footer />
       </Container>
     );

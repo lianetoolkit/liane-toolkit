@@ -9,6 +9,8 @@ import MapPage from "/imports/ui2/pages/Map.jsx";
 import PeoplePage from "/imports/ui2/pages/People.jsx";
 import AuthPage from "/imports/ui2/pages/Auth.jsx";
 
+import CampaignSettingsPage from "/imports/ui2/pages/CampaignSettings.jsx";
+
 import { APP_NAME, addTitle, trackRouteEntry } from "./utils.js";
 
 // app routes
@@ -46,5 +48,13 @@ appRoutes.route("/map", {
   action: function() {
     addTitle(`${APP_NAME} | Map`);
     return mount(App, { content: { component: MapPage } });
+  }
+});
+
+appRoutes.route("/campaign/settings", {
+  name: "App.campaign.settings",
+  action: function() {
+    addTitle(`${APP_NAME} | Campaign Settings`);
+    return mount(App, { content: { component: CampaignSettingsPage } });
   }
 });

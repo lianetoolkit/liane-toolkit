@@ -49,6 +49,7 @@ const Container = styled.nav`
   }
   .nav-content {
     max-width: 960px;
+    padding: 0 2rem;
     margin: 0 auto;
     display: flex;
     flex-direction: row;
@@ -91,9 +92,11 @@ class SettingsNav extends Component {
         trigger={<FontAwesomeIcon icon="cog" />}
       >
         <Dropdown.Content>
-          <Dropdown.NavItem href="#">
+          <Dropdown.NavItem href={FlowRouter.path("App.campaign.settings")}>
             Configurações da campanha
           </Dropdown.NavItem>
+          <Dropdown.Separator />
+          <Dropdown.NavItem href="#">Nova campanha</Dropdown.NavItem>
           <Dropdown.Separator />
           <Dropdown.NavItem href="#">Minha conta</Dropdown.NavItem>
           <Dropdown.NavItem href="javascript:void(0);" onClick={this._logout()}>
@@ -132,6 +135,12 @@ export default class AppNav extends Component {
               active={currentRoute.indexOf("App.map") === 0}
             >
               Locais
+            </NavItem>
+            <NavItem
+              href="#"
+              active={currentRoute.indexOf("App.chatbot") === 0}
+            >
+              Chatbot
             </NavItem>
           </div>
           <div className="meta link-group">

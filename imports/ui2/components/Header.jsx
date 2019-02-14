@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
-import TopNav from "./TopNav.jsx";
-
 const Container = styled.header`
   background: #222;
   padding: 2rem 0 1rem;
@@ -10,6 +8,7 @@ const Container = styled.header`
   flex: 0;
   .header-content {
     max-width: 960px;
+    padding: 0 2rem;
     margin: 0 auto;
     display: flex;
     flex-direction: row;
@@ -26,6 +25,27 @@ const Container = styled.header`
     .brand h1 img {
       width: 125px;
       height: auto;
+    }
+  }
+`;
+
+const TopNav = styled.nav`
+  display: flex;
+  flex-grow: 1;
+  flex-wrap: nowrap;
+  font-weight: 600;
+  font-size: 1em;
+  a {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    white-space: nowrap;
+    margin-left: 1.5rem;
+    border-bottom: 2px solid transparent;
+    &:hover,
+    &:focus,
+    &:active {
+      border-color: #fff;
     }
   }
 `;

@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import styled, { css } from "styled-components";
 
 const Container = styled.div`
+  width: 100%;
+  box-sizing: border-box;
   padding: 2rem 0 0;
 `;
 

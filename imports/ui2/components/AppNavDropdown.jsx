@@ -98,23 +98,26 @@ const Content = styled.div`
   font-size: 0.8em;
   position: relative;
   z-index: 2;
+  padding: 0.5rem 0 1rem 0;
 `;
 
 const Separator = styled.div`
   width: 100%;
   height: 1px;
-  background: #aaa;
+  background: #ccc;
+  margin: 0.5rem 0;
 `;
 
 const NavItem = styled.a`
   display: block;
-  padding: 0.4rem 1rem;
+  padding: 0.25rem 1.5rem;
   color: #666;
   text-decoration: none;
-  border-bottom: 1px solid #f0f0f0;
+  /* border-bottom: 1px solid #f0f0f0; */
   font-weight: 600;
   &:hover {
     color: #111;
+    background: #f0f0f0;
   }
   &:last-child {
     border: 0;

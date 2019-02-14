@@ -12,9 +12,6 @@ const Container = styled.table`
       box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.07);
       position: relative;
       z-index: 2;
-      td {
-        border-bottom-color: #ddd;
-      }
     }
     td {
       padding: 1rem;

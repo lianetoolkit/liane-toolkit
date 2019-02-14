@@ -3,8 +3,8 @@ import styled from "styled-components";
 
 const Container = styled.footer`
   flex: 0;
-  padding: 1rem;
-  background: #fff;
+  padding: 0.5rem;
+  background: #333;
   border-top: 1px solid #ddd;
   .footer-content {
     color: #999;
