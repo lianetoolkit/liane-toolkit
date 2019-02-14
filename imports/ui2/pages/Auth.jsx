@@ -4,6 +4,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Page from "../components/Page.jsx";
 
+const Container = styled.div`
+  flex: 1 1 100%;
+`;
+
 const HighlightContainer = styled.div`
   padding: 6rem 0;
   position: relative;
@@ -106,7 +110,7 @@ const LoginFormContainer = styled.form`
     font-size: 0.8em;
     text-transform: uppercase;
     letter-spacing: 0.12rem;
-    font-weight: 600;
+    font-weight: normal;
     line-height: 1.5;
     cursor: pointer;
     padding: 1rem;
@@ -117,6 +121,9 @@ const LoginFormContainer = styled.form`
     outline: none;
     border: 0;
     text-align: center;
+    .fa-facebook-square {
+      margin-right: 1rem;
+    }
     &:focus,
     &:hover {
       background: #333;
@@ -183,30 +190,36 @@ export default class AuthPage extends Component {
   render() {
     return (
       <Page>
-        <HighlightContainer>
-          <h2>
-            Caixa de ferramentas para campanhas eleitorais de baixo custo e alta
-            intensidade
-          </h2>
-          <ButtonGroup>
-            <a href="#">Como Funciona</a>
-            <a href="#">#NãoValeTudo</a>
-          </ButtonGroup>
-        </HighlightContainer>
-        <LoginFormContainer>
-          {/* <h3>Acesse sua conta</h3> */}
-          <a className="facebook-button button" onClick={this._facebookAuth()}>
-            <FontAwesomeIcon icon="facebook-square" /> Conecte-se com Facebook
-          </a>
-          {/* <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Senha" />
-          <input type="submit" value="Acessar painel" />
-          <nav>
+        <Container>
+          <HighlightContainer>
+            <h2>
+              Caixa de ferramentas para campanhas eleitorais de baixo custo e
+              alta intensidade
+            </h2>
+            <ButtonGroup>
+              <a href="#">Como Funciona</a>
+              <a href="#">#NãoValeTudo</a>
+            </ButtonGroup>
+          </HighlightContainer>
+          <LoginFormContainer>
+            {/* <h3>Acesse sua conta</h3> */}
+            <a
+              className="facebook-button button"
+              onClick={this._facebookAuth()}
+            >
+              <FontAwesomeIcon icon={["fab", "facebook-square"]} /> Conecte-se
+              com Facebook
+            </a>
+            {/* <input type="email" placeholder="Email" />
+            <input type="password" placeholder="Senha" />
+            <input type="submit" value="Acessar painel" />
+            <nav>
             &middot; <a href="#">Esqueci meu email</a>
             &middot; <a href="#">Esqueci minha senha</a>
             &middot;
           </nav> */}
-        </LoginFormContainer>
+          </LoginFormContainer>
+        </Container>
       </Page>
     );
   }
