@@ -96,7 +96,9 @@ class SettingsNav extends Component {
             Configurações da campanha
           </Dropdown.NavItem>
           <Dropdown.Separator />
-          <Dropdown.NavItem href="#">Nova campanha</Dropdown.NavItem>
+          <Dropdown.NavItem href={FlowRouter.path("App.campaign.new")}>
+            Nova campanha
+          </Dropdown.NavItem>
           <Dropdown.Separator />
           <Dropdown.NavItem href="#">Minha conta</Dropdown.NavItem>
           <Dropdown.NavItem href="javascript:void(0);" onClick={this._logout()}>

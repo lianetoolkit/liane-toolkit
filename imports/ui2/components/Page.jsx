@@ -5,23 +5,66 @@ import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import AppNav from "../components/AppNav.jsx";
 
-const Container = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
+const NavContainer = styled.div`
+  width: 20%;
+  min-width: 200px;
+  max-width: 600px;
   height: 100%;
+  background: #e7e7e7;
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  padding: 4rem 0 4rem 2rem;
+  @media (min-width: 1280px) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+  }
 `;
 
-const PageBody = styled.div`
-  flex: 1 1 100%;
-  overflow: auto;
-  display: flex;
-  flex-direction: row;
-  position: relative;
+const NavContent = styled.div`
+  width: 100%;
+  max-width: 200px;
+  flex: 0 0 auto;
+  font-size: 0.8em;
+  h3 {
+    color: #999;
+    font-size: 1.5em;
+    font-weight: normal;
+    margin: 0 2rem 2rem 1rem;
+  }
+  a {
+    display: block;
+    line-height: 1;
+    color: #666;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    &:hover {
+      color: #000;
+    }
+    &.active {
+      ${"" /* padding: 0.75rem 1rem;
+      margin: 0.25rem 0; */} color: #000;
+      background: #f7f7f7;
+      border-radius: 7px 0 0 7px;
+    }
+  }
 `;
+
+class Nav extends Component {
+  render() {
+    const { children } = this.props;
+    return (
+      <NavContainer>
+        <NavContent>{children}</NavContent>
+      </NavContainer>
+    );
+  }
+}
 
 const ContentContainer = styled.div`
   flex: 1 1 100%;
@@ -48,8 +91,33 @@ class Content extends Component {
   }
 }
 
+const Container = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const PageBody = styled.div`
+  flex: 1 1 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+`;
+
+const Title = styled.h1`
+  font-size: 3em;
+  margin: 4rem 0;
+`;
+
 export default class Page extends Component {
+  static Nav = Nav;
   static Content = Content;
+  static Title = Title;
   render() {
     const { children } = this.props;
     const user = Meteor.user();

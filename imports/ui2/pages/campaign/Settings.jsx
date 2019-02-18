@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 
-import Page from "../components/Page.jsx";
-import PageNav from "../components/PageNav.jsx";
+import Page from "../../components/Page.jsx";
 
 export default class CampaignSettingsPage extends Component {
   constructor(props) {
@@ -15,7 +14,7 @@ export default class CampaignSettingsPage extends Component {
     const { active } = this.state;
     return (
       <>
-        <PageNav>
+        <Page.Nav>
           <h3>Configurações da campanha</h3>
           <a
             href="javascript:void(0);"
@@ -52,7 +51,7 @@ export default class CampaignSettingsPage extends Component {
           >
             Ações
           </a>
-        </PageNav>
+        </Page.Nav>
         <Page.Content>
           <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin
