@@ -6,7 +6,7 @@ const Container = styled.ul`
   margin: 0;
   padding: 0;
   list-style: none;
-  border-radius: 1.5rem;
+  border-radius: 1.625rem;
   border: 1px solid #ccc;
   li {
     cursor: pointer;

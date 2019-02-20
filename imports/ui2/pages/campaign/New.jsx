@@ -7,14 +7,17 @@ import SelectAccount from "../../components/facebook/SelectAccount.jsx";
 export default class NewCampaignPage extends Component {
   render() {
     return (
-      <Page.Content>
-        <Page.Title>Criando Nova Campanha</Page.Title>
-        <Form>
+      <Form>
+        <Form.Content>
+          <Page.Title>Criando Nova Campanha</Page.Title>
           <input type="text" placeholder="Campaign name" />
           <p>Selecione uma conta de Facebook para sua campanha:</p>
           <SelectAccount />
-        </Form>
-      </Page.Content>
+        </Form.Content>
+        <Form.Actions>
+          <button>Next</button>
+        </Form.Actions>
+      </Form>
     );
   }
 }

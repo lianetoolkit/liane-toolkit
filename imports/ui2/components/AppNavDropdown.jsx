@@ -17,7 +17,7 @@ const Container = styled.div`
     height: 300px;
     background: #fff;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.07);
-    border-radius: 0 0 1rem 1rem;
+    border-radius: 0 0 1.65rem 1.65rem;
     display: flex;
     flex-direction: column;
     border: 1px solid #ddd;
@@ -98,7 +98,7 @@ const Content = styled.div`
   font-size: 0.8em;
   position: relative;
   z-index: 2;
-  padding: 0.5rem 0 1rem 0;
+  padding: 0.5rem 0 1.65rem 0;
 `;
 
 const Separator = styled.div`
