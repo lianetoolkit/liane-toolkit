@@ -124,7 +124,12 @@ export default class Page extends Component {
     return (
       <Container>
         <Header />
-        {user ? <AppNav /> : null}
+        {user ? (
+          <AppNav
+            campaigns={this.props.campaigns}
+            campaignId={this.props.campaignId}
+          />
+        ) : null}
         <PageBody>{children}</PageBody>
         <Footer />
       </Container>

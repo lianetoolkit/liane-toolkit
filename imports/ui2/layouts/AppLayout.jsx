@@ -12,10 +12,9 @@ export default class AppLayout extends Component {
   }
   render() {
     const { content, connected } = this.props;
-    console.log(this.props.campaigns);
     if (connected) {
       return (
-        <Page>
+        <Page {...this.props}>
           <content.component {...this.props} />
         </Page>
       );

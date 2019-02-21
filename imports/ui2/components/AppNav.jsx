@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { find } from "lodash";
 
 import Dropdown from "./AppNavDropdown.jsx";
 import NotificationsPopup from "./NotificationsPopup.jsx";
@@ -41,11 +42,11 @@ const Container = styled.nav`
     &.clean {
       border: 0;
     }
-    .fa-chevron-down {
+    ${"" /* .fa-chevron-down {
       margin-left: 0.5rem;
       font-weight: normal;
       font-size: 0.9em;
-    }
+    } */};
   }
   .nav-content {
     max-width: 960px;
@@ -110,21 +111,61 @@ class SettingsNav extends Component {
   }
 }
 
-export default class AppNav extends Component {
+class CampaignNav extends Component {
+  _handleClick = campaignId => ev => {
+    ev.preventDefault();
+    Session.set("campaignId", campaignId);
+  };
   render() {
+    const { campaigns } = this.props;
+    return (
+      <Dropdown
+        width="200px"
+        height="auto"
+        className="icon-link"
+        trigger={<FontAwesomeIcon icon="chevron-down" />}
+      >
+        <Dropdown.Content>
+          {campaigns.map(campaign => (
+            <Dropdown.NavItem
+              key={campaign._id}
+              href="javascript:void(0);"
+              onClick={this._handleClick(campaign._id)}
+            >
+              {campaign.name}
+            </Dropdown.NavItem>
+          ))}
+        </Dropdown.Content>
+      </Dropdown>
+    );
+  }
+}
+
+export default class AppNav extends Component {
+  _getCurrentCampaign = () => {
+    const { campaignId, campaigns } = this.props;
+    return find(campaigns, c => c._id == campaignId);
+  };
+  render() {
+    const { campaigns } = this.props;
+    const currentCampaign = this._getCurrentCampaign();
     const currentRoute = FlowRouter.current().route.name;
     return (
       <Container>
         <div className="nav-content">
           <div className="features link-group">
-            <NavItem
-              href={FlowRouter.path("App.dashboard")}
-              active={currentRoute.indexOf("App.dashboard") === 0}
-              featured={true}
-            >
-              Campanha
-              <FontAwesomeIcon icon="chevron-down" />
-            </NavItem>
+            {currentCampaign ? (
+              <NavItem
+                href={FlowRouter.path("App.dashboard")}
+                active={currentRoute.indexOf("App.dashboard") === 0}
+                featured={true}
+              >
+                {currentCampaign.name}
+              </NavItem>
+            ) : null}
+            {campaigns.length > 1 ? (
+              <CampaignNav campaigns={campaigns} />
+            ) : null}
             <NavItem href="#">Temas</NavItem>
             <NavItem
               href={FlowRouter.path("App.people")}

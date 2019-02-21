@@ -1,9 +1,13 @@
 import { Meteor } from "meteor/meteor";
 import { withTracker } from "meteor/react-meteor-data";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
-import { FlowRouter } from "meteor/kadira:flow-router";
+import { ReactiveVar } from "meteor/reactive-var";
+import { ClientStorage } from "meteor/ostrio:cstorage";
+import { find } from "lodash";
 
 import AppLayout from "../layouts/AppLayout.jsx";
+
+const campaignId = new ReactiveVar(false);
 
 const AppSubs = new SubsManager();
 
@@ -21,7 +25,26 @@ export default withTracker(({ content }) => {
       ? Campaigns.find({
           users: { $elemMatch: { userId: user._id } }
         }).fetch()
-      : null;
+      : [];
+  }
+
+  if (Session.get("campaignId")) {
+    campaignId.set(Session.get("campaignId"));
+    ClientStorage.set("campaign", Session.get("campaignId"));
+  }
+
+  if (campaignsHandle.ready() && campaigns.length) {
+    if (ClientStorage.has("campaign")) {
+      let currentCampaign = ClientStorage.get("campaign");
+      if (find(campaigns, c => currentCampaign == c._id)) {
+        Session.set("campaignId", currentCampaign);
+        campaignId.set(currentCampaign);
+      }
+    } else {
+      Session.set("campaignId", campaigns[0]._id);
+      campaignId.set(campaigns[0]._id);
+      ClientStorage.set("campaign", campaigns[0]._id);
+    }
   }
 
   return {
@@ -29,6 +52,7 @@ export default withTracker(({ content }) => {
     connected,
     isLoggedIn,
     campaigns,
+    campaignId: campaignId.get(),
     content: content,
     routeName: FlowRouter.getRouteName()
   };

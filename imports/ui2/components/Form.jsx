@@ -29,16 +29,12 @@ const Container = styled.form`
 const ContentContainer = styled.div`
   flex: 1 1 100%;
   overflow: auto;
+  box-sizing: border-box;
 `;
 
 const FormContent = styled.div`
   max-width: 600px;
   margin: 4rem auto;
-`;
-
-const Actions = styled.div`
-  background: #fff;
-  padding: 2rem;
 `;
 
 class Content extends Component {
@@ -52,11 +48,58 @@ class Content extends Component {
   }
 }
 
+const ActionsContainer = styled.div`
+  ${"" /* border-top: 1px solid #ddd; */};
+`;
+
+const ActionsContent = styled.div`
+  width: 100%;
+  max-width: 600px;
+  margin: 1rem auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  button,
+  input[type="submit"] {
+    display: block;
+    border: 0;
+    background: #63c;
+    padding: 1rem 1.5rem;
+    border-radius: 1.625rem;
+    color: #fff;
+    cursor: pointer;
+    font-family: "Unica One", monospace;
+    letter-spacing: 0.1rem;
+    margin: 0;
+    &:hover,
+    &:active,
+    &:focus {
+      background: #333;
+    }
+    &:disabled {
+      background: #bbb;
+      color: #fff;
+      cursor: default;
+    }
+  }
+`;
+
+class Actions extends Component {
+  render() {
+    const { children } = this.props;
+    return (
+      <ActionsContainer>
+        <ActionsContent>{children}</ActionsContent>
+      </ActionsContainer>
+    );
+  }
+}
+
 export default class Form extends Component {
   static Content = Content;
   static Actions = Actions;
   render() {
-    const { children } = this.props;
-    return <Container>{children}</Container>;
+    const { children, ...props } = this.props;
+    return <Container {...props}>{children}</Container>;
   }
 }

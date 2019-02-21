@@ -43,7 +43,8 @@ Campaigns.schema = new SimpleSchema({
     type: Campaigns.usersSchema
   },
   contextId: {
-    type: String
+    type: String,
+    optional: true
   },
   name: {
     type: String
