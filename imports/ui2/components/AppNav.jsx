@@ -142,49 +142,46 @@ class CampaignNav extends Component {
 }
 
 export default class AppNav extends Component {
-  _getCurrentCampaign = () => {
-    const { campaignId, campaigns } = this.props;
-    return find(campaigns, c => c._id == campaignId);
-  };
   render() {
-    const { campaigns } = this.props;
-    const currentCampaign = this._getCurrentCampaign();
+    const { campaigns, campaign } = this.props;
     const currentRoute = FlowRouter.current().route.name;
     return (
       <Container>
         <div className="nav-content">
           <div className="features link-group">
-            {currentCampaign ? (
-              <NavItem
-                href={FlowRouter.path("App.dashboard")}
-                active={currentRoute.indexOf("App.dashboard") === 0}
-                featured={true}
-              >
-                {currentCampaign.name}
-              </NavItem>
+            {campaign ? (
+              <>
+                <NavItem
+                  href={FlowRouter.path("App.dashboard")}
+                  active={currentRoute.indexOf("App.dashboard") === 0}
+                  featured={true}
+                >
+                  {campaign.name}
+                </NavItem>
+                {campaigns.length > 1 ? (
+                  <CampaignNav campaigns={campaigns} />
+                ) : null}
+                <NavItem href="#">Temas</NavItem>
+                <NavItem
+                  href={FlowRouter.path("App.people")}
+                  active={currentRoute.indexOf("App.people") === 0}
+                >
+                  Pessoas
+                </NavItem>
+                <NavItem
+                  href={FlowRouter.path("App.map")}
+                  active={currentRoute.indexOf("App.map") === 0}
+                >
+                  Locais
+                </NavItem>
+                <NavItem
+                  href="#"
+                  active={currentRoute.indexOf("App.chatbot") === 0}
+                >
+                  Chatbot
+                </NavItem>
+              </>
             ) : null}
-            {campaigns.length > 1 ? (
-              <CampaignNav campaigns={campaigns} />
-            ) : null}
-            <NavItem href="#">Temas</NavItem>
-            <NavItem
-              href={FlowRouter.path("App.people")}
-              active={currentRoute.indexOf("App.people") === 0}
-            >
-              Pessoas
-            </NavItem>
-            <NavItem
-              href={FlowRouter.path("App.map")}
-              active={currentRoute.indexOf("App.map") === 0}
-            >
-              Locais
-            </NavItem>
-            <NavItem
-              href="#"
-              active={currentRoute.indexOf("App.chatbot") === 0}
-            >
-              Chatbot
-            </NavItem>
           </div>
           <div className="meta link-group">
             <SettingsNav />

@@ -9,7 +9,7 @@ import MapPage from "/imports/ui2/pages/Map.jsx";
 import PeoplePage from "/imports/ui2/pages/People.jsx";
 import AuthPage from "/imports/ui2/pages/Auth.jsx";
 
-import CampaignSettingsPage from "/imports/ui2/pages/campaign/Settings.jsx";
+import CampaignSettingsPage from "/imports/ui2/pages/campaign/settings/General.jsx";
 import NewCampaignPage from "/imports/ui2/containers/campaign/New.jsx";
 
 import { APP_NAME, addTitle, trackRouteEntry } from "./utils.js";

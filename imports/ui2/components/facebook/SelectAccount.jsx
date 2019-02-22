@@ -50,13 +50,14 @@ export default class SelectAccount extends Component {
     super(props);
     this.state = {
       loading: false,
-      accounts: []
+      accounts: [],
+      selected: []
     };
   }
   _handleClick = account => ev => {
     ev.preventDefault();
     this.setState({
-      selected: account.id
+      selected: [account.id]
     });
     if (this.props.onChange) {
       this.props.onChange({
@@ -80,7 +81,7 @@ export default class SelectAccount extends Component {
   }
   _isSelected = account => {
     const { selected } = this.state;
-    return account.id == selected;
+    return selected.indexOf(account.id) !== -1;
   };
   render() {
     const { accounts } = this.state;

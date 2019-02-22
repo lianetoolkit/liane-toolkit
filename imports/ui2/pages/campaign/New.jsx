@@ -31,8 +31,11 @@ export default class NewCampaignPage extends Component {
     if (this._filledForm()) {
       const { formData } = this.state;
       Meteor.call("campaigns.create", formData, (err, data) => {
-        console.log(err);
-        console.log(data);
+        if (err) {
+          console.log(err);
+        } else {
+          // data
+        }
       });
     } else {
       console.log("nope");

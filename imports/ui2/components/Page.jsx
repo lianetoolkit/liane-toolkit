@@ -10,7 +10,6 @@ const NavContainer = styled.div`
   min-width: 200px;
   max-width: 600px;
   height: 100%;
-  background: #e7e7e7;
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
@@ -32,14 +31,14 @@ const NavContent = styled.div`
   font-size: 0.8em;
   h3 {
     color: #999;
-    font-size: 1.5em;
+    font-size: 1.75em;
     font-weight: normal;
     margin: 0 2rem 2rem 1rem;
   }
   a {
     display: block;
     line-height: 1;
-    color: #666;
+    color: #999;
     text-decoration: none;
     font-weight: 600;
     padding: 0.75rem 1rem;
@@ -128,6 +127,7 @@ export default class Page extends Component {
           <AppNav
             campaigns={this.props.campaigns}
             campaignId={this.props.campaignId}
+            campaign={this.props.campaign}
           />
         ) : null}
         <PageBody>{children}</PageBody>

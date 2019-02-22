@@ -20,6 +20,7 @@ const Container = styled.form`
     font-size: 1em;
     border-radius: 1.625rem;
     font-family: "Open Sans", "Helvetica", "Arial", sans-serif;
+    outline: none;
     &:focus {
       background: #fff;
     }
@@ -33,8 +34,9 @@ const ContentContainer = styled.div`
 `;
 
 const FormContent = styled.div`
-  max-width: 600px;
+  max-width: 640px;
   margin: 4rem auto;
+  padding: 0 4rem;
 `;
 
 class Content extends Component {
@@ -53,9 +55,9 @@ const ActionsContainer = styled.div`
 `;
 
 const ActionsContent = styled.div`
-  width: 100%;
-  max-width: 600px;
+  max-width: 640px;
   margin: 1rem auto;
+  padding: 0 4rem;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
