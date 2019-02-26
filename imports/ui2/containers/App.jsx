@@ -1,9 +1,10 @@
 import { Meteor } from "meteor/meteor";
 import { withTracker } from "meteor/react-meteor-data";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { ReactiveVar } from "meteor/reactive-var";
 import { ClientStorage } from "meteor/ostrio:cstorage";
-import { find } from "lodash";
+import { find, map } from "lodash";
 
 import AppLayout from "../layouts/AppLayout.jsx";
 
@@ -51,7 +52,41 @@ export default withTracker(({ content }) => {
 
   let campaign;
   if (campaignId) {
-    campaign = campaigns.find(c => c._id == campaignId);
+    const currentCampaignOptions = {
+      transform: function(campaign) {
+        let accountsMap = {};
+        campaign.accounts.forEach(account => {
+          accountsMap[account.facebookId] = account;
+        });
+        FacebookAccounts.find({
+          facebookId: { $in: Object.keys(accountsMap) }
+        })
+          .fetch()
+          .forEach(account => {
+            accountsMap[account.facebookId] = {
+              ...accountsMap[account.facebookId],
+              ...account
+            };
+          });
+        campaign.accounts = Object.values(accountsMap);
+        campaign.users = Meteor.users
+          .find({
+            _id: { $in: map(campaign.users, "userId") }
+          })
+          .fetch()
+          .map(user => {
+            user.campaign = campaign.users.find(u => u.userId == user._id);
+            return user;
+          });
+        return campaign;
+      }
+    };
+    const currentCampaignHandle = AppSubs.subscribe("campaigns.detail", {
+      campaignId
+    });
+    campaign = currentCampaignHandle.ready()
+      ? Campaigns.findOne(campaignId, currentCampaignOptions)
+      : null;
   }
 
   return {

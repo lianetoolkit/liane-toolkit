@@ -175,7 +175,7 @@ export default class AppNav extends Component {
                   Locais
                 </NavItem>
                 <NavItem
-                  href="#"
+                  href={FlowRouter.path("App.chatbot")}
                   active={currentRoute.indexOf("App.chatbot") === 0}
                 >
                   Chatbot

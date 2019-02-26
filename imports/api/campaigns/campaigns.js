@@ -13,12 +13,23 @@ Campaigns.usersSchema = new SimpleSchema({
   }
 });
 
+Campaigns.chatbotSchema = new SimpleSchema({
+  active: {
+    type: Boolean,
+    defaultValue: false
+  }
+});
+
 Campaigns.accountsSchema = new SimpleSchema({
   facebookId: {
     type: String
   },
   accessToken: {
     type: String
+  },
+  chatbot: {
+    type: Campaigns.chatbotSchema,
+    optional: true
   }
 });
 
