@@ -6,7 +6,9 @@ import {
   faBell,
   faChevronDown,
   faSignOutAlt,
-  faCheck
+  faCheck,
+  faToggleOff,
+  faToggleOn
 } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 
@@ -16,4 +18,6 @@ library.add(faBell);
 library.add(faChevronDown);
 library.add(faSignOutAlt);
 library.add(faCheck);
+library.add(faToggleOff);
+library.add(faToggleOn);
 library.add(faFacebookSquare);

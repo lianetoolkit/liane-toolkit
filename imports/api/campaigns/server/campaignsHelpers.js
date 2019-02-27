@@ -317,6 +317,56 @@ const CampaignsHelpers = {
       });
     }
   },
+  activateChatbot({ campaignId, facebookAccountId }) {
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    if (
+      !_.find(
+        campaign.accounts,
+        account => account.facebookId == facebookAccountId
+      )
+    ) {
+      throw new Meteor.Error(404, "Facebook Account not found");
+    }
+
+    return Campaigns.update(
+      { _id: campaignId, "accounts.facebookId": facebookAccountId },
+      {
+        $set: {
+          "accounts.$.chatbot.active": true
+        }
+      }
+    );
+  },
+  deactivateChatbot({ campaignId, facebookAccountId }) {
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    if (
+      !_.find(
+        campaign.accounts,
+        account => account.facebookId == facebookAccountId
+      )
+    ) {
+      throw new Meteor.Error(404, "Facebook Account not found");
+    }
+
+    return Campaigns.update(
+      { _id: campaignId, "accounts.facebookId": facebookAccountId },
+      {
+        $set: {
+          "accounts.$.chatbot.active": false
+        }
+      }
+    );
+  },
   removeCampaign({ campaignId }) {
     const campaign = Campaigns.findOne(campaignId);
 

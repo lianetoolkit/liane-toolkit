@@ -68,9 +68,18 @@ Meteor.publish("campaigns.byUser", function() {
   this.unblock();
   const currentUser = this.userId;
   if (currentUser) {
-    return Campaigns.find({
-      users: { $elemMatch: { userId: currentUser } }
-    });
+    return Campaigns.find(
+      {
+        users: { $elemMatch: { userId: currentUser } }
+      },
+      {
+        fields: {
+          name: 1,
+          users: 1,
+          accounts: 1
+        }
+      }
+    );
   } else {
     return this.ready();
   }
