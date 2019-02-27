@@ -40,3 +40,51 @@ h3 {
 p {
   margin: 0 0 1rem;
 }
+
+textarea,
+input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  padding: 1.25rem;
+  line-height: 1;
+  margin: 0 0 1rem;
+  border: 0;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  font-size: 1em;
+  border-radius: 1.625rem;
+  font-family: "Open Sans", "Helvetica", "Arial", sans-serif;
+  outline: none;
+}
+
+input:focus {
+  background: #fff;
+}
+
+.button,
+button,
+input[type="submit"] {
+  display: block;
+  border: 0;
+  background: #63c;
+  padding: 1rem 1.5rem;
+  border-radius: 1.625rem;
+  color: #fff;
+  cursor: pointer;
+  font-family: "Unica One", monospace;
+  letter-spacing: 0.1rem;
+  margin: 0;
+}
+
+input[type="submit"]:hover,
+input[type="submit"]:active,
+input[type="submit"]:focus {
+  background: #333;
+}
+input[type=submit]:disabled {
+  background: #bbb;
+  color: #fff;
+  cursor: default;
+}
