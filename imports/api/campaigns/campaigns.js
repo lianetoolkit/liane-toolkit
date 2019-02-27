@@ -13,7 +13,7 @@ Campaigns.usersSchema = new SimpleSchema({
   }
 });
 
-Campaigns.chatbotSchema = new SimpleSchema({
+Campaigns.accountChatbotSchema = new SimpleSchema({
   active: {
     type: Boolean,
     defaultValue: false
@@ -28,7 +28,7 @@ Campaigns.accountsSchema = new SimpleSchema({
     type: String
   },
   chatbot: {
-    type: Campaigns.chatbotSchema,
+    type: Campaigns.accountChatbotSchema,
     optional: true
   }
 });
