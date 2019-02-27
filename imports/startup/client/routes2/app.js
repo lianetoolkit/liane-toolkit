@@ -10,6 +10,7 @@ import PeoplePage from "/imports/ui2/pages/People.jsx";
 import AuthPage from "/imports/ui2/pages/Auth.jsx";
 
 import CampaignSettingsPage from "/imports/ui2/pages/campaign/settings/General.jsx";
+import CampaignAccountsPage from "/imports/ui2/pages/campaign/settings/Accounts.jsx";
 import NewCampaignPage from "/imports/ui2/containers/campaign/New.jsx";
 
 import { APP_NAME, addTitle, trackRouteEntry } from "./utils.js";
@@ -64,5 +65,12 @@ appRoutes.route("/campaign/settings", {
   action: function() {
     addTitle(`${APP_NAME} | Campaign Settings`);
     return mount(App, { content: { component: CampaignSettingsPage } });
+  }
+});
+appRoutes.route("/campaign/settings/accounts", {
+  name: "App.campaign.accounts",
+  action: function() {
+    addTitle(`${APP_NAME} | Campaign Accounts`);
+    return mount(App, { content: { component: CampaignAccountsPage } });
   }
 });

@@ -15,6 +15,7 @@ const NavContainer = styled.div`
   justify-content: flex-end;
   flex: 0 0 auto;
   box-sizing: border-box;
+  border-right: 1px solid #ccc;
   padding: 4rem 0 4rem 2rem;
   @media (min-width: 1280px) {
     position: absolute;
