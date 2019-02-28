@@ -41,6 +41,10 @@ p {
   margin: 0 0 1rem;
 }
 
+textarea {
+  resize: none;
+}
+
 textarea,
 input {
   display: block;
@@ -50,9 +54,7 @@ input {
   padding: 1.25rem;
   line-height: 1;
   margin: 0 0 1rem;
-  border: 0;
   border: 1px solid #ccc;
-  border-radius: 0;
   font-size: 1em;
   border-radius: 1.625rem;
   font-family: "Open Sans", "Helvetica", "Arial", sans-serif;
@@ -83,7 +85,7 @@ input[type="submit"]:active,
 input[type="submit"]:focus {
   background: #333;
 }
-input[type=submit]:disabled {
+input[type="submit"]:disabled {
   background: #bbb;
   color: #fff;
   cursor: default;

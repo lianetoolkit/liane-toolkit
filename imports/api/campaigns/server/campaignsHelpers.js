@@ -406,8 +406,12 @@ const CampaignsHelpers = {
         })
       );
     } catch (err) {
-      console.log(err);
-      throw new Meteor.Error(500, "Error trying to unsubscribe");
+      if (err.response.error.code == 100) { // App not installed
+        console.log("App not installed");
+      } else {
+        console.log(err);
+        throw new Meteor.Error(500, "Error trying to unsubscribe");
+      }
     }
 
     return Campaigns.update(
