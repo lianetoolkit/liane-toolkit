@@ -16,6 +16,10 @@ const AccountList = styled.ul`
   li {
     margin: 0;
     padding: 0;
+    border-bottom: 1px solid #ddd;
+    &:last-child {
+      border-bottom: 0;
+    }
     header {
       display: flex;
       padding: 1rem 1.5rem;

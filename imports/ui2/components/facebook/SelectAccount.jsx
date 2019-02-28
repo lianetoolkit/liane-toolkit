@@ -4,16 +4,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Container = styled.ul`
   margin: 0;
-  padding: 0;
+  padding: 0 0 0.25rem;
   list-style: none;
   border-radius: 1.625rem;
   border: 1px solid #ccc;
   li {
-    margin: 0;
+    margin: 0.25rem 0.25rem 0;
     padding: 0;
     a {
-      padding: 1rem 1.5rem;
-      border-radius: 1.5rem;
+      padding: 0.8rem 1.2rem;
+      border-radius: 1.625rem;
       margin: 0;
       color: #666;
       display: flex;
@@ -54,30 +54,61 @@ export default class SelectAccount extends Component {
       selected: []
     };
   }
-  _handleClick = account => ev => {
-    ev.preventDefault();
-    this.setState({
-      selected: [account.id]
-    });
-    if (this.props.onChange) {
-      this.props.onChange({
-        target: {
-          name: this.props.name,
-          value: account.id
-        }
-      });
+  static getDerivedStateFromProps({ value }, { selected }) {
+    if (value && value.length && !selected.length) {
+      return {
+        selected: value
+      };
     }
+    return null;
+  }
+  _handleClick = account => ev => {
+    const { multiple } = this.props;
+    const { selected } = this.state;
+    ev.preventDefault();
+    let newSelected;
+    if (!multiple) {
+      newSelected = [account.id];
+    } else {
+      if (selected.indexOf(account.id) == -1) {
+        newSelected = [...selected, account.id];
+      } else {
+        newSelected = selected.filter(aId => aId !== account.id);
+      }
+    }
+    this.setState({
+      selected: newSelected
+    });
   };
   componentDidMount() {
     this.setState({ loading: true });
     Meteor.call("facebook.accounts.getUserAccounts", (error, data) => {
       if (error) {
         console.log(error);
-        // Alerts.error(error);
       } else {
         this.setState({ accounts: data.result, loading: false });
       }
     });
+    if (this.state.selected.length && this.props.onChange) {
+      this.props.onChange({
+        target: {
+          name: this.props.name,
+          value: this.state.selected
+        }
+      });
+    }
+  }
+  componentDidUpdate(prevProps, { selected }) {
+    if (selected !== this.state.selected) {
+      if (this.props.onChange) {
+        this.props.onChange({
+          target: {
+            name: this.props.name,
+            value: this.state.selected
+          }
+        });
+      }
+    }
   }
   _isSelected = account => {
     const { selected } = this.state;

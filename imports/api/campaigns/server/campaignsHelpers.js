@@ -342,6 +342,22 @@ const CampaignsHelpers = {
     }
 
     try {
+      const yeekoRes = Promise.await(
+        axios.post(`${YEEKO.url}?api_key=${YEEKO.apiKey}`, {
+          idPage: facebookAccountId,
+          tokenPage: campaignAccount.accessToken,
+          titulo: account.name,
+          fanPage: `https://facebook.com/${facebookAccountId}`,
+          description: "test"
+        })
+      );
+      console.log(yeekoRes);
+    } catch (err) {
+      console.log(err);
+      throw new Meteor.Error(500, "Error connecting to Yeeko api");
+    }
+
+    try {
       Promise.await(
         FB.api(`${facebookAccountId}/subscribed_apps`, "post", {
           subscribed_fields: [
@@ -358,22 +374,6 @@ const CampaignsHelpers = {
       console.log(err);
       throw new Meteor.Error(500, "Error trying to subscribe");
     }
-
-    // try {
-    //   const yeekoRes = Promise.await(
-    //     axios.post(`${YEEKO.url}?api_key=${YEEKO.apiKey}`, {
-    //       idPage: facebookAccountId,
-    //       tokenPage: campaignAccount.accessToken,
-    //       titulo: account.name,
-    //       fanPage: `https://facebook.com/${facebookAccountId}`,
-    //       description: "test"
-    //     })
-    //   );
-    //   console.log(yeekoRes);
-    // } catch (err) {
-    //   console.log(err);
-    //   throw new Meteor.Error(500, "Error connecting to Yeeko api");
-    // }
 
     return Campaigns.update(
       { _id: campaignId, "accounts.facebookId": facebookAccountId },
@@ -400,13 +400,26 @@ const CampaignsHelpers = {
     }
 
     try {
+      const yeekoRes = Promise.await(
+        axios.delete(
+          `${YEEKO.url}${facebookAccountId}/?api_key=${YEEKO.apiKey}`
+        )
+      );
+      console.log(yeekoRes);
+    } catch (err) {
+      console.log(err);
+      throw new Meteor.Error(500, "Error connecting to Yeeko api");
+    }
+
+    try {
       Promise.await(
         FB.api(`${facebookAccountId}/subscribed_apps`, "delete", {
           access_token: campaignAccount.accessToken
         })
       );
     } catch (err) {
-      if (err.response.error.code == 100) { // App not installed
+      if (err.response.error.code == 100) {
+        // App not installed
         console.log("App not installed");
       } else {
         console.log(err);
