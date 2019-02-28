@@ -81,6 +81,7 @@ export default class SelectAccount extends Component {
     });
   };
   componentDidMount() {
+    const { multiple } = this.props;
     this.setState({ loading: true });
     Meteor.call("facebook.accounts.getUserAccounts", (error, data) => {
       if (error) {
@@ -93,18 +94,19 @@ export default class SelectAccount extends Component {
       this.props.onChange({
         target: {
           name: this.props.name,
-          value: this.state.selected
+          value: multiple ? this.state.selected : this.state.selected[0]
         }
       });
     }
   }
   componentDidUpdate(prevProps, { selected }) {
+    const { multiple } = this.props;
     if (selected !== this.state.selected) {
       if (this.props.onChange) {
         this.props.onChange({
           target: {
             name: this.props.name,
-            value: this.state.selected
+            value: multiple ? this.state.selected : this.state.selected[0]
           }
         });
       }
