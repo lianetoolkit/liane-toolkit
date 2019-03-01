@@ -12,6 +12,7 @@ import AuthPage from "/imports/ui2/pages/Auth.jsx";
 
 import CampaignSettingsPage from "/imports/ui2/pages/campaign/settings/General.jsx";
 import CampaignAccountsPage from "/imports/ui2/pages/campaign/settings/Accounts.jsx";
+import CampaignActionsPage from "/imports/ui2/pages/campaign/settings/Actions.jsx";
 import NewCampaignPage from "/imports/ui2/containers/campaign/New.jsx";
 
 import { APP_NAME, addTitle, trackRouteEntry } from "./utils.js";
@@ -81,5 +82,12 @@ appRoutes.route("/campaign/settings/accounts", {
   action: function() {
     addTitle(`${APP_NAME} | Campaign Accounts`);
     return mount(App, { content: { component: CampaignAccountsPage } });
+  }
+});
+appRoutes.route("/campaign/settings/actions", {
+  name: "App.campaign.actions",
+  action: function() {
+    addTitle(`${APP_NAME} | Campaign Actions`);
+    return mount(App, { content: { component: CampaignActionsPage } });
   }
 });

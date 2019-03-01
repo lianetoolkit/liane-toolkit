@@ -15,7 +15,6 @@ export default class NewCampaignPage extends Component {
     };
   }
   _handleChange = ({ target }) => {
-    console.log(target);
     this.setState({
       formData: {
         ...this.state.formData,

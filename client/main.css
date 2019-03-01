@@ -41,6 +41,13 @@ p {
   margin: 0 0 1rem;
 }
 
+hr {
+  margin: 2rem 0;
+  height: 0;
+  border: 0;
+  border-bottom: 1px solid #ddd;
+}
+
 textarea {
   resize: none;
 }
@@ -68,6 +75,8 @@ input:focus {
 .button,
 button,
 input[type="submit"] {
+  width: 100%;
+  box-sizing: border-box;
   display: block;
   border: 0;
   background: #63c;
@@ -78,6 +87,12 @@ input[type="submit"] {
   font-family: "Unica One", monospace;
   letter-spacing: 0.1rem;
   margin: 0;
+}
+
+.button.delete,
+button.delete,
+input[type="submit"].delete {
+  background-color: #cc0000;
 }
 
 input[type="submit"]:hover,

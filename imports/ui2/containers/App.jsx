@@ -34,14 +34,20 @@ export default withTracker(({ content }) => {
     ClientStorage.set("campaign", Session.get("campaignId"));
   }
 
+  let hasCampaign = false;
   if (campaignsHandle.ready() && campaigns.length) {
     if (ClientStorage.has("campaign")) {
+      hasCampaign = true;
       let currentCampaign = ClientStorage.get("campaign");
       if (find(campaigns, c => currentCampaign == c._id)) {
         Session.set("campaignId", currentCampaign);
         reactiveCampaignId.set(currentCampaign);
+      } else {
+        hasCampaign = false;
       }
-    } else {
+    }
+
+    if (!hasCampaign) {
       Session.set("campaignId", campaigns[0]._id);
       reactiveCampaignId.set(campaigns[0]._id);
       ClientStorage.set("campaign", campaigns[0]._id);

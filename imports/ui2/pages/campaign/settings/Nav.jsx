@@ -22,7 +22,12 @@ export default class SettingsNav extends Component {
           Contas de Facebook
         </a>
         <a href="javascript:void(0);">Equipe</a>
-        <a href="javascript:void(0);">Ações</a>
+        <a
+          href={FlowRouter.path("App.campaign.actions")}
+          className={currentRoute == "App.campaign.actions" ? "active" : ""}
+        >
+          Ações
+        </a>
       </Page.Nav>
     );
   }
