@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -135,7 +136,35 @@ export default class AppNavDropdown extends Component {
       open: false
     };
   }
-  toggle = () => () => {
+  componentDidMount() {
+    const node = ReactDOM.findDOMNode(this);
+    this.links = node.getElementsByTagName("A");
+    this._attachEvents();
+  }
+  componentWillUnmount() {
+    this._detachEvents();
+  }
+  _attachEvents = () => {
+    if (this.links.length) {
+      for (let i = 0; i < this.links.length; i++) {
+        this.links[i].addEventListener("click", this._closeOnInteraction);
+      }
+    }
+  };
+  _detachEvents = () => {
+    if (this.links.length) {
+      for (let i = 0; i < this.links.length; i++) {
+        this.links[i].removeEventListener("click", this._closeOnInteraction);
+      }
+    }
+  };
+  _closeOnInteraction = () => {
+    this.setState({
+      open: false
+    });
+  };
+  _toggle = () => ev => {
+    ev.preventDefault();
     const { open } = this.state;
     this.setState({
       open: !open
@@ -164,20 +193,19 @@ export default class AppNavDropdown extends Component {
     if (height) {
       style["height"] = height;
     }
+    if (!open) {
+      style["display"] = "none";
+    }
     return (
       <Container className={classes} {...props}>
-        <span className="trigger" onClick={this.toggle()}>
+        <span className="trigger" onClick={this._toggle()}>
           {trigger}
         </span>
         {triggerCount ? <TriggerCount>{triggerCount}</TriggerCount> : null}
-        {open ? (
-          <div className="dropdown" style={style}>
-            {tools ? (
-              <AppNavDropdown.Tools>{tools}</AppNavDropdown.Tools>
-            ) : null}
-            {children}
-          </div>
-        ) : null}
+        <div className="dropdown" style={style}>
+          {tools ? <AppNavDropdown.Tools>{tools}</AppNavDropdown.Tools> : null}
+          {children}
+        </div>
       </Container>
     );
   }
