@@ -6,12 +6,12 @@ import { get } from "lodash";
 import Content from "../components/Content.jsx";
 
 const AccountList = styled.ul`
-  max-width: 960px;
+  /* max-width: 960px; */
   margin: 0 auto;
   padding: 0;
   list-style: none;
   background: #fff;
-  border-radius: 1.65rem;
+  border-radius: 7px;
   border: 1px solid #ddd;
   li {
     margin: 0;

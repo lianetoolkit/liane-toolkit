@@ -7,7 +7,7 @@ import Table from "../components/Table.jsx";
 export default class PeoplePage extends Component {
   render() {
     return (
-      <Content full={true}>
+      <Content>
         <Table>
           <tbody>
             <tr>
