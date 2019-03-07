@@ -66,6 +66,18 @@ const ActionsContent = styled.div`
   }
 `;
 
+const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  button,
+  input[type=submit],
+  .button {
+    width: auto;
+    display: inline-block;
+    margin-left: 1rem;
+  }
+`;
+
 class Actions extends Component {
   render() {
     const { children } = this.props;
@@ -80,6 +92,7 @@ class Actions extends Component {
 export default class Form extends Component {
   static Content = Content;
   static Actions = Actions;
+  static ButtonGroup = ButtonGroup;
   render() {
     const { children, ...props } = this.props;
     return <Container {...props}>{children}</Container>;

@@ -4,16 +4,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Container = styled.ul`
   margin: 0;
-  padding: 0 0 0.25rem;
+  padding: 0 0 2px;
   list-style: none;
-  border-radius: 1.625rem;
+  border-radius: 7px;
   border: 1px solid #ccc;
   li {
-    margin: 0.25rem 0.25rem 0;
+    margin: 2px 2px 0;
     padding: 0;
     a {
       padding: 0.8rem 1.2rem;
-      border-radius: 1.625rem;
+      border-radius: 7px;
       margin: 0;
       color: #666;
       display: flex;

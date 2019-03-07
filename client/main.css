@@ -48,26 +48,49 @@ hr {
   border-bottom: 1px solid #ddd;
 }
 
+label {
+  display: block;
+  margin: 0 0 1rem;
+  font-weight: 600;
+}
+
+label input[type="checkbox"],
+label input[type="radio"] {
+  display: inline-block;
+  margin: 0 0.5rem;
+}
+
+label textarea,
+label input[type="text"],
+label input[type="email"],
+label input[type="password"] {
+  margin-top: 0.5rem;
+}
+
 textarea {
   resize: none;
+  min-height: 125px;
 }
 
 textarea,
-input {
+input[type="text"],
+input[type="email"],
+input[type="password"] {
   display: block;
   width: 100%;
   box-sizing: border-box;
   background: transparent;
-  padding: 1.25rem;
+  padding: 1rem;
   line-height: 1;
   margin: 0 0 1rem;
   border: 1px solid #ccc;
   font-size: 1em;
-  border-radius: 1.625rem;
+  border-radius: 7px;
   font-family: "Open Sans", "Helvetica", "Arial", sans-serif;
   outline: none;
 }
 
+textarea:focus,
 input:focus {
   background: #fff;
 }
@@ -80,7 +103,7 @@ input[type="submit"] {
   display: block;
   border: 0;
   background: #63c;
-  padding: 1rem 1.5rem;
+  padding: 1rem 2rem;
   border-radius: 1.625rem;
   color: #fff;
   cursor: pointer;

@@ -325,7 +325,7 @@ const CampaignsHelpers = {
       });
     }
   },
-  activateChatbot({ campaignId, facebookAccountId }) {
+  getChatbotYeekoConfig({ campaignId, facebookAccountId }) {
     const campaign = Campaigns.findOne(campaignId);
     const campaignAccount = _.find(
       campaign.accounts,
@@ -340,23 +340,29 @@ const CampaignsHelpers = {
     if (!campaignAccount) {
       throw new Meteor.Error(404, "Facebook Account not found");
     }
-
+    return {
+      idPage: facebookAccountId,
+      tokenPage: campaignAccount.accessToken,
+      titulo: account.name,
+      fanPage: `https://facebook.com/${facebookAccountId}`,
+      description: "test"
+    };
+  },
+  activateChatbot({ campaignId, facebookAccountId }) {
+    // Yeeko
+    const yeekoConfig = this.getChatbotYeekoConfig({
+      campaignId,
+      facebookAccountId
+    });
     try {
       const yeekoRes = Promise.await(
-        axios.post(`${YEEKO.url}?api_key=${YEEKO.apiKey}`, {
-          idPage: facebookAccountId,
-          tokenPage: campaignAccount.accessToken,
-          titulo: account.name,
-          fanPage: `https://facebook.com/${facebookAccountId}`,
-          description: "test"
-        })
+        axios.post(`${YEEKO.url}?api_key=${YEEKO.apiKey}`, yeekoConfig)
       );
-      console.log(yeekoRes);
     } catch (err) {
-      console.log(err);
+      console.log(err.response.data);
       throw new Meteor.Error(500, "Error connecting to Yeeko api");
     }
-
+    // Facebook subscription
     try {
       Promise.await(
         FB.api(`${facebookAccountId}/subscribed_apps`, "post", {
@@ -375,11 +381,67 @@ const CampaignsHelpers = {
       throw new Meteor.Error(500, "Error trying to subscribe");
     }
 
+    // Update locally
     return Campaigns.update(
       { _id: campaignId, "accounts.facebookId": facebookAccountId },
       {
         $set: {
           "accounts.$.chatbot.active": true
+        }
+      }
+    );
+  },
+  updateChatbot({ campaignId, facebookAccountId, config }) {
+    const campaign = Campaigns.findOne(campaignId);
+    const campaignAccount = _.find(
+      campaign.accounts,
+      account => account.facebookId == facebookAccountId
+    );
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    if (!campaignAccount) {
+      throw new Meteor.Error(404, "Facebook Account not found");
+    }
+
+    if (!campaignAccount.chatbot || !campaignAccount.chatbot.active) {
+      throw new Meteor.Error(401, "Chatbot is not active");
+    }
+
+    // Yeeko
+    const yeekoConfig = this.getChatbotYeekoConfig({
+      campaignId,
+      facebookAccountId
+    });
+    let data = _.pick(config, "init_text_response", "extra_info");
+    data["extra_info"] = JSON.stringify(data["extra_info"]);
+    try {
+      const yeekoRes = Promise.await(
+        axios.put(`${YEEKO.url}${facebookAccountId}/?api_key=${YEEKO.apiKey}`, {
+          ...yeekoConfig,
+          ...data
+        })
+      );
+    } catch (err) {
+      console.log(err.response.data);
+      throw new Meteor.Error(500, "Error connecting to Yeeko api");
+    }
+
+    // Update locally (repick data from config)
+    const $set = {
+      ...campaignAccount.chatbot,
+      ..._.pick(config, "init_text_response", "extra_info")
+    };
+    return Campaigns.update(
+      {
+        _id: campaignId,
+        "accounts.facebookId": facebookAccountId
+      },
+      {
+        $set: {
+          "accounts.$.chatbot": $set
         }
       }
     );
@@ -405,7 +467,6 @@ const CampaignsHelpers = {
           `${YEEKO.url}${facebookAccountId}/?api_key=${YEEKO.apiKey}`
         )
       );
-      console.log(yeekoRes);
     } catch (err) {
       console.log(err);
       throw new Meteor.Error(500, "Error connecting to Yeeko api");

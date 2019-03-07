@@ -256,6 +256,12 @@ export const campaignsChatbotActivation = new ValidatedMethod({
       throw new Meteor.Error(404, "Campaign not found");
     }
 
+    const allowed = Meteor.call("campaigns.canManage", { userId, campaignId });
+
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
     if (
       !_.find(
         campaign.accounts,
@@ -263,12 +269,6 @@ export const campaignsChatbotActivation = new ValidatedMethod({
       )
     ) {
       throw new Meteor.Error(404, "Facebook Account not found");
-    }
-
-    const allowed = Meteor.call("campaigns.canManage", { userId, campaignId });
-
-    if (!allowed) {
-      throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
     if (active) {
@@ -282,6 +282,60 @@ export const campaignsChatbotActivation = new ValidatedMethod({
         facebookAccountId
       });
     }
+  }
+});
+
+export const campaignsUpdateChatbot = new ValidatedMethod({
+  name: "campaigns.chatbot.update",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    facebookAccountId: {
+      type: String
+    },
+    config: {
+      type: Object,
+      blackbox: true
+    }
+  }).validator(),
+  run({ campaignId, facebookAccountId, config }) {
+    this.unblock();
+    logger.debug("campaigns.chatbot.update called", {
+      campaignId,
+      facebookAccountId
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    const allowed = Meteor.call("campaigns.canManage", { userId, campaignId });
+
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    if (
+      !_.find(
+        campaign.accounts,
+        account => account.facebookId == facebookAccountId
+      )
+    ) {
+      throw new Meteor.Error(404, "Facebook Account not found");
+    }
+
+    return CampaignsHelpers.updateChatbot({
+      campaignId,
+      facebookAccountId,
+      config
+    });
   }
 });
 
