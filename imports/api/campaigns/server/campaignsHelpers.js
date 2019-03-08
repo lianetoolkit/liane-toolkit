@@ -349,6 +349,12 @@ const CampaignsHelpers = {
     };
   },
   activateChatbot({ campaignId, facebookAccountId }) {
+    const campaign = Campaigns.findOne(campaignId);
+    const campaignAccount = _.find(
+      campaign.accounts,
+      account => account.facebookId == facebookAccountId
+    );
+    
     // Yeeko
     const yeekoConfig = this.getChatbotYeekoConfig({
       campaignId,
