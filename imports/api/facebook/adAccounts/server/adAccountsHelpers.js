@@ -58,7 +58,7 @@ const AdAccountsHelpers = {
     const adAccount = AdAccounts.findOne(adAccountId);
     const adminUsers = adAccount.users.filter(user => {
       // Retrieving users with permission "2" on the adaccount
-      return user.permissions.indexOf(2) !== -1;
+      return user.permissions && user.permissions.indexOf(2) !== -1;
     });
     if (adminUsers.length) {
       const ids = adminUsers.map(user => user.id);
