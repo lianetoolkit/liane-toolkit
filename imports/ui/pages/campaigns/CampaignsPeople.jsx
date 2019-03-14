@@ -65,13 +65,14 @@ export default class CampaignsPeople extends React.Component {
         options: query ? query.options : {}
       },
       (error, result) => {
-        this.setState({ isLoading: false });
-        if (error) {
-          Alerts.error(error);
-        } else {
-          const blob = new Blob([result], { type: "text/csv;charset=utf-8" });
-          saveAs(blob, `${campaign.name}-people.csv`);
-        }
+        console.log(result);
+        // this.setState({ isLoading: false });
+        // if (error) {
+        //   Alerts.error(error);
+        // } else {
+        //   const blob = new Blob([result], { type: "text/csv;charset=utf-8" });
+        //   saveAs(blob, `${campaign.name}-people.csv`);
+        // }
       }
     );
   }

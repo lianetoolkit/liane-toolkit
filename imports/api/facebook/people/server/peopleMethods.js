@@ -12,6 +12,8 @@ import moment from "moment";
 import { get, set, merge, pick, compact, uniq } from "lodash";
 import cep from "cep-promise";
 import { Random } from "meteor/random";
+import fs from "fs";
+import crypto from "crypto";
 
 const recaptchaSecret = Meteor.settings.recaptcha;
 
@@ -821,8 +823,168 @@ export const exportPeople = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    let flattened = [];
     let header = {};
+
+    const fileKey = crypto
+      .createHash("sha1")
+      .update(campaignId + JSON.stringify(rawQuery) + new Date().getTime())
+      .digest("hex")
+      .substr(0, 7);
+
+    const batchInterval = 15; // batch interval will be 10000
+
+    const totalCount = Promise.await(
+      People.rawCollection()
+        .find(searchQuery.query, {
+          ...searchQuery.options,
+          ...{
+            limit: 0,
+            fields: {
+              name: 1,
+              facebookId: 1,
+              campaignMeta: 1,
+              counts: 1
+            }
+          }
+        })
+        .count()
+    );
+
+    const batchAmount = Math.ceil(totalCount / batchInterval);
+
+    // first batch run get all headers
+    for (let i = 1; i <= batchAmount; i++) {
+      const limit = batchInterval * i;
+      const skip = limit - batchInterval;
+      console.log("HEADERS BATCH #" + i, { skip, limit });
+      Promise.await(
+        new Promise((resolve, reject) => {
+          People.rawCollection()
+            .find(searchQuery.query, {
+              ...searchQuery.options,
+              ...{
+                limit: limit,
+                skip: skip,
+                fields: {
+                  name: 1,
+                  facebookId: 1,
+                  campaignMeta: 1,
+                  counts: 1
+                }
+              }
+            })
+            .forEach(
+              person => {
+                if (person.campaignMeta) {
+                  for (let key in person.campaignMeta) {
+                    person[key] = person.campaignMeta[key];
+                  }
+                  delete person.campaignMeta;
+                }
+                const flattenedPerson = flattenObject(person);
+                for (let key in flattenedPerson) {
+                  header[key] = true;
+                }
+              },
+              err => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve();
+                }
+              }
+            );
+        })
+      );
+    }
+
+    const filePath = `/public/exports/${fileKey}.csv`;
+
+    header = Object.keys(header);
+
+    Promise.await(
+      new Promise((resolve, reject) => {
+        fs.mkdir("/public/exports", err => {
+          if (err) {
+            reject(err);
+          } else {
+            fs.writeFile(filePath, header.join(",") + "\n", "utf-8", err => {
+              if (err) reject(err);
+              else resolve();
+            });
+          }
+        });
+      })
+    );
+
+    let writeStream = fs.createWriteStream(filePath);
+
+    // second batch run store values
+    for (let i = 1; i <= batchAmount; i++) {
+      const limit = batchInterval * i;
+      const skip = limit - batchInterval;
+      let flattened = [];
+      console.log("STORE BATCH #" + i, { skip, limit });
+      Promise.await(
+        new Promise((resolve, reject) => {
+          People.rawCollection()
+            .find(searchQuery.query, {
+              ...searchQuery.options,
+              ...{
+                limit: limit,
+                skip: skip,
+                fields: {
+                  name: 1,
+                  facebookId: 1,
+                  campaignMeta: 1,
+                  counts: 1
+                }
+              }
+            })
+            .forEach(
+              person => {
+                if (person.campaignMeta) {
+                  for (let key in person.campaignMeta) {
+                    person[key] = person.campaignMeta[key];
+                  }
+                  delete person.campaignMeta;
+                }
+                flattened.push(flattenObject(person));
+              },
+              err => {
+                if (err) {
+                  reject(err);
+                } else {
+                  writeStream.write(
+                    Papa.unparse(
+                      {
+                        fields: header,
+                        data: flattened
+                      },
+                      {
+                        header: false
+                      }
+                    )
+                  );
+                  resolve();
+                }
+              }
+            );
+        })
+      );
+    }
+
+    writeStream.end();
+
+    return Promise.await(
+      new Promise((resolve, reject) => {
+        writeStream.on("finish", () => {
+          resolve(fileKey);
+        });
+      })
+    );
+
+    return false;
 
     return Promise.await(
       new Promise((resolve, reject) => {
