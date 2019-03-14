@@ -343,7 +343,7 @@ const CampaignsHelpers = {
     return {
       idPage: facebookAccountId,
       tokenPage: campaignAccount.accessToken,
-      titulo: account.name,
+      title: account.name,
       fanPage: `https://facebook.com/${facebookAccountId}`,
       description: "test"
     };
@@ -354,7 +354,7 @@ const CampaignsHelpers = {
       campaign.accounts,
       account => account.facebookId == facebookAccountId
     );
-    
+
     // Yeeko
     const yeekoConfig = this.getChatbotYeekoConfig({
       campaignId,
