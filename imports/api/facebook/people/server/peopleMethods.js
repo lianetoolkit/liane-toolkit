@@ -807,6 +807,7 @@ export const exportPeople = new ValidatedMethod({
     }
   }).validator(),
   run({ campaignId, rawQuery, options }) {
+    this.unblock();
     logger.debug("people.export called", { campaignId, rawQuery, options });
 
     const searchQuery = buildSearchQuery({
@@ -820,40 +821,54 @@ export const exportPeople = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    const people = People.find(searchQuery.query, {
-      ...searchQuery.options,
-      ...{
-        limit: 0,
-        fields: {
-          name: 1,
-          facebookId: 1,
-          campaignMeta: 1
-        }
-      }
-    }).fetch();
-
     let flattened = [];
-
     let header = {};
 
-    for (let person of people) {
-      if (person.campaignMeta) {
-        for (let key in person.campaignMeta) {
-          person[key] = person.campaignMeta[key];
-        }
-        delete person.campaignMeta;
-      }
-      const flattenedPerson = flattenObject(person);
-      for (let key in flattenedPerson) {
-        header[key] = true;
-      }
-      flattened.push(flattenObject(person));
-    }
-
-    return Papa.unparse({
-      fields: Object.keys(header),
-      data: flattened
-    });
+    return Promise.await(
+      new Promise((resolve, reject) => {
+        People.rawCollection()
+          .find(searchQuery.query, {
+            ...searchQuery.options,
+            ...{
+              limit: 0,
+              fields: {
+                name: 1,
+                facebookId: 1,
+                campaignMeta: 1,
+                counts: 1
+              }
+            }
+          })
+          .forEach(
+            person => {
+              console.log(person);
+              if (person.campaignMeta) {
+                for (let key in person.campaignMeta) {
+                  person[key] = person.campaignMeta[key];
+                }
+                delete person.campaignMeta;
+              }
+              const flattenedPerson = flattenObject(person);
+              for (let key in flattenedPerson) {
+                header[key] = true;
+              }
+              flattened.push(flattenObject(person));
+            },
+            err => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(
+                  Papa.unparse({
+                    fields: Object.keys(header),
+                    data: flattened
+                  })
+                );
+              }
+            }
+          );
+      })
+    );
   }
 });
 
