@@ -70,11 +70,12 @@ const ButtonGroup = styled.div`
   display: flex;
   justify-content: flex-end;
   button,
-  input[type=submit],
+  input[type="submit"],
   .button {
     width: auto;
     display: inline-block;
     margin-left: 1rem;
+    text-decoration: none;
   }
 `;
 

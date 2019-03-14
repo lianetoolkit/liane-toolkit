@@ -82,7 +82,8 @@ const CampaignsHelpers = {
       facebookId: account.id,
       accessToken: token.result,
       chatbot: {
-        active: false
+        active: false,
+        init_text_response: false
       }
     };
 
@@ -345,7 +346,9 @@ const CampaignsHelpers = {
       tokenPage: campaignAccount.accessToken,
       title: account.name,
       fanPage: `https://facebook.com/${facebookAccountId}`,
-      description: "test"
+      description: "test",
+      menu_autoconfigurable: true,
+      menu_principal: true
     };
   },
   activateChatbot({ campaignId, facebookAccountId }) {

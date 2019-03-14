@@ -112,7 +112,8 @@ class ChatbotPage extends Component {
     active: false,
     init_text_response: false,
     extra_info: {
-      campaign_presentation: ""
+      campaign_presentation: "",
+      campaign_details: ""
     }
   };
   static getDerivedStateFromProps({ campaign }, { formData }) {
@@ -307,6 +308,18 @@ class ChatbotPage extends Component {
                         />
                       </label>
                       <label>
+                        Detalhes da campanha
+                        <textarea
+                          placeholder="Dê mais detalhes sobre sua campanha"
+                          name="extra_info.campaign_details"
+                          value={
+                            formData[account.facebookId].extra_info
+                              .campaign_details
+                          }
+                          onChange={this._handleChange(account)}
+                        />
+                      </label>
+                      <label>
                         <input
                           type="checkbox"
                           name="init_text_response"
@@ -318,6 +331,13 @@ class ChatbotPage extends Component {
                         Ativar em mensagem inicial
                       </label>
                       <Form.ButtonGroup>
+                        <a
+                          className="button"
+                          href={`https://m.me/${account.facebookId}/?ref=:1116`}
+                          target="_blank"
+                        >
+                          Testar chatbot
+                        </a>
                         {this._isActive(account) ? (
                           <button
                             className="delete"
