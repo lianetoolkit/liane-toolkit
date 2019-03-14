@@ -841,7 +841,6 @@ export const exportPeople = new ValidatedMethod({
           })
           .forEach(
             person => {
-              console.log(person);
               if (person.campaignMeta) {
                 for (let key in person.campaignMeta) {
                   person[key] = person.campaignMeta[key];
