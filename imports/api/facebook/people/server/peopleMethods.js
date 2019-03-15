@@ -834,7 +834,7 @@ export const exportPeople = new ValidatedMethod({
       .digest("hex")
       .substr(0, 7);
 
-    const batchInterval = 15; // batch interval will be 10000
+    const batchInterval = 10000;
 
     const totalCount = Promise.await(
       People.rawCollection()
