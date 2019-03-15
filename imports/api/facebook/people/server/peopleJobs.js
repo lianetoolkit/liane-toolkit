@@ -40,6 +40,38 @@ const PeopleJobs = {
       return options;
     }
   },
+  "people.removeExportFile": {
+    run({ job }) {
+      logger.debug("people.removeExportFile job: called");
+      check(job && job.data && job.data.path, String);
+      let errored = false;
+      try {
+        PeopleHelpers.removeExportFile({
+          path: job.data.path
+        });
+      } catch (error) {
+        errored = true;
+        return job.fail(error.message);
+      } finally {
+        if (!errored) {
+          job.done();
+          return job.remove();
+        }
+      }
+    },
+    workerOptions: {
+      concurrency: 20
+    },
+    jobOptions() {
+      return {
+        delay: 12 * 60 * 60 * 1000, // Time until file deletion
+        retry: {
+          retries: 0,
+          wait: 5 * 1000
+        }
+      };
+    }
+  },
   "people.importPerson": {
     run({ job }) {
       logger.debug("people.importPerson job: called");

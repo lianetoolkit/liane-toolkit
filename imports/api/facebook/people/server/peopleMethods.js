@@ -6,14 +6,17 @@ import peopleMetaModel from "/imports/api/facebook/people/model/meta";
 import { PeopleHelpers } from "./peopleHelpers.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
+import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
 import moment from "moment";
 import { get, set, merge, pick, compact, uniq } from "lodash";
 import cep from "cep-promise";
 import { Random } from "meteor/random";
+import Papa from "papaparse";
 import fs from "fs";
 import crypto from "crypto";
+import mkdirp from "mkdirp";
 
 const recaptchaSecret = Meteor.settings.recaptcha;
 
@@ -853,10 +856,9 @@ export const exportPeople = new ValidatedMethod({
     const batchAmount = Math.ceil(totalCount / batchInterval);
 
     // first batch run get all headers
-    for (let i = 1; i <= batchAmount; i++) {
-      const limit = batchInterval * i;
-      const skip = limit - batchInterval;
-      console.log("HEADERS BATCH #" + i, { skip, limit });
+    for (let i = 0; i < batchAmount; i++) {
+      const limit = batchInterval;
+      const skip = batchInterval * i;
       Promise.await(
         new Promise((resolve, reject) => {
           People.rawCollection()
@@ -898,17 +900,19 @@ export const exportPeople = new ValidatedMethod({
       );
     }
 
-    const filePath = `/public/exports/${fileKey}.csv`;
+    const fileDir = `${process.env.PWD}/generated-files/${campaignId}`;
+    const fileName = `people-export-${fileKey}.csv`;
+    const filePath = `${fileDir}/${fileName}`;
 
     header = Object.keys(header);
 
     Promise.await(
       new Promise((resolve, reject) => {
-        fs.mkdir("/public/exports", err => {
+        mkdirp(fileDir, err => {
           if (err) {
             reject(err);
           } else {
-            fs.writeFile(filePath, header.join(",") + "\n", "utf-8", err => {
+            fs.writeFile(filePath, header.join(",") + "\r\n", "utf-8", err => {
               if (err) reject(err);
               else resolve();
             });
@@ -917,22 +921,21 @@ export const exportPeople = new ValidatedMethod({
       })
     );
 
-    let writeStream = fs.createWriteStream(filePath);
+    let writeStream = fs.createWriteStream(filePath, { flags: "a" });
 
     // second batch run store values
-    for (let i = 1; i <= batchAmount; i++) {
-      const limit = batchInterval * i;
-      const skip = limit - batchInterval;
+    for (let i = 0; i < batchAmount; i++) {
+      const limit = batchInterval;
+      const skip = batchInterval * i;
       let flattened = [];
-      console.log("STORE BATCH #" + i, { skip, limit });
       Promise.await(
         new Promise((resolve, reject) => {
           People.rawCollection()
             .find(searchQuery.query, {
               ...searchQuery.options,
               ...{
-                limit: limit,
-                skip: skip,
+                limit,
+                skip,
                 fields: {
                   name: 1,
                   facebookId: 1,
@@ -964,7 +967,8 @@ export const exportPeople = new ValidatedMethod({
                       {
                         header: false
                       }
-                    )
+                    ) + "\r\n",
+                    "utf-8"
                   );
                   resolve();
                 }
@@ -976,60 +980,23 @@ export const exportPeople = new ValidatedMethod({
 
     writeStream.end();
 
-    return Promise.await(
+    const url = Promise.await(
       new Promise((resolve, reject) => {
         writeStream.on("finish", () => {
-          resolve(fileKey);
+          resolve(`${Meteor.settings.filesUrl}/${campaignId}/${fileName}`);
         });
       })
     );
 
-    return false;
+    // Create job to delete export file
+    JobsHelpers.addJob({
+      jobType: "people.removeExportFile",
+      jobData: {
+        path: filePath
+      }
+    });
 
-    return Promise.await(
-      new Promise((resolve, reject) => {
-        People.rawCollection()
-          .find(searchQuery.query, {
-            ...searchQuery.options,
-            ...{
-              limit: 0,
-              fields: {
-                name: 1,
-                facebookId: 1,
-                campaignMeta: 1,
-                counts: 1
-              }
-            }
-          })
-          .forEach(
-            person => {
-              if (person.campaignMeta) {
-                for (let key in person.campaignMeta) {
-                  person[key] = person.campaignMeta[key];
-                }
-                delete person.campaignMeta;
-              }
-              const flattenedPerson = flattenObject(person);
-              for (let key in flattenedPerson) {
-                header[key] = true;
-              }
-              flattened.push(flattenObject(person));
-            },
-            err => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(
-                  Papa.unparse({
-                    fields: Object.keys(header),
-                    data: flattened
-                  })
-                );
-              }
-            }
-          );
-      })
-    );
+    return url;
   }
 });
 

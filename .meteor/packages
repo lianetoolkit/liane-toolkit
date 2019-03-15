@@ -45,7 +45,6 @@ dburles:factory
 xolvio:cleaner
 practicalmeteor:chai
 practicalmeteor:mocha
-harrison:papa-parse
 pfafman:filesaver
 session@1.1.8
 underscore@1.0.10

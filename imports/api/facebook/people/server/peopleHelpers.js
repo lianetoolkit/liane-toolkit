@@ -5,6 +5,7 @@ import { People, PeopleLists } from "/imports/api/facebook/people/people.js";
 import { Random } from "meteor/random";
 import { uniqBy, groupBy, mapKeys, flatten, get, set, cloneDeep } from "lodash";
 import crypto from "crypto";
+import fs from "fs";
 
 const googleMapsKey = Meteor.settings.googleMaps;
 
@@ -369,6 +370,13 @@ const PeopleHelpers = {
     );
 
     return res;
+  },
+  removeExportFile({ path }) {
+    return Promise.await(
+      new Promise((resolve, reject) => {
+        fs.unlink(path, resolve);
+      })
+    );
   }
 };
 

@@ -6,3 +6,4 @@ packages/*/.build*
 docker-compose.dev.yml
 .data/
 *.rdb
+generated-files/*

@@ -43,7 +43,6 @@ fetch@0.1.0
 fortawesome:fontawesome@4.7.0
 fourseven:scss@4.10.0
 geojson-utils@1.0.10
-harrison:papa-parse@1.1.7
 hot-code-push@1.0.4
 html-tools@1.0.11
 htmljs@1.0.11
