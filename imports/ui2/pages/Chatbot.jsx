@@ -96,6 +96,9 @@ const AccountList = styled.ul`
       padding: 1rem;
       font-size: 0.8em;
       background: #fbfbfb;
+      &.disabled > * {
+        opacity: 0.5;
+      }
     }
   }
 `;
@@ -290,7 +293,9 @@ class ChatbotPage extends Component {
                   ) : null}
                 </header>
                 {this._isSettings(account) ? (
-                  <section>
+                  <section
+                    className={!this._isActive(account) ? "disabled" : ""}
+                  >
                     <Form onSubmit={this._handleSubmit(account)}>
                       {!this._isActive(account) ? (
                         <p>O chatbot está desativado para esta página</p>
@@ -304,6 +309,7 @@ class ChatbotPage extends Component {
                             formData[account.facebookId].extra_info
                               .campaign_presentation
                           }
+                          disabled={!this._isActive(account)}
                           onChange={this._handleChange(account)}
                         />
                       </label>
@@ -316,6 +322,7 @@ class ChatbotPage extends Component {
                             formData[account.facebookId].extra_info
                               .campaign_details
                           }
+                          disabled={!this._isActive(account)}
                           onChange={this._handleChange(account)}
                         />
                       </label>
@@ -326,19 +333,22 @@ class ChatbotPage extends Component {
                           checked={
                             formData[account.facebookId].init_text_response
                           }
+                          disabled={!this._isActive(account)}
                           onChange={this._handleChange(account)}
                         />{" "}
                         Ativar em mensagem inicial
                       </label>
-                      <Form.ButtonGroup>
-                        <a
-                          className="button"
-                          href={`https://m.me/${account.facebookId}/?ref=:1116`}
-                          target="_blank"
-                        >
-                          Testar chatbot
-                        </a>
-                        {this._isActive(account) ? (
+                      {this._isActive(account) ? (
+                        <Form.ButtonGroup>
+                          <a
+                            className="button"
+                            href={`https://m.me/${
+                              account.facebookId
+                            }/?ref=:1116`}
+                            target="_blank"
+                          >
+                            Testar chatbot
+                          </a>
                           <button
                             className="delete"
                             onClick={this._handleActivationClick(
@@ -347,9 +357,12 @@ class ChatbotPage extends Component {
                           >
                             Remover chatbot
                           </button>
-                        ) : null}
-                        <input type="submit" value="Atualizar configurações" />
-                      </Form.ButtonGroup>
+                          <input
+                            type="submit"
+                            value="Atualizar configurações"
+                          />
+                        </Form.ButtonGroup>
+                      ) : null}
                     </Form>
                   </section>
                 ) : null}

@@ -63,7 +63,7 @@ export default class CampaignAccountsPage extends Component {
               />
             </Form.Content>
             <Form.Actions>
-              <input type="submit" value="Atualizar campanha" />
+              <input type="submit" value="Atualizar contas" />
             </Form.Actions>
           </Form>
         </>
