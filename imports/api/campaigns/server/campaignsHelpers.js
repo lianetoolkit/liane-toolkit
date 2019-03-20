@@ -52,13 +52,19 @@ const CampaignsHelpers = {
         const longToken = FacebookAccountsHelpers.exchangeFBToken({
           token: tokens[account.facebookId]
         });
-        if (longToken) {
-          account.accessToken = longToken.result;
-        }
+        Campaigns.update(
+          {
+            _id: campaignId,
+            "accounts.facebookId": account.facebookId
+          },
+          {
+            $set: {
+              "accounts.$.accessToken": longToken.result
+            }
+          }
+        );
       }
-      update.push(account);
     }
-    Campaigns.update({ _id: campaign._id }, { $set: { accounts: update } });
   },
   addAccount({ campaignId, account }) {
     check(campaignId, String);

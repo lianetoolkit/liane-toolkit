@@ -11,8 +11,8 @@ export default class AppLayout extends Component {
     }
   }
   render() {
-    const { content, connected } = this.props;
-    if (connected) {
+    const { content, ready, connected } = this.props;
+    if (connected && ready) {
       return (
         <Page {...this.props}>
           <content.component {...this.props} />

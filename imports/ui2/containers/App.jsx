@@ -9,6 +9,7 @@ import { find, map } from "lodash";
 import AppLayout from "../layouts/AppLayout.jsx";
 
 const reactiveCampaignId = new ReactiveVar(false);
+const ready = new ReactiveVar(false);
 
 const AppSubs = new SubsManager();
 
@@ -93,11 +94,15 @@ export default withTracker(({ content }) => {
     campaign = currentCampaignHandle.ready()
       ? Campaigns.findOne(campaignId, currentCampaignOptions)
       : null;
+    ready.set(currentCampaignHandle.ready() && campaignsHandle.ready());
+  } else {
+    ready.set(campaignsHandle.ready());
   }
 
   return {
     user,
     connected,
+    ready: ready.get(),
     isLoggedIn,
     campaigns,
     campaignId,

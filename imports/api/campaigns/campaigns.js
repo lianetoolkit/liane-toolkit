@@ -20,7 +20,8 @@ Campaigns.accountChatbotSchema = new SimpleSchema({
   },
   init_text_response: {
     type: Boolean,
-    defaultValue: false
+    defaultValue: false,
+    optional: true
   },
   extra_info: {
     type: Object,

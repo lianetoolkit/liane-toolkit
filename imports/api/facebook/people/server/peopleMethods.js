@@ -65,7 +65,7 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
   const { dateStart, dateEnd, reactionCount, ...query } = rawQuery;
   let queryOptions = {
     skip: options.skip || 0,
-    limit: Math.min(options.limit || 10, 50),
+    limit: Math.min(options.limit || 20, 50),
     fields: {
       name: 1,
       facebookId: 1,
