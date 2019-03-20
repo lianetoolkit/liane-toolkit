@@ -7,7 +7,7 @@ const Container = styled.div`
   width: 100%;
   > div {
     flex: 1 1 auto;
-    padding: 0.5rem;
+    padding: 0 1rem 0 0;
   }
   ul {
     margin: 0;
