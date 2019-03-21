@@ -13,6 +13,8 @@ const Container = styled.nav`
   font-size: 0.8em;
   box-shadow: 0 0 2rem rgba(0, 0, 0, 0.125);
   border-bottom: 1px solid #ddd;
+  position: relative;
+  z-index: 10;
   .link-group > * {
     display: inline-block;
     color: #333;

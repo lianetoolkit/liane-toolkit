@@ -1,12 +1,16 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import moment from "moment";
+import { get } from "lodash";
 
 import Page from "../components/Page.jsx";
 import Content from "../components/Content.jsx";
 import Table from "../components/Table.jsx";
+import Popup from "../components/Popup.jsx";
+import PersonMetaButtons from "../components/PersonMetaButtons.jsx";
 import PersonSummary from "../components/PersonSummary.jsx";
-import moment from "moment";
+import PersonReactions from "../components/PersonReactions.jsx";
 
 const MetaIndicatorContainer = styled.div`
   > * {
@@ -18,10 +22,24 @@ const MetaIndicatorContainer = styled.div`
   }
 `;
 
+const ExtraActions = styled.p`
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 0.7em;
+  background: #fff;
+  padding: 1.1rem 0.75rem 0.5rem 0.5rem;
+  a {
+    display: inline-block;
+    margin-left: 0.5rem;
+    color: #6633cc;
+  }
+`;
+
 class PersonMetaIndicator extends Component {
   hasMeta(key) {
     const { person } = this.props;
-    return !!(person.campaignMeta && person.campaignMeta[key]);
+    return !!(person.campaignMeta && get(person.campaignMeta, key));
   }
   filledForm() {
     const { person } = this.props;
@@ -34,11 +52,11 @@ class PersonMetaIndicator extends Component {
         <MetaIndicatorContainer>
           <FontAwesomeIcon
             icon="envelope"
-            className={this.hasMeta("email") ? "active" : ""}
+            className={this.hasMeta("contact.email") ? "active" : ""}
           />
           <FontAwesomeIcon
             icon="phone"
-            className={this.hasMeta("phone") ? "active" : ""}
+            className={this.hasMeta("contact.cellphone") ? "active" : ""}
           />
           <FontAwesomeIcon
             icon="align-left"
@@ -107,7 +125,25 @@ export default class PeoplePage extends Component {
     }
     return comments;
   }
-  expand = person => () => {
+  _handleMetaButtonsChange = data => {
+    const { people } = this.state;
+    const newPeople = people.map(p => {
+      if (p._id == data.personId) {
+        if (!p.campaignMeta) {
+          p.campaignMeta = {};
+        }
+        p.campaignMeta[data.metaKey] = data.metaValue;
+      }
+      return p;
+    });
+    this.setState({
+      people: newPeople
+    });
+  };
+  expand = person => ev => {
+    if (ev.target.nodeName == "A" || ev.target.closest("a")) {
+      return false;
+    }
     const { expanded } = this.state;
     if (expanded && expanded._id == person._id) {
       this.setState({
@@ -118,6 +154,10 @@ export default class PeoplePage extends Component {
         expanded: person
       });
     }
+  };
+  isExpanded = person => {
+    const { expanded } = this.state;
+    return expanded && expanded._id == person._id;
   };
   render() {
     const { people, expanded } = this.state;
@@ -136,12 +176,30 @@ export default class PeoplePage extends Component {
               </tr>
             </thead>
             {people.map(person => (
-              <tbody key={person._id}>
+              <tbody
+                key={person._id}
+                className={this.isExpanded(person) ? "active" : ""}
+              >
                 <tr className="interactive" onClick={this.expand(person)}>
                   <td>
-                    <FontAwesomeIcon icon="grip-horizontal" />
+                    <Popup
+                      trigger={<FontAwesomeIcon icon="grip-horizontal" />}
+                      direction="top left"
+                    >
+                      <PersonMetaButtons
+                        person={person}
+                        onChange={this._handleMetaButtonsChange}
+                      />
+                    </Popup>
                   </td>
-                  <td className="fill highlight">{person.name}</td>
+                  <td className="fill highlight">
+                    {person.name}
+                    <ExtraActions className="show-on-hover">
+                      <a href="javascript:void(0);">Perfil completo</a>
+                      <a href="javascript:void(0);">Editar</a>
+                      <a href="javascript:void(0);">Remover</a>
+                    </ExtraActions>
+                  </td>
                   <td className="small icon-number">
                     <FontAwesomeIcon icon="heart" />
                     <span className="number">{this._sumReactions(person)}</span>
@@ -157,11 +215,28 @@ export default class PeoplePage extends Component {
                     {moment(person.lastInteractionDate).fromNow()}
                   </td>
                 </tr>
-                {expanded && expanded._id == person._id ? (
+                {this.isExpanded(person) ? (
                   <tr>
-                    <td className="extra" />
-                    <td className="extra" colSpan="5">
-                      <PersonSummary perosn={person} />
+                    <td className="extra">
+                      <PersonMetaButtons
+                        person={person}
+                        vertical={true}
+                        readOnly={true}
+                        simple={true}
+                      />
+                    </td>
+                    <td className="extra fill">
+                      <PersonSummary person={person} />
+                    </td>
+                    <td className="extra" colSpan="4">
+                      <PersonReactions person={person} />
+                      <p>
+                        <FontAwesomeIcon icon="comment" />{" "}
+                        {this._sumComments(person)} comentários
+                      </p>
+                      <p>
+                        <button>Enviar mensagem privada</button>
+                      </p>
                     </td>
                   </tr>
                 ) : null}

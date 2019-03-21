@@ -14,7 +14,16 @@ import {
   faAlignLeft,
   faGripHorizontal,
   faComment,
-  faHeart
+  faHeart,
+  faTag,
+  faStar,
+  faHandPointUp,
+  faUsers,
+  faMoneyBill,
+  faCertificate,
+  faThumbsUp,
+  faBan,
+  faCalendarTimes
 } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 
@@ -32,4 +41,13 @@ library.add(faAlignLeft);
 library.add(faGripHorizontal);
 library.add(faComment);
 library.add(faHeart);
+library.add(faTag);
+library.add(faStar);
+library.add(faHandPointUp);
+library.add(faUsers);
+library.add(faMoneyBill);
+library.add(faCertificate);
+library.add(faThumbsUp);
+library.add(faBan);
+library.add(faCalendarTimes);
 library.add(faFacebookSquare);

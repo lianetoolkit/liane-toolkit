@@ -1,49 +1,59 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { get } from "lodash";
 
-const Container = styled.div`
-  display: flex;
+const Container = styled.ul`
   width: 100%;
-  > div {
-    flex: 1 1 auto;
-    padding: 0 1rem 0 0;
-  }
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    li {
-      margin: 0 0 0.5rem;
-      padding: 0 0 0.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      &:last-child {
-        margin: 0;
-        padding: 0;
-        border-bottom: 0;
-      }
-      svg {
-        margin-right: 0.5rem;
-      }
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  li {
+    margin: 0 0 0.75rem;
+    padding: 0 0 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    &:last-child {
+      margin: 0;
+      padding: 0;
+      border-bottom: 0;
+    }
+    svg {
+      margin-right: 1rem;
+    }
+    span.empty {
+      color: #999;
+      font-style: italic;
     }
   }
 `;
 
 export default class PersonSummary extends Component {
+  metaValue(key, defaultText) {
+    const { person } = this.props;
+    const value = person.campaignMeta ? get(person.campaignMeta, key) : false;
+    if (value) {
+      return <span>{value}</span>;
+    } else {
+      return (
+        <span className="empty">
+          {defaultText || "Informação não disponível"}
+        </span>
+      );
+    }
+  }
   render() {
     return (
       <Container>
-        <div>
-          <ul>
-            <li>
-              <FontAwesomeIcon icon="envelope" /> Não disponível
-            </li>
-            <li>
-              <FontAwesomeIcon icon="phone" /> Não disponível
-            </li>
-          </ul>
-        </div>
-        <div>Teste</div>
+        <li>
+          <FontAwesomeIcon icon="envelope" /> {this.metaValue("contact.email")}
+        </li>
+        <li>
+          <FontAwesomeIcon icon="phone" /> {this.metaValue("contact.cellphone")}
+        </li>
+        <li>
+          <FontAwesomeIcon icon="tag" />{" "}
+          {this.metaValue("tags", "Não existem tags associadas")}
+        </li>
       </Container>
     );
   }

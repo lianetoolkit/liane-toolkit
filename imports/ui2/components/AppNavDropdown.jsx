@@ -137,28 +137,42 @@ export default class AppNavDropdown extends Component {
     };
   }
   componentDidMount() {
-    const node = ReactDOM.findDOMNode(this);
-    this.links = node.getElementsByTagName("A");
+    this.node = ReactDOM.findDOMNode(this);
+    this.links = this.node.getElementsByTagName("A");
     this._attachEvents();
   }
   componentWillUnmount() {
     this._detachEvents();
   }
+  _handleWindowClick = ev => {
+    if (
+      ev.target !== this.node &&
+      !this.node.contains(ev.target) &&
+      this.state.open
+    ) {
+      ev.preventDefault();
+      this.close();
+    }
+  };
   _attachEvents = () => {
+    window.addEventListener("click", this._handleWindowClick);
+    window.addEventListener("touchstart", this._handleWindowClick);
     if (this.links.length) {
       for (let i = 0; i < this.links.length; i++) {
-        this.links[i].addEventListener("click", this._closeOnInteraction);
+        this.links[i].addEventListener("click", this.close);
       }
     }
   };
   _detachEvents = () => {
+    window.removeEventListener("click", this._handleWindowClick);
+    window.removeEventListener("touchstart", this._handleWindowClick);
     if (this.links.length) {
       for (let i = 0; i < this.links.length; i++) {
-        this.links[i].removeEventListener("click", this._closeOnInteraction);
+        this.links[i].removeEventListener("click", this.close);
       }
     }
   };
-  _closeOnInteraction = () => {
+  close = () => {
     this.setState({
       open: false
     });
