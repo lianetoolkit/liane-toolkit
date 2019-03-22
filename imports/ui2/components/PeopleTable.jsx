@@ -285,6 +285,7 @@ export default class PeoplePage extends Component {
                         )
                       }
                       direction="top left"
+                      rounded
                     >
                       <PersonMetaButtons
                         person={person}
@@ -321,9 +322,9 @@ export default class PeoplePage extends Component {
                     <td className="extra">
                       <PersonMetaButtons
                         person={person}
-                        vertical={true}
-                        readOnly={true}
-                        simple={true}
+                        vertical
+                        readOnly
+                        simple
                       />
                     </td>
                     <td className="extra fill">

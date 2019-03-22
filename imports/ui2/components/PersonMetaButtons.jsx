@@ -215,20 +215,6 @@ export default class PersonMetaButtons extends React.Component {
         <FontAwesomeIcon icon={iconName} />
       </a>
     );
-    return (
-      <Popup
-        trigger={
-          <Icon
-            color={iconColor}
-            size={size}
-            name={iconName}
-            style={style}
-            onClick={this._handleClick(key)}
-          />
-        }
-        content={iconLabel}
-      />
-    );
   }
   render() {
     const { person, ...props } = this.props;

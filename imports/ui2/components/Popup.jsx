@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 const Container = styled.div`
   position: relative;
@@ -29,6 +29,13 @@ const Container = styled.div`
     padding: 0.5rem;
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
   }
+  ${props =>
+    props.rounded &&
+    css`
+      .popup {
+        border-radius: 2rem;
+      }
+    `}
 `;
 
 export default class Popup extends Component {
@@ -70,13 +77,14 @@ export default class Popup extends Component {
     });
   };
   render() {
+    const { direction, trigger, children, ...props } = this.props;
     const { open } = this.state;
     return (
-      <Container className={this.props.direction || ""}>
+      <Container className={direction || ""} {...props}>
         <a href="javascript:void(0);" onClick={this._handleClick}>
-          {this.props.trigger}
+          {trigger}
         </a>
-        {open ? <div className="popup">{this.props.children}</div> : null}
+        {open ? <div className="popup">{children}</div> : null}
       </Container>
     );
   }
