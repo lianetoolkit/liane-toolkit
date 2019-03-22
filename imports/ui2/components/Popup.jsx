@@ -27,7 +27,7 @@ const Container = styled.div`
     position: absolute;
     z-index: 15;
     padding: 0.5rem;
-    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0.15rem 0.5rem rgba(0, 0, 0, 0.1);
   }
   ${props =>
     props.rounded &&
