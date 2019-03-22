@@ -21,9 +21,9 @@ const FormContent = styled.div`
 
 class Content extends Component {
   render() {
-    const { children } = this.props;
+    const { children, ...props } = this.props;
     return (
-      <ContentContainer>
+      <ContentContainer {...props}>
         <FormContent>{children}</FormContent>
       </ContentContainer>
     );

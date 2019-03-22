@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import styled from "styled-components";
 
 import Header from "../components/Header.jsx";
@@ -107,6 +108,7 @@ const PageBody = styled.div`
   display: flex;
   flex-direction: row;
   position: relative;
+  outline: none;
 `;
 
 const Title = styled.h1`
@@ -118,6 +120,9 @@ export default class Page extends Component {
   static Nav = Nav;
   static Content = Content;
   static Title = Title;
+  componentDidMount() {
+    document.getElementById("main").focus();
+  }
   render() {
     const { children } = this.props;
     const user = Meteor.user();
@@ -131,7 +136,9 @@ export default class Page extends Component {
             campaign={this.props.campaign}
           />
         ) : null}
-        <PageBody>{children}</PageBody>
+        <PageBody id="main" tabIndex="-1">
+          {children}
+        </PageBody>
         <Footer />
       </Container>
     );

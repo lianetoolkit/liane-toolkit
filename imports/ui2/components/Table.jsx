@@ -105,7 +105,7 @@ const Container = styled.table`
       &.extra {
         border: 0;
         text-align: left;
-        background: #333;
+        background: #555;
         font-size: 0.8em;
         color: #fff;
       }

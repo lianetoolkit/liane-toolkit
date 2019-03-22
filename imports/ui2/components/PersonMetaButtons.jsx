@@ -5,23 +5,26 @@ import styled, { css } from "styled-components";
 const Container = styled.div`
   font-size: 0.8em;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   a.meta-icon {
-    display: inline-block;
-    margin: 0 0.25rem;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0.125rem;
     color: #fff;
     border-radius: 100%;
     width: 15px;
     height: 15px;
     padding: 0.4rem;
-    &:hover {
-      opacity: 0.7 !important;
-    }
   }
   ${props =>
     props.vertical &&
     css`
+      flex-direction: column;
       a.meta-icon {
-        display: block;
         margin: 0 0 1rem;
       }
     `}
@@ -41,13 +44,51 @@ const Container = styled.div`
       a.meta-icon {
         cursor: default;
         &:hover {
+          box-shadow: none;
           opacity: 1 !important;
+        }
+      }
+    `}
+  ${props =>
+    props.interactive &&
+    css`
+      a.meta-icon {
+        transition: all 0.1s ease-in-out;
+        transform-origin: 50% 100%;
+        background: #fff;
+        box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+        position: relative;
+        &:hover {
+          z-index: 2;
+          opacity: 1 !important;
+          transform: scale(1.5);
+          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
         }
       }
     `}
 `;
 
 export default class PersonMetaButtons extends React.Component {
+  static keys = [
+    "supporter",
+    "volunteer",
+    "mobilizer",
+    "donor",
+    "influencer",
+    "voter",
+    "non-voter",
+    "troll"
+  ];
+  static colors = {
+    supporter: "#7171fc",
+    volunteer: "#ffa500",
+    mobilizer: "#d5d500",
+    donor: "#46dd46",
+    influencer: "#f399cc",
+    voter: "#31d5d5",
+    "non-voter": "#f25ff2",
+    troll: "#ff5656"
+  };
   constructor(props) {
     super(props);
     this._handleClick = this._handleClick.bind(this);
@@ -109,24 +150,7 @@ export default class PersonMetaButtons extends React.Component {
     }
   }
   _metaIconColor(key) {
-    switch (key) {
-      case "supporter":
-        return "blue";
-      case "volunteer":
-        return "orange";
-      case "mobilizer":
-        return "yellow";
-      case "donor":
-        return "green";
-      case "influencer":
-        return "pink";
-      case "voter":
-        return "teal";
-      case "non-voter":
-        return "purple";
-      case "troll":
-        return "red";
-    }
+    return PersonMetaButtons.colors[key];
   }
   _metaIconLabel(key) {
     switch (key) {
@@ -163,13 +187,22 @@ export default class PersonMetaButtons extends React.Component {
 
     if (!readOnly) {
       style["cursor"] = "pointer";
-      style["opacity"] = hasMeta ? 1 : 0.2;
+      style["opacity"] = hasMeta ? 1 : 0.5;
     }
 
     if (simple) {
       style["color"] = iconColor;
     } else {
-      style["backgroundColor"] = iconColor;
+      style["borderWidth"] = "1px";
+      style["borderStyle"] = "solid";
+      style["borderColor"] = "#ddd";
+      style["color"] = iconColor;
+      if (hasMeta) {
+        style["color"] = "#333";
+        style["backgroundColor"] = iconColor;
+        style["borderColor"] = iconColor;
+        style["borderColor"] = "rgba(0,0,0,0.5)";
+      }
     }
 
     return (
