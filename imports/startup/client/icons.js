@@ -23,7 +23,8 @@ import {
   faCertificate,
   faThumbsUp,
   faBan,
-  faCalendarTimes
+  faCalendarTimes,
+  faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 
@@ -50,4 +51,5 @@ library.add(faCertificate);
 library.add(faThumbsUp);
 library.add(faBan);
 library.add(faCalendarTimes);
+library.add(faSpinner);
 library.add(faFacebookSquare);

@@ -5,6 +5,11 @@ import styled, { css } from "styled-components";
 import PopupLabel from "./PopupLabel.jsx";
 
 const Container = styled.div`
+  @keyframes rotate {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
   font-size: 0.8em;
   text-align: center;
   display: flex;
@@ -21,6 +26,9 @@ const Container = styled.div`
     width: 15px;
     height: 15px;
     padding: 0.4rem;
+    .loading {
+      animation: rotate 2s linear infinite;
+    }
   }
   ${props =>
     props.vertical &&
@@ -103,6 +111,9 @@ export default class PersonMetaButtons extends React.Component {
   };
   constructor(props) {
     super(props);
+    this.state = {
+      loading: {}
+    };
     this._handleClick = this._handleClick.bind(this);
   }
   _handleClick(key) {
@@ -114,6 +125,11 @@ export default class PersonMetaButtons extends React.Component {
       person.campaignMeta = person.campaignMeta || {};
       const personId = person.personId || person.__originalId || person._id;
       return ev => {
+        this.setState({
+          loading: {
+            [key]: true
+          }
+        });
         const data = {
           personId,
           metaKey: key,
@@ -126,8 +142,12 @@ export default class PersonMetaButtons extends React.Component {
             if (onChange) {
               onChange(data);
             }
+            this.setState({
+              loading: {
+                [key]: false
+              }
+            });
             person.campaignMeta[key] = data.metaValue;
-            // Alerts.success("Person updated successfully");
           }
         });
       };
@@ -189,12 +209,13 @@ export default class PersonMetaButtons extends React.Component {
   }
   _metaButton(data = {}, key) {
     const { size, readOnly, simple } = this.props;
+    const { loading } = this.state;
 
     const hasMeta = this._hasMeta(data, key);
 
     if (readOnly && !hasMeta) return null;
 
-    const iconName = this._metaIconName(key);
+    const iconName = loading[key] ? "spinner" : this._metaIconName(key);
     const iconColor = this._metaIconColor(key);
     const iconLabel = this._metaIconLabel(key);
 
@@ -230,11 +251,14 @@ export default class PersonMetaButtons extends React.Component {
       >
         <a
           href="javascript:void(0);"
-          className="meta-icon"
+          className={`meta-icon`}
           style={style}
           onClick={this._handleClick(key)}
         >
-          <FontAwesomeIcon icon={iconName} />
+          <FontAwesomeIcon
+            icon={iconName}
+            className={`${loading[key] ? "loading" : ""}`}
+          />
         </a>
       </PopupLabel>
     );
