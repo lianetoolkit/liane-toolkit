@@ -103,7 +103,7 @@ const Container = styled.table`
         text-align: right;
       }
       &.extra {
-        border: 0;
+        border-color: #666;
         text-align: left;
         background: #555;
         font-size: 0.8em;

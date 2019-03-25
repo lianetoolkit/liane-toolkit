@@ -6,6 +6,7 @@ import { get, debounce } from "lodash";
 
 import Table from "../components/Table.jsx";
 import Popup from "../components/Popup.jsx";
+import PopupLabel from "../components/PopupLabel.jsx";
 import PersonMetaButtons from "../components/PersonMetaButtons.jsx";
 import PersonSummary from "../components/PersonSummary.jsx";
 import PersonReactions from "../components/PersonReactions.jsx";
@@ -50,20 +51,25 @@ const MetaCircles = styled.div`
   width: 30px;
   align-items: center;
   justify-content: center;
-  > span {
+  .meta-circle-container {
     width: 12px;
     height: 12px;
     position: relative;
-    > span {
-      position: absolute;
-      left: 0;
-      top: 0;
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      border-radius: 100%;
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+  }
+  .meta-circle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+  }
+  &:hover .meta-circle {
+      border-color: rgba(0, 0, 0, 0.5);
+      ${"" /* box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.5); */}
     }
   }
 `;
@@ -74,8 +80,9 @@ class PersonMetaCircles extends Component {
       <MetaCircles>
         {PersonMetaButtons.keys.map(key =>
           get(person, `campaignMeta.${key}`) ? (
-            <span key={key}>
+            <span key={key} className="meta-circle-container">
               <span
+                className="meta-circle"
                 style={{ backgroundColor: PersonMetaButtons.colors[key] }}
               />
             </span>
@@ -120,7 +127,7 @@ class PersonContactIcons extends Component {
   }
 }
 
-export default class PeoplePage extends Component {
+export default class PeopleTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -129,12 +136,12 @@ export default class PeoplePage extends Component {
   }
   componentDidMount() {
     this.container = document.getElementById("main");
-    window.addEventListener("keydown", this._keydown);
+    window.addEventListener("keydown", this._handleKeydown);
   }
   componentWillUnmount() {
-    window.removeEventListener("keydown", this._keydown);
+    window.removeEventListener("keydown", this._handleKeydown);
   }
-  _keydown = ev => {
+  _handleKeydown = ev => {
     const { people } = this.props;
     const { expanded } = this.state;
     let curIndex = -1;
@@ -245,6 +252,15 @@ export default class PeoplePage extends Component {
     }
     return has;
   };
+  personCategoriesText = person => {
+    let text = [];
+    PersonMetaButtons.keys.map(key => {
+      if (get(person, `campaignMeta.${key}`)) {
+        text.push(PersonMetaButtons.labels[key]);
+      }
+    });
+    return text.join(", ");
+  };
   render() {
     const { people } = this.props;
     const { expanded } = this.state;
@@ -274,14 +290,22 @@ export default class PeoplePage extends Component {
                 >
                   <td style={{ width: "20px", textAlign: "center" }}>
                     <Popup
-                      trigger={
+                      trigger={open =>
                         this.hasMeta(person) ? (
-                          <PersonMetaCircles person={person} />
+                          <PopupLabel
+                            text={this.personCategoriesText(person)}
+                            extra={"Clique para editar"}
+                            disabled={open}
+                          >
+                            <PersonMetaCircles person={person} />
+                          </PopupLabel>
                         ) : (
-                          <FontAwesomeIcon
-                            icon="grip-horizontal"
-                            className="meta-trigger"
-                          />
+                          <PopupLabel text="Editar categorias" disabled={open}>
+                            <FontAwesomeIcon
+                              icon="grip-horizontal"
+                              className="meta-trigger"
+                            />
+                          </PopupLabel>
                         )
                       }
                       direction="top left"

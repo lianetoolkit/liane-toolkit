@@ -154,9 +154,17 @@ export default class AppNavDropdown extends Component {
       this.close();
     }
   };
+  _handleKeydown = ev => {
+    if (ev.keyCode == 27) {
+      this.setState({
+        open: false
+      });
+    }
+  };
   _attachEvents = () => {
     window.addEventListener("click", this._handleWindowClick);
     window.addEventListener("touchstart", this._handleWindowClick);
+    window.addEventListener("keydown", this._handleKeydown);
     if (this.links.length) {
       for (let i = 0; i < this.links.length; i++) {
         this.links[i].addEventListener("click", this.close);
@@ -166,6 +174,7 @@ export default class AppNavDropdown extends Component {
   _detachEvents = () => {
     window.removeEventListener("click", this._handleWindowClick);
     window.removeEventListener("touchstart", this._handleWindowClick);
+    window.removeEventListener("keydown", this._handleKeydown);
     if (this.links.length) {
       for (let i = 0; i < this.links.length; i++) {
         this.links[i].removeEventListener("click", this.close);

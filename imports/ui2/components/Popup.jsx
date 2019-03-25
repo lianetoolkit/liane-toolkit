@@ -27,7 +27,8 @@ const Container = styled.div`
     position: absolute;
     z-index: 15;
     padding: 0.5rem;
-    box-shadow: 0 0.15rem 0.5rem rgba(0, 0, 0, 0.1);
+    border: 1px solid #ccc;
+    box-shadow: 0 0.15rem 0.25rem rgba(0, 0, 0, 0.3);
   }
   ${props =>
     props.rounded &&
@@ -49,11 +50,20 @@ export default class Popup extends Component {
     this.node = ReactDOM.findDOMNode(this);
     window.addEventListener("click", this._handleWindowClick);
     window.addEventListener("touchstart", this._handleWindowClick);
+    window.addEventListener("keydown", this._handleKeydown);
   }
   componentWillUnmount() {
     window.removeEventListener("click", this._handleWindowClick);
     window.removeEventListener("touchstart", this._handleWindowClick);
+    window.removeEventListener("keydown", this._handleKeydown);
   }
+  _handleKeydown = ev => {
+    if (ev.keyCode == 27) {
+      this.setState({
+        open: false
+      });
+    }
+  };
   _handleClick = ev => {
     ev.preventDefault();
     const { open } = this.state;
@@ -82,7 +92,7 @@ export default class Popup extends Component {
     return (
       <Container className={direction || ""} {...props}>
         <a href="javascript:void(0);" onClick={this._handleClick}>
-          {trigger}
+          {typeof trigger == "function" ? trigger(open) : trigger}
         </a>
         {open ? <div className="popup">{children}</div> : null}
       </Container>

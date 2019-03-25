@@ -2,6 +2,8 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled, { css } from "styled-components";
 
+import PopupLabel from "./PopupLabel.jsx";
+
 const Container = styled.div`
   font-size: 0.8em;
   text-align: center;
@@ -89,6 +91,16 @@ export default class PersonMetaButtons extends React.Component {
     "non-voter": "#f25ff2",
     troll: "#ff5656"
   };
+  static labels = {
+    supporter: "Apoiador",
+    volunteer: "Voluntário",
+    mobilizer: "Mobilizador",
+    donor: "Doador",
+    influencer: "Influenciador",
+    voter: "Declarou voto",
+    "non-voter": "Não pode votar",
+    troll: "Troll"
+  };
   constructor(props) {
     super(props);
     this._handleClick = this._handleClick.bind(this);
@@ -149,6 +161,9 @@ export default class PersonMetaButtons extends React.Component {
         return "ban";
     }
   }
+  _metaIconLabel(key) {
+    return PersonMetaButtons.labels[key];
+  }
   _metaIconColor(key) {
     return PersonMetaButtons.colors[key];
   }
@@ -190,9 +205,12 @@ export default class PersonMetaButtons extends React.Component {
       style["opacity"] = hasMeta ? 1 : 0.5;
     }
 
+    let bottomOffset = "0.25rem";
+
     if (simple) {
       style["color"] = iconColor;
     } else {
+      bottomOffset = "1.25rem";
       style["borderWidth"] = "1px";
       style["borderStyle"] = "solid";
       style["borderColor"] = "#ddd";
@@ -206,14 +224,19 @@ export default class PersonMetaButtons extends React.Component {
     }
 
     return (
-      <a
-        href="javascript:void(0);"
-        className="meta-icon"
-        style={style}
-        onClick={this._handleClick(key)}
+      <PopupLabel
+        text={PersonMetaButtons.labels[key]}
+        bottomOffset={bottomOffset}
       >
-        <FontAwesomeIcon icon={iconName} />
-      </a>
+        <a
+          href="javascript:void(0);"
+          className="meta-icon"
+          style={style}
+          onClick={this._handleClick(key)}
+        >
+          <FontAwesomeIcon icon={iconName} />
+        </a>
+      </PopupLabel>
     );
   }
   render() {
