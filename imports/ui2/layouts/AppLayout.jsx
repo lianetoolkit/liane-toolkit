@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Modal from "../containers/Modal.jsx";
 import Page from "../components/Page.jsx";
 
 export default class AppLayout extends Component {
@@ -14,9 +15,12 @@ export default class AppLayout extends Component {
     const { content, ready, connected } = this.props;
     if (connected && ready) {
       return (
-        <Page {...this.props}>
-          <content.component {...this.props} />
-        </Page>
+        <>
+          <Page {...this.props}>
+            <content.component {...this.props} />
+          </Page>
+          <Modal />
+        </>
       );
     } else {
       return null;

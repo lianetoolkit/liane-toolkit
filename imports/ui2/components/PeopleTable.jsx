@@ -4,13 +4,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import { get, debounce } from "lodash";
 
-import Table from "../components/Table.jsx";
-import Button from "../components/Button.jsx";
-import Popup from "../components/Popup.jsx";
-import PopupLabel from "../components/PopupLabel.jsx";
-import PersonMetaButtons from "../components/PersonMetaButtons.jsx";
-import PersonSummary from "../components/PersonSummary.jsx";
-import PersonReactions from "../components/PersonReactions.jsx";
+import { modalStore } from "../containers/Modal.jsx";
+
+import Table from "./Table.jsx";
+import Button from "./Button.jsx";
+import Popup from "./Popup.jsx";
+import PopupLabel from "./PopupLabel.jsx";
+import PersonMetaButtons from "./PersonMetaButtons.jsx";
+import PersonSummary from "./PersonSummary.jsx";
+import PersonReactions from "./PersonReactions.jsx";
+import PersonEdit from "./PersonEdit.jsx";
 
 const Container = styled.div`
   width: 100%;
@@ -258,6 +261,11 @@ export default class PeopleTable extends Component {
       this.props.onChange(newPeople);
     }
   };
+  _handleEditClick = person => ev => {
+    ev.preventDefault();
+    modalStore.setTitle(`Editando perfil de ${person.name}`);
+    modalStore.set(<PersonEdit person={person} />);
+  };
   expand = person => ev => {
     if (ev.target.nodeName == "A" || ev.target.closest("a")) {
       return false;
@@ -356,12 +364,17 @@ export default class PeopleTable extends Component {
                     {person.name}
                     <p className="extra-actions show-on-hover">
                       <a href="javascript:void(0);">Acessar perfil</a>
-                      <a href="javascript:void(0);">Editar</a>
+                      <a
+                        href="javascript:void(0);"
+                        onClick={this._handleEditClick(person)}
+                      >
+                        Editar
+                      </a>
                       <a href="javascript:void(0);">Remover</a>
                     </p>
                   </td>
                   <td className="small icon-number">
-                    <FontAwesomeIcon icon="heart" />
+                    <FontAwesomeIcon icon="hand-pointer" />
                     <span className="number">{this._sumReactions(person)}</span>
                   </td>
                   <td className="small icon-number">
@@ -397,10 +410,7 @@ export default class PeopleTable extends Component {
                           <FontAwesomeIcon icon="comment" />{" "}
                           {this._sumComments(person)} comentários
                         </span>
-                        {person.canReceivePrivateReply &&
-                        person.canReceivePrivateReply.length ? (
-                          <Button light>Enviar mensagem privada</Button>
-                        ) : null}
+                        <Button light>Enviar mensagem privada</Button>
                       </p>
                       <p className="person-buttons" />
                     </td>

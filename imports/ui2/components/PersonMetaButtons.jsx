@@ -166,7 +166,7 @@ export default class PersonMetaButtons extends React.Component {
       case "supporter":
         return "star";
       case "volunteer":
-        return "hand-point-up";
+        return "hand-holding-heart";
       case "mobilizer":
         return "users";
       case "donor":
