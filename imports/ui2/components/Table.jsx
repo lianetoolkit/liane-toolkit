@@ -30,10 +30,8 @@ const Container = styled.table`
       border-color: rgba(255, 255, 255, 0.4);
       background: #fc0;
     }
-    tr:hover {
-      .show-on-hover {
-        display: none;
-      }
+    tr td .show-on-hover {
+      display: block;
     }
     tr:first-child {
       td:first-child {
@@ -108,6 +106,15 @@ const Container = styled.table`
         background: #555;
         font-size: 0.8em;
         color: #fff;
+        a {
+          color: #fff;
+          text-decoration: none;
+          &:hover,
+          &:active,
+          &:focus {
+            color: #f0f0f0;
+          }
+        }
       }
       &:last-child {
         border-right: 0;

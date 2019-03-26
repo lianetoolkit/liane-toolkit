@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 const Button = styled.a`
   width: 100%;
@@ -11,6 +11,9 @@ const Button = styled.a`
   border-radius: 3rem;
   border: 1px solid #6633cc;
   background: rgba(255, 255, 255, 0.6);
+  display: inline-block;
+  box-sizing: border-box;
+  cursor: pointer;
   &:hover,
   &:focus,
   &:active {
@@ -18,6 +21,19 @@ const Button = styled.a`
     border-color: #000;
     color: #000;
   }
+  ${props =>
+    props.light &&
+    css`
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      &:hover,
+      &:focus,
+      &:active {
+        background: #333;
+        color: #fff;
+      }
+    `}
 `;
 
 export default Button;

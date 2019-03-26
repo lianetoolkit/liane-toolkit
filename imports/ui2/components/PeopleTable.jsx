@@ -5,6 +5,7 @@ import moment from "moment";
 import { get, debounce } from "lodash";
 
 import Table from "../components/Table.jsx";
+import Button from "../components/Button.jsx";
 import Popup from "../components/Popup.jsx";
 import PopupLabel from "../components/PopupLabel.jsx";
 import PersonMetaButtons from "../components/PersonMetaButtons.jsx";
@@ -13,11 +14,58 @@ import PersonReactions from "../components/PersonReactions.jsx";
 
 const Container = styled.div`
   width: 100%;
+  .extra-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.7em;
+    background: #fff;
+    padding: 1.1rem 0.75rem 0.5rem 0.5rem;
+    a {
+      display: inline-block;
+      margin-left: 0.5rem;
+      color: #63c;
+      &:hover,
+      &:active,
+      &:focus {
+        color: #000;
+      }
+    }
+  }
+  .active .extra-actions {
+    background: #fc0;
+    a {
+      color: #444;
+      &:hover,
+      &:active,
+      &:focus {
+        color: #000;
+      }
+    }
+  }
   .meta-trigger {
     color: rgba(0, 0, 0, 0.25);
     padding: 0 0.5rem;
     &:hover {
       color: #000;
+    }
+  }
+  .person-extra {
+    .person-comment-count {
+      display: flex;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      border-top: 1px solid #666;
+      padding-top: 1rem;
+      span {
+        font-size: 1.2em;
+        margin-right: 1rem;
+        svg {
+          margin-right: 1rem;
+        }
+      }
     }
   }
 `;
@@ -29,20 +77,6 @@ const ContactIcons = styled.div`
     &.active {
       opacity: 1;
     }
-  }
-`;
-
-const ExtraActions = styled.p`
-  position: absolute;
-  top: 0;
-  right: 0;
-  font-size: 0.7em;
-  background: #fff;
-  padding: 1.1rem 0.75rem 0.5rem 0.5rem;
-  a {
-    display: inline-block;
-    margin-left: 0.5rem;
-    color: #6633cc;
   }
 `;
 
@@ -320,11 +354,11 @@ export default class PeopleTable extends Component {
                   </td>
                   <td className="fill highlight">
                     {person.name}
-                    <ExtraActions className="show-on-hover">
-                      <a href="javascript:void(0);">Perfil completo</a>
+                    <p className="extra-actions show-on-hover">
+                      <a href="javascript:void(0);">Acessar perfil</a>
                       <a href="javascript:void(0);">Editar</a>
                       <a href="javascript:void(0);">Remover</a>
-                    </ExtraActions>
+                    </p>
                   </td>
                   <td className="small icon-number">
                     <FontAwesomeIcon icon="heart" />
@@ -342,7 +376,7 @@ export default class PeopleTable extends Component {
                   </td>
                 </tr>
                 {this.isExpanded(person) ? (
-                  <tr>
+                  <tr className="person-extra">
                     <td className="extra">
                       <PersonMetaButtons
                         person={person}
@@ -355,14 +389,20 @@ export default class PeopleTable extends Component {
                       <PersonSummary person={person} />
                     </td>
                     <td className="extra" colSpan="4">
-                      <PersonReactions person={person} />
-                      <p>
-                        <FontAwesomeIcon icon="comment" />{" "}
-                        {this._sumComments(person)} comentários
+                      <div className="person-reactions">
+                        <PersonReactions person={person} />
+                      </div>
+                      <p className="person-comment-count">
+                        <span>
+                          <FontAwesomeIcon icon="comment" />{" "}
+                          {this._sumComments(person)} comentários
+                        </span>
+                        {person.canReceivePrivateReply &&
+                        person.canReceivePrivateReply.length ? (
+                          <Button light>Enviar mensagem privada</Button>
+                        ) : null}
                       </p>
-                      <p>
-                        <button>Enviar mensagem privada</button>
-                      </p>
+                      <p className="person-buttons" />
                     </td>
                   </tr>
                 ) : null}
