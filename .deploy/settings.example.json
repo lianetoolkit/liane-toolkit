@@ -6,6 +6,7 @@
     "appEmail": "contact@example.com",
     "recaptcha": "<SITE KEY>"
   },
+  "filesUrl": "http://localhost:8080",
   "recaptcha": "<SECRET KEY>",
   "private": false,
   "googleMaps": "<GOOGLE GEOCODING API KEY>",

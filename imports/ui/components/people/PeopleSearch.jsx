@@ -149,7 +149,10 @@ export default class PeopleSearch extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     const { onQuery } = this.props;
     const { search, options } = this.state;
-    if (JSON.stringify(search) != JSON.stringify(prevState.search)) {
+    if (
+      JSON.stringify(search) != JSON.stringify(prevState.search) ||
+      JSON.stringify(options) != JSON.stringify(prevState.options)
+    ) {
       if (onQuery) {
         onQuery(search, options);
       }

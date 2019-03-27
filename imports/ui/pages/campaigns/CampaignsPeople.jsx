@@ -28,6 +28,7 @@ export default class CampaignsPeople extends React.Component {
     this.state = {
       editMode: false,
       isLoading: false,
+      exportFileUrl: "",
       importData: null,
       activityQuery: {}
     };
@@ -53,27 +54,43 @@ export default class CampaignsPeople extends React.Component {
     });
   }
   _handleExport(ev) {
-    ev.preventDefault();
-    const { campaign } = this.props;
-    const { query } = this.state;
-    this.setState({ isLoading: true });
-    Meteor.call(
-      "people.export",
-      {
-        campaignId: campaign._id,
-        rawQuery: query ? query.query : {},
-        options: query ? query.options : {}
-      },
-      (error, result) => {
-        this.setState({ isLoading: false });
-        if (error) {
-          Alerts.error(error);
-        } else {
-          const blob = new Blob([result], { type: "text/csv;charset=utf-8" });
-          saveAs(blob, `${campaign.name}-people.csv`);
+    const { query, exportFileUrl } = this.state;
+    if (!exportFileUrl) {
+      ev.preventDefault();
+      const { campaign } = this.props;
+      this.setState({ isLoading: true });
+      Meteor.call(
+        "people.export",
+        {
+          campaignId: campaign._id,
+          rawQuery: query ? query.query : {},
+          options: query ? query.options : {}
+        },
+        (error, result) => {
+          this.setState({ isLoading: false });
+          if (error) {
+            Alerts.error(error);
+          } else {
+            this.setState({ exportFileUrl: result });
+          }
+          // if (error) {
+          // } else {
+          //   const blob = new Blob([result], { type: "text/csv;charset=utf-8" });
+          //   saveAs(blob, `${campaign.name}-people.csv`);
+          // }
         }
-      }
-    );
+      );
+    }
+  }
+  _exportText() {
+    const { isLoading, exportFileUrl } = this.state;
+    if (isLoading) {
+      return "Generating export file...";
+    }
+    if (exportFileUrl) {
+      return "Download export file";
+    }
+    return "Export CSV";
   }
   _handleImportClick(ev) {
     ev.preventDefault();
@@ -114,6 +131,7 @@ export default class CampaignsPeople extends React.Component {
   };
   render() {
     const {
+      exportFileUrl,
       isLoading,
       editMode,
       importData,
@@ -199,12 +217,13 @@ export default class CampaignsPeople extends React.Component {
                           <Menu.Item
                             onClick={this._handleExport}
                             disabled={isLoading}
+                            href={exportFileUrl}
                           >
                             <Icon
                               name={isLoading ? "spinner" : "upload"}
                               loading={isLoading}
                             />{" "}
-                            Export CSV
+                            {this._exportText()}
                           </Menu.Item>
                           {importCount ? (
                             <Menu.Item disabled>
