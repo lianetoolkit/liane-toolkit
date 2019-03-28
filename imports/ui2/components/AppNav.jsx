@@ -4,51 +4,77 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find } from "lodash";
 
 import Dropdown from "./AppNavDropdown.jsx";
-import NotificationsPopup from "./NotificationsPopup.jsx";
+import NotificationsNav from "./NotificationsPopup.jsx";
 
 const Container = styled.nav`
   flex: 0;
   background: #fff;
-  padding: 1rem 0;
   font-size: 0.8em;
   box-shadow: 0 0 2rem rgba(0, 0, 0, 0.125);
   border-bottom: 1px solid #ddd;
   position: relative;
+  padding-top: 0.6rem;
   z-index: 10;
-  .link-group > * {
-    display: inline-block;
-    color: #333;
-    padding: 0.25rem 1rem;
-    border-radius: 3rem;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    margin: 0 0.5rem;
-    text-decoration: none;
-    &.icon-link {
-      padding: 0.2rem 0.5rem;
-      border-radius: 100%;
-      font-size: 1.2em;
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    li {
+      display: inline-block;
+      position: relative;
+      a {
+        display: block;
+        padding: 0.4rem 1rem 1rem;
+        text-decoration: none;
+        color: #333;
+        font-weight: 600;
+      }
+      &:hover,
+      &:active,
+      &:focus {
+        > a {
+          background: #444;
+          color: #fff;
+        }
+      }
+      &.active {
+        > a {
+          color: #fc0;
+        }
+      }
+      ul {
+        display: none;
+        min-width: 200px;
+        background: #444;
+        border-right: 1px solid #333;
+        border-left: 1px solid #333;
+        border-bottom: 1px solid #333;
+        box-shadow: 0 0.25rem 0.4rem rgba(0, 0, 0, 0.1);
+        padding: 0 0 0.5rem;
+        border-radius: 0 0 7px 7px;
+        li {
+          display: block;
+          a {
+            color: #fff;
+            padding: 0.5rem 1rem;
+          }
+          &:hover {
+            a {
+              background: #333;
+            }
+          }
+        }
+      }
+      &:hover {
+        z-index: 2;
+        ul {
+          display: block;
+          position: absolute;
+          top: 100%;
+          left: 0;
+        }
+      }
     }
-    &:hover,
-    &:active,
-    &:focus {
-      color: #000;
-      border-color: #333;
-    }
-    &.active {
-      background: #fc0;
-      border-color: #fc0;
-    }
-    &.featured {
-      font-weight: 600;
-    }
-    &.clean {
-      border: 0;
-    }
-    ${"" /* .fa-chevron-down {
-      margin-left: 0.5rem;
-      font-weight: normal;
-      font-size: 0.9em;
-    } */};
   }
   .nav-content {
     max-width: 960px;
@@ -68,15 +94,26 @@ const Container = styled.nav`
 
 class NavItem extends Component {
   render() {
-    const { active, clean, featured, children, href, ...props } = this.props;
+    const {
+      active,
+      clean,
+      featured,
+      children,
+      href,
+      name,
+      ...props
+    } = this.props;
     let className = "";
     if (active) className += " active";
     if (featured) className += " featured";
     if (clean) className += " clean";
     return (
-      <a href={href} className={className} {...props}>
+      <li className={className}>
+        <a href={href} {...props}>
+          {name}
+        </a>
         {children}
-      </a>
+      </li>
     );
   }
 }
@@ -152,19 +189,43 @@ export default class AppNav extends Component {
         <div className="nav-content">
           <div className="features link-group">
             {campaign ? (
-              <>
+              <ul>
                 <NavItem
                   href={FlowRouter.path("App.dashboard")}
                   active={currentRoute.indexOf("App.dashboard") === 0}
                   featured={true}
-                >
-                  {campaign.name}
-                </NavItem>
+                  name={campaign.name}
+                />
                 {campaigns.length > 1 ? (
                   <CampaignNav campaigns={campaigns} />
                 ) : null}
-                <NavItem href="#">Temas</NavItem>
-                <NavItem
+                <NavItem href="#" name="Inteligência">
+                  <ul>
+                    <li>
+                      <a href="#">Minha audiência</a>
+                    </li>
+                    <li>
+                      <a href="#">Territórios</a>
+                    </li>
+                  </ul>
+                </NavItem>
+                <NavItem href="#" name="Comunicação">
+                  <ul>
+                    <li>
+                      <a href={FlowRouter.path("App.people")}>
+                        Diretório de contatos
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#">Gestão de comentários</a>
+                    </li>
+                    <li>
+                      <a href={FlowRouter.path("App.chatbot")}>Chatbot</a>
+                    </li>
+                  </ul>
+                </NavItem>
+                <NavItem href="#" name="+ Criar adset" />
+                {/* <NavItem
                   href={FlowRouter.path("App.people")}
                   active={currentRoute.indexOf("App.people") === 0}
                 >
@@ -181,15 +242,15 @@ export default class AppNav extends Component {
                   active={currentRoute.indexOf("App.chatbot") === 0}
                 >
                   Chatbot
-                </NavItem>
-              </>
+                </NavItem> */}
+              </ul>
             ) : null}
           </div>
           <div className="meta link-group">
             <SettingsNav />
-            <NotificationsPopup className="icon-link">
+            <NotificationsNav className="icon-link">
               <FontAwesomeIcon icon="bell" />
-            </NotificationsPopup>
+            </NotificationsNav>
           </div>
         </div>
       </Container>

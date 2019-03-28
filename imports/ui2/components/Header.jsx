@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 
 const Container = styled.header`
-  background: #222;
+  background: #444;
   padding: 2rem 0 1rem;
   font-size: 0.8em;
   flex: 0;
