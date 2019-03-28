@@ -12,7 +12,7 @@ const Container = styled.div`
   right: 0;
   height: 0;
   z-index: 100;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.75);
   .modal {
     width: 80%;
     max-width: 800px;

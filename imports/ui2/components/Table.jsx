@@ -26,6 +26,8 @@ const Container = styled.table`
     transform: scale(1.015);
     transition: all 0.1s linear;
     box-shadow: 0 0.7rem 1rem rgba(0, 0, 0, 0.2);
+    transform-origin: 50% 100%;
+    border-radius: 7px;
     td {
       border-color: rgba(255, 255, 255, 0.4);
       background: #fc0;

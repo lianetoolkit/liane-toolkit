@@ -58,7 +58,16 @@ const AdAccountsHelpers = {
     const adAccount = AdAccounts.findOne(adAccountId);
     const adminUsers = adAccount.users.filter(user => {
       // Retrieving users with permission "2" on the adaccount
-      return user.permissions.indexOf(2) !== -1;
+      if (user.permissions) {
+        return user.permissions.indexOf(2) !== -1;
+        // Retrieving user with tasks advertise or manage (new FB API)
+      } else if (user.tasks) {
+        return (
+          user.tasks.indexOf("ADVERTISE") !== -1 ||
+          user.tasks.indexOf("MANAGE") !== -1
+        );
+      }
+      return false;
     });
     if (adminUsers.length) {
       const ids = adminUsers.map(user => user.id);
