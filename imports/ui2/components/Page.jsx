@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
@@ -17,13 +17,24 @@ const NavContainer = styled.div`
   flex: 0 0 auto;
   box-sizing: border-box;
   border-right: 1px solid #ccc;
-  padding: 4rem 0 4rem 2rem;
-  @media (min-width: 1280px) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-  }
+  padding: 3rem 0 3rem 2rem;
+  ${props =>
+    !props.full &&
+    css`
+      @media (min-width: 1280px) {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+      }
+    `}
+  ${props =>
+    props.large &&
+    css`
+      .nav-content {
+        max-width: 400px;
+      }
+    `}
 `;
 
 const NavContent = styled.div`
@@ -58,10 +69,10 @@ const NavContent = styled.div`
 
 class Nav extends Component {
   render() {
-    const { children } = this.props;
+    const { children, ...props } = this.props;
     return (
-      <NavContainer>
-        <NavContent>{children}</NavContent>
+      <NavContainer {...props}>
+        <NavContent className="nav-content">{children}</NavContent>
       </NavContainer>
     );
   }
@@ -70,23 +81,38 @@ class Nav extends Component {
 const ContentContainer = styled.div`
   flex: 1 1 100%;
   overflow: auto;
+  ${props =>
+    props.full &&
+    css`
+      .content-body {
+        max-width: none;
+      }
+    `}
+  ${props =>
+    props.compact &&
+    css`
+      .content-body {
+        margin: 0;
+        padding: 0;
+      }
+    `}
 `;
 
 const ContentBody = styled.div`
   max-width: 640px;
-  margin: 4rem 0;
-  padding: 0 4rem;
+  margin: 3rem 0;
+  padding: 0 3rem;
   @media (min-width: 1280px) {
-    margin: 4rem auto;
+    margin: 3rem auto;
   }
 `;
 
 class Content extends Component {
   render() {
-    const { children } = this.props;
+    const { children, ...props } = this.props;
     return (
-      <ContentContainer>
-        <ContentBody>{children}</ContentBody>
+      <ContentContainer {...props} className="scrollable content-container">
+        <ContentBody className="content-body">{children}</ContentBody>
       </ContentContainer>
     );
   }
@@ -124,18 +150,10 @@ export default class Page extends Component {
     document.getElementById("main").focus();
   }
   render() {
-    const { children } = this.props;
-    const user = Meteor.user();
+    const { campaigns, campaign, children } = this.props;
     return (
       <Container>
-        <Header />
-        {user ? (
-          <AppNav
-            campaigns={this.props.campaigns}
-            campaignId={this.props.campaignId}
-            campaign={this.props.campaign}
-          />
-        ) : null}
+        <Header campaigns={campaigns} campaign={campaign} />
         <PageBody id="main" tabIndex="-1">
           {children}
         </PageBody>

@@ -7,13 +7,11 @@ import Dropdown from "./AppNavDropdown.jsx";
 import NotificationsNav from "./NotificationsPopup.jsx";
 
 const Container = styled.nav`
+  width: 100%;
   flex: 0;
-  background: #fff;
   font-size: 0.8em;
-  box-shadow: 0 0 2rem rgba(0, 0, 0, 0.125);
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #222;
   position: relative;
-  padding-top: 0.6rem;
   z-index: 10;
   ul {
     list-style: none;
@@ -24,17 +22,17 @@ const Container = styled.nav`
       position: relative;
       a {
         display: block;
-        padding: 0.4rem 1rem 1rem;
+        padding: 0.8rem 1rem;
         text-decoration: none;
-        color: #333;
+        color: #fff;
         font-weight: 600;
       }
       &:hover,
       &:active,
       &:focus {
+        color: #999;
         > a {
-          background: #444;
-          color: #fff;
+          color: #999;
         }
       }
       &.active {
@@ -45,22 +43,24 @@ const Container = styled.nav`
       ul {
         display: none;
         min-width: 200px;
-        background: #444;
-        border-right: 1px solid #333;
-        border-left: 1px solid #333;
-        border-bottom: 1px solid #333;
-        box-shadow: 0 0.25rem 0.4rem rgba(0, 0, 0, 0.1);
+        background: #333;
+        border-right: 1px solid #222;
+        border-left: 1px solid #222;
+        border-bottom: 1px solid #222;
+        box-shadow: 0 0.25rem 0.3rem rgba(0, 0, 0, 0.15);
         padding: 0 0 0.5rem;
         border-radius: 0 0 7px 7px;
         li {
           display: block;
           a {
-            color: #fff;
+            color: #ddd;
             padding: 0.5rem 1rem;
+            border: 0;
           }
           &:hover {
             a {
-              background: #333;
+              color: #fff;
+              background: #222;
             }
           }
         }
@@ -77,15 +77,9 @@ const Container = styled.nav`
     }
   }
   .nav-content {
-    max-width: 960px;
-    padding: 0 2rem;
-    margin: 0 auto;
     display: flex;
     flex-direction: row;
     align-items: center;
-    > * {
-      margin: 0 -0.5rem;
-    }
     .features {
       flex-grow: 1;
     }

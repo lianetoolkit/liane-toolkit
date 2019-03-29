@@ -15,8 +15,8 @@ const ContentContainer = styled.div`
 
 const FormContent = styled.div`
   max-width: 640px;
-  margin: 4rem auto;
-  padding: 0 4rem;
+  margin: 3rem auto;
+  padding: 0 3rem;
 `;
 
 class Content extends Component {

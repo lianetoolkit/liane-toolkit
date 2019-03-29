@@ -1,21 +1,20 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
+import AppNav from "../components/AppNav.jsx";
+
 const Container = styled.header`
-  background: #444;
-  padding: 2rem 0 1rem;
-  font-size: 0.8em;
+  background: #333;
+  padding: 0;
   flex: 0;
   .header-content {
     max-width: 960px;
     padding: 0 2rem;
     margin: 0 auto;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
     line-height: 1;
     .brand {
-      width: 100%;
+      margin: 1rem 0.8rem 0.8rem 0;
+      float: left;
       font-family: "Unica One", monospace;
     }
     .brand h1 {
@@ -23,41 +22,47 @@ const Container = styled.header`
       padding: 0;
     }
     .brand h1 img {
-      width: 125px;
-      height: auto;
+      display: block;
+      width: auto;
+      height: 28px;
     }
   }
 `;
 
 const TopNav = styled.nav`
   display: flex;
-  flex-grow: 1;
   flex-wrap: nowrap;
   font-weight: 600;
-  font-size: 1em;
+  font-size: 0.7em;
+  justify-content: flex-end;
+  padding-top: 0.5rem;
   a {
-    color: #fff;
+    color: #999;
     text-decoration: none;
     display: block;
     white-space: nowrap;
-    margin-left: 1.5rem;
-    border-bottom: 2px solid transparent;
+    margin-left: 1rem;
     &:hover,
     &:focus,
     &:active {
-      border-color: #fff;
+      color: #fff;
     }
   }
 `;
 
 export default class Header extends Component {
   render() {
+    const { campaign, campaigns } = this.props;
+    const user = Meteor.user();
     return (
       <Container>
         <div className="header-content">
           <div className="brand">
             <h1>
-              <img src="/images/logo_dark.svg" alt="Liane" />
+              <img
+                src={user ? "/images/logo_icon.svg" : "/images/logo_dark.svg"}
+                alt="Liane"
+              />
             </h1>
           </div>
           <TopNav>
@@ -65,6 +70,7 @@ export default class Header extends Component {
             <a href="#">Instituto Update</a>
             <a href="#">Termos de uso</a>
           </TopNav>
+          {user ? <AppNav campaign={campaign} campaigns={campaigns} /> : null}
         </div>
       </Container>
     );

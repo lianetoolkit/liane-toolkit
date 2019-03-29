@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
@@ -172,7 +173,12 @@ export default class PeopleTable extends Component {
     };
   }
   componentDidMount() {
-    this.container = document.getElementById("main");
+    this.node = ReactDOM.findDOMNode(this);
+    if (this.node.closest(".scrollable")) {
+      this.container = this.node.closest(".scrollable");
+    } else {
+      this.container = document.getElementById("main");
+    }
     window.addEventListener("keydown", this._handleKeydown);
   }
   componentWillUnmount() {
@@ -304,12 +310,12 @@ export default class PeopleTable extends Component {
     return text.join(", ");
   };
   render() {
-    const { people } = this.props;
+    const { people, onChange, ...props } = this.props;
     const { expanded } = this.state;
-    if (people && people.length) {
-      return (
-        <Container>
-          <Table>
+    return (
+      <Container>
+        {people && people.length ? (
+          <Table {...props}>
             <thead>
               <tr>
                 <th />
@@ -419,10 +425,8 @@ export default class PeopleTable extends Component {
               </tbody>
             ))}
           </Table>
-        </Container>
-      );
-    } else {
-      return null;
-    }
+        ) : null}
+      </Container>
+    );
   }
 }

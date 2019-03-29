@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 const Container = styled.table`
   width: 100%;
@@ -23,7 +23,7 @@ const Container = styled.table`
   tbody.active {
     position: relative;
     z-index: 3;
-    transform: scale(1.015);
+    transform: scale(1.007);
     transition: all 0.1s linear;
     box-shadow: 0 0.7rem 1rem rgba(0, 0, 0, 0.2);
     transform-origin: 50% 100%;
@@ -132,11 +132,25 @@ const Container = styled.table`
       cursor: default;
     }
   }
+  thead tr {
+    ${'' /* box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.07);
+    position: relative;
+    z-index: 1; */}
+    th {
+      border-bottom: 1px solid #ccc;
+    }
+  }
+  ${props =>
+    props.compact &&
+    css`
+      border-radius: 0;
+      border: 0;
+    `}
 `;
 
 export default class Table extends Component {
   render() {
-    const { children } = this.props;
-    return <Container>{children}</Container>;
+    const { children, ...props } = this.props;
+    return <Container {...props}>{children}</Container>;
   }
 }
