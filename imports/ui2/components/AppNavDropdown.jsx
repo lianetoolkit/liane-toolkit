@@ -12,7 +12,7 @@ const Container = styled.div`
   }
   .dropdown {
     position: absolute;
-    top: 47px;
+    top: 40px;
     right: -25px;
     width: 380px;
     height: 300px;
@@ -29,7 +29,7 @@ const Container = styled.div`
       width: 16px;
       height: 16px;
       top: -6px;
-      right: 32px;
+      right: 29px;
       transform: rotate(45deg);
       border: 1px solid #ddd;
     }
@@ -53,12 +53,12 @@ const Container = styled.div`
 
 const TriggerCount = styled.span`
   position: absolute;
-  bottom: -0.5rem;
-  right: -0.5rem;
+  bottom: -0.1rem;
+  right: -0.35rem;
   display: block;
-  width: 20px;
-  height: 20px;
-  line-height: 20px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
   text-align: center;
   background: red;
   color: #fff;
@@ -72,7 +72,7 @@ const Tools = styled.div`
   padding: 0.5rem 1rem;
   border-bottom: 1px solid #dedede;
   text-align: right;
-  font-size: 0.7em;
+  font-size: 0.8em;
   background: #f0f0f0;
   position: relative;
   z-index: 2;
@@ -96,7 +96,7 @@ const Content = styled.div`
   flex-grow: 1;
   overflow: auto;
   box-sizing: border-box;
-  font-size: 0.8em;
+  font-size: 0.9em;
   position: relative;
   z-index: 2;
   padding: 0.5rem 0 0.5rem 0;
@@ -111,7 +111,7 @@ const Separator = styled.div`
 
 const NavItem = styled.a`
   display: block;
-  padding: 0.25rem 1.5rem;
+  padding: 0.5rem 1.5rem;
   color: #666;
   text-decoration: none;
   /* border-bottom: 1px solid #f0f0f0; */

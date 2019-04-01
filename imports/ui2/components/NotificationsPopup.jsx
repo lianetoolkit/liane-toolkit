@@ -12,6 +12,7 @@ const ItemContainer = styled.article`
   color: #666;
   cursor: pointer;
   position: relative;
+  line-height: 1.2;
   &:last-child {
     border-bottom: 0;
   }

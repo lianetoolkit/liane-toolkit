@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find } from "lodash";
 
@@ -17,51 +17,80 @@ const Container = styled.nav`
     list-style: none;
     margin: 0;
     padding: 0;
-    li {
-      display: inline-block;
-      position: relative;
-      a {
-        display: block;
-        padding: 0.8rem 1rem;
-        text-decoration: none;
-        color: #fff;
-        font-weight: 600;
-      }
-      &:hover,
-      &:active,
-      &:focus {
+  }
+  .nav-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    .features {
+      flex-grow: 1;
+    }
+  }
+  .icon-link {
+    color: #fff;
+    padding: 0.8rem 0.5rem 0.5rem;
+    svg {
+      font-size: 1.15em;
+    }
+    &:hover {
+      color: #999;
+    }
+  }
+`;
+
+const NavItemContainer = styled.li`
+  display: inline-block;
+  position: relative;
+  .icon-link {
+    padding: 0.8rem 0.5rem 0;
+    svg {
+      font-size: 0.9em;
+    }
+  }
+  ${props =>
+    !props.clean &&
+    css`
+    a {
+      display: block;
+      padding: 0.8rem 1rem;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 600;
+    }
+    &:hover,
+    &:active,
+    &:focus {
+      color: #999;
+      > a {
         color: #999;
-        > a {
-          color: #999;
-        }
       }
-      &.active {
-        > a {
-          color: #fc0;
-        }
+    }
+    &.active {
+      > a {
+        color: #fc0;
       }
-      ul {
-        display: none;
-        min-width: 200px;
-        background: #333;
-        border-right: 1px solid #222;
-        border-left: 1px solid #222;
-        border-bottom: 1px solid #222;
-        box-shadow: 0 0.25rem 0.3rem rgba(0, 0, 0, 0.15);
-        padding: 0 0 0.5rem;
-        border-radius: 0 0 7px 7px;
-        li {
-          display: block;
+    }
+    ul {
+      display: none;
+      min-width: 200px;
+      background: #333;
+      border-right: 1px solid #222;
+      border-left: 1px solid #222;
+      border-bottom: 1px solid #222;
+      box-shadow: 0 0.25rem 0.3rem rgba(0, 0, 0, 0.15);
+      padding: 0 0 0.5rem;
+      border-radius: 0 0 7px 7px;
+      li {
+        display: block;
+        a {
+          color: #ddd;
+          padding: 0.5rem 1rem;
+          border: 0;
+        }
+        &:hover {
           a {
-            color: #ddd;
-            padding: 0.5rem 1rem;
-            border: 0;
-          }
-          &:hover {
-            a {
-              color: #fff;
-              background: #222;
-            }
+            color: #fff;
+            background: #222;
           }
         }
       }
@@ -74,40 +103,27 @@ const Container = styled.nav`
           left: 0;
         }
       }
-    }
-  }
-  .nav-content {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    .features {
-      flex-grow: 1;
-    }
+  `}
   }
 `;
 
 class NavItem extends Component {
   render() {
-    const {
-      active,
-      clean,
-      featured,
-      children,
-      href,
-      name,
-      ...props
-    } = this.props;
+    const { active, featured, children, href, name, ...props } = this.props;
     let className = "";
     if (active) className += " active";
     if (featured) className += " featured";
-    if (clean) className += " clean";
     return (
-      <li className={className}>
-        <a href={href} {...props}>
-          {name}
-        </a>
+      <NavItemContainer {...props} className={className}>
+        {this.props.clean ? (
+          name
+        ) : (
+          <a href={href} {...props}>
+            {name}
+          </a>
+        )}
         {children}
-      </li>
+      </NavItemContainer>
     );
   }
 }
@@ -191,7 +207,7 @@ export default class AppNav extends Component {
                   name={campaign.name}
                 />
                 {campaigns.length > 1 ? (
-                  <CampaignNav campaigns={campaigns} />
+                  <NavItem name={<CampaignNav campaigns={campaigns} />} clean />
                 ) : null}
                 <NavItem href="#" name="Inteligência">
                   <ul>
