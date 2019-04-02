@@ -143,6 +143,11 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
   }
   delete query.q;
 
+  if (query.category) {
+    query[`campaignMeta.${query.category}`] = true;
+  }
+  delete query.category;
+
   switch (query.accountFilter) {
     case "account":
       if (options.facebookId) {

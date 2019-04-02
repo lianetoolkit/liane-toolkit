@@ -28,7 +28,7 @@ const Container = styled.nav`
   }
   .icon-link {
     color: #fff;
-    padding: 0.8rem 0.5rem 0.5rem;
+    padding: 0.9rem 0.5rem 0.5rem;
     svg {
       font-size: 1.15em;
     }
@@ -44,53 +44,54 @@ const NavItemContainer = styled.li`
   .icon-link {
     padding: 0.8rem 0.5rem 0;
     svg {
-      font-size: 0.9em;
+      font-size: 0.8em;
     }
   }
   ${props =>
     !props.clean &&
     css`
-    a {
-      display: block;
-      padding: 0.8rem 1rem;
-      text-decoration: none;
-      color: #fff;
-      font-weight: 600;
-    }
-    &:hover,
-    &:active,
-    &:focus {
-      color: #999;
-      > a {
-        color: #999;
-      }
-    }
-    &.active {
-      > a {
-        color: #fc0;
-      }
-    }
-    ul {
-      display: none;
-      min-width: 200px;
-      background: #333;
-      border-right: 1px solid #222;
-      border-left: 1px solid #222;
-      border-bottom: 1px solid #222;
-      box-shadow: 0 0.25rem 0.3rem rgba(0, 0, 0, 0.15);
-      padding: 0 0 0.5rem;
-      border-radius: 0 0 7px 7px;
-      li {
+      a {
         display: block;
-        a {
-          color: #ddd;
-          padding: 0.5rem 1rem;
-          border: 0;
+        padding: 0.8rem 1rem;
+        text-decoration: none;
+        color: #fff;
+        font-weight: 600;
+      }
+      &:hover,
+      &:active,
+      &:focus {
+        color: #999;
+        > a {
+          color: #999;
         }
-        &:hover {
+      }
+      &.active {
+        > a {
+          color: #fc0;
+        }
+      }
+      ul {
+        display: none;
+        min-width: 200px;
+        background: #333;
+        border-right: 1px solid #222;
+        border-left: 1px solid #222;
+        border-bottom: 1px solid #222;
+        box-shadow: 0 0.25rem 0.3rem rgba(0, 0, 0, 0.15);
+        padding: 0 0 0.5rem;
+        border-radius: 0 0 7px 7px;
+        li {
+          display: block;
           a {
-            color: #fff;
-            background: #222;
+            color: #ddd;
+            padding: 0.5rem 1rem;
+            border: 0;
+          }
+          &:hover {
+            a {
+              color: #fff;
+              background: #222;
+            }
           }
         }
       }
@@ -103,16 +104,15 @@ const NavItemContainer = styled.li`
           left: 0;
         }
       }
-  `}
+    `}
   }
 `;
 
 class NavItem extends Component {
   render() {
-    const { active, featured, children, href, name, ...props } = this.props;
+    const { active, children, href, name, ...props } = this.props;
     let className = "";
     if (active) className += " active";
-    if (featured) className += " featured";
     return (
       <NavItemContainer {...props} className={className}>
         {this.props.clean ? (
@@ -203,7 +203,6 @@ export default class AppNav extends Component {
                 <NavItem
                   href={FlowRouter.path("App.dashboard")}
                   active={currentRoute.indexOf("App.dashboard") === 0}
-                  featured={true}
                   name={campaign.name}
                 />
                 {campaigns.length > 1 ? (

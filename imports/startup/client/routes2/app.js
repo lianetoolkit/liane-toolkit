@@ -41,9 +41,12 @@ appRoutes.route("/auth", {
 
 appRoutes.route("/people", {
   name: "App.people",
-  action: function() {
+  action: function(params, queryParams) {
     addTitle(`${APP_NAME} | People`);
-    return mount(App, { content: { component: PeoplePage } });
+    return mount(App, {
+      content: { component: PeoplePage },
+      query: queryParams
+    });
   }
 });
 

@@ -12,7 +12,7 @@ const Container = styled.div`
   }
   .dropdown {
     position: absolute;
-    top: 40px;
+    top: 39px;
     right: -25px;
     width: 380px;
     height: 300px;
@@ -26,10 +26,10 @@ const Container = styled.div`
       content: "";
       background: #fff;
       position: absolute;
-      width: 16px;
-      height: 16px;
-      top: -6px;
-      right: 29px;
+      width: 10px;
+      height: 10px;
+      top: -4px;
+      right: 33px;
       transform: rotate(45deg);
       border: 1px solid #ddd;
     }

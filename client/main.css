@@ -128,3 +128,23 @@ input[type="submit"]:disabled {
   color: #fff;
   cursor: default;
 }
+
+#app .select__control {
+  background: transparent;
+  border-radius: 7px;
+}
+
+#app .select__control,
+#app .select__control--is-focused {
+  border: 1px solid #e6e6e6;
+  box-shadow: none;
+}
+
+#app .select__control--is-focused {
+  background: #fff;
+}
+
+#app .select__value-container {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}

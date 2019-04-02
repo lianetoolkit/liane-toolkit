@@ -16,7 +16,7 @@ export default class AppLayout extends Component {
     if (connected && ready) {
       return (
         <>
-          <Page {...this.props}>
+          <Page id="app" {...this.props}>
             <content.component {...this.props} />
           </Page>
           <Modal />

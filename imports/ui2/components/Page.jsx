@@ -17,7 +17,7 @@ const NavContainer = styled.div`
   flex: 0 0 auto;
   box-sizing: border-box;
   border-right: 1px solid #ccc;
-  padding: 3rem 0 3rem 2rem;
+  padding: 3rem 0 2rem 2rem;
   ${props =>
     !props.full &&
     css`
@@ -46,7 +46,7 @@ const NavContent = styled.div`
     color: #999;
     font-size: 1.75em;
     font-weight: normal;
-    margin: 0 2rem 2rem 1rem;
+    margin: 0 1rem 2rem 0;
   }
   a {
     display: block;
@@ -54,7 +54,7 @@ const NavContent = styled.div`
     color: #999;
     text-decoration: none;
     font-weight: 600;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 1rem 0.75rem 0;
     &:hover {
       color: #000;
     }
@@ -63,6 +63,15 @@ const NavContent = styled.div`
       margin: 0.25rem 0; */} color: #000;
       background: #f7f7f7;
       border-radius: 7px 0 0 7px;
+    }
+  }
+  form {
+    margin-right: 1rem;
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      padding: 0.75rem 1rem;
+      border-color: #e6e6e6;
     }
   }
 `;
@@ -150,9 +159,9 @@ export default class Page extends Component {
     document.getElementById("main").focus();
   }
   render() {
-    const { campaigns, campaign, children } = this.props;
+    const { campaigns, campaign, children, ...props } = this.props;
     return (
-      <Container>
+      <Container {...props}>
         <Header campaigns={campaigns} campaign={campaign} />
         <PageBody id="main" tabIndex="-1">
           {children}

@@ -145,6 +145,13 @@ const Container = styled.table`
     css`
       border-radius: 0;
       border: 0;
+      border-bottom: 1px solid #ccc;
+      tbody.active {
+        border-radius: 0;
+        tr, td {
+          border-radius: 0 !important;
+        }
+      }
     `}
 `;
 
