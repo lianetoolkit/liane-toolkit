@@ -27,7 +27,10 @@ import {
   faSpinner,
   faFistRaised,
   faHandHoldingHeart,
-  faHandPointer
+  faHandPointer,
+  faSort,
+  faSortUp,
+  faSortDown
 } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 
@@ -58,4 +61,7 @@ library.add(faSpinner);
 library.add(faFistRaised);
 library.add(faHandHoldingHeart);
 library.add(faHandPointer);
+library.add(faSort);
+library.add(faSortUp);
+library.add(faSortDown);
 library.add(faFacebookSquare);

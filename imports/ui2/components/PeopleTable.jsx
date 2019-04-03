@@ -309,8 +309,32 @@ export default class PeopleTable extends Component {
     });
     return text.join(", ");
   };
+  _handleSortClick = (key, defaultOrder = "desc") => () => {
+    const { options, onSort } = this.props;
+    const currentOrder = this.getSort(key);
+    let order;
+    if (!currentOrder) {
+      order = defaultOrder;
+    } else if (currentOrder != defaultOrder) {
+      order = false;
+    } else if (currentOrder == "asc") {
+      order = "desc";
+    } else if (currentOrder == "desc") {
+      order = "asc";
+    }
+    if (onSort) {
+      onSort(key, order);
+    }
+  };
+  getSort = key => {
+    const { options } = this.props;
+    if (options["sort"] == key) {
+      return options["order"];
+    }
+    return false;
+  };
   render() {
-    const { people, onChange, ...props } = this.props;
+    const { people, onChange, onSort, ...props } = this.props;
     const { expanded } = this.state;
     return (
       <Container>
@@ -319,11 +343,32 @@ export default class PeopleTable extends Component {
             <thead>
               <tr>
                 <th />
-                <th className="fill">Nome</th>
-                <th>Reações</th>
-                <th>Comentários</th>
+                <Table.SortableHead
+                  className="fill"
+                  onClick={this._handleSortClick("name", "asc")}
+                  sorted={this.getSort("name")}
+                >
+                  Nome
+                </Table.SortableHead>
+                <Table.SortableHead
+                  onClick={this._handleSortClick("likes")}
+                  sorted={this.getSort("likes")}
+                >
+                  Reações
+                </Table.SortableHead>
+                <Table.SortableHead
+                  onClick={this._handleSortClick("comments")}
+                  sorted={this.getSort("comments")}
+                >
+                  Comentários
+                </Table.SortableHead>
                 <th>Contatos</th>
-                <th>Última interação</th>
+                <Table.SortableHead
+                  onClick={this._handleSortClick("lastInteraction")}
+                  sorted={this.getSort("lastInteraction")}
+                >
+                  Última interação
+                </Table.SortableHead>
               </tr>
             </thead>
             {people.map(person => (

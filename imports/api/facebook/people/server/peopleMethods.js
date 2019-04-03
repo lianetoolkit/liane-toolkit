@@ -92,17 +92,18 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
       case "likes":
         if (options.facebookId) {
           queryOptions.sort = {
-            [`counts.${options.facebookId}.${options.sort}`]: -1
+            [`counts.${options.facebookId}.${options.sort}`]:
+              options.order || -1
           };
         }
         break;
       case "name":
-        queryOptions.sort = { name: 1 };
+        queryOptions.sort = { name: options.order || 1 };
         break;
       case "lastInteraction":
         if (options.facebookId) {
           queryOptions.sort = {
-            lastInteractionDate: -1
+            lastInteractionDate: options.order || -1
           };
         }
         break;

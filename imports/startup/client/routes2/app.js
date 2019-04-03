@@ -1,6 +1,7 @@
 import { FlowRouter } from "meteor/kadira:flow-router";
 import React from "react";
 import { mount } from "react-mounter";
+import { pick } from "lodash";
 
 import App from "/imports/ui2/containers/App.jsx";
 
@@ -45,7 +46,8 @@ appRoutes.route("/people", {
     addTitle(`${APP_NAME} | People`);
     return mount(App, {
       content: { component: PeoplePage },
-      query: queryParams
+      query: pick(queryParams, ["q", "category"]),
+      options: pick(queryParams, ["sort", "order"])
     });
   }
 });

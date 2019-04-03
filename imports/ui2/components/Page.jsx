@@ -89,7 +89,8 @@ class Nav extends Component {
 
 const ContentContainer = styled.div`
   flex: 1 1 100%;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   ${props =>
     props.full &&
     css`

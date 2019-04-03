@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Container = styled.table`
   width: 100%;
@@ -133,9 +134,6 @@ const Container = styled.table`
     }
   }
   thead tr {
-    ${'' /* box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.07);
-    position: relative;
-    z-index: 1; */}
     th {
       border-bottom: 1px solid #ccc;
     }
@@ -148,14 +146,63 @@ const Container = styled.table`
       border-bottom: 1px solid #ccc;
       tbody.active {
         border-radius: 0;
-        tr, td {
+        tr,
+        td {
           border-radius: 0 !important;
         }
       }
     `}
 `;
 
+const SortableHeadContainer = styled.th`
+  .th-container {
+    color: inherit;
+    display: flex;
+    align-items: center;
+    .th-content {
+      flex: 1 1 100%;
+    }
+    .sort-icon {
+      margin-left: 0.5rem;
+      flex: 0 0 auto;
+      color: #ccc;
+    }
+    &:hover {
+      .sort-icon {
+        color: #333;
+      }
+    }
+  }
+`;
+
+class SortableHead extends Component {
+  render() {
+    const { children, onClick, sorted, ...props } = this.props;
+    let sortIcon = "sort";
+    if (sorted == "desc") {
+      sortIcon = "sort-up";
+    } else if (sorted == "asc") {
+      sortIcon = "sort-down";
+    }
+    return (
+      <SortableHeadContainer {...props}>
+        <a
+          href="javascript:void(0);"
+          className="th-container"
+          onClick={onClick}
+        >
+          <span className="th-content">{children}</span>
+          <span className="sort-icon">
+            <FontAwesomeIcon icon={sortIcon} />
+          </span>
+        </a>
+      </SortableHeadContainer>
+    );
+  }
+}
+
 export default class Table extends Component {
+  static SortableHead = SortableHead;
   render() {
     const { children, ...props } = this.props;
     return <Container {...props}>{children}</Container>;

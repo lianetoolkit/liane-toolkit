@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Select from "react-select";
-import { debounce, defaultsDeep } from "lodash";
+import { pick, debounce, defaultsDeep } from "lodash";
 
 import Page from "../components/Page.jsx";
 
@@ -16,6 +16,9 @@ export default class PeoplePage extends Component {
       people: [],
       query: {
         q: ""
+      },
+      options: {
+        limit: 20
       }
     };
   }
@@ -24,26 +27,60 @@ export default class PeoplePage extends Component {
     this.setState({
       query: defaultsDeep(this.props.query, {
         q: ""
+      }),
+      options: defaultsDeep(this.props.options, {
+        limit: 20
       })
     });
   }
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const { query } = this.state;
-    if (JSON.stringify(query) != JSON.stringify(prevState.query)) {
+    const { query, options } = this.state;
+    if (
+      JSON.stringify(query) != JSON.stringify(prevState.query) ||
+      JSON.stringify(options) != JSON.stringify(prevState.options)
+    ) {
       this.fetchPeople();
     }
   }
-  fetchPeople = debounce((options = {}) => {
+  sanitizeQueryParams = (params, allowedParams = []) => {
+    let sanitized = {};
+    for (let key in params) {
+      if (params[key]) {
+        sanitized[key] = params[key];
+      } else {
+        sanitized[key] = null;
+      }
+    }
+    if (allowedParams.length) {
+      return pick(sanitized, allowedParams);
+    }
+    return sanitized;
+  };
+  buildOptions = options => {
+    let queryOptions = {};
+    if (options.limit) {
+      queryOptions.limit = options.limit;
+    }
+    if (options.sort) {
+      queryOptions.sort = options.sort;
+      queryOptions.order = options.order == "desc" ? -1 : 1;
+    }
+    return queryOptions;
+  };
+  fetchPeople = debounce(() => {
     const { campaignId } = this.props;
-    const { query } = this.state;
-    FlowRouter.setQueryParams(query);
+    const { query, options } = this.state;
+    FlowRouter.setQueryParams(this.sanitizeQueryParams(query));
+    FlowRouter.setQueryParams(
+      this.sanitizeQueryParams(options, ["sort", "order"])
+    );
     if (campaignId) {
       Meteor.call(
         "people.search",
         {
           campaignId,
           query,
-          options
+          options: this.buildOptions(options)
         },
         (err, data) => {
           if (err) {
@@ -57,6 +94,20 @@ export default class PeoplePage extends Component {
   }, 200);
   _handlePeopleChange = people => {
     this.setState({ people });
+  };
+  _handleTableSort = (sort, order) => {
+    let options = {};
+    if (!order) {
+      options = { order: "", sort: "" };
+    } else {
+      options = { order, sort };
+    }
+    this.setState({
+      options: {
+        ...this.state.options,
+        ...options
+      }
+    });
   };
   _handleFormChange = ({ target }) => {
     this.setState({
@@ -97,7 +148,7 @@ export default class PeoplePage extends Component {
     return null;
   };
   render() {
-    const { people, query, expanded } = this.state;
+    const { people, query, options, expanded } = this.state;
     return (
       <>
         <Page.Nav full large>
@@ -125,7 +176,9 @@ export default class PeoplePage extends Component {
         <Page.Content full compact>
           <PeopleTable
             people={people}
+            options={options}
             onChange={this._handlePeopleChange}
+            onSort={this._handleTableSort}
             compact
           />
         </Page.Content>
