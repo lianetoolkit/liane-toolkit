@@ -173,6 +173,17 @@ const SortableHeadContainer = styled.th`
       }
     }
   }
+  ${props =>
+    props.sorted &&
+    css`
+      .th-container .th-content {
+        font-weight: 600;
+        color: #333;
+      }
+      .th-container .sort-icon {
+        color: #333;
+      }
+    `}
 `;
 
 class SortableHead extends Component {
@@ -185,7 +196,7 @@ class SortableHead extends Component {
       sortIcon = "sort-down";
     }
     return (
-      <SortableHeadContainer {...props}>
+      <SortableHeadContainer {...props} sorted={sorted}>
         <a
           href="javascript:void(0);"
           className="th-container"
