@@ -172,6 +172,18 @@ Meteor.startup(() => {
     );
     People.rawCollection().createIndex(
       {
+        "counts.all.likes": 1
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "counts.all.comments": 1
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
         "campaignMeta.influencer": 1
       },
       { sparse: true }

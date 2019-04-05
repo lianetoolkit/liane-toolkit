@@ -90,22 +90,18 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
     switch (options.sort) {
       case "comments":
       case "likes":
-        if (options.facebookId) {
-          queryOptions.sort = {
-            [`counts.${options.facebookId}.${options.sort}`]:
-              options.order || -1
-          };
-        }
+        queryOptions.sort = {
+          [`counts.${options.facebookId || "all"}.${options.sort}`]:
+            options.order || -1
+        };
         break;
       case "name":
         queryOptions.sort = { name: options.order || 1 };
         break;
       case "lastInteraction":
-        if (options.facebookId) {
-          queryOptions.sort = {
-            lastInteractionDate: options.order || -1
-          };
-        }
+        queryOptions.sort = {
+          lastInteractionDate: options.order || -1
+        };
         break;
       default:
     }
@@ -125,11 +121,13 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
 
   if (reactionCount && reactionCount.amount && options.facebookId) {
     if (reactionCount.type == "all" || !reactionCount.type) {
-      query[`counts.${options.facebookId}.likes`] = {
+      query[`counts.${options.facebookId || "all"}.likes`] = {
         $gte: parseInt(reactionCount.amount)
       };
     } else {
-      query[`counts.${options.facebookId}.reactions.${reactionCount.type}`] = {
+      query[
+        `counts.${options.facebookId || "all"}.reactions.${reactionCount.type}`
+      ] = {
         $gte: parseInt(reactionCount.amount)
       };
     }
@@ -160,6 +158,8 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
       break;
   }
   delete query.accountFilter;
+
+  console.log(queryOptions);
 
   return { query, options: queryOptions };
 };

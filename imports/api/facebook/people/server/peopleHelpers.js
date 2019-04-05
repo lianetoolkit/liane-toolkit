@@ -51,15 +51,24 @@ const PeopleHelpers = {
     };
     if (person.counts) {
       for (let facebookId in person.counts) {
-        const personCounts = person.counts[facebookId];
-        counts.comments += personCounts.comments;
-        counts.likes += personCounts.likes;
-        for (let reaction in personCounts.reactions) {
-          counts.reactions[reaction] += personCounts.reactions[reaction];
+        if (facebookId !== "all") {
+          const personCounts = person.counts[facebookId];
+          if (!isNaN(personCounts.comments)) {
+            counts.comments += personCounts.comments;
+          }
+          if (!isNaN(personCounts.likes)) {
+            counts.likes += personCounts.likes;
+          }
+          for (let reaction in personCounts.reactions) {
+            counts.reactions[reaction] += personCounts.reactions[reaction];
+            if (!isNaN(personCounts.reactions[reaction])) {
+            }
+          }
         }
       }
     }
-    return People.update(personId, { $set: { "counts.0": counts } });
+    console.log("SUM COUNTS", counts);
+    return People.update(personId, { $set: { "counts.all": counts } });
   },
   geocode({ address }) {
     let str = "";

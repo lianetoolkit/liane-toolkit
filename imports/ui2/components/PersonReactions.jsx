@@ -27,23 +27,21 @@ const Container = styled.ul`
 `;
 
 export default class PersonReactions extends Component {
-  reactionVal(reaction) {
+  reactionVal(reaction, facebookId = "all") {
     const { person } = this.props;
-    let total = 0;
-    if (person.counts) {
-      for (let facebookAccountId in person.counts)
-        total +=
-          get(person.counts, `${facebookAccountId}.reactions.${reaction}`) || 0;
+    if (person.counts && person.counts[facebookId]) {
+      return get(person.counts[facebookId], `reactions.${reaction}`) || 0;
     }
-    return total;
+    return 0;
   }
   render() {
-    const { person } = this.props;
+    const { person, facebookId } = this.props;
     return (
       <Container>
         {reactions.map(reaction => (
           <li key={reaction}>
-            <Reaction reaction={reaction} /> {this.reactionVal(reaction)}
+            <Reaction reaction={reaction} />{" "}
+            {this.reactionVal(reaction, facebookId)}
           </li>
         ))}
       </Container>

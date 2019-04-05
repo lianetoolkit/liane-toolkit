@@ -233,24 +233,16 @@ export default class PeopleTable extends Component {
     }
   }, 100);
   _sumReactions(person) {
-    let reactions = 0;
-    if (person.counts) {
-      for (let facebookAccountId in person.counts) {
-        const count = person.counts[facebookAccountId].likes;
-        if (!isNaN(count)) reactions += count;
-      }
+    if (person.counts && person.counts.all) {
+      return person.counts.all.likes || 0;
     }
-    return reactions;
+    return 0;
   }
   _sumComments(person) {
-    let comments = 0;
-    if (person.counts) {
-      for (let facebookAccountId in person.counts) {
-        const count = person.counts[facebookAccountId].comments;
-        if (!isNaN(count)) comments += count;
-      }
+    if (person.counts && person.counts.all) {
+      return person.counts.all.comments || 0;
     }
-    return comments;
+    return 0;
   }
   _handleMetaButtonsChange = data => {
     if (this.props.onChange) {
