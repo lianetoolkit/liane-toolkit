@@ -30,6 +30,37 @@ const PeopleHelpers = {
     People.update(person._id, { $set: { formId } });
     return formId;
   },
+  updateInteractionCountSum({ personId, inputData }) {
+    const person = People.findOne(personId);
+    if (!person) {
+      throw new Meteor.Error(404, "Person not found");
+    }
+    let counts = {
+      comments: 0,
+      likes: 0,
+      reactions: {
+        none: 0,
+        like: 0,
+        love: 0,
+        wow: 0,
+        haha: 0,
+        sad: 0,
+        angry: 0,
+        thankful: 0
+      }
+    };
+    if (person.counts) {
+      for (let facebookId in person.counts) {
+        const personCounts = person.counts[facebookId];
+        counts.comments += personCounts.comments;
+        counts.likes += personCounts.likes;
+        for (let reaction in personCounts.reactions) {
+          counts.reactions[reaction] += personCounts.reactions[reaction];
+        }
+      }
+    }
+    return People.update(personId, { $set: { "counts.0": counts } });
+  },
   geocode({ address }) {
     let str = "";
     if (address.country) {

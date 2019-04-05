@@ -1,6 +1,7 @@
 import { Promise } from "meteor/promise";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { People } from "/imports/api/facebook/people/people.js";
+import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { HTTP } from "meteor/http";
 import { Random } from "meteor/random";
@@ -122,6 +123,18 @@ const CommentsHelpers = {
         }
       }
       peopleBulk.execute();
+
+      for (const campaign of accountCampaigns) {
+        for (const commentedPerson of commentedPeople) {
+          JobsHelpers.addJob({
+            jobType: "people.sumPersonInteractions",
+            jobData: {
+              campaignId: campaign._id,
+              facebookId: commentedPerson.id
+            }
+          });
+        }
+      }
     }
   },
   getEntryComments({ campaignId, facebookAccountId, entryId, accessToken }) {

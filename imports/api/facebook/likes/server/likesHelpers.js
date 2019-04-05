@@ -1,6 +1,7 @@
 import { Promise } from "meteor/promise";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { People } from "/imports/api/facebook/people/people.js";
+import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { HTTP } from "meteor/http";
 import { Random } from "meteor/random";
@@ -137,6 +138,18 @@ const LikesHelpers = {
         }
       }
       peopleBulk.execute();
+
+      for (const campaign of accountCampaigns) {
+        for (const likedPerson of likedPeople) {
+          JobsHelpers.addJob({
+            jobType: "people.sumPersonInteractions",
+            jobData: {
+              campaignId: campaign._id,
+              facebookId: likedPerson.id
+            }
+          });
+        }
+      }
     }
   },
   getEntryLikes({
