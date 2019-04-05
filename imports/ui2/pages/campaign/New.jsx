@@ -34,7 +34,7 @@ export default class NewCampaignPage extends Component {
         if (err) {
           console.log(err);
         } else {
-          // data
+          FlowRouter.go("App.dashboard");
         }
       });
     } else {
