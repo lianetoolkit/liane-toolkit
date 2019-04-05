@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
 
-const Button = styled.a`
+const ButtonContainer = styled.a`
   width: 100%;
   text-align: center;
   color: #6633cc;
   text-decoration: none;
-  padding: 0.5rem 2rem;
+  padding: 0.5rem 1rem;
   margin: 0 0.5rem;
   border-radius: 3rem;
   border: 1px solid #6633cc;
@@ -36,4 +36,13 @@ const Button = styled.a`
     `}
 `;
 
-export default Button;
+export default class Button extends Component {
+  render() {
+    const { children, ...props } = this.props;
+    return (
+      <ButtonContainer className="button" {...props}>
+        {children}
+      </ButtonContainer>
+    );
+  }
+}

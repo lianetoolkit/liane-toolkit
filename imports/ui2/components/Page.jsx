@@ -17,7 +17,53 @@ const NavContainer = styled.div`
   flex: 0 0 auto;
   box-sizing: border-box;
   border-right: 1px solid #ccc;
-  padding: 3rem 0 2rem 2rem;
+  ${props =>
+    !props.plain &&
+    css`
+      padding: 3rem 0 2rem 2rem;
+    `}
+  h3 {
+    color: #999;
+    font-size: 1.75em;
+    font-weight: normal;
+    margin: 0 1rem 1rem 0;
+  }
+  .nav-content {
+    a {
+      display: block;
+      line-height: 1;
+      color: #999;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.75rem 1rem 0.75rem 0;
+      &:hover {
+        color: #000;
+      }
+      &.active {
+        ${"" /* padding: 0.75rem 1rem;
+        margin: 0.25rem 0; */} color: #000;
+        background: #f7f7f7;
+        border-radius: 7px 0 0 7px;
+      }
+    }
+  }
+  form {
+    margin-right: 1rem;
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      padding: 0.75rem 1rem;
+      border-color: #e6e6e6;
+      margin: 0 0 1rem;
+    }
+    .select__control {
+      margin-bottom: 1rem;
+    }
+    label {
+      font-weight: normal;
+      margin-bottom: 1rem;
+    }
+  }
   ${props =>
     !props.full &&
     css`
@@ -42,48 +88,24 @@ const NavContent = styled.div`
   max-width: 200px;
   flex: 0 0 auto;
   font-size: 0.8em;
-  h3 {
-    color: #999;
-    font-size: 1.75em;
-    font-weight: normal;
-    margin: 0 1rem 2rem 0;
-  }
-  a {
-    display: block;
-    line-height: 1;
-    color: #999;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 0.75rem 1rem 0.75rem 0;
-    &:hover {
-      color: #000;
-    }
-    &.active {
-      ${"" /* padding: 0.75rem 1rem;
-      margin: 0.25rem 0; */} color: #000;
-      background: #f7f7f7;
-      border-radius: 7px 0 0 7px;
-    }
-  }
-  form {
-    margin-right: 1rem;
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-      padding: 0.75rem 1rem;
-      border-color: #e6e6e6;
-    }
-  }
 `;
 
 class Nav extends Component {
   render() {
-    const { children, ...props } = this.props;
-    return (
-      <NavContainer {...props}>
-        <NavContent className="nav-content">{children}</NavContent>
-      </NavContainer>
-    );
+    const { children, plain, ...props } = this.props;
+    if (plain) {
+      return (
+        <NavContainer {...props} plain={plain}>
+          {children}
+        </NavContainer>
+      );
+    } else {
+      return (
+        <NavContainer {...props}>
+          <NavContent className="nav-content">{children}</NavContent>
+        </NavContainer>
+      );
+    }
   }
 }
 
