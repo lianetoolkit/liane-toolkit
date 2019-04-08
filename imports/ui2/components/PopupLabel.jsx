@@ -5,10 +5,13 @@ const Container = styled.span`
   display: inline-block;
   position: relative;
   .label {
+    font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    letter-spacing: normal;
+    white-space: nowrap;
     opacity: 0;
     position: absolute;
     bottom: 100%;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
     margin-left: -0.5rem;
     left: 0;
     padding: 0.2rem 0.5rem;

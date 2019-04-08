@@ -21,7 +21,10 @@ const YEEKO = Meteor.settings.yeeko;
 const CampaignsHelpers = {
   refreshCampaignAccountsTokens({ campaignId }) {
     const campaign = Campaigns.findOne(campaignId);
-    const accounts = campaign.accounts;
+    let accounts = [campaign.facebookAccount];
+    if (campaign.accounts) {
+      accounts = accounts.concat(campaign.accounts);
+    }
     const users = campaign.users;
     let tokens = {};
     for (let campaignUser of users) {
@@ -65,6 +68,62 @@ const CampaignsHelpers = {
         );
       }
     }
+  },
+  setMainAccount({ campaignId, account }) {
+    check(campaignId, String);
+    check(account, Object);
+
+    const upsertObj = {
+      $set: {
+        name: account.name,
+        category: account.category,
+        fanCount: account.fan_count
+      }
+    };
+
+    FacebookAccounts.upsert({ facebookId: account.id }, upsertObj);
+
+    const token = FacebookAccountsHelpers.exchangeFBToken({
+      token: account.access_token
+    });
+
+    const updateObj = {
+      facebookId: account.id,
+      accessToken: token.result,
+      chatbot: {
+        active: false,
+        init_text_response: false
+      }
+    };
+
+    Campaigns.update(
+      { _id: campaignId },
+      { $set: { facebookAccount: updateObj } }
+    );
+
+    JobsHelpers.addJob({
+      jobType: "entries.updateAccountEntries",
+      jobData: {
+        campaignId,
+        facebookId: account.id,
+        accessToken: token.result
+      }
+    });
+    JobsHelpers.addJob({
+      jobType: "audiences.updateAccountAudience",
+      jobData: {
+        campaignId,
+        facebookAccountId: account.id
+      }
+    });
+    JobsHelpers.addJob({
+      jobType: "people.updateFBUsers",
+      jobData: {
+        campaignId,
+        facebookAccountId: account.id
+      }
+    });
+    return;
   },
   addAccount({ campaignId, account }) {
     check(campaignId, String);

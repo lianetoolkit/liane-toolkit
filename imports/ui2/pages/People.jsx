@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import { pick, debounce, defaultsDeep } from "lodash";
 
-import Page from "../components/Page.jsx";
 import Button from "../components/Button.jsx";
+import PopupLabel from "../components/PopupLabel.jsx";
+import Page from "../components/Page.jsx";
 
 import Content from "../components/Content.jsx";
 import PeopleTable from "../components/PeopleTable.jsx";
@@ -24,7 +26,7 @@ const PeopleFilters = styled.div`
   }
   .actions {
     flex: 0 0 auto;
-    border-top: 1px solid #ccc;
+    border-top: 1px solid #eee;
     padding: 1rem;
     .button {
       margin: 0;
@@ -240,11 +242,18 @@ export default class PeoplePage extends Component {
               </form>
             </div>
             <div className="actions">
-              <Button>Exportar resultados</Button>
-            </div>
-            <div className="actions">
-              <Button>Importar pessoas</Button>
-              <Button>Gerenciar importações</Button>
+              <Button.Group vertical>
+                <Button>Exportar resultados</Button>
+                <Button>
+                  Importar pessoas
+                  <PopupLabel
+                    text="Gerenciar importações"
+                    bottomOffset="0.2rem"
+                  >
+                    <FontAwesomeIcon icon="cog" />
+                  </PopupLabel>
+                </Button>
+              </Button.Group>
             </div>
           </PeopleFilters>
         </Page.Nav>

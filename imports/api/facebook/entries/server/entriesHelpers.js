@@ -54,14 +54,10 @@ const EntriesHelpers = {
 
     if (campaignId) {
       campaign = Campaigns.findOne(campaignId);
-      isCampaignAccount = !!campaign.accounts.find(
-        account => account.facebookId == facebookId
-      );
+      isCampaignAccount = campaign.facebookAccount.facebookId == facebookId;
     }
 
-    const accessToken = campaign.accounts.find(
-      acc => acc.facebookId == facebookId
-    ).accessToken;
+    const accessToken = campaign.facebookAccount.accessToken;
 
     const accountPath = isCampaignAccount ? "me" : facebookId;
 

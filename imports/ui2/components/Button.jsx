@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
 
-const ButtonContainer = styled.a`
+const styles = css`
   width: 100%;
   text-align: center;
   color: #6633cc;
@@ -36,7 +36,41 @@ const ButtonContainer = styled.a`
     `}
 `;
 
+const ButtonContainer = styled.a(styles);
+
+const ButtonGroupContainer = styled.span`
+  display: flex;
+  .button {
+    flex: 1 1 100%;
+    border-radius: 0;
+    margin: 0;
+    border-radius: 0;
+    &:first-child {
+      border-radius: 3rem 0 0 3rem;
+    }
+    &:last-child {
+      border-radius: 0 3rem 3rem 0;
+    }
+  }
+  ${props =>
+    props.vertical &&
+    css`
+      flex-direction: column;
+      .button {
+        border-bottom-width: 0;
+      }
+      .button:first-child {
+        border-radius: 7px 7px 0 0;
+      }
+      .button:last-child {
+        border-radius: 0 0 7px 7px;
+        border-bottom-width: 1px;
+      }
+    `}
+`;
+
 export default class Button extends Component {
+  static Group = ButtonGroupContainer;
   render() {
     const { children, ...props } = this.props;
     return (

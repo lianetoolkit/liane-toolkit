@@ -83,8 +83,9 @@ const LikesHelpers = {
         //   lastInteraction["estimate"] = true;
         // }
         set["name"] = likedPerson.name;
-        set[`counts.${facebookAccountId}.likes`] = likesCount;
-        set[`counts.${facebookAccountId}.reactions`] = reactionsCount;
+        set["counts.likes"] = likesCount;
+        set["counts.reactions"] = reactionsCount;
+        set["facebookAccountId"] = facebookAccountId;
         // set["lastInteraction"] = lastInteraction;
 
         for (const campaign of accountCampaigns) {
@@ -139,17 +140,17 @@ const LikesHelpers = {
       }
       peopleBulk.execute();
 
-      for (const campaign of accountCampaigns) {
-        for (const likedPerson of likedPeople) {
-          JobsHelpers.addJob({
-            jobType: "people.sumPersonInteractions",
-            jobData: {
-              campaignId: campaign._id,
-              facebookId: likedPerson.id
-            }
-          });
-        }
-      }
+      // for (const campaign of accountCampaigns) {
+      //   for (const likedPerson of likedPeople) {
+      //     JobsHelpers.addJob({
+      //       jobType: "people.sumPersonInteractions",
+      //       jobData: {
+      //         campaignId: campaign._id,
+      //         facebookId: likedPerson.id
+      //       }
+      //     });
+      //   }
+      // }
     }
   },
   getEntryLikes({

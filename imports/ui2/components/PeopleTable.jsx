@@ -232,15 +232,15 @@ export default class PeopleTable extends Component {
       this.container.scrollTop += nodeArea - this.container.offsetHeight / 2;
     }
   }, 100);
-  _sumReactions(person) {
-    if (person.counts && person.counts.all) {
-      return person.counts.all.likes || 0;
+  _getReactions(person) {
+    if (person.counts) {
+      return person.counts.likes || 0;
     }
     return 0;
   }
-  _sumComments(person) {
-    if (person.counts && person.counts.all) {
-      return person.counts.all.comments || 0;
+  _getComments(person) {
+    if (person.counts) {
+      return person.counts.comments || 0;
     }
     return 0;
   }
@@ -418,11 +418,11 @@ export default class PeopleTable extends Component {
                   </td>
                   <td className="small icon-number">
                     <FontAwesomeIcon icon="hand-pointer" />
-                    <span className="number">{this._sumReactions(person)}</span>
+                    <span className="number">{this._getReactions(person)}</span>
                   </td>
                   <td className="small icon-number">
                     <FontAwesomeIcon icon="comment" />
-                    <span className="number">{this._sumComments(person)}</span>
+                    <span className="number">{this._getComments(person)}</span>
                   </td>
                   <td>
                     <PersonContactIcons person={person} />
@@ -451,7 +451,7 @@ export default class PeopleTable extends Component {
                       <p className="person-comment-count">
                         <span>
                           <FontAwesomeIcon icon="comment" />{" "}
-                          {this._sumComments(person)} comentários
+                          {this._getComments(person)} comentários
                         </span>
                         <Button light>Enviar mensagem privada</Button>
                       </p>

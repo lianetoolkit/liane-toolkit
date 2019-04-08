@@ -86,6 +86,9 @@ Campaigns.schema = new SimpleSchema({
     type: String,
     optional: true
   },
+  facebookAccount: {
+    type: Campaigns.accountsSchema
+  },
   accounts: {
     type: Array,
     optional: true

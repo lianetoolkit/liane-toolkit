@@ -74,7 +74,8 @@ const CommentsHelpers = {
           updatedAt: new Date()
         };
         set["name"] = commentedPerson.name;
-        set[`counts.${facebookAccountId}.comments`] = commentsCount;
+        set["counts.comments"] = commentsCount;
+        set["facebookAccountId"] = facebookAccountId;
 
         let addToSet = {
           facebookAccounts: facebookAccountId
@@ -124,17 +125,17 @@ const CommentsHelpers = {
       }
       peopleBulk.execute();
 
-      for (const campaign of accountCampaigns) {
-        for (const commentedPerson of commentedPeople) {
-          JobsHelpers.addJob({
-            jobType: "people.sumPersonInteractions",
-            jobData: {
-              campaignId: campaign._id,
-              facebookId: commentedPerson.id
-            }
-          });
-        }
-      }
+      // for (const campaign of accountCampaigns) {
+      //   for (const commentedPerson of commentedPeople) {
+      //     JobsHelpers.addJob({
+      //       jobType: "people.sumPersonInteractions",
+      //       jobData: {
+      //         campaignId: campaign._id,
+      //         facebookId: commentedPerson.id
+      //       }
+      //     });
+      //   }
+      // }
     }
   },
   getEntryComments({ campaignId, facebookAccountId, entryId, accessToken }) {

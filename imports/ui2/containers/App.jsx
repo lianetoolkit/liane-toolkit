@@ -62,9 +62,15 @@ export default withTracker(({ content }) => {
     const currentCampaignOptions = {
       transform: function(campaign) {
         let accountsMap = {};
-        campaign.accounts.forEach(account => {
-          accountsMap[account.facebookId] = account;
-        });
+        if (campaign.accounts) {
+          campaign.accounts.forEach(account => {
+            accountsMap[account.facebookId] = account;
+          });
+        }
+        if (campaign.facebookAccount) {
+          accountsMap[campaign.facebookAccount.facebookId] =
+            campaign.facebookAccount;
+        }
         FacebookAccounts.find({
           facebookId: { $in: Object.keys(accountsMap) }
         })

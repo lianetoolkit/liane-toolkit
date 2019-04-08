@@ -78,23 +78,36 @@ export const campaignsCreate = new ValidatedMethod({
     }
 
     const users = [{ userId, role: "owner" }];
-    const insertDoc = { users, name };
+    let insertDoc = { users, name };
 
     const user = Meteor.users.findOne(userId);
     const token = user.services.facebook.accessToken;
 
     // AdAccountsHelpers.update({ adAccountId, token });
 
+    const account = FacebookAccountsHelpers.getUserAccount({
+      userId,
+      facebookAccountId
+    });
+
+    const accountToken = FacebookAccountsHelpers.exchangeFBToken({
+      token: account.access_token
+    });
+
+    insertDoc.facebookAccount = {
+      facebookId: account.id,
+      accessToken: accountToken.result,
+      chatbot: {
+        active: false,
+        init_text_response: false
+      }
+    };
+
     campaignId = Campaigns.insert(insertDoc);
 
-    if (facebookAccountId) {
-      const account = FacebookAccountsHelpers.getUserAccount({
-        userId,
-        facebookAccountId
-      });
-      CampaignsHelpers.addAccount({ campaignId, account });
-      // CampaignsHelpers.addAudienceAccount({ campaignId, account });
-    }
+    CampaignsHelpers.setMainAccount({ campaignId, account });
+    // CampaignsHelpers.addAccount({ campaignId, account });
+    // CampaignsHelpers.addAudienceAccount({ campaignId, account });
 
     return { result: campaignId };
   }

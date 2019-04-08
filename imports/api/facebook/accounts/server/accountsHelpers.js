@@ -119,7 +119,7 @@ const FacebookAccountsHelpers = {
     check(facebookId, String);
     return Campaigns.find({
       status: { $ne: "suspended" },
-      accounts: { $elemMatch: { facebookId } }
+      "facebookAccount.facebookId": facebookId
     }).fetch();
   },
   fetchFBAccount({ userId, address }) {
