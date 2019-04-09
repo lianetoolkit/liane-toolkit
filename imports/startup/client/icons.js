@@ -4,6 +4,7 @@ import {
   faCog,
   faTimes,
   faBell,
+  faChevronUp,
   faChevronDown,
   faSignOutAlt,
   faCheck,
@@ -37,6 +38,7 @@ import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 library.add(faCog);
 library.add(faTimes);
 library.add(faBell);
+library.add(faChevronUp);
 library.add(faChevronDown);
 library.add(faSignOutAlt);
 library.add(faCheck);

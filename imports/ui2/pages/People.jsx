@@ -5,6 +5,7 @@ import Select from "react-select";
 import { pick, debounce, defaultsDeep } from "lodash";
 
 import Button from "../components/Button.jsx";
+import More from "../components/More.jsx";
 import PopupLabel from "../components/PopupLabel.jsx";
 import Page from "../components/Page.jsx";
 
@@ -277,6 +278,9 @@ export default class PeoplePage extends Component {
                     </span>
                   </span>
                 </label>
+                <More text="Mais opções">
+                  <p>...</p>
+                </More>
               </form>
             </div>
             <div className="actions">
