@@ -51,7 +51,8 @@ const NavContainer = styled.div`
     margin-right: 1rem;
     input[type="text"],
     input[type="email"],
-    input[type="password"] {
+    input[type="password"],
+    input[type="number"] {
       padding: 0.75rem 1rem;
       border-color: #e6e6e6;
       margin: 0 0 1rem;

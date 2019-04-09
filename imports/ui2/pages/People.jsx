@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
+import DatePicker from "react-datepicker";
 import { pick, debounce, defaultsDeep } from "lodash";
 
 import Button from "../components/Button.jsx";
@@ -13,6 +14,7 @@ import Content from "../components/Content.jsx";
 import PeopleTable from "../components/PeopleTable.jsx";
 
 import PersonMetaButtons from "../components/PersonMetaButtons.jsx";
+import Reaction from "../components/Reaction.jsx";
 
 const PeopleFilters = styled.div`
   display: flex;
@@ -53,6 +55,36 @@ const PeopleFilters = styled.div`
       display: block;
       font-size: 0.8em;
       color: #999;
+    }
+  }
+  .from-to-input {
+    margin: 0 0 1rem;
+    .input {
+      display: flex;
+      align-items: center;
+      input {
+        margin: 0;
+        padding: 0.5rem;
+      }
+      .between {
+        padding: 0 0.5rem;
+      }
+    }
+  }
+  .reaction-count-input {
+    .input {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      span {
+        flex: 0 0 auto;
+        display: block;
+      }
+      input {
+        padding: 0.5rem;
+        margin: 0;
+        width: auto;
+      }
     }
   }
 `;
@@ -279,7 +311,28 @@ export default class PeoplePage extends Component {
                   </span>
                 </label>
                 <More text="Mais opções">
-                  <p>...</p>
+                  <div className="from-to-input">
+                    <h4>Data de inserção na base</h4>
+                    <div className="input">
+                      <div className="from">
+                        <DatePicker placeholderText="Início" />
+                      </div>
+                      <span className="between">até</span>
+                      <div className="from">
+                        <DatePicker placeholderText="Fim" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="reaction-count-input">
+                    <h4>Quantidade de reações</h4>
+                    <div className="input">
+                      <span>ao menos</span>
+                      <span>
+                        <input type="number" placeholder="Quantidade" />
+                      </span>
+                    </div>
+                    <Reaction.Filter showAny />
+                  </div>
                 </More>
               </form>
             </div>
