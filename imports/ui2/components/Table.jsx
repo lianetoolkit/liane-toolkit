@@ -118,6 +118,10 @@ const Container = styled.table`
             color: #f0f0f0;
           }
         }
+        .button {
+          background: rgba(0, 0, 0, 0.2);
+          border-color: rgba(0, 0, 0, 0.3);
+        }
       }
       &:last-child {
         border-right: 0;

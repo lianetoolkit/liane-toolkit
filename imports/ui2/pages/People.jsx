@@ -24,12 +24,34 @@ const PeopleFilters = styled.div`
     overflow: auto;
     padding: 3.25rem 0 2rem 1rem;
   }
+  .main-input {
+    font-size: 1.2em;
+    background: #fff;
+  }
   .actions {
     flex: 0 0 auto;
-    border-top: 1px solid #eee;
-    padding: 1rem;
     .button {
+      background: #fff;
       margin: 0;
+      border-color: #ddd;
+      border-right: 0;
+      .icon {
+        border-color: #ddd;
+      }
+    }
+  }
+  label {
+    display: block;
+    display: flex;
+    input[type="checkbox"],
+    input[type="radio"] {
+      flex: 0 0 auto;
+      margin-right: 1rem;
+    }
+    .tip {
+      display: block;
+      font-size: 0.8em;
+      color: #999;
     }
   }
 `;
@@ -187,6 +209,7 @@ export default class PeoplePage extends Component {
                   onChange={this._handleFormChange}
                   name="q"
                   value={query.q}
+                  className="main-input"
                 />
                 <Select
                   classNamePrefix="select"
@@ -228,31 +251,58 @@ export default class PeoplePage extends Component {
                   placeholder="Filtrar por tag"
                 />
                 <label>
-                  <input type="checkbox" /> Formulário. Apenas pessoas que
-                  preencheram o formulário.
+                  <input type="checkbox" />
+                  <span>
+                    Formulário
+                    <span className="tip">
+                      Apenas pessoas que preencheram o formulário.
+                    </span>
+                  </span>
                 </label>
                 <label>
-                  <input type="checkbox" /> Comentários. Apenas pessoas que
-                  comentaram ao menos 1 vez.
+                  <input type="checkbox" />
+                  <span>
+                    Comentários
+                    <span className="tip">
+                      Apenas pessoas que comentaram ao menos 1 vez.
+                    </span>
+                  </span>
                 </label>
                 <label>
-                  <input type="checkbox" /> Mensagens privadas. Apenas pessoas
-                  que podem receber mensagens privadas.
+                  <input type="checkbox" />
+                  <span>
+                    Mensagens privadas
+                    <span className="tip">
+                      Apenas pessoas que podem receber mensagens privadas.
+                    </span>
+                  </span>
                 </label>
               </form>
             </div>
             <div className="actions">
-              <Button.Group vertical>
-                <Button>Exportar resultados</Button>
-                <Button>
-                  Importar pessoas
-                  <PopupLabel
-                    text="Gerenciar importações"
-                    bottomOffset="0.2rem"
-                  >
-                    <FontAwesomeIcon icon="cog" />
-                  </PopupLabel>
-                </Button>
+              <Button.Group vertical attached>
+                <Button.WithIcon>
+                  <a href="javascript:void(0);">Exportar resultados</a>
+                  <span className="icon">
+                    <PopupLabel
+                      text="Gerenciar exportações"
+                      bottomOffset="0.2rem"
+                    >
+                      <FontAwesomeIcon icon="cog" />
+                    </PopupLabel>
+                  </span>
+                </Button.WithIcon>
+                <Button.WithIcon>
+                  <a href="javascript:void(0);">Importar planilha</a>
+                  <span className="icon">
+                    <PopupLabel
+                      text="Gerenciar importações"
+                      bottomOffset="0.2rem"
+                    >
+                      <FontAwesomeIcon icon="cog" />
+                    </PopupLabel>
+                  </span>
+                </Button.WithIcon>
               </Button.Group>
             </div>
           </PeopleFilters>

@@ -5,7 +5,7 @@ const Container = styled.footer`
   flex: 0;
   padding: 0.5rem;
   background: #333;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #222;
   .footer-content {
     color: #999;
     font-size: 0.8em;
