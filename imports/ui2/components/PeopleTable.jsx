@@ -428,7 +428,9 @@ export default class PeopleTable extends Component {
                     <PersonContactIcons person={person} />
                   </td>
                   <td className="small last">
-                    {moment(person.lastInteractionDate).fromNow()}
+                    {person.lastInteractionDate
+                      ? moment(person.lastInteractionDate).fromNow()
+                      : "--"}
                   </td>
                 </tr>
                 {this.isExpanded(person) ? (

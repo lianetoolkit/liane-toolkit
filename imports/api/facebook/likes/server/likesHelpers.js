@@ -75,45 +75,30 @@ const LikesHelpers = {
           updatedAt: new Date()
         };
 
-        // let lastInteraction = {
-        //   facebookId: facebookAccountId
-        // };
-        // if (likedPerson.like.created_time) {
-        //   lastInteraction["date"] = { $max: likedPerson.like.created_time };
-        //   lastInteraction["estimate"] = true;
-        // }
         set["name"] = likedPerson.name;
         set["counts.likes"] = likesCount;
         set["counts.reactions"] = reactionsCount;
         set["facebookAccountId"] = facebookAccountId;
-        // set["lastInteraction"] = lastInteraction;
+
+        let updateObj = {
+          $setOnInsert: {
+            _id: Random.id(),
+            createdAt: new Date(),
+            source: "facebook"
+          },
+          $set: set,
+          $addToSet: {
+            facebookAccounts: facebookAccountId
+          }
+        };
+
+        if (likedPerson.like.created_time) {
+          updateObj.$max = {
+            lastInteractionDate: new Date(likedPerson.like.created_time || 0)
+          };
+        }
 
         for (const campaign of accountCampaigns) {
-          // Person has the last interaction populated
-          // peopleBulk
-          //   .find({
-          //     campaignId: campaign._id,
-          //     facebookId: likedPerson.id,
-          //     // "lastInteractions.facebookId": facebookAccountId
-          //   })
-          //   .update({
-          //     $setOnInsert: {
-          //       _id: Random.id(),
-          //       createdAt: new Date()
-          //     },
-          //     $set: {
-          //       ...set,
-          //       // "lastInteractions.$": lastInteraction
-          //     },
-          //     $max: {
-          //       "lastInteractionDate": likedPerson.like.created_time || 0
-          //     },
-          //     $addToSet: {
-          //       facebookAccounts: facebookAccountId
-          //     }
-          //   });
-
-          // Person does not have the last interaction populated
           peopleBulk
             .find({
               campaignId: campaign._id,
@@ -121,19 +106,10 @@ const LikesHelpers = {
             })
             .upsert()
             .update({
+              ...updateObj,
               $setOnInsert: {
-                _id: Random.id(),
-                createdAt: new Date()
-              },
-              $set: set,
-              $max: {
-                lastInteractionDate: new Date(
-                  likedPerson.like.created_time || 0
-                )
-              },
-              $addToSet: {
-                facebookAccounts: facebookAccountId
-                // lastInteractions: lastInteraction
+                ...updateObj.$setOnInsert,
+                _id: Random.id()
               }
             });
         }

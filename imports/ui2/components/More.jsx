@@ -62,8 +62,8 @@ export default class More extends Component {
             <FontAwesomeIcon icon={active ? "chevron-up" : "chevron-down"} />
           </a>
         </Container>
-        {/* {active ? children : null} */}
-        {children}
+        {active ? children : null}
+        {/* {children} */}
       </>
     );
   }

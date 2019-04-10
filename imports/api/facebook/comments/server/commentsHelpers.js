@@ -91,15 +91,19 @@ const CommentsHelpers = {
         // Build update obj
         let updateObj = {
           $setOnInsert: {
-            createdAt: new Date()
+            createdAt: new Date(),
+            source: "facebook"
           },
-          $set: set,
-          $max: {
+          $set: set
+        };
+
+        if (commentedPerson.comment.created_time) {
+          updateObj.$max = {
             lastInteractionDate: new Date(
               commentedPerson.comment.created_time || 0
             )
-          }
-        };
+          };
+        }
         if (Object.keys(addToSet).length) {
           updateObj.$addToSet = addToSet;
         }

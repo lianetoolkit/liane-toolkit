@@ -144,6 +144,8 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
   }
   delete query.category;
 
+  if (!query.source) delete query.source;
+
   switch (query.accountFilter) {
     case "account":
       if (options.facebookId) {
@@ -670,7 +672,7 @@ export const peopleCreate = new ValidatedMethod({
   }
 });
 
-export const canvasFormUpdate = new ValidatedMethod({
+export const peopleMetaUpdate = new ValidatedMethod({
   name: "people.metaUpdate",
   validate: new SimpleSchema({
     campaignId: {

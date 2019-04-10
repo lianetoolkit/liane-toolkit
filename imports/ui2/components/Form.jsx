@@ -19,6 +19,28 @@ const FormContent = styled.div`
   padding: 0 3rem;
 `;
 
+const FieldContainer = styled.label`
+  display: block;
+  font-weight: normal;
+  margin: 0 0 1rem;
+  .label {
+    color: #666;
+    display: block;
+    font-size: 0.8em;
+    margin-bottom: 0.25rem;
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  .select__control {
+    margin: 0;
+  }
+  .select__value-container {
+    padding: 0.5rem 1rem;
+  }
+`;
+
 class Content extends Component {
   render() {
     const { children, ...props } = this.props;
@@ -90,10 +112,23 @@ class Actions extends Component {
   }
 }
 
+class Field extends Component {
+  render() {
+    const { label, children } = this.props;
+    return (
+      <FieldContainer>
+        <span className="label">{label}</span>
+        {children}
+      </FieldContainer>
+    );
+  }
+}
+
 export default class Form extends Component {
   static Content = Content;
   static Actions = Actions;
   static ButtonGroup = ButtonGroup;
+  static Field = Field;
   render() {
     const { children, ...props } = this.props;
     return <Container {...props}>{children}</Container>;

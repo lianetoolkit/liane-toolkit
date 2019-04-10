@@ -242,6 +242,29 @@ export default class PeoplePage extends Component {
     }
     return null;
   };
+  getSourceValue = () => {
+    const { query } = this.state;
+    if (query.source) {
+      let value = {
+        value: query.source,
+        label: ""
+      };
+      switch (query.source) {
+        case "facebook":
+          value.label = "Facebook";
+          break;
+        case "import":
+          value.label = "Importação";
+          break;
+        case "manual":
+          value.label = "Manual";
+          break;
+        default:
+      }
+      return value;
+    }
+    return null;
+  };
   render() {
     const { people, query, options, expanded } = this.state;
     return (
@@ -277,15 +300,19 @@ export default class PeoplePage extends Component {
                       label: "Importação"
                     },
                     {
+                      value: "manual",
+                      label: "Manual"
+                    },
+                    {
                       value: "facebook",
                       label: "Facebook"
                     }
                   ]}
                   isSearchable={false}
                   isClearable={true}
-                  // onChange={this._handleSelectChange}
+                  onChange={this._handleSelectChange}
                   name="source"
-                  // value={this.getCategoryValue()}
+                  value={this.getSourceValue()}
                   placeholder="Filtrar por origem"
                 />
                 <Select

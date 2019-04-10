@@ -134,11 +134,12 @@ input[type="submit"]:disabled {
 #app .select__control {
   background: transparent;
   border-radius: 7px;
+  margin: 0 0 1rem;
 }
 
 #app .select__control,
 #app .select__control--is-focused {
-  border: 1px solid #e6e6e6;
+  border: 1px solid #ccc;
   box-shadow: none;
 }
 

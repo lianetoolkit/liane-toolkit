@@ -15,12 +15,12 @@ export default class AppLayout extends Component {
     const { content, ready, connected } = this.props;
     if (connected && ready) {
       return (
-        <>
-          <Page id="app" {...this.props}>
+        <div id="app">
+          <Page {...this.props}>
             <content.component {...this.props} />
           </Page>
           <Modal />
-        </>
+        </div>
       );
     } else {
       return null;
