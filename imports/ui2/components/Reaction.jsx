@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PopupLabel from "./PopupLabel.jsx";
 
 const sizes = {
-  tiny: 12,
+  tiny: 16,
   small: 24,
   medium: 32,
   large: 46,

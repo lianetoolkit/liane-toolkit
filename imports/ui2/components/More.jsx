@@ -5,7 +5,7 @@ import styled from "styled-components";
 const Container = styled.div`
   display: block;
   position: relative;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   .text {
     margin-left: 0.5rem;
     font-size: 0.9em;
@@ -62,7 +62,8 @@ export default class More extends Component {
             <FontAwesomeIcon icon={active ? "chevron-up" : "chevron-down"} />
           </a>
         </Container>
-        {active ? children : null}
+        {/* {active ? children : null} */}
+        {children}
       </>
     );
   }

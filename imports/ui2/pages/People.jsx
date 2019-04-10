@@ -57,7 +57,13 @@ const PeopleFilters = styled.div`
       color: #999;
     }
   }
+  h4 {
+    margin: 0 0 0.5rem;
+    color: #666;
+    font-weight: 600;
+  }
   .from-to-input {
+    font-size: 0.8em;
     margin: 0 0 1rem;
     .input {
       display: flex;
@@ -72,18 +78,27 @@ const PeopleFilters = styled.div`
     }
   }
   .reaction-count-input {
+    margin: 0 0 1rem;
+    font-size: 0.8em;
     .input {
       display: flex;
       align-items: center;
       width: 100%;
+      margin-bottom: 0.5rem;
       span {
-        flex: 0 0 auto;
-        display: block;
+        white-space: nowrap;
+        ${"" /* flex: 0 0 auto; */}
+        display: inline-block;
+        padding-right: 0.5rem;
+        &:last-child {
+          flex: 1 1 100%;
+          padding-right: 0;
+        }
       }
       input {
         padding: 0.5rem;
         margin: 0;
-        width: auto;
+        width: 100%;
       }
     }
   }
@@ -315,11 +330,11 @@ export default class PeoplePage extends Component {
                     <h4>Data de inserção na base</h4>
                     <div className="input">
                       <div className="from">
-                        <DatePicker placeholderText="Início" />
+                        <DatePicker placeholderText="Data" />
                       </div>
                       <span className="between">até</span>
                       <div className="from">
-                        <DatePicker placeholderText="Fim" />
+                        <DatePicker placeholderText="Data" />
                       </div>
                     </div>
                   </div>
@@ -331,7 +346,7 @@ export default class PeoplePage extends Component {
                         <input type="number" placeholder="Quantidade" />
                       </span>
                     </div>
-                    <Reaction.Filter showAny />
+                    <Reaction.Filter showAny size="tiny" />
                   </div>
                 </More>
               </form>
