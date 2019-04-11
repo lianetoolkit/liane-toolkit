@@ -5,6 +5,7 @@ import { get, set } from "lodash";
 
 import Form from "./Form.jsx";
 import TabNav from "./TabNav.jsx";
+import TagSelect from "./TagSelect.jsx";
 
 export default class PersonEdit extends Component {
   constructor(props) {
@@ -14,14 +15,16 @@ export default class PersonEdit extends Component {
       sectionKey: "basic_info",
       formData: {
         name: "",
-        tags: []
+        basic_info: {}
       }
     };
   }
-  static getDerivedStateFromProps({ person }, { id }) {
-    if (person._id !== id) {
+  static getDerivedStateFromProps({ person }, state) {
+    if (person._id !== state.id) {
       return {
+        id: person._id,
         formData: {
+          ...state.formData,
           name: person.name,
           ...person.campaignMeta
         }
@@ -31,9 +34,28 @@ export default class PersonEdit extends Component {
   }
   _handleChange = ev => {
     const { formData } = this.state;
+    const newFormData = Object.assign({}, formData);
+    set(newFormData, ev.target.name, ev.target.value);
+    this.setState({
+      formData: newFormData
+    });
   };
   _handleSubmit = ev => {
     ev.preventDefault();
+    const { id, sectionKey, formData } = this.state;
+    Meteor.call(
+      "people.metaUpdate",
+      {
+        campaignId: Session.get("campaignId"),
+        personId: id,
+        name: formData.name,
+        sectionKey,
+        data: formData[sectionKey]
+      },
+      (err, res) => {
+        console.log(err, res);
+      }
+    );
   };
   render() {
     const { person } = this.props;
@@ -54,14 +76,19 @@ export default class PersonEdit extends Component {
         {sectionKey == "basic_info" ? (
           <div>
             <Form.Field label="Nome">
-              <input type="text" name="name" placeholder="Nome" />
+              <input
+                type="text"
+                name="name"
+                placeholder="Nome"
+                value={formData.name}
+                onChange={this._handleChange}
+              />
             </Form.Field>
             <Form.Field label="Tags">
-              <AsyncCreatableSelect
-                classNamePrefix="select"
-                cacheOptions
-                isMulti
-                placeholder="Tags..."
+              <TagSelect
+                name="basic_info.tags"
+                onChange={this._handleChange}
+                value={formData.basic_info.tags}
               />
             </Form.Field>
           </div>

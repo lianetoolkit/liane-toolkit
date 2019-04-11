@@ -107,7 +107,6 @@ const MetaCircles = styled.div`
   }
   &:hover .meta-circle {
       border-color: rgba(0, 0, 0, 0.5);
-      ${"" /* box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.5); */}
     }
   }
 `;
@@ -194,22 +193,31 @@ export default class PeopleTable extends Component {
       });
     }
     let target = false;
-    switch (ev.keyCode) {
-      case 27:
-        if (curIndex > -1) {
-          this.setState({
-            expanded: false
-          });
-        }
-        break;
-      case 40:
-        ev.preventDefault();
-        target = people[Math.min(curIndex + 1, people.length - 1)];
-        break;
-      case 38:
-        ev.preventDefault();
-        target = people[Math.max(curIndex - 1, 0)];
-      default:
+    if (document.activeElement && document.activeElement.contains(this.node)) {
+      switch (ev.keyCode) {
+        case 27: // esc
+          if (curIndex > -1) {
+            this.setState({
+              expanded: false
+            });
+          }
+          break;
+        case 40: // arrow down
+          ev.preventDefault();
+          target = people[Math.min(curIndex + 1, people.length - 1)];
+          break;
+        case 38: // arrow up
+          ev.preventDefault();
+          target = people[Math.max(curIndex - 1, 0)];
+          break;
+        case 69: // (e)dit
+          if (curIndex > -1) {
+            modalStore.setTitle(`Editando perfil de ${people[curIndex].name}`);
+            modalStore.set(<PersonEdit person={people[curIndex]} />);
+          }
+          break;
+        default:
+      }
     }
     if (target) {
       this.setState({

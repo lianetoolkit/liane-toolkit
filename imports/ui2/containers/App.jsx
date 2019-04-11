@@ -2,6 +2,7 @@ import { Meteor } from "meteor/meteor";
 import { withTracker } from "meteor/react-meteor-data";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
+import { PeopleTags } from "/imports/api/facebook/people/people.js";
 import { ReactiveVar } from "meteor/reactive-var";
 import { ClientStorage } from "meteor/ostrio:cstorage";
 import { find, map } from "lodash";
@@ -82,6 +83,9 @@ export default withTracker(({ content }) => {
             };
           });
         campaign.accounts = Object.values(accountsMap);
+        campaign.tags = PeopleTags.find({
+          campaignId: campaign._id
+        }).fetch();
         campaign.users = Meteor.users
           .find({
             _id: { $in: map(campaign.users, "userId") }

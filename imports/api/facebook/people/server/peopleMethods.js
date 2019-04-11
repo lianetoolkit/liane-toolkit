@@ -144,6 +144,11 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
   }
   delete query.category;
 
+  if (query.tag) {
+    query[`campaignMeta.basic_info.tags`] = query.tag;
+  }
+  delete query.tag;
+
   if (!query.source) delete query.source;
 
   switch (query.accountFilter) {

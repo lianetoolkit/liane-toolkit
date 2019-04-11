@@ -46,7 +46,7 @@ appRoutes.route("/people", {
     addTitle(`${APP_NAME} | People`);
     return mount(App, {
       content: { component: PeoplePage },
-      query: pick(queryParams, ["q", "category"]),
+      query: pick(queryParams, ["q", "category", "source", "tag"]),
       options: pick(queryParams, ["sort", "order"])
     });
   }

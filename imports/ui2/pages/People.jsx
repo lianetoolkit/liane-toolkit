@@ -13,6 +13,7 @@ import Page from "../components/Page.jsx";
 import Content from "../components/Content.jsx";
 import PeopleTable from "../components/PeopleTable.jsx";
 
+import TagFilter from "../components/TagFilter.jsx";
 import PersonMetaButtons from "../components/PersonMetaButtons.jsx";
 import Reaction from "../components/Reaction.jsx";
 
@@ -315,14 +316,10 @@ export default class PeoplePage extends Component {
                   value={this.getSourceValue()}
                   placeholder="Filtrar por origem"
                 />
-                <Select
-                  classNamePrefix="select"
-                  // options={}
-                  isSearchable={false}
-                  isClearable={true}
-                  // onChange={this._handleSelectChange}
+                <TagFilter
+                  onChange={this._handleFormChange}
                   name="tag"
-                  // value={this.getCategoryValue()}
+                  value={query.tag}
                   placeholder="Filtrar por tag"
                 />
                 <label>

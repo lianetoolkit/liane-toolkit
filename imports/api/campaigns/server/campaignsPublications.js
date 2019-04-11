@@ -1,5 +1,6 @@
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
+import { PeopleTags } from "/imports/api/facebook/people/people.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { Jobs } from "/imports/api/jobs/jobs.js";
@@ -160,6 +161,13 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
           find: function(campaign) {
             return FacebookAccounts.find({
               facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
+            });
+          }
+        },
+        {
+          find: function(campaign) {
+            return PeopleTags.find({
+              campaignId: campaign._id
             });
           }
         },

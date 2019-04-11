@@ -48,6 +48,12 @@ export default class Modal extends Component {
     window.addEventListener("keydown", this._handleKeydown);
     window.addEventListener("click", this._handleNodeClick);
   }
+  componentDidUpdate() {
+    const node = document.getElementById("modal");
+    if (node) {
+      node.focus();
+    }
+  }
   componentWillUnmount() {
     window.removeEventListener("keydown", this._handleKeydown);
     window.removeEventListener("click", this._handleNodeClick);
@@ -64,17 +70,21 @@ export default class Modal extends Component {
   };
   render() {
     const { title, children } = this.props;
-    return (
-      <Container active={!!children}>
-        <div className="modal">
-          {title ? (
-            <header>
-              <h2>{title}</h2>
-            </header>
-          ) : null}
-          <section className="modal-content">{children}</section>
-        </div>
-      </Container>
-    );
+    if (children) {
+      return (
+        <Container id="modal" active={!!children} tabIndex="-1">
+          <div className="modal">
+            {title ? (
+              <header>
+                <h2>{title}</h2>
+              </header>
+            ) : null}
+            <section className="modal-content">{children}</section>
+          </div>
+        </Container>
+      );
+    } else {
+      return null;
+    }
   }
 }

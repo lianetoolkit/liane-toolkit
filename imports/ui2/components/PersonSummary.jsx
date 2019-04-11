@@ -52,7 +52,7 @@ export default class PersonSummary extends Component {
         </li>
         <li>
           <FontAwesomeIcon icon="tag" />{" "}
-          {this.metaValue("tags", "Não existem tags associadas")}
+          {this.metaValue("basic_info.tags", "Não existem tags associadas")}
         </li>
       </Container>
     );
