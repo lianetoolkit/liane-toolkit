@@ -25,6 +25,7 @@ const Container = styled.div`
     font-size: 0.7em;
     background: #fff;
     padding: 1.1rem 0.75rem 0.5rem 0.5rem;
+    margin: 0;
     a {
       display: inline-block;
       margin-left: 0.5rem;
@@ -37,15 +38,24 @@ const Container = styled.div`
     }
   }
   .active .extra-actions {
-    background: #fc0;
+    background: transparent;
+    position: static;
+    display: block;
+    padding: 0;
+    margin-bottom: 0.2rem;
     a {
-      color: #444;
+      margin-left: 0;
+      margin-right: 0.5rem;
+      color: rgba(0, 0, 0, 0.4);
       &:hover,
       &:active,
       &:focus {
         color: #000;
       }
     }
+  }
+  .active .person-name {
+    font-weight: 600;
   }
   .meta-trigger {
     color: rgba(0, 0, 0, 0.25);
@@ -77,7 +87,7 @@ const Container = styled.div`
 const ContactIcons = styled.div`
   > * {
     margin: 0 0.5rem;
-    opacity: 0.25;
+    opacity: 0.2;
     &.active {
       opacity: 1;
     }
@@ -412,7 +422,6 @@ export default class PeopleTable extends Component {
                     </Popup>
                   </td>
                   <td className="fill highlight">
-                    {person.name}
                     <p className="extra-actions show-on-hover">
                       <a href="javascript:void(0);">Acessar perfil</a>
                       <a
@@ -421,11 +430,11 @@ export default class PeopleTable extends Component {
                       >
                         Editar
                       </a>
-                      <a href="javascript:void(0);">Remover</a>
                     </p>
+                    <span className="person-name">{person.name}</span>
                   </td>
                   <td className="small icon-number">
-                    <FontAwesomeIcon icon="hand-pointer" />
+                    <FontAwesomeIcon icon="dot-circle" />
                     <span className="number">{this._getReactions(person)}</span>
                   </td>
                   <td className="small icon-number">
@@ -452,7 +461,7 @@ export default class PeopleTable extends Component {
                       />
                     </td>
                     <td className="extra fill">
-                      <PersonSummary person={person} />
+                      <PersonSummary person={person} tags={this.props.tags} />
                     </td>
                     <td className="extra" colSpan="4">
                       <div className="person-reactions">

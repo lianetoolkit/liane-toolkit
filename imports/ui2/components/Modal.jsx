@@ -13,12 +13,22 @@ const Container = styled.div`
   height: 0;
   z-index: 100;
   background: rgba(0, 0, 0, 0.75);
+  .close-background {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
   .modal {
     width: 80%;
     max-width: 800px;
     margin: 6rem auto;
     border-radius: 7px;
     background: #fff;
+    position: relative;
+    z-index: 2;
     header {
       border-radius: 7px 7px 0 0;
       background: #fc0;
@@ -68,11 +78,19 @@ export default class Modal extends Component {
       modalStore.reset();
     }
   };
+  _handleCloseClick = () => {
+    modalStore.reset();
+  };
   render() {
     const { title, children } = this.props;
     if (children) {
       return (
         <Container id="modal" active={!!children} tabIndex="-1">
+          <a
+            href="javascript:void(0);"
+            onClick={this._handleCloseClick}
+            className="close-background"
+          />
           <div className="modal">
             {title ? (
               <header>

@@ -316,12 +316,15 @@ export default class PeoplePage extends Component {
                   value={this.getSourceValue()}
                   placeholder="Filtrar por origem"
                 />
-                <TagFilter
-                  onChange={this._handleFormChange}
-                  name="tag"
-                  value={query.tag}
-                  placeholder="Filtrar por tag"
-                />
+                {this.props.tags && this.props.tags.length ? (
+                  <TagFilter
+                    tags={this.props.tags}
+                    onChange={this._handleFormChange}
+                    name="tag"
+                    value={query.tag}
+                    placeholder="Filtrar por tag"
+                  />
+                ) : null}
                 <label>
                   <input type="checkbox" />
                   <span>
@@ -405,6 +408,7 @@ export default class PeoplePage extends Component {
         </Page.Nav>
         <Page.Content full compact>
           <PeopleTable
+            tags={this.props.tags}
             people={people}
             options={options}
             onChange={this._handlePeopleChange}

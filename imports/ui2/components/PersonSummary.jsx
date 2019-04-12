@@ -41,6 +41,18 @@ export default class PersonSummary extends Component {
       );
     }
   }
+  tags() {
+    const { person, tags } = this.props;
+    const personTags = get(person, "campaignMeta.basic_info.tags");
+    if (personTags && personTags.length && tags && tags.length) {
+      return tags
+        .filter(tag => personTags.indexOf(tag._id) !== -1)
+        .map(tag => tag.name)
+        .join(", ");
+    } else {
+      return <span className="empty">Não existem tags associadas</span>;
+    }
+  }
   render() {
     return (
       <Container>
@@ -51,8 +63,7 @@ export default class PersonSummary extends Component {
           <FontAwesomeIcon icon="phone" /> {this.metaValue("contact.cellphone")}
         </li>
         <li>
-          <FontAwesomeIcon icon="tag" />{" "}
-          {this.metaValue("basic_info.tags", "Não existem tags associadas")}
+          <FontAwesomeIcon icon="tag" /> {this.tags()}
         </li>
       </Container>
     );

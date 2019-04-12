@@ -59,6 +59,7 @@ export default withTracker(({ content }) => {
   const campaignId = reactiveCampaignId.get();
 
   let campaign;
+  let tags = [];
   if (campaignId) {
     const currentCampaignOptions = {
       transform: function(campaign) {
@@ -104,7 +105,17 @@ export default withTracker(({ content }) => {
     campaign = currentCampaignHandle.ready()
       ? Campaigns.findOne(campaignId, currentCampaignOptions)
       : null;
-    ready.set(currentCampaignHandle.ready() && campaignsHandle.ready());
+
+    const tagsHandle = AppSubs.subscribe("people.tags", {
+      campaignId
+    });
+    tags = tagsHandle.ready() ? PeopleTags.find({ campaignId }).fetch() : [];
+
+    ready.set(
+      currentCampaignHandle.ready() &&
+        campaignsHandle.ready() &&
+        tagsHandle.ready()
+    );
   } else {
     ready.set(campaignsHandle.ready());
   }
@@ -117,6 +128,7 @@ export default withTracker(({ content }) => {
     campaigns,
     campaignId,
     campaign,
+    tags,
     content: content,
     routeName: FlowRouter.getRouteName()
   };

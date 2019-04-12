@@ -70,10 +70,10 @@ const Container = styled.table`
       width: 1px;
       white-space: nowrap;
       padding: 1rem;
-      line-height: 1;
+      line-height: 1.2;
       border-bottom: 1px solid #f7f7f7;
       border-right: 1px solid #f7f7f7;
-      vertical-align: top;
+      vertical-align: middle;
       position: relative;
       &.highlight {
         color: #000;

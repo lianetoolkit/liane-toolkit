@@ -9,21 +9,47 @@ export default class TagFilter extends Component {
       options: []
     };
   }
-  componentDidMount() {
-    Meteor.call(
-      "people.getTags",
-      { campaignId: Session.get("campaignId") },
-      (err, res) => {
-        this.setState({
-          options: (res || []).map(item => {
-            return {
-              value: item._id,
-              label: item.name
-            };
-          })
-        });
+  static tagsToOptions(tags) {
+    return tags.map(item => {
+      return {
+        value: item._id,
+        label: item.name
+      };
+    });
+  }
+  static getDerivedStateFromProps(props, state) {
+    if (props.tags && props.tags.length) {
+      if (state.options.length) {
+        const ids = props.tags.map(tag => tag._id);
+        const optionsIds = state.options.map(option => option.value);
+        if (JSON.stringify(ids) != JSON.stringify(optionsIds)) {
+          return {
+            options: TagFilter.tagsToOptions(props.tags)
+          };
+        } else {
+          return null;
+        }
+      } else {
+        return {
+          options: TagFilter.tagsToOptions(props.tags)
+        };
       }
-    );
+    }
+    return null;
+  }
+  componentDidMount() {
+    if (!this.props.tags || !this.props.tags.length) {
+      console.log("calling method");
+      Meteor.call(
+        "people.getTags",
+        { campaignId: Session.get("campaignId") },
+        (err, res) => {
+          this.setState({
+            options: TagFilter.tagsToOptions(res || [])
+          });
+        }
+      );
+    }
   }
   _handleChange = value => {
     const { onChange, name } = this.props;
