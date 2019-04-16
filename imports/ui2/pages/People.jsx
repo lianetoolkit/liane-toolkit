@@ -5,6 +5,7 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import { pick, debounce, defaultsDeep } from "lodash";
 
+import { PersonImportButton } from "../components/PersonImport.jsx";
 import Button from "../components/Button.jsx";
 import More from "../components/More.jsx";
 import PopupLabel from "../components/PopupLabel.jsx";
@@ -421,7 +422,7 @@ export default class PeoplePage extends Component {
                   </span>
                 </Button.WithIcon>
                 <Button.WithIcon>
-                  <a href="javascript:void(0);">Importar planilha</a>
+                  <PersonImportButton>Importar planilha</PersonImportButton>
                   <span className="icon">
                     <PopupLabel
                       text="Gerenciar importações"
