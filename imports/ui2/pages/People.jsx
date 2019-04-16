@@ -111,7 +111,10 @@ export default class PeoplePage extends Component {
     this.state = {
       people: [],
       query: {
-        q: ""
+        q: "",
+        form: false,
+        commented: false,
+        private_reply: false
       },
       options: {
         limit: 20
@@ -122,7 +125,10 @@ export default class PeoplePage extends Component {
     this.fetchPeople();
     this.setState({
       query: defaultsDeep(this.props.query, {
-        q: ""
+        q: "",
+        form: false,
+        commented: false,
+        private_reply: false
       }),
       options: defaultsDeep(this.props.options, {
         limit: 20
@@ -222,6 +228,14 @@ export default class PeoplePage extends Component {
       query: {
         ...this.state.query,
         [name]: value
+      }
+    });
+  };
+  _handleCheckboxChange = ({ target }) => {
+    this.setState({
+      query: {
+        ...this.state.query,
+        [target.name]: target.checked
       }
     });
   };
@@ -326,7 +340,12 @@ export default class PeoplePage extends Component {
                   />
                 ) : null}
                 <label>
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={query.form}
+                    onChange={this._handleCheckboxChange}
+                    name="form"
+                  />
                   <span>
                     Formulário
                     <span className="tip">
@@ -335,7 +354,12 @@ export default class PeoplePage extends Component {
                   </span>
                 </label>
                 <label>
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={query.commented}
+                    onChange={this._handleCheckboxChange}
+                    name="commented"
+                  />
                   <span>
                     Comentários
                     <span className="tip">
@@ -344,7 +368,12 @@ export default class PeoplePage extends Component {
                   </span>
                 </label>
                 <label>
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={query.private_reply}
+                    onChange={this._handleCheckboxChange}
+                    name="private_reply"
+                  />
                   <span>
                     Mensagens privadas
                     <span className="tip">

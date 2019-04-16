@@ -149,6 +149,21 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
   }
   delete query.tag;
 
+  if (query.form) {
+    query["filledForm"] = true;
+  }
+  delete query.form;
+
+  if (query.commented) {
+    query["counts.comments"] = { $gt: 0 };
+  }
+  delete query.commented;
+
+  if (query.private_reply) {
+    query["canReceivePrivateReply"] = { $exists: true };
+  }
+  delete query.private_reply;
+
   if (!query.source) delete query.source;
 
   switch (query.accountFilter) {
