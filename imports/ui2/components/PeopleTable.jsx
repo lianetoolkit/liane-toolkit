@@ -7,8 +7,11 @@ import { get, debounce } from "lodash";
 
 import { modalStore } from "../containers/Modal.jsx";
 
+import { getFormUrl } from "../utils/people";
+
 import Table from "./Table.jsx";
 import Button from "./Button.jsx";
+import CopyToClipboard from "./CopyToClipboard.jsx";
 import Popup from "./Popup.jsx";
 import PopupLabel from "./PopupLabel.jsx";
 import PersonMetaButtons from "./PersonMetaButtons.jsx";
@@ -84,16 +87,6 @@ const Container = styled.div`
   }
 `;
 
-const ContactIcons = styled.div`
-  > * {
-    margin: 0 0.5rem;
-    opacity: 0.2;
-    &.active {
-      opacity: 1;
-    }
-  }
-`;
-
 const MetaCircles = styled.div`
   display: flex;
   width: 30px;
@@ -140,10 +133,33 @@ class PersonMetaCircles extends Component {
   }
 }
 
+const ContactIcons = styled.div`
+  a {
+    display: inline-block;
+    margin: 0 0.5rem;
+    opacity: 0.2;
+    &.active {
+      opacity: 1;
+      &:hover,
+      &:focus {
+        color: #f60;
+      }
+    }
+  }
+`;
+
 class PersonContactIcons extends Component {
-  hasMeta(key) {
+  getMeta(key) {
     const { person } = this.props;
-    return !!(person.campaignMeta && get(person.campaignMeta, key));
+    return person.campaignMeta && get(person.campaignMeta, key);
+  }
+  getLabelText(key) {
+    const { person } = this.props;
+    const data = get(person, `campaignMeta.${key}`);
+    if (data) {
+      return data;
+    }
+    return "Não disponível";
   }
   filledForm() {
     const { person } = this.props;
@@ -151,21 +167,51 @@ class PersonContactIcons extends Component {
   }
   render() {
     const { person } = this.props;
+    const email = this.getMeta("contact.email");
+    const phone = this.getMeta("contact.cellphone");
+    const form = this.filledForm();
     if (person) {
       return (
         <ContactIcons>
-          <FontAwesomeIcon
-            icon="envelope"
-            className={this.hasMeta("contact.email") ? "active" : ""}
-          />
-          <FontAwesomeIcon
-            icon="phone"
-            className={this.hasMeta("contact.cellphone") ? "active" : ""}
-          />
-          <FontAwesomeIcon
-            icon="align-left"
-            className={this.filledForm() ? "active" : ""}
-          />
+          <PopupLabel
+            text={this.getLabelText("contact.email")}
+            disabled={!email}
+            extra={email ? "Clique para copiar" : false}
+          >
+            <CopyToClipboard
+              disabled={!email}
+              text={email}
+              className={email ? "active" : ""}
+            >
+              <FontAwesomeIcon icon="envelope" />
+            </CopyToClipboard>
+          </PopupLabel>
+          <PopupLabel
+            text={this.getLabelText("contact.cellphone")}
+            disabled={!phone}
+            extra={phone ? "Clique para copiar" : false}
+          >
+            <CopyToClipboard
+              disabled={!phone}
+              text={phone}
+              className={phone ? "active" : ""}
+            >
+              <FontAwesomeIcon icon="phone" />
+            </CopyToClipboard>
+          </PopupLabel>
+          <PopupLabel
+            text={
+              form ? "Preencheu o formulário" : "Não preencheu o formulário"
+            }
+            extra="Clique para copiar link"
+          >
+            <CopyToClipboard
+              text={getFormUrl(person.formId)}
+              className={form ? "active" : ""}
+            >
+              <FontAwesomeIcon icon="align-left" />
+            </CopyToClipboard>
+          </PopupLabel>
         </ContactIcons>
       );
     } else {

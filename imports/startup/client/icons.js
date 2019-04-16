@@ -32,7 +32,8 @@ import {
   faSort,
   faSortUp,
   faSortDown,
-  faDotCircle
+  faDotCircle,
+  faCopy
 } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 
@@ -68,4 +69,5 @@ library.add(faSort);
 library.add(faSortUp);
 library.add(faSortDown);
 library.add(faDotCircle);
+library.add(faCopy);
 library.add(faFacebookSquare);

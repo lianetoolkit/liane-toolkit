@@ -1,5 +1,7 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import styled from "styled-components";
+import { debounce } from "lodash";
 
 const Container = styled.span`
   display: inline-block;
@@ -38,6 +40,44 @@ const Container = styled.span`
 `;
 
 export default class PopupLabel extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      labelMargins: {
+        left: 0,
+        right: 0
+      }
+    };
+  }
+  componentDidMount() {
+    this.node = ReactDOM.findDOMNode(this);
+    this.calcMargins();
+    window.addEventListener("resize", this.calcMargins);
+  }
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.calcMargins);
+  }
+  calcMargins = debounce(() => {
+    if (this.node) {
+      const labelNode = this.node.getElementsByClassName("label")[0];
+      const rect = labelNode.getBoundingClientRect();
+      const rightDistance = window.innerWidth - (rect.width + rect.x);
+      const leftDistance = rect.left;
+      if (rect.x > 0 && rightDistance < 0) {
+        this.setState({
+          labelMargins: {
+            left: rightDistance - 20
+          }
+        });
+      } else if (rect.x < 0) {
+        this.setState({
+          labelMargins: {
+            left: -rect.left + 20
+          }
+        });
+      }
+    }
+  }, 350);
   render() {
     const {
       text,
@@ -47,18 +87,22 @@ export default class PopupLabel extends Component {
       bottomOffset,
       ...props
     } = this.props;
+    const { labelMargins } = this.state;
     let style = {};
     if (bottomOffset) {
       style["marginBottom"] = bottomOffset;
     }
+    style["marginLeft"] = labelMargins.left + "px";
+    style["marginRight"] = labelMargins.right + "px";
+    if (disabled) {
+      style["opacity"] = "0";
+    }
     return (
       <Container {...props}>
         {children}
-        {!disabled ? (
-          <span className="label" style={style}>
-            {text} {extra ? <span className="extra">{extra}</span> : null}
-          </span>
-        ) : null}
+        <span className="label" style={style}>
+          {text} {extra ? <span className="extra">{extra}</span> : null}
+        </span>
       </Container>
     );
   }
