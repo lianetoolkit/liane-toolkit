@@ -1472,7 +1472,7 @@ export const peopleGetTags = new ValidatedMethod({
     }
   }).validator(),
   run({ campaignId }) {
-    logger.debug("peopleTags.get called", { campaignId });
+    logger.debug("people.getTags called", { campaignId });
     const userId = Meteor.userId();
     if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
