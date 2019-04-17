@@ -43,6 +43,9 @@ const PeopleFilters = styled.div`
       .icon {
         border-color: #ddd;
       }
+      .disabled {
+        color: #999;
+      }
     }
   }
   label {
@@ -282,7 +285,9 @@ export default class PeoplePage extends Component {
     return null;
   };
   render() {
+    const { importCount } = this.props;
     const { people, query, options, expanded } = this.state;
+    console.log(importCount);
     return (
       <>
         <Page.Nav full plain>
@@ -422,7 +427,7 @@ export default class PeoplePage extends Component {
                   </span>
                 </Button.WithIcon>
                 <Button.WithIcon>
-                  <PersonImportButton>Importar planilha</PersonImportButton>
+                  <PersonImportButton importCount={importCount} />
                   <span className="icon">
                     <PopupLabel
                       text="Gerenciar importações"

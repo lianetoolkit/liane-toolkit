@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Modal from "../containers/Modal.jsx";
+import Alerts from "../containers/Alerts.jsx";
 import Page from "../components/Page.jsx";
 
 export default class AppLayout extends Component {
@@ -20,6 +21,7 @@ export default class AppLayout extends Component {
             <content.component {...this.props} />
           </Page>
           <Modal />
+          <Alerts />
         </div>
       );
     } else {

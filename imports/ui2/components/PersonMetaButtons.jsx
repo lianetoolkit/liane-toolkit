@@ -1,6 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled, { css } from "styled-components";
+import { alertStore } from "../containers/Alerts.jsx";
 
 import PopupLabel from "./PopupLabel.jsx";
 
@@ -168,6 +169,7 @@ export default class PersonMetaButtons extends React.Component {
           if (error) {
             console.log(error);
           } else {
+            alertStore.add("Perfil atualizado com sucesso", "success");
             if (onChange) {
               onChange(data);
             }

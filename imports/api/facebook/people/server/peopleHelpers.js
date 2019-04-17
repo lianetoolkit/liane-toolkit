@@ -67,7 +67,6 @@ const PeopleHelpers = {
         }
       }
     }
-    console.log("SUM COUNTS", counts);
     return People.update(personId, { $set: { "counts.all": counts } });
   },
   geocode({ address }) {

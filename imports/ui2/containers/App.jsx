@@ -60,6 +60,7 @@ export default withTracker(({ content }) => {
 
   let campaign;
   let tags = [];
+  let importCount = 0;
   if (campaignId) {
     const currentCampaignOptions = {
       transform: function(campaign) {
@@ -106,10 +107,19 @@ export default withTracker(({ content }) => {
       ? Campaigns.findOne(campaignId, currentCampaignOptions)
       : null;
 
+    // Tags
     const tagsHandle = AppSubs.subscribe("people.tags", {
       campaignId
     });
     tags = tagsHandle.ready() ? PeopleTags.find({ campaignId }).fetch() : [];
+
+    // Import job count
+    const importCountHandle = AppSubs.subscribe("people.importJobCount", {
+      campaignId
+    });
+    importCount = importCountHandle.ready()
+      ? Counts.get("people.importJobCount")
+      : 0;
 
     ready.set(
       currentCampaignHandle.ready() &&
@@ -129,6 +139,7 @@ export default withTracker(({ content }) => {
     campaignId,
     campaign,
     tags,
+    importCount,
     content: content,
     routeName: FlowRouter.getRouteName()
   };

@@ -129,7 +129,10 @@ export class PersonImportButton extends React.Component {
   }
   _handleImportClick = ev => {
     ev.preventDefault();
-    this.importInput.click();
+    const { importCount } = this.props;
+    if (!importCount) {
+      this.importInput.click();
+    }
   };
   _handleImport = ev => {
     const campaign = ClientStorage.get("campaign");
@@ -154,6 +157,8 @@ export class PersonImportButton extends React.Component {
     }
   };
   render() {
+    const { importCount } = this.props;
+    console.log(importCount);
     return (
       <>
         <input
@@ -166,8 +171,9 @@ export class PersonImportButton extends React.Component {
           {...this.props}
           href="javascript:void(0);"
           onClick={this._handleImportClick}
+          className={importCount ? "disabled" : ""}
         >
-          Importar planilha
+          {importCount ? `Importando... (${importCount})` : "Importar planilha"}
         </a>
       </>
     );
@@ -383,6 +389,7 @@ export default class PeopleImport extends React.Component {
         this.setState({
           loading: false
         });
+        modalStore.reset();
         if (onSubmit) {
           onSubmit(err, res);
         }
