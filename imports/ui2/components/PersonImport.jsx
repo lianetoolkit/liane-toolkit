@@ -91,6 +91,17 @@ const ItemConfigContainer = styled.div`
     flex: 0 0 auto;
     margin: 0 1rem;
   }
+  &.header {
+    h4 {
+      margin: 0;
+    }
+    .arrow {
+      opacity: 0;
+    }
+  }
+  .custom-field-name-input {
+    margin-left: 0.5rem;
+  }
 `;
 
 export class PersonImportButton extends React.Component {
@@ -105,7 +116,7 @@ export class PersonImportButton extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     const { importData, importFilename } = this.state;
     if (importFilename != prevState.importFilename && importData) {
-      modalStore.setTitle("Importando planilha");
+      modalStore.setTitle(`Importando ${importFilename}`);
       modalStore.set(
         <PeopleImport
           data={importData}
@@ -224,11 +235,11 @@ class ItemConfig extends React.Component {
       };
     });
     options.unshift({
-      label: "Custom",
+      label: "Campo customizado",
       value: "custom"
     });
     options.unshift({
-      label: "Skip",
+      label: "Pular campo",
       value: "skip"
     });
     return options;
@@ -268,7 +279,9 @@ class ItemConfig extends React.Component {
           <div>
             <input
               type="text"
+              className="custom-field-name-input"
               value={customField}
+              placeholder="Nome do campo"
               onChange={this._handleCustomChange}
             />
           </div>
@@ -277,6 +290,12 @@ class ItemConfig extends React.Component {
     );
   }
 }
+
+const Container = styled.div`
+  .person-meta-buttons {
+    margin: 0.5rem 0;
+  }
+`;
 
 export default class PeopleImport extends React.Component {
   constructor(props) {
@@ -328,9 +347,9 @@ export default class PeopleImport extends React.Component {
     }
     return [];
   }
-  _handleTagChange = (ev, { name, value }) => {
+  _handleTagChange = ({ target }) => {
     this.setState({
-      tags: value
+      tags: target.value
     });
   };
   _handleMetaButtons = key => {
@@ -374,32 +393,51 @@ export default class PeopleImport extends React.Component {
     const { data, tags, labels, loading } = this.state;
     const headers = this._getHeaders();
     return (
-      <Form onSubmit={this._handleSubmit}>
-        <p>Associe as colunas da sua planilha aos dados da base.</p>
-        {headers.map((header, i) => (
-          <ItemConfig key={i} header={header} onChange={this._handleChange} />
-        ))}
-        <TagSelect
-          onChange={this._handleTagChange}
-          value={tags}
-          label="Default tags for this import"
-        />
-        <Form.Field>
-          <PersonMetaButtons onChange={this._handleMetaButtons} />
-        </Form.Field>
-        {/* <Form.Field
+      <Container>
+        <Form onSubmit={this._handleSubmit}>
+          <p>Associe as colunas da sua planilha aos dados da base.</p>
+          <ItemConfigContainer className="header">
+            <div>
+              <h4>Cabeçalho da planilha</h4>
+            </div>
+            <span className="arrow">
+              <FontAwesomeIcon icon="arrow-right" />
+            </span>
+            <div>
+              <h4>Campo</h4>
+            </div>
+          </ItemConfigContainer>
+          {headers.map((header, i) => (
+            <ItemConfig key={i} header={header} onChange={this._handleChange} />
+          ))}
+          <Form.Field label="Selecione tags padrão para todas as entradas da importação">
+            <TagSelect
+              onChange={this._handleTagChange}
+              value={tags}
+              label="Default tags for this import"
+            />
+          </Form.Field>
+          <Form.Field label="Selecione categorias padrão para todas as entradas da importação">
+            <PersonMetaButtons
+              size="big"
+              onChange={this._handleMetaButtons}
+              active={labels}
+            />
+          </Form.Field>
+          {/* <Form.Field
           control={PeopleMetaButtons}
           size="big"
           onChange={this._handleMetaButtons}
           active={labels}
           label="Default labels for this import"
         /> */}
-        <input type="submit" value="Iniciar importação" />
-        {/* <Button primary fluid disabled={loading} icon>
+          <input type="submit" value="Iniciar importação" />
+          {/* <Button primary fluid disabled={loading} icon>
           <Icon name={loading ? "spinner" : "download"} loading={loading} />{" "}
           Start import
         </Button> */}
-      </Form>
+        </Form>
+      </Container>
     );
   }
 }

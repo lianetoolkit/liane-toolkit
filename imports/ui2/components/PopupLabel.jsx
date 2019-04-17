@@ -13,7 +13,7 @@ const Container = styled.span`
     opacity: 0;
     position: absolute;
     bottom: 100%;
-    margin-bottom: 0.3rem;
+    margin-bottom: 10px;
     margin-left: -0.5rem;
     left: 0;
     padding: 0.2rem 0.5rem;
@@ -24,7 +24,7 @@ const Container = styled.span`
     pointer-events: none;
     transition: opacity 0.1s linear;
     border-radius: 7px;
-    font-size: 0.8em;
+    font-size: 12px;
     .extra {
       font-size: 0.8em;
       color: rgba(255, 255, 255, 0.5);

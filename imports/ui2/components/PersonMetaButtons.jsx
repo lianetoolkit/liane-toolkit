@@ -10,6 +10,23 @@ const Container = styled.div`
       transform: rotate(360deg);
     }
   }
+  @keyframes wiggle {
+    0% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(10deg);
+    }
+    50% {
+      transform: rotate(-10deg);
+    }
+    75% {
+      transform: rotate(10deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
   font-size: 0.8em;
   text-align: center;
   display: flex;
@@ -28,6 +45,11 @@ const Container = styled.div`
     padding: 0.4rem;
     .loading {
       animation: rotate 2s linear infinite;
+    }
+    &.big {
+      width: 40px;
+      height: 40px;
+      font-size: 1.8em;
     }
   }
   ${props =>
@@ -71,8 +93,15 @@ const Container = styled.div`
         &:hover {
           z-index: 2;
           opacity: 1 !important;
-          transform: scale(1.5);
+          transform: scale(1.6);
           box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+          svg {
+            animation: wiggle 0.75s ease-in-out infinite;
+          }
+        }
+        &:hover .loading,
+        .loading {
+          animation: rotate 2s linear infinite;
         }
       }
     `}
@@ -243,15 +272,11 @@ export default class PersonMetaButtons extends React.Component {
         style["borderColor"] = "rgba(0,0,0,0.5)";
       }
     }
-
     return (
-      <PopupLabel
-        text={PersonMetaButtons.labels[key]}
-        bottomOffset={bottomOffset}
-      >
+      <PopupLabel text={PersonMetaButtons.labels[key]}>
         <a
           href="javascript:void(0);"
-          className={`meta-icon`}
+          className={`meta-icon ${size || ""}`}
           style={style}
           onClick={this._handleClick(key)}
         >
@@ -266,7 +291,7 @@ export default class PersonMetaButtons extends React.Component {
   render() {
     const { person, ...props } = this.props;
     return (
-      <Container {...props}>
+      <Container className="person-meta-buttons" {...props}>
         {this._metaButton(person ? person.campaignMeta : false, "supporter")}
         {this._metaButton(person ? person.campaignMeta : false, "volunteer")}
         {this._metaButton(person ? person.campaignMeta : false, "mobilizer")}
