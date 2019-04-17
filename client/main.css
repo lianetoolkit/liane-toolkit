@@ -131,23 +131,40 @@ input[type="submit"]:disabled {
   cursor: default;
 }
 
-#app .select__control {
+#app .select__control,
+#app .select-search__control {
   background: transparent;
   border-radius: 7px;
   margin: 0 0 1rem;
 }
 
 #app .select__control,
-#app .select__control--is-focused {
+#app .select__control--is-focused,
+#app .select-search__control,
+#app .select-search__control--is-focused {
   border: 1px solid #ccc;
   box-shadow: none;
 }
 
-#app .select__control--is-focused {
+#app .select__control--is-focused,
+#app .select-search__control--is-focused {
   background: #fff;
 }
 
 #app .select__value-container {
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding: 1rem;
+}
+
+#app .select-search__value-container {
+  padding: 0.57rem 1rem;
+}
+
+#app .select__multi-value,
+#app .select-search__multi-value {
+  border-radius: 7px;
+}
+
+#app .select-search__multi-value__remove,
+#app .select__multi-value__remove {
+  border-radius: 7px;
 }

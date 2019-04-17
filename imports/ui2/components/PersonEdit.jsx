@@ -144,8 +144,10 @@ export default class PersonEdit extends Component {
             </Form.Field>
             <Form.Field label="Gênero">
               <Select
+                classNamePrefix="select"
                 name="basic_info.gender"
                 placeholder="Gênero"
+                isSearchable={false}
                 value={this.getGenderValue()}
                 onChange={this._handleSelectChange}
                 options={this.genderOptions}

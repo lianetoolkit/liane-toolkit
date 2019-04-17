@@ -68,7 +68,7 @@ export default class TagSelect extends Component {
     const { options } = this.state;
     return (
       <CreatableSelect
-        classNamePrefix="select"
+        classNamePrefix="select-search"
         cacheOptions
         isMulti
         placeholder="Tags..."
