@@ -135,7 +135,7 @@ const Container = styled.table`
       color: #999;
       font-weight: 600;
       cursor: default;
-      background: #fafafa;
+      background: #fcfcfc;
     }
   }
   thead {
