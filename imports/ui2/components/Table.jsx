@@ -128,7 +128,7 @@ const Container = styled.table`
       }
     }
     th {
-      font-size: 0.7em;
+      font-size: 0.6em;
       text-transform: uppercase;
       letter-spacing: 0.1rem;
       text-align: left;
