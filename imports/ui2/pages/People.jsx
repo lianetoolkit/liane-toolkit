@@ -52,10 +52,13 @@ const PeopleFilters = styled.div`
   label {
     display: flex;
     align-items: center;
+    border-radius: 7px;
+    border: 1px solid #ddd;
+    padding: 0.5rem 1rem;
     input[type="checkbox"],
     input[type="radio"] {
       flex: 0 0 auto;
-      margin-right: 1rem;
+      margin: 0 1rem 0 0;
     }
     .tip {
       display: block;

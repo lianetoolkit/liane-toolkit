@@ -84,7 +84,7 @@ input[type="number"] {
   padding: 1rem;
   line-height: 1;
   margin: 0 0 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   font-size: 1em;
   border-radius: 7px;
   font-family: "Open Sans", "Helvetica", "Arial", sans-serif;
@@ -142,7 +142,7 @@ input[type="submit"]:disabled {
 #app .select__control--is-focused,
 #app .select-search__control,
 #app .select-search__control--is-focused {
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   box-shadow: none;
 }
 
