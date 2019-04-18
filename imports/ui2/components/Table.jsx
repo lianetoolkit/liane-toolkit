@@ -135,12 +135,17 @@ const Container = styled.table`
       color: #999;
       font-weight: 600;
       cursor: default;
-      background: #f7f7f7;
+      background: #fafafa;
     }
   }
-  thead tr {
-    th {
-      border-bottom: 1px solid #ccc;
+  thead {
+    tr {
+      th {
+        border-bottom: 1px solid #ccc;
+        position: sticky;
+        top: 0;
+        z-index: 4;
+      }
     }
   }
   ${props =>

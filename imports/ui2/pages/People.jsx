@@ -128,13 +128,13 @@ const PeopleContent = styled.div`
 const PeopleNavContainer = styled.nav`
   display: flex;
   align-items: center;
-  background: #fff;
   border-bottom: 1px solid #ccc;
   p {
     flex: 1 1 100%;
     padding: 0.75rem 1rem;
     margin: 0;
-    font-size: 0.8em;
+    font-size: 0.7em;
+    color: #666;
   }
   a {
     flex: 0 0 auto;
@@ -362,7 +362,6 @@ export default class PeoplePage extends Component {
         <Page.Nav full plain>
           <PeopleFilters>
             <div className="filters">
-              <h3>Navegar nos contatos</h3>
               <form onSubmit={ev => ev.preventDefault()}>
                 <input
                   type="text"
