@@ -6,6 +6,8 @@ import {
   faBell,
   faChevronUp,
   faChevronDown,
+  faChevronLeft,
+  faChevronRight,
   faSignOutAlt,
   faCheck,
   faToggleOff,
@@ -43,6 +45,8 @@ library.add(faTimes);
 library.add(faBell);
 library.add(faChevronUp);
 library.add(faChevronDown);
+library.add(faChevronLeft);
+library.add(faChevronRight);
 library.add(faSignOutAlt);
 library.add(faCheck);
 library.add(faToggleOff);

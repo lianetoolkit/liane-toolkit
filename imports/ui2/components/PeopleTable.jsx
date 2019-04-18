@@ -232,10 +232,14 @@ export default class PeopleTable extends Component {
   }
   componentDidMount() {
     this.node = ReactDOM.findDOMNode(this);
-    if (this.node.closest(".scrollable")) {
-      this.container = this.node.closest(".scrollable");
+    if(this.props.scrollable) {
+      this.container = this.node;
     } else {
-      this.container = document.getElementById("main");
+      if (this.node.closest(".scrollable")) {
+        this.container = this.node.closest(".scrollable");
+      } else {
+        this.container = document.getElementById("main");
+      }
     }
     window.addEventListener("keydown", this._handleKeydown);
   }
@@ -396,7 +400,7 @@ export default class PeopleTable extends Component {
     const { people, onChange, onSort, ...props } = this.props;
     const { expanded } = this.state;
     return (
-      <Container>
+      <Container className="people-table">
         {people && people.length ? (
           <Table {...props}>
             <thead>

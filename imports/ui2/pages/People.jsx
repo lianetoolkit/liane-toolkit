@@ -110,6 +110,54 @@ const PeopleFilters = styled.div`
   }
 `;
 
+const PeopleContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  .people-nav {
+    flex: 0 0 auto;
+  }
+  .people-table {
+    flex: 1 1 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+`;
+
+const PeopleNavContainer = styled.nav`
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+  p {
+    flex: 1 1 100%;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    font-size: 0.8em;
+  }
+  a {
+    flex: 0 0 auto;
+    padding: 0.75rem 1rem;
+  }
+`;
+
+class PeopleNav extends Component {
+  render() {
+    return (
+      <PeopleNavContainer className="people-nav">
+        <p>Exibindo 1-20 de 1000</p>
+        <a href="javascript:void(0);">
+          <FontAwesomeIcon icon="chevron-left" />
+        </a>
+        <a href="javascript:void(0);">
+          <FontAwesomeIcon icon="chevron-right" />
+        </a>
+      </PeopleNavContainer>
+    );
+  }
+}
+
 export default class PeoplePage extends Component {
   constructor(props) {
     super(props);
@@ -461,10 +509,7 @@ export default class PeoplePage extends Component {
                 <Button.WithIcon>
                   <a href="javascript:void(0);">Exportar resultados</a>
                   <span className="icon">
-                    <PopupLabel
-                      text="Gerenciar exportações"
-                      bottomOffset="0.2rem"
-                    >
+                    <PopupLabel text="Gerenciar exportações" position="center">
                       <FontAwesomeIcon icon="cog" />
                     </PopupLabel>
                   </span>
@@ -472,10 +517,7 @@ export default class PeoplePage extends Component {
                 <Button.WithIcon>
                   <PersonImportButton importCount={importCount} />
                   <span className="icon">
-                    <PopupLabel
-                      text="Gerenciar importações"
-                      bottomOffset="0.2rem"
-                    >
+                    <PopupLabel text="Gerenciar importações" position="center">
                       <FontAwesomeIcon icon="cog" />
                     </PopupLabel>
                   </span>
@@ -484,7 +526,9 @@ export default class PeoplePage extends Component {
             </div>
           </PeopleFilters>
         </Page.Nav>
-        <Page.Content full compact>
+        {/* <Page.Content full compact> */}
+        <PeopleContent>
+          <PeopleNav />
           <PeopleTable
             tags={this.props.tags}
             people={people}
@@ -492,8 +536,10 @@ export default class PeoplePage extends Component {
             onChange={this._handlePeopleChange}
             onSort={this._handleTableSort}
             compact
+            scrollable
           />
-        </Page.Content>
+        </PeopleContent>
+        {/* </Page.Content> */}
       </>
     );
   }
