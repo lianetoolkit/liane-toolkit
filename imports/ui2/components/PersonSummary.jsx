@@ -81,7 +81,7 @@ export default class PersonSummary extends Component {
           <FontAwesomeIcon icon="envelope" /> {this.text("contact.email")}
           {email ? (
             <CopyToClipboard text={email} className="copy">
-              <PopupLabel text="Copiar">
+              <PopupLabel text="Copiar" position="center">
                 <FontAwesomeIcon icon="copy" />
               </PopupLabel>
             </CopyToClipboard>
@@ -91,7 +91,7 @@ export default class PersonSummary extends Component {
           <FontAwesomeIcon icon="phone" /> {this.text("contact.cellphone")}
           {phone ? (
             <CopyToClipboard text={phone} className="copy">
-              <PopupLabel text="Copiar">
+              <PopupLabel text="Copiar" position="center">
                 <FontAwesomeIcon icon="copy" />
               </PopupLabel>
             </CopyToClipboard>

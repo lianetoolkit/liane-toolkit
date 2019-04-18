@@ -177,6 +177,7 @@ class PersonContactIcons extends Component {
             text={this.getLabelText("contact.email")}
             disabled={!email}
             extra={email ? "Clique para copiar" : false}
+            position="center"
           >
             <CopyToClipboard
               disabled={!email}
@@ -190,6 +191,7 @@ class PersonContactIcons extends Component {
             text={this.getLabelText("contact.cellphone")}
             disabled={!phone}
             extra={phone ? "Clique para copiar" : false}
+            position="center"
           >
             <CopyToClipboard
               disabled={!phone}
@@ -204,6 +206,7 @@ class PersonContactIcons extends Component {
               form ? "Preencheu o formulário" : "Não preencheu o formulário"
             }
             extra="Clique para copiar link"
+            position="center"
           >
             <CopyToClipboard
               text={getFormUrl(person.formId)}

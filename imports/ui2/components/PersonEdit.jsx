@@ -3,6 +3,8 @@ import styled from "styled-components";
 import Select from "react-select";
 import { get, set } from "lodash";
 
+import { alertStore } from "../containers/Alerts.jsx";
+
 import Form from "./Form.jsx";
 import TabNav from "./TabNav.jsx";
 import TagSelect from "./TagSelect.jsx";
@@ -70,7 +72,11 @@ export default class PersonEdit extends Component {
         data: formData[sectionKey]
       },
       (err, res) => {
-        console.log(err, res);
+        if (!err) {
+          alertStore.add("Perfil atualizado com sucesso.", "success");
+        } else {
+          alertStore.add(err);
+        }
       }
     );
   };

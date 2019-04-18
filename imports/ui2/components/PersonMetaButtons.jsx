@@ -239,7 +239,7 @@ export default class PersonMetaButtons extends React.Component {
     }
   }
   _metaButton(data = {}, key) {
-    const { size, readOnly, simple } = this.props;
+    const { size, readOnly, simple, vertical } = this.props;
     const { loading } = this.state;
 
     const hasMeta = this._hasMeta(data, key);
@@ -275,7 +275,10 @@ export default class PersonMetaButtons extends React.Component {
       }
     }
     return (
-      <PopupLabel text={PersonMetaButtons.labels[key]}>
+      <PopupLabel
+        text={PersonMetaButtons.labels[key]}
+        position={vertical ? null : "center"}
+      >
         <a
           href="javascript:void(0);"
           className={`meta-icon ${size || ""}`}

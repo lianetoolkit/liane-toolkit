@@ -168,3 +168,8 @@ input[type="submit"]:disabled {
 #app .select__multi-value__remove {
   border-radius: 7px;
 }
+
+#app .react-datepicker__close-icon::after {
+  background-color: transparent;
+  color: #999;
+}

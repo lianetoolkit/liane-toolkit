@@ -11,6 +11,11 @@ class AlertStore {
   add(content, type, timeout = 3) {
     let alerts = reactiveAlerts.get().splice(0);
     const id = count;
+    if (content.error) {
+      type = "error";
+      content =
+        content.message || content.reason || "Ocorreu um erro inesperado.";
+    }
     alerts.unshift({
       id,
       content,

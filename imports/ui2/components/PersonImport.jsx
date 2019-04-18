@@ -5,6 +5,7 @@ import { ClientStorage } from "meteor/ostrio:cstorage";
 import XLSX from "xlsx";
 import Select from "react-select";
 import { modalStore } from "../containers/Modal.jsx";
+import { alertStore } from "../containers/Alerts.jsx";
 import Form from "./Form.jsx";
 import TagSelect from "./TagSelect.jsx";
 import PersonMetaButtons from "./PersonMetaButtons.jsx";
@@ -82,7 +83,11 @@ const ItemConfigContainer = styled.div`
     .select-search__control,
     .select__control {
       width: 100%;
-      margin: 0;
+      margin-bottom: 0 !important;
+    }
+    &:first-child {
+      width: 30%;
+      flex: 0 0 auto;
     }
   }
   .arrow {
@@ -114,6 +119,7 @@ export class PersonImportButton extends React.Component {
     };
   }
   componentDidUpdate(prevProps, prevState) {
+    const { importCount } = this.props;
     const { importData, importFilename } = this.state;
     if (importFilename != prevState.importFilename && importData) {
       modalStore.setTitle(`Importando ${importFilename}`);
@@ -122,9 +128,13 @@ export class PersonImportButton extends React.Component {
           data={importData}
           filename={importFilename}
           campaignId={Session.get("campaignId")}
-          onSubmit={this._handleImporSubmit}
-        />
+          onSubmit={this._handleImportSubmit}
+        />,
+        this._handleClose
       );
+    }
+    if (importCount == 0 && prevProps.importCount > 0) {
+      alertStore.add("Importação concluída", "success");
     }
   }
   _handleImportClick = ev => {
@@ -145,20 +155,31 @@ export class PersonImportButton extends React.Component {
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(sheet);
       this.setState({ importData: json, importFilename: file.name });
+      this.importInput.value = null;
+      this.importInput.dispatchEvent(new Event("input", { bubbles: true }));
     };
     reader.readAsArrayBuffer(file);
   };
   _handleImportSubmit = (err, res) => {
     if (!err) {
-      this.setState({ importData: null });
-      // Alerts.success("Import has started");
+      this.setState({ importData: null, importFilename: "" });
+      alertStore.add("Importação iniciada");
+      modalStore.reset(true);
     } else {
-      // Alerts.error(err);
+      alertStore.add(
+        "Ocorreu um erro inesperado durante a importação",
+        "error"
+      );
+    }
+  };
+  _handleClose = () => {
+    if (confirm("Tem certeza que deseja cancelar a importação?")) {
+      this.setState({ importData: null, importFilename: "" });
+      return true;
     }
   };
   render() {
     const { importCount } = this.props;
-    console.log(importCount);
     return (
       <>
         <input
@@ -211,6 +232,7 @@ class ItemConfig extends React.Component {
         if (
           fields[key].suggestions.indexOf(
             header
+              .trim()
               .toLowerCase()
               .replace("-", " ")
               .replace("_", " ")
@@ -307,7 +329,6 @@ export default class PeopleImport extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [],
       tags: [],
       labels: {}
     };
@@ -315,20 +336,6 @@ export default class PeopleImport extends React.Component {
     this._handleModalClose = this._handleModalClose.bind(this);
     this._handleChange = this._handleChange.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
-  }
-  componentDidMount() {
-    const { data } = this.props;
-    if (data && data.length) {
-      this.setState({ data });
-    }
-  }
-  componentWillReceiveProps(nextProps) {
-    const { data } = nextProps;
-    if (data && data.length) {
-      this.setState({ data });
-    } else {
-      this.setState({ data: [] });
-    }
   }
   _handleChange = ({ name, value, customField }) => {
     this.setState({
@@ -368,8 +375,8 @@ export default class PeopleImport extends React.Component {
   };
   _handleSubmit(ev) {
     ev.preventDefault();
-    const { campaignId, filename, onSubmit } = this.props;
-    const { data, tags, labels, ...config } = this.state;
+    const { data, campaignId, filename, onSubmit } = this.props;
+    const { tags, labels, ...config } = this.state;
     this.setState({
       loading: true
     });
@@ -389,7 +396,6 @@ export default class PeopleImport extends React.Component {
         this.setState({
           loading: false
         });
-        modalStore.reset();
         if (onSubmit) {
           onSubmit(err, res);
         }
@@ -397,7 +403,8 @@ export default class PeopleImport extends React.Component {
     );
   }
   render() {
-    const { data, tags, labels, loading } = this.state;
+    const { data } = this.props;
+    const { tags, labels, loading } = this.state;
     const headers = this._getHeaders();
     return (
       <Container>

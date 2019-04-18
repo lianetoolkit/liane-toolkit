@@ -67,7 +67,7 @@ export const resolveZipcode = new ValidatedMethod({
 });
 
 const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
-  const { dateStart, dateEnd, reactionCount, ...query } = rawQuery;
+  const { creation_from, creation_to, reactionCount, ...query } = rawQuery;
   let queryOptions = {
     skip: options.skip || 0,
     limit: Math.min(options.limit || 20, 50),
@@ -108,13 +108,13 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
 
   query.campaignId = campaignId;
 
-  if (dateStart || dateEnd) {
+  if (creation_from || creation_to) {
     if (!query.createdAt) query.createdAt = {};
-    if (dateStart) {
-      query.createdAt["$gte"] = dateStart;
+    if (creation_from) {
+      query.createdAt["$gte"] = new Date(creation_from);
     }
-    if (dateEnd) {
-      query.createdAt["$lt"] = dateEnd;
+    if (creation_to) {
+      query.createdAt["$lt"] = moment(creation_to).add("1", "day").toDate();
     }
   }
 

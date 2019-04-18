@@ -151,7 +151,8 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
               description: 1,
               contextId: 1,
               status: 1,
-              forms: 1
+              forms: 1,
+              createdAt: 1
             }
           }
         );

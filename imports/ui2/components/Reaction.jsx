@@ -53,7 +53,7 @@ class Filter extends React.Component {
       <FilterContainer>
         {showAny ? (
           <a href="javascript:void(0);">
-            <PopupLabel text="all">
+            <PopupLabel text="all" position="center">
               <FontAwesomeIcon
                 icon="dot-circle"
                 style={{ fontSize: sizes[size || "small"] + "px" }}
@@ -63,7 +63,7 @@ class Filter extends React.Component {
         ) : null}
         {keys.map(key => (
           <a href="javascript:void(0);" key={key}>
-            <PopupLabel text={key}>
+            <PopupLabel text={key} position="center">
               <img
                 src={imagePaths[key]}
                 style={{

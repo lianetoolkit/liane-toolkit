@@ -53,7 +53,9 @@ appRoutes.route("/people", {
         "tag",
         "form",
         "commented",
-        "private_reply"
+        "private_reply",
+        "creation_from",
+        "creation_to"
       ]),
       options: pick(queryParams, ["sort", "order"])
     });

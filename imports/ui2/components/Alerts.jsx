@@ -33,6 +33,9 @@ const Container = styled.div`
       &.success {
         background: #006633;
       }
+      &.error {
+        background: #cc0000;
+      }
     }
   }
 `;

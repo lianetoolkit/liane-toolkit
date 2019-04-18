@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { debounce } from "lodash";
 
 const Container = styled.span`
@@ -13,7 +13,7 @@ const Container = styled.span`
     opacity: 0;
     position: absolute;
     bottom: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     margin-left: -0.5rem;
     left: 0;
     padding: 0.2rem 0.5rem;
@@ -37,6 +37,13 @@ const Container = styled.span`
     opacity: 1;
     z-index: 10;
   }
+  ${props =>
+    props.position == "center" &&
+    css`
+      .label {
+        left: 50%;
+      }
+    `}
 `;
 
 export default class PopupLabel extends Component {
@@ -59,25 +66,29 @@ export default class PopupLabel extends Component {
   }
   calcMargins = debounce(() => {
     if (this.node) {
+      const { position } = this.props;
       const labelNode = this.node.getElementsByClassName("label")[0];
       const rect = labelNode.getBoundingClientRect();
       const rightDistance = window.innerWidth - (rect.width + rect.x);
       const leftDistance = rect.left;
-      if (rect.x > 0 && rightDistance < 0) {
+      let calculatedLeft = 0;
+      if (position == "center") {
+        calculatedLeft = -(rect.width / 2);
+      }
+      if (rect.x + calculatedLeft > 0 && rightDistance - calculatedLeft < 0) {
+        calculatedLeft = rightDistance - 20;
+      } else if (rect.x + calculatedLeft < 0) {
+        calculatedLeft = -rect.left + 20;
+      }
+      if (calculatedLeft) {
         this.setState({
           labelMargins: {
-            left: rightDistance - 20
-          }
-        });
-      } else if (rect.x < 0) {
-        this.setState({
-          labelMargins: {
-            left: -rect.left + 20
+            left: calculatedLeft
           }
         });
       }
     }
-  }, 350);
+  }, 200);
   render() {
     const {
       text,

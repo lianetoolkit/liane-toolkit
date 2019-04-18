@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
@@ -49,8 +50,8 @@ const PeopleFilters = styled.div`
     }
   }
   label {
-    display: block;
     display: flex;
+    align-items: center;
     input[type="checkbox"],
     input[type="radio"] {
       flex: 0 0 auto;
@@ -243,6 +244,27 @@ export default class PeoplePage extends Component {
       }
     });
   };
+  _handleDateChange = type => value => {
+    this.setState({
+      query: {
+        ...this.state.query,
+        [`creation_${type}`]: value ? value.format("YYYY-MM-DD") : null
+      }
+    });
+  };
+  _getDateValue = key => {
+    const { campaign } = this.props;
+    const { query } = this.state;
+    let defaultDate;
+    switch (key) {
+      case "creation_from":
+        defaultDate = campaign.createdAt;
+        break;
+      default:
+        defaultDate = new Date();
+    }
+    return moment(query[key] || defaultDate);
+  };
   categoriesOptions = () => {
     let options = [];
     for (let key in PersonMetaButtons.labels) {
@@ -285,9 +307,8 @@ export default class PeoplePage extends Component {
     return null;
   };
   render() {
-    const { importCount } = this.props;
+    const { campaign, importCount } = this.props;
     const { people, query, options, expanded } = this.state;
-    console.log(importCount);
     return (
       <>
         <Page.Nav full plain>
@@ -392,11 +413,33 @@ export default class PeoplePage extends Component {
                     <h4>Data de inserção na base</h4>
                     <div className="input">
                       <div className="from">
-                        <DatePicker placeholderText="Data" />
+                        <DatePicker
+                          name="creation_from"
+                          selectsStart
+                          selected={this._getDateValue("creation_from")}
+                          startDate={this._getDateValue("creation_from")}
+                          endDate={this._getDateValue("creation_to")}
+                          placeholderText="Data"
+                          onChange={this._handleDateChange("from")}
+                          minDate={new Date(campaign.createdAt)}
+                          maxDate={new Date()}
+                          isClearable={true}
+                        />
                       </div>
                       <span className="between">até</span>
-                      <div className="from">
-                        <DatePicker placeholderText="Data" />
+                      <div className="to">
+                        <DatePicker
+                          name="creation_to"
+                          selectsEnd
+                          selected={this._getDateValue("creation_to")}
+                          startDate={this._getDateValue("creation_from")}
+                          endDate={this._getDateValue("creation_to")}
+                          placeholderText="Data"
+                          onChange={this._handleDateChange("to")}
+                          minDate={new Date(campaign.createdAt)}
+                          maxDate={new Date()}
+                          isClearable={true}
+                        />
                       </div>
                     </div>
                   </div>
