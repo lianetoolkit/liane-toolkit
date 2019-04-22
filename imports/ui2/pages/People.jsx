@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
@@ -126,6 +126,13 @@ const PeopleContent = styled.div`
     overflow-x: hidden;
     overflow-y: auto;
   }
+  ${props =>
+    props.loading &&
+    css`
+      .people-table {
+        opacity: 0.25;
+      }
+    `}
 `;
 
 const PeopleNavContainer = styled.nav`
@@ -178,12 +185,16 @@ class PeopleNav extends Component {
     const { skip, limit, count, loading } = this.props;
     return (
       <PeopleNavContainer className="people-nav">
-        {!count ? (
+        {isNaN(count) ? (
           <p>Calculando...</p>
         ) : (
           <p>
-            Exibindo {skip * limit + 1}-{Math.min(count, skip * limit + limit)}{" "}
-            de {count}
+            {!count
+              ? "Nenhum resultado"
+              : `Exibindo ${skip * limit + 1}-${Math.min(
+                  count,
+                  skip * limit + limit
+                )} de ${count}`}
           </p>
         )}
         <a
@@ -245,6 +256,7 @@ export default class PeoplePage extends Component {
       JSON.stringify(query) != JSON.stringify(prevState.query) ||
       JSON.stringify(options) != JSON.stringify(prevState.options)
     ) {
+      this.setLoading();
       this.fetchPeople();
     }
   }
@@ -276,6 +288,19 @@ export default class PeoplePage extends Component {
     }
     return queryOptions;
   };
+  setLoading = debounce(
+    () => {
+      this.setState({
+        loading: true,
+        loadingCount: true
+      });
+    },
+    200,
+    {
+      leading: true,
+      trailing: false
+    }
+  );
   fetchPeople = debounce(() => {
     const { campaignId } = this.props;
     const { query, options } = this.state;
@@ -289,20 +314,20 @@ export default class PeoplePage extends Component {
         query,
         options: this.buildOptions(options)
       };
-      this.setState({
-        loading: true,
-        loadingCount: true
-      });
       Meteor.call("people.search", methodParams, (err, data) => {
         if (err) {
-          console.log(err);
+          this.setState({
+            loading: false
+          });
         } else {
           this.setState({ people: data, loading: false });
         }
       });
       Meteor.call("people.search.count", methodParams, (err, data) => {
         if (err) {
-          console.log(err);
+          this.setState({
+            loadingCount: false
+          });
         } else {
           this.setState({ count: data, loadingCount: false });
         }
@@ -636,7 +661,7 @@ export default class PeoplePage extends Component {
           </PeopleFilters>
         </Page.Nav>
         {/* <Page.Content full compact> */}
-        <PeopleContent>
+        <PeopleContent loading={loading}>
           <PeopleNav
             skip={options.skip}
             limit={options.limit}
