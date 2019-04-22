@@ -8,9 +8,12 @@ let count = 0;
 const reactiveAlerts = new ReactiveVar([]);
 
 class AlertStore {
-  add(content, type, timeout = 3) {
+  add(content, type, timeout) {
     let alerts = reactiveAlerts.get().splice(0);
     const id = count;
+    if (!timeout) {
+      timeout = type == "success" ? 1 : 3;
+    }
     if (content.error) {
       type = "error";
       content =

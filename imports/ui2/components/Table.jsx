@@ -21,13 +21,19 @@ const Container = styled.table`
       color: #000;
     }
   }
-  tbody.active {
+  tbody.active,
+  tbody:hover,
+  tbody:focus,
+  tbody:active {
     position: relative;
-    z-index: 3;
-    transform: scale(1.007);
-    transition: all 0.1s linear;
-    box-shadow: 0 0.7rem 1rem rgba(0, 0, 0, 0.2);
-    transform-origin: 50% 100%;
+    z-index: 5;
+    background: #fff;
+  }
+  tbody.active {
+    ${"" /* transform: scale(1.007); */}
+    ${"" /* transition: all 0.1s linear; */}
+    ${"" /* box-shadow: 0 0.7rem 1rem rgba(0, 0, 0, 0.2); */}
+    ${"" /* transform-origin: 50% 100%; */}
     border-radius: 7px;
     td {
       border-color: rgba(255, 255, 255, 0.4);
@@ -141,6 +147,8 @@ const Container = styled.table`
   thead {
     tr {
       th {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
         border-bottom: 1px solid #ccc;
         position: sticky;
         top: 0;

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { alertStore } from "../containers/Alerts.jsx";
 
@@ -32,6 +33,24 @@ const Container = styled.div`
       cursor: default;
       &.success {
         background: #006633;
+        position: fixed;
+        top: 40%;
+        left: 50%;
+        font-size: 4em;
+        border-radius: 100%;
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        margin-top: -50px;
+        margin-left: -50px;
+        padding: 1rem;
+        pointer-events: none;
+        .alert-text {
+          display: none;
+        }
       }
       &.error {
         background: #cc0000;
@@ -56,7 +75,10 @@ export default class Alerts extends Component {
               onClick={this._handleClick(alert.id)}
               className={`alert ${alert.type}`}
             >
-              {alert.content}
+              <span className="alert-text">{alert.content}</span>
+              {alert.type == "success" ? (
+                <FontAwesomeIcon icon="check" />
+              ) : null}
             </div>
           ))}
         </div>

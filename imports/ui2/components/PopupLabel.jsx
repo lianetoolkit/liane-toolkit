@@ -38,10 +38,22 @@ const Container = styled.span`
     z-index: 10;
   }
   ${props =>
-    props.position == "center" &&
+    props.position &&
+    props.position.indexOf("center") !== -1 &&
     css`
       .label {
         left: 50%;
+      }
+    `}
+  ${props =>
+    props.position &&
+    props.position.indexOf("bottom") !== -1 &&
+    css`
+      .label {
+        bottom: auto;
+        top: 100%;
+        margin-top: 5px;
+        margin-bottom: 0;
       }
     `}
 `;
@@ -72,7 +84,7 @@ export default class PopupLabel extends Component {
       const rightDistance = window.innerWidth - (rect.width + rect.x);
       const leftDistance = rect.left;
       let calculatedLeft = 0;
-      if (position == "center") {
+      if (position && position.indexOf("center") !== -1) {
         calculatedLeft = -(rect.width / 2);
       }
       if (rect.x + calculatedLeft > 0 && rightDistance - calculatedLeft < 0) {

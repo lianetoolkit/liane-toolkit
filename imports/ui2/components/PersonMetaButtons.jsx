@@ -167,9 +167,8 @@ export default class PersonMetaButtons extends React.Component {
         };
         Meteor.call("facebook.people.updatePersonMeta", data, error => {
           if (error) {
-            console.log(error);
+            alertStore.add(error);
           } else {
-            alertStore.add("Perfil atualizado com sucesso", "success");
             if (onChange) {
               onChange(data);
             }
@@ -277,7 +276,7 @@ export default class PersonMetaButtons extends React.Component {
     return (
       <PopupLabel
         text={PersonMetaButtons.labels[key]}
-        position={vertical ? null : "center"}
+        position={vertical ? null : "bottom center"}
       >
         <a
           href="javascript:void(0);"

@@ -142,18 +142,62 @@ const PeopleNavContainer = styled.nav`
   a {
     flex: 0 0 auto;
     padding: 0.75rem 1rem;
+    color: #333;
+    &:hover,
+    &:focus {
+      color: #000;
+    }
+    &.disabled {
+      color: #bbb;
+    }
   }
 `;
 
 class PeopleNav extends Component {
+  handlePrev = () => {
+    const { onPrev } = this.props;
+    if (onPrev) {
+      onPrev();
+    }
+  };
+  handleNext = () => {
+    const { onNext } = this.props;
+    if (onNext) {
+      onNext();
+    }
+  };
+  hasPrev = () => {
+    const { skip, count } = this.props;
+    return count && skip;
+  };
+  hasNext = () => {
+    const { skip, limit, count } = this.props;
+    return count && skip * limit + limit < count;
+  };
   render() {
+    const { skip, limit, count, loading } = this.props;
     return (
       <PeopleNavContainer className="people-nav">
-        <p>Exibindo 1-20 de 1000</p>
-        <a href="javascript:void(0);">
+        {!count ? (
+          <p>Calculando...</p>
+        ) : (
+          <p>
+            Exibindo {skip * limit + 1}-{Math.min(count, skip * limit + limit)}{" "}
+            de {count}
+          </p>
+        )}
+        <a
+          href="javascript:void(0);"
+          onClick={this.handlePrev}
+          className={this.hasPrev() ? "" : "disabled"}
+        >
           <FontAwesomeIcon icon="chevron-left" />
         </a>
-        <a href="javascript:void(0);">
+        <a
+          href="javascript:void(0);"
+          onClick={this.handleNext}
+          className={this.hasNext() ? "" : "disabled"}
+        >
           <FontAwesomeIcon icon="chevron-right" />
         </a>
       </PeopleNavContainer>
@@ -165,6 +209,8 @@ export default class PeoplePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
+      loadingCount: false,
       people: [],
       query: {
         q: "",
@@ -173,6 +219,7 @@ export default class PeoplePage extends Component {
         private_reply: false
       },
       options: {
+        skip: 0,
         limit: 20
       }
     };
@@ -187,7 +234,8 @@ export default class PeoplePage extends Component {
         private_reply: false
       }),
       options: defaultsDeep(this.props.options, {
-        limit: 20
+        limit: 20,
+        skip: 0
       })
     });
   }
@@ -219,6 +267,9 @@ export default class PeoplePage extends Component {
     if (options.limit) {
       queryOptions.limit = options.limit;
     }
+    if (options.skip) {
+      queryOptions.skip = options.skip * queryOptions.limit;
+    }
     if (options.sort) {
       queryOptions.sort = options.sort;
       queryOptions.order = options.order == "desc" ? -1 : 1;
@@ -233,23 +284,53 @@ export default class PeoplePage extends Component {
       this.sanitizeQueryParams(options, ["sort", "order"])
     );
     if (campaignId) {
-      Meteor.call(
-        "people.search",
-        {
-          campaignId,
-          query,
-          options: this.buildOptions(options)
-        },
-        (err, data) => {
-          if (err) {
-            console.log(err);
-          } else {
-            this.setState({ people: data });
-          }
+      const methodParams = {
+        campaignId,
+        query,
+        options: this.buildOptions(options)
+      };
+      this.setState({
+        loading: true,
+        loadingCount: true
+      });
+      Meteor.call("people.search", methodParams, (err, data) => {
+        if (err) {
+          console.log(err);
+        } else {
+          this.setState({ people: data, loading: false });
         }
-      );
+      });
+      Meteor.call("people.search.count", methodParams, (err, data) => {
+        if (err) {
+          console.log(err);
+        } else {
+          this.setState({ count: data, loadingCount: false });
+        }
+      });
     }
   }, 200);
+  _handlePrev = () => {
+    const { options } = this.state;
+    if (options.skip > 0) {
+      this.setState({
+        options: {
+          ...options,
+          skip: options.skip - 1
+        }
+      });
+    }
+  };
+  _handleNext = () => {
+    const { options, count } = this.state;
+    if (options.skip * options.limit + options.limit < count) {
+      this.setState({
+        options: {
+          ...options,
+          skip: options.skip + 1
+        }
+      });
+    }
+  };
   _handlePeopleChange = people => {
     this.setState({ people });
   };
@@ -263,7 +344,8 @@ export default class PeoplePage extends Component {
     this.setState({
       options: {
         ...this.state.options,
-        ...options
+        ...options,
+        skip: 0
       }
     });
   };
@@ -272,6 +354,10 @@ export default class PeoplePage extends Component {
       query: {
         ...this.state.query,
         [target.name]: target.value
+      },
+      options: {
+        ...this.state.options,
+        skip: 0
       }
     });
   };
@@ -284,6 +370,10 @@ export default class PeoplePage extends Component {
       query: {
         ...this.state.query,
         [name]: value
+      },
+      options: {
+        ...this.state.options,
+        skip: 0
       }
     });
   };
@@ -292,6 +382,10 @@ export default class PeoplePage extends Component {
       query: {
         ...this.state.query,
         [target.name]: target.checked
+      },
+      options: {
+        ...this.state.options,
+        skip: 0
       }
     });
   };
@@ -300,6 +394,10 @@ export default class PeoplePage extends Component {
       query: {
         ...this.state.query,
         [`creation_${type}`]: value ? value.format("YYYY-MM-DD") : null
+      },
+      options: {
+        ...this.state.options,
+        skip: 0
       }
     });
   };
@@ -359,7 +457,16 @@ export default class PeoplePage extends Component {
   };
   render() {
     const { campaign, importCount } = this.props;
-    const { people, query, options, expanded } = this.state;
+    const {
+      loading,
+      people,
+      query,
+      options,
+      expanded,
+      skip,
+      count,
+      loadingCount
+    } = this.state;
     return (
       <>
         <Page.Nav full plain>
@@ -530,7 +637,14 @@ export default class PeoplePage extends Component {
         </Page.Nav>
         {/* <Page.Content full compact> */}
         <PeopleContent>
-          <PeopleNav />
+          <PeopleNav
+            skip={options.skip}
+            limit={options.limit}
+            count={count}
+            loading={loadingCount}
+            onNext={this._handleNext}
+            onPrev={this._handlePrev}
+          />
           <PeopleTable
             tags={this.props.tags}
             people={people}
