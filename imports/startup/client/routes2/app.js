@@ -55,7 +55,9 @@ appRoutes.route("/people", {
         "commented",
         "private_reply",
         "creation_from",
-        "creation_to"
+        "creation_to",
+        "reaction_count",
+        "reaction_type"
       ]),
       options: pick(queryParams, ["sort", "order"])
     });

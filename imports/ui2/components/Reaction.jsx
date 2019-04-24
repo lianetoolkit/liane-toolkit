@@ -31,28 +31,71 @@ const FilterContainer = styled.div`
   a {
     flex: 1 1 100%;
     color: #333;
-    opacity: 0.6;
     svg,
     img {
+      opacity: 0.6;
       display: block;
     }
     &:hover {
       opacity: 1;
     }
   }
+  &.has-selection {
+    a {
+      svg,
+      img {
+        opacity: 0.4;
+      }
+      &.active {
+        svg,
+        img {
+          opacity: 1;
+        }
+      }
+    }
+  }
 `;
 
 class Filter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selected: false
+    };
+  }
+  componentDidMount() {
+    if (this.props.value) {
+      this.setState({ selected: this.props.value });
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
+    const { onChange } = this.props;
+    const { selected } = this.state;
+    if (prevState.selected != selected && onChange) {
+      onChange(selected);
+    }
+  }
   static propTypes = {
     size: PropTypes.string
   };
+  _handleClick = type => ev => {
+    const { selected } = this.state;
+    this.setState({
+      selected: selected == type ? false : type
+    });
+  };
   render() {
     const { size, showAny } = this.props;
+    const { selected } = this.state;
     const keys = Object.keys(imagePaths);
     return (
-      <FilterContainer>
+      <FilterContainer className={selected ? "has-selection" : ""}>
         {showAny ? (
-          <a href="javascript:void(0);">
+          <a
+            href="javascript:void(0);"
+            onClick={this._handleClick("any")}
+            className={selected == "any" ? "active" : ""}
+          >
             <PopupLabel text="all" position="center">
               <FontAwesomeIcon
                 icon="dot-circle"
@@ -62,7 +105,12 @@ class Filter extends React.Component {
           </a>
         ) : null}
         {keys.map(key => (
-          <a href="javascript:void(0);" key={key}>
+          <a
+            href="javascript:void(0);"
+            key={key}
+            onClick={this._handleClick(key)}
+            className={selected == key ? "active" : ""}
+          >
             <PopupLabel text={key} position="center">
               <img
                 src={imagePaths[key]}

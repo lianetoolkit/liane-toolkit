@@ -435,6 +435,14 @@ export default class PeoplePage extends Component {
       }
     });
   };
+  _handleReactionFilterChange = value => {
+    this.setState({
+      query: {
+        ...this.state.query,
+        reaction_type: value
+      }
+    });
+  };
   _getDateValue = key => {
     const { campaign } = this.props;
     const { query } = this.state;
@@ -639,10 +647,22 @@ export default class PeoplePage extends Component {
                     <div className="input">
                       <span>ao menos</span>
                       <span>
-                        <input type="number" placeholder="Quantidade" />
+                        <input
+                          type="number"
+                          placeholder="Quantidade"
+                          name="reaction_count"
+                          value={query.reaction_count}
+                          onChange={this._handleFormChange}
+                        />
                       </span>
                     </div>
-                    <Reaction.Filter showAny size="tiny" />
+                    <Reaction.Filter
+                      showAny
+                      size="tiny"
+                      name="reaction_type"
+                      value={query.reaction_type}
+                      onChange={this._handleReactionFilterChange}
+                    />
                   </div>
                 </More>
               </form>

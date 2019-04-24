@@ -67,7 +67,13 @@ export const resolveZipcode = new ValidatedMethod({
 });
 
 const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
-  const { creation_from, creation_to, reactionCount, ...query } = rawQuery;
+  const {
+    creation_from,
+    creation_to,
+    reaction_count,
+    reaction_type,
+    ...query
+  } = rawQuery;
   let queryOptions = {
     skip: options.skip || 0,
     limit: Math.min(options.limit || 20, 50),
@@ -114,18 +120,20 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
       query.createdAt["$gte"] = new Date(creation_from);
     }
     if (creation_to) {
-      query.createdAt["$lt"] = moment(creation_to).add("1", "day").toDate();
+      query.createdAt["$lt"] = moment(creation_to)
+        .add("1", "day")
+        .toDate();
     }
   }
 
-  if (reactionCount && reactionCount.amount) {
-    if (reactionCount.type == "all" || !reactionCount.type) {
+  if (reaction_count) {
+    if (!reaction_type || reaction_type == "any" || reaction_type == "all") {
       query[`counts.likes`] = {
-        $gte: parseInt(reactionCount.amount)
+        $gte: parseInt(reaction_count)
       };
     } else {
-      query[`counts.reactions.${reactionCount.type}`] = {
-        $gte: parseInt(reactionCount.amount)
+      query[`counts.reactions.${reaction_type}`] = {
+        $gte: parseInt(reaction_count)
       };
     }
   }
