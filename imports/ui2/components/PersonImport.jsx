@@ -134,7 +134,7 @@ export class PersonImportButton extends React.Component {
       );
     }
     if (importCount == 0 && prevProps.importCount > 0) {
-      alertStore.add("Importação concluída", "success");
+      alertStore.add("Importação concluída", "success", { verbose: true });
     }
   }
   _handleImportClick = ev => {

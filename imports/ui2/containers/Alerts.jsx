@@ -8,11 +8,11 @@ let count = 0;
 const reactiveAlerts = new ReactiveVar([]);
 
 class AlertStore {
-  add(content, type, timeout) {
+  add(content, type, config = {}) {
     let alerts = reactiveAlerts.get().splice(0);
     const id = count;
-    if (!timeout) {
-      timeout = type == "success" ? 1 : 3;
+    if (!config.timeout) {
+      config.timeout = type == "success" && !config.verbose ? 1 : 3;
     }
     if (content.error) {
       type = "error";
@@ -22,12 +22,13 @@ class AlertStore {
     alerts.unshift({
       id,
       content,
-      type
+      type,
+      config
     });
     reactiveAlerts.set(alerts);
     setTimeout(() => {
       this.remove(id);
-    }, timeout * 1000);
+    }, config.timeout * 1000);
     count++;
   }
   remove(id) {

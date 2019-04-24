@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { alertStore } from "../containers/Alerts.jsx";
@@ -19,43 +19,52 @@ const Container = styled.div`
     align-items: center;
     flex-direction: column;
     margin-top: 50px;
-    .alert {
-      flex: 0 0 auto;
-      max-width: 600px;
-      pointer-events: auto;
-      color: #fff;
-      padding: 0.5rem 1rem;
-      background: #444;
-      border-radius: 7px;
-      box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
-      margin: 0 0 0.25rem;
-      text-align: center;
-      cursor: default;
-      &.success {
-        background: #006633;
+  }
+`;
+
+const Alert = styled.div`
+  flex: 0 0 auto;
+  max-width: 600px;
+  pointer-events: auto;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  background: #444;
+  border-radius: 7px;
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+  margin: 0 0 0.25rem;
+  text-align: center;
+  cursor: default;
+  &.success {
+    background: #006633;
+    .alert-text {
+      margin-left: 1rem;
+    }
+    ${props =>
+      !props.verbose &&
+      css`
         position: fixed;
         top: 40%;
         left: 50%;
         font-size: 4em;
         border-radius: 100%;
-        width: 100px;
-        height: 100px;
+        width: 150px;
+        height: 150px;
         display: flex;
         align-items: center;
         justify-content: center;
         text-align: center;
-        margin-top: -50px;
-        margin-left: -50px;
+        margin-top: -75px;
+        margin-left: -75px;
         padding: 1rem;
         pointer-events: none;
+        box-sizing: border-box;
         .alert-text {
           display: none;
         }
-      }
-      &.error {
-        background: #cc0000;
-      }
-    }
+      `}
+  }
+  &.error {
+    background: #cc0000;
   }
 `;
 
@@ -70,16 +79,17 @@ export default class Alerts extends Component {
       <Container>
         <div className="alerts">
           {alerts.map(alert => (
-            <div
+            <Alert
+              verbose={alert.config.verbose}
               key={alert.id}
               onClick={this._handleClick(alert.id)}
               className={`alert ${alert.type}`}
             >
-              <span className="alert-text">{alert.content}</span>
               {alert.type == "success" ? (
                 <FontAwesomeIcon icon="check" />
               ) : null}
-            </div>
+              <span className="alert-text">{alert.content}</span>
+            </Alert>
           ))}
         </div>
       </Container>

@@ -20,14 +20,11 @@ class ModalStore {
     }
   }
   reset(force) {
-    if (force || !onClose) {
+    if (force || !onClose || onClose()) {
       title.set(false);
       content.set(false);
-    } else if (onClose()) {
-      title.set(false);
-      content.set(false);
+      onClose = false;
     }
-    onClose = false;
   }
 }
 
