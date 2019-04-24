@@ -7,8 +7,6 @@ import { get, debounce } from "lodash";
 
 import { modalStore } from "../containers/Modal.jsx";
 
-import { getFormUrl } from "../utils/people";
-
 import Table from "./Table.jsx";
 import Button from "./Button.jsx";
 import CopyToClipboard from "./CopyToClipboard.jsx";
@@ -18,6 +16,7 @@ import PersonMetaButtons from "./PersonMetaButtons.jsx";
 import PersonSummary from "./PersonSummary.jsx";
 import PersonReactions from "./PersonReactions.jsx";
 import PersonEdit from "./PersonEdit.jsx";
+import PersonContactIcons from "./PersonContactIcons.jsx";
 
 const Container = styled.div`
   width: 100%;
@@ -130,96 +129,6 @@ class PersonMetaCircles extends Component {
         )}
       </MetaCircles>
     );
-  }
-}
-
-const ContactIcons = styled.div`
-  a {
-    display: inline-block;
-    margin: 0 0.5rem;
-    opacity: 0.2;
-    &.active {
-      opacity: 1;
-      &:hover,
-      &:focus {
-        color: #f60;
-      }
-    }
-  }
-`;
-
-class PersonContactIcons extends Component {
-  getMeta(key) {
-    const { person } = this.props;
-    return person.campaignMeta && get(person.campaignMeta, key);
-  }
-  getLabelText(key) {
-    const { person } = this.props;
-    const data = get(person, `campaignMeta.${key}`);
-    if (data) {
-      return data;
-    }
-    return "Não disponível";
-  }
-  filledForm() {
-    const { person } = this.props;
-    return person.filledForm;
-  }
-  render() {
-    const { person } = this.props;
-    const email = this.getMeta("contact.email");
-    const phone = this.getMeta("contact.cellphone");
-    const form = this.filledForm();
-    if (person) {
-      return (
-        <ContactIcons>
-          <PopupLabel
-            text={this.getLabelText("contact.email")}
-            disabled={!email}
-            extra={email ? "Clique para copiar" : false}
-            position="center"
-          >
-            <CopyToClipboard
-              disabled={!email}
-              text={email}
-              className={email ? "active" : ""}
-            >
-              <FontAwesomeIcon icon="envelope" />
-            </CopyToClipboard>
-          </PopupLabel>
-          <PopupLabel
-            text={this.getLabelText("contact.cellphone")}
-            disabled={!phone}
-            extra={phone ? "Clique para copiar" : false}
-            position="center"
-          >
-            <CopyToClipboard
-              disabled={!phone}
-              text={phone}
-              className={phone ? "active" : ""}
-            >
-              <FontAwesomeIcon icon="phone" />
-            </CopyToClipboard>
-          </PopupLabel>
-          <PopupLabel
-            text={
-              form ? "Preencheu o formulário" : "Não preencheu o formulário"
-            }
-            extra="Clique para copiar link"
-            position="center"
-          >
-            <CopyToClipboard
-              text={getFormUrl(person.formId)}
-              className={form ? "active" : ""}
-            >
-              <FontAwesomeIcon icon="align-left" />
-            </CopyToClipboard>
-          </PopupLabel>
-        </ContactIcons>
-      );
-    } else {
-      return null;
-    }
   }
 }
 

@@ -33,8 +33,17 @@ export default class CopyToClipboard extends Component {
   };
   render() {
     const { children, disabled, text, ...props } = this.props;
+    let style = {};
+    if (disabled) {
+      style["cursor"] = "default";
+    }
     return (
-      <a href="javascript:void(0);" onClick={this._handleClick} {...props}>
+      <a
+        href="javascript:void(0);"
+        onClick={this._handleClick}
+        {...props}
+        style={style}
+      >
         {children}
       </a>
     );

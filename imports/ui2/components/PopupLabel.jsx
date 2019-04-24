@@ -101,6 +101,22 @@ export default class PopupLabel extends Component {
       }
     }
   }, 200);
+  _handleMouseEnter = () => {
+    const { labelMargins } = this.state;
+    const labelNode = this.node.getElementsByClassName("label")[0];
+    const rect = labelNode.getBoundingClientRect();
+    labelNode.style.top = rect.y + "px";
+    labelNode.style.left = rect.x - labelMargins.left + "px";
+    labelNode.style.bottom = "auto";
+    labelNode.style.position = "fixed";
+  };
+  _handleMouseLeave = () => {
+    const labelNode = this.node.getElementsByClassName("label")[0];
+    labelNode.style.top = null;
+    labelNode.style.left = null;
+    labelNode.style.bottom = null;
+    labelNode.style.position = null;
+  };
   render() {
     const {
       text,
@@ -121,7 +137,11 @@ export default class PopupLabel extends Component {
       style["opacity"] = "0";
     }
     return (
-      <Container {...props}>
+      <Container
+        {...props}
+        onMouseEnter={this._handleMouseEnter}
+        onMouseLeave={this._handleMouseLeave}
+      >
         {children}
         <span className="label" style={style}>
           {text} {extra ? <span className="extra">{extra}</span> : null}

@@ -32,6 +32,11 @@ const BoxContainer = styled.div`
       border-color: #63c;
       color: #fff;
     `};
+  ${props =>
+    props.attached &&
+    css`
+      padding: 0;
+    `}
 `;
 
 const BoxTitle = styled.h3`
