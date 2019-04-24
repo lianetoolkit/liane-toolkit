@@ -57,6 +57,7 @@ const Alert = styled.div`
         margin-left: -75px;
         pointer-events: none;
         box-sizing: border-box;
+        padding: 0;
         .alert-text {
           display: none;
         }
