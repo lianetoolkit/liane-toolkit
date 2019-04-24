@@ -125,6 +125,7 @@ const PeopleContent = styled.div`
     flex: 1 1 100%;
     overflow-x: hidden;
     overflow-y: auto;
+    transition: opacity 0.1s linear;
   }
   ${props =>
     props.loading &&
@@ -155,6 +156,7 @@ const PeopleNavContainer = styled.nav`
       color: #000;
     }
     &.disabled {
+      cursor: default;
       color: #bbb;
     }
   }

@@ -232,7 +232,7 @@ export default class PeopleTable extends Component {
   }
   componentDidMount() {
     this.node = ReactDOM.findDOMNode(this);
-    if(this.props.scrollable) {
+    if (this.props.scrollable) {
       this.container = this.node;
     } else {
       if (this.node.closest(".scrollable")) {
@@ -242,6 +242,14 @@ export default class PeopleTable extends Component {
       }
     }
     window.addEventListener("keydown", this._handleKeydown);
+  }
+  componentDidUpdate(prevProps) {
+    if (
+      this.container &&
+      JSON.stringify(prevProps.people) != JSON.stringify(this.props.people)
+    ) {
+      this.container.scrollTop = 0;
+    }
   }
   componentWillUnmount() {
     window.removeEventListener("keydown", this._handleKeydown);

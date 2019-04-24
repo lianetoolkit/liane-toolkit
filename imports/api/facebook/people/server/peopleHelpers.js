@@ -316,11 +316,12 @@ const PeopleHelpers = {
     const _queries = () => {
       let queries = [];
       let defaultQuery = { campaignId, $or: [] };
-      // sorted by uniqueness importance
+      // sorted by reversed uniqueness importance
       const fieldGroups = [
         ["name"],
         [
           "campaignMeta.contact.email",
+          "campaignMeta.contact.cellphone",
           "campaignMeta.social_networks.twitter",
           "campaignMeta.social_networks.instagram"
         ]
@@ -332,7 +333,7 @@ const PeopleHelpers = {
           const fieldVal = person.$set[field];
           // clear previous value
           if (fieldVal) {
-            query.$or.push({ [field]: fieldVal });
+            query.$or.push({ [field]: fieldVal.trim() });
           }
         }
         if (query.$or.length) {
@@ -396,7 +397,7 @@ const PeopleHelpers = {
       _upsertAddToSet();
     }
 
-    res = People.upsert(
+    People.upsert(
       selector,
       {
         ...person,
@@ -408,7 +409,25 @@ const PeopleHelpers = {
       { multi: false }
     );
 
-    return res;
+    People.upsert(
+      { ...selector, listId: { $exists: true } },
+      {
+        $set: {
+          listId
+        }
+      },
+      { multi: false }
+    );
+
+    // Clear empty campaign lists
+    const campaignLists = PeopleLists.find({ campaignId }).fetch();
+    for (let list of campaignLists) {
+      if (!People.find({ listId: list._id }).count()) {
+        PeopleLists.remove(list._id);
+      }
+    }
+
+    return;
   },
   removeExportFile({ path }) {
     return Promise.await(
