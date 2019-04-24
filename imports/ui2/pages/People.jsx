@@ -127,6 +127,13 @@ const PeopleContent = styled.div`
     overflow-y: auto;
     transition: opacity 0.1s linear;
   }
+  .not-found {
+    font-size: 1.5em;
+    font-style: italic;
+    color: #ccc;
+    text-align: center;
+    margin: 4rem;
+  }
   ${props =>
     props.loading &&
     css`
@@ -672,15 +679,19 @@ export default class PeoplePage extends Component {
             onNext={this._handleNext}
             onPrev={this._handlePrev}
           />
-          <PeopleTable
-            tags={this.props.tags}
-            people={people}
-            options={options}
-            onChange={this._handlePeopleChange}
-            onSort={this._handleTableSort}
-            compact
-            scrollable
-          />
+          {!loading && (!people || !people.length) ? (
+            <p className="not-found">Nenhum resultado encontrado.</p>
+          ) : (
+            <PeopleTable
+              tags={this.props.tags}
+              people={people}
+              options={options}
+              onChange={this._handlePeopleChange}
+              onSort={this._handleTableSort}
+              compact
+              scrollable
+            />
+          )}
         </PeopleContent>
         {/* </Page.Content> */}
       </>
