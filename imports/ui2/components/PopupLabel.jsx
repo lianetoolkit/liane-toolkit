@@ -18,11 +18,11 @@ const Container = styled.span`
     left: 0;
     padding: 0.2rem 0.5rem;
     line-height: 1;
-    background: rgba(0, 0, 0, 0.8);
+    background: #000;
     border: 1px solid rgba(0, 0, 0, 0.5);
     color: #fff;
     pointer-events: none;
-    transition: opacity 0.1s linear;
+    transition: opacity 0.1s linear, transform 0.1s linear;
     border-radius: 7px;
     font-size: 12px;
     .extra {
@@ -32,9 +32,20 @@ const Container = styled.span`
       background: rgba(255, 255, 255, 0.05);
       border-radius: 7px;
     }
+    &:before {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      bottom: -3px;
+      left: 15px;
+      margin-left: -3px;
+      background: #000;
+      transform: rotate(45deg);
+    }
   }
   &:hover .label {
-    opacity: 1;
+    opacity: 0.9;
     z-index: 10;
   }
   ${props =>
@@ -43,6 +54,9 @@ const Container = styled.span`
     css`
       .label {
         left: 50%;
+        &:before {
+          left: 50%;
+        }
       }
     `}
   ${props =>
@@ -54,6 +68,18 @@ const Container = styled.span`
         top: 100%;
         margin-top: 5px;
         margin-bottom: 0;
+        &:before {
+          bottom: auto;
+          top: -3px;
+        }
+      }
+    `}
+  ${props =>
+    props.faded &&
+    css`
+      .label {
+        opacity: 0 !important;
+        transform: translate(0, -10px);
       }
     `}
 `;
@@ -62,6 +88,7 @@ export default class PopupLabel extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      faded: false,
       labelMargins: {
         left: 0,
         right: 0
@@ -102,6 +129,7 @@ export default class PopupLabel extends Component {
     }
   }, 200);
   _handleMouseEnter = () => {
+    const { onMouseEnter } = this.props;
     const { labelMargins } = this.state;
     const labelNode = this.node.getElementsByClassName("label")[0];
     const rect = labelNode.getBoundingClientRect();
@@ -109,13 +137,34 @@ export default class PopupLabel extends Component {
     labelNode.style.left = rect.x - labelMargins.left + "px";
     labelNode.style.bottom = "auto";
     labelNode.style.position = "fixed";
+    if (onMouseEnter) {
+      onMouseEnter();
+    }
   };
   _handleMouseLeave = () => {
+    const { onMouseLeave } = this.props;
     const labelNode = this.node.getElementsByClassName("label")[0];
     labelNode.style.top = null;
     labelNode.style.left = null;
     labelNode.style.bottom = null;
     labelNode.style.position = null;
+    this.setState({
+      faded: false
+    });
+    if (onMouseLeave) {
+      onMouseLeave();
+    }
+  };
+  fade = () => {
+    this.setState({
+      faded: true
+    });
+  };
+  _handleClick = ev => {
+    const { onClick } = this.props;
+    if (onClick) {
+      onClick(ev, this.fade);
+    }
   };
   render() {
     const {
@@ -126,7 +175,7 @@ export default class PopupLabel extends Component {
       bottomOffset,
       ...props
     } = this.props;
-    const { labelMargins } = this.state;
+    const { faded, labelMargins } = this.state;
     let style = {};
     if (bottomOffset) {
       style["marginBottom"] = bottomOffset;
@@ -141,6 +190,8 @@ export default class PopupLabel extends Component {
         {...props}
         onMouseEnter={this._handleMouseEnter}
         onMouseLeave={this._handleMouseLeave}
+        onClick={this._handleClick}
+        faded={faded}
       >
         {children}
         <span className="label" style={style}>

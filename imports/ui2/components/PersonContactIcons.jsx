@@ -24,6 +24,12 @@ const Container = styled.div`
 `;
 
 export default class PersonContactIcons extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      copied: false
+    };
+  }
   getMeta(key) {
     const { person } = this.props;
     return person.campaignMeta && get(person.campaignMeta, key);
@@ -40,8 +46,20 @@ export default class PersonContactIcons extends Component {
     const { person } = this.props;
     return person.filledForm;
   }
+  _handleClick = (ev, fade) => {
+    this.setState({
+      copied: true
+    });
+    fade();
+  };
+  _handleMouseLeave = () => {
+    this.setState({
+      copied: false
+    });
+  };
   render() {
     const { person } = this.props;
+    const { copied } = this.state;
     const email = this.getMeta("contact.email");
     const phone = this.getMeta("contact.cellphone");
     const form = this.filledForm();
@@ -53,6 +71,8 @@ export default class PersonContactIcons extends Component {
             disabled={!email}
             extra={email ? "Clique para copiar" : false}
             position="center"
+            onClick={this._handleClick}
+            onMouseLeave={this._handleMouseLeave}
           >
             <CopyToClipboard
               disabled={!email}
@@ -67,6 +87,8 @@ export default class PersonContactIcons extends Component {
             disabled={!phone}
             extra={phone ? "Clique para copiar" : false}
             position="center"
+            onClick={this._handleClick}
+            onMouseLeave={this._handleMouseLeave}
           >
             <CopyToClipboard
               disabled={!phone}
@@ -82,6 +104,8 @@ export default class PersonContactIcons extends Component {
             }
             extra="Clique para copiar link"
             position="center"
+            onClick={this._handleClick}
+            onMouseLeave={this._handleMouseLeave}
           >
             <CopyToClipboard
               text={getFormUrl(person.formId)}
