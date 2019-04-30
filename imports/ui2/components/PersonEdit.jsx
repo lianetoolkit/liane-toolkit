@@ -8,6 +8,7 @@ import { alertStore } from "../containers/Alerts.jsx";
 import Form from "./Form.jsx";
 import TabNav from "./TabNav.jsx";
 import TagSelect from "./TagSelect.jsx";
+import AddressField from "./AddressField.jsx";
 
 export default class PersonEdit extends Component {
   constructor(props) {
@@ -15,6 +16,7 @@ export default class PersonEdit extends Component {
     this.state = {
       id: "",
       sectionKey: "basic_info",
+      tab: "basic_info",
       formData: {
         name: "",
         basic_info: {},
@@ -35,9 +37,9 @@ export default class PersonEdit extends Component {
     }
     return null;
   }
-  _handleNavClick = sectionKey => ev => {
+  _handleNavClick = (tab, sectionKey) => ev => {
     ev.preventDefault();
-    this.setState({ sectionKey });
+    this.setState({ tab, sectionKey: sectionKey || tab });
   };
   _handleChange = ev => {
     const { formData } = this.state;
@@ -53,6 +55,14 @@ export default class PersonEdit extends Component {
     if (selected && selected.value) {
       value = selected.value;
     }
+    const newFormData = Object.assign({}, formData);
+    set(newFormData, name, value);
+    this.setState({
+      formData: newFormData
+    });
+  };
+  _handleAddressChange = ({ name, value }) => {
+    const { formData } = this.state;
     const newFormData = Object.assign({}, formData);
     set(newFormData, name, value);
     this.setState({
@@ -116,20 +126,27 @@ export default class PersonEdit extends Component {
   }
   render() {
     const { person } = this.props;
-    const { sectionKey, formData } = this.state;
+    const { tab, sectionKey, formData } = this.state;
     return (
       <Form onSubmit={this._handleSubmit}>
         <TabNav>
           <a
             href="javascript:void(0);"
-            className={sectionKey == "basic_info" ? "active" : ""}
+            className={tab == "basic_info" ? "active" : ""}
             onClick={this._handleNavClick("basic_info")}
           >
             Geral
           </a>
           <a
             href="javascript:void(0);"
-            className={sectionKey == "contact" ? "active" : ""}
+            className={tab == "address" ? "active" : ""}
+            onClick={this._handleNavClick("address", "basic_info")}
+          >
+            Endereço
+          </a>
+          <a
+            href="javascript:void(0);"
+            className={tab == "contact" ? "active" : ""}
             onClick={this._handleNavClick("contact")}
           >
             Contato
@@ -137,7 +154,7 @@ export default class PersonEdit extends Component {
           <a href="javascript:void(0);">Rede sociais</a>
           <a href="javascript:void(0);">Campos extras</a>
         </TabNav>
-        {sectionKey == "basic_info" ? (
+        {tab == "basic_info" ? (
           <div>
             <Form.Field label="Nome">
               <input
@@ -177,7 +194,14 @@ export default class PersonEdit extends Component {
             </Form.Field>
           </div>
         ) : null}
-        {sectionKey == "contact" ? (
+        {tab == "address" ? (
+          <AddressField
+            name="basic_info.address"
+            value={formData.basic_info.address}
+            onChange={this._handleAddressChange}
+          />
+        ) : null}
+        {tab == "contact" ? (
           <div>
             <Form.Field label="Email">
               <input

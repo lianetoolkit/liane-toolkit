@@ -91,6 +91,18 @@ input[type="number"] {
   outline: none;
 }
 
+select {
+  display: block;
+  width: 100%;
+  background: #fff;
+  border-radius: 7px;
+  border: 1px solid #ddd;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: calc(1rem - 2px);
+  padding-bottom: calc(1rem - 3px);
+}
+
 textarea:focus,
 input:focus {
   background: #fff;

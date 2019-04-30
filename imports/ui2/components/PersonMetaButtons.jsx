@@ -276,7 +276,7 @@ export default class PersonMetaButtons extends React.Component {
     return (
       <PopupLabel
         text={PersonMetaButtons.labels[key]}
-        position={vertical ? null : "bottom center"}
+        position={vertical ? "center" : "bottom center"}
       >
         <a
           href="javascript:void(0);"

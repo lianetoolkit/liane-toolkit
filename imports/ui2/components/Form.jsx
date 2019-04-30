@@ -114,9 +114,9 @@ class Actions extends Component {
 
 class Field extends Component {
   render() {
-    const { label, children } = this.props;
+    const { label, children, ...props } = this.props;
     return (
-      <FieldContainer>
+      <FieldContainer {...props}>
         <span className="label">{label}</span>
         {children}
       </FieldContainer>
