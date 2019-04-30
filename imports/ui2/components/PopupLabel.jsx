@@ -79,7 +79,7 @@ const Container = styled.span`
     css`
       .label {
         opacity: 0 !important;
-        transform: translate(0, -10px);
+        transform: translate(0, -5px);
       }
     `}
 `;
