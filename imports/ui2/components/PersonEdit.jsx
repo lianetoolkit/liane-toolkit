@@ -8,6 +8,7 @@ import { alertStore } from "../containers/Alerts.jsx";
 import Form from "./Form.jsx";
 import TabNav from "./TabNav.jsx";
 import TagSelect from "./TagSelect.jsx";
+import SkillsField from "./SkillsField.jsx";
 import AddressField from "./AddressField.jsx";
 import ExtraFields from "./ExtraFields.jsx";
 
@@ -206,6 +207,13 @@ export default class PersonEdit extends Component {
                 placeholder="Ocupação"
                 value={formData.basic_info.occupation}
                 onChange={this._handleChange}
+              />
+            </Form.Field>
+            <Form.Field label="Habilidades">
+              <SkillsField
+                name="basic_info.skills"
+                onChange={this._handleChange}
+                value={formData.basic_info.skills}
               />
             </Form.Field>
             <Form.Field label="Tags">
