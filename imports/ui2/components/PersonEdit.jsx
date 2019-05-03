@@ -9,6 +9,7 @@ import Form from "./Form.jsx";
 import TabNav from "./TabNav.jsx";
 import TagSelect from "./TagSelect.jsx";
 import AddressField from "./AddressField.jsx";
+import ExtraFields from "./ExtraFields.jsx";
 
 export default class PersonEdit extends Component {
   constructor(props) {
@@ -20,7 +21,9 @@ export default class PersonEdit extends Component {
       formData: {
         name: "",
         basic_info: {},
-        contact: {}
+        contact: {},
+        social_networks: {},
+        extra: []
       }
     };
   }
@@ -67,6 +70,14 @@ export default class PersonEdit extends Component {
     set(newFormData, name, value);
     this.setState({
       formData: newFormData
+    });
+  };
+  _handleExtraFieldsChange = value => {
+    this.setState({
+      formData: {
+        ...this.state.formData,
+        extra: value
+      }
     });
   };
   _handleSubmit = ev => {
@@ -151,8 +162,20 @@ export default class PersonEdit extends Component {
           >
             Contato
           </a>
-          <a href="javascript:void(0);">Rede sociais</a>
-          <a href="javascript:void(0);">Campos extras</a>
+          <a
+            href="javascript:void(0);"
+            className={tab == "social_networks" ? "active" : ""}
+            onClick={this._handleNavClick("social_networks")}
+          >
+            Rede sociais
+          </a>
+          <a
+            href="javascript:void(0);"
+            className={tab == "extra" ? "active" : ""}
+            onClick={this._handleNavClick("extra")}
+          >
+            Campos extras
+          </a>
         </TabNav>
         {tab == "basic_info" ? (
           <div>
@@ -222,6 +245,34 @@ export default class PersonEdit extends Component {
               />
             </Form.Field>
           </div>
+        ) : null}
+        {tab == "social_networks" ? (
+          <div>
+            <Form.Field label="Instagram">
+              <input
+                type="text"
+                name="social_networks.instagram"
+                placeholder="@instagram"
+                onChange={this._handleChange}
+                value={formData.social_networks.instagram}
+              />
+            </Form.Field>
+            <Form.Field label="Twitter">
+              <input
+                type="text"
+                name="social_networks.twitter"
+                placeholder="@twitter"
+                onChange={this._handleChange}
+                value={formData.social_networks.twitter}
+              />
+            </Form.Field>
+          </div>
+        ) : null}
+        {tab == "extra" ? (
+          <ExtraFields
+            onChange={this._handleExtraFieldsChange}
+            value={formData.extra}
+          />
         ) : null}
         <input type="submit" value="Salvar alterações" />
       </Form>
