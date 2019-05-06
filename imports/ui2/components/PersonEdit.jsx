@@ -284,10 +284,16 @@ export default class PersonEdit extends Component {
           </div>
         ) : null}
         {tab == "extra" ? (
-          <ExtraFields
-            onChange={this._handleExtraFieldsChange}
-            value={formData.extra}
-          />
+          <div>
+            <p>
+              Adicione campos adicionais sobre essa pessoa. Por exemplo,{" "}
+              <span style={{ fontStyle: "italic" }}>signo: escorpião</span>.
+            </p>
+            <ExtraFields
+              onChange={this._handleExtraFieldsChange}
+              value={formData.extra}
+            />
+          </div>
         ) : null}
         <input type="submit" value="Salvar alterações" />
       </Form>
