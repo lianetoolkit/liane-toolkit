@@ -785,13 +785,15 @@ export const peopleMetaUpdate = new ValidatedMethod({
       update.$unset = $unset;
     }
 
-    return People.update(
+    People.update(
       {
         campaignId,
         _id: personId
       },
       update
     );
+
+    return People.findOne(personId);
   }
 });
 

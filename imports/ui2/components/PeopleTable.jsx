@@ -193,7 +193,12 @@ export default class PeopleTable extends Component {
         case 69: // (e)dit
           if (curIndex > -1) {
             modalStore.setTitle(`Editando perfil de ${people[curIndex].name}`);
-            modalStore.set(<PersonEdit person={people[curIndex]} />);
+            modalStore.set(
+              <PersonEdit
+                person={people[curIndex]}
+                onSuccess={this._handleEditSuccess}
+              />
+            );
           }
           break;
         default:
@@ -247,10 +252,24 @@ export default class PeopleTable extends Component {
       this.props.onChange(newPeople);
     }
   };
+  _handleEditSuccess = person => {
+    if (this.props.onChange) {
+      const { people } = this.props;
+      const newPeople = people.map(p => {
+        if (p._id == person._id) {
+          return person;
+        }
+        return p;
+      });
+      this.props.onChange(newPeople);
+    }
+  };
   _handleEditClick = person => ev => {
     ev.preventDefault();
     modalStore.setTitle(`Editando perfil de ${person.name}`);
-    modalStore.set(<PersonEdit person={person} />);
+    modalStore.set(
+      <PersonEdit person={person} onSuccess={this._handleEditSuccess} />
+    );
   };
   expand = person => ev => {
     if (ev.target.nodeName == "A" || ev.target.closest("a")) {

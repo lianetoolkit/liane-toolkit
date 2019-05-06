@@ -83,6 +83,7 @@ export default class PersonEdit extends Component {
   };
   _handleSubmit = ev => {
     ev.preventDefault();
+    const { onSuccess, onError } = this.props;
     const { id, sectionKey, formData } = this.state;
     Meteor.call(
       "people.metaUpdate",
@@ -96,8 +97,14 @@ export default class PersonEdit extends Component {
       (err, res) => {
         if (!err) {
           alertStore.add("Perfil atualizado com sucesso.", "success");
+          if (onSuccess) {
+            onSuccess(res);
+          }
         } else {
           alertStore.add(err);
+          if (onError) {
+            onError(err);
+          }
         }
       }
     );
