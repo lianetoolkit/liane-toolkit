@@ -167,6 +167,7 @@ export default class PopupLabel extends Component {
     }
   };
   render() {
+    this.calcMargins();
     const {
       text,
       extra,
