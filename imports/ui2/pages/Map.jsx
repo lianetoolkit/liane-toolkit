@@ -10,6 +10,7 @@ import {
   LayerGroup,
   GeoJSON
 } from "react-leaflet";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Page from "../components/Page.jsx";
 import Button from "../components/Button.jsx";
@@ -43,15 +44,33 @@ const Tools = styled.div`
 
 const Tool = styled.div`
   margin-top: 10px;
-  ${props =>
-    !props.transparent &&
-    css`
-      background: #fff;
-      border-radius: 7px;
-    `}
   .button {
     display: block;
     margin: 0;
+  }
+`;
+
+const LayerFilter = styled.ul`
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8em;
+  li {
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    &:first-child {
+      border-radius: 7px 7px 0 0;
+    }
+    &:last-child {
+      border-radius: 0 0 7px 7px;
+    }
+    svg {
+      margin: 0 1rem 0 0;
+    }
   }
 `;
 
@@ -71,7 +90,20 @@ export default class MapPage extends Component {
         </Map>
         <Tools>
           <Tool>
-            <p>Tste</p>
+            <LayerFilter>
+              <li>
+                <FontAwesomeIcon icon="map-marker" />
+                <span>Pessoas</span>
+              </li>
+              <li>
+                <FontAwesomeIcon icon="map-marker" />
+                <span>Datapedia</span>
+              </li>
+              <li>
+                <FontAwesomeIcon icon="map-marker" />
+                <span>Marcações da campanha</span>
+              </li>
+            </LayerFilter>
           </Tool>
           <Tool transparent>
             <Button>Adicionar ao mapa</Button>
