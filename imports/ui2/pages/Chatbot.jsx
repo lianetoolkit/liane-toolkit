@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { get, set, defaultsDeep } from "lodash";
 
+import { alertStore } from "../containers/Alerts.jsx";
+
 import Content from "../components/Content.jsx";
 import Form from "../components/Form.jsx";
 
@@ -155,7 +157,7 @@ class ChatbotPage extends Component {
         },
         (err, data) => {
           if (err) {
-            console.log(err);
+            alertStore.add(err);
           } else {
             if (active) {
               this._closeSettings(account);
@@ -240,7 +242,7 @@ class ChatbotPage extends Component {
       },
       (err, res) => {
         if (err) {
-          console.log(err);
+          alertStore.add(err);
         }
       }
     );

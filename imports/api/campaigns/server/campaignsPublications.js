@@ -147,6 +147,7 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
             fields: {
               users: 1,
               accounts: 1,
+              facebookAccount: 1,
               name: 1,
               description: 1,
               contextId: 1,
@@ -160,8 +161,11 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
       children: [
         {
           find: function(campaign) {
+            let ids = _.pluck(campaign.accounts, "facebookId");
+            if (campaign.facebookAccount)
+              ids.push(campaign.facebookAccount.facebookId);
             return FacebookAccounts.find({
-              facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
+              facebookId: { $in: ids }
             });
           }
         },

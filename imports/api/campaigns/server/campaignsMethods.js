@@ -276,6 +276,7 @@ export const campaignsChatbotActivation = new ValidatedMethod({
     }
 
     if (
+      !campaign.facebookAccount &&
       !_.find(
         campaign.accounts,
         account => account.facebookId == facebookAccountId
@@ -336,6 +337,7 @@ export const campaignsUpdateChatbot = new ValidatedMethod({
     }
 
     if (
+      !campaign.facebookAccount &&
       !_.find(
         campaign.accounts,
         account => account.facebookId == facebookAccountId

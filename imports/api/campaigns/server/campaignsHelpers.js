@@ -393,10 +393,12 @@ const CampaignsHelpers = {
   },
   getChatbotYeekoConfig({ campaignId, facebookAccountId }) {
     const campaign = Campaigns.findOne(campaignId);
-    const campaignAccount = _.find(
-      campaign.accounts,
-      account => account.facebookId == facebookAccountId
-    );
+    const campaignAccount =
+      campaign.facebookAccount ||
+      _.find(
+        campaign.accounts,
+        account => account.facebookId == facebookAccountId
+      );
     const account = FacebookAccounts.findOne({ facebookId: facebookAccountId });
 
     if (!campaign) {
@@ -418,10 +420,12 @@ const CampaignsHelpers = {
   },
   activateChatbot({ campaignId, facebookAccountId }) {
     const campaign = Campaigns.findOne(campaignId);
-    const campaignAccount = _.find(
-      campaign.accounts,
-      account => account.facebookId == facebookAccountId
-    );
+    const campaignAccount =
+      campaign.facebookAccount ||
+      _.find(
+        campaign.accounts,
+        account => account.facebookId == facebookAccountId
+      );
 
     // Yeeko
     const yeekoConfig = this.getChatbotYeekoConfig({
@@ -433,12 +437,11 @@ const CampaignsHelpers = {
         axios.post(`${YEEKO.url}?api_key=${YEEKO.apiKey}`, yeekoConfig)
       );
     } catch (err) {
-      console.log(err.response.data);
       throw new Meteor.Error(500, "Error connecting to Yeeko api");
     }
     // Facebook subscription
     try {
-      Promise.await(
+      const fbRes = Promise.await(
         FB.api(`${facebookAccountId}/subscribed_apps`, "post", {
           subscribed_fields: [
             "messages",
@@ -451,7 +454,6 @@ const CampaignsHelpers = {
         })
       );
     } catch (err) {
-      console.log(err);
       throw new Meteor.Error(500, "Error trying to subscribe");
     }
 
@@ -467,10 +469,12 @@ const CampaignsHelpers = {
   },
   updateChatbot({ campaignId, facebookAccountId, config }) {
     const campaign = Campaigns.findOne(campaignId);
-    const campaignAccount = _.find(
-      campaign.accounts,
-      account => account.facebookId == facebookAccountId
-    );
+    const campaignAccount =
+      campaign.facebookAccount ||
+      _.find(
+        campaign.accounts,
+        account => account.facebookId == facebookAccountId
+      );
 
     if (!campaign) {
       throw new Meteor.Error(404, "Campaign not found");
