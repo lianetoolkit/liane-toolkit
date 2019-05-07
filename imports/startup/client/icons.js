@@ -37,7 +37,8 @@ import {
   faDotCircle,
   faCopy,
   faArrowRight,
-  faMapMarker
+  faMapMarker,
+  faMapMarked
 } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 
@@ -78,4 +79,5 @@ library.add(faDotCircle);
 library.add(faCopy);
 library.add(faArrowRight);
 library.add(faMapMarker);
+library.add(faMapMarked);
 library.add(faFacebookSquare);

@@ -34,7 +34,48 @@ const Container = styled.div`
   }
 `;
 
+const MapNav = styled.nav`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 65%;
+  z-index: 2;
+  pointer-events: none;
+  background: rgb(0, 0, 0);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  .nav-content {
+    display: flex;
+    justify-content: center;
+    padding: 1.5em 0 0;
+    font-size: 0.8em;
+  }
+  a {
+    pointer-events: auto;
+    display: inline-block;
+    flex: 0 0 auto;
+    color: #ccc;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    margin: 0 2rem;
+    font-weight: 600;
+    &.active {
+      border-bottom: 2px solid #fff;
+      color: #fff;
+    }
+    &:hover {
+      color: #fff;
+    }
+  }
+`;
+
 const Tools = styled.div`
+  max-width: 300px;
+  min-width: 230px;
   position: absolute;
   bottom: 10px;
   left: 10px;
@@ -47,6 +88,36 @@ const Tool = styled.div`
   .button {
     display: block;
     margin: 0;
+    background: #f60;
+    color: #fff;
+    border: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    padding: 0;
+    span {
+      display: block;
+      flex: 1 1 auto;
+      text-align: center;
+      padding: 0.75rem 1rem;
+    }
+    .icon {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1.625rem 0 0 1.625rem;
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .label {
+      font-size: 0.8em;
+    }
+    &:hover,
+    &:active,
+    &:focus {
+      .icon {
+        ${"" /* color: rgba(255, 255, 255, 0.5); */}
+        background: rgba(0, 0, 0, 0.1);
+      }
+    }
   }
 `;
 
@@ -62,6 +133,7 @@ const LayerFilter = styled.ul`
     margin: 0;
     display: flex;
     align-items: center;
+    cursor: pointer;
     &:first-child {
       border-radius: 7px 7px 0 0;
     }
@@ -71,6 +143,12 @@ const LayerFilter = styled.ul`
     svg {
       margin: 0 1rem 0 0;
     }
+    &:hover {
+      background: #f0f0f0;
+    }
+    &.disabled {
+      color: #999;
+    }
   }
 `;
 
@@ -78,6 +156,14 @@ export default class MapPage extends Component {
   render() {
     return (
       <Container>
+        <MapNav>
+          <span className="nav-content">
+            <a href="javascript:void(0);">Audiência de território</a>
+            <a href="javascript:void(0);" className="active">
+              Mapa
+            </a>
+          </span>
+        </MapNav>
         <Map ref="map" center={[0, 0]} zoom={2} scrollWheelZoom={true}>
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -97,16 +183,21 @@ export default class MapPage extends Component {
               </li>
               <li>
                 <FontAwesomeIcon icon="map-marker" />
-                <span>Datapedia</span>
-              </li>
-              <li>
-                <FontAwesomeIcon icon="map-marker" />
                 <span>Marcações da campanha</span>
+              </li>
+              <li className="disabled">
+                <FontAwesomeIcon icon="map-marker" />
+                <span>Datapedia</span>
               </li>
             </LayerFilter>
           </Tool>
           <Tool transparent>
-            <Button>Adicionar ao mapa</Button>
+            <Button>
+              <span className="icon">
+                <FontAwesomeIcon icon="map-marked" />
+              </span>
+              <span className="label">Adicionar ao mapa</span>
+            </Button>
           </Tool>
         </Tools>
       </Container>
