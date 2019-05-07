@@ -2,6 +2,8 @@
 
 ## An Electoral Toolkit for Activist Campaigns
 
+**This version is under development and going through constant changes. For a stable version, checkout v0.1 tag.**
+
 Liane is a free software using [Meteor](https://meteor.com), [MongoDB](https://www.mongodb.com/), [React](https://reactjs.org/), [Redis](https://redis.io/) and the [Facebook API](https://developers.facebook.com/docs).
 
 > This project is under development.
@@ -10,21 +12,21 @@ Liane is a free software using [Meteor](https://meteor.com), [MongoDB](https://w
 
 **Table of Contents**
 
-* [Getting Started](#getting-started)
-  * [Dependencies](#dependencies)
-* [Routes Definition](#routes-definition)
-* [Application Structure](#application-structure)
-* [On startup](#on-startup)
-* [Cron Jobs](#cron-jobs)
-* [Internationalization](#internationalization)
-* [Tests](#tests)
+- [Getting Started](#getting-started)
+  - [Dependencies](#dependencies)
+- [Routes Definition](#routes-definition)
+- [Application Structure](#application-structure)
+- [On startup](#on-startup)
+- [Cron Jobs](#cron-jobs)
+- [Internationalization](#internationalization)
+- [Tests](#tests)
 
 ## Getting Started
 
 ### Dependencies
 
-* [Meteor](https://guide.meteor.com)
-* [Redis](https://redis.io/) (v4.0.0 or newer)
+- [Meteor](https://guide.meteor.com)
+- [Redis](https://redis.io/) (v4.0.0 or newer)
 
 Install **Meteor** full-stack framework.
 
