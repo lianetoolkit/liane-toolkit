@@ -86,11 +86,22 @@ const NavItemContainer = styled.li`
             color: #ddd;
             padding: 0.5rem 1rem;
             border: 0;
+            span {
+              font-size: 0.6em;
+              font-style: italic;
+            }
+            &.disabled {
+              color: #666;
+            }
           }
           &:hover {
             a {
               color: #fff;
               background: #222;
+              &.disabled {
+                color: #666;
+                background: transparent;
+              }
             }
           }
         }
@@ -208,32 +219,48 @@ export default class AppNav extends Component {
                 {campaigns.length > 1 ? (
                   <NavItem name={<CampaignNav campaigns={campaigns} />} clean />
                 ) : null}
-                <NavItem href="#" name="Inteligência">
+                <NavItem
+                  href="javascript:void(0);"
+                  name="Inteligência e Estratégia"
+                >
                   <ul>
                     <li>
-                      <a href="#">Minha audiência</a>
-                    </li>
-                    <li>
-                      <a href="#">Territórios</a>
-                    </li>
-                  </ul>
-                </NavItem>
-                <NavItem href="#" name="Comunicação">
-                  <ul>
-                    <li>
-                      <a href={FlowRouter.path("App.people")}>
-                        Diretório de contatos
+                      <a href="javascript:void(0);" className="disabled">
+                        Minha audiência <span>Em breve</span>
                       </a>
                     </li>
                     <li>
-                      <a href="#">Gestão de comentários</a>
+                      <a href={FlowRouter.path("App.map")}>Territórios</a>
+                    </li>
+                  </ul>
+                </NavItem>
+                <NavItem
+                  href="javascript:void(0);"
+                  name="Pessoas e Comunicação"
+                >
+                  <ul>
+                    <li>
+                      <a href={FlowRouter.path("App.people")}>
+                        Diretório de pessoas
+                      </a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);">Gestão de comentários</a>
                     </li>
                     <li>
                       <a href={FlowRouter.path("App.chatbot")}>Chatbot</a>
                     </li>
                   </ul>
                 </NavItem>
-                <NavItem href="#" name="+ Criar adset" />
+                <NavItem
+                  href="javascript:void(0);"
+                  name={
+                    <>
+                      <FontAwesomeIcon icon={["fab", "facebook-square"]} />{" "}
+                      Criar adset
+                    </>
+                  }
+                />
                 {/* <NavItem
                   href={FlowRouter.path("App.people")}
                   active={currentRoute.indexOf("App.people") === 0}

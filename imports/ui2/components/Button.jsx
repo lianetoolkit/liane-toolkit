@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import styled, { css } from "styled-components";
 
 const styles = css`
-  width: 100%;
   text-align: center;
   color: #6633cc;
   text-decoration: none;

@@ -111,7 +111,6 @@ input:focus {
 .button,
 button,
 input[type="submit"] {
-  width: 100%;
   box-sizing: border-box;
   display: block;
   border: 0;

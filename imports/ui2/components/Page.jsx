@@ -167,6 +167,7 @@ const PageBody = styled.div`
   display: flex;
   flex-direction: row;
   position: relative;
+  z-index: 1;
   outline: none;
 `;
 

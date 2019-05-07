@@ -11,9 +11,16 @@ export default class DashboardPage extends Component {
     return (
       <Dashboard>
         <Dashboard.Row>
-          <Dashboard.Box grow="2">
-            <Dashboard.Title>Teste</Dashboard.Title>
-            <p>Teste</p>
+          <Dashboard.Box grow="2" attached>
+            <PeopleBlock
+              query={{
+                campaignId,
+                query: {
+                  "campaignMeta.donor": true
+                },
+                options: {}
+              }}
+            />
           </Dashboard.Box>
           <Dashboard.Box grow="2" attached>
             <PeopleBlock
@@ -31,6 +38,10 @@ export default class DashboardPage extends Component {
           </Dashboard.Box>
         </Dashboard.Row>
         <Dashboard.Row>
+          <Dashboard.Box grow="2">
+            <Dashboard.Title>Teste</Dashboard.Title>
+            <p>Teste</p>
+          </Dashboard.Box>
           <Dashboard.Box>
             <p>Teste</p>
           </Dashboard.Box>

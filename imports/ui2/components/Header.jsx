@@ -67,7 +67,13 @@ export default class Header extends Component {
           </div>
           <TopNav>
             <a href="#">Como funciona</a>
-            <a href="#">Instituto Update</a>
+            <a
+              href="https://institutoupdate.org.br"
+              target="_blank"
+              rel="external"
+            >
+              Instituto Update
+            </a>
             <a href="#">Termos de uso</a>
           </TopNav>
           {user ? <AppNav campaign={campaign} campaigns={campaigns} /> : null}
