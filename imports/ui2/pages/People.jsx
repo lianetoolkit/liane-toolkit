@@ -28,7 +28,7 @@ const PeopleFilters = styled.div`
   .filters {
     flex: 1 1 100%;
     overflow: auto;
-    padding: 3.25rem 0 2rem 1rem;
+    padding: 3rem 0 2rem 1rem;
   }
   .main-input {
     font-size: 1.2em;
