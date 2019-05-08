@@ -24,53 +24,68 @@ L.Icon.Default.mergeOptions({
 });
 
 const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
   .leaflet-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    flex: 1 1 100%;
+    position: relative;
+    width: 100%;
+    height: 100%;
     z-index: 1;
   }
 `;
 
 const MapNav = styled.nav`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 65%;
   z-index: 2;
-  pointer-events: none;
-  background: rgb(0, 0, 0);
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: #333;
   .nav-content {
     display: flex;
     justify-content: center;
-    padding: 1.5em 0 0;
+    padding: 1em 0 0;
     font-size: 0.8em;
+    font-weight: 600;
   }
   a {
     pointer-events: auto;
     display: inline-block;
     flex: 0 0 auto;
-    color: #ccc;
+    color: rgba(255, 255, 255, 0.6);
     text-decoration: none;
-    padding: 0.5rem 0;
-    margin: 0 2rem;
-    font-weight: 600;
-    &.active {
-      border-bottom: 2px solid #fff;
-      color: #fff;
-    }
+    padding: 0.5rem 1rem;
+    border-bottom: 2px solid transparent;
     &:hover {
       color: #fff;
+      border-color: rgba(0, 0, 0, 0.3);
+    }
+    &.active {
+      color: #f7f7f7;
+      border-color: #000;
     }
   }
+  ${props =>
+    props.attached &&
+    css`
+      position: relative;
+      flex: 0 0 auto;
+      width: 100%;
+    `}
+  ${props =>
+    !props.attached &&
+    css`
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 65%;
+      pointer-events: none;
+      background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.7) 0%,
+        rgba(255, 255, 255, 0) 100%
+      );
+    `}
 `;
 
 const Tools = styled.div`
@@ -106,6 +121,7 @@ const Tool = styled.div`
       background: rgba(255, 255, 255, 0.1);
       border-radius: 1.625rem 0 0 1.625rem;
       border-right: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.75rem 0;
     }
     .label {
       font-size: 0.8em;
@@ -149,57 +165,103 @@ const LayerFilter = styled.ul`
     &.disabled {
       color: #999;
     }
+    .description {
+      font-size: 0.8em;
+      font-style: italic;
+      color: #666;
+      display: block;
+    }
   }
 `;
 
 export default class MapPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      map: true
+    };
+  }
+  _handleNavClick = map => ev => {
+    ev.preventDefault();
+    this.setState({ map });
+  };
   render() {
+    const { map } = this.state;
     return (
       <Container>
-        <MapNav>
+        <MapNav attached={!map}>
           <span className="nav-content">
-            <a href="javascript:void(0);">Audiência de território</a>
-            <a href="javascript:void(0);" className="active">
+            <a
+              href="javascript:void(0);"
+              className={!map ? "active" : ""}
+              onClick={this._handleNavClick(false)}
+            >
+              Audiência de território
+            </a>
+            <a
+              href="javascript:void(0);"
+              className={map ? "active" : ""}
+              onClick={this._handleNavClick(true)}
+            >
               Mapa
             </a>
           </span>
         </MapNav>
-        <Map ref="map" center={[0, 0]} zoom={2} scrollWheelZoom={true}>
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          />
-          {/* {layers.map(layer => (
-            <TileLayer key={layer._id} url={layer.tilelayer} />
-          ))}
-          {children} */}
-        </Map>
-        <Tools>
-          <Tool>
-            <LayerFilter>
-              <li>
-                <FontAwesomeIcon icon="map-marker" />
-                <span>Pessoas</span>
-              </li>
-              <li>
-                <FontAwesomeIcon icon="map-marker" />
-                <span>Marcações da campanha</span>
-              </li>
-              <li className="disabled">
-                <FontAwesomeIcon icon="map-marker" />
-                <span>Datapedia</span>
-              </li>
-            </LayerFilter>
-          </Tool>
-          <Tool transparent>
-            <Button>
-              <span className="icon">
-                <FontAwesomeIcon icon="map-marked" />
-              </span>
-              <span className="label">Adicionar ao mapa</span>
-            </Button>
-          </Tool>
-        </Tools>
+        {map ? (
+          <>
+            <Map ref="map" center={[0, 0]} zoom={2} scrollWheelZoom={true}>
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+              />
+              {/* {layers.map(layer => (
+              <TileLayer key={layer._id} url={layer.tilelayer} />
+            ))}
+            {children} */}
+            </Map>
+            <Tools>
+              <Tool>
+                <LayerFilter>
+                  <li>
+                    <FontAwesomeIcon icon="map-marker" />
+                    <span>
+                      Pessoas
+                      <span className="description">
+                        Pessoas do diretório que possuem endereço cadastrado
+                      </span>
+                    </span>
+                  </li>
+                  <li>
+                    <FontAwesomeIcon icon="map-marker" />
+                    <span>
+                      Marcações da campanha
+                      <span className="description">
+                        Pontos customizados adicionados pela campanha
+                      </span>
+                    </span>
+                  </li>
+                  <li className="disabled">
+                    <FontAwesomeIcon icon="map-marker" />
+                    <span>
+                      Datapedia
+                      <span className="description">
+                        Dados de eleições passadas em parceria com Datapedia
+                      </span>
+                    </span>
+                  </li>
+                </LayerFilter>
+              </Tool>
+              <Tool transparent>
+                <Button>
+                  <span className="icon">
+                    <FontAwesomeIcon icon="map-marked" />
+                  </span>
+                  <span className="label">Adicionar ao mapa</span>
+                </Button>
+              </Tool>
+            </Tools>
+          </>
+        ) : null}
       </Container>
     );
   }

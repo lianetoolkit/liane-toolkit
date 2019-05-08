@@ -12,6 +12,13 @@ import SkillsField from "./SkillsField.jsx";
 import AddressField from "./AddressField.jsx";
 import ExtraFields from "./ExtraFields.jsx";
 
+const Container = styled.div`
+  .tab-nav {
+    margin: -2rem -2rem 2rem -2rem;
+    padding: 1rem 0 0;
+  }
+`;
+
 export default class PersonEdit extends Component {
   constructor(props) {
     super(props);
@@ -147,156 +154,158 @@ export default class PersonEdit extends Component {
     const { person } = this.props;
     const { tab, sectionKey, formData } = this.state;
     return (
-      <Form onSubmit={this._handleSubmit}>
-        <TabNav>
-          <a
-            href="javascript:void(0);"
-            className={tab == "basic_info" ? "active" : ""}
-            onClick={this._handleNavClick("basic_info")}
-          >
-            Geral
-          </a>
-          <a
-            href="javascript:void(0);"
-            className={tab == "address" ? "active" : ""}
-            onClick={this._handleNavClick("address", "basic_info")}
-          >
-            Endereço
-          </a>
-          <a
-            href="javascript:void(0);"
-            className={tab == "contact" ? "active" : ""}
-            onClick={this._handleNavClick("contact")}
-          >
-            Contato
-          </a>
-          <a
-            href="javascript:void(0);"
-            className={tab == "social_networks" ? "active" : ""}
-            onClick={this._handleNavClick("social_networks")}
-          >
-            Rede sociais
-          </a>
-          <a
-            href="javascript:void(0);"
-            className={tab == "extra" ? "active" : ""}
-            onClick={this._handleNavClick("extra")}
-          >
-            Campos extras
-          </a>
-        </TabNav>
-        {tab == "basic_info" ? (
-          <div>
-            <Form.Field label="Nome">
-              <input
-                type="text"
-                name="name"
-                placeholder="Nome"
-                value={formData.name}
-                onChange={this._handleChange}
-              />
-            </Form.Field>
-            <Form.Field label="Gênero">
-              <Select
-                classNamePrefix="select"
-                name="basic_info.gender"
-                placeholder="Gênero"
-                isSearchable={false}
-                value={this.getGenderValue()}
-                onChange={this._handleSelectChange}
-                options={this.genderOptions}
-              />
-            </Form.Field>
-            <Form.Field label="Ocupação">
-              <input
-                type="text"
-                name="basic_info.occupation"
-                placeholder="Ocupação"
-                value={formData.basic_info.occupation}
-                onChange={this._handleChange}
-              />
-            </Form.Field>
-            <Form.Field label="Habilidades">
-              <SkillsField
-                name="basic_info.skills"
-                onChange={this._handleChange}
-                value={formData.basic_info.skills}
-              />
-            </Form.Field>
-            <Form.Field label="Tags">
-              <TagSelect
-                name="basic_info.tags"
-                onChange={this._handleChange}
-                value={formData.basic_info.tags}
-              />
-            </Form.Field>
-          </div>
-        ) : null}
-        {tab == "address" ? (
-          <AddressField
-            name="basic_info.address"
-            value={formData.basic_info.address}
-            onChange={this._handleAddressChange}
-          />
-        ) : null}
-        {tab == "contact" ? (
-          <div>
-            <Form.Field label="Email">
-              <input
-                type="email"
-                name="contact.email"
-                placeholder="Email"
-                onChange={this._handleChange}
-                value={formData.contact.email}
-              />
-            </Form.Field>
-            <Form.Field label="Telefone celular">
-              <input
-                type="text"
-                name="contact.cellphone"
-                placeholder="Telefone celular"
-                onChange={this._handleChange}
-                value={formData.contact.cellphone}
-              />
-            </Form.Field>
-          </div>
-        ) : null}
-        {tab == "social_networks" ? (
-          <div>
-            <Form.Field label="Instagram">
-              <input
-                type="text"
-                name="social_networks.instagram"
-                placeholder="@instagram"
-                onChange={this._handleChange}
-                value={formData.social_networks.instagram}
-              />
-            </Form.Field>
-            <Form.Field label="Twitter">
-              <input
-                type="text"
-                name="social_networks.twitter"
-                placeholder="@twitter"
-                onChange={this._handleChange}
-                value={formData.social_networks.twitter}
-              />
-            </Form.Field>
-          </div>
-        ) : null}
-        {tab == "extra" ? (
-          <div>
-            <p>
-              Adicione campos adicionais sobre essa pessoa. Por exemplo,{" "}
-              <span style={{ fontStyle: "italic" }}>signo: escorpião</span>.
-            </p>
-            <ExtraFields
-              onChange={this._handleExtraFieldsChange}
-              value={formData.extra}
+      <Container>
+        <Form onSubmit={this._handleSubmit}>
+          <TabNav dark>
+            <a
+              href="javascript:void(0);"
+              className={tab == "basic_info" ? "active" : ""}
+              onClick={this._handleNavClick("basic_info")}
+            >
+              Geral
+            </a>
+            <a
+              href="javascript:void(0);"
+              className={tab == "address" ? "active" : ""}
+              onClick={this._handleNavClick("address", "basic_info")}
+            >
+              Endereço
+            </a>
+            <a
+              href="javascript:void(0);"
+              className={tab == "contact" ? "active" : ""}
+              onClick={this._handleNavClick("contact")}
+            >
+              Contato
+            </a>
+            <a
+              href="javascript:void(0);"
+              className={tab == "social_networks" ? "active" : ""}
+              onClick={this._handleNavClick("social_networks")}
+            >
+              Rede sociais
+            </a>
+            <a
+              href="javascript:void(0);"
+              className={tab == "extra" ? "active" : ""}
+              onClick={this._handleNavClick("extra")}
+            >
+              Campos extras
+            </a>
+          </TabNav>
+          {tab == "basic_info" ? (
+            <div>
+              <Form.Field label="Nome">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Nome"
+                  value={formData.name}
+                  onChange={this._handleChange}
+                />
+              </Form.Field>
+              <Form.Field label="Gênero">
+                <Select
+                  classNamePrefix="select"
+                  name="basic_info.gender"
+                  placeholder="Gênero"
+                  isSearchable={false}
+                  value={this.getGenderValue()}
+                  onChange={this._handleSelectChange}
+                  options={this.genderOptions}
+                />
+              </Form.Field>
+              <Form.Field label="Ocupação">
+                <input
+                  type="text"
+                  name="basic_info.occupation"
+                  placeholder="Ocupação"
+                  value={formData.basic_info.occupation}
+                  onChange={this._handleChange}
+                />
+              </Form.Field>
+              <Form.Field label="Habilidades">
+                <SkillsField
+                  name="basic_info.skills"
+                  onChange={this._handleChange}
+                  value={formData.basic_info.skills}
+                />
+              </Form.Field>
+              <Form.Field label="Tags">
+                <TagSelect
+                  name="basic_info.tags"
+                  onChange={this._handleChange}
+                  value={formData.basic_info.tags}
+                />
+              </Form.Field>
+            </div>
+          ) : null}
+          {tab == "address" ? (
+            <AddressField
+              name="basic_info.address"
+              value={formData.basic_info.address}
+              onChange={this._handleAddressChange}
             />
-          </div>
-        ) : null}
-        <input type="submit" value="Salvar alterações" />
-      </Form>
+          ) : null}
+          {tab == "contact" ? (
+            <div>
+              <Form.Field label="Email">
+                <input
+                  type="email"
+                  name="contact.email"
+                  placeholder="Email"
+                  onChange={this._handleChange}
+                  value={formData.contact.email}
+                />
+              </Form.Field>
+              <Form.Field label="Telefone celular">
+                <input
+                  type="text"
+                  name="contact.cellphone"
+                  placeholder="Telefone celular"
+                  onChange={this._handleChange}
+                  value={formData.contact.cellphone}
+                />
+              </Form.Field>
+            </div>
+          ) : null}
+          {tab == "social_networks" ? (
+            <div>
+              <Form.Field label="Instagram">
+                <input
+                  type="text"
+                  name="social_networks.instagram"
+                  placeholder="@instagram"
+                  onChange={this._handleChange}
+                  value={formData.social_networks.instagram}
+                />
+              </Form.Field>
+              <Form.Field label="Twitter">
+                <input
+                  type="text"
+                  name="social_networks.twitter"
+                  placeholder="@twitter"
+                  onChange={this._handleChange}
+                  value={formData.social_networks.twitter}
+                />
+              </Form.Field>
+            </div>
+          ) : null}
+          {tab == "extra" ? (
+            <div>
+              <p>
+                Adicione campos adicionais sobre essa pessoa. Por exemplo,{" "}
+                <span style={{ fontStyle: "italic" }}>signo: escorpião</span>.
+              </p>
+              <ExtraFields
+                onChange={this._handleExtraFieldsChange}
+                value={formData.extra}
+              />
+            </div>
+          ) : null}
+          <input type="submit" value="Salvar alterações" />
+        </Form>
+      </Container>
     );
   }
 }

@@ -324,23 +324,23 @@
        aria-label="liane">
       <path
          id="path887"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Unica One';-inkscape-font-specification:'Unica One';letter-spacing:0px;fill:#ffffff;fill-opacity:1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Unica One';-inkscape-font-specification:'Unica One';letter-spacing:0px;fill:#000000;fill-opacity:1"
          d="M 568.32989,263.54425 V 212.6087 h 5.48537 v 46.23381 h 14.34032 v 4.70174 z" />
       <path
          id="path889"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Unica One';-inkscape-font-specification:'Unica One';letter-spacing:0px;fill:#ffffff;fill-opacity:1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Unica One';-inkscape-font-specification:'Unica One';letter-spacing:0px;fill:#000000;fill-opacity:1"
          d="m 603.0481,263.54425 h -5.48537 V 212.6087 h 5.48537 z" />
       <path
          id="path891"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Unica One';-inkscape-font-specification:'Unica One';letter-spacing:0px;fill:#ffffff;fill-opacity:1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Unica One';-inkscape-font-specification:'Unica One';letter-spacing:0px;fill:#000000;fill-opacity:1"
          d="m 642.97619,263.54425 h -2.35087 l -2.03742,-5.01519 q -1.64561,2.82104 -4.30994,4.54502 -2.66432,1.64561 -5.87717,1.64561 -11.28419,0 -11.28419,-10.97074 v -7.83624 q 0,-10.97073 11.28419,-10.97073 h 9.09003 v -12.85143 q 0,-2.82105 -1.80233,-4.3883 -1.80234,-1.56724 -5.32864,-1.56724 -6.97426,0 -6.97426,5.95554 v 4.62338 h -5.48536 V 222.404 q 0,-5.25028 3.05613,-8.07133 3.13449,-2.89941 9.40349,-2.89941 6.26899,0 9.40348,2.89941 3.21286,2.82105 3.21286,8.07133 z m -5.48537,-23.90053 h -9.09003 q -3.29122,0 -4.54502,1.64561 -1.2538,1.64561 -1.2538,4.62338 v 7.83624 q 0,2.97777 1.2538,4.62338 1.2538,1.64561 4.54502,1.64561 3.29122,0 6.11226,-2.50759 2.82105,-2.58596 2.97777,-5.09356 z" />
       <path
          id="path893"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Unica One';-inkscape-font-specification:'Unica One';letter-spacing:0px;fill:#ffffff;fill-opacity:1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Unica One';-inkscape-font-specification:'Unica One';letter-spacing:0px;fill:#000000;fill-opacity:1"
          d="m 663.35041,263.54425 h -5.48537 V 212.6087 h 2.35087 l 1.95906,5.09355 q 3.7614,-6.26899 10.4222,-6.26899 11.51927,0 11.51927,10.97074 v 41.14025 h -5.48537 V 222.404 q 0,-2.97777 -1.33216,-4.62338 -1.2538,-1.64561 -4.70174,-1.64561 -3.44795,0 -6.34735,2.66432 -2.89941,2.66432 -2.89941,5.17191 z" />
       <path
          id="path895"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Unica One';-inkscape-font-specification:'Unica One';letter-spacing:0px;fill:#ffffff;fill-opacity:1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Unica One';-inkscape-font-specification:'Unica One';letter-spacing:0px;fill:#000000;fill-opacity:1"
          d="m 718.23469,253.74895 v -4.30993 h 5.48536 v 4.30993 q 0,5.25028 -3.21286,8.14969 -3.21285,2.82105 -9.63857,2.82105 -6.42572,0 -9.71694,-2.82105 -3.29122,-2.89941 -3.29122,-8.14969 V 222.404 q 0,-5.25028 3.21286,-8.07133 3.21286,-2.89941 9.63858,-2.89941 6.42571,0 9.71693,2.89941 3.29122,2.82105 3.29122,8.07133 v 17.23972 h -20.37422 v 14.10523 q 0,6.26899 7.44443,6.26899 7.44443,0 7.44443,-6.26899 z M 703.34583,222.404 v 12.53798 h 14.88886 V 222.404 q 0,-6.26899 -7.44443,-6.26899 -7.44443,0 -7.44443,6.26899 z" />
     </g>
   </g>
