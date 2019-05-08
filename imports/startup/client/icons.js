@@ -22,6 +22,7 @@ import {
   faStar,
   faHandPointUp,
   faUsers,
+  faUserCircle,
   faMoneyBill,
   faCertificate,
   faThumbsUp,
@@ -38,7 +39,8 @@ import {
   faCopy,
   faArrowRight,
   faMapMarker,
-  faMapMarked
+  faMapMarked,
+  faGlobe
 } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 
@@ -63,6 +65,7 @@ library.add(faTag);
 library.add(faStar);
 library.add(faHandPointUp);
 library.add(faUsers);
+library.add(faUserCircle);
 library.add(faMoneyBill);
 library.add(faCertificate);
 library.add(faThumbsUp);
@@ -80,4 +83,5 @@ library.add(faCopy);
 library.add(faArrowRight);
 library.add(faMapMarker);
 library.add(faMapMarked);
+library.add(faGlobe);
 library.add(faFacebookSquare);

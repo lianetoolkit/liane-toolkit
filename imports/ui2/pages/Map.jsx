@@ -165,7 +165,11 @@ const LayerFilter = styled.ul`
     &.disabled {
       color: #999;
     }
-    .description {
+    span {
+      font-weight: 600;
+    }
+    span.description {
+      font-weight: normal;
       font-size: 0.8em;
       font-style: italic;
       color: #666;
@@ -223,7 +227,7 @@ export default class MapPage extends Component {
               <Tool>
                 <LayerFilter>
                   <li>
-                    <FontAwesomeIcon icon="map-marker" />
+                    <FontAwesomeIcon icon="user-circle" />
                     <span>
                       Pessoas
                       <span className="description">
@@ -241,7 +245,7 @@ export default class MapPage extends Component {
                     </span>
                   </li>
                   <li className="disabled">
-                    <FontAwesomeIcon icon="map-marker" />
+                    <FontAwesomeIcon icon="globe" />
                     <span>
                       Datapedia
                       <span className="description">

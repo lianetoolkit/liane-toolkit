@@ -57,18 +57,24 @@ Campaigns.audienceAccountsSchema = new SimpleSchema({
 });
 
 Campaigns.schema = new SimpleSchema({
+  name: {
+    type: String
+  },
   users: {
     type: Array
   },
   "users.$": {
     type: Campaigns.usersSchema
   },
-  contextId: {
+  country: {
     type: String,
-    optional: true
+    optional: true,
+    index: 1
   },
-  name: {
-    type: String
+  regionId: {
+    type: String,
+    optional: true,
+    index: 1
   },
   autoReplyMessage: {
     type: String,

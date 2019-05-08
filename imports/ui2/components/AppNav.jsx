@@ -245,7 +245,9 @@ export default class AppNav extends Component {
                       </a>
                     </li>
                     <li>
-                      <a href="javascript:void(0);">Gestão de comentários</a>
+                      <a href={FlowRouter.path("App.comments")}>
+                        Gestão de comentários
+                      </a>
                     </li>
                     <li>
                       <a href={FlowRouter.path("App.chatbot")}>Chatbot</a>

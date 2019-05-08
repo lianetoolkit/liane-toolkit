@@ -8,6 +8,7 @@ import App from "/imports/ui2/containers/App.jsx";
 import DashboardPage from "/imports/ui2/pages/Dashboard.jsx";
 import MapPage from "/imports/ui2/pages/Map.jsx";
 import PeoplePage from "/imports/ui2/pages/People.jsx";
+import CommentsPage from "/imports/ui2/pages/Comments.jsx";
 import ChatbotPage from "/imports/ui2/pages/Chatbot.jsx";
 import AuthPage from "/imports/ui2/pages/Auth.jsx";
 
@@ -60,6 +61,16 @@ appRoutes.route("/people", {
         "reaction_type"
       ]),
       options: pick(queryParams, ["sort", "order"])
+    });
+  }
+});
+
+appRoutes.route("/comments", {
+  name: "App.comments",
+  action: function() {
+    addTitle(`${APP_NAME} | Gestão de comentários`);
+    return mount(App, {
+      content: { component: CommentsPage }
     });
   }
 });
