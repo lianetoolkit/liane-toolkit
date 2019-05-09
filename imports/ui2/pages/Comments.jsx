@@ -24,8 +24,8 @@ const Comment = styled.article`
   .comment-resolve {
     flex: 0 0 auto;
     padding: 1rem;
-    background: #f7f7f7;
-    border-left: 1px solid #eee;
+    ${'' /* background: #f7f7f7;
+    border-left: 1px solid #eee; */}
     display: flex;
     justify-content: center;
     align-items: center;
@@ -50,14 +50,15 @@ const Comment = styled.article`
     }
   }
   .comment-message {
-    background: #f7f7f7;
+    background: #f0f0f0;
     font-size: 0.9em;
     padding: 1rem;
     position: relative;
     margin: 0 1rem 1rem 1rem;
+    border-radius: 7px;
     &:before {
       content: "";
-      background: #f7f7f7;
+      background: #f0f0f0;
       position: absolute;
       width: 10px;
       height: 10px;

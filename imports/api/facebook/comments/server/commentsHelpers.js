@@ -161,10 +161,15 @@ const CommentsHelpers = {
             "from",
             "message",
             "message_tags",
+            "can_hide",
+            "can_remove",
+            "can_reply_privately",
+            "is_hidden",
+            "is_private",
+            "comments",
             "comment_count",
             "like_count",
-            "created_time",
-            "can_reply_privately"
+            "created_time"
           ],
           limit: 1000,
           access_token: accessToken
