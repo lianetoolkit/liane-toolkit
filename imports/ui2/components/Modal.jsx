@@ -31,9 +31,11 @@ const Container = styled.div`
     z-index: 2;
     header {
       border-radius: 7px 7px 0 0;
-      background: #fc0;
+      background: #333;
+      border-bottom: 1px solid #222;
       padding: 1rem 2rem;
       h2 {
+        color: #fff;
         font-size: 1.2em;
         margin: 0;
         line-height: 1;
