@@ -12,13 +12,10 @@ Meteor.publishComposite("comments.byAccount", function({
 }) {
   const userId = this.userId;
   if (Meteor.call("campaigns.canManage", { campaignId, userId })) {
-    console.log("can manage");
     const campaign = Campaigns.findOne(campaignId);
     if (!campaign.facebookAccount) return this.ready();
     facebookId = facebookId || campaign.facebookAccount.facebookId;
-    console.log({ facebookId });
     if (campaign.facebookAccount.facebookId == facebookId) {
-      console.log("allowewd query");
       let query = { resolved: { $ne: true } };
       if (queryParams.resolved == "true") {
         query.resolved = true;

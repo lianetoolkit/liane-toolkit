@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import moment from "moment";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import Page from "../components/Page.jsx";
 
 const Container = styled.div`
@@ -13,6 +15,21 @@ const Container = styled.div`
 const Comment = styled.article`
   border-bottom: 1px solid #ddd;
   font-size: 0.9em;
+  display: flex;
+  justify-content: center;
+  .comment-content {
+    flex: 1 1 100%;
+  }
+  .comment-actions,
+  .comment-resolve {
+    flex: 0 0 auto;
+    padding: 1rem;
+    background: #f7f7f7;
+    border-left: 1px solid #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   header {
     padding: 0.5rem 1rem;
     color: #666;
@@ -52,6 +69,36 @@ const Comment = styled.article`
       margin: 0;
     }
   }
+  .action-icons {
+    display: flex;
+    a {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      margin: 0 0.5rem;
+      justify-content: center;
+      align-items: center;
+      background: #63c;
+      color: #fff;
+      border-radius: 100%;
+    }
+  }
+  .comment-resolve {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    a {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      margin: 0 0.5rem;
+      justify-content: center;
+      align-items: center;
+      background: #006633;
+      color: #fff;
+      border-radius: 100%;
+    }
+  }
 `;
 
 export default class CommentsPage extends Component {
@@ -65,19 +112,37 @@ export default class CommentsPage extends Component {
             <div>
               {comments.map(comment => (
                 <Comment key={comment._id}>
-                  <header>
-                    <h3>
-                      <span className="name">{comment.person.name}</span>{" "}
-                      comentou em um post{" "}
-                      <span className="date">
-                        {moment(comment.created_time).fromNow()}
-                      </span>
-                    </h3>
-                  </header>
                   <div className="comment-content">
+                    <header>
+                      <h3>
+                        <span className="name">{comment.person.name}</span>{" "}
+                        comentou em um post{" "}
+                        <span className="date">
+                          {moment(comment.created_time).fromNow()}
+                        </span>
+                      </h3>
+                    </header>
                     <section className="comment-message">
                       <p>{comment.message}</p>
                     </section>
+                  </div>
+                  <div className="comment-actions">
+                    <div className="action-icons">
+                      <a href="javascript:void(0);">
+                        <FontAwesomeIcon icon="question" />
+                      </a>
+                      <a href="javascript:void(0);">
+                        <FontAwesomeIcon icon="thumbs-up" />
+                      </a>
+                      <a href="javascript:void(0);">
+                        <FontAwesomeIcon icon="ban" />
+                      </a>
+                    </div>
+                  </div>
+                  <div className="comment-resolve">
+                    <a href="javascript:void(0);">
+                      <FontAwesomeIcon icon="check" />
+                    </a>
                   </div>
                 </Comment>
               ))}
