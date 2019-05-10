@@ -160,6 +160,7 @@ const CommentsHelpers = {
             "id",
             "from",
             "message",
+            "attachment",
             "message_tags",
             "can_hide",
             "can_remove",

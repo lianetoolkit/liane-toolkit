@@ -43,6 +43,11 @@ Comments.schema = new SimpleSchema({
   message: {
     type: String
   },
+  attachment: {
+    type: Object,
+    blackbox: true,
+    optional: true
+  },
   message_tags: {
     type: Object,
     blackbox: true,
