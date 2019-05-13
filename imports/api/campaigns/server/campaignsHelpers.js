@@ -96,6 +96,27 @@ const CampaignsHelpers = {
       }
     };
 
+    // Facebook subscription
+    try {
+      const fbRes = Promise.await(
+        FB.api(`${account.id}/subscribed_apps`, "post", {
+          subscribed_fields: [
+            "feed",
+            "messages",
+            "message_deliveries",
+            "messaging_postbacks",
+            "message_deliveries",
+            "message_reads",
+            "ratings",
+            "mention"
+          ],
+          access_token: token.result
+        })
+      );
+    } catch (err) {
+      throw new Meteor.Error(500, "Error trying to subscribe");
+    }
+
     Campaigns.update(
       { _id: campaignId },
       { $set: { facebookAccount: updateObj } }
@@ -151,6 +172,27 @@ const CampaignsHelpers = {
         init_text_response: false
       }
     };
+
+    // Facebook subscription
+    try {
+      const fbRes = Promise.await(
+        FB.api(`${account.id}/subscribed_apps`, "post", {
+          subscribed_fields: [
+            "feed",
+            "messages",
+            "message_deliveries",
+            "messaging_postbacks",
+            "message_deliveries",
+            "message_reads",
+            "ratings",
+            "mention"
+          ],
+          access_token: token.result
+        })
+      );
+    } catch (err) {
+      throw new Meteor.Error(500, "Error trying to subscribe");
+    }
 
     Campaigns.update(
       { _id: campaignId },
