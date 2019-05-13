@@ -5,6 +5,29 @@ import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 
+export const webhookUpdate = new ValidatedMethod({
+  name: "webhookUpdate",
+  validate: new SimpleSchema({
+    token: {
+      type: String
+    },
+    facebookAccountId: {
+      type: String
+    },
+    data: {
+      type: Object,
+      blackbox: true,
+      optional: true
+    }
+  }).validator(),
+  run({ token, data }) {
+    this.unblock();
+    logger.debug("facebook.accounts.webhook.update called");
+    console.log({ token, facebookAccountId, data });
+    return true;
+  }
+});
+
 export const getUserAccounts = new ValidatedMethod({
   name: "facebook.accounts.getUserAccounts",
   validate() {},
