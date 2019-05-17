@@ -11,6 +11,11 @@ Comments.schema = new SimpleSchema({
     type: String,
     index: true
   },
+  parentId: {
+    type: String,
+    optional: true,
+    index: true
+  },
   facebookAccountId: {
     type: String,
     index: true

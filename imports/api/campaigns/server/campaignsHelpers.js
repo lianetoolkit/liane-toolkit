@@ -633,16 +633,21 @@ const CampaignsHelpers = {
     FacebookAudiences.remove({ campaignId });
 
     // Facebook accounts to delete
+    let accountsIds = _.pluck(campaign.accounts, "facebookId");
+    if (campaign.facebookAccount) {
+      accountsIds.push(campaign.facebookAccount.facebookId);
+    }
     const accounts = FacebookAccounts.find({
-      facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
+      facebookId: {
+        $in: accountsIds
+      }
     }).fetch();
     for (const account of accounts) {
       const accountCampaignsCount = Campaigns.find({
-        accounts: {
-          $elemMatch: {
-            facebookId: account.facebookId
-          }
-        }
+        $or: [
+          { accounts: { $elemMatch: { facebookId: account.facebookId } } },
+          { "facebookAccount.facebookId": account.facebookId }
+        ]
       }).count();
       if (accountCampaignsCount <= 1) {
         FacebookAccountsHelpers.removeAccount({

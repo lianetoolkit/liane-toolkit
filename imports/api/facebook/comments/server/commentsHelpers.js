@@ -1,4 +1,5 @@
 import { Promise } from "meteor/promise";
+import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
@@ -23,6 +24,84 @@ const _fetchFacebookPageData = ({ url }) => {
 };
 
 const CommentsHelpers = {
+  handleWebhook({ facebookAccountId, data }) {
+    switch (data.verb) {
+      case "add":
+        this.upsertComment({ facebookAccountId, data });
+        break;
+      case "edited":
+        this.upsertComment({ facebookAccountId, data });
+        break;
+      default:
+    }
+  },
+  upsertComment({ facebookAccountId, data }) {
+    const campaignWithToken = Campaigns.findOne({
+      "facebookAccount.facebookId": facebookAccountId
+    });
+    if (!campaignWithToken || !campaignWithToken.facebookAccount.accessToken) {
+      throw new Meteor.Error(400, "Facebook account not available");
+    }
+    let comment;
+    try {
+      comment = Promise.await(
+        FB.api(data.comment_id, {
+          fields: [
+            "id",
+            "from",
+            "message",
+            "attachment",
+            "message_tags",
+            "can_hide",
+            "can_remove",
+            "can_reply_privately",
+            "is_hidden",
+            "is_private",
+            "comment_count",
+            "like_count",
+            "created_time"
+          ],
+          access_token: campaignWithToken.facebookAccount.accessToken
+        })
+      );
+    } catch (error) {
+      throw new Meteor.Error(error);
+    }
+    if (data.parent_id && data.parent_id !== data.post_id) {
+      comment.parentId = data.parent_id;
+      // Refetch parent comment
+      this.upsertComment({
+        facebookAccountId,
+        data: {
+          comment_id: data.parent_id,
+          post_id: data.post_id
+        }
+      });
+    }
+    comment.personId = comment.from.id;
+    comment.name = comment.from.name;
+    comment.entryId = data.post_id;
+    comment.facebookAccountId = facebookAccountId;
+    delete comment.id;
+    delete comment.from;
+    Comments.upsert({ _id: data.comment_id }, { $set: comment });
+
+    // Update person comment count
+    if (comment.personId) {
+      const query = {
+        personId: comment.personId,
+        facebookAccountId
+      };
+      const commentsCount = Comments.find(query).count();
+      People.update(
+        { facebookId: comment.personId, facebookAccountId },
+        { $set: { "counts.comments": commentsCount } },
+        { multi: true }
+      );
+    }
+
+    return true;
+  },
   updatePeopleCommentsCountByEntry({ campaignId, facebookAccountId, entryId }) {
     check(campaignId, String);
     check(facebookAccountId, String);
@@ -142,6 +221,47 @@ const CommentsHelpers = {
       // }
     }
   },
+  getCommentReplies({ commentId, accessToken }) {
+    let response,
+      comments = [];
+    try {
+      response = Promise.await(
+        FB.api(`${commentId}/comments`, {
+          fields: [
+            "id",
+            "from",
+            "message",
+            "attachment",
+            "message_tags",
+            "can_hide",
+            "can_remove",
+            "can_reply_privately",
+            "is_hidden",
+            "is_private",
+            "comment_count",
+            "like_count",
+            "created_time"
+          ],
+          limit: 1000,
+          access_token: accessToken
+        })
+      );
+    } catch (error) {
+      throw new Meteor.Error(error);
+    }
+    if (response.data.length) {
+      comments = comments.concat(response.data);
+      let next = response.paging.next;
+      while (next !== undefined) {
+        let nextPage = _fetchFacebookPageData({ url: next });
+        next = nextPage.data.paging ? nextPage.data.paging.next : undefined;
+        if (nextPage.statusCode == 200 && nextPage.data.data.length) {
+          comments = comments.concat(nextPage.data.data);
+        }
+      }
+    }
+    return comments;
+  },
   getEntryComments({ campaignId, facebookAccountId, entryId, accessToken }) {
     check(campaignId, String);
     check(facebookAccountId, String);
@@ -151,6 +271,59 @@ const CommentsHelpers = {
     logger.debug("CommentsHelpers.getEntryComments called", {
       entryId
     });
+
+    let commentedPeople = [];
+
+    const addCommentToBulk = ({ comment, bulk }) => {
+      if (comment.from) {
+        commentedPeople.push({ ...comment.from, comment });
+        comment.personId = comment.from.id;
+        comment.name = comment.from.name;
+        comment.entryId = entryId;
+        comment.facebookAccountId = facebookAccountId;
+        const commentId = comment.id;
+        delete comment.id;
+        delete comment.from;
+        bulk
+          .find({ _id: commentId })
+          .upsert()
+          .update({
+            $set: comment
+          });
+      }
+    };
+
+    const _insertBulk = ({ data }) => {
+      const bulk = Comments.rawCollection().initializeUnorderedBulkOp();
+      for (const comment of data) {
+        if (comment.comment_count > 0) {
+          const replies = this.getCommentReplies({
+            commentId: comment.id,
+            accessToken
+          });
+          for (const reply of replies) {
+            addCommentToBulk({
+              comment: {
+                ...reply,
+                parentId: comment.id
+              },
+              bulk
+            });
+          }
+        }
+        addCommentToBulk({ comment, bulk });
+      }
+
+      bulk.execute(
+        Meteor.bindEnvironment((e, result) => {
+          this.updatePeopleCommentsCount({
+            campaignId,
+            facebookAccountId,
+            commentedPeople
+          });
+        })
+      );
+    };
 
     let response;
     try {
@@ -167,7 +340,6 @@ const CommentsHelpers = {
             "can_reply_privately",
             "is_hidden",
             "is_private",
-            "comments",
             "comment_count",
             "like_count",
             "created_time"
@@ -179,39 +351,6 @@ const CommentsHelpers = {
     } catch (error) {
       throw new Meteor.Error(error);
     }
-
-    const _insertBulk = ({ data }) => {
-      const bulk = Comments.rawCollection().initializeUnorderedBulkOp();
-      const commentedPeople = [];
-      for (const comment of data) {
-        if (comment.from) {
-          commentedPeople.push({ ...comment.from, comment });
-          comment.personId = comment.from.id;
-          comment.name = comment.from.name;
-          comment.entryId = entryId;
-          comment.facebookAccountId = facebookAccountId;
-          const commentId = comment.id;
-          delete comment.id;
-          delete comment.from;
-          bulk
-            .find({ _id: commentId })
-            .upsert()
-            .update({
-              $set: comment
-            });
-        }
-      }
-
-      bulk.execute(
-        Meteor.bindEnvironment((e, result) => {
-          this.updatePeopleCommentsCount({
-            campaignId,
-            facebookAccountId,
-            commentedPeople
-          });
-        })
-      );
-    };
 
     if (response.data.length) {
       _insertBulk({ data: response.data });

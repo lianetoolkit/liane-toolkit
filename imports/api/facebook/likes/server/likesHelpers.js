@@ -21,6 +21,81 @@ const rawLikes = Likes.rawCollection();
 rawLikes.distinctAsync = Meteor.wrapAsync(rawLikes.distinct);
 
 const LikesHelpers = {
+  handleWebhook({ facebookAccountId, data }) {
+    switch (data.verb) {
+      case "add":
+      case "edit":
+        this.upsertReaction({ facebookAccountId, data });
+        break;
+      case "remove":
+        this.removeReaction({ facebookAccountId, data });
+        this.break;
+      default:
+    }
+  },
+  upsertReaction({ facebookAccountId, data }) {
+    console.log(data.verb, { data });
+    let reaction = {
+      facebookAccountId,
+      entryId: data.post_id,
+      personId: data.from.id,
+      name: data.from.name,
+      type: data.reaction_type.toUpperCase(),
+      created_time: data.created_time * 1000
+    };
+    let query = { personId: reaction.personId, entryId: reaction.entryId };
+    // Handle entry comment reaction
+    if (data.parent_id && data.parent_id != data.post_id) {
+      reaction.parentId = data.parent_id;
+      query.parentId = data.parent_id;
+    }
+    Likes.upsert(query, { $set: reaction });
+    // Update person reaction count
+    // if (reaction.personId) {
+    //   const likesCount = Likes.find({
+    //     personId: reaction.personId,
+    //     facebookAccountId: facebookAccountId
+    //   }).count();
+    //   let reactionsCount = {};
+    //   const reactionTypes = this.getReactionTypes();
+    //   for (const reactionType of reactionTypes) {
+    //     reactionsCount[reactionType.toLowerCase()] = Likes.find({
+    //       personId: reaction.personId,
+    //       facebookAccountId: facebookAccountId,
+    //       type: reactionType
+    //     }).count();
+    //   }
+    //   People.update(
+    //     { facebookId: reaction.personId, facebookAccountId },
+    //     {
+    //       "counts.likes": likesCount,
+    //       "counts.reactions": reactionsCount
+    //     }
+    //   );
+    // }
+    // if (reaction.personId) {
+    //   const query = {
+    //     personId: reaction.personId,
+    //     facebookAccountId
+    //   };
+    //   const reactionsCount = Likes.find(query).count();
+    //   People.update(
+    //     { facebookId: comment.personId, facebookAccountId },
+    //     { $set: { "counts.comments": commentsCount } },
+    //     { multi: true }
+    //   );
+    // }
+  },
+  removeReaction({ facebookAccountId, data }) {
+    let query = {
+      personId: data.from.id,
+      entryId: data.post_id
+    };
+    if (data.parent_id && data.parent_id != data.post_id) {
+      query.parentId = data.parent_id;
+    }
+    Likes.remove(query);
+  },
   getReactionTypes() {
     return ["NONE", "LIKE", "LOVE", "WOW", "HAHA", "SAD", "ANGRY", "THANKFUL"];
   },

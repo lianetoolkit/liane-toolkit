@@ -51,9 +51,11 @@ export default withTracker(props => {
   if (queryParams.categories) {
     commentsQuery.categories = { $in: [queryParams.categories] };
   }
-  const comments = commentsHandle.ready()
+  let comments = commentsHandle.ready()
     ? Comments.find(commentsQuery, commentsOptions).fetch()
     : [];
+
+  comments = sortBy(comments, comment => -new Date(comment.created_time));
 
   return {
     limit: props.limit || 10,
