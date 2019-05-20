@@ -1,6 +1,7 @@
 import { Promise } from "meteor/promise";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { People } from "/imports/api/facebook/people/people.js";
+import { PeopleHelpers } from "/imports/api/facebook/people/server/peopleHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { HTTP } from "meteor/http";
@@ -45,56 +46,101 @@ const LikesHelpers = {
     };
     let query = { personId: reaction.personId, entryId: reaction.entryId };
     // Handle entry comment reaction
-    if (data.parent_id && data.parent_id != data.post_id) {
-      reaction.parentId = data.parent_id;
-      query.parentId = data.parent_id;
+    if (data.comment_id) {
+      reaction.parentId = data.comment_id;
+      query.parentId = data.comment_id;
     }
     Likes.upsert(query, { $set: reaction });
-    // Update person reaction count
-    // if (reaction.personId) {
-    //   const likesCount = Likes.find({
-    //     personId: reaction.personId,
-    //     facebookAccountId: facebookAccountId
-    //   }).count();
-    //   let reactionsCount = {};
-    //   const reactionTypes = this.getReactionTypes();
-    //   for (const reactionType of reactionTypes) {
-    //     reactionsCount[reactionType.toLowerCase()] = Likes.find({
-    //       personId: reaction.personId,
-    //       facebookAccountId: facebookAccountId,
-    //       type: reactionType
-    //     }).count();
-    //   }
-    //   People.update(
-    //     { facebookId: reaction.personId, facebookAccountId },
-    //     {
-    //       "counts.likes": likesCount,
-    //       "counts.reactions": reactionsCount
-    //     }
-    //   );
-    // }
-    // if (reaction.personId) {
-    //   const query = {
-    //     personId: reaction.personId,
-    //     facebookAccountId
-    //   };
-    //   const reactionsCount = Likes.find(query).count();
-    //   People.update(
-    //     { facebookId: comment.personId, facebookAccountId },
-    //     { $set: { "counts.comments": commentsCount } },
-    //     { multi: true }
-    //   );
-    // }
+
+    // Upsert person
+    if (reaction.personId) {
+      const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
+        facebookId: facebookAccountId
+      });
+      let set = {
+        updatedAt: new Date()
+      };
+      set["counts"] = PeopleHelpers.getInteractionCount({
+        facebookId: reaction.personId,
+        facebookAccountId
+      });
+      set["facebookAccountId"] = facebookAccountId;
+
+      let addToSet = {
+        facebookAccounts: facebookAccountId
+      };
+
+      // Build update obj
+      let updateObj = {
+        $setOnInsert: {
+          createdAt: new Date(),
+          source: "facebook",
+          name: data.from.name
+        },
+        $set: set
+      };
+
+      if (reaction.created_time) {
+        updateObj.$max = {
+          lastInteractionDate: new Date(reaction.created_time)
+        };
+      }
+      if (Object.keys(addToSet).length) {
+        updateObj.$addToSet = addToSet;
+      }
+
+      const PeopleRawCollection = People.rawCollection();
+      for (const campaign of accountCampaigns) {
+        PeopleRawCollection.update(
+          {
+            campaignId: campaign._id,
+            facebookId: reaction.personId
+          },
+          {
+            ...updateObj,
+            $setOnInsert: {
+              ...updateObj.$setOnInsert,
+              _id: Random.id()
+            }
+          },
+          {
+            upsert: true,
+            multi: false
+          }
+        );
+      }
+    }
   },
   removeReaction({ facebookAccountId, data }) {
     let query = {
       personId: data.from.id,
       entryId: data.post_id
     };
-    if (data.parent_id && data.parent_id != data.post_id) {
-      query.parentId = data.parent_id;
+    if (data.comment_id) {
+      query.parentId = data.comment_id;
     }
     Likes.remove(query);
+
+    // Upsert person
+    const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
+      facebookId: facebookAccountId
+    });
+    for (const campaign of accountCampaigns) {
+      People.update(
+        {
+          campaignId: campaign._id,
+          facebookId: data.from.id
+        },
+        {
+          $set: {
+            counts: PeopleHelpers.getInteractionCount({
+              facebookId: data.from.id,
+              facebookAccountId
+            })
+          }
+        }
+      );
+    }
   },
   getReactionTypes() {
     return ["NONE", "LIKE", "LOVE", "WOW", "HAHA", "SAD", "ANGRY", "THANKFUL"];

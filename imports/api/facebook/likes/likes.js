@@ -11,6 +11,11 @@ Likes.schema = new SimpleSchema({
     type: String,
     index: true
   },
+  parentId: {
+    type: String,
+    index: true,
+    optional: true
+  },
   personId: {
     type: String,
     index: true
