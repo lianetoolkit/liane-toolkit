@@ -2,6 +2,9 @@ import { Promise } from "meteor/promise";
 import axios from "axios";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { People, PeopleLists } from "/imports/api/facebook/people/people.js";
+import { Comments } from "/imports/api/facebook/comments/comments.js";
+import { Likes } from "/imports/api/facebook/likes/likes.js";
+import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
 import { Random } from "meteor/random";
 import { uniqBy, groupBy, mapKeys, flatten, get, set, cloneDeep } from "lodash";
 import crypto from "crypto";
@@ -30,7 +33,33 @@ const PeopleHelpers = {
     People.update(person._id, { $set: { formId } });
     return formId;
   },
-  updateInteractionCountSum({ personId, inputData }) {
+  getInteractionCount({ facebookId, facebookAccountId }) {
+    const commentsCount = Comments.find({
+      personId: facebookId,
+      facebookAccountId
+    }).count();
+    const likesCount = Likes.find({
+      personId: facebookId,
+      facebookAccountId: facebookAccountId,
+      parentId: { $exists: false }
+    }).count();
+    let reactionsCount = {};
+    const reactionTypes = LikesHelpers.getReactionTypes();
+    for (const reactionType of reactionTypes) {
+      reactionsCount[reactionType.toLowerCase()] = Likes.find({
+        personId: facebookId,
+        facebookAccountId: facebookAccountId,
+        type: reactionType,
+        parentId: { $exists: false }
+      }).count();
+    }
+    return {
+      comments: commentsCount,
+      likes: likesCount,
+      reactions: reactionsCount
+    };
+  },
+  updateInteractionCountSum({ personId }) {
     const person = People.findOne(personId);
     if (!person) {
       throw new Meteor.Error(404, "Person not found");
