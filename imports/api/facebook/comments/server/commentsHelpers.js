@@ -2,6 +2,7 @@ import { Promise } from "meteor/promise";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { People } from "/imports/api/facebook/people/people.js";
+import { PeopleHelpers } from "/imports/api/facebook/people/server/peopleHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { HTTP } from "meteor/http";
@@ -78,26 +79,88 @@ const CommentsHelpers = {
         }
       });
     }
-    comment.personId = comment.from.id;
-    comment.name = comment.from.name;
+    comment.personId = data.from.id;
     comment.entryId = data.post_id;
     comment.facebookAccountId = facebookAccountId;
     delete comment.id;
     delete comment.from;
     Comments.upsert({ _id: data.comment_id }, { $set: comment });
 
-    // Update person comment count
+    // Upsert person
     if (comment.personId) {
+      const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
+        facebookId: facebookAccountId
+      });
       const query = {
         personId: comment.personId,
         facebookAccountId
       };
-      const commentsCount = Comments.find(query).count();
-      People.update(
-        { facebookId: comment.personId, facebookAccountId },
-        { $set: { "counts.comments": commentsCount } },
-        { multi: true }
-      );
+      const hasPrivateReply = !!Comments.findOne({
+        ...query,
+        can_reply_privately: true
+      });
+      let set = {
+        updatedAt: new Date()
+      };
+      set["counts"] = PeopleHelpers.getInteractionCount({
+        facebookId: comment.personId,
+        facebookAccountId
+      });
+      set["facebookAccountId"] = facebookAccountId;
+
+      let addToSet = {
+        facebookAccounts: facebookAccountId
+      };
+      let pull = {};
+
+      if (hasPrivateReply) {
+        addToSet["canReceivePrivateReply"] = facebookAccountId;
+      } else {
+        pull["canReceivePrivateReply"] = facebookAccountId;
+      }
+
+      // Build update obj
+      let updateObj = {
+        $setOnInsert: {
+          createdAt: new Date(),
+          source: "facebook",
+          name: data.from.name
+        },
+        $set: set
+      };
+
+      if (comment.created_time) {
+        updateObj.$max = {
+          lastInteractionDate: new Date(comment.created_time)
+        };
+      }
+      if (Object.keys(addToSet).length) {
+        updateObj.$addToSet = addToSet;
+      }
+      if (Object.keys(pull).length) {
+        updateObj.$pull = pull;
+      }
+
+      const PeopleRawCollection = People.rawCollection();
+      for (const campaign of accountCampaigns) {
+        PeopleRawCollection.update(
+          {
+            campaignId: campaign._id,
+            facebookId: comment.personId
+          },
+          {
+            ...updateObj,
+            $setOnInsert: {
+              ...updateObj.$setOnInsert,
+              _id: Random.id()
+            }
+          },
+          {
+            upsert: true,
+            multi: false
+          }
+        );
+      }
     }
 
     return true;
