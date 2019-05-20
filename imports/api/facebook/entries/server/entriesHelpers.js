@@ -242,11 +242,10 @@ const EntriesHelpers = {
       });
     }
     if (interactionTypes.indexOf("likes") !== -1) {
-      LikesHelpers.getEntryLikes({
+      LikesHelpers.getObjectReactions({
         facebookAccountId,
         entryId,
         accessToken,
-        campaignId,
         likeDateEstimate
       });
     }

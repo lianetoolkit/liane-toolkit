@@ -35,7 +35,6 @@ const LikesHelpers = {
     }
   },
   upsertReaction({ facebookAccountId, data }) {
-    console.log(data.verb, { data });
     let reaction = {
       facebookAccountId,
       entryId: data.post_id,
@@ -49,6 +48,8 @@ const LikesHelpers = {
     if (data.comment_id) {
       reaction.parentId = data.comment_id;
       query.parentId = data.comment_id;
+    } else {
+      query.parentId = { $exists: false };
     }
     Likes.upsert(query, { $set: reaction });
 
@@ -142,11 +143,24 @@ const LikesHelpers = {
       );
     }
   },
+  handleCommentsReactions({
+    facebookAccountId,
+    entryId,
+    commentId,
+    accessToken
+  }) {
+    this.getObjectReactions({
+      facebookAccountId,
+      entryId,
+      objectId: commentId,
+      likeDateEstimate: false,
+      accessToken
+    });
+  },
   getReactionTypes() {
     return ["NONE", "LIKE", "LOVE", "WOW", "HAHA", "SAD", "ANGRY", "THANKFUL"];
   },
-  updatePeopleLikesCountByEntry({ campaignId, facebookAccountId, entryId }) {
-    check(campaignId, String);
+  updatePeopleLikesCountByEntry({ facebookAccountId, entryId }) {
     check(facebookAccountId, String);
     check(entryId, String);
 
@@ -162,14 +176,12 @@ const LikesHelpers = {
 
     if (likedPeople.length) {
       this.updatePeopleLikesCount({
-        campaignId,
         facebookAccountId,
         likedPeople
       });
     }
   },
-  updatePeopleLikesCount({ campaignId, facebookAccountId, likedPeople }) {
-    check(campaignId, String);
+  updatePeopleLikesCount({ facebookAccountId, likedPeople }) {
     check(facebookAccountId, String);
 
     const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
@@ -179,27 +191,16 @@ const LikesHelpers = {
     if (likedPeople.length) {
       const peopleBulk = People.rawCollection().initializeOrderedBulkOp();
       for (const likedPerson of likedPeople) {
-        const likesCount = Likes.find({
-          personId: likedPerson.id,
-          facebookAccountId: facebookAccountId
-        }).count();
-        let reactionsCount = {};
-        const reactionTypes = this.getReactionTypes();
-        for (const reactionType of reactionTypes) {
-          reactionsCount[reactionType.toLowerCase()] = Likes.find({
-            personId: likedPerson.id,
-            facebookAccountId: facebookAccountId,
-            type: reactionType
-          }).count();
-        }
         let set = {
           updatedAt: new Date()
         };
 
         set["name"] = likedPerson.name;
-        set["counts.likes"] = likesCount;
-        set["counts.reactions"] = reactionsCount;
         set["facebookAccountId"] = facebookAccountId;
+        set["counts"] = PeopleHelpers.getInteractionCount({
+          facebookAccountId,
+          facebookId: likedPerson.id
+        });
 
         let updateObj = {
           $setOnInsert: {
@@ -215,7 +216,7 @@ const LikesHelpers = {
 
         if (likedPerson.like.created_time) {
           updateObj.$max = {
-            lastInteractionDate: new Date(likedPerson.like.created_time || 0)
+            lastInteractionDate: new Date(likedPerson.like.created_time)
           };
         }
 
@@ -236,40 +237,27 @@ const LikesHelpers = {
         }
       }
       peopleBulk.execute();
-
-      // for (const campaign of accountCampaigns) {
-      //   for (const likedPerson of likedPeople) {
-      //     JobsHelpers.addJob({
-      //       jobType: "people.sumPersonInteractions",
-      //       jobData: {
-      //         campaignId: campaign._id,
-      //         facebookId: likedPerson.id
-      //       }
-      //     });
-      //   }
-      // }
     }
   },
-  getEntryLikes({
-    campaignId,
+  getObjectReactions({
     facebookAccountId,
     entryId,
+    objectId,
     likeDateEstimate,
     accessToken
   }) {
-    check(campaignId, String);
     check(facebookAccountId, String);
     check(entryId, String);
     check(accessToken, String);
 
-    logger.debug("LikesHelpers.getEntryLikes called", {
-      entryId
+    logger.debug("LikesHelpers.getObjectReactions called", {
+      objectId
     });
 
     let response;
     try {
       response = Promise.await(
-        FB.api(`${entryId}/reactions`, {
+        FB.api(`${objectId || entryId}/reactions`, {
           limit: 1000,
           access_token: accessToken
         })
@@ -278,7 +266,7 @@ const LikesHelpers = {
       throw new Meteor.Error(error);
     }
 
-    logger.debug("LikesHelpers.getEntryLikes response", { response });
+    logger.debug("LikesHelpers.getObjectReactions response", { response });
 
     const _insertBulk = ({ data }) => {
       const bulk = Likes.rawCollection().initializeUnorderedBulkOp();
@@ -292,12 +280,19 @@ const LikesHelpers = {
           personId,
           entryId
         };
+        let bulkQuery = { personId, entryId };
+        if (objectId) {
+          insert.parentId = objectId;
+          bulkQuery.parentId = objectId;
+        } else {
+          bulkQuery.parentId = { $exists: false };
+        }
         if (likeDateEstimate) {
           insert["created_time"] = new Date();
         }
         likedPeople.push({ id: personId, name: like.name, like: insert });
         bulk
-          .find({ personId, entryId })
+          .find(bulkQuery)
           .upsert()
           .update({
             $setOnInsert: insert,
@@ -306,20 +301,7 @@ const LikesHelpers = {
       }
       bulk.execute(
         Meteor.bindEnvironment((e, result) => {
-          // If like date estimate is set, update people from upserted result so it doesnt update last interaction date for all people.
-          if (likeDateEstimate) {
-            const upsertedLikes = result.getRawResponse().upserted;
-            if (upsertedLikes.length) {
-              const likes = Likes.find({
-                _id: { $in: upsertedLikes.map(l => l._id) }
-              }).fetch();
-              likedPeople = likedPeople.filter(person =>
-                likes.find(l => l.personId == person.id)
-              );
-            }
-          }
           this.updatePeopleLikesCount({
-            campaignId,
             facebookAccountId,
             likedPeople
           });

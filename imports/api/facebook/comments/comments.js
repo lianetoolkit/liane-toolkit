@@ -71,7 +71,7 @@ Comments.schema = new SimpleSchema({
     blackbox: true,
     optional: true
   },
-  like_count: {
+  reaction_count: {
     type: Number,
     optional: true
   },

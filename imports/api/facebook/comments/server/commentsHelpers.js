@@ -3,6 +3,7 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { PeopleHelpers } from "/imports/api/facebook/people/server/peopleHelpers.js";
+import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { HTTP } from "meteor/http";
@@ -59,7 +60,7 @@ const CommentsHelpers = {
             "is_hidden",
             "is_private",
             "comment_count",
-            "like_count",
+            "reactions.limit(0).summary(total_count)",
             "created_time"
           ],
           access_token: campaignWithToken.facebookAccount.accessToken
@@ -82,8 +83,10 @@ const CommentsHelpers = {
     comment.personId = data.from.id;
     comment.entryId = data.post_id;
     comment.facebookAccountId = facebookAccountId;
+    comment.reaction_count = comment.reactions.summary.total_count;
     delete comment.id;
     delete comment.from;
+    delete comment.reaction_count;
     Comments.upsert({ _id: data.comment_id }, { $set: comment });
 
     // Upsert person
@@ -165,8 +168,7 @@ const CommentsHelpers = {
 
     return true;
   },
-  updatePeopleCommentsCountByEntry({ campaignId, facebookAccountId, entryId }) {
-    check(campaignId, String);
+  updatePeopleCommentsCountByEntry({ facebookAccountId, entryId }) {
     check(facebookAccountId, String);
     check(entryId, String);
 
@@ -182,18 +184,12 @@ const CommentsHelpers = {
 
     if (commentedPeople.length) {
       this.updatePeopleCommentsCount({
-        campaignId,
         facebookAccountId,
         commentedPeople
       });
     }
   },
-  updatePeopleCommentsCount({
-    campaignId,
-    facebookAccountId,
-    commentedPeople
-  }) {
-    check(campaignId, String);
+  updatePeopleCommentsCount({ facebookAccountId, commentedPeople }) {
     check(facebookAccountId, String);
 
     const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
@@ -270,18 +266,6 @@ const CommentsHelpers = {
         }
       }
       peopleBulk.execute();
-
-      // for (const campaign of accountCampaigns) {
-      //   for (const commentedPerson of commentedPeople) {
-      //     JobsHelpers.addJob({
-      //       jobType: "people.sumPersonInteractions",
-      //       jobData: {
-      //         campaignId: campaign._id,
-      //         facebookId: commentedPerson.id
-      //       }
-      //     });
-      //   }
-      // }
     }
   },
   getCommentReplies({ commentId, accessToken }) {
@@ -302,7 +286,7 @@ const CommentsHelpers = {
             "is_hidden",
             "is_private",
             "comment_count",
-            "like_count",
+            "reactions.limit(0).summary(total_count)",
             "created_time"
           ],
           limit: 1000,
@@ -325,8 +309,7 @@ const CommentsHelpers = {
     }
     return comments;
   },
-  getEntryComments({ campaignId, facebookAccountId, entryId, accessToken }) {
-    check(campaignId, String);
+  getEntryComments({ facebookAccountId, entryId, accessToken }) {
     check(facebookAccountId, String);
     check(entryId, String);
     check(accessToken, String);
@@ -344,9 +327,19 @@ const CommentsHelpers = {
         comment.name = comment.from.name;
         comment.entryId = entryId;
         comment.facebookAccountId = facebookAccountId;
+        comment.reaction_count = comment.reactions.summary.total_count;
         const commentId = comment.id;
         delete comment.id;
         delete comment.from;
+        delete comment.reactions;
+        if (comment.reaction_count && comment.reaction_count > 0) {
+          LikesHelpers.handleCommentsReactions({
+            facebookAccountId,
+            entryId,
+            commentId,
+            accessToken
+          });
+        }
         bulk
           .find({ _id: commentId })
           .upsert()
@@ -380,7 +373,6 @@ const CommentsHelpers = {
       bulk.execute(
         Meteor.bindEnvironment((e, result) => {
           this.updatePeopleCommentsCount({
-            campaignId,
             facebookAccountId,
             commentedPeople
           });
@@ -404,7 +396,7 @@ const CommentsHelpers = {
             "is_hidden",
             "is_private",
             "comment_count",
-            "like_count",
+            "reactions.limit(0).summary(total_count)",
             "created_time"
           ],
           limit: 1000,
