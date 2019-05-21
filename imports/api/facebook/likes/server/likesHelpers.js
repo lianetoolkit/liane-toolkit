@@ -51,7 +51,13 @@ const LikesHelpers = {
     } else {
       query.parentId = { $exists: false };
     }
-    Likes.upsert(query, { $set: reaction });
+
+    const LikesRawCollection = Likes.rawCollection();
+    LikesRawCollection.update(
+      query,
+      { $set: reaction, $setOnInsert: { _id: Random.id() } },
+      { upsert: true, multi: false }
+    );
 
     // Upsert person
     if (reaction.personId) {
