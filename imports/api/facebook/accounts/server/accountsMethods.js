@@ -39,7 +39,9 @@ export const webhookUpdate = new ValidatedMethod({
       case "status":
       case "photo":
       case "link":
+      case "share":
         EntriesHelpers.handleWebhook({ facebookAccountId, data });
+        break;
       default:
     }
     return true;
