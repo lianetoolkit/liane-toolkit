@@ -159,14 +159,14 @@ const PeopleHelpers = {
         .aggregate([
           {
             $match: {
-              facebookAccounts: { $in: [facebookAccountId] }
+              facebookAccountId: facebookAccountId
             }
           },
           {
             $group: {
               _id: "$facebookId",
               name: { $first: "$name" },
-              counts: { $first: `$counts.${facebookAccountId}` }
+              counts: { $first: `$counts` }
             }
           },
           {
@@ -174,7 +174,7 @@ const PeopleHelpers = {
               _id: null,
               facebookId: "$_id",
               name: "$name",
-              [`counts.${facebookAccountId}`]: "$counts"
+              [`counts`]: "$counts"
             }
           }
         ])
@@ -193,11 +193,12 @@ const PeopleHelpers = {
           .update({
             $setOnInsert: {
               _id: Random.id(),
-              createdAt: person.createdAt
+              createdAt: new Date()
             },
             $set: {
               name: person.name,
-              [`counts.${facebookAccountId}`]: person.counts[facebookAccountId]
+              facebookAccountId,
+              [`counts`]: person.counts
             },
             $addToSet: {
               facebookAccounts: facebookAccountId
