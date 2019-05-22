@@ -166,7 +166,8 @@ const PeopleHelpers = {
             $group: {
               _id: "$facebookId",
               name: { $first: "$name" },
-              counts: { $first: `$counts` }
+              counts: { $first: `$counts` },
+              lastInteractionDate: { $first: `$lastInteractionDate` }
             }
           },
           {
@@ -174,7 +175,8 @@ const PeopleHelpers = {
               _id: null,
               facebookId: "$_id",
               name: "$name",
-              [`counts`]: "$counts"
+              counts: "$counts",
+              lastInteractionDate: "$lastInteractionDate"
             }
           }
         ])
@@ -198,7 +200,8 @@ const PeopleHelpers = {
             $set: {
               name: person.name,
               facebookAccountId,
-              [`counts`]: person.counts
+              [`counts`]: person.counts,
+              lastInteractionDate: person.lastInteractionDate
             },
             $addToSet: {
               facebookAccounts: facebookAccountId
