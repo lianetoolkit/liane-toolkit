@@ -1,10 +1,9 @@
 import SimpleSchema from "simpl-schema";
 import { FacebookAccountsHelpers } from "./accountsHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
-import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
-import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { CommentsHelpers } from "/imports/api/facebook/comments/server/commentsHelpers.js";
+import { EntriesHelpers } from "/imports/api/facebook/entries/server/entriesHelpers.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 
 export const webhookUpdate = new ValidatedMethod({
@@ -36,6 +35,11 @@ export const webhookUpdate = new ValidatedMethod({
         break;
       case "reaction":
         LikesHelpers.handleWebhook({ facebookAccountId, data });
+        break;
+      case "status":
+      case "photo":
+      case "link":
+        EntriesHelpers.handleWebhook({ facebookAccountId, data });
       default:
     }
     return true;

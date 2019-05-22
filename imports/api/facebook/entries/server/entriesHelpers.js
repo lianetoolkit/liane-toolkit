@@ -21,6 +21,9 @@ const _fetchFacebookPageData = ({ url }) => {
 };
 
 const EntriesHelpers = {
+  handleWebhook({ facebookAccountId, data }) {
+    console.log("handling entry webhook", data);
+  },
   updatePeopleCountByEntry({ campaignId, facebookId, entryId }) {
     check(campaignId, String);
     check(facebookId, String);
