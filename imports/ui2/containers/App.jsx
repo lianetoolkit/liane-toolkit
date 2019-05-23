@@ -31,9 +31,11 @@ export default withTracker(({ content }) => {
       : [];
   }
 
-  if (Session.get("campaignId")) {
-    reactiveCampaignId.set(Session.get("campaignId"));
-    ClientStorage.set("campaign", Session.get("campaignId"));
+  const incomingCampaignId = Session.get("campaignId");
+
+  if (incomingCampaignId) {
+    reactiveCampaignId.set(incomingCampaignId);
+    ClientStorage.set("campaign", incomingCampaignId);
   }
 
   let hasCampaign = false;

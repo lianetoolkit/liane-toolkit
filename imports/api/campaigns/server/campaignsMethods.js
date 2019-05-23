@@ -1,6 +1,7 @@
 import SimpleSchema from "simpl-schema";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { CampaignsHelpers } from "./campaignsHelpers.js";
+import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { FacebookAudiencesHelpers } from "/imports/api/facebook/audiences/server/audiencesHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
@@ -77,13 +78,18 @@ export const campaignsCreate = new ValidatedMethod({
       throw new Meteor.Error(401, "Campaign creation is currently disabled.");
     }
 
+    if (FacebookAccounts.findOne({ facebookId: facebookAccountId })) {
+      throw new Meteor.Error(
+        401,
+        "This account is already being used by another campaign"
+      );
+    }
+
     const users = [{ userId, role: "owner" }];
     let insertDoc = { users, name };
 
     const user = Meteor.users.findOne(userId);
     const token = user.services.facebook.accessToken;
-
-    // AdAccountsHelpers.update({ adAccountId, token });
 
     const account = FacebookAccountsHelpers.getUserAccount({
       userId,

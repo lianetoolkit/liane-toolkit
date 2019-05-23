@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import { alertStore } from "../../containers/Alerts.jsx";
+
 import Page from "../../components/Page.jsx";
 import Form from "../../components/Form.jsx";
 import SelectAccount from "../../components/facebook/SelectAccount.jsx";
@@ -8,6 +10,7 @@ export default class NewCampaignPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       formData: {
         name: "",
         facebookAccountId: ""
@@ -30,19 +33,31 @@ export default class NewCampaignPage extends Component {
     ev.preventDefault();
     if (this._filledForm()) {
       const { formData } = this.state;
+      this.setState({
+        loading: true
+      });
       Meteor.call("campaigns.create", formData, (err, data) => {
         if (err) {
-          console.log(err);
+          alertStore.add(err);
+          this.setState({
+            loading: false
+          });
         } else {
+          Session.set("campaignId", data.result);
           FlowRouter.go("App.dashboard");
+          window.location.reload();
         }
       });
     } else {
+      alertStore.add(
+        "Você deve preencher todos os campos obrigatórios",
+        "error"
+      );
       console.log("nope");
     }
   };
   render() {
-    const { formData } = this.state;
+    const { loading, formData } = this.state;
     return (
       <Form onSubmit={this._handleSubmit}>
         <Form.Content>
@@ -50,7 +65,7 @@ export default class NewCampaignPage extends Component {
           <input
             type="text"
             name="name"
-            placeholder="Campaign name"
+            placeholder="Nome da campanha"
             onChange={this._handleChange}
             value={formData.name}
           />
@@ -64,7 +79,7 @@ export default class NewCampaignPage extends Component {
         <Form.Actions>
           <input
             type="submit"
-            disabled={!this._filledForm()}
+            disabled={!this._filledForm() || loading}
             value="Cadastrar campanha"
           />
         </Form.Actions>

@@ -175,6 +175,7 @@ class CampaignNav extends Component {
   _handleClick = campaignId => ev => {
     ev.preventDefault();
     Session.set("campaignId", campaignId);
+    window.location.reload();
   };
   render() {
     const { campaigns } = this.props;
