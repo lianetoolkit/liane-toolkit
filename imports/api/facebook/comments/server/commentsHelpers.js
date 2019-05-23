@@ -80,7 +80,8 @@ const CommentsHelpers = {
         }
       });
     }
-    comment.personId = data.from.id;
+    const from = comment.from;
+    comment.personId = from.id;
     comment.entryId = data.post_id;
     comment.facebookAccountId = facebookAccountId;
     comment.reaction_count = comment.reactions.summary.total_count;
@@ -127,7 +128,7 @@ const CommentsHelpers = {
         $setOnInsert: {
           createdAt: new Date(),
           source: "facebook",
-          name: data.from.name
+          name: from.name
         },
         $set: set
       };
