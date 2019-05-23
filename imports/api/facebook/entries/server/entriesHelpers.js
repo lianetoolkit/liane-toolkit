@@ -22,7 +22,24 @@ const _fetchFacebookPageData = ({ url }) => {
 
 const EntriesHelpers = {
   handleWebhook({ facebookAccountId, data }) {
-    console.log("handling entry webhook", data);
+    switch (data.verb) {
+      case "add":
+        this.upsertEntry({ facebookAccountId, data });
+        break;
+      case "edited":
+        this.upsertEntry({ facebookAccountId, data });
+        break;
+      default:
+    }
+  },
+  upsertEntry({ facebookAccountId, data }) {
+    const campaignWithToken = Campaigns.findOne({
+      "facebookAccount.facebookId": facebookAccountId
+    });
+    if (!campaignWithToken || !campaignWithToken.facebookAccount.accessToken) {
+      throw new Meteor.Error(400, "Facebook account not available");
+    }
+    return;
   },
   updatePeopleCountByEntry({ campaignId, facebookId, entryId }) {
     check(campaignId, String);

@@ -36,10 +36,29 @@ export const webhookUpdate = new ValidatedMethod({
       case "reaction":
         LikesHelpers.handleWebhook({ facebookAccountId, data });
         break;
-      case "status":
-      case "photo":
+      case "album":
+      case "address":
+      case "coupon":
+      case "event":
+      case "experience":
+      case "group":
+      case "group_message":
+      case "interest":
       case "link":
+      case "milestone":
+      case "note":
+      case "page":
+      case "picture":
+      case "platform-story":
+      case "photo":
+      case "photo-album":
+      case "post":
+      case "question":
       case "share":
+      case "status":
+      case "story":
+      case "tag":
+      case "video":
         EntriesHelpers.handleWebhook({ facebookAccountId, data });
         break;
       default:
