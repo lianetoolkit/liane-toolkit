@@ -31,7 +31,7 @@ const LikesHelpers = {
         break;
       case "remove":
         this.removeReaction({ facebookAccountId, data });
-        this.break;
+        break;
       default:
     }
   },
@@ -129,10 +129,15 @@ const LikesHelpers = {
     };
     if (data.comment_id) {
       query.parentId = data.comment_id;
+    } else {
+      query.parentId = { $exists: false };
     }
     Likes.remove(query);
 
-    // Upsert person
+    // Update entry
+    EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
+
+    // Update person
     const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
       facebookId: facebookAccountId
     });

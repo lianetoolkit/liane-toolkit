@@ -30,10 +30,11 @@ const CommentsHelpers = {
   handleWebhook({ facebookAccountId, data }) {
     switch (data.verb) {
       case "add":
-        this.upsertComment({ facebookAccountId, data });
-        break;
       case "edited":
         this.upsertComment({ facebookAccountId, data });
+        break;
+      case "remove":
+        this.removeComment({ facebookAccountId, data });
         break;
       default:
     }
@@ -172,6 +173,57 @@ const CommentsHelpers = {
     }
 
     return true;
+  },
+  removeComment({ facebookAccountId, data }) {
+    const comment = Comments.findOne(data.comment_id);
+
+    if (!comment) return;
+
+    // Remove comment replies
+    if (comment.comment_count > 0) {
+      const replies = Comments.find({ parentId: data.comment_id }).fetch();
+      if (replies) {
+        for (let reply of replies) {
+          this.removeComment({
+            facebookAccountId,
+            data: {
+              comment_id: reply._id,
+              post_id: reply.entryId,
+              from: {
+                id: reply.personId,
+                name: reply.name
+              }
+            }
+          });
+        }
+      }
+    }
+
+    Comments.remove(data.comment_id);
+
+    // Update entry
+    EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
+
+    // Update person
+    const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
+      facebookId: facebookAccountId
+    });
+    for (const campaign of accountCampaigns) {
+      People.update(
+        {
+          campaignId: campaign._id,
+          facebookId: data.from.id
+        },
+        {
+          $set: {
+            counts: PeopleHelpers.getInteractionCount({
+              facebookId: data.from.id,
+              facebookAccountId
+            })
+          }
+        }
+      );
+    }
   },
   updatePeopleCommentsCountByEntry({ facebookAccountId, entryId }) {
     check(facebookAccountId, String);
