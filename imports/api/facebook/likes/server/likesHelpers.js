@@ -2,6 +2,7 @@ import { Promise } from "meteor/promise";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { PeopleHelpers } from "/imports/api/facebook/people/server/peopleHelpers.js";
+import { EntriesHelpers } from "/imports/api/facebook/entries/server/entriesHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { HTTP } from "meteor/http";
@@ -58,6 +59,9 @@ const LikesHelpers = {
       { $set: reaction, $setOnInsert: { _id: Random.id() } },
       { upsert: true, multi: false }
     );
+
+    // Update entry interaction count
+    EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
 
     // Upsert person
     if (reaction.personId) {

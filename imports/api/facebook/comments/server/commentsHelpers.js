@@ -4,6 +4,7 @@ import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { PeopleHelpers } from "/imports/api/facebook/people/server/peopleHelpers.js";
 import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
+import { EntriesHelpers } from "/imports/api/facebook/entries/server/entriesHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { HTTP } from "meteor/http";
@@ -89,6 +90,9 @@ const CommentsHelpers = {
     delete comment.from;
     delete comment.reaction_count;
     Comments.upsert({ _id: data.comment_id }, { $set: comment });
+
+    // Update entry interaction count
+    EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
 
     // Upsert person
     if (comment.personId) {
