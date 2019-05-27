@@ -1,9 +1,8 @@
 import React from "react";
+import ReactTooltip from "react-tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled, { css } from "styled-components";
 import { alertStore } from "../containers/Alerts.jsx";
-
-import PopupLabel from "./PopupLabel.jsx";
 
 const Container = styled.div`
   @keyframes rotate {
@@ -238,7 +237,7 @@ export default class PersonMetaButtons extends React.Component {
     }
   }
   _metaButton(data = {}, key) {
-    const { size, readOnly, simple, vertical } = this.props;
+    const { person, size, readOnly, simple, vertical } = this.props;
     const { loading } = this.state;
 
     const hasMeta = this._hasMeta(data, key);
@@ -274,28 +273,25 @@ export default class PersonMetaButtons extends React.Component {
       }
     }
     return (
-      <PopupLabel
-        text={PersonMetaButtons.labels[key]}
-        position={vertical ? "center" : "bottom center"}
+      <a
+        href="javascript:void(0);"
+        className={`meta-icon ${size || ""}`}
+        style={style}
+        onClick={this._handleClick(key)}
+        data-tip={PersonMetaButtons.labels[key]}
+        data-for={`person-meta-buttons-${person._id}`}
       >
-        <a
-          href="javascript:void(0);"
-          className={`meta-icon ${size || ""}`}
-          style={style}
-          onClick={this._handleClick(key)}
-        >
-          <FontAwesomeIcon
-            icon={iconName}
-            className={`${loading[key] ? "loading" : ""}`}
-          />
-        </a>
-      </PopupLabel>
+        <FontAwesomeIcon
+          icon={iconName}
+          className={`${loading[key] ? "loading" : ""}`}
+        />
+      </a>
     );
   }
   render() {
-    const { person, ...props } = this.props;
+    const { person, vertical, ...props } = this.props;
     return (
-      <Container className="person-meta-buttons" {...props}>
+      <Container className="person-meta-buttons" {...props} vertical={vertical}>
         {this._metaButton(person ? person.campaignMeta : false, "supporter")}
         {this._metaButton(person ? person.campaignMeta : false, "volunteer")}
         {this._metaButton(person ? person.campaignMeta : false, "mobilizer")}
@@ -304,6 +300,11 @@ export default class PersonMetaButtons extends React.Component {
         {this._metaButton(person ? person.campaignMeta : false, "voter")}
         {this._metaButton(person ? person.campaignMeta : false, "non-voter")}
         {this._metaButton(person ? person.campaignMeta : false, "troll")}
+        <ReactTooltip
+          id={`person-meta-buttons-${person._id}`}
+          place={vertical ? "top" : "bottom"}
+          effect="solid"
+        />
       </Container>
     );
   }

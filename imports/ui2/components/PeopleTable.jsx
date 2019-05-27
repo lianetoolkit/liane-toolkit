@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
@@ -11,7 +12,6 @@ import Table from "./Table.jsx";
 import Button from "./Button.jsx";
 import CopyToClipboard from "./CopyToClipboard.jsx";
 import Popup from "./Popup.jsx";
-import PopupLabel from "./PopupLabel.jsx";
 import PersonMetaButtons from "./PersonMetaButtons.jsx";
 import PersonSummary from "./PersonSummary.jsx";
 import PersonReactions from "./PersonReactions.jsx";
@@ -114,9 +114,9 @@ const MetaCircles = styled.div`
 `;
 class PersonMetaCircles extends Component {
   render() {
-    const { person } = this.props;
+    const { person, ...props } = this.props;
     return (
-      <MetaCircles>
+      <MetaCircles {...props}>
         {PersonMetaButtons.keys.map(key =>
           get(person, `campaignMeta.${key}`) ? (
             <span key={key} className="meta-circle-container">
@@ -384,20 +384,18 @@ export default class PeopleTable extends Component {
                     <Popup
                       trigger={open =>
                         this.hasMeta(person) ? (
-                          <PopupLabel
-                            text={this.personCategoriesText(person)}
-                            extra={"Clique para editar"}
-                            disabled={open}
-                          >
-                            <PersonMetaCircles person={person} />
-                          </PopupLabel>
+                          <PersonMetaCircles
+                            person={person}
+                            data-tip
+                            data-for={`person-meta-${person._id}`}
+                          />
                         ) : (
-                          <PopupLabel text="Editar categorias" disabled={open}>
-                            <FontAwesomeIcon
-                              icon="grip-horizontal"
-                              className="meta-trigger"
-                            />
-                          </PopupLabel>
+                          <FontAwesomeIcon
+                            icon="grip-horizontal"
+                            className="meta-trigger"
+                            data-tip
+                            data-for={`person-meta-${person._id}`}
+                          />
                         )
                       }
                       direction="top left"
@@ -409,6 +407,16 @@ export default class PeopleTable extends Component {
                         interactive
                       />
                     </Popup>
+                    <ReactTooltip
+                      id={`person-meta-${person._id}`}
+                      aria-haspopup="true"
+                      place="left"
+                      effect="solid"
+                    >
+                      {this.hasMeta(person)
+                        ? this.personCategoriesText(person)
+                        : "Editar categorias"}
+                    </ReactTooltip>
                   </td>
                   <td className="fill highlight">
                     <p className="extra-actions show-on-hover">

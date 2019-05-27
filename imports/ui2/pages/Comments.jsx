@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import moment from "moment";
 
@@ -24,7 +25,7 @@ const Comment = styled.article`
   .comment-resolve {
     flex: 0 0 auto;
     padding: 1rem;
-    ${'' /* background: #f7f7f7;
+    ${"" /* background: #f7f7f7;
     border-left: 1px solid #eee; */}
     display: flex;
     justify-content: center;
@@ -76,12 +77,18 @@ const Comment = styled.article`
       width: 40px;
       height: 40px;
       display: flex;
-      margin: 0 0.5rem;
+      margin: 0 0.25rem;
       justify-content: center;
       align-items: center;
-      background: #63c;
-      color: #fff;
+      color: #63c;
+      background-color: rgba(102, 51, 204, 0);
       border-radius: 100%;
+      transition: all 0.1s linear;
+      &:hover,
+      &:focus {
+        background-color: #63c;
+        color: #fff;
+      }
     }
   }
   .comment-resolve {
@@ -95,9 +102,13 @@ const Comment = styled.article`
       margin: 0 0.5rem;
       justify-content: center;
       align-items: center;
-      background: #006633;
-      color: #fff;
       border-radius: 100%;
+      color: #006633;
+      &:hover,
+      &:focus {
+        background: #006633;
+        color: #fff;
+      }
     }
   }
 `;
@@ -111,7 +122,7 @@ export default class CommentsPage extends Component {
         <Container>
           {comments.length ? (
             <div>
-              {comments.map(comment => (
+              {comments.map((comment, i) => (
                 <Comment key={comment._id}>
                   <div className="comment-content">
                     <header>
@@ -129,24 +140,37 @@ export default class CommentsPage extends Component {
                   </div>
                   <div className="comment-actions">
                     <div className="action-icons">
-                      <a href="javascript:void(0);">
+                      <a
+                        href="javascript:void(0);"
+                        data-tip="Marcar como pergunta"
+                      >
                         <FontAwesomeIcon icon="question" />
                       </a>
-                      <a href="javascript:void(0);">
+                      <a
+                        href="javascript:void(0);"
+                        data-tip="Marcar como declaração de voto"
+                      >
                         <FontAwesomeIcon icon="thumbs-up" />
                       </a>
-                      <a href="javascript:void(0);">
+                      <a
+                        href="javascript:void(0);"
+                        data-tip="Marcar pessoa como troll"
+                      >
                         <FontAwesomeIcon icon="ban" />
                       </a>
                     </div>
                   </div>
                   <div className="comment-resolve">
-                    <a href="javascript:void(0);">
+                    <a
+                      href="javascript:void(0);"
+                      data-tip="Marcar com resolvido"
+                    >
                       <FontAwesomeIcon icon="check" />
                     </a>
                   </div>
                 </Comment>
               ))}
+              <ReactTooltip effect="solid" />
             </div>
           ) : null}
         </Container>

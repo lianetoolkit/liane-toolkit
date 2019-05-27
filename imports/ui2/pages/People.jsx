@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactTooltip from "react-tooltip";
 import styled, { css } from "styled-components";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,7 +10,6 @@ import { pick, debounce, defaultsDeep } from "lodash";
 import { PersonImportButton } from "../components/PersonImport.jsx";
 import Button from "../components/Button.jsx";
 import More from "../components/More.jsx";
-import PopupLabel from "../components/PopupLabel.jsx";
 import Page from "../components/Page.jsx";
 
 import Content from "../components/Content.jsx";
@@ -672,21 +672,26 @@ export default class PeoplePage extends Component {
                 <Button.WithIcon>
                   <a href="javascript:void(0);">Exportar resultados</a>
                   <span className="icon">
-                    <PopupLabel text="Gerenciar exportações" position="center">
-                      <FontAwesomeIcon icon="cog" />
-                    </PopupLabel>
+                    <FontAwesomeIcon
+                      icon="cog"
+                      data-tip="Gerenciar exportações"
+                      data-for="people-actions"
+                    />
                   </span>
                 </Button.WithIcon>
                 <Button.WithIcon>
                   <PersonImportButton importCount={importCount} />
                   <span className="icon">
-                    <PopupLabel text="Gerenciar importações" position="center">
-                      <FontAwesomeIcon icon="cog" />
-                    </PopupLabel>
+                    <FontAwesomeIcon
+                      icon="cog"
+                      data-tip="Gerenciar importações"
+                      data-for="people-actions"
+                    />
                   </span>
                 </Button.WithIcon>
               </Button.Group>
             </div>
+            <ReactTooltip id="people-actions" place="top" effect="solid" />
           </PeopleFilters>
         </Page.Nav>
         {/* <Page.Content full compact> */}

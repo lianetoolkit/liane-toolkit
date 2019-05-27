@@ -1,9 +1,9 @@
 import React, { Component } from "react";
+import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { get } from "lodash";
 
-import PopupLabel from "./PopupLabel.jsx";
 import CopyToClipboard from "./CopyToClipboard.jsx";
 
 const Container = styled.ul`
@@ -73,34 +73,46 @@ export default class PersonSummary extends Component {
     }
   }
   render() {
+    const { person } = this.props;
     const email = this.value("contact.email");
     const phone = this.value("contact.cellphone");
     return (
-      <Container>
-        <li>
-          <FontAwesomeIcon icon="envelope" /> {this.text("contact.email")}
-          {email ? (
-            <CopyToClipboard text={email} className="copy">
-              <PopupLabel text="Copiar" position="center">
-                <FontAwesomeIcon icon="copy" />
-              </PopupLabel>
-            </CopyToClipboard>
-          ) : null}
-        </li>
-        <li>
-          <FontAwesomeIcon icon="phone" /> {this.text("contact.cellphone")}
-          {phone ? (
-            <CopyToClipboard text={phone} className="copy">
-              <PopupLabel text="Copiar" position="center">
-                <FontAwesomeIcon icon="copy" />
-              </PopupLabel>
-            </CopyToClipboard>
-          ) : null}
-        </li>
-        <li>
-          <FontAwesomeIcon icon="tag" /> {this.tags()}
-        </li>
-      </Container>
+      <>
+        <Container>
+          <li>
+            <FontAwesomeIcon icon="envelope" /> {this.text("contact.email")}
+            {email ? (
+              <CopyToClipboard text={email} className="copy">
+                <FontAwesomeIcon
+                  icon="copy"
+                  data-tip="Copiar"
+                  data-for={`person-summary-${person._id}`}
+                />
+              </CopyToClipboard>
+            ) : null}
+          </li>
+          <li>
+            <FontAwesomeIcon icon="phone" /> {this.text("contact.cellphone")}
+            {phone ? (
+              <CopyToClipboard text={phone} className="copy">
+                <FontAwesomeIcon
+                  icon="copy"
+                  data-tip="Copiar"
+                  data-for={`person-summary-${person._id}`}
+                />
+              </CopyToClipboard>
+            ) : null}
+          </li>
+          <li>
+            <FontAwesomeIcon icon="tag" /> {this.tags()}
+          </li>
+        </Container>
+        <ReactTooltip
+          id={`person-summary-${person._id}`}
+          place="top"
+          effect="solid"
+        />
+      </>
     );
   }
 }

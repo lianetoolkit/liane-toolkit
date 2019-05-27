@@ -1,11 +1,11 @@
 import React, { Component } from "react";
+import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { get } from "lodash";
 
 import { getFormUrl } from "../utils/people";
 
-import PopupLabel from "./PopupLabel.jsx";
 import CopyToClipboard from "./CopyToClipboard.jsx";
 
 const Container = styled.div`
@@ -66,54 +66,50 @@ export default class PersonContactIcons extends Component {
     if (person) {
       return (
         <Container>
-          <PopupLabel
+          {/* <PopupLabel
             text={this.getLabelText("contact.email")}
             disabled={!email}
             extra={email ? "Clique para copiar" : false}
             position="center"
             onClick={this._handleClick}
             onMouseLeave={this._handleMouseLeave}
+          > */}
+          <CopyToClipboard
+            disabled={!email}
+            text={email}
+            className={email ? "active" : ""}
+            data-tip={email ? `${email} (copiar)` : null}
+            data-for={`person-contact-icons-${person._id}`}
           >
-            <CopyToClipboard
-              disabled={!email}
-              text={email}
-              className={email ? "active" : ""}
-            >
-              <FontAwesomeIcon icon="envelope" />
-            </CopyToClipboard>
-          </PopupLabel>
-          <PopupLabel
-            text={this.getLabelText("contact.cellphone")}
+            <FontAwesomeIcon icon="envelope" />
+          </CopyToClipboard>
+          {/* </PopupLabel> */}
+          <CopyToClipboard
             disabled={!phone}
-            extra={phone ? "Clique para copiar" : false}
-            position="center"
-            onClick={this._handleClick}
-            onMouseLeave={this._handleMouseLeave}
+            text={phone}
+            className={phone ? "active" : ""}
+            data-tip={phone ? `${phone} (copiar)` : null}
+            data-for={`person-contact-icons-${person._id}`}
           >
-            <CopyToClipboard
-              disabled={!phone}
-              text={phone}
-              className={phone ? "active" : ""}
-            >
-              <FontAwesomeIcon icon="phone" />
-            </CopyToClipboard>
-          </PopupLabel>
-          <PopupLabel
-            text={
-              form ? "Preencheu o formulário" : "Não preencheu o formulário"
+            <FontAwesomeIcon icon="phone" />
+          </CopyToClipboard>
+          <CopyToClipboard
+            text={getFormUrl(person.formId)}
+            className={form ? "active" : ""}
+            data-tip={
+              form
+                ? "Preencheu o formulário (copiar link)"
+                : "Não preencheu o formulário (copiar link)"
             }
-            extra="Clique para copiar link"
-            position="center"
-            onClick={this._handleClick}
-            onMouseLeave={this._handleMouseLeave}
+            data-for={`person-contact-icons-${person._id}`}
           >
-            <CopyToClipboard
-              text={getFormUrl(person.formId)}
-              className={form ? "active" : ""}
-            >
-              <FontAwesomeIcon icon="align-left" />
-            </CopyToClipboard>
-          </PopupLabel>
+            <FontAwesomeIcon icon="align-left" />
+          </CopyToClipboard>
+          <ReactTooltip
+            id={`person-contact-icons-${person._id}`}
+            place="top"
+            effect="solid"
+          />
         </Container>
       );
     } else {

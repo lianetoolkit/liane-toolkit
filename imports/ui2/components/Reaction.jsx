@@ -1,10 +1,9 @@
 import React from "react";
+import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import PopupLabel from "./PopupLabel.jsx";
 
 const sizes = {
   tiny: 16,
@@ -31,10 +30,11 @@ const FilterContainer = styled.div`
   a {
     flex: 1 1 100%;
     color: #333;
+    text-align: center;
     svg,
     img {
       opacity: 0.6;
-      display: block;
+      display: inline-block;
     }
     &:hover {
       opacity: 1;
@@ -89,40 +89,43 @@ class Filter extends React.Component {
     const { selected } = this.state;
     const keys = Object.keys(imagePaths);
     return (
-      <FilterContainer className={selected ? "has-selection" : ""}>
-        {showAny ? (
-          <a
-            href="javascript:void(0);"
-            onClick={this._handleClick("any")}
-            className={selected == "any" ? "active" : ""}
-          >
-            <PopupLabel text="all" position="center">
+      <>
+        <FilterContainer className={selected ? "has-selection" : ""}>
+          {showAny ? (
+            <a
+              href="javascript:void(0);"
+              onClick={this._handleClick("any")}
+              className={selected == "any" ? "active" : ""}
+            >
               <FontAwesomeIcon
                 icon="dot-circle"
                 style={{ fontSize: sizes[size || "small"] + "px" }}
+                data-tip="all"
+                data-for="reaction-filter"
               />
-            </PopupLabel>
-          </a>
-        ) : null}
-        {keys.map(key => (
-          <a
-            href="javascript:void(0);"
-            key={key}
-            onClick={this._handleClick(key)}
-            className={selected == key ? "active" : ""}
-          >
-            <PopupLabel text={key} position="center">
+            </a>
+          ) : null}
+          {keys.map(key => (
+            <a
+              href="javascript:void(0);"
+              key={key}
+              onClick={this._handleClick(key)}
+              className={selected == key ? "active" : ""}
+            >
               <img
                 src={imagePaths[key]}
                 style={{
                   width: sizes[size || "small"] + "px",
                   height: sizes[size || "small"] + "px"
                 }}
+                data-tip={key}
+                data-for="reaction-filter"
               />
-            </PopupLabel>
-          </a>
-        ))}
-      </FilterContainer>
+            </a>
+          ))}
+        </FilterContainer>
+        <ReactTooltip id="reaction-filter" effect="solid" />
+      </>
     );
   }
 }
