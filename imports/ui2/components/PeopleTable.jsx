@@ -382,22 +382,20 @@ export default class PeopleTable extends Component {
                 >
                   <td style={{ width: "20px", textAlign: "center" }}>
                     <Popup
-                      trigger={open =>
-                        this.hasMeta(person) ? (
-                          <PersonMetaCircles
-                            person={person}
-                            data-tip
-                            data-for={`person-meta-${person._id}`}
-                          />
-                        ) : (
-                          <FontAwesomeIcon
-                            icon="grip-horizontal"
-                            className="meta-trigger"
-                            data-tip
-                            data-for={`person-meta-${person._id}`}
-                          />
-                        )
-                      }
+                      trigger={open => (
+                        <div data-tip data-for={`person-meta-${person._id}`}>
+                          {this.hasMeta(person) ? (
+                            <PersonMetaCircles
+                              person={person}
+                            />
+                          ) : (
+                            <FontAwesomeIcon
+                              icon="grip-horizontal"
+                              className="meta-trigger"
+                            />
+                          )}
+                        </div>
+                      )}
                       direction="top left"
                       rounded
                     >
