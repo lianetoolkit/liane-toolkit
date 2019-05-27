@@ -272,6 +272,10 @@ export default class PersonMetaButtons extends React.Component {
         style["borderColor"] = "rgba(0,0,0,0.5)";
       }
     }
+    let tooltipId = "person-meta-buttons";
+    if (person) {
+      tooltipId += `-${person._id}`;
+    }
     return (
       <a
         href="javascript:void(0);"
@@ -279,7 +283,7 @@ export default class PersonMetaButtons extends React.Component {
         style={style}
         onClick={this._handleClick(key)}
         data-tip={PersonMetaButtons.labels[key]}
-        data-for={`person-meta-buttons-${person._id}`}
+        data-for={tooltipId}
       >
         <FontAwesomeIcon
           icon={iconName}
@@ -290,6 +294,10 @@ export default class PersonMetaButtons extends React.Component {
   }
   render() {
     const { person, vertical, ...props } = this.props;
+    let tooltipId = "person-meta-buttons";
+    if (person) {
+      tooltipId += `-${person._id}`;
+    }
     return (
       <Container className="person-meta-buttons" {...props} vertical={vertical}>
         {this._metaButton(person ? person.campaignMeta : false, "supporter")}
@@ -301,7 +309,7 @@ export default class PersonMetaButtons extends React.Component {
         {this._metaButton(person ? person.campaignMeta : false, "non-voter")}
         {this._metaButton(person ? person.campaignMeta : false, "troll")}
         <ReactTooltip
-          id={`person-meta-buttons-${person._id}`}
+          id={tooltipId}
           place={vertical ? "top" : "bottom"}
           effect="solid"
         />
