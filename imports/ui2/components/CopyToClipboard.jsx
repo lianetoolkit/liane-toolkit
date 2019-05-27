@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import { alertStore } from "../containers/Alerts.jsx";
 
 export default class CopyToClipboard extends Component {
   componentDidMount() {
@@ -26,8 +27,9 @@ export default class CopyToClipboard extends Component {
     this.textarea.select();
     try {
       document.execCommand("copy");
+      alertStore.add("Copiado!");
     } catch (err) {
-      alert("Oops, unable to copy");
+      alertStore.add("Não foi possível copiar...", "error");
     }
     node.removeChild(this.textarea);
   };
