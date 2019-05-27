@@ -10,7 +10,7 @@ const Container = styled.nav`
   width: 100%;
   flex: 0;
   font-size: 0.8em;
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid #212121;
   position: relative;
   z-index: 10;
   ul {

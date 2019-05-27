@@ -31,7 +31,7 @@ const Container = styled.div`
     z-index: 2;
     header {
       border-radius: 7px 7px 0 0;
-      background: #333;
+      background: #262626;
       border-bottom: 1px solid #222;
       padding: 1rem 2rem;
       h2 {

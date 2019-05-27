@@ -41,7 +41,7 @@ const Container = styled.nav`
         }
         &.active {
           color: #f7f7f7;
-          border-color: #000;
+          border-color: #212121;
         }
       }
     `}
