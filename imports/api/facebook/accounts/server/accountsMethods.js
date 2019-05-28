@@ -6,6 +6,8 @@ import { CommentsHelpers } from "/imports/api/facebook/comments/server/commentsH
 import { EntriesHelpers } from "/imports/api/facebook/entries/server/entriesHelpers.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 
+const WEBHOOK_TOKEN = Meteor.settings.webhookToken;
+
 export const webhookUpdate = new ValidatedMethod({
   name: "webhookUpdate",
   validate: new SimpleSchema({
@@ -23,6 +25,12 @@ export const webhookUpdate = new ValidatedMethod({
   }).validator(),
   run({ token, facebookAccountId, data }) {
     this.unblock();
+    if(!WEBHOOK_TOKEN || !token) {
+      throw new Meteor.Error("Token not available");
+    }
+    if(WEBHOOK_TOKEN !== token) {
+      throw new Meteor.Error("Invalid token");
+    }
     logger.debug("facebook.accounts.webhook.update called", {
       facebookAccountId,
       type: data.item,
