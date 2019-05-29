@@ -8,7 +8,8 @@ People.schema = new SimpleSchema({
   facebookId: {
     type: String,
     index: true,
-    optional: true
+    optional: true,
+    unique: true
   },
   name: {
     type: String,
