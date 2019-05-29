@@ -160,7 +160,7 @@ export default class CommentsPage extends Component {
                   </div>
                   <div className="comment-reply">
                     <p className="action-label">Reagir e responder</p>
-                    <Reaction.Filter key={comment._id} />
+                    <Reaction.Filter target={comment._id} />
                     <Button.Group>
                       <Button>Responder</Button>
                       <Button>Inbox</Button>

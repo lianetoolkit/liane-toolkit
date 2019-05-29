@@ -85,17 +85,19 @@ class Filter extends React.Component {
     });
   };
   render() {
-    const { size, showAny, key } = this.props;
+    const { size, showAny, target } = this.props;
     const { selected } = this.state;
     const keys = Object.keys(imagePaths);
+    console.log(this);
     let className = "reaction-filter";
     if (selected) {
       className += " has-selection";
     }
     let tooltipId = "reaction-filter";
-    if (key) {
-      tooltipId += `-${key}`;
+    if (target) {
+      tooltipId += `-${target}`;
     }
+    console.log(tooltipId);
     return (
       <>
         <FilterContainer className={className}>
