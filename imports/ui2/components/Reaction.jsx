@@ -88,7 +88,6 @@ class Filter extends React.Component {
     const { size, showAny, target } = this.props;
     const { selected } = this.state;
     const keys = Object.keys(imagePaths);
-    console.log(this);
     let className = "reaction-filter";
     if (selected) {
       className += " has-selection";
@@ -97,7 +96,6 @@ class Filter extends React.Component {
     if (target) {
       tooltipId += `-${target}`;
     }
-    console.log(tooltipId);
     return (
       <>
         <FilterContainer className={className}>
