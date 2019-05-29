@@ -67,10 +67,16 @@ export const resolveZipcode = new ValidatedMethod({
 });
 
 const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
-  const { dateStart, dateEnd, reactionCount, ...query } = rawQuery;
+  const {
+    creation_from,
+    creation_to,
+    reaction_count,
+    reaction_type,
+    ...query
+  } = rawQuery;
   let queryOptions = {
     skip: options.skip || 0,
-    limit: Math.min(options.limit || 10, 50),
+    limit: Math.min(options.limit || 20, 50),
     fields: {
       name: 1,
       facebookId: 1,
@@ -90,21 +96,17 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
     switch (options.sort) {
       case "comments":
       case "likes":
-        if (options.facebookId) {
-          queryOptions.sort = {
-            [`counts.${options.facebookId}.${options.sort}`]: -1
-          };
-        }
+        queryOptions.sort = {
+          [`counts.${options.sort}`]: options.order || -1
+        };
         break;
       case "name":
-        queryOptions.sort = { name: 1 };
+        queryOptions.sort = { name: options.order || 1 };
         break;
       case "lastInteraction":
-        if (options.facebookId) {
-          queryOptions.sort = {
-            lastInteractionDate: -1
-          };
-        }
+        queryOptions.sort = {
+          lastInteractionDate: options.order || -1
+        };
         break;
       default:
     }
@@ -112,24 +114,26 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
 
   query.campaignId = campaignId;
 
-  if (dateStart || dateEnd) {
+  if (creation_from || creation_to) {
     if (!query.createdAt) query.createdAt = {};
-    if (dateStart) {
-      query.createdAt["$gte"] = dateStart;
+    if (creation_from) {
+      query.createdAt["$gte"] = new Date(creation_from);
     }
-    if (dateEnd) {
-      query.createdAt["$lt"] = dateEnd;
+    if (creation_to) {
+      query.createdAt["$lt"] = moment(creation_to)
+        .add("1", "day")
+        .toDate();
     }
   }
 
-  if (reactionCount && reactionCount.amount && options.facebookId) {
-    if (reactionCount.type == "all" || !reactionCount.type) {
-      query[`counts.${options.facebookId}.likes`] = {
-        $gte: parseInt(reactionCount.amount)
+  if (reaction_count) {
+    if (!reaction_type || reaction_type == "any" || reaction_type == "all") {
+      query[`counts.likes`] = {
+        $gte: parseInt(reaction_count)
       };
     } else {
-      query[`counts.${options.facebookId}.reactions.${reactionCount.type}`] = {
-        $gte: parseInt(reactionCount.amount)
+      query[`counts.reactions.${reaction_type}`] = {
+        $gte: parseInt(reaction_count)
       };
     }
   }
@@ -142,6 +146,33 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
     }
   }
   delete query.q;
+
+  if (query.category) {
+    query[`campaignMeta.${query.category}`] = true;
+  }
+  delete query.category;
+
+  if (query.tag) {
+    query[`campaignMeta.basic_info.tags`] = query.tag;
+  }
+  delete query.tag;
+
+  if (query.form) {
+    query["filledForm"] = true;
+  }
+  delete query.form;
+
+  if (query.commented) {
+    query["counts.comments"] = { $gt: 0 };
+  }
+  delete query.commented;
+
+  if (query.private_reply) {
+    query["canReceivePrivateReply"] = { $exists: true };
+  }
+  delete query.private_reply;
+
+  if (!query.source) delete query.source;
 
   switch (query.accountFilter) {
     case "account":
@@ -669,7 +700,7 @@ export const peopleCreate = new ValidatedMethod({
   }
 });
 
-export const canvasFormUpdate = new ValidatedMethod({
+export const peopleMetaUpdate = new ValidatedMethod({
   name: "people.metaUpdate",
   validate: new SimpleSchema({
     campaignId: {
@@ -754,13 +785,15 @@ export const canvasFormUpdate = new ValidatedMethod({
       update.$unset = $unset;
     }
 
-    return People.update(
+    People.update(
       {
         campaignId,
         _id: personId
       },
       update
     );
+
+    return People.findOne(personId);
   }
 });
 
@@ -1449,7 +1482,7 @@ export const peopleGetTags = new ValidatedMethod({
     }
   }).validator(),
   run({ campaignId }) {
-    logger.debug("peopleTags.get called", { campaignId });
+    logger.debug("people.getTags called", { campaignId });
     const userId = Meteor.userId();
     if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not allowed to do this action");

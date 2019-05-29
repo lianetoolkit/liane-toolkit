@@ -11,12 +11,47 @@ Comments.schema = new SimpleSchema({
     type: String,
     index: true
   },
+  parentId: {
+    type: String,
+    optional: true,
+    index: true
+  },
   facebookAccountId: {
     type: String,
     index: true
   },
+  can_hide: {
+    type: Boolean,
+    optional: true,
+    index: true
+  },
+  can_remove: {
+    type: Boolean,
+    optional: true,
+    index: true
+  },
+  can_reply_privately: {
+    type: Boolean,
+    optional: true,
+    index: true
+  },
+  is_hidden: {
+    type: Boolean,
+    optional: true,
+    index: true
+  },
+  is_private: {
+    type: Boolean,
+    optional: true,
+    index: true
+  },
   message: {
     type: String
+  },
+  attachment: {
+    type: Object,
+    blackbox: true,
+    optional: true
   },
   message_tags: {
     type: Object,
@@ -27,15 +62,16 @@ Comments.schema = new SimpleSchema({
     type: Date,
     index: true
   },
-  can_reply_privately: {
-    type: Boolean,
-    optional: true
-  },
   comment_count: {
     type: Number,
     optional: true
   },
-  like_count: {
+  comments: {
+    type: Object,
+    blackbox: true,
+    optional: true
+  },
+  reaction_count: {
     type: Number,
     optional: true
   },

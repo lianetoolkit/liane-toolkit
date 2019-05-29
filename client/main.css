@@ -1,0 +1,203 @@
+/* colors
+ * red #cc0000
+ * purple #6633cc
+ * orange #ff6600
+ * blue #003399
+ * yellow #ffcc00
+ * green #006633
+*/
+
+html,
+body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+a,
+input,
+button {
+  outline: none;
+}
+
+body {
+  background-color: #f7f7f7;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Unica One", monospace;
+  font-weight: normal;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+hr {
+  margin: 2rem 0;
+  height: 0;
+  border: 0;
+  border-bottom: 1px solid #ddd;
+}
+
+label {
+  display: block;
+  margin: 0 0 1rem;
+  font-weight: 600;
+}
+
+label input[type="checkbox"],
+label input[type="radio"] {
+  display: inline-block;
+  margin: 0 0.5rem;
+}
+
+label textarea,
+label input[type="text"],
+label input[type="email"],
+label input[type="password"] {
+  margin-top: 0.5rem;
+}
+
+textarea {
+  resize: none;
+  min-height: 125px;
+}
+
+textarea,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"] {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  padding: 1rem;
+  line-height: 1;
+  margin: 0 0 1rem;
+  border: 1px solid #ddd;
+  font-size: 1em;
+  border-radius: 7px;
+  font-family: "Open Sans", "Helvetica", "Arial", sans-serif;
+  outline: none;
+}
+
+select {
+  display: block;
+  width: 100%;
+  background: #fff;
+  border-radius: 7px;
+  border: 1px solid #ddd;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: calc(1rem - 2px);
+  padding-bottom: calc(1rem - 3px);
+}
+
+textarea:focus,
+input:focus {
+  background: #fff;
+}
+
+.button,
+button,
+input[type="submit"] {
+  box-sizing: border-box;
+  display: block;
+  border: 0;
+  background: #63c;
+  padding: 0.75rem 1.5rem;
+  border-radius: 1.625rem;
+  color: #fff;
+  cursor: pointer;
+  /* font-family: "Unica One", monospace; */
+  font-weight: 600;
+  letter-spacing: 0.03rem;
+  margin: 0;
+}
+
+.button.delete,
+button.delete,
+input[type="submit"].delete {
+  background-color: #cc0000;
+}
+
+input[type="submit"]:hover,
+input[type="submit"]:active,
+input[type="submit"]:focus {
+  background: #333;
+}
+input[type="submit"]:disabled {
+  background: #bbb;
+  color: #fff;
+  cursor: default;
+}
+
+#app .select__control,
+#app .select-search__control {
+  background: transparent;
+  border-radius: 7px;
+  margin: 0 0 1rem;
+}
+
+#app .select__control,
+#app .select__control--is-focused,
+#app .select-search__control,
+#app .select-search__control--is-focused {
+  border: 1px solid #ddd;
+  box-shadow: none;
+}
+
+#app .select__control--is-focused,
+#app .select-search__control--is-focused {
+  background: #fff;
+}
+
+#app .select__value-container {
+  padding: 1rem;
+}
+
+#app .select-search__value-container {
+  padding: 0.57rem 1rem;
+}
+
+#app .select__multi-value,
+#app .select-search__multi-value {
+  border-radius: 7px;
+}
+
+#app .select-search__multi-value__remove,
+#app .select__multi-value__remove {
+  border-radius: 7px;
+}
+
+#app .react-datepicker__close-icon::after {
+  background-color: transparent;
+  color: #999;
+}
+
+/* React Tooltip */
+#app .__react_component_tooltip {
+  font-size: 12px;
+  padding: 0.5rem 0.7rem;
+  line-height: 1;
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 7px;
+}
+
+#app .__react_component_tooltip.type-dark.place-left:after {
+  border-left-color: rgba(0, 0, 0, 0.9);
+}
+
+#app .__react_component_tooltip.type-dark.place-top:after {
+  border-top-color: rgba(0, 0, 0, 0.9);
+}

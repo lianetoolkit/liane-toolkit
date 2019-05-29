@@ -15,7 +15,10 @@ export default class AppAlerts extends React.Component {
         "ads_management",
         "ads_read",
         "business_management",
-        "read_page_mailboxes"
+        "read_page_mailboxes",
+        "pages_messaging",
+        "pages_messaging_phone_number",
+        "pages_messaging_subscriptions"
       ]
     };
     this._handlePermissionsClick = this._handlePermissionsClick.bind(this);

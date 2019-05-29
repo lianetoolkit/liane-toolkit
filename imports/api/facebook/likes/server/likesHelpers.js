@@ -1,6 +1,9 @@
 import { Promise } from "meteor/promise";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { People } from "/imports/api/facebook/people/people.js";
+import { PeopleHelpers } from "/imports/api/facebook/people/server/peopleHelpers.js";
+import { EntriesHelpers } from "/imports/api/facebook/entries/server/entriesHelpers.js";
+import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { HTTP } from "meteor/http";
 import { Random } from "meteor/random";
@@ -20,11 +23,159 @@ const rawLikes = Likes.rawCollection();
 rawLikes.distinctAsync = Meteor.wrapAsync(rawLikes.distinct);
 
 const LikesHelpers = {
+  handleWebhook({ facebookAccountId, data }) {
+    switch (data.verb) {
+      case "add":
+      case "edit":
+        this.upsertReaction({ facebookAccountId, data });
+        break;
+      case "remove":
+        this.removeReaction({ facebookAccountId, data });
+        break;
+      default:
+    }
+  },
+  upsertReaction({ facebookAccountId, data }) {
+    let reaction = {
+      facebookAccountId,
+      entryId: data.post_id,
+      personId: data.from.id,
+      name: data.from.name,
+      type: data.reaction_type.toUpperCase(),
+      created_time: data.created_time * 1000
+    };
+    let query = { personId: reaction.personId, entryId: reaction.entryId };
+    // Handle entry comment reaction
+    if (data.comment_id) {
+      reaction.parentId = data.comment_id;
+      query.parentId = data.comment_id;
+    } else {
+      query.parentId = { $exists: false };
+    }
+
+    const LikesRawCollection = Likes.rawCollection();
+    LikesRawCollection.update(
+      query,
+      { $set: reaction, $setOnInsert: { _id: Random.id() } },
+      { upsert: true, multi: false }
+    );
+
+    // Update entry interaction count
+    EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
+
+    // Upsert person
+    if (reaction.personId) {
+      const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
+        facebookId: facebookAccountId
+      });
+      let set = {
+        updatedAt: new Date()
+      };
+      set["counts"] = PeopleHelpers.getInteractionCount({
+        facebookId: reaction.personId,
+        facebookAccountId
+      });
+      set["facebookAccountId"] = facebookAccountId;
+
+      let addToSet = {
+        facebookAccounts: facebookAccountId
+      };
+
+      // Build update obj
+      let updateObj = {
+        $setOnInsert: {
+          createdAt: new Date(),
+          source: "facebook",
+          name: data.from.name
+        },
+        $set: set
+      };
+
+      if (reaction.created_time) {
+        updateObj.$max = {
+          lastInteractionDate: new Date(reaction.created_time)
+        };
+      }
+      if (Object.keys(addToSet).length) {
+        updateObj.$addToSet = addToSet;
+      }
+
+      const PeopleRawCollection = People.rawCollection();
+      for (const campaign of accountCampaigns) {
+        PeopleRawCollection.update(
+          {
+            campaignId: campaign._id,
+            facebookId: reaction.personId
+          },
+          {
+            ...updateObj,
+            $setOnInsert: {
+              ...updateObj.$setOnInsert,
+              _id: Random.id()
+            }
+          },
+          {
+            upsert: true,
+            multi: false
+          }
+        );
+      }
+    }
+  },
+  removeReaction({ facebookAccountId, data }) {
+    let query = {
+      personId: data.from.id,
+      entryId: data.post_id
+    };
+    if (data.comment_id) {
+      query.parentId = data.comment_id;
+    } else {
+      query.parentId = { $exists: false };
+    }
+    Likes.remove(query);
+
+    // Update entry
+    EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
+
+    // Update person
+    const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
+      facebookId: facebookAccountId
+    });
+    for (const campaign of accountCampaigns) {
+      People.update(
+        {
+          campaignId: campaign._id,
+          facebookId: data.from.id
+        },
+        {
+          $set: {
+            counts: PeopleHelpers.getInteractionCount({
+              facebookId: data.from.id,
+              facebookAccountId
+            })
+          }
+        }
+      );
+    }
+  },
+  handleCommentsReactions({
+    facebookAccountId,
+    entryId,
+    commentId,
+    accessToken
+  }) {
+    this.getObjectReactions({
+      facebookAccountId,
+      entryId,
+      objectId: commentId,
+      likeDateEstimate: false,
+      accessToken
+    });
+  },
   getReactionTypes() {
     return ["NONE", "LIKE", "LOVE", "WOW", "HAHA", "SAD", "ANGRY", "THANKFUL"];
   },
-  updatePeopleLikesCountByEntry({ campaignId, facebookAccountId, entryId }) {
-    check(campaignId, String);
+  updatePeopleLikesCountByEntry({ facebookAccountId, entryId }) {
     check(facebookAccountId, String);
     check(entryId, String);
 
@@ -40,14 +191,12 @@ const LikesHelpers = {
 
     if (likedPeople.length) {
       this.updatePeopleLikesCount({
-        campaignId,
         facebookAccountId,
         likedPeople
       });
     }
   },
-  updatePeopleLikesCount({ campaignId, facebookAccountId, likedPeople }) {
-    check(campaignId, String);
+  updatePeopleLikesCount({ facebookAccountId, likedPeople }) {
     check(facebookAccountId, String);
 
     const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
@@ -57,61 +206,36 @@ const LikesHelpers = {
     if (likedPeople.length) {
       const peopleBulk = People.rawCollection().initializeOrderedBulkOp();
       for (const likedPerson of likedPeople) {
-        const likesCount = Likes.find({
-          personId: likedPerson.id,
-          facebookAccountId: facebookAccountId
-        }).count();
-        let reactionsCount = {};
-        const reactionTypes = this.getReactionTypes();
-        for (const reactionType of reactionTypes) {
-          reactionsCount[reactionType.toLowerCase()] = Likes.find({
-            personId: likedPerson.id,
-            facebookAccountId: facebookAccountId,
-            type: reactionType
-          }).count();
-        }
         let set = {
           updatedAt: new Date()
         };
 
-        // let lastInteraction = {
-        //   facebookId: facebookAccountId
-        // };
-        // if (likedPerson.like.created_time) {
-        //   lastInteraction["date"] = { $max: likedPerson.like.created_time };
-        //   lastInteraction["estimate"] = true;
-        // }
         set["name"] = likedPerson.name;
-        set[`counts.${facebookAccountId}.likes`] = likesCount;
-        set[`counts.${facebookAccountId}.reactions`] = reactionsCount;
-        // set["lastInteraction"] = lastInteraction;
+        set["facebookAccountId"] = facebookAccountId;
+        set["counts"] = PeopleHelpers.getInteractionCount({
+          facebookAccountId,
+          facebookId: likedPerson.id
+        });
+
+        let updateObj = {
+          $setOnInsert: {
+            _id: Random.id(),
+            createdAt: new Date(),
+            source: "facebook"
+          },
+          $set: set,
+          $addToSet: {
+            facebookAccounts: facebookAccountId
+          }
+        };
+
+        if (likedPerson.like.created_time) {
+          updateObj.$max = {
+            lastInteractionDate: new Date(likedPerson.like.created_time)
+          };
+        }
 
         for (const campaign of accountCampaigns) {
-          // Person has the last interaction populated
-          // peopleBulk
-          //   .find({
-          //     campaignId: campaign._id,
-          //     facebookId: likedPerson.id,
-          //     // "lastInteractions.facebookId": facebookAccountId
-          //   })
-          //   .update({
-          //     $setOnInsert: {
-          //       _id: Random.id(),
-          //       createdAt: new Date()
-          //     },
-          //     $set: {
-          //       ...set,
-          //       // "lastInteractions.$": lastInteraction
-          //     },
-          //     $max: {
-          //       "lastInteractionDate": likedPerson.like.created_time || 0
-          //     },
-          //     $addToSet: {
-          //       facebookAccounts: facebookAccountId
-          //     }
-          //   });
-
-          // Person does not have the last interaction populated
           peopleBulk
             .find({
               campaignId: campaign._id,
@@ -119,19 +243,10 @@ const LikesHelpers = {
             })
             .upsert()
             .update({
+              ...updateObj,
               $setOnInsert: {
-                _id: Random.id(),
-                createdAt: new Date()
-              },
-              $set: set,
-              $max: {
-                lastInteractionDate: new Date(
-                  likedPerson.like.created_time || 0
-                )
-              },
-              $addToSet: {
-                facebookAccounts: facebookAccountId
-                // lastInteractions: lastInteraction
+                ...updateObj.$setOnInsert,
+                _id: Random.id()
               }
             });
         }
@@ -139,26 +254,25 @@ const LikesHelpers = {
       peopleBulk.execute();
     }
   },
-  getEntryLikes({
-    campaignId,
+  getObjectReactions({
     facebookAccountId,
     entryId,
+    objectId,
     likeDateEstimate,
     accessToken
   }) {
-    check(campaignId, String);
     check(facebookAccountId, String);
     check(entryId, String);
     check(accessToken, String);
 
-    logger.debug("LikesHelpers.getEntryLikes called", {
-      entryId
+    logger.debug("LikesHelpers.getObjectReactions called", {
+      objectId
     });
 
     let response;
     try {
       response = Promise.await(
-        FB.api(`${entryId}/reactions`, {
+        FB.api(`${objectId || entryId}/reactions`, {
           limit: 1000,
           access_token: accessToken
         })
@@ -167,7 +281,7 @@ const LikesHelpers = {
       throw new Meteor.Error(error);
     }
 
-    logger.debug("LikesHelpers.getEntryLikes response", { response });
+    logger.debug("LikesHelpers.getObjectReactions response", { response });
 
     const _insertBulk = ({ data }) => {
       const bulk = Likes.rawCollection().initializeUnorderedBulkOp();
@@ -181,12 +295,19 @@ const LikesHelpers = {
           personId,
           entryId
         };
+        let bulkQuery = { personId, entryId };
+        if (objectId) {
+          insert.parentId = objectId;
+          bulkQuery.parentId = objectId;
+        } else {
+          bulkQuery.parentId = { $exists: false };
+        }
         if (likeDateEstimate) {
           insert["created_time"] = new Date();
         }
         likedPeople.push({ id: personId, name: like.name, like: insert });
         bulk
-          .find({ personId, entryId })
+          .find(bulkQuery)
           .upsert()
           .update({
             $setOnInsert: insert,
@@ -195,20 +316,7 @@ const LikesHelpers = {
       }
       bulk.execute(
         Meteor.bindEnvironment((e, result) => {
-          // If like date estimate is set, update people from upserted result so it doesnt update last interaction date for all people.
-          if (likeDateEstimate) {
-            const upsertedLikes = result.getRawResponse().upserted;
-            if (upsertedLikes.length) {
-              const likes = Likes.find({
-                _id: { $in: upsertedLikes.map(l => l._id) }
-              }).fetch();
-              likedPeople = likedPeople.filter(person =>
-                likes.find(l => l.personId == person.id)
-              );
-            }
-          }
           this.updatePeopleLikesCount({
-            campaignId,
             facebookAccountId,
             likedPeople
           });

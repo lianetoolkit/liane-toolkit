@@ -24,6 +24,11 @@ People.schema = new SimpleSchema({
     blackbox: true,
     optional: true
   },
+  facebookAccountId: {
+    type: String,
+    optional: true,
+    index: true
+  },
   facebookAccounts: {
     type: Array,
     optional: true,
@@ -169,6 +174,18 @@ Meteor.startup(() => {
         facebookAccounts: 1
       },
       { background: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "counts.likes": 1
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "counts.comments": 1
+      },
+      { sparse: true }
     );
     People.rawCollection().createIndex(
       {

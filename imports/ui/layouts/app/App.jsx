@@ -2,6 +2,13 @@ import React from "react";
 import { Meteor } from "meteor/meteor";
 import PropTypes from "prop-types";
 
+import {
+  Grommet,
+  ResponsiveContext
+} from "grommet";
+
+import { grommet } from "grommet/themes";
+
 import AppContainer from "/imports/ui/components/app/AppContainer.jsx";
 import AppHeader from "/imports/ui/components/app/AppHeader.jsx";
 import AppAlerts from "/imports/ui/components/app/AppAlerts.jsx";
@@ -25,9 +32,6 @@ export default class App extends React.Component {
     super(props);
     this.logout = this.logout.bind(this);
     this.confirmStore = new ConfirmStore();
-    this.state = {
-      showConnectionIssue: false
-    };
   }
 
   componentWillReceiveProps({ currentUser, loading }) {
@@ -95,7 +99,6 @@ export default class App extends React.Component {
   }
 
   render() {
-    const { showConnectionIssue } = this.state;
     const {
       campaigns,
       campaign,
@@ -113,7 +116,7 @@ export default class App extends React.Component {
     } = this.props;
 
     return (
-      <div style={{ height: "100%" }}>
+      <Grommet full theme={grommet}>
         {!currentUser ? (
           <Dimmer active={true}>
             <Loader>Loading</Loader>
@@ -150,7 +153,7 @@ export default class App extends React.Component {
             </AppContent>
           </AppContainer>
         )}
-      </div>
+      </Grommet>
     );
   }
 }

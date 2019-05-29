@@ -1,6 +1,7 @@
 import SimpleSchema from "simpl-schema";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { CampaignsHelpers } from "./campaignsHelpers.js";
+import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { FacebookAudiencesHelpers } from "/imports/api/facebook/audiences/server/audiencesHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
@@ -58,26 +59,13 @@ export const campaignsCreate = new ValidatedMethod({
     name: {
       type: String
     },
-    description: {
-      type: String
-    },
-    adAccountId: {
-      type: String
-    },
-    contextId: {
-      type: String
-    },
     facebookAccountId: {
-      type: String,
-      optional: true
+      type: String
     }
   }).validator(),
-  run({ name, description, adAccountId, contextId, facebookAccountId }) {
+  run({ name, facebookAccountId }) {
     logger.debug("campaigns.create called", {
       name,
-      description,
-      contextId,
-      adAccountId,
       facebookAccountId
     });
 
@@ -90,24 +78,42 @@ export const campaignsCreate = new ValidatedMethod({
       throw new Meteor.Error(401, "Campaign creation is currently disabled.");
     }
 
+    if (FacebookAccounts.findOne({ facebookId: facebookAccountId })) {
+      throw new Meteor.Error(
+        401,
+        "This account is already being used by another campaign"
+      );
+    }
+
     const users = [{ userId, role: "owner" }];
-    const insertDoc = { users, name, description, contextId, adAccountId };
+    let insertDoc = { users, name };
 
     const user = Meteor.users.findOne(userId);
     const token = user.services.facebook.accessToken;
 
-    AdAccountsHelpers.update({ adAccountId, token });
+    const account = FacebookAccountsHelpers.getUserAccount({
+      userId,
+      facebookAccountId
+    });
+
+    const accountToken = FacebookAccountsHelpers.exchangeFBToken({
+      token: account.access_token
+    });
+
+    insertDoc.facebookAccount = {
+      facebookId: account.id,
+      accessToken: accountToken.result,
+      chatbot: {
+        active: false,
+        init_text_response: false
+      }
+    };
 
     campaignId = Campaigns.insert(insertDoc);
 
-    if (facebookAccountId) {
-      const account = FacebookAccountsHelpers.getUserAccount({
-        userId,
-        facebookAccountId
-      });
-      CampaignsHelpers.addAccount({ campaignId, account });
-      // CampaignsHelpers.addAudienceAccount({ campaignId, account });
-    }
+    CampaignsHelpers.setMainAccount({ campaignId, account });
+    // CampaignsHelpers.addAccount({ campaignId, account });
+    // CampaignsHelpers.addAudienceAccount({ campaignId, account });
 
     return { result: campaignId };
   }
@@ -233,6 +239,124 @@ export const campaignsUpdate = new ValidatedMethod({
         }
       }
     }
+  }
+});
+
+export const campaignsChatbotActivation = new ValidatedMethod({
+  name: "campaigns.chatbot.activation",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    facebookAccountId: {
+      type: String
+    },
+    active: {
+      type: Boolean,
+      defaultValue: false,
+      optional: true
+    }
+  }).validator(),
+  run({ campaignId, facebookAccountId, active }) {
+    this.unblock();
+    logger.debug("campaigns.chatbot.activate called", {
+      campaignId,
+      facebookAccountId,
+      active
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    const allowed = Meteor.call("campaigns.canManage", { userId, campaignId });
+
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    if (
+      !campaign.facebookAccount &&
+      !_.find(
+        campaign.accounts,
+        account => account.facebookId == facebookAccountId
+      )
+    ) {
+      throw new Meteor.Error(404, "Facebook Account not found");
+    }
+
+    if (active) {
+      return CampaignsHelpers.activateChatbot({
+        campaignId,
+        facebookAccountId
+      });
+    } else {
+      return CampaignsHelpers.deactivateChatbot({
+        campaignId,
+        facebookAccountId
+      });
+    }
+  }
+});
+
+export const campaignsUpdateChatbot = new ValidatedMethod({
+  name: "campaigns.chatbot.update",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    facebookAccountId: {
+      type: String
+    },
+    config: {
+      type: Object,
+      blackbox: true
+    }
+  }).validator(),
+  run({ campaignId, facebookAccountId, config }) {
+    this.unblock();
+    logger.debug("campaigns.chatbot.update called", {
+      campaignId,
+      facebookAccountId
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    const allowed = Meteor.call("campaigns.canManage", { userId, campaignId });
+
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    if (
+      !campaign.facebookAccount &&
+      !_.find(
+        campaign.accounts,
+        account => account.facebookId == facebookAccountId
+      )
+    ) {
+      throw new Meteor.Error(404, "Facebook Account not found");
+    }
+
+    return CampaignsHelpers.updateChatbot({
+      campaignId,
+      facebookAccountId,
+      config
+    });
   }
 });
 
@@ -435,6 +559,74 @@ export const removeUser = new ValidatedMethod({
       },
       { $pull: { users: campaignUser } }
     );
+  }
+});
+
+export const updateCampaignAccounts = new ValidatedMethod({
+  name: "campaigns.updateAccounts",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    accounts: {
+      type: Array
+    },
+    "accounts.$": {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, accounts }) {
+    this.unblock();
+    logger.debug("campaigns.updateAccounts called", {
+      campaignId,
+      accounts
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "This campaign does not exist");
+    }
+
+    if (campaign.status == "suspended") {
+      throw new Meteor.Error(401, "This campaign is suspended");
+    }
+
+    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    const currentIds = campaign.accounts.map(acc => acc.facebookId);
+
+    const idsToAdd = _.difference(accounts, currentIds);
+    const idsToRemove = _.difference(currentIds, accounts);
+
+    // Remove accounts
+    idsToRemove.forEach(facebookId => {
+      CampaignsHelpers.removeAccount({ campaignId, facebookId });
+    });
+
+    // Fetch accounts to add from fb api
+    let accountsToAdd = [];
+    idsToAdd.forEach(facebookAccountId => {
+      accountsToAdd.push(
+        FacebookAccountsHelpers.getUserAccount({
+          userId,
+          facebookAccountId
+        })
+      );
+    });
+
+    // Add accounts
+    accountsToAdd.forEach(account => {
+      CampaignsHelpers.addAccount({ campaignId, account });
+    });
+
+    return;
   }
 });
 

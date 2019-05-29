@@ -1,7 +1,67 @@
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
+
+Meteor.publishComposite("comments.byAccount", function({
+  campaignId,
+  facebookId,
+  queryParams,
+  limit
+}) {
+  const userId = this.userId;
+  if (Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign.facebookAccount) return this.ready();
+    facebookId = facebookId || campaign.facebookAccount.facebookId;
+    if (campaign.facebookAccount.facebookId == facebookId) {
+      let query = { resolved: { $ne: true } };
+      if (queryParams.resolved == "true") {
+        query.resolved = true;
+      }
+      if (queryParams.type == "comment") {
+        if (queryParams.message_tags) {
+          query.message_tags = { $exists: true };
+        }
+        if (queryParams.categories) {
+          query.categories = { $in: [queryParams.categories] };
+        }
+      }
+      return {
+        find: function() {
+          return Comments.find(
+            {
+              ...query,
+              facebookAccountId: facebookId,
+              created_time: { $exists: true }
+            },
+            {
+              sort: { created_time: -1 },
+              limit: Math.min(limit || 10, 20)
+            }
+          );
+        },
+        children: [
+          {
+            find: function(comment) {
+              return Entries.find({ _id: comment.entryId });
+            }
+          },
+          {
+            find: function(comment) {
+              return People.find({
+                facebookId: comment.personId,
+                campaignId
+              });
+            }
+          }
+        ]
+      };
+    }
+  }
+  return this.ready();
+});
 
 Meteor.publishComposite("comments.byPerson", function({ personId }) {
   const userId = this.userId;
@@ -19,8 +79,8 @@ Meteor.publishComposite("comments.byPerson", function({ personId }) {
         },
         children: [
           {
-            find: function(like) {
-              return Entries.find({ _id: like.entryId });
+            find: function(comment) {
+              return Entries.find({ _id: comment.entryId });
             }
           }
         ]

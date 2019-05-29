@@ -1,5 +1,6 @@
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
+import { PeopleTags } from "/imports/api/facebook/people/people.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { Jobs } from "/imports/api/jobs/jobs.js";
@@ -68,9 +69,18 @@ Meteor.publish("campaigns.byUser", function() {
   this.unblock();
   const currentUser = this.userId;
   if (currentUser) {
-    return Campaigns.find({
-      users: { $elemMatch: { userId: currentUser } }
-    });
+    return Campaigns.find(
+      {
+        users: { $elemMatch: { userId: currentUser } }
+      },
+      {
+        fields: {
+          name: 1,
+          users: 1,
+          accounts: 1
+        }
+      }
+    );
   } else {
     return this.ready();
   }
@@ -137,11 +147,13 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
             fields: {
               users: 1,
               accounts: 1,
+              facebookAccount: 1,
               name: 1,
               description: 1,
               contextId: 1,
               status: 1,
-              forms: 1
+              forms: 1,
+              createdAt: 1
             }
           }
         );
@@ -149,8 +161,18 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
       children: [
         {
           find: function(campaign) {
+            let ids = _.pluck(campaign.accounts, "facebookId");
+            if (campaign.facebookAccount)
+              ids.push(campaign.facebookAccount.facebookId);
             return FacebookAccounts.find({
-              facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
+              facebookId: { $in: ids }
+            });
+          }
+        },
+        {
+          find: function(campaign) {
+            return PeopleTags.find({
+              campaignId: campaign._id
             });
           }
         },

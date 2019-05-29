@@ -13,12 +13,33 @@ Campaigns.usersSchema = new SimpleSchema({
   }
 });
 
+Campaigns.accountChatbotSchema = new SimpleSchema({
+  active: {
+    type: Boolean,
+    defaultValue: false
+  },
+  init_text_response: {
+    type: Boolean,
+    defaultValue: false,
+    optional: true
+  },
+  extra_info: {
+    type: Object,
+    blackbox: true,
+    optional: true
+  }
+});
+
 Campaigns.accountsSchema = new SimpleSchema({
   facebookId: {
     type: String
   },
   accessToken: {
     type: String
+  },
+  chatbot: {
+    type: Campaigns.accountChatbotSchema,
+    optional: true
   }
 });
 
@@ -36,17 +57,24 @@ Campaigns.audienceAccountsSchema = new SimpleSchema({
 });
 
 Campaigns.schema = new SimpleSchema({
+  name: {
+    type: String
+  },
   users: {
     type: Array
   },
   "users.$": {
     type: Campaigns.usersSchema
   },
-  contextId: {
-    type: String
+  country: {
+    type: String,
+    optional: true,
+    index: 1
   },
-  name: {
-    type: String
+  regionId: {
+    type: String,
+    optional: true,
+    index: 1
   },
   autoReplyMessage: {
     type: String,
@@ -63,6 +91,9 @@ Campaigns.schema = new SimpleSchema({
   status: {
     type: String,
     optional: true
+  },
+  facebookAccount: {
+    type: Campaigns.accountsSchema
   },
   accounts: {
     type: Array,

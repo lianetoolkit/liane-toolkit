@@ -2,6 +2,9 @@ import { Promise } from "meteor/promise";
 import axios from "axios";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { People, PeopleLists } from "/imports/api/facebook/people/people.js";
+import { Comments } from "/imports/api/facebook/comments/comments.js";
+import { Likes } from "/imports/api/facebook/likes/likes.js";
+import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
 import { Random } from "meteor/random";
 import { uniqBy, groupBy, mapKeys, flatten, get, set, cloneDeep } from "lodash";
 import crypto from "crypto";
@@ -29,6 +32,71 @@ const PeopleHelpers = {
       .substr(0, 7);
     People.update(person._id, { $set: { formId } });
     return formId;
+  },
+  getInteractionCount({ facebookId, facebookAccountId }) {
+    const commentsCount = Comments.find({
+      personId: facebookId,
+      facebookAccountId
+    }).count();
+    const likesCount = Likes.find({
+      personId: facebookId,
+      facebookAccountId: facebookAccountId,
+      parentId: { $exists: false }
+    }).count();
+    let reactionsCount = {};
+    const reactionTypes = LikesHelpers.getReactionTypes();
+    for (const reactionType of reactionTypes) {
+      reactionsCount[reactionType.toLowerCase()] = Likes.find({
+        personId: facebookId,
+        facebookAccountId: facebookAccountId,
+        type: reactionType,
+        parentId: { $exists: false }
+      }).count();
+    }
+    return {
+      comments: commentsCount,
+      likes: likesCount,
+      reactions: reactionsCount
+    };
+  },
+  updateInteractionCountSum({ personId }) {
+    const person = People.findOne(personId);
+    if (!person) {
+      throw new Meteor.Error(404, "Person not found");
+    }
+    let counts = {
+      comments: 0,
+      likes: 0,
+      reactions: {
+        none: 0,
+        like: 0,
+        love: 0,
+        wow: 0,
+        haha: 0,
+        sad: 0,
+        angry: 0,
+        thankful: 0
+      }
+    };
+    if (person.counts) {
+      for (let facebookId in person.counts) {
+        if (facebookId !== "all") {
+          const personCounts = person.counts[facebookId];
+          if (!isNaN(personCounts.comments)) {
+            counts.comments += personCounts.comments;
+          }
+          if (!isNaN(personCounts.likes)) {
+            counts.likes += personCounts.likes;
+          }
+          for (let reaction in personCounts.reactions) {
+            counts.reactions[reaction] += personCounts.reactions[reaction];
+            if (!isNaN(personCounts.reactions[reaction])) {
+            }
+          }
+        }
+      }
+    }
+    return People.update(personId, { $set: { "counts.all": counts } });
   },
   geocode({ address }) {
     let str = "";
@@ -91,14 +159,15 @@ const PeopleHelpers = {
         .aggregate([
           {
             $match: {
-              facebookAccounts: { $in: [facebookAccountId] }
+              facebookAccountId: facebookAccountId
             }
           },
           {
             $group: {
               _id: "$facebookId",
               name: { $first: "$name" },
-              counts: { $first: `$counts.${facebookAccountId}` }
+              counts: { $first: `$counts` },
+              lastInteractionDate: { $first: `$lastInteractionDate` }
             }
           },
           {
@@ -106,7 +175,8 @@ const PeopleHelpers = {
               _id: null,
               facebookId: "$_id",
               name: "$name",
-              [`counts.${facebookAccountId}`]: "$counts"
+              counts: "$counts",
+              lastInteractionDate: "$lastInteractionDate"
             }
           }
         ])
@@ -125,11 +195,13 @@ const PeopleHelpers = {
           .update({
             $setOnInsert: {
               _id: Random.id(),
-              createdAt: person.createdAt
+              createdAt: new Date()
             },
             $set: {
               name: person.name,
-              [`counts.${facebookAccountId}`]: person.counts[facebookAccountId]
+              facebookAccountId,
+              [`counts`]: person.counts,
+              lastInteractionDate: person.lastInteractionDate
             },
             $addToSet: {
               facebookAccounts: facebookAccountId
@@ -277,11 +349,12 @@ const PeopleHelpers = {
     const _queries = () => {
       let queries = [];
       let defaultQuery = { campaignId, $or: [] };
-      // sorted by uniqueness importance
+      // sorted by reversed uniqueness importance
       const fieldGroups = [
         ["name"],
         [
           "campaignMeta.contact.email",
+          "campaignMeta.contact.cellphone",
           "campaignMeta.social_networks.twitter",
           "campaignMeta.social_networks.instagram"
         ]
@@ -293,7 +366,7 @@ const PeopleHelpers = {
           const fieldVal = person.$set[field];
           // clear previous value
           if (fieldVal) {
-            query.$or.push({ [field]: fieldVal });
+            query.$or.push({ [field]: fieldVal.trim() });
           }
         }
         if (query.$or.length) {
@@ -357,7 +430,7 @@ const PeopleHelpers = {
       _upsertAddToSet();
     }
 
-    res = People.upsert(
+    People.upsert(
       selector,
       {
         ...person,
@@ -369,7 +442,25 @@ const PeopleHelpers = {
       { multi: false }
     );
 
-    return res;
+    People.upsert(
+      { ...selector, listId: { $exists: true } },
+      {
+        $set: {
+          listId
+        }
+      },
+      { multi: false }
+    );
+
+    // Clear empty campaign lists
+    const campaignLists = PeopleLists.find({ campaignId }).fetch();
+    for (let list of campaignLists) {
+      if (!People.find({ listId: list._id }).count()) {
+        PeopleLists.remove(list._id);
+      }
+    }
+
+    return;
   },
   removeExportFile({ path }) {
     return Promise.await(

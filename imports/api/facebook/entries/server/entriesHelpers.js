@@ -3,7 +3,9 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
 import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
+import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { CommentsHelpers } from "/imports/api/facebook/comments/server/commentsHelpers.js";
+import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 
@@ -21,6 +23,86 @@ const _fetchFacebookPageData = ({ url }) => {
 };
 
 const EntriesHelpers = {
+  handleWebhook({ facebookAccountId, data }) {
+    switch (data.verb) {
+      case "add":
+        this.upsertEntry({ facebookAccountId, data });
+        break;
+      case "edited":
+        this.upsertEntry({ facebookAccountId, data });
+        break;
+      default:
+    }
+  },
+  upsertEntry({ facebookAccountId, data }) {
+    const campaignWithToken = Campaigns.findOne({
+      "facebookAccount.facebookId": facebookAccountId
+    });
+    if (!campaignWithToken || !campaignWithToken.facebookAccount.accessToken) {
+      throw new Meteor.Error(400, "Facebook account not available");
+    }
+    if (!data.post_id) {
+      return;
+    }
+    let entry;
+    try {
+      entry = Promise.await(
+        FB.api(data.post_id, {
+          fields: [
+            "object_id",
+            "parent_id",
+            "message",
+            "link",
+            "type",
+            "created_time",
+            "updated_time",
+            "shares",
+            "comments.limit(0).summary(true)",
+            "reactions.limit(0).summary(true).as(reaction)",
+            "reactions.type(LIKE).limit(0).summary(true).as(like)",
+            "reactions.type(LOVE).limit(0).summary(true).as(love)",
+            "reactions.type(WOW).limit(0).summary(true).as(wow)",
+            "reactions.type(HAHA).limit(0).summary(true).as(haha)",
+            "reactions.type(SAD).limit(0).summary(true).as(sad)",
+            "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
+            "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
+          ],
+          access_token: campaignWithToken.facebookAccount.accessToken
+        })
+      );
+    } catch (error) {
+      throw new Meteor.Error(error);
+    }
+
+    return Entries.upsert(
+      {
+        _id: entry.id
+      },
+      this.getUpdateObjFromFBData({ facebookAccountId, entry })
+    );
+  },
+  updateInteractionCount({ entryId }) {
+    const entry = Entries.findOne(entryId);
+    let counts = Object.assign({}, entry.counts || {});
+    counts.comment = Comments.find({ entryId }).count();
+    counts.reaction = Likes.find({
+      entryId,
+      parentId: { $exists: false }
+    }).count();
+    const reactionTypes = LikesHelpers.getReactionTypes();
+    for (const reactionType of reactionTypes) {
+      counts[reactionType.toLowerCase()] = Likes.find({
+        entryId,
+        type: reactionType,
+        parentId: { $exists: false }
+      }).count();
+    }
+    let $set = {};
+    for (let type in counts) {
+      $set[`counts.${type}`] = counts[type];
+    }
+    Entries.update(entryId, { $set });
+  },
   updatePeopleCountByEntry({ campaignId, facebookId, entryId }) {
     check(campaignId, String);
     check(facebookId, String);
@@ -36,6 +118,36 @@ const EntriesHelpers = {
       facebookAccountId: facebookId,
       entryId
     });
+  },
+  getUpdateObjFromFBData({ facebookAccountId, entry }) {
+    const counts = {
+      share: entry.shares ? entry.shares.count : 0,
+      like: entry.like ? entry.like.summary.total_count : 0,
+      love: entry.love ? entry.love.summary.total_count : 0,
+      wow: entry.wow ? entry.wow.summary.total_count : 0,
+      haha: entry.haha ? entry.haha.summary.total_count : 0,
+      sad: entry.sad ? entry.sad.summary.total_count : 0,
+      angry: entry.angry ? entry.angry.summary.total_count : 0,
+      thankful: entry.thankful ? entry.thankful.summary.total_count : 0,
+      reaction: entry.reaction ? entry.reaction.summary.total_count : 0,
+      comment: entry.comments ? entry.comments.summary.total_count : 0
+    };
+    return {
+      $setOnInsert: {
+        _id: entry.id,
+        facebookAccountId,
+        createdTime: entry.created_time
+      },
+      $set: {
+        type: entry.type,
+        message: entry.message,
+        objectId: entry.object_id,
+        parentId: entry.parent_id,
+        link: entry.link,
+        updatedTime: entry.updated_time,
+        counts
+      }
+    };
   },
   updateAccountEntries({
     campaignId,
@@ -54,14 +166,10 @@ const EntriesHelpers = {
 
     if (campaignId) {
       campaign = Campaigns.findOne(campaignId);
-      isCampaignAccount = !!campaign.accounts.find(
-        account => account.facebookId == facebookId
-      );
+      isCampaignAccount = campaign.facebookAccount.facebookId == facebookId;
     }
 
-    const accessToken = campaign.accounts.find(
-      acc => acc.facebookId == facebookId
-    ).accessToken;
+    const accessToken = campaign.facebookAccount.accessToken;
 
     const accountPath = isCampaignAccount ? "me" : facebookId;
 
@@ -100,41 +208,13 @@ const EntriesHelpers = {
       throw new Meteor.Error(error);
     }
 
-    const _getUpdateObj = ({ entry }) => {
-      const counts = {
-        share: entry.shares ? entry.shares.count : 0,
-        like: entry.like ? entry.like.summary.total_count : 0,
-        love: entry.love ? entry.love.summary.total_count : 0,
-        wow: entry.wow ? entry.wow.summary.total_count : 0,
-        haha: entry.haha ? entry.haha.summary.total_count : 0,
-        sad: entry.sad ? entry.sad.summary.total_count : 0,
-        angry: entry.angry ? entry.angry.summary.total_count : 0,
-        thankful: entry.thankful ? entry.thankful.summary.total_count : 0,
-        reaction: entry.reaction ? entry.reaction.summary.total_count : 0,
-        comment: entry.comments ? entry.comments.summary.total_count : 0
-      };
-      return {
-        $setOnInsert: {
-          _id: entry.id,
-          facebookAccountId: facebookId,
-          createdTime: entry.created_time
-        },
-        $set: {
-          type: entry.type,
-          message: entry.message,
-          objectId: entry.object_id,
-          parentId: entry.parent_id,
-          link: entry.link,
-          updatedTime: entry.updated_time,
-          counts
-        }
-      };
-    };
-
     const _insertWithInteractions = ({ data }) => {
       for (const entry of data) {
         const currentEntry = Entries.findOne(entry.id);
-        const updateObj = _getUpdateObj({ entry });
+        const updateObj = this.getUpdateObjFromFBData({
+          facebookAccountId: facebookId,
+          entry
+        });
         const vals = updateObj.$set;
         let updateInteractions = [];
         if (currentEntry) {
@@ -185,7 +265,12 @@ const EntriesHelpers = {
             _id: entry.id
           })
           .upsert()
-          .update(_getUpdateObj({ entry }));
+          .update(
+            this.getUpdateObjFromFBData({
+              facebookAccountId: facebookId,
+              entry
+            })
+          );
       }
       bulk.execute();
     };
@@ -246,11 +331,10 @@ const EntriesHelpers = {
       });
     }
     if (interactionTypes.indexOf("likes") !== -1) {
-      LikesHelpers.getEntryLikes({
+      LikesHelpers.getObjectReactions({
         facebookAccountId,
         entryId,
         accessToken,
-        campaignId,
         likeDateEstimate
       });
     }

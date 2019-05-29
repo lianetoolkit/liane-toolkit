@@ -1,3 +1,4 @@
+import { People, PeopleLists } from "/imports/api/facebook/people/people.js";
 import { PeopleHelpers } from "./peopleHelpers.js";
 
 const PeopleJobs = {
@@ -38,6 +39,42 @@ const PeopleJobs = {
         }
       };
       return options;
+    }
+  },
+  "people.sumPersonInteractions": {
+    run({ job }) {
+      logger.debug("people.updateFBUsers job: called");
+      check(job && job.data && job.data.campaignId, String);
+      check(job && job.data && job.data.facebookId, String);
+      let errored = false;
+      try {
+        const person = People.findOne({
+          campaignId: job.data.campaignId,
+          facebookId: job.data.facebookId
+        });
+        PeopleHelpers.updateInteractionCountSum({
+          personId: person._id
+        });
+      } catch (error) {
+        errored = true;
+        return job.fail(error.message);
+      } finally {
+        if (!errored) {
+          job.done();
+          return job.remove();
+        }
+      }
+    },
+    workerOptions: {
+      concurrency: 30
+    },
+    jobOptions() {
+      return {
+        retry: {
+          retries: 2,
+          wait: 1000
+        }
+      };
     }
   },
   "people.removeExportFile": {

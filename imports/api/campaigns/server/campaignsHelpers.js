@@ -1,3 +1,5 @@
+import { Promise } from "meteor/promise";
+import axios from "axios";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import {
@@ -14,10 +16,15 @@ import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import _ from "underscore";
 
+const YEEKO = Meteor.settings.yeeko;
+
 const CampaignsHelpers = {
   refreshCampaignAccountsTokens({ campaignId }) {
     const campaign = Campaigns.findOne(campaignId);
-    const accounts = campaign.accounts;
+    let accounts = [campaign.facebookAccount];
+    if (campaign.accounts) {
+      accounts = accounts.concat(campaign.accounts);
+    }
     const users = campaign.users;
     let tokens = {};
     for (let campaignUser of users) {
@@ -48,31 +55,23 @@ const CampaignsHelpers = {
         const longToken = FacebookAccountsHelpers.exchangeFBToken({
           token: tokens[account.facebookId]
         });
-        if (longToken) {
-          account.accessToken = longToken.result;
-        }
+        Campaigns.update(
+          {
+            _id: campaignId,
+            "accounts.facebookId": account.facebookId
+          },
+          {
+            $set: {
+              "accounts.$.accessToken": longToken.result
+            }
+          }
+        );
       }
-      update.push(account);
     }
-    Campaigns.update({ _id: campaign._id }, { $set: { accounts: update } });
   },
-  addAccount({ campaignId, account }) {
+  setMainAccount({ campaignId, account }) {
     check(campaignId, String);
     check(account, Object);
-
-    const token = FacebookAccountsHelpers.exchangeFBToken({
-      token: account.access_token
-    });
-
-    const updateObj = {
-      facebookId: account.id,
-      accessToken: token.result
-    };
-
-    Campaigns.update(
-      { _id: campaignId },
-      { $addToSet: { accounts: updateObj } }
-    );
 
     const upsertObj = {
       $set: {
@@ -83,6 +82,123 @@ const CampaignsHelpers = {
     };
 
     FacebookAccounts.upsert({ facebookId: account.id }, upsertObj);
+
+    const token = FacebookAccountsHelpers.exchangeFBToken({
+      token: account.access_token
+    });
+
+    const updateObj = {
+      facebookId: account.id,
+      accessToken: token.result,
+      chatbot: {
+        active: false,
+        init_text_response: false
+      }
+    };
+
+    // Facebook subscription
+    try {
+      const fbRes = Promise.await(
+        FB.api(`${account.id}/subscribed_apps`, "post", {
+          subscribed_fields: [
+            "feed",
+            "messages",
+            "message_deliveries",
+            "messaging_postbacks",
+            "message_deliveries",
+            "message_reads",
+            "ratings",
+            "mention"
+          ],
+          access_token: token.result
+        })
+      );
+    } catch (err) {
+      throw new Meteor.Error(500, "Error trying to subscribe");
+    }
+
+    Campaigns.update(
+      { _id: campaignId },
+      { $set: { facebookAccount: updateObj } }
+    );
+
+    JobsHelpers.addJob({
+      jobType: "entries.updateAccountEntries",
+      jobData: {
+        campaignId,
+        facebookId: account.id,
+        accessToken: token.result
+      }
+    });
+    JobsHelpers.addJob({
+      jobType: "audiences.updateAccountAudience",
+      jobData: {
+        campaignId,
+        facebookAccountId: account.id
+      }
+    });
+    JobsHelpers.addJob({
+      jobType: "people.updateFBUsers",
+      jobData: {
+        campaignId,
+        facebookAccountId: account.id
+      }
+    });
+    return;
+  },
+  addAccount({ campaignId, account }) {
+    check(campaignId, String);
+    check(account, Object);
+
+    const upsertObj = {
+      $set: {
+        name: account.name,
+        category: account.category,
+        fanCount: account.fan_count
+      }
+    };
+
+    FacebookAccounts.upsert({ facebookId: account.id }, upsertObj);
+
+    const token = FacebookAccountsHelpers.exchangeFBToken({
+      token: account.access_token
+    });
+
+    const updateObj = {
+      facebookId: account.id,
+      accessToken: token.result,
+      chatbot: {
+        active: false,
+        init_text_response: false
+      }
+    };
+
+    // Facebook subscription
+    try {
+      const fbRes = Promise.await(
+        FB.api(`${account.id}/subscribed_apps`, "post", {
+          subscribed_fields: [
+            "feed",
+            "messages",
+            "message_deliveries",
+            "messaging_postbacks",
+            "message_deliveries",
+            "message_reads",
+            "ratings",
+            "mention"
+          ],
+          access_token: token.result
+        })
+      );
+    } catch (err) {
+      throw new Meteor.Error(500, "Error trying to subscribe");
+    }
+
+    Campaigns.update(
+      { _id: campaignId },
+      { $addToSet: { accounts: updateObj } }
+    );
+
     JobsHelpers.addJob({
       jobType: "entries.updateAccountEntries",
       jobData: {
@@ -317,6 +433,190 @@ const CampaignsHelpers = {
       });
     }
   },
+  getChatbotYeekoConfig({ campaignId, facebookAccountId }) {
+    const campaign = Campaigns.findOne(campaignId);
+    const campaignAccount =
+      campaign.facebookAccount ||
+      _.find(
+        campaign.accounts,
+        account => account.facebookId == facebookAccountId
+      );
+    const account = FacebookAccounts.findOne({ facebookId: facebookAccountId });
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    if (!campaignAccount) {
+      throw new Meteor.Error(404, "Facebook Account not found");
+    }
+    return {
+      idPage: facebookAccountId,
+      tokenPage: campaignAccount.accessToken,
+      title: account.name,
+      fanPage: `https://facebook.com/${facebookAccountId}`,
+      description: "test",
+      menu_autoconfigurable: true,
+      menu_principal: true
+    };
+  },
+  activateChatbot({ campaignId, facebookAccountId }) {
+    const campaign = Campaigns.findOne(campaignId);
+    const campaignAccount =
+      campaign.facebookAccount ||
+      _.find(
+        campaign.accounts,
+        account => account.facebookId == facebookAccountId
+      );
+
+    // Yeeko
+    const yeekoConfig = this.getChatbotYeekoConfig({
+      campaignId,
+      facebookAccountId
+    });
+    try {
+      const yeekoRes = Promise.await(
+        axios.post(`${YEEKO.url}?api_key=${YEEKO.apiKey}`, yeekoConfig)
+      );
+    } catch (err) {
+      throw new Meteor.Error(500, "Error connecting to Yeeko api");
+    }
+    // Facebook subscription
+    try {
+      const fbRes = Promise.await(
+        FB.api(`${facebookAccountId}/subscribed_apps`, "post", {
+          subscribed_fields: [
+            "messages",
+            "message_deliveries",
+            "messaging_postbacks",
+            "message_deliveries",
+            "message_reads"
+          ],
+          access_token: campaignAccount.accessToken
+        })
+      );
+    } catch (err) {
+      throw new Meteor.Error(500, "Error trying to subscribe");
+    }
+
+    // Update locally
+    return Campaigns.update(
+      { _id: campaignId, "accounts.facebookId": facebookAccountId },
+      {
+        $set: {
+          "accounts.$.chatbot.active": true
+        }
+      }
+    );
+  },
+  updateChatbot({ campaignId, facebookAccountId, config }) {
+    const campaign = Campaigns.findOne(campaignId);
+    const campaignAccount =
+      campaign.facebookAccount ||
+      _.find(
+        campaign.accounts,
+        account => account.facebookId == facebookAccountId
+      );
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    if (!campaignAccount) {
+      throw new Meteor.Error(404, "Facebook Account not found");
+    }
+
+    if (!campaignAccount.chatbot || !campaignAccount.chatbot.active) {
+      throw new Meteor.Error(401, "Chatbot is not active");
+    }
+
+    // Yeeko
+    const yeekoConfig = this.getChatbotYeekoConfig({
+      campaignId,
+      facebookAccountId
+    });
+    let data = _.pick(config, "init_text_response", "extra_info");
+    data["extra_info"] = JSON.stringify(data["extra_info"]);
+    try {
+      const yeekoRes = Promise.await(
+        axios.put(`${YEEKO.url}${facebookAccountId}/?api_key=${YEEKO.apiKey}`, {
+          ...yeekoConfig,
+          ...data
+        })
+      );
+    } catch (err) {
+      console.log(err.response.data);
+      throw new Meteor.Error(500, "Error connecting to Yeeko api");
+    }
+
+    // Update locally (repick data from config)
+    const $set = {
+      ...campaignAccount.chatbot,
+      ..._.pick(config, "init_text_response", "extra_info")
+    };
+    return Campaigns.update(
+      {
+        _id: campaignId,
+        "accounts.facebookId": facebookAccountId
+      },
+      {
+        $set: {
+          "accounts.$.chatbot": $set
+        }
+      }
+    );
+  },
+  deactivateChatbot({ campaignId, facebookAccountId }) {
+    const campaign = Campaigns.findOne(campaignId);
+    const campaignAccount = _.find(
+      campaign.accounts,
+      account => account.facebookId == facebookAccountId
+    );
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    if (!campaignAccount) {
+      throw new Meteor.Error(404, "Facebook Account not found");
+    }
+
+    try {
+      const yeekoRes = Promise.await(
+        axios.delete(
+          `${YEEKO.url}${facebookAccountId}/?api_key=${YEEKO.apiKey}`
+        )
+      );
+    } catch (err) {
+      console.log(err);
+      throw new Meteor.Error(500, "Error connecting to Yeeko api");
+    }
+
+    try {
+      Promise.await(
+        FB.api(`${facebookAccountId}/subscribed_apps`, "delete", {
+          access_token: campaignAccount.accessToken
+        })
+      );
+    } catch (err) {
+      if (err.response.error.code == 100) {
+        // App not installed
+        console.log("App not installed");
+      } else {
+        console.log(err);
+        throw new Meteor.Error(500, "Error trying to unsubscribe");
+      }
+    }
+
+    return Campaigns.update(
+      { _id: campaignId, "accounts.facebookId": facebookAccountId },
+      {
+        $set: {
+          "accounts.$.chatbot.active": false
+        }
+      }
+    );
+  },
   removeCampaign({ campaignId }) {
     const campaign = Campaigns.findOne(campaignId);
 
@@ -333,16 +633,21 @@ const CampaignsHelpers = {
     FacebookAudiences.remove({ campaignId });
 
     // Facebook accounts to delete
+    let accountsIds = _.pluck(campaign.accounts, "facebookId");
+    if (campaign.facebookAccount) {
+      accountsIds.push(campaign.facebookAccount.facebookId);
+    }
     const accounts = FacebookAccounts.find({
-      facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
+      facebookId: {
+        $in: accountsIds
+      }
     }).fetch();
     for (const account of accounts) {
       const accountCampaignsCount = Campaigns.find({
-        accounts: {
-          $elemMatch: {
-            facebookId: account.facebookId
-          }
-        }
+        $or: [
+          { accounts: { $elemMatch: { facebookId: account.facebookId } } },
+          { "facebookAccount.facebookId": account.facebookId }
+        ]
       }).count();
       if (accountCampaignsCount <= 1) {
         FacebookAccountsHelpers.removeAccount({
