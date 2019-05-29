@@ -85,12 +85,20 @@ class Filter extends React.Component {
     });
   };
   render() {
-    const { size, showAny } = this.props;
+    const { size, showAny, key } = this.props;
     const { selected } = this.state;
     const keys = Object.keys(imagePaths);
+    let className = "reaction-filter";
+    if (selected) {
+      className += " has-selection";
+    }
+    let tooltipId = "reaction-filter";
+    if (key) {
+      tooltipId += `-${key}`;
+    }
     return (
       <>
-        <FilterContainer className={selected ? "has-selection" : ""}>
+        <FilterContainer className={className}>
           {showAny ? (
             <a
               href="javascript:void(0);"
@@ -101,7 +109,7 @@ class Filter extends React.Component {
                 icon="dot-circle"
                 style={{ fontSize: sizes[size || "small"] + "px" }}
                 data-tip="all"
-                data-for="reaction-filter"
+                data-for={tooltipId}
               />
             </a>
           ) : null}
@@ -119,12 +127,12 @@ class Filter extends React.Component {
                   height: sizes[size || "small"] + "px"
                 }}
                 data-tip={key}
-                data-for="reaction-filter"
+                data-for={tooltipId}
               />
             </a>
           ))}
         </FilterContainer>
-        <ReactTooltip id="reaction-filter" effect="solid" />
+        <ReactTooltip id={tooltipId} effect="solid" />
       </>
     );
   }

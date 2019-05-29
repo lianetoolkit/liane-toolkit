@@ -6,6 +6,8 @@ import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Page from "../components/Page.jsx";
+import Reaction from "../components/Reaction.jsx";
+import Button from "../components/Button.jsx";
 
 const Container = styled.div`
   flex: 1 1 100%;
@@ -21,15 +23,28 @@ const Comment = styled.article`
   .comment-content {
     flex: 1 1 100%;
   }
+  .comment-reply,
   .comment-actions,
   .comment-resolve {
     flex: 0 0 auto;
     padding: 1rem;
+    border-left: 1px solid #eee;
     ${"" /* background: #f7f7f7;
     border-left: 1px solid #eee; */}
-    display: flex;
+  }
+  .comment-reply {
+    .reaction-filter {
+      margin-bottom: 0.5rem;
+    }
+    .button-group {
+      font-size: 0.8em;
+    }
+  }
+  .comment-resolve {
     justify-content: center;
     align-items: center;
+    background: #f7f7f7;
+    border-left: 1px solid #eee;
   }
   header {
     padding: 0.5rem 1rem;
@@ -82,6 +97,7 @@ const Comment = styled.article`
       align-items: center;
       color: #63c;
       background-color: rgba(102, 51, 204, 0);
+      border: 1px solid rgba(102, 51, 204, 0.25);
       border-radius: 100%;
       transition: all 0.1s linear;
       &:hover,
@@ -111,6 +127,10 @@ const Comment = styled.article`
       }
     }
   }
+  .action-label {
+    font-size: 0.8em;
+    color: #666;
+  }
 `;
 
 export default class CommentsPage extends Component {
@@ -138,7 +158,16 @@ export default class CommentsPage extends Component {
                       <p>{comment.message}</p>
                     </section>
                   </div>
+                  <div className="comment-reply">
+                    <p className="action-label">Reagir e responder</p>
+                    <Reaction.Filter key={comment._id} />
+                    <Button.Group>
+                      <Button>Responder</Button>
+                      <Button>Inbox</Button>
+                    </Button.Group>
+                  </div>
                   <div className="comment-actions">
+                    <p className="action-label">Classificar</p>
                     <div className="action-icons">
                       <a
                         href="javascript:void(0);"
