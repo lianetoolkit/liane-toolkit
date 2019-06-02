@@ -12,6 +12,7 @@ import ChatbotPage from "/imports/ui2/pages/Chatbot.jsx";
 import AuthPage from "/imports/ui2/pages/Auth.jsx";
 
 import CommentsPage from "/imports/ui2/containers/CommentsPage.jsx";
+import AdsetPage from "/imports/ui2/pages/Adset.jsx";
 
 import CampaignSettingsPage from "/imports/ui2/pages/campaign/settings/General.jsx";
 import CampaignAccountsPage from "/imports/ui2/pages/campaign/settings/Accounts.jsx";
@@ -72,6 +73,16 @@ appRoutes.route("/comments", {
     addTitle(`${APP_NAME} | Gestão de comentários`);
     return mount(App, {
       content: { component: CommentsPage }
+    });
+  }
+});
+
+appRoutes.route("/adset", {
+  name: "App.adset",
+  action: function() {
+    addTitle(`${APP_NAME} | Criar adset`);
+    return mount(App, {
+      content: { component: AdsetPage }
     });
   }
 });

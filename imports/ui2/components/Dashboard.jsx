@@ -31,12 +31,45 @@ const BoxContainer = styled.div`
       background: #63c;
       border-color: #63c;
       color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      .links {
+        margin-top: 1rem;
+        text-align: center;
+        p {
+          margin-bottom: 0.25rem;
+        }
+        a {
+          color: rgba(255,255,255,0.5);
+          text-decoration: none;
+          font-size: 0.8em;
+        }
+        .button {
+          border: 0;
+          color: #63c;
+          margin: 0;
+          background: #fff;
+          display: block;
+          width: 100%;
+          &:hover,
+          &:active,
+          &:focus {
+            background-color: #333;
+            color: #fff;
+          }
+        }
+      }
     `};
   ${props =>
     props.attached &&
     css`
       padding: 0;
     `}
+  .button {
+    font-size: 0.8em;
+  }
 `;
 
 const BoxTitle = styled.h3`

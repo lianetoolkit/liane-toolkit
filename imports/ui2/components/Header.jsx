@@ -16,6 +16,8 @@ const Container = styled.header`
       margin: 1rem 0.8rem 0.8rem 0;
       float: left;
       font-family: "Unica One", monospace;
+      position: relative;
+      z-index: 15;
     }
     .brand h1 {
       margin: 0;
@@ -59,10 +61,12 @@ export default class Header extends Component {
         <div className="header-content">
           <div className="brand">
             <h1>
-              <img
-                src={user ? "/images/logo_icon.svg" : "/images/logo_dark.svg"}
-                alt="Liane"
-              />
+              <a href={FlowRouter.path("App.dashboard")}>
+                <img
+                  src={user ? "/images/logo_icon.svg" : "/images/logo_dark.svg"}
+                  alt="Liane"
+                />
+              </a>
             </h1>
           </div>
           <TopNav>

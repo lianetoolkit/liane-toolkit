@@ -76,11 +76,16 @@ export default class PeopleBlock extends Component {
     });
   };
   render() {
+    const { title, color } = this.props;
     const { people } = this.state;
     return (
       <Container>
-        <header>
-          <h3>Voluntários</h3>
+        <header
+          style={{
+            backgroundColor: color || "#fc0"
+          }}
+        >
+          <h3>{title}</h3>
         </header>
         <div className="people-table">
           {people.length ? (
@@ -100,7 +105,7 @@ export default class PeopleBlock extends Component {
         </div>
         <footer>
           <Button.Group>
-            <Button>Exportar voluntários</Button>
+            <Button>Exportar {title}</Button>
             <Button>Marcar novos</Button>
           </Button.Group>
         </footer>

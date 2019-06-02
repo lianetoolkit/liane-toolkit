@@ -11,6 +11,10 @@ import { AdAccountsHelpers } from "/imports/api/facebook/adAccounts/server/adAcc
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 import _ from "underscore";
 
+import { People } from "/imports/api/facebook/people/people.js";
+import { Likes } from "/imports/api/facebook/likes/likes.js";
+import { Comments } from "/imports/api/facebook/comments/comments.js";
+
 const PRIVATE = Meteor.settings.private;
 
 export const canManageCampaign = new ValidatedMethod({
@@ -880,5 +884,57 @@ export const refreshAccountJob = new ValidatedMethod({
     }
 
     CampaignsHelpers.refreshAccountJob({ campaignId, facebookAccountId, type });
+  }
+});
+
+export const campaignCounts = new ValidatedMethod({
+  name: "campaigns.counts",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId }) {
+    this.unblock();
+    logger.debug("campaigns.counts", { campaignId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "This campaign does not exist");
+    }
+
+    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    if (!campaign.facebookAccount) {
+      throw new Meteor.Error(400, "Facebook Account not found");
+    }
+
+    const account = FacebookAccounts.findOne({
+      facebookId: campaign.facebookAccount.facebookId
+    });
+
+    if (!account) {
+      throw new Meteor.Error(400, "Facebook Account not found");
+    }
+
+    let counts = {};
+
+    counts["people"] = People.find({ campaignId }).count();
+    counts["comments"] = Comments.find({
+      facebookAccountId: account.facebookId
+    }).count();
+    counts["likes"] = Likes.find({
+      facebookAccountId: account.facebookId,
+      parentId: { $exists: false }
+    }).count();
+
+    return counts;
   }
 });

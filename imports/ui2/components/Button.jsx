@@ -8,7 +8,7 @@ const styles = css`
   padding: 0.5rem 1rem;
   margin: 0 0.5rem;
   border-radius: 3rem;
-  border: 1px solid #6633cc;
+  border: 1px solid rgba(102, 51, 204, 0.25);
   background: rgba(255, 255, 255, 0.6);
   display: inline-block;
   box-sizing: border-box;
@@ -16,9 +16,8 @@ const styles = css`
   &:hover,
   &:focus,
   &:active {
-    background: #fff;
-    border-color: #000;
-    color: #000;
+    background: #63c;
+    color: #fff;
   }
   &.with-icon {
     padding: 0;
@@ -73,8 +72,12 @@ const ButtonGroupContainer = styled.span`
   ${props =>
     !props.attached &&
     css`
+      .button {
+        border-left-width: 0;
+      }
       .button:first-child {
         border-radius: 3rem 0 0 3rem;
+        border-left-width: 1px;
       }
       .button:last-child {
         border-radius: 0 3rem 3rem 0;

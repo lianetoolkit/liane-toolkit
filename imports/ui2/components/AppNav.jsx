@@ -221,7 +221,7 @@ export default class AppNav extends Component {
                   <NavItem name={<CampaignNav campaigns={campaigns} />} clean />
                 ) : null}
                 <NavItem
-                  href="javascript:void(0);"
+                  href={FlowRouter.path("App.map")}
                   name="Inteligência e Estratégia"
                 >
                   <ul>
@@ -236,7 +236,7 @@ export default class AppNav extends Component {
                   </ul>
                 </NavItem>
                 <NavItem
-                  href="javascript:void(0);"
+                  href={FlowRouter.path("App.people")}
                   name="Pessoas e Comunicação"
                 >
                   <ul>
@@ -256,7 +256,7 @@ export default class AppNav extends Component {
                   </ul>
                 </NavItem>
                 <NavItem
-                  href="javascript:void(0);"
+                  href={FlowRouter.path("App.adset")}
                   name={
                     <>
                       <FontAwesomeIcon icon={["fab", "facebook-square"]} />{" "}

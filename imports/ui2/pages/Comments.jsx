@@ -6,6 +6,7 @@ import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Page from "../components/Page.jsx";
+import PageFilters from "../components/PageFilters.jsx";
 import Reaction from "../components/Reaction.jsx";
 import Button from "../components/Button.jsx";
 
@@ -41,10 +42,6 @@ const Comment = styled.article`
     }
   }
   .comment-resolve {
-    justify-content: center;
-    align-items: center;
-    background: #f7f7f7;
-    border-left: 1px solid #eee;
   }
   header {
     padding: 0.5rem 1rem;
@@ -111,6 +108,8 @@ const Comment = styled.article`
     display: flex;
     justify-content: center;
     align-items: center;
+    background: rgba(0, 102, 51, 0.1);
+    border-left: 1px solid #eee;
     a {
       width: 40px;
       height: 40px;
@@ -138,7 +137,22 @@ export default class CommentsPage extends Component {
     const { comments } = this.props;
     return (
       <>
-        <Page.Nav full plain />
+        <Page.Nav full plain>
+          <PageFilters>
+            <div className="filters">
+              <form onSubmit={ev => ev.preventDefault()}>
+                <input
+                  className="main-input"
+                  type="text"
+                  placeholder="Buscar por texto"
+                  name="q"
+                  // onChange={this._handleFormChange}
+                  // value={query.q}
+                />
+              </form>
+            </div>
+          </PageFilters>
+        </Page.Nav>
         <Container>
           {comments.length ? (
             <div>
