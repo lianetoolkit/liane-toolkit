@@ -102,6 +102,7 @@ const LikesHelpers = {
 
       const PeopleRawCollection = People.rawCollection();
       for (const campaign of accountCampaigns) {
+        const _id = Random.id();
         PeopleRawCollection.update(
           {
             campaignId: campaign._id,
@@ -111,7 +112,8 @@ const LikesHelpers = {
             ...updateObj,
             $setOnInsert: {
               ...updateObj.$setOnInsert,
-              _id: Random.id()
+              _id,
+              formId: PeopleHelpers.generateFormId(_id)
             }
           },
           {
@@ -219,7 +221,6 @@ const LikesHelpers = {
 
         let updateObj = {
           $setOnInsert: {
-            _id: Random.id(),
             createdAt: new Date(),
             source: "facebook"
           },
@@ -236,6 +237,7 @@ const LikesHelpers = {
         }
 
         for (const campaign of accountCampaigns) {
+          const _id = Random.id();
           peopleBulk
             .find({
               campaignId: campaign._id,
@@ -246,7 +248,8 @@ const LikesHelpers = {
               ...updateObj,
               $setOnInsert: {
                 ...updateObj.$setOnInsert,
-                _id: Random.id()
+                _id: Random.id(),
+                formId: PeopleHelpers.generateFormId(_id)
               }
             });
         }

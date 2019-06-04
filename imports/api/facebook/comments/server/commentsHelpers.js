@@ -152,6 +152,7 @@ const CommentsHelpers = {
 
       const PeopleRawCollection = People.rawCollection();
       for (const campaign of accountCampaigns) {
+        const _id = Random.id();
         PeopleRawCollection.update(
           {
             campaignId: campaign._id,
@@ -161,7 +162,8 @@ const CommentsHelpers = {
             ...updateObj,
             $setOnInsert: {
               ...updateObj.$setOnInsert,
-              _id: Random.id()
+              _id,
+              formId: PeopleHelpers.generateFormId(_id)
             }
           },
           {
@@ -307,6 +309,7 @@ const CommentsHelpers = {
         }
 
         for (const campaign of accountCampaigns) {
+          const _id = Random.id();
           peopleBulk
             .find({
               campaignId: campaign._id,
@@ -317,7 +320,8 @@ const CommentsHelpers = {
               ...updateObj,
               $setOnInsert: {
                 ...updateObj.$setOnInsert,
-                _id: Random.id()
+                _id,
+                formId: PeopleHelpers.generateFormId(_id)
               }
             });
         }

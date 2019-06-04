@@ -599,7 +599,7 @@ export const updatePersonMeta = new ValidatedMethod({
     let doc = {};
     doc[`campaignMeta.${metaKey}`] = metaValue;
 
-    if (!person.formId) PeopleHelpers.generateFormId({ person });
+    if (!person.formId) PeopleHelpers.updateFormId({ person });
 
     return People.update({ _id: person._id }, { $set: doc });
   }
@@ -665,8 +665,7 @@ export const peopleFormId = new ValidatedMethod({
 
     let formId = person.formId;
 
-    if (!formId || regenerate)
-      formId = PeopleHelpers.generateFormId({ person });
+    if (!formId || regenerate) formId = PeopleHelpers.updateFormId({ person });
 
     return {
       formId,
@@ -748,7 +747,7 @@ export const peopleMetaUpdate = new ValidatedMethod({
       throw new Meteor.Error(401, "Not allowed");
     }
 
-    if (!person.formId) PeopleHelpers.generateFormId({ person });
+    if (!person.formId) PeopleHelpers.updateFormId({ person });
 
     if (data.address) {
       let location;
@@ -1274,7 +1273,7 @@ export const peopleFormConnectFacebook = new ValidatedMethod({
         );
         const person = People.findOne({ campaignId, facebookId: data.id });
         let formId = person.formId;
-        if (!formId) formId = PeopleHelpers.generateFormId({ person });
+        if (!formId) formId = PeopleHelpers.updateFormId({ person });
         return formId;
       }
     }

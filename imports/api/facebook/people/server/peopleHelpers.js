@@ -19,19 +19,22 @@ const PeopleHelpers = {
       throw new Meteor.Error(404, "Person not found");
     }
     if (generate || !person.formId) {
-      return this.generateFormId({ person });
+      return this.updateFormId({ person });
     } else {
       return person.formId;
     }
   },
-  generateFormId({ person }) {
-    const formId = crypto
-      .createHash("sha1")
-      .update(person._id + new Date().getTime())
-      .digest("hex")
-      .substr(0, 7);
+  updateFormId({ person }) {
+    const formId = this.generateFormId(person._id);
     People.update(person._id, { $set: { formId } });
     return formId;
+  },
+  generateFormId(id) {
+    return crypto
+      .createHash("sha1")
+      .update(id + new Date().getTime())
+      .digest("hex")
+      .substr(0, 7);
   },
   getInteractionCount({ facebookId, facebookAccountId }) {
     const commentsCount = Comments.find({
@@ -186,6 +189,7 @@ const PeopleHelpers = {
     if (data.length) {
       const peopleBulk = collection.initializeUnorderedBulkOp();
       for (const person of data) {
+        const _id = Random.id();
         peopleBulk
           .find({
             campaignId,
@@ -194,7 +198,8 @@ const PeopleHelpers = {
           .upsert()
           .update({
             $setOnInsert: {
-              _id: Random.id(),
+              _id,
+              formId: this.generateFormId(_id),
               createdAt: new Date()
             },
             $set: {
@@ -344,7 +349,8 @@ const PeopleHelpers = {
     });
   },
   importPerson({ campaignId, listId, person }) {
-    let selector = { _id: Random.id(), campaignId };
+    const _id = Random.id();
+    let selector = { _id, campaignId };
     let foundMatch = false;
     const _queries = () => {
       let queries = [];
@@ -399,6 +405,7 @@ const PeopleHelpers = {
                     },
                     $setOnInsert: {
                       source: "import",
+                      formId: this.generateFormId(_id),
                       listId
                     }
                   },
@@ -451,6 +458,8 @@ const PeopleHelpers = {
       },
       { multi: false }
     );
+
+    this.updateFormId({ _id: selector._id });
 
     // Clear empty campaign lists
     const campaignLists = PeopleLists.find({ campaignId }).fetch();
