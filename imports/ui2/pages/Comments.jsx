@@ -9,6 +9,7 @@ import Page from "../components/Page.jsx";
 import PageFilters from "../components/PageFilters.jsx";
 import Reaction from "../components/Reaction.jsx";
 import Button from "../components/Button.jsx";
+import Comment from "../components/Comment.jsx";
 
 const Container = styled.div`
   flex: 1 1 100%;
@@ -16,13 +17,16 @@ const Container = styled.div`
   background: #fff;
 `;
 
-const Comment = styled.article`
+const CommentContainer = styled.article`
   border-bottom: 1px solid #ddd;
   font-size: 0.9em;
   display: flex;
   justify-content: center;
   .comment-content {
     flex: 1 1 100%;
+    header h3 {
+      margin-top: 0.5rem;
+    }
   }
   .comment-reply,
   .comment-actions,
@@ -39,46 +43,6 @@ const Comment = styled.article`
     }
     .button-group {
       font-size: 0.8em;
-    }
-  }
-  header {
-    padding: 0.5rem 1rem;
-    color: #666;
-    h3 {
-      margin: 0.5rem 0;
-      font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-      font-size: 1em;
-      .name {
-        color: #333;
-        font-weight: 600;
-        font-size: 1.1em;
-      }
-      .date {
-        color: #999;
-        font-size: 0.9em;
-        margin-left: 0.5rem;
-      }
-    }
-  }
-  .comment-message {
-    background: #f0f0f0;
-    font-size: 0.9em;
-    padding: 1rem;
-    position: relative;
-    margin: 0 1rem 1rem 1rem;
-    border-radius: 7px;
-    &:before {
-      content: "";
-      background: #f0f0f0;
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      left: 1rem;
-      top: -5px;
-      transform: rotate(45deg);
-    }
-    p {
-      margin: 0;
     }
   }
   .action-icons {
@@ -155,20 +119,9 @@ export default class CommentsPage extends Component {
           {comments.length ? (
             <div>
               {comments.map((comment, i) => (
-                <Comment key={comment._id}>
+                <CommentContainer key={comment._id}>
                   <div className="comment-content">
-                    <header>
-                      <h3>
-                        <span className="name">{comment.person.name}</span>{" "}
-                        comentou em um post{" "}
-                        <span className="date">
-                          {moment(comment.created_time).fromNow()}
-                        </span>
-                      </h3>
-                    </header>
-                    <section className="comment-message">
-                      <p>{comment.message}</p>
-                    </section>
+                    <Comment comment={comment} />
                   </div>
                   <div className="comment-reply">
                     <p className="action-label">Reagir e responder</p>
@@ -209,7 +162,7 @@ export default class CommentsPage extends Component {
                       <FontAwesomeIcon icon="check" />
                     </a>
                   </div>
-                </Comment>
+                </CommentContainer>
               ))}
               <ReactTooltip effect="solid" />
             </div>
