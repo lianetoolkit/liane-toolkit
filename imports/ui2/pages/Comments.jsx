@@ -41,8 +41,6 @@ const Comment = styled.article`
       font-size: 0.8em;
     }
   }
-  .comment-resolve {
-  }
   header {
     padding: 0.5rem 1rem;
     color: #666;

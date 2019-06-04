@@ -17,6 +17,7 @@ import PersonSummary from "./PersonSummary.jsx";
 import PersonReactions from "./PersonReactions.jsx";
 import PersonEdit from "./PersonEdit.jsx";
 import PersonContactIcons from "./PersonContactIcons.jsx";
+import PrivateReply from "./PrivateReply.jsx";
 
 const Container = styled.div`
   width: 100%;
@@ -332,6 +333,16 @@ export default class PeopleTable extends Component {
     }
     return false;
   };
+  _handlePrivateReplyClick = person => ev => {
+    ev.preventDefault();
+    modalStore.setTitle(`Enviando mensagem privada para ${person.name}`);
+    modalStore.set(
+      <PrivateReply personId={person._id} onSuccess={this._handlePRSuccess} />
+    );
+  };
+  _handlePRSuccess = data => {
+    console.log(data);
+  };
   render() {
     const { people, onChange, onSort, ...props } = this.props;
     const { expanded } = this.state;
@@ -385,9 +396,7 @@ export default class PeopleTable extends Component {
                       trigger={open => (
                         <div data-tip data-for={`person-meta-${person._id}`}>
                           {this.hasMeta(person) ? (
-                            <PersonMetaCircles
-                              person={person}
-                            />
+                            <PersonMetaCircles person={person} />
                           ) : (
                             <FontAwesomeIcon
                               icon="grip-horizontal"
@@ -467,7 +476,15 @@ export default class PeopleTable extends Component {
                           <FontAwesomeIcon icon="comment" />{" "}
                           {this._getComments(person)} comentários
                         </span>
-                        <Button light>Enviar mensagem privada</Button>
+                        {person.canReceivePrivateReply &&
+                        person.canReceivePrivateReply.length ? (
+                          <Button
+                            light
+                            onClick={this._handlePrivateReplyClick(person)}
+                          >
+                            Enviar mensagem privada
+                          </Button>
+                        ) : null}
                       </p>
                       <p className="person-buttons" />
                     </td>

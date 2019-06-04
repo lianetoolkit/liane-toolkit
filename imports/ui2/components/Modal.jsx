@@ -29,7 +29,7 @@ const Container = styled.div`
     background: #fff;
     position: relative;
     z-index: 2;
-    header {
+    header.modal-header {
       border-radius: 7px 7px 0 0;
       background: #262626;
       border-bottom: 1px solid #222;
@@ -95,7 +95,7 @@ export default class Modal extends Component {
           />
           <div className="modal">
             {title ? (
-              <header>
+              <header className="modal-header">
                 <h2>{title}</h2>
               </header>
             ) : null}

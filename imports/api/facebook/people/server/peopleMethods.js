@@ -6,6 +6,7 @@ import peopleMetaModel from "/imports/api/facebook/people/model/meta";
 import { PeopleHelpers } from "./peopleHelpers.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
+import { Entries } from "/imports/api/facebook/entries/entries.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { flattenObject } from "/imports/utils/common.js";
 import _ from "underscore";
@@ -321,7 +322,8 @@ export const peopleReplyComment = new ValidatedMethod({
       type: String
     },
     facebookAccountId: {
-      type: String
+      type: String,
+      optional: true
     }
   }).validator(),
   run({ personId, facebookAccountId }) {
@@ -344,7 +346,11 @@ export const peopleReplyComment = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    const comment = Comments.findOne(
+    const campaign = Campaigns.findOne(person.campaignId);
+    facebookAccountId =
+      facebookAccountId || campaign.facebookAccount.facebookId;
+
+    let comment = Comments.findOne(
       {
         personId: person.facebookId,
         facebookAccountId,
@@ -362,13 +368,14 @@ export const peopleReplyComment = new ValidatedMethod({
       },
       { sort: { created_time: -1 } }
     );
-
-    const campaign = Campaigns.findOne(person.campaignId);
     // Recheck for reply availability
     if (comment) {
-      const campaignAccount = campaign.accounts.find(
-        a => a.facebookId == facebookAccountId
-      );
+      const campaignAccount =
+        campaign.facebookAccount ||
+        _.find(
+          campaign.accounts,
+          account => account.facebookId == facebookAccountId
+        );
       if (campaignAccount) {
         const access_token = campaignAccount.accessToken;
         let res;
@@ -404,6 +411,12 @@ export const peopleReplyComment = new ValidatedMethod({
         }
       }
     }
+
+    comment.person = People.findOne({
+      facebookId: comment.personId,
+      campaignId: campaign._id
+    });
+    comment.entry = Entries.findOne(comment.entryId);
 
     return {
       comment,
