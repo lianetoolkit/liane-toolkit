@@ -101,7 +101,7 @@ const PeopleJobs = {
     },
     jobOptions() {
       return {
-        delay: 12 * 60 * 60 * 1000, // Time until file deletion
+        delay: 12 * 60 * 60 * 1000, // 12 hours until file deletion
         retry: {
           retries: 0,
           wait: 5 * 1000

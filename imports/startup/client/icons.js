@@ -2,6 +2,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCog,
+  faDownload,
   faTimes,
   faBell,
   faChevronUp,
@@ -46,6 +47,7 @@ import {
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 
 library.add(faCog);
+library.add(faDownload);
 library.add(faTimes);
 library.add(faBell);
 library.add(faChevronUp);

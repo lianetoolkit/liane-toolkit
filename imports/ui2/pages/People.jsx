@@ -7,6 +7,7 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import { pick, debounce, defaultsDeep } from "lodash";
 
+import PeopleExport from "../components/PeopleExport.jsx";
 import { PersonImportButton } from "../components/PersonImport.jsx";
 import Button from "../components/Button.jsx";
 import More from "../components/More.jsx";
@@ -577,7 +578,9 @@ export default class PeoplePage extends Component {
             <div className="actions">
               <Button.Group vertical attached>
                 <Button.WithIcon>
-                  <a href="javascript:void(0);">Exportar resultados</a>
+                  <PeopleExport query={query} options={options}>
+                    Exportar resultados
+                  </PeopleExport>
                   <span className="icon">
                     <FontAwesomeIcon
                       icon="cog"

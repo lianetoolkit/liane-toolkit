@@ -29,6 +29,11 @@ export default styled.div`
       .disabled {
         color: #999;
       }
+      &:hover,
+      &:active,
+      &:focus {
+        color: #333;
+      }
     }
   }
   label {

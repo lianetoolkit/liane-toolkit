@@ -847,11 +847,17 @@ export const exportPeople = new ValidatedMethod({
     this.unblock();
     logger.debug("people.export called", { campaignId, rawQuery, options });
 
-    const searchQuery = buildSearchQuery({
+    let searchQuery = buildSearchQuery({
       campaignId,
       rawQuery: rawQuery || {},
       options: options || {}
     });
+
+    if (searchQuery.query.$text) {
+      searchQuery.options.projection = {
+        score: { $meta: "textScore" }
+      };
+    }
 
     const userId = Meteor.userId();
     if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
@@ -1015,7 +1021,9 @@ export const exportPeople = new ValidatedMethod({
     const url = Promise.await(
       new Promise((resolve, reject) => {
         writeStream.on("finish", () => {
-          resolve(`${Meteor.settings.filesUrl}/${campaignId}/${fileName}`);
+          resolve(
+            `${Meteor.settings.filesUrl || ""}/${campaignId}/${fileName}`
+          );
         });
       })
     );
