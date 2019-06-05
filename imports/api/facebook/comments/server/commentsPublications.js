@@ -16,7 +16,6 @@ Meteor.publishComposite("comments.byAccount", function({
     if (!campaign.facebookAccount) return this.ready();
     facebookId = facebookId || campaign.facebookAccount.facebookId;
     if (campaign.facebookAccount.facebookId == facebookId) {
-      console.log({ query });
       return {
         find: function() {
           return Comments.find(
