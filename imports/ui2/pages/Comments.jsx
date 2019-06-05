@@ -24,9 +24,7 @@ const CommentContainer = styled.article`
   justify-content: center;
   .comment-content {
     flex: 1 1 100%;
-    header h3 {
-      margin-top: 0.5rem;
-    }
+    padding: 1rem;
   }
   .comment-reply,
   .comment-actions,

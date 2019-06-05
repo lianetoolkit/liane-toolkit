@@ -7,7 +7,7 @@ import { Comments } from "/imports/api/facebook/comments/comments.js";
 Meteor.publishComposite("comments.byAccount", function({
   campaignId,
   facebookId,
-  queryParams,
+  query,
   limit
 }) {
   const userId = this.userId;
@@ -16,18 +16,7 @@ Meteor.publishComposite("comments.byAccount", function({
     if (!campaign.facebookAccount) return this.ready();
     facebookId = facebookId || campaign.facebookAccount.facebookId;
     if (campaign.facebookAccount.facebookId == facebookId) {
-      let query = { resolved: { $ne: true } };
-      if (queryParams.resolved == "true") {
-        query.resolved = true;
-      }
-      if (queryParams.type == "comment") {
-        if (queryParams.message_tags) {
-          query.message_tags = { $exists: true };
-        }
-        if (queryParams.categories) {
-          query.categories = { $in: [queryParams.categories] };
-        }
-      }
+      console.log({ query });
       return {
         find: function() {
           return Comments.find(
@@ -46,6 +35,13 @@ Meteor.publishComposite("comments.byAccount", function({
           {
             find: function(comment) {
               return Entries.find({ _id: comment.entryId });
+            }
+          },
+          {
+            find: function(comment) {
+              if (comment.parentId) {
+                return Comments.find({ _id: comment.parentId });
+              }
             }
           },
           {

@@ -20,6 +20,11 @@ Comments.schema = new SimpleSchema({
     type: String,
     index: true
   },
+  lastValidation: {
+    type: Date,
+    index: true,
+    optional: true
+  },
   can_hide: {
     type: Boolean,
     optional: true,
@@ -46,7 +51,8 @@ Comments.schema = new SimpleSchema({
     index: true
   },
   message: {
-    type: String
+    type: String,
+    index: true
   },
   attachment: {
     type: Object,

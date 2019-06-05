@@ -6,6 +6,7 @@ import peopleMetaModel from "/imports/api/facebook/people/model/meta";
 import { PeopleHelpers } from "./peopleHelpers.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
+import { CommentsHelpers } from "/imports/api/facebook/comments/server/commentsHelpers.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { flattenObject } from "/imports/utils/common.js";
@@ -350,73 +351,106 @@ export const peopleReplyComment = new ValidatedMethod({
     facebookAccountId =
       facebookAccountId || campaign.facebookAccount.facebookId;
 
-    let comment = Comments.findOne(
-      {
-        personId: person.facebookId,
-        facebookAccountId,
-        $or: [
-          { can_reply_privately: true },
-          {
-            can_reply_privately: { $exists: false },
-            created_time: {
-              $gte: moment()
-                .subtract(4, "months")
-                .toISOString()
-            }
-          }
-        ]
-      },
-      { sort: { created_time: -1 } }
-    );
-    // Recheck for reply availability
-    if (comment) {
-      const campaignAccount =
-        campaign.facebookAccount ||
-        _.find(
-          campaign.accounts,
-          account => account.facebookId == facebookAccountId
-        );
-      if (campaignAccount) {
-        const access_token = campaignAccount.accessToken;
-        let res;
-        try {
-          res = Promise.await(
-            FB.api(comment._id, {
-              fields: ["can_reply_privately"],
-              access_token
-            })
-          );
-        } catch (e) {
-          if (e.response && e.response.error.code == 190) {
-            throw new Meteor.Error(500, "Invalid facebook token");
-          } else {
-            throw new Meteor.Error(500);
-          }
-        }
-        if (res) {
-          Comments.update(
-            { _id: comment._id },
-            {
-              $set: {
-                can_reply_privately: res.can_reply_privately
-              }
-            }
-          );
-          if (!res.can_reply_privately) {
-            People.update(person._id, {
-              $pull: { canReceivePrivateReply: facebookAccountId }
-            });
-            return;
-          }
-        }
-      }
+    const campaignAccount =
+      campaign.facebookAccount ||
+      _.find(
+        campaign.accounts,
+        account => account.facebookId == facebookAccountId
+      );
+
+    if (!campaignAccount) {
+      throw new Meteor.Error(500, "Campaign account not found");
     }
 
-    comment.person = People.findOne({
-      facebookId: comment.personId,
-      campaignId: campaign._id
-    });
-    comment.entry = Entries.findOne(comment.entryId);
+    let comment, fbRes;
+
+    const getComment = () => {
+      comment = Comments.findOne(
+        {
+          personId: person.facebookId,
+          facebookAccountId,
+          $or: [
+            { can_reply_privately: true },
+            {
+              can_reply_privately: { $exists: false },
+              created_time: {
+                $gte: moment()
+                  .subtract(4, "months")
+                  .toISOString()
+              }
+            }
+          ]
+        },
+        { sort: { created_time: -1 } }
+      );
+    };
+
+    const validateFB = () => {
+      const access_token = campaignAccount.accessToken;
+      if (!comment) return;
+      if (
+        comment.lastValidation &&
+        moment(comment.lastValidation).isSame(moment.now(), "day")
+      ) {
+        return;
+      }
+      try {
+        fbRes = Promise.await(
+          FB.api(comment._id, {
+            fields: ["can_reply_privately"],
+            access_token
+          })
+        );
+      } catch (e) {
+        if (e.response) {
+          const error = e.response.error;
+          if (error.code == 190) {
+            throw new Meteor.Error(500, "Invalid facebook token");
+          } else if (error.error_subcode == 33) {
+            // Comment does not exist
+            CommentsHelpers.removeComment({
+              facebookAccountId,
+              data: comment._id
+            });
+            getComment();
+            validateFB();
+          } else {
+            throw new Meteor.Error(500, error.message);
+          }
+        } else {
+          throw new Meteor.Error(500, e);
+        }
+      }
+    };
+
+    getComment();
+    validateFB();
+
+    if (comment) {
+      if (fbRes) {
+        Comments.update(
+          { _id: comment._id },
+          {
+            $set: {
+              lastValidation: new Date(),
+              can_reply_privately: fbRes.can_reply_privately
+            }
+          }
+        );
+        if (!fbRes.can_reply_privately) {
+          People.update(person._id, {
+            $pull: { canReceivePrivateReply: facebookAccountId }
+          });
+          return;
+        }
+      }
+      comment.person = People.findOne({
+        facebookId: comment.personId,
+        campaignId: campaign._id
+      });
+      comment.entry = Entries.findOne(comment.entryId);
+    }
+
 
     return {
       comment,

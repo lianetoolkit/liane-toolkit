@@ -11,23 +11,35 @@ const CommentsSubs = new SubsManager();
 export default withTracker(props => {
   const queryParams = FlowRouter.current().queryParams;
 
-  const commentsHandle = CommentsSubs.subscribe("comments.byAccount", {
-    campaignId: props.campaignId,
-    queryParams,
-    limit: props.limit || 10
-  });
-
-  const loading = !commentsHandle.ready();
-
   let facebookIds = props.campaign.accounts.map(acc => acc.facebookId);
   if (props.facebookId) {
     facebookIds = [props.facebookId];
   }
 
-  let query = { resolved: { $ne: true } };
+  let query = {
+    personId: { $nin: facebookIds },
+    created_time: { $exists: true },
+    resolved: { $ne: true }
+  };
+
   if (queryParams.resolved == "true") {
     query.resolved = true;
   }
+
+  if (queryParams.message_tags) {
+    query.message_tags = { $exists: true };
+  }
+  if (queryParams.categories) {
+    query.categories = { $in: [queryParams.categories] };
+  }
+
+  const commentsHandle = CommentsSubs.subscribe("comments.byAccount", {
+    campaignId: props.campaignId,
+    query,
+    limit: props.limit || 10
+  });
+
+  const loading = !commentsHandle.ready();
 
   const commentsOptions = {
     transform: function(comment) {
@@ -36,23 +48,13 @@ export default withTracker(props => {
         facebookId: comment.personId,
         campaignId: props.campaignId
       });
+      comment.parent = Comments.findOne(comment.parentId);
       return comment;
     }
   };
 
-  let commentsQuery = {
-    ...query,
-    facebookAccountId: { $in: facebookIds },
-    created_time: { $exists: true }
-  };
-  if (queryParams.message_tags) {
-    commentsQuery.message_tags = { $exists: true };
-  }
-  if (queryParams.categories) {
-    commentsQuery.categories = { $in: [queryParams.categories] };
-  }
   let comments = commentsHandle.ready()
-    ? Comments.find(commentsQuery, commentsOptions).fetch()
+    ? Comments.find(query, commentsOptions).fetch()
     : [];
 
   comments = sortBy(comments, comment => -new Date(comment.created_time));

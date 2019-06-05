@@ -1,13 +1,13 @@
 import React, { Component } from "react";
+import { ClientStorage } from "meteor/ostrio:cstorage";
 import styled from "styled-components";
 import moment from "moment";
 
 const Container = styled.article`
   header {
-    padding: 0.5rem 1rem;
     color: #666;
     h3 {
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 1rem;
       font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
       font-size: 1em;
       .name {
@@ -19,16 +19,17 @@ const Container = styled.article`
         color: #999;
         font-size: 0.9em;
         margin-left: 0.5rem;
+        white-space: nowrap;
       }
     }
   }
   .comment-message {
     background: #f0f0f0;
-    font-size: 0.9em;
     padding: 1rem;
     position: relative;
-    margin: 0 1rem 1rem 1rem;
+    margin: 0;
     border-radius: 7px;
+    display: inline-block;
     &:before {
       content: "";
       background: #f0f0f0;
@@ -46,6 +47,15 @@ const Container = styled.article`
 `;
 
 export default class Comment extends Component {
+  action = () => {
+    const { comment } = this.props;
+    if (comment.parent) {
+      console.log(comment.parent);
+      return "respondeu um comentário";
+    } else {
+      return "comentou em um post";
+    }
+  };
   render() {
     const { comment } = this.props;
     if (comment) {
@@ -53,8 +63,8 @@ export default class Comment extends Component {
         <Container>
           <header>
             <h3>
-              <span className="name">{comment.person.name}</span> comentou em um
-              post{" "}
+              <span className="name">{comment.person.name}</span>{" "}
+              {this.action()}{" "}
               <span className="date">
                 {moment(comment.created_time).fromNow()}
               </span>

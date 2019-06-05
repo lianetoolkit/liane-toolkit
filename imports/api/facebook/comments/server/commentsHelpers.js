@@ -87,6 +87,7 @@ const CommentsHelpers = {
     comment.entryId = data.post_id;
     comment.facebookAccountId = facebookAccountId;
     comment.reaction_count = comment.reactions.summary.total_count;
+    comment.lastValidation = new Date();
     delete comment.id;
     delete comment.from;
     delete comment.reaction_count;
@@ -109,6 +110,7 @@ const CommentsHelpers = {
         can_reply_privately: true
       });
       let set = {
+        lastValidation: new Date(),
         updatedAt: new Date()
       };
       set["counts"] = PeopleHelpers.getInteractionCount({
@@ -177,13 +179,22 @@ const CommentsHelpers = {
     return true;
   },
   removeComment({ facebookAccountId, data }) {
-    const comment = Comments.findOne(data.comment_id);
+    let commentId;
+    if(typeof data == "string") {
+      commentId = data;
+    } else {
+      commentId = data.comment_id || data._id;
+    }
+
+    if(!commentId) return;
+
+    const comment = Comments.findOne(commentId);
 
     if (!comment) return;
 
     // Remove comment replies
     if (comment.comment_count > 0) {
-      const replies = Comments.find({ parentId: data.comment_id }).fetch();
+      const replies = Comments.find({ parentId: comment._id }).fetch();
       if (replies) {
         for (let reply of replies) {
           this.removeComment({
@@ -201,10 +212,10 @@ const CommentsHelpers = {
       }
     }
 
-    Comments.remove(data.comment_id);
+    Comments.remove(comment._id);
 
     // Update entry
-    EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
+    EntriesHelpers.updateInteractionCount({ entryId: comment.entryId });
 
     // Update person
     const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
@@ -214,12 +225,12 @@ const CommentsHelpers = {
       People.update(
         {
           campaignId: campaign._id,
-          facebookId: data.from.id
+          facebookId: comment.personId
         },
         {
           $set: {
             counts: PeopleHelpers.getInteractionCount({
-              facebookId: data.from.id,
+              facebookId: comment.personId,
               facebookAccountId
             })
           }
@@ -268,6 +279,7 @@ const CommentsHelpers = {
           can_reply_privately: true
         });
         let set = {
+          lastValidation: new Date(),
           updatedAt: new Date()
         };
         set["name"] = commentedPerson.name;

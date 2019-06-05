@@ -46,6 +46,7 @@ export default class PrivateReply extends Component {
           errored: true
         });
         if (err) {
+          console.log(err);
           alertStore.add(err);
         } else {
           alertStore.add(
