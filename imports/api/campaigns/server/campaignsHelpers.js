@@ -479,6 +479,7 @@ const CampaignsHelpers = {
         axios.post(`${YEEKO.url}?api_key=${YEEKO.apiKey}`, yeekoConfig)
       );
     } catch (err) {
+      console.log(err);
       throw new Meteor.Error(500, "Error connecting to Yeeko api");
     }
     // Facebook subscription
