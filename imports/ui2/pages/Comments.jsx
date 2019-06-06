@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Page from "../components/Page.jsx";
 import PageFilters from "../components/PageFilters.jsx";
+import PagePaging from "../components/PagePaging.jsx";
 import Reaction from "../components/Reaction.jsx";
 import Button from "../components/Button.jsx";
 import Comment from "../components/Comment.jsx";
@@ -15,6 +16,34 @@ const Container = styled.div`
   flex: 1 1 100%;
   overflow: auto;
   background: #fff;
+`;
+
+const CommentsContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  .comments {
+    flex: 1 1 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transition: opacity 0.1s linear;
+    background: #fff;
+  }
+  .not-found {
+    font-size: 1.5em;
+    font-style: italic;
+    color: #ccc;
+    text-align: center;
+    margin: 4rem;
+  }
+  ${props =>
+    props.loading &&
+    css`
+      .comments {
+        opacity: 0.25;
+      }
+    `}
 `;
 
 const CommentContainer = styled.article`
@@ -93,8 +122,19 @@ const CommentContainer = styled.article`
 `;
 
 export default class CommentsPage extends Component {
+  _handleChange = ({ target }) => {
+    const value = target.value || null;
+    FlowRouter.setQueryParams({ [target.name]: value });
+  };
+  _handleNext = () => {
+
+  }
+  _handlePrev = () => {
+
+  }
   render() {
-    const { comments } = this.props;
+    const { comments, limit, page, count } = this.props;
+    console.log(count);
     return (
       <>
         <Page.Nav full plain>
@@ -106,16 +146,24 @@ export default class CommentsPage extends Component {
                   type="text"
                   placeholder="Buscar por texto"
                   name="q"
-                  // onChange={this._handleFormChange}
+                  onChange={this._handleChange}
                   // value={query.q}
                 />
               </form>
             </div>
           </PageFilters>
         </Page.Nav>
-        <Container>
+        <CommentsContent>
+          <PagePaging
+            skip={page-1}
+            limit={limit}
+            count={count}
+            loading={loadingCount}
+            onNext={this._handleNext}
+            onPrev={this._handlePrev}
+          />
           {comments.length ? (
-            <div>
+            <div className="comments">
               {comments.map((comment, i) => (
                 <CommentContainer key={comment._id}>
                   <div className="comment-content">
@@ -165,7 +213,7 @@ export default class CommentsPage extends Component {
               <ReactTooltip effect="solid" />
             </div>
           ) : null}
-        </Container>
+        </CommentsContent>
       </>
     );
   }

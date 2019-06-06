@@ -69,10 +69,11 @@ appRoutes.route("/people", {
 
 appRoutes.route("/comments", {
   name: "App.comments",
-  action: function() {
+  action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Gestão de comentários`);
     return mount(App, {
-      content: { component: CommentsPage }
+      content: { component: CommentsPage },
+      query: pick(queryParams, ["q"])
     });
   }
 });

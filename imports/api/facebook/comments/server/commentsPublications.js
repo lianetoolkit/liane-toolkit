@@ -10,25 +10,28 @@ Meteor.publishComposite("comments.byAccount", function({
   query,
   limit
 }) {
+  this.unblock();
   const userId = this.userId;
   if (Meteor.call("campaigns.canManage", { campaignId, userId })) {
     const campaign = Campaigns.findOne(campaignId);
     if (!campaign.facebookAccount) return this.ready();
     facebookId = facebookId || campaign.facebookAccount.facebookId;
     if (campaign.facebookAccount.facebookId == facebookId) {
+      let options = {
+        sort: { created_time: -1 },
+        limit: Math.min(limit || 10, 20)
+      };
+      const cursor = Comments.find(
+        {
+          ...query,
+          facebookAccountId: facebookId,
+          created_time: { $exists: true }
+        },
+        options
+      );
       return {
         find: function() {
-          return Comments.find(
-            {
-              ...query,
-              facebookAccountId: facebookId,
-              created_time: { $exists: true }
-            },
-            {
-              sort: { created_time: -1 },
-              limit: Math.min(limit || 10, 20)
-            }
-          );
+          return cursor;
         },
         children: [
           {
@@ -54,6 +57,30 @@ Meteor.publishComposite("comments.byAccount", function({
         ]
       };
     }
+  }
+  return this.ready();
+});
+
+Meteor.publish("comments.byAccount.count", function({
+  campaignId,
+  facebookId,
+  query
+}) {
+  this.unblock();
+  const campaign = Campaigns.findOne(campaignId);
+  if (!campaign.facebookAccount) return this.ready();
+  facebookId = facebookId || campaign.facebookAccount.facebookId;
+  if (campaign.facebookAccount.facebookId == facebookId) {
+    Counts.publish(
+      this,
+      "comments.byAccount.count",
+      Comments.find({
+        ...query,
+        facebookAccountId: facebookId,
+        created_time: { $exists: true }
+      })
+    );
+    return;
   }
   return this.ready();
 });

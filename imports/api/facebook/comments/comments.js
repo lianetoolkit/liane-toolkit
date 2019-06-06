@@ -101,6 +101,9 @@ Comments.attachSchema(Comments.schema);
 
 Meteor.startup(() => {
   if (Meteor.isServer) {
+    Comments.rawCollection().createIndex({
+      message: "text"
+    });
     Comments.rawCollection().createIndex(
       { message_tags: 1 },
       { partialFilterExpression: { message_tags: { $exists: true } } }
