@@ -50,7 +50,6 @@ export default class Comment extends Component {
   action = () => {
     const { comment } = this.props;
     if (comment.parent) {
-      console.log(comment.parent);
       return "respondeu um comentário";
     } else {
       return "comentou em um post";

@@ -16,8 +16,9 @@ export default withTracker(props => {
     facebookIds = [props.facebookId];
   }
 
-  const limit = 5;
-  const page = props.page || 1;
+  const limit = 10;
+  const page = parseInt(props.page || 1);
+  const skip = (page - 1) * limit;
 
   let query = {
     personId: { $nin: facebookIds },
@@ -43,20 +44,17 @@ export default withTracker(props => {
   const commentsHandle = CommentsSubs.subscribe("comments.byAccount", {
     campaignId: props.campaignId,
     query,
-    limit
-  });
-
-  const commentsCountHandle = CommentsSubs.subscribe(
-    "comments.byAccount.count",
-    {
-      campaignId: props.campaignId,
-      query
+    options: {
+      limit,
+      skip
     }
-  );
+  });
 
   const loading = !commentsHandle.ready();
 
   const commentsOptions = {
+    limit,
+    skip,
     transform: function(comment) {
       comment.entry = Entries.findOne(comment.entryId);
       comment.person = People.findOne({
@@ -72,18 +70,13 @@ export default withTracker(props => {
     ? Comments.find(query, commentsOptions).fetch()
     : [];
 
-  const loadingCount = !commentsCountHandle.ready();
-  const count = Counts.get("comments.byAccount.count");
-
   comments = sortBy(comments, comment => -new Date(comment.created_time));
 
   return {
     loading,
-    loadingCount,
     comments,
     query,
     page,
-    limit,
-    count
+    limit
   };
 })(CommentsPage);

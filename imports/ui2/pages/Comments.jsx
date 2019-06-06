@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import moment from "moment";
+import { debounce } from "lodash";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -122,19 +123,66 @@ const CommentContainer = styled.article`
 `;
 
 export default class CommentsPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loadingCount: false,
+      count: 0
+    };
+  }
+  componentDidMount() {
+    this._fetchCount();
+  }
+  componentDidUpdate(prevProps) {
+    const { query, comments } = this.props;
+    if (
+      JSON.stringify(query) != JSON.stringify(prevProps.query) ||
+      JSON.stringify(comments) != JSON.stringify(prevProps.comments)
+    ) {
+      this._fetchCount();
+    }
+  }
+  _fetchCount = debounce(() => {
+    const { campaignId, query } = this.props;
+    this.setState({
+      loadingCount: true
+    });
+    Meteor.call(
+      "comments.queryCount",
+      {
+        campaignId,
+        query
+      },
+      (err, res) => {
+        if (!err) {
+          this.setState({
+            count: res,
+            loadingCount: false
+          });
+        }
+      }
+    );
+  }, 200);
   _handleChange = ({ target }) => {
     const value = target.value || null;
     FlowRouter.setQueryParams({ [target.name]: value });
   };
   _handleNext = () => {
-
-  }
+    const { page, limit } = this.props;
+    const { count } = this.state;
+    if ((page - 1) * limit + limit < count) {
+      FlowRouter.setQueryParams({ page: page + 1 });
+    }
+  };
   _handlePrev = () => {
-
-  }
+    const { page } = this.props;
+    if (page > 1) {
+      FlowRouter.setQueryParams({ page: page - 1 });
+    }
+  };
   render() {
-    const { comments, limit, page, count } = this.props;
-    console.log(count);
+    const { comments, limit, page } = this.props;
+    const { loadingCount, count } = this.state;
     return (
       <>
         <Page.Nav full plain>
@@ -155,7 +203,7 @@ export default class CommentsPage extends Component {
         </Page.Nav>
         <CommentsContent>
           <PagePaging
-            skip={page-1}
+            skip={page - 1}
             limit={limit}
             count={count}
             loading={loadingCount}
