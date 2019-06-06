@@ -41,21 +41,12 @@ export default withTracker(props => {
     query.categories = { $in: [queryParams.categories] };
   }
 
-  const commentsHandle = CommentsSubs.subscribe("comments.byAccount", {
-    campaignId: props.campaignId,
-    query,
-    options: {
-      limit,
-      skip
-    }
-  });
-
-  const loading = !commentsHandle.ready();
+  let commentsHandle, loading, comments;
 
   const commentsOptions = {
     limit,
     skip,
-    transform: function(comment) {
+    transform: comment => {
       comment.entry = Entries.findOne(comment.entryId);
       comment.person = People.findOne({
         facebookId: comment.personId,
@@ -66,13 +57,31 @@ export default withTracker(props => {
     }
   };
 
-  let comments = commentsHandle.ready()
-    ? Comments.find(query, commentsOptions).fetch()
-    : [];
+  const triggerQuery = () => {
+    commentsHandle = CommentsSubs.subscribe("comments.byAccount", {
+      campaignId: props.campaignId,
+      query,
+      options: {
+        limit,
+        skip
+      }
+    });
+    loading = !commentsHandle.ready();
+    comments = commentsHandle.ready()
+      ? Comments.find(query, commentsOptions).fetch()
+      : [];
+    comments = sortBy(comments, comment => -new Date(comment.created_time));
+  };
 
-  comments = sortBy(comments, comment => -new Date(comment.created_time));
+  const clearSubs = () => {
+    CommentsSubs.clear();
+  };
+
+  triggerQuery();
 
   return {
+    triggerQuery,
+    clearSubs,
     loading,
     comments,
     query,

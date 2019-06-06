@@ -90,14 +90,14 @@ const CommentContainer = styled.article`
       border-radius: 100%;
       transition: all 0.1s linear;
       &:hover {
-        background-color: #63c;
+        background-color: rgba(102, 51, 204, 0.5);
         color: #fff;
       }
       &.active {
         background-color: #63c;
         color: #fff;
         &:hover {
-          opacity: 0.5;
+          background-color: rgba(102, 51, 204, 0.75);
         }
       }
       &.troll {
@@ -105,14 +105,14 @@ const CommentContainer = styled.article`
         background-color: rgba(204, 0, 0, 0);
         border: 1px solid rgba(204, 0, 0, 0.25);
         &:hover {
-          background-color: #c00;
+          background-color: rgba(204, 0, 0, 0.5);
           color: #fff;
         }
         &.active {
           background-color: #c00;
           color: #fff;
           &:hover {
-            opacity: 0.5;
+            background-color: rgba(204, 0, 0, 0.75);
           }
         }
       }
@@ -164,6 +164,7 @@ export default class CommentsPage extends Component {
       JSON.stringify(comments) != JSON.stringify(prevProps.comments)
     ) {
       this._fetchCount();
+      ReactTooltip.rebuild();
     }
   }
   _fetchCount = debounce(() => {
@@ -211,13 +212,12 @@ export default class CommentsPage extends Component {
       (err, res) => {
         if (err) {
           alertStore.add(err);
-        } else {
-          console.log(res);
         }
       }
     );
   };
   _handleTrollClick = comment => () => {
+    const { triggerQuery, clearSubs } = this.props;
     Meteor.call(
       "facebook.people.updatePersonMeta",
       {
@@ -229,7 +229,8 @@ export default class CommentsPage extends Component {
         if (err) {
           alertStore.add(err);
         } else {
-          console.log(res);
+          triggerQuery();
+          // clearSubs();
         }
       }
     );
@@ -245,8 +246,6 @@ export default class CommentsPage extends Component {
         (err, res) => {
           if (err) {
             alertStore.add(err);
-          } else {
-            console.log(res);
           }
         }
       );
