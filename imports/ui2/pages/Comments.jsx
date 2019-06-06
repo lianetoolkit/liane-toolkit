@@ -100,6 +100,22 @@ const CommentContainer = styled.article`
           opacity: 0.5;
         }
       }
+      &.troll {
+        color: #c00;
+        background-color: rgba(204, 0, 0, 0);
+        border: 1px solid rgba(204, 0, 0, 0.25);
+        &:hover {
+          background-color: #c00;
+          color: #fff;
+        }
+        &.active {
+          background-color: #c00;
+          color: #fff;
+          &:hover {
+            opacity: 0.5;
+          }
+        }
+      }
     }
   }
   .comment-resolve {
@@ -174,6 +190,9 @@ export default class CommentsPage extends Component {
   hasCategory = (comment, category) => {
     return comment.categories && comment.categories.indexOf(category) != -1;
   };
+  isTroll = comment => {
+    return comment.person.campaignMeta && comment.person.campaignMeta.troll;
+  };
   _handleCategoryClick = (comment, category) => () => {
     const { campaignId } = this.props;
     let categories = (comment.categories || []).slice(0);
@@ -188,6 +207,23 @@ export default class CommentsPage extends Component {
         campaignId,
         commentId: comment._id,
         categories
+      },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          console.log(res);
+        }
+      }
+    );
+  };
+  _handleTrollClick = comment => () => {
+    Meteor.call(
+      "facebook.people.updatePersonMeta",
+      {
+        personId: comment.person._id,
+        metaKey: "troll",
+        metaValue: !this.isTroll(comment)
       },
       (err, res) => {
         if (err) {
@@ -304,6 +340,10 @@ export default class CommentsPage extends Component {
                       <a
                         href="javascript:void(0);"
                         data-tip="Marcar pessoa como troll"
+                        className={
+                          this.isTroll(comment) ? "active troll" : "troll"
+                        }
+                        onClick={this._handleTrollClick(comment)}
                       >
                         <FontAwesomeIcon icon="ban" />
                       </a>
