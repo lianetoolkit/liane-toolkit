@@ -6,6 +6,8 @@ import { debounce } from "lodash";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { alertStore } from "../containers/Alerts.jsx";
+
 import Page from "../components/Page.jsx";
 import PageFilters from "../components/PageFilters.jsx";
 import PagePaging from "../components/PagePaging.jsx";
@@ -87,10 +89,16 @@ const CommentContainer = styled.article`
       border: 1px solid rgba(102, 51, 204, 0.25);
       border-radius: 100%;
       transition: all 0.1s linear;
-      &:hover,
-      &:focus {
+      &:hover {
         background-color: #63c;
         color: #fff;
+      }
+      &.active {
+        background-color: #63c;
+        color: #fff;
+        &:hover {
+          opacity: 0.5;
+        }
       }
     }
   }
@@ -163,6 +171,51 @@ export default class CommentsPage extends Component {
       }
     );
   }, 200);
+  hasCategory = (comment, category) => {
+    return comment.categories && comment.categories.indexOf(category) != -1;
+  };
+  _handleCategoryClick = (comment, category) => () => {
+    const { campaignId } = this.props;
+    let categories = (comment.categories || []).slice(0);
+    if (!this.hasCategory(comment, category)) {
+      categories.push(category);
+    } else {
+      categories = categories.filter(cat => cat != category);
+    }
+    Meteor.call(
+      "comments.updateCategories",
+      {
+        campaignId,
+        commentId: comment._id,
+        categories
+      },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          console.log(res);
+        }
+      }
+    );
+  };
+  _handleResolveClick = comment => () => {
+    const { campaignId } = this.props;
+    if (
+      confirm("Tem certeza que deseja marcar este comentário como resolvido?")
+    ) {
+      Meteor.call(
+        "comments.resolve",
+        { campaignId, commentId: comment._id },
+        (err, res) => {
+          if (err) {
+            alertStore.add(err);
+          } else {
+            console.log(res);
+          }
+        }
+      );
+    }
+  };
   _handleChange = ({ target }) => {
     const value = target.value || null;
     FlowRouter.setQueryParams({ [target.name]: value });
@@ -231,12 +284,20 @@ export default class CommentsPage extends Component {
                       <a
                         href="javascript:void(0);"
                         data-tip="Marcar como pergunta"
+                        className={
+                          this.hasCategory(comment, "question") ? "active" : ""
+                        }
+                        onClick={this._handleCategoryClick(comment, "question")}
                       >
                         <FontAwesomeIcon icon="question" />
                       </a>
                       <a
                         href="javascript:void(0);"
                         data-tip="Marcar como declaração de voto"
+                        className={
+                          this.hasCategory(comment, "vote") ? "active" : ""
+                        }
+                        onClick={this._handleCategoryClick(comment, "vote")}
                       >
                         <FontAwesomeIcon icon="thumbs-up" />
                       </a>
@@ -252,6 +313,7 @@ export default class CommentsPage extends Component {
                     <a
                       href="javascript:void(0);"
                       data-tip="Marcar com resolvido"
+                      onClick={this._handleResolveClick(comment)}
                     >
                       <FontAwesomeIcon icon="check" />
                     </a>
