@@ -151,7 +151,8 @@ export default class CommentsPage extends Component {
     super(props);
     this.state = {
       loadingCount: false,
-      count: 0
+      count: 0,
+      personMeta: {}
     };
   }
   componentDidMount() {
@@ -192,7 +193,15 @@ export default class CommentsPage extends Component {
     return comment.categories && comment.categories.indexOf(category) != -1;
   };
   isTroll = comment => {
-    return comment.person.campaignMeta && comment.person.campaignMeta.troll;
+    const { personMeta } = this.state;
+    if (
+      personMeta[comment.personId] &&
+      personMeta[comment.personId].hasOwnProperty("troll")
+    ) {
+      return personMeta[comment.personId].troll;
+    } else {
+      return comment.person.campaignMeta && comment.person.campaignMeta.troll;
+    }
   };
   _handleCategoryClick = (comment, category) => () => {
     const { campaignId } = this.props;
@@ -217,20 +226,25 @@ export default class CommentsPage extends Component {
     );
   };
   _handleTrollClick = comment => () => {
-    const { triggerQuery, clearSubs } = this.props;
+    const { personMeta } = this.state;
+    const isTroll = this.isTroll(comment);
     Meteor.call(
       "facebook.people.updatePersonMeta",
       {
         personId: comment.person._id,
         metaKey: "troll",
-        metaValue: !this.isTroll(comment)
+        metaValue: !isTroll
       },
       (err, res) => {
         if (err) {
           alertStore.add(err);
         } else {
-          triggerQuery();
-          // clearSubs();
+          this.setState({
+            personMeta: {
+              ...personMeta,
+              [comment.personId]: { troll: !isTroll }
+            }
+          });
         }
       }
     );

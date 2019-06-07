@@ -71,6 +71,9 @@ export default class Comment extends Component {
           </header>
           <section className="comment-message">
             <p>{comment.message}</p>
+            {comment.adminReplies && comment.adminReplies.length ? (
+              <p>Você respondeu</p>
+            ) : null}
           </section>
         </Container>
       );

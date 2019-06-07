@@ -33,28 +33,41 @@ Meteor.publishComposite("comments.byAccount", function({
             options
           );
         },
-        children: [
-          {
-            find: function(comment) {
-              return Entries.find({ _id: comment.entryId });
-            }
-          },
-          {
-            find: function(comment) {
-              if (comment.parentId) {
-                return Comments.find({ _id: comment.parentId });
+        children(parentComment) {
+          let children = [
+            {
+              find: function(comment) {
+                return Entries.find({ _id: comment.entryId });
+              }
+            },
+            {
+              find: function(comment) {
+                return People.find({
+                  facebookId: comment.personId,
+                  campaignId
+                });
+              }
+            },
+            {
+              find: function(comment) {
+                return Comments.find({
+                  personId: facebookId,
+                  parentId: comment._id
+                });
               }
             }
-          },
-          {
-            find: function(comment) {
-              return People.find({
-                facebookId: comment.personId,
-                campaignId
-              });
-            }
+          ];
+          if (parentComment.parentId) {
+            children.push({
+              find: function(comment) {
+                if (comment.parentId) {
+                  return Comments.find({ _id: comment.parentId });
+                }
+              }
+            });
           }
-        ]
+          return children;
+        }
       };
     }
   }

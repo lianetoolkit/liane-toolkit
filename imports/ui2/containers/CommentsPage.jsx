@@ -11,17 +11,14 @@ const CommentsSubs = new SubsManager();
 export default withTracker(props => {
   const queryParams = props.query;
 
-  let facebookIds = props.campaign.accounts.map(acc => acc.facebookId);
-  if (props.facebookId) {
-    facebookIds = [props.facebookId];
-  }
+  const facebookId = props.campaign.facebookAccount.facebookId;
 
   const limit = 10;
   const page = parseInt(props.page || 1);
   const skip = (page - 1) * limit;
 
   let query = {
-    personId: { $nin: facebookIds },
+    personId: { $nin: [facebookId] },
     created_time: { $exists: true },
     resolved: { $ne: true }
   };
@@ -41,7 +38,8 @@ export default withTracker(props => {
     query.categories = { $in: [queryParams.categories] };
   }
 
-  let commentsHandle, loading, comments;
+  let commentsHandle, loading;
+  let comments = [];
 
   const commentsOptions = {
     limit,
@@ -53,35 +51,29 @@ export default withTracker(props => {
         campaignId: props.campaignId
       });
       comment.parent = Comments.findOne(comment.parentId);
+      comment.adminReplies = Comments.find({
+        personId: facebookId,
+        parentId: comment._id
+      }).fetch();
       return comment;
     }
   };
 
-  const triggerQuery = () => {
-    commentsHandle = CommentsSubs.subscribe("comments.byAccount", {
-      campaignId: props.campaignId,
-      query,
-      options: {
-        limit,
-        skip
-      }
-    });
-    loading = !commentsHandle.ready();
-    comments = commentsHandle.ready()
-      ? Comments.find(query, commentsOptions).fetch()
-      : [];
-    comments = sortBy(comments, comment => -new Date(comment.created_time));
-  };
-
-  const clearSubs = () => {
-    CommentsSubs.clear();
-  };
-
-  triggerQuery();
+  commentsHandle = CommentsSubs.subscribe("comments.byAccount", {
+    campaignId: props.campaignId,
+    query,
+    options: {
+      limit,
+      skip
+    }
+  });
+  loading = !commentsHandle.ready();
+  comments = commentsHandle.ready()
+    ? Comments.find(query, commentsOptions).fetch()
+    : [];
+  comments = sortBy(comments, comment => -new Date(comment.created_time));
 
   return {
-    triggerQuery,
-    clearSubs,
     loading,
     comments,
     query,
