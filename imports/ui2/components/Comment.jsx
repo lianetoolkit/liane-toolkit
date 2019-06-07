@@ -23,11 +23,14 @@ const Container = styled.article`
       }
     }
   }
+  .messaging {
+    display: flex;
+  }
   .comment-message {
     background: #f0f0f0;
-    padding: 1rem;
+    padding: 0.5rem 1rem;
     position: relative;
-    margin: 0;
+    margin: 0 1rem 0 0;
     border-radius: 7px;
     display: inline-block;
     &:before {
@@ -42,6 +45,34 @@ const Container = styled.article`
     }
     p {
       margin: 0;
+    }
+  }
+  .comment-admin-replies {
+    font-size: 0.9em;
+    margin-top: 1rem;
+    .label {
+      font-size: 0.8em;
+      color: #999;
+      margin: 0 0 0.5rem;
+    }
+    p.reply {
+      padding: 0.25rem 0.5rem;
+      background: #333;
+      color: #fff;
+      border-radius: 7px;
+      display: table;
+      position: relative;
+      margin: 0 0 0.5rem;
+      &:before {
+        content: "";
+        background: #333;
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        left: -2.5px;
+        top: 10px;
+        transform: rotate(45deg);
+      }
     }
   }
 `;
@@ -69,12 +100,19 @@ export default class Comment extends Component {
               </span>
             </h3>
           </header>
-          <section className="comment-message">
-            <p>{comment.message}</p>
+          <div className="messaging">
+            <section className="comment-message">
+              <p>{comment.message}</p>
+            </section>
             {comment.adminReplies && comment.adminReplies.length ? (
-              <p>Você respondeu</p>
+              <section className="comment-admin-replies">
+                <p className="label">Você respondeu</p>
+                {comment.adminReplies.map(reply => (
+                  <p className="reply">{reply.message}</p>
+                ))}
+              </section>
             ) : null}
-          </section>
+          </div>
         </Container>
       );
     }
