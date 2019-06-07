@@ -7,11 +7,14 @@ const Container = styled.nav`
   align-items: center;
   border-bottom: 1px solid #ccc;
   p {
-    flex: 1 1 100%;
+    flex: 0 0 auto;
     padding: 0.75rem 1rem;
     margin: 0;
     font-size: 0.7em;
     color: #666;
+  }
+  .spacer {
+    flex: 1 1 100%;
   }
   a {
     flex: 0 0 auto;
@@ -50,7 +53,7 @@ export default class PagePaging extends Component {
     return count && skip * limit + limit < count;
   };
   render() {
-    const { skip, limit, count, loading } = this.props;
+    const { skip, limit, count, loading, children } = this.props;
     return (
       <Container className="page-paging">
         {isNaN(count) ? (
@@ -65,6 +68,8 @@ export default class PagePaging extends Component {
                 )} de ${count}`}
           </p>
         )}
+        {children}
+        <div className="spacer" />
         <a
           href="javascript:void(0);"
           onClick={this.handlePrev}
