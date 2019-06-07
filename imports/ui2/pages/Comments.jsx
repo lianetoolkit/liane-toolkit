@@ -15,12 +15,6 @@ import Reaction from "../components/Reaction.jsx";
 import Button from "../components/Button.jsx";
 import Comment from "../components/Comment.jsx";
 
-const Container = styled.div`
-  flex: 1 1 100%;
-  overflow: auto;
-  background: #fff;
-`;
-
 const CommentsContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -47,6 +41,16 @@ const CommentsContent = styled.div`
         opacity: 0.25;
       }
     `}
+  .page-paging {
+    .button-group {
+      font-size: 0.7em;
+      white-space: nowrap;
+      margin: 0 1rem;
+      .button {
+        padding: 0.4rem 0.7rem;
+      }
+    }
+  }
 `;
 
 const CommentContainer = styled.article`
@@ -311,7 +315,12 @@ export default class CommentsPage extends Component {
             loading={loadingCount}
             onNext={this._handleNext}
             onPrev={this._handlePrev}
-          />
+          >
+            <Button.Group>
+              <Button>Não resolvidas</Button>
+              <Button>Resolvidas</Button>
+            </Button.Group>
+          </PagePaging>
           {comments.length ? (
             <div className="comments">
               {comments.map((comment, i) => (
