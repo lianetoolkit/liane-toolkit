@@ -165,7 +165,9 @@ export default class Comment extends Component {
               <section className="comment-admin-replies">
                 <p className="label">Você respondeu</p>
                 {comment.adminReplies.map(reply => (
-                  <p className="reply">{reply.message}</p>
+                  <p className="reply" key={reply._id}>
+                    {reply.message}
+                  </p>
                 ))}
               </section>
             ) : null}
