@@ -6,6 +6,14 @@ import moment from "moment";
 const Container = styled.article`
   header {
     color: #666;
+    a {
+      color: #999;
+      &:hover,
+      &:active,
+      &:focus {
+        color: #333;
+      }
+    }
     h3 {
       margin: 0 0 1rem;
       font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -80,11 +88,60 @@ const Container = styled.article`
 export default class Comment extends Component {
   action = () => {
     const { comment } = this.props;
+    const url = this.getCommentUrl();
     if (comment.parent) {
-      return "respondeu um comentário";
+      const parentUrl = this.getParentUrl();
+      return (
+        <>
+          <a href={url} target="_blank">
+            respondeu
+          </a>{" "}
+          um{" "}
+          <a href={parentUrl} target="_blank">
+            comentário
+          </a>
+        </>
+      );
     } else {
-      return "comentou em um post";
+      const postUrl = this.getPostUrl();
+      return (
+        <>
+          <a href={url} target="_blank">
+            comentou
+          </a>{" "}
+          em um{" "}
+          <a href={postUrl} target="_blank">
+            post
+          </a>
+        </>
+      );
     }
+  };
+  getCommentUrl = () => {
+    const { comment } = this.props;
+    const id = comment.facebookAccountId;
+    const story_fbid = comment._id.split("_")[0];
+    const comment_id = comment._id.split("_")[1];
+    return this.getFBUrl({ id, story_fbid, comment_id });
+  };
+  getParentUrl = () => {
+    const { comment } = this.props;
+    const id = comment.facebookAccountId;
+    const story_fbid = comment.parentId.split("_")[0];
+    const comment_id = comment.parentId.split("_")[1];
+    return this.getFBUrl({ id, story_fbid, comment_id });
+  };
+  getPostUrl = () => {
+    const { comment } = this.props;
+    const id = comment.facebookAccountId;
+    const story_fbid = comment._id.split("_")[0];
+    return this.getFBUrl({ id, story_fbid });
+  };
+  getFBUrl = params => {
+    const encoded = Object.keys(params)
+      .map(key => `${key}=${encodeURIComponent(params[key])}`)
+      .join("&");
+    return `https://www.facebook.com/permalink.php?${encoded}`;
   };
   render() {
     const { comment } = this.props;
