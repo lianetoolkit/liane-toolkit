@@ -97,25 +97,10 @@ const CampaignsHelpers = {
     };
 
     // Facebook subscription
-    try {
-      const fbRes = Promise.await(
-        FB.api(`${account.id}/subscribed_apps`, "post", {
-          subscribed_fields: [
-            "feed",
-            "messages",
-            "message_deliveries",
-            "messaging_postbacks",
-            "message_deliveries",
-            "message_reads",
-            "ratings",
-            "mention"
-          ],
-          access_token: token.result
-        })
-      );
-    } catch (err) {
-      throw new Meteor.Error(500, "Error trying to subscribe");
-    }
+    FacebookAccountsHelpers.updateFBSubscription({
+      facebookAccountId: account.id,
+      token: token.result
+    });
 
     Campaigns.update(
       { _id: campaignId },
@@ -483,22 +468,22 @@ const CampaignsHelpers = {
       throw new Meteor.Error(500, "Error connecting to Yeeko api");
     }
     // Facebook subscription
-    try {
-      const fbRes = Promise.await(
-        FB.api(`${facebookAccountId}/subscribed_apps`, "post", {
-          subscribed_fields: [
-            "messages",
-            "message_deliveries",
-            "messaging_postbacks",
-            "message_deliveries",
-            "message_reads"
-          ],
-          access_token: campaignAccount.accessToken
-        })
-      );
-    } catch (err) {
-      throw new Meteor.Error(500, "Error trying to subscribe");
-    }
+    // try {
+    //   const fbRes = Promise.await(
+    //     FB.api(`${facebookAccountId}/subscribed_apps`, "post", {
+    //       subscribed_fields: [
+    //         "messages",
+    //         "message_deliveries",
+    //         "messaging_postbacks",
+    //         "message_deliveries",
+    //         "message_reads"
+    //       ],
+    //       access_token: campaignAccount.accessToken
+    //     })
+    //   );
+    // } catch (err) {
+    //   throw new Meteor.Error(500, "Error trying to subscribe");
+    // }
 
     // Update locally
     return Campaigns.update(

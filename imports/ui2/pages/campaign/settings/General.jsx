@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import { alertStore } from "../../../containers/Alerts.jsx";
+
 import Nav from "./Nav.jsx";
 import Form from "../../../components/Form.jsx";
 
@@ -51,7 +53,7 @@ export default class CampaignSettingsPage extends Component {
         if (!err) {
           console.log(err);
         } else {
-          // data
+          alertStore.add("Campanha atualizada", "success");
         }
       });
     }
@@ -70,23 +72,6 @@ export default class CampaignSettingsPage extends Component {
               placeholder="Nome da campanha"
               onChange={this._handleChange}
             />
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
-              consectetur libero a fermentum malesuada. Proin pharetra ultricies
-              eros, vel porta metus interdum eget. Sed maximus diam justo. Nunc
-              vitae mattis nisl. Nunc efficitur, ipsum id iaculis sodales, ante
-              nunc ullamcorper dui, ut ullamcorper enim turpis et sem.
-              Suspendisse tempus porta purus, hendrerit pharetra sapien aliquet
-              sed. Nulla vitae tellus ut ante convallis mollis a in tortor.
-              Mauris porta, ante vel commodo convallis, lacus sem dignissim
-              tellus, vitae venenatis arcu orci feugiat tortor. Nullam hendrerit
-              ipsum felis, quis cursus est tincidunt vitae. Nulla et lacus
-              iaculis, volutpat nunc a, finibus nunc. Ut suscipit mauris sed
-              lacus rhoncus fermentum. Quisque fringilla, urna sit amet mollis
-              laoreet, quam nunc placerat erat, suscipit vehicula ante velit ut
-              urna. Praesent cursus justo ut nibh pretium, et tristique lectus
-              volutpat.
-            </p>
           </Form.Content>
           <Form.Actions>
             <input

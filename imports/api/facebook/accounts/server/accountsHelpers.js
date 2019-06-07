@@ -17,6 +17,29 @@ const _fetchFacebookPageData = ({ url }) => {
 };
 
 const FacebookAccountsHelpers = {
+  updateFBSubscription({ facebookAccountId, token }) {
+    check(facebookAccountId, String);
+    try {
+      const fbRes = Promise.await(
+        FB.api(`${facebookAccountId}/subscribed_apps`, "post", {
+          subscribed_fields: [
+            "feed",
+            "messages",
+            "message_deliveries",
+            "messaging_postbacks",
+            "message_deliveries",
+            "message_reads",
+            "ratings",
+            "mention"
+          ],
+          access_token: token
+        })
+      );
+    } catch (err) {
+      console.log(err);
+      throw new Meteor.Error(500, "Error trying to subscribe");
+    }
+  },
   removeAccount({ facebookAccountId }) {
     const account = FacebookAccounts.findOne({ facebookId: facebookAccountId });
     if (!account) {

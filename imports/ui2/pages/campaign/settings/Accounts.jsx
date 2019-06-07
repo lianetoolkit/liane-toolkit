@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 
+import { alertStore } from "../../../containers/Alerts.jsx";
+
 import Nav from "./Nav.jsx";
 import Form from "../../../components/Form.jsx";
+import Button from "../../../components/Button.jsx";
 import SelectAccount from "../../../components/facebook/SelectAccount.jsx";
 
 export default class CampaignAccountsPage extends Component {
@@ -42,6 +45,21 @@ export default class CampaignAccountsPage extends Component {
       );
     }
   };
+  _handleSubscriptionClick = ev => {
+    ev.preventDefault();
+    const { campaign } = this.props;
+    Meteor.call(
+      "accounts.updateFBSubscription",
+      { campaignId: campaign._id },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          alertStore.add("Atualizado", "success");
+        }
+      }
+    );
+  };
   render() {
     const { campaign } = this.props;
     if (campaign) {
@@ -52,19 +70,24 @@ export default class CampaignAccountsPage extends Component {
           <Form onSubmit={this._handleSubmit}>
             <Form.Content>
               <p>
-                Altere quais páginas de Facebook serão utilizadas pela sua
-                campanha
+                Verifique a saúde da conexão da sua página com a nossa
+                plataforma
               </p>
-              <SelectAccount
+              <p>
+                <Button onClick={this._handleSubscriptionClick}>
+                  Atualizar assinatura de dados
+                </Button>
+              </p>
+              {/* <SelectAccount
                 multiple={true}
                 name="accounts"
                 value={accounts.map(a => a.facebookId)}
                 onChange={this._handleChange}
-              />
+              /> */}
             </Form.Content>
-            <Form.Actions>
+            {/* <Form.Actions>
               <input type="submit" value="Atualizar contas" />
-            </Form.Actions>
+            </Form.Actions> */}
           </Form>
         </>
       );
