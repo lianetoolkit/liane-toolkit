@@ -31,11 +31,14 @@ export default withTracker(props => {
     query.resolved = true;
   }
 
-  if (queryParams.message_tags) {
+  if (queryParams.mention) {
     query.message_tags = { $exists: true };
   }
   if (queryParams.category) {
     query.categories = { $in: [queryParams.category] };
+  }
+  if (queryParams.unreplied) {
+    // query.adminReplied = true;
   }
 
   let commentsHandle, loading;

@@ -312,12 +312,23 @@ export default class CommentsPage extends Component {
     const { query } = this.props;
     return query.resolved == true;
   };
+  isQueryingMention = () => {
+    const { query } = this.props;
+    return !!query.message_tags;
+  };
+  isQueryingUnreplied = () => {
+    const { query } = this.props;
+    return false;
+  };
   _handleChange = ({ target }) => {
     const value = target.value || null;
     FlowRouter.setQueryParams({ [target.name]: value, page: 1 });
   };
-  _handleRadioChange = ({ target }) => {
-    // const value = target.value || null
+  _handleCheckboxChange = ({ target }) => {
+    FlowRouter.setQueryParams({
+      [target.name]: target.checked || null,
+      page: 1
+    });
   };
   _handleQueryResolveClick = resolved => ev => {
     ev.preventDefault();
@@ -408,6 +419,24 @@ export default class CommentsPage extends Component {
                     Declarações de voto
                   </label>
                 </PageFilters.Category>
+                <label>
+                  <input
+                    type="checkbox"
+                    onChange={this._handleCheckboxChange}
+                    name="mention"
+                    checked={this.isQueryingMention()}
+                  />
+                  Comentários com menções
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    onChange={this._handleCheckboxChange}
+                    name="unreplied"
+                    checked={this.isQueryingUnreplied()}
+                  />
+                  Comentários sem respostas da página
+                </label>
               </form>
             </div>
           </PageFilters>

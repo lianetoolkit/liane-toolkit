@@ -41,7 +41,12 @@ const Container = styled.div`
     align-items: center;
     border-radius: 7px;
     border: 1px solid #ddd;
-    padding: 0.5rem 1rem;
+    padding: 0.7rem 1rem;
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: #fff;
+    }
     input[type="checkbox"],
     input[type="radio"] {
       flex: 0 0 auto;
@@ -107,6 +112,7 @@ const CategoryContainer = styled.div`
   align-items: center;
   border-radius: 7px;
   border: 1px solid #ddd;
+  margin: 0 0 1rem;
   label {
     width: 100%;
     box-sizing: border-box;

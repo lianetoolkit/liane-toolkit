@@ -73,6 +73,7 @@ const CommentsHelpers = {
     }
     if (data.parent_id && data.parent_id !== data.post_id) {
       comment.parentId = data.parent_id;
+      // TODO Check if reply is made by admin and store adminReplied meta
       // Refetch parent comment
       this.upsertComment({
         facebookAccountId,
@@ -180,13 +181,13 @@ const CommentsHelpers = {
   },
   removeComment({ facebookAccountId, data }) {
     let commentId;
-    if(typeof data == "string") {
+    if (typeof data == "string") {
       commentId = data;
     } else {
       commentId = data.comment_id || data._id;
     }
 
-    if(!commentId) return;
+    if (!commentId) return;
 
     const comment = Comments.findOne(commentId);
 
