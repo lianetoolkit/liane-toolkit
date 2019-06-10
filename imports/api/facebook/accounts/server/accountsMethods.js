@@ -1,4 +1,5 @@
 import SimpleSchema from "simpl-schema";
+import { FacebookAccounts } from "../accounts.js";
 import { FacebookAccountsHelpers } from "./accountsHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
@@ -38,6 +39,13 @@ export const webhookUpdate = new ValidatedMethod({
       verb: data.verb,
       data
     });
+    // Validate facebook account
+    const account = FacebookAccounts.findOne({ facebookId: facebookAccountId });
+    if (!account) {
+      // TODO Unsuscribe from `subscribed_apps`
+      logger.debug("webhookUpdate received unknown Facebook Account ID");
+      return true;
+    }
     switch (data.item) {
       case "comment":
         CommentsHelpers.handleWebhook({ facebookAccountId, data });
