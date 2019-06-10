@@ -34,8 +34,8 @@ export default withTracker(props => {
   if (queryParams.message_tags) {
     query.message_tags = { $exists: true };
   }
-  if (queryParams.categories) {
-    query.categories = { $in: [queryParams.categories] };
+  if (queryParams.category) {
+    query.categories = { $in: [queryParams.category] };
   }
 
   let commentsHandle, loading;

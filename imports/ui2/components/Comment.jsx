@@ -36,7 +36,7 @@ const Container = styled.article`
   }
   .comment-message {
     background: #f0f0f0;
-    padding: 0.5rem 1rem;
+    padding: 0.8rem 1rem;
     position: relative;
     margin: 0 1rem 0 0;
     border-radius: 7px;

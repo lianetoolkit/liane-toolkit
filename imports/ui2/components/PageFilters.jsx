@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
-export default styled.div`
+const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -99,3 +99,69 @@ export default styled.div`
     }
   }
 `;
+
+const CategoryContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 7px;
+  border: 1px solid #ddd;
+  label {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 0;
+    margin: 0 !important;
+    border-bottom: 1px solid #ddd;
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    &:first-child {
+      border-radius: 7px 7px 0 0;
+    }
+    &:last-child {
+      border-bottom: 0;
+      border-radius: 0 0 7px 7px;
+    }
+    .icon {
+      flex: 0 0 auto;
+      margin-right: 1rem;
+      width: 20px;
+      text-align: center;
+      color: #666;
+    }
+    &:hover,
+    &:focus,
+    &:active {
+      background: #fff;
+    }
+    &.active {
+      background: #63c;
+      color: #fff;
+      font-weight: 600;
+      .icon {
+        font-weight: normal;
+        color: #fff;
+      }
+    }
+  }
+  ${props =>
+    props.hiddenInput &&
+    css`
+      input[type="radio"],
+      input[type="checkbox"] {
+        display: none;
+      }
+    `}
+`;
+
+export default class PageFilters extends Component {
+  static Category = CategoryContainer;
+  render() {
+    const { children, ...props } = this.props;
+    return <Container {...props}>{children}</Container>;
+  }
+}

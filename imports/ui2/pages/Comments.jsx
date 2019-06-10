@@ -277,17 +277,29 @@ export default class CommentsPage extends Component {
       );
     }
   };
+  queryingCategory = () => {
+    const { query } = this.props;
+    const category = query.categories;
+    if (typeof category == "object") {
+      return category.$in[0];
+    } else {
+      return false;
+    }
+  };
   isQueryingResolved = () => {
     const { query } = this.props;
     return query.resolved == true;
   };
   _handleChange = ({ target }) => {
     const value = target.value || null;
-    FlowRouter.setQueryParams({ [target.name]: value });
+    FlowRouter.setQueryParams({ [target.name]: value, page: 1 });
+  };
+  _handleRadioChange = ({ target }) => {
+    // const value = target.value || null
   };
   _handleQueryResolveClick = resolved => ev => {
     ev.preventDefault();
-    FlowRouter.setQueryParams({ resolved });
+    FlowRouter.setQueryParams({ resolved: resolved ? true : null, page: 1 });
   };
   _handleNext = () => {
     const { page, limit } = this.props;
@@ -305,6 +317,7 @@ export default class CommentsPage extends Component {
   render() {
     const { comments, limit, page } = this.props;
     const { loadingCount, count } = this.state;
+    const queryingCategory = this.queryingCategory();
     return (
       <Container>
         <Page.Nav full plain>
@@ -333,6 +346,46 @@ export default class CommentsPage extends Component {
                   onChange={this._handleChange}
                   // value={query.q}
                 />
+                <PageFilters.Category hiddenInput>
+                  <label className={!queryingCategory ? "active" : ""}>
+                    <input
+                      type="radio"
+                      onChange={this._handleChange}
+                      name="category"
+                      value=""
+                    />
+                    <span className="icon">
+                      <FontAwesomeIcon icon="dot-circle" />
+                    </span>
+                    Todos os comentários
+                  </label>
+                  <label
+                    className={queryingCategory == "question" ? "active" : ""}
+                  >
+                    <input
+                      type="radio"
+                      onChange={this._handleChange}
+                      name="category"
+                      value="question"
+                    />
+                    <span className="icon">
+                      <FontAwesomeIcon icon="question" />
+                    </span>
+                    Marcados como pergunta
+                  </label>
+                  <label className={queryingCategory == "vote" ? "active" : ""}>
+                    <input
+                      type="radio"
+                      onChange={this._handleChange}
+                      name="category"
+                      value="vote"
+                    />
+                    <span className="icon">
+                      <FontAwesomeIcon icon="thumbs-up" />
+                    </span>
+                    Declarações de voto
+                  </label>
+                </PageFilters.Category>
               </form>
             </div>
           </PageFilters>
