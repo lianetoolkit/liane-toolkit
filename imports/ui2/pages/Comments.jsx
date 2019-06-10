@@ -89,11 +89,15 @@ const CommentContainer = styled.article`
   }
   .action-icons {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     a {
-      width: 40px;
-      height: 40px;
+      width: 30px;
+      height: 30px;
+      font-size: 0.8em;
       display: flex;
-      margin: 0 0.25rem;
+      margin: 0 0.25rem 0.5rem;
       justify-content: center;
       align-items: center;
       color: #63c;
@@ -101,6 +105,9 @@ const CommentContainer = styled.article`
       border: 1px solid rgba(102, 51, 204, 0.25);
       border-radius: 100%;
       transition: all 0.1s linear;
+      &:last-child {
+        margin-bottom: 0;
+      }
       &:hover {
         background-color: rgba(102, 51, 204, 0.5);
         color: #fff;
@@ -165,7 +172,7 @@ const CommentContainer = styled.article`
   }
   .action-label {
     font-size: 0.8em;
-    color: #666;
+    color: #999;
   }
 `;
 
