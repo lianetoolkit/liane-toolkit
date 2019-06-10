@@ -15,7 +15,8 @@ const styles = css`
   cursor: pointer;
   &:hover,
   &:focus,
-  &:active {
+  &:active,
+  &.active {
     background: #63c;
     color: #fff;
   }
@@ -69,6 +70,20 @@ const ButtonGroupContainer = styled.span`
     margin: 0;
     border-radius: 0;
   }
+  &.toggler {
+    .button {
+      &:hover,
+      &:focus,
+      &:active {
+        background-color: rgba(102, 51, 204, 0.5);
+        color: #fff;
+      }
+      &.active {
+        background-color: #63c;
+        color: #fff;
+      }
+    }
+  }
   ${props =>
     !props.attached &&
     css`
@@ -108,9 +123,11 @@ const ButtonGroupContainer = styled.span`
 
 class ButtonGroup extends Component {
   render() {
-    const { children, ...props } = this.props;
+    const { children, toggler, ...props } = this.props;
+    let className = "button-group";
+    if (toggler) className += " toggler";
     return (
-      <ButtonGroupContainer className="button-group" {...props}>
+      <ButtonGroupContainer className={className} {...props}>
         {children}
       </ButtonGroupContainer>
     );
@@ -132,9 +149,11 @@ export default class Button extends Component {
   static Group = ButtonGroup;
   static WithIcon = ButtonIcon;
   render() {
-    const { children, ...props } = this.props;
+    const { children, active, ...props } = this.props;
+    let className = "button";
+    if (active) className += " active";
     return (
-      <ButtonContainer className="button" {...props}>
+      <ButtonContainer className={className} {...props}>
         {children}
       </ButtonContainer>
     );

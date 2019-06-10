@@ -73,7 +73,7 @@ appRoutes.route("/comments", {
     addTitle(`${APP_NAME} | Gestão de comentários`);
     return mount(App, {
       content: { component: CommentsPage },
-      query: pick(queryParams, ["q"]),
+      query: pick(queryParams, ["q", "resolved"]),
       page: queryParams.page
     });
   }

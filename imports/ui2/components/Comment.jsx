@@ -56,17 +56,17 @@ const Container = styled.article`
     }
   }
   .comment-admin-replies {
-    font-size: 0.9em;
+    font-size: 0.8em;
     margin-top: 1rem;
     .label {
-      font-size: 0.8em;
+      font-size: 0.9em;
       color: #999;
       margin: 0 0 0.5rem;
     }
     p.reply {
       padding: 0.25rem 0.5rem;
       background: #333;
-      color: #fff;
+      color: #f0f0f0;
       border-radius: 7px;
       display: table;
       position: relative;
@@ -109,9 +109,9 @@ export default class Comment extends Component {
           <a href={url} target="_blank">
             comentou
           </a>{" "}
-          em um{" "}
+          uma{" "}
           <a href={postUrl} target="_blank">
-            post
+            publicação
           </a>
         </>
       );

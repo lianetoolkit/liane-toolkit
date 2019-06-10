@@ -15,6 +15,22 @@ import Reaction from "../components/Reaction.jsx";
 import Button from "../components/Button.jsx";
 import Comment from "../components/Comment.jsx";
 
+const Container = styled.div`
+  width: 100%;
+  display: flex;
+  .filters {
+    padding-top: 1rem;
+    .button-group {
+      margin: 0 0 1rem;
+      font-size: 0.9em;
+      white-space: nowrap;
+      .button {
+        padding: 0.5rem 0.7rem;
+      }
+    }
+  }
+`;
+
 const CommentsContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -42,14 +58,6 @@ const CommentsContent = styled.div`
       }
     `}
   .page-paging {
-    .button-group {
-      font-size: 0.7em;
-      white-space: nowrap;
-      margin: 0 1rem;
-      .button {
-        padding: 0.4rem 0.7rem;
-      }
-    }
   }
 `;
 
@@ -168,6 +176,7 @@ export default class CommentsPage extends Component {
       JSON.stringify(query) != JSON.stringify(prevProps.query) ||
       JSON.stringify(comments) != JSON.stringify(prevProps.comments)
     ) {
+      console.log(query);
       this._fetchCount();
       ReactTooltip.rebuild();
     }
@@ -269,9 +278,18 @@ export default class CommentsPage extends Component {
       );
     }
   };
+  isQueryingResolved = () => {
+    const { query } = this.props;
+    console.log(query.resolved == true);
+    return query.resolved == true;
+  };
   _handleChange = ({ target }) => {
     const value = target.value || null;
     FlowRouter.setQueryParams({ [target.name]: value });
+  };
+  _handleQueryResolveClick = resolved => ev => {
+    ev.preventDefault();
+    FlowRouter.setQueryParams({ resolved });
   };
   _handleNext = () => {
     const { page, limit } = this.props;
@@ -290,11 +308,25 @@ export default class CommentsPage extends Component {
     const { comments, limit, page } = this.props;
     const { loadingCount, count } = this.state;
     return (
-      <>
+      <Container>
         <Page.Nav full plain>
           <PageFilters>
             <div className="filters">
               <form onSubmit={ev => ev.preventDefault()}>
+                <Button.Group toggler>
+                  <Button
+                    onClick={this._handleQueryResolveClick(false)}
+                    active={!this.isQueryingResolved()}
+                  >
+                    Não resolvidas
+                  </Button>
+                  <Button
+                    onClick={this._handleQueryResolveClick(true)}
+                    active={this.isQueryingResolved()}
+                  >
+                    Resolvidas
+                  </Button>
+                </Button.Group>
                 <input
                   className="main-input"
                   type="text"
@@ -315,12 +347,7 @@ export default class CommentsPage extends Component {
             loading={loadingCount}
             onNext={this._handleNext}
             onPrev={this._handlePrev}
-          >
-            <Button.Group>
-              <Button>Não resolvidas</Button>
-              <Button>Resolvidas</Button>
-            </Button.Group>
-          </PagePaging>
+          />
           {comments.length ? (
             <div className="comments">
               {comments.map((comment, i) => (
@@ -386,7 +413,7 @@ export default class CommentsPage extends Component {
             </div>
           ) : null}
         </CommentsContent>
-      </>
+      </Container>
     );
   }
 }
