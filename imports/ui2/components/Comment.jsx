@@ -35,6 +35,7 @@ const Container = styled.article`
     display: flex;
   }
   .comment-message {
+    flex: 1 1 100%;
     background: #f0f0f0;
     padding: 0.8rem 1rem;
     position: relative;
@@ -56,6 +57,7 @@ const Container = styled.article`
     }
   }
   .comment-admin-replies {
+    flex: 1 1 100%;
     font-size: 0.8em;
     margin-top: 1rem;
     .label {
