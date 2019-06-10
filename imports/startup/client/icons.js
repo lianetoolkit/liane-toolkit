@@ -42,7 +42,8 @@ import {
   faMapMarker,
   faMapMarked,
   faGlobe,
-  faQuestion
+  faQuestion,
+  faUndoAlt
 } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 
@@ -88,4 +89,5 @@ library.add(faMapMarker);
 library.add(faMapMarked);
 library.add(faGlobe);
 library.add(faQuestion);
+library.add(faUndoAlt);
 library.add(faFacebookSquare);

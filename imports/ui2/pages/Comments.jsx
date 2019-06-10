@@ -151,6 +151,17 @@ const CommentContainer = styled.article`
         color: #fff;
       }
     }
+    &.resolved {
+      background-color: #f7f7f7;
+      a {
+        color: #999;
+        &:hover,
+        &:focus {
+          background: #333;
+          color: #fff;
+        }
+      }
+    }
   }
   .action-label {
     font-size: 0.8em;
@@ -263,15 +274,19 @@ export default class CommentsPage extends Component {
   };
   _handleResolveClick = comment => () => {
     const { campaignId } = this.props;
+    const resolve = !comment.resolved;
+    const label = resolve ? "resolvido" : "não resolvido";
     if (
-      confirm("Tem certeza que deseja marcar este comentário como resolvido?")
+      confirm(`Tem certeza que deseja marcar este comentário como ${label}?`)
     ) {
       Meteor.call(
         "comments.resolve",
-        { campaignId, commentId: comment._id },
+        { campaignId, commentId: comment._id, resolve },
         (err, res) => {
           if (err) {
             alertStore.add(err);
+          } else {
+            alertStore.add(`Marcado como ${label}`, "success");
           }
         }
       );
@@ -449,13 +464,23 @@ export default class CommentsPage extends Component {
                       </a>
                     </div>
                   </div>
-                  <div className="comment-resolve">
+                  <div
+                    className={
+                      "comment-resolve " + (comment.resolved ? "resolved" : "")
+                    }
+                  >
                     <a
                       href="javascript:void(0);"
-                      data-tip="Marcar com resolvido"
+                      data-tip={
+                        comment.resolved
+                          ? "Marcar com não resolvido"
+                          : "Marcar como resolvido"
+                      }
                       onClick={this._handleResolveClick(comment)}
                     >
-                      <FontAwesomeIcon icon="check" />
+                      <FontAwesomeIcon
+                        icon={comment.resolved ? "undo-alt" : "check"}
+                      />
                     </a>
                   </div>
                 </CommentContainer>

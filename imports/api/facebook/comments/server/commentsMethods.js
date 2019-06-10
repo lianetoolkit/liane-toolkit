@@ -75,7 +75,7 @@ export const resolveComment = new ValidatedMethod({
 
     return Comments.update(commentId, {
       $set: {
-        resolved: resolve || true
+        resolved: typeof resolve != "undefined" ? resolve : true
       }
     });
   }
