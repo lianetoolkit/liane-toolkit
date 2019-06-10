@@ -176,7 +176,6 @@ export default class CommentsPage extends Component {
       JSON.stringify(query) != JSON.stringify(prevProps.query) ||
       JSON.stringify(comments) != JSON.stringify(prevProps.comments)
     ) {
-      console.log(query);
       this._fetchCount();
       ReactTooltip.rebuild();
     }
@@ -280,7 +279,6 @@ export default class CommentsPage extends Component {
   };
   isQueryingResolved = () => {
     const { query } = this.props;
-    console.log(query.resolved == true);
     return query.resolved == true;
   };
   _handleChange = ({ target }) => {
