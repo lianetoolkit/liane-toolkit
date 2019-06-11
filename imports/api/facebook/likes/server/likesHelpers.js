@@ -3,6 +3,7 @@ import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { People } from "/imports/api/facebook/people/people.js";
 import { PeopleHelpers } from "/imports/api/facebook/people/server/peopleHelpers.js";
 import { EntriesHelpers } from "/imports/api/facebook/entries/server/entriesHelpers.js";
+import { CommentsHelpers } from "/imports/api/facebook/comments/server/commentsHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { HTTP } from "meteor/http";
@@ -49,6 +50,13 @@ const LikesHelpers = {
     if (data.comment_id) {
       reaction.parentId = data.comment_id;
       query.parentId = data.comment_id;
+      CommentsHelpers.upsertComment({
+        facebookAccountId,
+        data: {
+          comment_id: data.comment_id,
+          post_id: data.post_id
+        }
+      });
     } else {
       query.parentId = { $exists: false };
     }

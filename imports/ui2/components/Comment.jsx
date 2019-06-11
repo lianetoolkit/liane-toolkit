@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { ClientStorage } from "meteor/ostrio:cstorage";
 import styled from "styled-components";
 import moment from "moment";
+
+import Reaction from "./Reaction.jsx";
 
 const Container = styled.article`
   header {
@@ -42,6 +43,7 @@ const Container = styled.article`
     margin: 0 1rem 0 0;
     border-radius: 7px;
     display: inline-block;
+    position: relative;
     &:before {
       content: "";
       background: #f0f0f0;
@@ -54,6 +56,13 @@ const Container = styled.article`
     }
     p {
       margin: 0;
+    }
+    .comment-meta {
+      float: right;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      margin: 0.25rem;
     }
   }
   .comment-admin-replies {
@@ -162,6 +171,12 @@ export default class Comment extends Component {
           <div className="messaging">
             <section className="comment-message">
               <p>{comment.message}</p>
+              <div className="comment-meta">
+                <Reaction.Count
+                  counts={comment.reaction_count}
+                  total={comment.reaction_count.reaction}
+                />
+              </div>
             </section>
             {comment.adminReplies && comment.adminReplies.length ? (
               <section className="comment-admin-replies">

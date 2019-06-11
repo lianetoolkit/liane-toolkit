@@ -56,14 +56,21 @@ const CommentsHelpers = {
             "message",
             "attachment",
             "message_tags",
+            "created_time",
             "can_hide",
             "can_remove",
             "can_reply_privately",
             "is_hidden",
             "is_private",
             "comment_count",
-            "reactions.limit(0).summary(total_count)",
-            "created_time"
+            "reactions.limit(0).summary(true).as(reaction)",
+            "reactions.type(LIKE).limit(0).summary(true).as(like)",
+            "reactions.type(LOVE).limit(0).summary(true).as(love)",
+            "reactions.type(WOW).limit(0).summary(true).as(wow)",
+            "reactions.type(HAHA).limit(0).summary(true).as(haha)",
+            "reactions.type(SAD).limit(0).summary(true).as(sad)",
+            "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
+            "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
           ],
           access_token: campaignWithToken.facebookAccount.accessToken
         })
@@ -85,13 +92,24 @@ const CommentsHelpers = {
     }
     const from = comment.from;
     comment.personId = from.id;
-    comment.entryId = data.post_id;
+    if (data.post_id) {
+      comment.entryId = data.post_id;
+    }
     comment.facebookAccountId = facebookAccountId;
-    comment.reaction_count = comment.reactions.summary.total_count;
+    comment.reaction_count = this.getReactionCountFromFBData({ comment });
     comment.lastValidation = new Date();
     delete comment.id;
     delete comment.from;
-    delete comment.reaction_count;
+
+    // Remove raw reaction count
+    delete comment.reaction;
+    delete comment.like;
+    delete comment.love;
+    delete comment.haha;
+    delete comment.sad;
+    delete comment.angry;
+    delete comment.thankful;
+
     Comments.upsert({ _id: data.comment_id }, { $set: comment });
 
     // Update adminReplied if comment does not have it already
@@ -106,7 +124,9 @@ const CommentsHelpers = {
     }
 
     // Update entry interaction count
-    EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
+    if (data.post_id) {
+      EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
+    }
 
     // Upsert person
     if (comment.personId) {
@@ -365,14 +385,21 @@ const CommentsHelpers = {
             "message",
             "attachment",
             "message_tags",
+            "created_time",
             "can_hide",
             "can_remove",
             "can_reply_privately",
             "is_hidden",
             "is_private",
             "comment_count",
-            "reactions.limit(0).summary(total_count)",
-            "created_time"
+            "reactions.limit(0).summary(true).as(reaction)",
+            "reactions.type(LIKE).limit(0).summary(true).as(like)",
+            "reactions.type(LOVE).limit(0).summary(true).as(love)",
+            "reactions.type(WOW).limit(0).summary(true).as(wow)",
+            "reactions.type(HAHA).limit(0).summary(true).as(haha)",
+            "reactions.type(SAD).limit(0).summary(true).as(sad)",
+            "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
+            "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
           ],
           limit: 1000,
           access_token: accessToken
@@ -394,6 +421,18 @@ const CommentsHelpers = {
     }
     return comments;
   },
+  getReactionCountFromFBData({ comment }) {
+    return {
+      like: comment.like ? comment.like.summary.total_count : 0,
+      love: comment.love ? comment.love.summary.total_count : 0,
+      wow: comment.wow ? comment.wow.summary.total_count : 0,
+      haha: comment.haha ? comment.haha.summary.total_count : 0,
+      sad: comment.sad ? comment.sad.summary.total_count : 0,
+      angry: comment.angry ? comment.angry.summary.total_count : 0,
+      thankful: comment.thankful ? comment.thankful.summary.total_count : 0,
+      reaction: comment.reaction ? comment.reaction.summary.total_count : 0
+    };
+  },
   getEntryComments({ facebookAccountId, entryId, accessToken }) {
     check(facebookAccountId, String);
     check(entryId, String);
@@ -412,12 +451,19 @@ const CommentsHelpers = {
         comment.name = comment.from.name;
         comment.entryId = entryId;
         comment.facebookAccountId = facebookAccountId;
-        comment.reaction_count = comment.reactions.summary.total_count;
+        comment.reaction_count = this.getReactionCountFromFBData({ comment });
         const commentId = comment.id;
         delete comment.id;
         delete comment.from;
-        delete comment.reactions;
-        if (comment.reaction_count && comment.reaction_count > 0) {
+        // Remove raw reaction count
+        delete comment.reaction;
+        delete comment.like;
+        delete comment.love;
+        delete comment.haha;
+        delete comment.sad;
+        delete comment.angry;
+        delete comment.thankful;
+        if (comment.reaction_count && comment.reaction_count.reaction > 0) {
           LikesHelpers.handleCommentsReactions({
             facebookAccountId,
             entryId,
@@ -477,14 +523,21 @@ const CommentsHelpers = {
             "message",
             "attachment",
             "message_tags",
+            "created_time",
             "can_hide",
             "can_remove",
             "can_reply_privately",
             "is_hidden",
             "is_private",
             "comment_count",
-            "reactions.limit(0).summary(total_count)",
-            "created_time"
+            "reactions.limit(0).summary(true).as(reaction)",
+            "reactions.type(LIKE).limit(0).summary(true).as(like)",
+            "reactions.type(LOVE).limit(0).summary(true).as(love)",
+            "reactions.type(WOW).limit(0).summary(true).as(wow)",
+            "reactions.type(HAHA).limit(0).summary(true).as(haha)",
+            "reactions.type(SAD).limit(0).summary(true).as(sad)",
+            "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
+            "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
           ],
           limit: 1000,
           access_token: accessToken

@@ -83,7 +83,8 @@ Comments.schema = new SimpleSchema({
     optional: true
   },
   reaction_count: {
-    type: Number,
+    type: Object,
+    blackbox: true,
     optional: true
   },
   resolved: {

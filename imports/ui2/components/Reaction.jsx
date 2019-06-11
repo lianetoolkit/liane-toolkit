@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import PropTypes from "prop-types";
@@ -12,6 +12,8 @@ const sizes = {
   large: 46,
   huge: 64
 };
+
+const REACTIONS = ["like", "love", "haha", "wow", "sad", "angry"];
 
 const imagePaths = {
   like: "/images/reactions/like.png",
@@ -56,7 +58,7 @@ const FilterContainer = styled.div`
   }
 `;
 
-class Filter extends React.Component {
+class Filter extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -138,12 +140,75 @@ class Filter extends React.Component {
   }
 }
 
-export default class Reaction extends React.Component {
+const CountContainer = styled.div`
+  font-size: 0.8em;
+  background: #fff;
+  padding: 0.2rem 0.4rem;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  .reactions {
+    display: flex;
+    align-items: center;
+    margin-right: 0.7rem;
+    img {
+      border-radius: 100%;
+      display: inline-block;
+      border: 1px solid #fff;
+      margin-right: -5px;
+    }
+  }
+  .total {
+    color: #999;
+  }
+`;
+
+class Count extends Component {
+  render() {
+    const { counts, total } = this.props;
+    if (typeof counts !== "object") return null;
+    const values = Object.keys(counts)
+      .map(k => {
+        return {
+          k,
+          v: counts[k] || 0
+        };
+      })
+      .filter(item => {
+        return REACTIONS.indexOf(item.k) !== -1 && item.v > 0;
+      })
+      .sort((a, b) => {
+        return b.v - a.v;
+      });
+    return (
+      <CountContainer className="reaction-count">
+        {values.length ? (
+          <span className="reactions">
+            {values.map((v, i) => (
+              <img
+                key={i}
+                src={imagePaths[v.k]}
+                style={{
+                  width: "16px",
+                  height: "16px"
+                }}
+              />
+            ))}
+          </span>
+        ) : null}
+        <span className="total">{total} reações</span>
+      </CountContainer>
+    );
+  }
+}
+
+export default class Reaction extends Component {
   static propTypes = {
     reaction: PropTypes.string.isRequired,
     size: PropTypes.string
   };
   static Filter = Filter;
+  static Count = Count;
   render() {
     const { reaction, size, ...props } = this.props;
     if (imagePaths[reaction.toLowerCase()]) {
