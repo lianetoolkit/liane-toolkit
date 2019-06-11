@@ -31,6 +31,9 @@ export default withTracker(props => {
     query.resolved = true;
   }
 
+  if (queryParams.hideReplies) {
+    query.parentId = { $exists: false };
+  }
   if (queryParams.mention) {
     query.message_tags = { $exists: true };
   }
@@ -38,7 +41,8 @@ export default withTracker(props => {
     query.categories = { $in: [queryParams.category] };
   }
   if (queryParams.unreplied) {
-    // query.adminReplied = true;
+    query.adminReplied = { $ne: true };
+    query.parentId = { $exists: false };
   }
 
   let commentsHandle, loading;

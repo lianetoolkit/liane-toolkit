@@ -78,7 +78,8 @@ appRoutes.route("/comments", {
         "resolved",
         "category",
         "mention",
-        "unreplied"
+        "unreplied",
+        "hideReplies"
       ]),
       page: queryParams.page
     });

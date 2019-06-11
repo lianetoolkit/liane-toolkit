@@ -25,6 +25,11 @@ Comments.schema = new SimpleSchema({
     index: true,
     optional: true
   },
+  adminReplied: {
+    type: Boolean,
+    index: true,
+    optional: true
+  },
   can_hide: {
     type: Boolean,
     optional: true,

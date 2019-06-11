@@ -312,13 +312,17 @@ export default class CommentsPage extends Component {
     const { query } = this.props;
     return query.resolved == true;
   };
+  isQueryingHideReplies = () => {
+    const { query } = this.props;
+    return !!query.parentId;
+  };
   isQueryingMention = () => {
     const { query } = this.props;
     return !!query.message_tags;
   };
   isQueryingUnreplied = () => {
     const { query } = this.props;
-    return false;
+    return !!query.adminReplied;
   };
   _handleChange = ({ target }) => {
     const value = target.value || null;
@@ -423,10 +427,11 @@ export default class CommentsPage extends Component {
                   <input
                     type="checkbox"
                     onChange={this._handleCheckboxChange}
-                    name="mention"
-                    checked={this.isQueryingMention()}
+                    name="hideReplies"
+                    checked={this.isQueryingHideReplies()}
+                    disabled={this.isQueryingUnreplied()}
                   />
-                  Comentários com menções
+                  Ocultar respostas à comentários
                 </label>
                 <label>
                   <input
@@ -436,6 +441,15 @@ export default class CommentsPage extends Component {
                     checked={this.isQueryingUnreplied()}
                   />
                   Comentários sem respostas da página
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    onChange={this._handleCheckboxChange}
+                    name="mention"
+                    checked={this.isQueryingMention()}
+                  />
+                  Comentários com menções
                 </label>
               </form>
             </div>

@@ -73,13 +73,13 @@ const CommentsHelpers = {
     }
     if (data.parent_id && data.parent_id !== data.post_id) {
       comment.parentId = data.parent_id;
-      // TODO Check if reply is made by admin and store adminReplied meta
       // Refetch parent comment
       this.upsertComment({
         facebookAccountId,
         data: {
           comment_id: data.parent_id,
-          post_id: data.post_id
+          post_id: data.post_id,
+          adminReplied: data.from.id == facebookAccountId
         }
       });
     }
@@ -93,6 +93,17 @@ const CommentsHelpers = {
     delete comment.from;
     delete comment.reaction_count;
     Comments.upsert({ _id: data.comment_id }, { $set: comment });
+
+    // Update adminReplied if comment does not have it already
+    if (data.hasOwnProperty("adminReplied")) {
+      Comments.update(
+        {
+          _id: data.comment_id,
+          adminReplied: { $ne: true }
+        },
+        { $set: { adminReplied: data.adminReplied } }
+      );
+    }
 
     // Update entry interaction count
     EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
@@ -431,6 +442,8 @@ const CommentsHelpers = {
             commentId: comment.id,
             accessToken
           });
+          comment.adminReplied =
+            replies.findIndex(c => c.from.id == facebookAccountId) != -1;
           for (const reply of replies) {
             addCommentToBulk({
               comment: {
