@@ -2,13 +2,14 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import moment from "moment";
 
+import Button from "./Button.jsx";
 import Reaction from "./Reaction.jsx";
 
 const Container = styled.article`
   header {
-    color: #666;
+    color: #999;
     a {
-      color: #999;
+      color: #bbb;
       &:hover,
       &:active,
       &:focus {
@@ -25,7 +26,7 @@ const Container = styled.article`
         font-size: 1.1em;
       }
       .date {
-        color: #999;
+        color: #ccc;
         font-size: 0.9em;
         margin-left: 0.5rem;
         white-space: nowrap;
@@ -73,7 +74,7 @@ const Container = styled.article`
   .comment-admin-replies {
     flex: 1 1 0;
     font-size: 0.8em;
-    margin-top: 1rem;
+    ${'' /* margin-top: 1rem; */}
     .label {
       font-size: 0.9em;
       color: #999;
@@ -97,6 +98,12 @@ const Container = styled.article`
         top: 10px;
         transform: rotate(45deg);
       }
+    }
+  }
+  .comment-fb-actions {
+    .button {
+      margin: 0;
+      display: block;
     }
   }
 `;
@@ -188,7 +195,7 @@ export default class Comment extends Component {
     return `https://www.facebook.com/permalink.php?${encoded}`;
   };
   render() {
-    const { comment } = this.props;
+    const { comment, actions } = this.props;
     if (comment) {
       return (
         <Container>
@@ -213,16 +220,24 @@ export default class Comment extends Component {
                 <Comment.Count total={comment.comment_count} />
               </div>
             </section>
-            {comment.adminReplies && comment.adminReplies.length ? (
-              <section className="comment-admin-replies">
-                <p className="label">Você respondeu</p>
-                {comment.adminReplies.map(reply => (
-                  <p className="reply" key={reply._id}>
-                    {reply.message}
-                  </p>
-                ))}
-              </section>
-            ) : null}
+            <section className="comment-admin-replies">
+              {comment.adminReplies && comment.adminReplies.length ? (
+                <>
+                  <p className="label">Você respondeu</p>
+                  {comment.adminReplies.map(reply => (
+                    <p className="reply" key={reply._id}>
+                      {reply.message}
+                    </p>
+                  ))}
+                </>
+              ) : null}
+              {actions ? (
+                <div className="comment-fb-actions">
+                  {/* <p className="label">Responder</p> */}
+                  <Button>Responder</Button>
+                </div>
+              ) : null}
+            </section>
           </div>
         </Container>
       );

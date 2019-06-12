@@ -27,7 +27,7 @@ export const queryCount = new ValidatedMethod({
     const campaign = Campaigns.findOne(campaignId);
 
     if (!campaign.facebookAccount) {
-      throw new Meteor.Error(400, "Facebook accout not found");
+      throw new Meteor.Error(400, "Facebook account not found");
     }
 
     const facebookAccountId = campaign.facebookAccount.facebookId;
@@ -37,6 +37,43 @@ export const queryCount = new ValidatedMethod({
       facebookAccountId,
       created_time: { $exists: true }
     }).count();
+  }
+});
+
+export const reactComment = new ValidatedMethod({
+  name: "comments.react",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    commentId: {
+      type: String
+    },
+    reaction: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, commentId, reaction }) {
+    this.unblock();
+    logger.debug("comments.react called", { commentId, reaction });
+
+    const userId = Meteor.userId();
+
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    const comment = Comments.findOne(commentId);
+
+    if (
+      !campaign.facebookAccount ||
+      campaign.facebookAccount.facebookId != comment.facebookAccountId
+    ) {
+      throw new Meteor.Error(400, "Not allowed");
+    }
+
+
   }
 });
 

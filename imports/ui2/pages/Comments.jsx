@@ -89,7 +89,7 @@ const CommentContainer = styled.article`
   }
   .action-icons {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
     a {
@@ -97,7 +97,7 @@ const CommentContainer = styled.article`
       height: 30px;
       font-size: 0.8em;
       display: flex;
-      margin: 0 0.25rem 0.5rem;
+      margin: 0 0.25rem;
       justify-content: center;
       align-items: center;
       color: #63c;
@@ -105,9 +105,6 @@ const CommentContainer = styled.article`
       border: 1px solid rgba(102, 51, 204, 0.25);
       border-radius: 100%;
       transition: all 0.1s linear;
-      &:last-child {
-        margin-bottom: 0;
-      }
       &:hover {
         background-color: rgba(102, 51, 204, 0.5);
         color: #fff;
@@ -275,6 +272,21 @@ export default class CommentsPage extends Component {
               [comment.personId]: { troll: !isTroll }
             }
           });
+        }
+      }
+    );
+  };
+  _handleReactionChange = commentId => reaction => {
+    const { campaignId } = this.props;
+    console.log(reaction);
+    Meteor.call(
+      "comments.react",
+      { campaignId, commentId, reaction },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          alertStore.add("Sucesso", "success");
         }
       }
     );
@@ -469,16 +481,19 @@ export default class CommentsPage extends Component {
               {comments.map((comment, i) => (
                 <CommentContainer key={comment._id}>
                   <div className="comment-content">
-                    <Comment comment={comment} />
+                    <Comment comment={comment} actions={true} />
                   </div>
-                  <div className="comment-reply">
+                  {/* <div className="comment-reply">
                     <p className="action-label">Reagir e responder</p>
-                    <Reaction.Filter target={comment._id} />
+                    <Reaction.Filter
+                      target={comment._id}
+                      onChange={this._handleReactionChange(comment._id)}
+                    />
                     <Button.Group>
                       <Button>Responder</Button>
                       <Button>Inbox</Button>
                     </Button.Group>
-                  </div>
+                  </div> */}
                   <div className="comment-actions">
                     <p className="action-label">Classificar</p>
                     <div className="action-icons">

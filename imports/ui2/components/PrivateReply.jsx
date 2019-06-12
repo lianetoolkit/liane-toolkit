@@ -8,13 +8,13 @@ import Comment from "./Comment.jsx";
 
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
   .comment,
   form {
     flex: 1 1 100%;
   }
   .comment {
-    max-width: 250px;
-    margin: -2rem 2rem -2rem -2rem;
+    margin: -2rem -2rem 2rem -2rem;
     padding: 2rem;
     font-size: 0.8em;
     background: #f7f7f7;
@@ -46,7 +46,6 @@ export default class PrivateReply extends Component {
           errored: true
         });
         if (err) {
-          console.log(err);
           alertStore.add(err);
         } else {
           alertStore.add(

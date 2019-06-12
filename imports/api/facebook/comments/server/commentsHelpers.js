@@ -105,6 +105,7 @@ const CommentsHelpers = {
     delete comment.reaction;
     delete comment.like;
     delete comment.love;
+    delete comment.wow;
     delete comment.haha;
     delete comment.sad;
     delete comment.angry;
@@ -459,6 +460,7 @@ const CommentsHelpers = {
         delete comment.reaction;
         delete comment.like;
         delete comment.love;
+        delete comment.wow;
         delete comment.haha;
         delete comment.sad;
         delete comment.angry;
