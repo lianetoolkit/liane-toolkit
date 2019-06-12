@@ -143,7 +143,8 @@ class Filter extends Component {
 const CountContainer = styled.div`
   font-size: 0.8em;
   background: #fff;
-  padding: 0.2rem 0.4rem;
+  border: 1px solid #e7e7e7;
+  padding: 0.15rem 0.35rem;
   border-radius: 7px;
   display: flex;
   align-items: center;
@@ -161,11 +162,35 @@ const CountContainer = styled.div`
   .total {
     color: #999;
   }
+  .__react_component_tooltip.type-dark.place-top {
+    padding: 0.25rem 0.5rem;
+    &:before {
+      bottom: -3px;
+      border-left-width: 6px;
+      border-right-width: 6px;
+      margin-left: -6px;
+    }
+    &:after {
+      bottom: -3px;
+      border-top-width: 4px;
+      margin-left: -8px;
+    }
+  }
 `;
 
 class Count extends Component {
+  label = () => {
+    const { total } = this.props;
+    if (!total || total == 0) {
+      return "Nenhuma reação";
+    } else if (total == 1) {
+      return "1 reação";
+    } else {
+      return `${total} reações`;
+    }
+  };
   render() {
-    const { counts, total } = this.props;
+    const { counts, total, target } = this.props;
     if (typeof counts !== "object") return null;
     const values = Object.keys(counts)
       .map(k => {
@@ -180,23 +205,31 @@ class Count extends Component {
       .sort((a, b) => {
         return b.v - a.v;
       });
+
+    let tooltipId = "reaction-count";
+    if (target) {
+      tooltipId += `-${target}`;
+    }
     return (
       <CountContainer className="reaction-count">
         {values.length ? (
           <span className="reactions">
-            {values.map((v, i) => (
+            {values.map((item, i) => (
               <img
                 key={i}
-                src={imagePaths[v.k]}
+                src={imagePaths[item.k]}
                 style={{
-                  width: "16px",
-                  height: "16px"
+                  width: "14px",
+                  height: "14px"
                 }}
+                data-tip={item.v}
+                data-for={tooltipId}
               />
             ))}
           </span>
         ) : null}
-        <span className="total">{total} reações</span>
+        <span className="total">{this.label()}</span>
+        <ReactTooltip id={tooltipId} effect="solid" />
       </CountContainer>
     );
   }

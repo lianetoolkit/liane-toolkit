@@ -186,7 +186,7 @@ input[type="submit"]:disabled {
 }
 
 /* React Tooltip */
-#app .__react_component_tooltip {
+.__react_component_tooltip {
   font-size: 12px;
   padding: 0.5rem 0.7rem;
   line-height: 1;
@@ -194,10 +194,10 @@ input[type="submit"]:disabled {
   border-radius: 7px;
 }
 
-#app .__react_component_tooltip.type-dark.place-left:after {
+.__react_component_tooltip.type-dark.place-left:after {
   border-left-color: rgba(0, 0, 0, 0.9);
 }
 
-#app .__react_component_tooltip.type-dark.place-top:after {
+.__react_component_tooltip.type-dark.place-top:after {
   border-top-color: rgba(0, 0, 0, 0.9);
 }

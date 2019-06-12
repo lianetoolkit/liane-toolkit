@@ -38,7 +38,7 @@ const Container = styled.article`
   .comment-message {
     flex: 2 1 0;
     background: #f0f0f0;
-    padding: 0.8rem 1rem;
+    padding: 0.8rem 1rem 1rem;
     position: relative;
     margin: 0 1rem 0 0;
     border-radius: 7px;
@@ -60,9 +60,14 @@ const Container = styled.article`
     .comment-meta {
       float: right;
       position: absolute;
-      bottom: 0;
+      bottom: -0.6rem;
       right: 0;
-      margin: 0.25rem;
+      margin-right: 0.5rem;
+      display: flex;
+      align-items: center;
+      > * {
+        margin-left: 0.15rem;
+      }
     }
   }
   .comment-admin-replies {
@@ -96,7 +101,35 @@ const Container = styled.article`
   }
 `;
 
+const CountContainer = styled.div`
+  font-size: 0.8em;
+  background: #fff;
+  border: 1px solid #e7e7e7;
+  padding: 0.15rem 0.35rem;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  color: #999;
+`;
+
+class Count extends Component {
+  label = () => {
+    const { total } = this.props;
+    if (!total || total == 0) {
+      return "Nenhum comentário";
+    } else if (total == 1) {
+      return "1 comentário";
+    } else {
+      return `${total} comentários`;
+    }
+  };
+  render() {
+    return <CountContainer>{this.label()}</CountContainer>;
+  }
+}
+
 export default class Comment extends Component {
+  static Count = Count;
   action = () => {
     const { comment } = this.props;
     const url = this.getCommentUrl();
@@ -175,7 +208,9 @@ export default class Comment extends Component {
                 <Reaction.Count
                   counts={comment.reaction_count}
                   total={comment.reaction_count.reaction}
+                  target={comment._id}
                 />
+                <Comment.Count total={comment.comment_count} />
               </div>
             </section>
             {comment.adminReplies && comment.adminReplies.length ? (
