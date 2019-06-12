@@ -164,6 +164,7 @@ export default class AuthPage extends Component {
           "public_profile",
           "email",
           "manage_pages",
+          "publish_pages",
           "pages_show_list",
           "ads_management",
           "ads_read",

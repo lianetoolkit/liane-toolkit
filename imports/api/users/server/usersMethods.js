@@ -49,6 +49,7 @@ const validatePermissions = scopes => {
   const permissions = [
     "public_profile",
     "email",
+    "publish_pages",
     "manage_pages",
     "pages_show_list",
     "ads_management",
