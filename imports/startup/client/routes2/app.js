@@ -11,6 +11,7 @@ import PeoplePage from "/imports/ui2/pages/People.jsx";
 import ChatbotPage from "/imports/ui2/pages/Chatbot.jsx";
 import AuthPage from "/imports/ui2/pages/Auth.jsx";
 
+import FAQPage from "/imports/ui2/containers/FAQPage.jsx";
 import CommentsPage from "/imports/ui2/containers/CommentsPage.jsx";
 import AdsetPage from "/imports/ui2/pages/Adset.jsx";
 
@@ -99,8 +100,16 @@ appRoutes.route("/adset", {
 appRoutes.route("/map", {
   name: "App.map",
   action: function() {
-    addTitle(`${APP_NAME} | Map`);
+    addTitle(`${APP_NAME} | Território`);
     return mount(App, { content: { component: MapPage } });
+  }
+});
+
+appRoutes.route("/faq", {
+  name: "App.faq",
+  action: function() {
+    addTitle(`${APP_NAME} | Perguntas frequentes`);
+    return mount(App, { content: { component: FAQPage } });
   }
 });
 

@@ -253,6 +253,11 @@ export default class AppNav extends Component {
                     <li>
                       <a href={FlowRouter.path("App.chatbot")}>Chatbot</a>
                     </li>
+                    <li>
+                      <a href={FlowRouter.path("App.faq")}>
+                        Perguntas frequentes
+                      </a>
+                    </li>
                   </ul>
                 </NavItem>
                 <NavItem
