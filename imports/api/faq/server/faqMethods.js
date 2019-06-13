@@ -76,3 +76,36 @@ export const updateFAQ = new ValidatedMethod({
     return FAQ.update(_id, { $set: { question, answer } });
   }
 });
+
+export const removeFAQ = new ValidatedMethod({
+  name: "faq.remove",
+  validate: new SimpleSchema({
+    _id: {
+      type: String
+    }
+  }).validator(),
+  run({ _id }) {
+    this.unblock();
+    logger.debug("faq.remove called", { _id });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const item = FAQ.findOne(_id);
+    const campaignId = item.campaignId;
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+      throw new Meteor.Error(401, "Not allowed");
+    }
+
+    return FAQ.remove(_id);
+  }
+});

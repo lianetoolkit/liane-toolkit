@@ -23,6 +23,7 @@ const ViewContainer = styled.article`
     text-align: right;
     font-size: 0.8em;
     a {
+      margin-left: 0.5rem;
       color: #999;
       display: inline-block;
       border: 1px solid #ddd;
@@ -41,6 +42,25 @@ const ViewContainer = styled.article`
 `;
 
 class FAQView extends Component {
+  _handleEditClick = ev => {
+    const { item } = this.props;
+    ev.preventDefault();
+    modalStore.setTitle("Editando resposta");
+    modalStore.set(<FAQEdit item={item} />);
+  };
+  _handleRemoveClick = ev => {
+    const { item } = this.props;
+    if (confirm("Tem certeza que deseja remover esta resposta?")) {
+      Meteor.call("faq.remove", { _id: item._id }, (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          alertStore.add("Removido com sucesso", "success");
+          modalStore.reset();
+        }
+      });
+    }
+  };
   render() {
     const { item } = this.props;
     if (!item) return null;
@@ -52,6 +72,12 @@ class FAQView extends Component {
           <CopyToClipboard text={item.answer}>
             <FontAwesomeIcon icon="copy" /> Copiar para área de transferência
           </CopyToClipboard>
+          <a href="javascript:void(0);" onClick={this._handleEditClick}>
+            <FontAwesomeIcon icon="edit" /> Editar
+          </a>
+          <a href="javascript:void(0);" onClick={this._handleRemoveClick}>
+            <FontAwesomeIcon icon="times" /> Remover
+          </a>
         </aside>
       </ViewContainer>
     );
