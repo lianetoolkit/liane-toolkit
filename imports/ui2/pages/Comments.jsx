@@ -538,7 +538,7 @@ export default class CommentsPage extends Component {
                       href="javascript:void(0);"
                       data-tip={
                         comment.resolved
-                          ? "Marcar com não resolvido"
+                          ? "Marcar como não resolvido"
                           : "Marcar como resolvido"
                       }
                       onClick={this._handleResolveClick(comment)}

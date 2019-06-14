@@ -90,6 +90,7 @@ class FAQEdit extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       formData: {
         question: "",
         answer: ""
@@ -111,11 +112,17 @@ class FAQEdit extends Component {
     ev.preventDefault();
     const { campaignId, onSuccess } = this.props;
     const { _id, question, answer } = this.state.formData;
+    this.setState({
+      loading: true
+    });
     if (!_id) {
       Meteor.call(
         "faq.create",
         { campaignId, question, answer },
         (err, res) => {
+          this.setState({
+            loading: false
+          });
           if (err) {
             alertStore.add(err);
           } else {
@@ -128,6 +135,9 @@ class FAQEdit extends Component {
       );
     } else {
       Meteor.call("faq.update", { _id, question, answer }, (err, res) => {
+        this.setState({
+          loading: false
+        });
         if (err) {
           alertStore.add(err);
         } else {
@@ -156,7 +166,7 @@ class FAQEdit extends Component {
     }
   };
   render() {
-    const { formData } = this.state;
+    const { formData, loading } = this.state;
     return (
       <EditContainer>
         <Form onSubmit={this._handleSubmit}>
@@ -177,7 +187,7 @@ class FAQEdit extends Component {
               value={formData.answer}
             />
           </Form.Field>
-          <input type="submit" value={this.submitLabel()} />
+          <input disabled={loading} type="submit" value={this.submitLabel()} />
         </Form>
       </EditContainer>
     );
