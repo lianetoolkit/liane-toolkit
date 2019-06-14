@@ -164,16 +164,12 @@ const CountContainer = styled.div`
   }
   .__react_component_tooltip.type-dark.place-top {
     padding: 0.25rem 0.5rem;
-    &:before {
-      bottom: -3px;
-      border-left-width: 6px;
-      border-right-width: 6px;
-      margin-left: -6px;
-    }
     &:after {
       bottom: -3px;
-      border-top-width: 4px;
-      margin-left: -8px;
+      border-top-width: 3px;
+      margin-left: -4px;
+      border-left-width: 4px;
+      border-right-width: 4px;
     }
   }
 `;
