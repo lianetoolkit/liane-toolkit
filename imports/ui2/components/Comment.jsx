@@ -2,8 +2,11 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import moment from "moment";
 
+import { modalStore } from "../containers/Modal.jsx";
+
 import Button from "./Button.jsx";
 import Reaction from "./Reaction.jsx";
+import Reply from "./Reply.jsx";
 
 const Container = styled.article`
   header {
@@ -74,7 +77,7 @@ const Container = styled.article`
   .comment-admin-replies {
     flex: 1 1 0;
     font-size: 0.8em;
-    ${'' /* margin-top: 1rem; */}
+    ${"" /* margin-top: 1rem; */}
     .label {
       font-size: 0.9em;
       color: #999;
@@ -194,6 +197,12 @@ export default class Comment extends Component {
       .join("&");
     return `https://www.facebook.com/permalink.php?${encoded}`;
   };
+  _handleReplyClick = ev => {
+    const { comment } = this.props;
+    ev.preventDefault();
+    modalStore.setTitle(`Respondendo ${comment.person.name}`);
+    modalStore.set(<Reply comment={comment} defaultSendAs="comment" />);
+  };
   render() {
     const { comment, actions } = this.props;
     if (comment) {
@@ -234,7 +243,7 @@ export default class Comment extends Component {
               {actions ? (
                 <div className="comment-fb-actions">
                   {/* <p className="label">Responder</p> */}
-                  <Button>Responder</Button>
+                  <Button onClick={this._handleReplyClick}>Responder</Button>
                 </div>
               ) : null}
             </section>

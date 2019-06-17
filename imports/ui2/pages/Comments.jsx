@@ -7,6 +7,7 @@ import { debounce } from "lodash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { alertStore } from "../containers/Alerts.jsx";
+import { modalStore } from "../containers/Modal.jsx";
 
 import Page from "../components/Page.jsx";
 import PageFilters from "../components/PageFilters.jsx";

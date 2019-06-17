@@ -17,7 +17,7 @@ import PersonSummary from "./PersonSummary.jsx";
 import PersonReactions from "./PersonReactions.jsx";
 import PersonEdit from "./PersonEdit.jsx";
 import PersonContactIcons from "./PersonContactIcons.jsx";
-import PrivateReply from "./PrivateReply.jsx";
+import Reply from "./Reply.jsx";
 
 const Container = styled.div`
   width: 100%;
@@ -336,12 +336,7 @@ export default class PeopleTable extends Component {
   _handlePrivateReplyClick = person => ev => {
     ev.preventDefault();
     modalStore.setTitle(`Enviando mensagem privada para ${person.name}`);
-    modalStore.set(
-      <PrivateReply personId={person._id} onSuccess={this._handlePRSuccess} />
-    );
-  };
-  _handlePRSuccess = data => {
-    console.log(data);
+    modalStore.set(<Reply personId={person._id} messageOnly={true} />);
   };
   render() {
     const { people, onChange, onSort, ...props } = this.props;

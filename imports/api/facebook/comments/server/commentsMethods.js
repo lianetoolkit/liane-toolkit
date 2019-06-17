@@ -72,8 +72,6 @@ export const reactComment = new ValidatedMethod({
     ) {
       throw new Meteor.Error(400, "Not allowed");
     }
-
-
   }
 });
 
@@ -159,5 +157,48 @@ export const categorizeComment = new ValidatedMethod({
         categories
       }
     });
+  }
+});
+
+export const sendComment = new ValidatedMethod({
+  name: "comments.send",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    objectId: {
+      type: String
+    },
+    message: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, objectId, message }) {
+    this.unblock();
+    logger.debug("comments.send called", { campaignId, objectId });
+
+    const userId = Meteor.userId();
+
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    const access_token = campaign.facebookAccount.accessToken;
+
+    try {
+      Promise.await(
+        FB.api(`${objectId}/comments`, "POST", {
+          message,
+          access_token
+        })
+      );
+    } catch (err) {
+      console.log(err);
+      throw new Meteor.Error(500, "Error trying to publish comment");
+    }
+
+    return;
   }
 });

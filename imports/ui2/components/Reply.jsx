@@ -35,11 +35,14 @@ const Container = styled.div`
   }
   .faq-select {
     font-size: 0.9em;
+    margin-bottom: 1rem;
   }
-  .type-select {
+  .radio-select {
     display: flex;
+    font-size: 0.8em;
     label {
       flex: 1 1 100%;
+      color: #444;
     }
     label.disabled {
       color: #ccc;
@@ -52,14 +55,34 @@ export default class PrivateReply extends Component {
     super(props);
     this.state = {
       loading: false,
+      sendAs: props.defaultSendAs || "message",
       faq: [],
       text: ""
     };
   }
   componentDidMount() {
-    this.fetchComment();
+    const { personId, comment, messageOnly } = this.props;
+    if (personId) {
+      this.fetchPersonComment();
+    } else if (comment) {
+      this.setState({ comment });
+      this.fetchFAQ(comment.person.campaignId);
+      if (!comment.can_reply_privately) {
+        this.setState({
+          sendAs: "comment",
+          disabledMessage: true
+        });
+        if (messageOnly) {
+          alertStore.add(
+            "Comentário não pode receber mensagem privada",
+            "error"
+          );
+          modalStore.reset();
+        }
+      }
+    }
   }
-  fetchComment = () => {
+  fetchPersonComment = () => {
     const { personId } = this.props;
     this.setState({ loading: true });
     Meteor.call("people.getReplyComment", { personId }, (err, res) => {
@@ -77,6 +100,7 @@ export default class PrivateReply extends Component {
             "Não foi possível encontrar um comentário para enviar mensagem privada",
             "error"
           );
+          modalStore.reset();
         }
       } else {
         this.setState({
@@ -118,7 +142,7 @@ export default class PrivateReply extends Component {
       text: id ? faq.find(item => item._id == id).answer : ""
     });
   };
-  send = () => {
+  sendPrivateReply = () => {
     const { text, comment } = this.state;
     if (!text) {
       alertStore.add("Mensagem não definida", "error");
@@ -148,6 +172,44 @@ export default class PrivateReply extends Component {
       }
     );
   };
+  sendCommentResponse = () => {
+    const { text, comment } = this.state;
+    if (!text) {
+      alertStore.add("Mensagem não definida", "error");
+      return;
+    }
+    this.setState({
+      loading: true
+    });
+    Meteor.call(
+      "comments.send",
+      {
+        campaignId: comment.person.campaignId,
+        objectId: comment._id,
+        message: text
+      },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          alertStore.add("Comentário enviado", "success");
+          modalStore.reset();
+        }
+      }
+    );
+  };
+  send = () => {
+    const { sendAs } = this.state;
+    switch (sendAs) {
+      case "message":
+        this.sendPrivateReply();
+        break;
+      case "comment":
+        this.sendCommentResponse();
+        break;
+      default:
+    }
+  };
   _handleSubmit = ev => {
     ev.preventDefault();
     this.send();
@@ -164,17 +226,35 @@ export default class PrivateReply extends Component {
       text: edit ? "" : text
     });
   };
+  _handleSendAsChange = ev => {
+    const { value } = ev.target;
+    this.setState({
+      sendAs: value
+    });
+  };
   render() {
-    const { loading, faq, type, errored, comment, text, edit } = this.state;
+    const { messageOnly } = this.props;
+    const {
+      sendAs,
+      loading,
+      faq,
+      type,
+      errored,
+      comment,
+      text,
+      edit,
+      disabledMessage
+    } = this.state;
     if (!errored && comment) {
       return (
         <Container>
           <div className="comment">
+            <p>Você está respondendo:</p>
             <Comment comment={comment} />
           </div>
           {!loading ? (
             <Form onSubmit={this._handleSubmit}>
-              <div className="type-select">
+              <div className="radio-select">
                 <label className={!faq || !faq.length ? "disabled" : ""}>
                   <input
                     type="radio"
@@ -218,6 +298,31 @@ export default class PrivateReply extends Component {
               {faq && faq.length && type == "faq" && !edit ? (
                 <FAQSelect faq={faq} onChange={this._handleFAQChange} />
               ) : null}
+              {!messageOnly ? (
+                <div className="radio-select">
+                  <label>
+                    <input
+                      type="radio"
+                      name="sendAs"
+                      value="comment"
+                      checked={sendAs == "comment"}
+                      onChange={this._handleSendAsChange}
+                    />
+                    Enviar como resposta ao comentário
+                  </label>
+                  <label className={disabledMessage ? "disabled" : ""}>
+                    <input
+                      type="radio"
+                      name="sendAs"
+                      value="message"
+                      checked={sendAs == "message"}
+                      onChange={this._handleSendAsChange}
+                      disabled={disabledMessage}
+                    />
+                    Enviar como mensagem privada
+                  </label>
+                </div>
+              ) : null}
               <Button.Group>
                 {type == "faq" ? (
                   <Button disabled={!text} onClick={this._handleEditClick}>
@@ -231,7 +336,9 @@ export default class PrivateReply extends Component {
                   disabled={!text}
                   onClick={this._handleSendClick}
                 >
-                  Enviar mensagem privada
+                  {sendAs == "message"
+                    ? "Enviar mensagem privada"
+                    : "Enviar resposta ao comentário"}
                 </Button>
               </Button.Group>
             </Form>
