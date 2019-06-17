@@ -16,6 +16,16 @@ body {
   line-height: 1.5;
 }
 
+a {
+  color: #63c;
+}
+
+a:hover,
+a:focus,
+a:active {
+  color: #333;
+}
+
 a,
 input,
 button {
@@ -190,8 +200,11 @@ input[type="submit"]:disabled {
   font-size: 12px;
   padding: 0.5rem 0.7rem;
   line-height: 1;
-  background: rgba(0, 0, 0, 0.9);
   border-radius: 7px;
+}
+
+.__react_component_tooltip.type-dark {
+  background-color: rgba(0, 0, 0, 0.9);
 }
 
 .__react_component_tooltip.type-dark.place-left:after {
@@ -200,4 +213,8 @@ input[type="submit"]:disabled {
 
 .__react_component_tooltip.type-dark.place-top:after {
   border-top-color: rgba(0, 0, 0, 0.9);
+}
+
+.__react_component_tooltip.type-dark.place-bottom:after {
+  border-bottom-color: rgba(0, 0, 0, 0.9);
 }
