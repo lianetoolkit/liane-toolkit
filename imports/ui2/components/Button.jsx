@@ -13,11 +13,12 @@ const styles = css`
   display: inline-block;
   box-sizing: border-box;
   cursor: pointer;
+  font-size: 0.9em;
   &:hover,
   &:focus,
   &:active,
   &.active {
-    background: #63c;
+    background: #333;
     color: #fff;
   }
   &.with-icon {
@@ -42,6 +43,26 @@ const styles = css`
         border-color: #000;
       }
     }
+  }
+  &.primary {
+    background: #63c;
+    color: #fff;
+    font-size: 1em;
+    &:hover,
+    &:active,
+    &:focus,
+    &.active {
+      background: #333;
+    }
+  }
+  &.disabled,
+  &.disabled:hover,
+  &.disabled:active,
+  &.disabled:focus {
+    background: #bbb;
+    color: #fff;
+    cursor: default;
+    border-color: #fff;
   }
   ${props =>
     props.light &&
@@ -89,13 +110,16 @@ const ButtonGroupContainer = styled.span`
     css`
       .button {
         border-left-width: 0;
+        border-radius: 0;
       }
       .button:first-child {
-        border-radius: 3rem 0 0 3rem;
+        border-top-left-radius: 3rem;
+        border-bottom-left-radius: 3rem;
         border-left-width: 1px;
       }
       .button:last-child {
-        border-radius: 0 3rem 3rem 0;
+        border-top-right-radius: 3rem;
+        border-bottom-right-radius: 3rem;
       }
     `}
   ${props =>
@@ -110,11 +134,16 @@ const ButtonGroupContainer = styled.span`
       ${props =>
         !props.attached &&
         css`
+          .button {
+            border-radius: 0;
+          }
           .button:first-child {
-            border-radius: 7px 7px 0 0;
+            border-top-left-radius: 7px;
+            border-top-right-radius: 7px;
           }
           .button:last-child {
-            border-radius: 0 0 7px 7px;
+            border-bottom-left-radius: 7px;
+            border-bottom-right-radius: 7px;
             border-bottom-width: 1px;
           }
         `}
@@ -148,12 +177,27 @@ class ButtonIcon extends Component {
 export default class Button extends Component {
   static Group = ButtonGroup;
   static WithIcon = ButtonIcon;
+  _handleClick = ev => {
+    const { onClick, disabled } = this.props;
+    if (disabled) {
+      return;
+    }
+    if (typeof onClick == "function") {
+      onClick(ev);
+    }
+  };
   render() {
-    const { children, active, ...props } = this.props;
+    const { children, active, primary, disabled, ...props } = this.props;
     let className = "button";
     if (active) className += " active";
+    if (primary) className += " primary";
+    if (disabled) className += " disabled";
     return (
-      <ButtonContainer className={className} {...props}>
+      <ButtonContainer
+        className={className}
+        {...props}
+        onClick={this._handleClick}
+      >
         {children}
       </ButtonContainer>
     );

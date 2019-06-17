@@ -5,6 +5,7 @@ import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
 
 import Form from "./Form.jsx";
+import Button from "./Button.jsx";
 import Comment from "./Comment.jsx";
 import FAQSelect from "./FAQSelect.jsx";
 
@@ -102,6 +103,7 @@ export default class PrivateReply extends Component {
   _handleTypeChange = ({ target }) => {
     this.setState({
       type: target.value,
+      edit: false,
       text: ""
     });
   };
@@ -116,8 +118,7 @@ export default class PrivateReply extends Component {
       text: id ? faq.find(item => item._id == id).answer : ""
     });
   };
-  _handleSubmit = ev => {
-    ev.preventDefault();
+  send = () => {
     const { text, comment } = this.state;
     if (!text) {
       alertStore.add("Mensagem não definida", "error");
@@ -147,8 +148,24 @@ export default class PrivateReply extends Component {
       }
     );
   };
+  _handleSubmit = ev => {
+    ev.preventDefault();
+    this.send();
+  };
+  _handleSendClick = ev => {
+    ev.preventDefault();
+    this.send();
+  };
+  _handleEditClick = ev => {
+    ev.preventDefault();
+    const { edit, text } = this.state;
+    this.setState({
+      edit: !edit,
+      text: edit ? "" : text
+    });
+  };
   render() {
-    const { loading, faq, type, errored, comment, text } = this.state;
+    const { loading, faq, type, errored, comment, text, edit } = this.state;
     if (!errored && comment) {
       return (
         <Container>
@@ -191,20 +208,32 @@ export default class PrivateReply extends Component {
                   .
                 </p>
               ) : null}
-              {type == "write" ? (
+              {type == "write" || edit ? (
                 <textarea
                   placeholder="Escreva uma mensagem para enviar"
                   onChange={this._handleTextChange}
+                  value={text}
                 />
               ) : null}
-              {faq && faq.length && type == "faq" ? (
+              {faq && faq.length && type == "faq" && !edit ? (
                 <FAQSelect faq={faq} onChange={this._handleFAQChange} />
               ) : null}
-              <input
-                type="submit"
-                value="Enviar mensagem privada"
-                disabled={!text}
-              />
+              <Button.Group>
+                {type == "faq" ? (
+                  <Button disabled={!text} onClick={this._handleEditClick}>
+                    {!edit
+                      ? "Selecionar e editar mensagem"
+                      : "Voltar para seleção"}
+                  </Button>
+                ) : null}
+                <Button
+                  primary
+                  disabled={!text}
+                  onClick={this._handleSendClick}
+                >
+                  Enviar mensagem privada
+                </Button>
+              </Button.Group>
             </Form>
           ) : null}
         </Container>
