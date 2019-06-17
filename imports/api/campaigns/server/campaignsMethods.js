@@ -53,7 +53,11 @@ export const campaignHasAccount = new ValidatedMethod({
   }).validator(),
   run({ campaignId, facebookId }) {
     const campaign = Campaigns.findOne(campaignId);
-    return !!_.findWhere(campaign.accounts, { facebookId });
+    return (
+      (campaign.facebookAccount &&
+        campaign.facebookAccount.facebookId == facebookId) ||
+      !!_.findWhere(campaign.accounts, { facebookId })
+    );
   }
 });
 

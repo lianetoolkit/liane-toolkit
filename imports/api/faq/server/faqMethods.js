@@ -2,6 +2,36 @@ import SimpleSchema from "simpl-schema";
 import { FAQ } from "../faq";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 
+export const queryFAQ = new ValidatedMethod({
+  name: "faq.query",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId }) {
+    this.unblock();
+    logger.debug("faq.query called", { campaignId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+      throw new Meteor.Error(401, "Not allowed");
+    }
+
+    return FAQ.find({ campaignId }).fetch();
+  }
+});
+
 export const createFAQ = new ValidatedMethod({
   name: "faq.create",
   validate: new SimpleSchema({

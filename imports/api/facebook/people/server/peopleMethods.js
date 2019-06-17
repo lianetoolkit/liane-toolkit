@@ -471,16 +471,11 @@ export const peopleSendPrivateReply = new ValidatedMethod({
     commentId: {
       type: String
     },
-    type: {
-      type: String,
-      defaultValue: "custom",
-      allowedValues: ["auto", "custom"]
-    },
     message: {
       type: String
     }
   }).validator(),
-  run({ campaignId, personId, commentId, type, message }) {
+  run({ campaignId, personId, commentId, message }) {
     logger.debug("people.sendPrivateReply called", {
       campaignId,
       commentId,
@@ -490,6 +485,12 @@ export const peopleSendPrivateReply = new ValidatedMethod({
     const userId = Meteor.userId();
     if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    const comment = Comments.findOne(commentId);
+
+    if (!message) {
+      throw new Meteor.Error(401, "You must type a message");
     }
 
     if (
@@ -506,17 +507,7 @@ export const peopleSendPrivateReply = new ValidatedMethod({
 
     const campaign = Campaigns.findOne(campaignId);
 
-    if (type == "auto") message = campaign.autoReplyMessage;
-
-    if (!message) {
-      throw new Meteor.Error(401, "You must type a message");
-    }
-
-    const comment = Comments.findOne(commentId);
-
-    const campaignAccount = _.findWhere(campaign.accounts, {
-      facebookId: comment.facebookAccountId
-    });
+    const campaignAccount = campaign.facebookAccount;
 
     const person = People.findOne(personId);
 
@@ -594,16 +585,16 @@ export const peopleSendPrivateReply = new ValidatedMethod({
         }
       }
     }
-    if (type == "auto") {
-      People.update(
-        { _id: person._id },
-        {
-          $set: {
-            receivedAutoPrivateReply: true
-          }
-        }
-      );
-    }
+    // if (type == "auto") {
+    //   People.update(
+    //     { _id: person._id },
+    //     {
+    //       $set: {
+    //         receivedAutoPrivateReply: true
+    //       }
+    //     }
+    //   );
+    // }
     closeComment();
     return response;
   }
