@@ -445,6 +445,29 @@ const CampaignsHelpers = {
       menu_principal: true
     };
   },
+  getChatbot({ campaignId }) {
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign.facebookAccount) {
+      throw new Meteor.Error(404, "Facebook Account not found");
+    }
+    let res;
+    try {
+      res = Promise.await(
+        axios.get(
+          `${YEEKO.url}${campaign.facebookAccount.facebookId}?api_key=${
+            YEEKO.apiKey
+          }`
+        )
+      );
+    } catch (err) {
+      console.log(err);
+      throw new Meteor.Error(500, "Error connecting with Yeeko");
+    }
+    if (!res.data) {
+      throw new Meteor.Error(500, "No data available");
+    }
+    return res.data;
+  },
   activateChatbot({ campaignId, facebookAccountId }) {
     const campaign = Campaigns.findOne(campaignId);
     const campaignAccount =

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -28,6 +28,8 @@ const Container = styled.div`
   }
   padding: 2rem;
   font-size: 2em;
+  box-sizing: border-box;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -35,12 +37,24 @@ const Container = styled.div`
   svg {
     animation: rotate 2s linear infinite;
   }
+  ${props =>
+    props.full &&
+    css`
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.75);
+      font-size: 3em;
+    `}
 `;
 
 export default class Loading extends Component {
   render() {
     return (
-      <Container className="loading">
+      <Container className="loading" {...this.props}>
         <FontAwesomeIcon icon="spinner" />
       </Container>
     );
