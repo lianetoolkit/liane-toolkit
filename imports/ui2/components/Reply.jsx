@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
 
+import Loading from "./Loading.jsx";
 import Form from "./Form.jsx";
 import Button from "./Button.jsx";
 import Comment from "./Comment.jsx";
@@ -17,7 +18,7 @@ const Container = styled.div`
     flex: 1 1 100%;
   }
   .comment {
-    margin: -2rem -2rem 2rem -2rem;
+    margin: -2rem -2rem 0 -2rem;
     padding: 2rem;
     font-size: 0.8em;
     background: #f7f7f7;
@@ -35,18 +36,35 @@ const Container = styled.div`
   }
   .faq-select {
     font-size: 0.9em;
-    margin-bottom: 1rem;
+    background: #f7f7f7;
+    margin: -2rem -2rem 0 -2rem;
+    padding: 1rem;
   }
   .radio-select {
     display: flex;
     font-size: 0.8em;
+    margin: 0 -2rem 2rem;
+    padding: 1rem 2rem;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    background: #f0f0f0;
     label {
+      margin: 0;
       flex: 1 1 100%;
       color: #444;
+      input {
+        margin: 0 0.5rem 0 0;
+      }
     }
     label.disabled {
       color: #ccc;
     }
+  }
+  .message-text {
+    margin: -1rem -1rem 1rem -1rem;
+    padding: 1rem;
+    display: block;
+    width: auto;
   }
 `;
 
@@ -290,6 +308,7 @@ export default class PrivateReply extends Component {
               ) : null}
               {type == "write" || edit ? (
                 <textarea
+                  className="message-text"
                   placeholder="Escreva uma mensagem para enviar"
                   onChange={this._handleTextChange}
                   value={text}
@@ -319,7 +338,8 @@ export default class PrivateReply extends Component {
                       onChange={this._handleSendAsChange}
                       disabled={disabledMessage}
                     />
-                    Enviar como mensagem privada
+                    Enviar como mensagem privada{" "}
+                    {disabledMessage ? "(Não disponível)" : ""}
                   </label>
                 </div>
               ) : null}
@@ -342,9 +362,13 @@ export default class PrivateReply extends Component {
                 </Button>
               </Button.Group>
             </Form>
-          ) : null}
+          ) : (
+            <Loading />
+          )}
         </Container>
       );
+    } else {
+      return <Loading />;
     }
     return null;
   }

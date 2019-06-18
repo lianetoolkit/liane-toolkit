@@ -80,7 +80,8 @@ appRoutes.route("/comments", {
         "category",
         "mention",
         "unreplied",
-        "hideReplies"
+        "hideReplies",
+        "privateReply"
       ]),
       page: queryParams.page
     });

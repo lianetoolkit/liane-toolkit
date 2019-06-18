@@ -44,6 +44,9 @@ export default withTracker(props => {
     query.adminReplied = { $ne: true };
     query.parentId = { $exists: false };
   }
+  if (queryParams.privateReply) {
+    query.can_reply_privately = true;
+  }
 
   let commentsHandle, loading;
   let comments = [];

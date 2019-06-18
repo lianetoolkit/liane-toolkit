@@ -337,6 +337,10 @@ export default class CommentsPage extends Component {
     const { query } = this.props;
     return !!query.adminReplied;
   };
+  isQueryingPrivateReply = () => {
+    const { query } = this.props;
+    return !!query.can_reply_privately;
+  };
   _handleChange = ({ target }) => {
     const value = target.value || null;
     FlowRouter.setQueryParams({ [target.name]: value, page: 1 });
@@ -454,6 +458,15 @@ export default class CommentsPage extends Component {
                     checked={this.isQueryingUnreplied()}
                   />
                   Comentários sem respostas da página
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    onChange={this._handleCheckboxChange}
+                    name="privateReply"
+                    checked={this.isQueryingPrivateReply()}
+                  />
+                  Comentários que podem receber mensagem privada
                 </label>
                 <label>
                   <input
