@@ -5,18 +5,47 @@ import { get, set, defaultsDeep } from "lodash";
 
 import { alertStore } from "../containers/Alerts.jsx";
 
+import Page from "../components/Page.jsx";
 import Content from "../components/Content.jsx";
 import Loading from "../components/Loading.jsx";
 import Form from "../components/Form.jsx";
 
 const Container = styled.div`
   /* max-width: 960px; */
-  margin: 0 auto;
-  padding: 0;
-  list-style: none;
-  background: #fff;
-  border-radius: 7px;
-  border: 1px solid #ddd;
+  width: 100%;
+  display: flex;
+  .toggle-chatbot {
+    flex: 0 0 auto;
+    color: #999;
+    text-decoration: none;
+    font-size: 0.8em;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    > * {
+      display: inline-block;
+    }
+    .fa-toggle-off,
+    .fa-toggle-on {
+      font-size: 2em;
+      display: inline-block;
+      margin-left: 1.5rem;
+    }
+    .fa-toggle-off {
+      color: #ccc;
+    }
+    .fa-toggle-on {
+      color: green;
+    }
+    &:hover {
+      .fa-toggle-off {
+        color: green;
+      }
+      .fa-toggle-on {
+        color: #333;
+      }
+    }
+  }
   header {
     display: flex;
     padding: 1rem 1.5rem;
@@ -33,38 +62,6 @@ const Container = styled.div`
         }
       }
     }
-    .toggle-chatbot {
-      flex: 0 0 auto;
-      color: #999;
-      text-decoration: none;
-      font-size: 0.8em;
-      line-height: 1;
-      display: flex;
-      align-items: center;
-      > * {
-        display: inline-block;
-      }
-      .fa-toggle-off,
-      .fa-toggle-on {
-        font-size: 2em;
-        display: inline-block;
-        margin-left: 1.5rem;
-      }
-      .fa-toggle-off {
-        color: #ccc;
-      }
-      .fa-toggle-on {
-        color: green;
-      }
-      &:hover {
-        .fa-toggle-off {
-          color: green;
-        }
-        .fa-toggle-on {
-          color: #333;
-        }
-      }
-    }
     .settings-link {
       margin-left: 1.5rem;
       display: inline-block;
@@ -76,22 +73,8 @@ const Container = styled.div`
       cursor: default;
     }
   }
-  &.enabled {
-    header {
-      .settings-link {
-        color: #666;
-        cursor: pointer;
-        &:hover {
-          color: #333;
-        }
-      }
-    }
-  }
   section {
-    border-top: 1px solid #eee;
-    padding: 1rem;
     font-size: 0.8em;
-    background: #fbfbfb;
     &.disabled > * {
       opacity: 0.5;
     }
@@ -210,10 +193,40 @@ class ChatbotPage extends Component {
     if (loading) {
       return <Loading full />;
     }
+    const currentRoute = FlowRouter.current().route.name;
     return (
-      <Content>
-        <Container>
-          <header>
+      <Container>
+        <Page.Nav>
+          <h3>Configurações do chatbot</h3>
+          <a
+            href="javascript:void(0);"
+            className={currentRoute == "App.chatbot" ? "active" : ""}
+          >
+            Configurações gerais
+          </a>
+          <a href="javascript:void(0);">Informações do candidato</a>
+          <a
+            href="javascript:void(0);"
+            className={currentRoute == "App.campaign.accounts" ? "active" : ""}
+          >
+            Dar e receber propostas
+          </a>
+          <a href="javascript:void(0);">Respostas automáticas</a>
+          <a
+            href="javascript:void(0);"
+            className={currentRoute == "App.campaign.actions" ? "active" : ""}
+          >
+            Notificações a pessoas
+          </a>
+          <a
+            href="javascript:void(0);"
+            className={currentRoute == "App.campaign.actions" ? "active" : ""}
+          >
+            Registro de apoio
+          </a>
+        </Page.Nav>
+        <Page.Content>
+          <section className={!this._isActive() ? "disabled" : ""}>
             <a
               href="javascript:void(0);"
               className="toggle-chatbot"
@@ -228,8 +241,6 @@ class ChatbotPage extends Component {
                 </>
               ) : null}
             </a>
-          </header>
-          <section className={!this._isActive() ? "disabled" : ""}>
             <Form onSubmit={this._handleSubmit}>
               {!this._isActive() ? (
                 <p>O chatbot está desativado para esta página</p>
@@ -284,8 +295,8 @@ class ChatbotPage extends Component {
               ) : null}
             </Form>
           </section>
-        </Container>
-      </Content>
+        </Page.Content>
+      </Container>
     );
   }
 }
