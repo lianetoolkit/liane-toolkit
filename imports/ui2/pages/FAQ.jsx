@@ -7,6 +7,7 @@ import { modalStore } from "../containers/Modal.jsx";
 import { alertStore } from "../containers/Alerts.jsx";
 
 import Page from "../components/Page.jsx";
+import Loading from "../components/Loading.jsx";
 import Form from "../components/Form.jsx";
 import Button from "../components/Button.jsx";
 import CopyToClipboard from "../components/CopyToClipboard.jsx";
@@ -327,7 +328,10 @@ export default class FAQPage extends Component {
     modalStore.set(<FAQEdit item={item} />);
   };
   render() {
-    const { faq } = this.props;
+    const { loading, faq } = this.props;
+    if (loading) {
+      return <Loading full />;
+    }
     return (
       <Page.Content full>
         <Page.Title>Perguntas Frequentes</Page.Title>

@@ -200,7 +200,9 @@ export default class Comment extends Component {
   _handleReplyClick = ev => {
     const { comment } = this.props;
     ev.preventDefault();
-    modalStore.setTitle(`Respondendo ${comment.person.name}`);
+    modalStore.setTitle(
+      `Respondendo ${comment.person ? comment.person.name : "desconhecido"}`
+    );
     modalStore.set(<Reply comment={comment} defaultSendAs="comment" />);
   };
   render() {
@@ -210,7 +212,11 @@ export default class Comment extends Component {
         <Container>
           <header>
             <h3>
-              <span className="name">{comment.person.name}</span>{" "}
+              {comment.person ? (
+                <span className="name">{comment.person.name} </span>
+              ) : (
+                "Desconhecido"
+              )}
               {this.action()}{" "}
               <span className="date">
                 {moment(comment.created_time).fromNow()}

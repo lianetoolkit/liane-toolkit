@@ -227,9 +227,10 @@ export default class CommentsPage extends Component {
       personMeta[comment.personId].hasOwnProperty("troll")
     ) {
       return personMeta[comment.personId].troll;
-    } else {
+    } else if (comment.person) {
       return comment.person.campaignMeta && comment.person.campaignMeta.troll;
     }
+    return false;
   };
   _handleCategoryClick = (comment, category) => () => {
     const { campaignId } = this.props;
@@ -256,6 +257,10 @@ export default class CommentsPage extends Component {
   _handleTrollClick = comment => () => {
     const { personMeta } = this.state;
     const isTroll = this.isTroll(comment);
+    if (!comment.person) {
+      alertStore.add("Pessoa não identificada", "error");
+      return;
+    }
     Meteor.call(
       "facebook.people.updatePersonMeta",
       {
@@ -279,7 +284,6 @@ export default class CommentsPage extends Component {
   };
   _handleReactionChange = commentId => reaction => {
     const { campaignId } = this.props;
-    console.log(reaction);
     Meteor.call(
       "comments.react",
       { campaignId, commentId, reaction },
