@@ -37,13 +37,14 @@ const Container = styled.div`
   .faq-select {
     font-size: 0.9em;
     background: #f7f7f7;
-    margin: -2rem -2rem 0 -2rem;
+    margin: 0 -2rem;
     padding: 1rem;
+    border-bottom: 1px solid #ddd;
   }
   .radio-select {
     display: flex;
     font-size: 0.8em;
-    margin: 0 -2rem 2rem;
+    margin: 0 -2rem;
     padding: 1rem 2rem;
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
@@ -61,10 +62,13 @@ const Container = styled.div`
     }
   }
   .message-text {
-    margin: -1rem -1rem 1rem -1rem;
+    margin: 1rem -1rem;
     padding: 1rem;
     display: block;
     width: auto;
+  }
+  .button-group {
+    margin-top: 2rem;
   }
 `;
 

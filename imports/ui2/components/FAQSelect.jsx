@@ -5,14 +5,15 @@ const Container = styled.div`
   input {
     font-size: 0.8em;
     padding: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin: 0;
+    border-color: #eee;
   }
   .faq-list {
     display: flex;
     flex-wrap: wrap;
     margin: 0 -0.25rem;
     article {
-      margin: 0 0.25rem 0.5rem;
+      margin: 0.5rem 0.25rem 0;
       font-size: 0.8em;
       flex: 1 1 20%;
       border-radius: 7px;
