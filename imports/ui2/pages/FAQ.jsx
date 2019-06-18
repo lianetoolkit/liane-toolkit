@@ -170,16 +170,16 @@ class FAQEdit extends Component {
     return (
       <EditContainer>
         <Form onSubmit={this._handleSubmit}>
-          <Form.Field name="Pergunta">
+          <Form.Field label="Pergunta frequente">
             <input
               type="text"
-              placeholder="Descreva a pergunta"
+              placeholder="Descreva a pergunta frequente"
               onChange={this._handleChange}
               name="question"
               value={formData.question}
             />
           </Form.Field>
-          <Form.Field name="Resposta">
+          <Form.Field label="Resposta">
             <textarea
               placeholder="Escreva a resposta padrão para esta pergunta"
               onChange={this._handleChange}
