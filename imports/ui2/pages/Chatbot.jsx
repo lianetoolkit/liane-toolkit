@@ -9,7 +9,7 @@ import Content from "../components/Content.jsx";
 import Loading from "../components/Loading.jsx";
 import Form from "../components/Form.jsx";
 
-const AccountList = styled.div`
+const Container = styled.div`
   /* max-width: 960px; */
   margin: 0 auto;
   padding: 0;
@@ -129,6 +129,9 @@ class ChatbotPage extends Component {
       });
       if (err) {
         alertStore.add(err);
+        this.setState({
+          chatbot: {}
+        });
       } else {
         this.setState({
           chatbot: res,
@@ -137,43 +140,36 @@ class ChatbotPage extends Component {
       }
     });
   };
-  _handleActivationClick = facebookAccountId => ev => {
+  _handleActivationClick = ev => {
     ev.preventDefault();
     const { campaignId, campaign } = this.props;
-    const account = campaign.accounts.find(
-      account => account.facebookId == facebookAccountId
-    );
-    const active = get(account, "chatbot.active");
-    let msg = "Você tem certeza que deseja ativar o chatbot para essa página?";
+    const active = get(campaign.facebookAccount, "chatbot.active");
+    let msg = "Você tem certeza que deseja ativar o chatbot?";
     if (active) {
-      msg = "Você tem certeza que deseja remover o chatbot dessa página?";
+      msg = "Você tem certeza que deseja remover o chatbot?";
     }
     if (confirm(msg)) {
       Meteor.call(
         "campaigns.chatbot.activation",
         {
           campaignId,
-          facebookAccountId,
           active: !active
         },
         (err, data) => {
           if (err) {
             alertStore.add(err);
           } else {
-            if (active) {
-              this._closeSettings(account);
-            } else {
-              this._openSettings(account);
-            }
+            alertStore.add("Atualizado", "success");
           }
+          this.fetch();
         }
       );
     }
   };
   _isActive = () => {
-    return this.state.chatbot.active;
+    return this.state.chatbot && this.state.chatbot.active;
   };
-  _handleChange = account => ({ target }) => {
+  _handleChange = ({ target }) => {
     const { formData } = this.state;
     let newFormData = { ...formData };
     set(
@@ -188,7 +184,7 @@ class ChatbotPage extends Component {
       }
     });
   };
-  _handleSubmit = account => ev => {
+  _handleSubmit = ev => {
     ev.preventDefault();
     const { campaignId } = this.props;
     const { formData } = this.state;
@@ -201,6 +197,8 @@ class ChatbotPage extends Component {
       (err, res) => {
         if (err) {
           alertStore.add(err);
+        } else {
+          alertStore.add("Atualizado", "success");
         }
       }
     );
@@ -214,12 +212,12 @@ class ChatbotPage extends Component {
     }
     return (
       <Content>
-        <AccountList>
+        <Container>
           <header>
             <a
               href="javascript:void(0);"
               className="toggle-chatbot"
-              onClick={this._handleActivationClick(account.facebookId)}
+              onClick={this._handleActivationClick}
             >
               {!this._isActive(account) ? (
                 <>
@@ -232,8 +230,8 @@ class ChatbotPage extends Component {
             </a>
           </header>
           <section className={!this._isActive() ? "disabled" : ""}>
-            <Form onSubmit={this._handleSubmit(account)}>
-              {!this._isActive(account) ? (
+            <Form onSubmit={this._handleSubmit}>
+              {!this._isActive() ? (
                 <p>O chatbot está desativado para esta página</p>
               ) : null}
               <label>
@@ -243,7 +241,7 @@ class ChatbotPage extends Component {
                   name="extra_info.campaign_presentation"
                   value={formData.extra_info.campaign_presentation}
                   disabled={!this._isActive()}
-                  onChange={this._handleChange(account)}
+                  onChange={this._handleChange}
                 />
               </label>
               <label>
@@ -253,20 +251,20 @@ class ChatbotPage extends Component {
                   name="extra_info.campaign_details"
                   value={formData.extra_info.campaign_details}
                   disabled={!this._isActive()}
-                  onChange={this._handleChange(account)}
+                  onChange={this._handleChange}
                 />
               </label>
               <label>
                 <input
                   type="checkbox"
-                  name="init_text_response"
-                  checked={formData.init_text_response}
+                  name="text_response"
+                  checked={formData.text_response}
                   disabled={!this._isActive()}
-                  onChange={this._handleChange(account)}
+                  onChange={this._handleChange}
                 />{" "}
                 Ativar em mensagem inicial
               </label>
-              {this._isActive(account) ? (
+              {this._isActive() ? (
                 <Form.ButtonGroup>
                   <a
                     className="button"
@@ -277,7 +275,7 @@ class ChatbotPage extends Component {
                   </a>
                   <button
                     className="delete"
-                    onClick={this._handleActivationClick(account.facebookId)}
+                    onClick={this._handleActivationClick}
                   >
                     Remover chatbot
                   </button>
@@ -286,7 +284,7 @@ class ChatbotPage extends Component {
               ) : null}
             </Form>
           </section>
-        </AccountList>
+        </Container>
       </Content>
     );
   }

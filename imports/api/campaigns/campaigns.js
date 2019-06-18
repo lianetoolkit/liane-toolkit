@@ -38,7 +38,8 @@ Campaigns.accountsSchema = new SimpleSchema({
     type: String
   },
   chatbot: {
-    type: Campaigns.accountChatbotSchema,
+    type: Object,
+    blackbox: true,
     optional: true
   }
 });

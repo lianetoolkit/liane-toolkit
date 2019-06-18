@@ -256,20 +256,16 @@ export const campaignsChatbotActivation = new ValidatedMethod({
     campaignId: {
       type: String
     },
-    facebookAccountId: {
-      type: String
-    },
     active: {
       type: Boolean,
       defaultValue: false,
       optional: true
     }
   }).validator(),
-  run({ campaignId, facebookAccountId, active }) {
+  run({ campaignId, active }) {
     this.unblock();
     logger.debug("campaigns.chatbot.activate called", {
       campaignId,
-      facebookAccountId,
       active
     });
 
@@ -289,26 +285,10 @@ export const campaignsChatbotActivation = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    if (
-      !campaign.facebookAccount &&
-      !_.find(
-        campaign.accounts,
-        account => account.facebookId == facebookAccountId
-      )
-    ) {
-      throw new Meteor.Error(404, "Facebook Account not found");
-    }
-
     if (active) {
-      return CampaignsHelpers.activateChatbot({
-        campaignId,
-        facebookAccountId
-      });
+      return CampaignsHelpers.activateChatbot({ campaignId });
     } else {
-      return CampaignsHelpers.deactivateChatbot({
-        campaignId,
-        facebookAccountId
-      });
+      return CampaignsHelpers.deactivateChatbot({ campaignId });
     }
   }
 });
@@ -350,9 +330,6 @@ export const campaignsUpdateChatbot = new ValidatedMethod({
     campaignId: {
       type: String
     },
-    facebookAccountId: {
-      type: String
-    },
     config: {
       type: Object,
       blackbox: true
@@ -381,19 +358,8 @@ export const campaignsUpdateChatbot = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    if (
-      !campaign.facebookAccount &&
-      !_.find(
-        campaign.accounts,
-        account => account.facebookId == facebookAccountId
-      )
-    ) {
-      throw new Meteor.Error(404, "Facebook Account not found");
-    }
-
     return CampaignsHelpers.updateChatbot({
       campaignId,
-      facebookAccountId,
       config
     });
   }
