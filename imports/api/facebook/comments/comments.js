@@ -30,6 +30,11 @@ Comments.schema = new SimpleSchema({
     index: true,
     optional: true
   },
+  can_comment: {
+    type: Boolean,
+    optional: true,
+    index: true
+  },
   can_hide: {
     type: Boolean,
     optional: true,
