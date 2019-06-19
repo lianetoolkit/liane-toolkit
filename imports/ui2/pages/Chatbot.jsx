@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { get, set, defaultsDeep } from "lodash";
 
@@ -9,6 +9,97 @@ import Page from "../components/Page.jsx";
 import Content from "../components/Content.jsx";
 import Loading from "../components/Loading.jsx";
 import Form from "../components/Form.jsx";
+
+const ModuleLinkContainer = styled.a`
+  padding-right: 0 !important;
+  .module-link-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+    margin-left: -1.5rem;
+    span {
+      flex: 1 1 100%;
+      display: block;
+    }
+    span.status {
+      flex: 0 0 auto;
+      width: 10px;
+      height: 10px;
+      border-radius: 100%;
+      background: #bbb;
+      margin: 0 1rem 0 0;
+    }
+    .module-info {
+      .label {
+        padding-bottom: 0.25rem;
+        margin-bottom: 0.25rem;
+        border-bottom: 1px solid #eee;
+      }
+      .status-label {
+        font-size: 0.8em;
+        color: #999;
+        font-style: italic;
+        font-weight: normal;
+      }
+    }
+  }
+  ${props =>
+    props.active &&
+    css`
+      .module-link-content {
+        span.status {
+          background: #00cc66;
+          border: 1px solid #00ff80;
+          box-shadow: 0 0 0.5rem #00ff80;
+        }
+      }
+    `}
+  ${props =>
+    props.pending &&
+    css`
+      .module-link-content {
+        span.status {
+          background: #fc0;
+          border: 1px solid #ffdf5d;
+          box-shadow: 0 0 0.5rem #ffdf5d;
+        }
+      }
+    `}
+`;
+
+class ModuleLink extends Component {
+  statusLabel = () => {
+    const { active, pending } = this.props;
+    if (pending) return "Configuração pendente";
+    if (active) return "Ativo";
+    return "Inativo";
+  };
+  render() {
+    const { children, ...props } = this.props;
+    let statusClass = "status";
+    let statusLabelClass = "status-label";
+    // if (active) {
+    //   statusClass += " active";
+    //   statusLabelClass += " active";
+    // }
+    // if (pending) {
+    //   statusClass += " pending";
+    //   statusLabelClass += " pending";
+    // }
+    return (
+      <ModuleLinkContainer {...props}>
+        <span className="module-link-content">
+          <span className="status" />
+          <span className="module-info">
+            <span className="label">{children}</span>
+            <span className="status-label">{this.statusLabel()}</span>
+          </span>
+        </span>
+      </ModuleLinkContainer>
+    );
+  }
+}
 
 const Container = styled.div`
   /* max-width: 960px; */
@@ -74,7 +165,6 @@ const Container = styled.div`
     }
   }
   section {
-    font-size: 0.8em;
     &.disabled > * {
       opacity: 0.5;
     }
@@ -204,29 +294,25 @@ class ChatbotPage extends Component {
           >
             Configurações gerais
           </a>
-          <a href="javascript:void(0);">Informações do candidato</a>
-          <a
-            href="javascript:void(0);"
-            className={currentRoute == "App.campaign.accounts" ? "active" : ""}
-          >
+          <h3>Módulos</h3>
+          <ModuleLink active={true} href="javascript:void(0);">
+            Informações do Candidato
+          </ModuleLink>
+          <ModuleLink active={false} href="javascript:void(0);">
             Dar e receber propostas
-          </a>
-          <a href="javascript:void(0);">Respostas automáticas</a>
-          <a
-            href="javascript:void(0);"
-            className={currentRoute == "App.campaign.actions" ? "active" : ""}
-          >
+          </ModuleLink>
+          <ModuleLink active={true} href="javascript:void(0);">
+            Respostas automáticas
+          </ModuleLink>
+          <ModuleLink active={true} pending={true} href="javascript:void(0);">
             Notificações a pessoas
-          </a>
-          <a
-            href="javascript:void(0);"
-            className={currentRoute == "App.campaign.actions" ? "active" : ""}
-          >
+          </ModuleLink>
+          <ModuleLink active={false} href="javascript:void(0);">
             Registro de apoio
-          </a>
+          </ModuleLink>
         </Page.Nav>
-        <Page.Content>
-          <section className={!this._isActive() ? "disabled" : ""}>
+        <Form onSubmit={this._handleSubmit}>
+          <Form.Content>
             <a
               href="javascript:void(0);"
               className="toggle-chatbot"
@@ -241,61 +327,55 @@ class ChatbotPage extends Component {
                 </>
               ) : null}
             </a>
-            <Form onSubmit={this._handleSubmit}>
-              {!this._isActive() ? (
-                <p>O chatbot está desativado para esta página</p>
-              ) : null}
-              <label>
-                Apresentação da campanha
-                <textarea
-                  placeholder="Descreva brevemente sobre sua campanha"
-                  name="extra_info.campaign_presentation"
-                  value={formData.extra_info.campaign_presentation}
-                  disabled={!this._isActive()}
-                  onChange={this._handleChange}
-                />
-              </label>
-              <label>
-                Detalhes da campanha
-                <textarea
-                  placeholder="Dê mais detalhes sobre sua campanha"
-                  name="extra_info.campaign_details"
-                  value={formData.extra_info.campaign_details}
-                  disabled={!this._isActive()}
-                  onChange={this._handleChange}
-                />
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="text_response"
-                  checked={formData.text_response}
-                  disabled={!this._isActive()}
-                  onChange={this._handleChange}
-                />{" "}
-                Ativar em mensagem inicial
-              </label>
-              {this._isActive() ? (
-                <Form.ButtonGroup>
-                  <a
-                    className="button"
-                    href={`https://m.me/${account.facebookId}/?ref=:1116`}
-                    target="_blank"
-                  >
-                    Testar chatbot
-                  </a>
-                  <button
-                    className="delete"
-                    onClick={this._handleActivationClick}
-                  >
-                    Remover chatbot
-                  </button>
-                  <input type="submit" value="Atualizar configurações" />
-                </Form.ButtonGroup>
-              ) : null}
-            </Form>
-          </section>
-        </Page.Content>
+            {!this._isActive() ? (
+              <p>O chatbot está desativado para esta página</p>
+            ) : null}
+            <Form.Field label="Apresentação da Campanha">
+              <textarea
+                placeholder="Descreva brevemente sobre sua campanha"
+                name="extra_info.campaign_presentation"
+                value={formData.extra_info.campaign_presentation}
+                disabled={!this._isActive()}
+                onChange={this._handleChange}
+              />
+            </Form.Field>
+            <label>
+              <input
+                type="checkbox"
+                name="text_response"
+                checked={formData.text_response}
+                disabled={!this._isActive()}
+                onChange={this._handleChange}
+              />{" "}
+              Ativar em mensagem inicial
+            </label>
+            {/* {this._isActive() ? (
+              <Form.ButtonGroup>
+              <a
+              className="button"
+              href={`https://m.me/${account.facebookId}/?ref=:1116`}
+              target="_blank"
+              >
+              Testar chatbot
+            </a>
+            <button
+            className="delete"
+            onClick={this._handleActivationClick}
+            >
+            Remover chatbot
+          </button>
+          <input type="submit" value="Atualizar configurações" />
+        </Form.ButtonGroup>
+      ) : null} */}
+          </Form.Content>
+          <Form.Actions>
+            <input
+              type="submit"
+              value="Atualizar configurações"
+              onClick={this._handleSubmit}
+            />
+          </Form.Actions>
+        </Form>
       </Container>
     );
   }
