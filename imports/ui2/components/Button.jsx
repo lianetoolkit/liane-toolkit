@@ -59,7 +59,7 @@ const styles = css`
   &.disabled:hover,
   &.disabled:active,
   &.disabled:focus {
-    background: #bbb;
+    background: #ddd;
     color: #fff;
     cursor: default;
     border-color: #fff;
