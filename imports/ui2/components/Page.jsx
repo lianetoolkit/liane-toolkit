@@ -17,6 +17,7 @@ const NavContainer = styled.div`
   flex: 0 0 auto;
   box-sizing: border-box;
   border-right: 1px solid #ccc;
+  overflow: auto;
   ${props =>
     !props.plain &&
     css`
