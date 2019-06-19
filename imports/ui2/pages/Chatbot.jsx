@@ -5,6 +5,7 @@ import { get, set, defaultsDeep } from "lodash";
 
 import { alertStore } from "../containers/Alerts.jsx";
 
+import Button from "../components/Button.jsx";
 import Page from "../components/Page.jsx";
 import Content from "../components/Content.jsx";
 import Loading from "../components/Loading.jsx";
@@ -105,63 +106,56 @@ const Container = styled.div`
   /* max-width: 960px; */
   width: 100%;
   display: flex;
-  .toggle-chatbot {
-    flex: 0 0 auto;
-    color: #999;
-    text-decoration: none;
-    font-size: 0.8em;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    > * {
-      display: inline-block;
-    }
-    .fa-toggle-off,
-    .fa-toggle-on {
-      font-size: 2em;
-      display: inline-block;
-      margin-left: 1.5rem;
-    }
-    .fa-toggle-off {
-      color: #ccc;
-    }
-    .fa-toggle-on {
-      color: green;
-    }
-    &:hover {
-      .fa-toggle-off {
-        color: green;
-      }
-      .fa-toggle-on {
-        color: #333;
-      }
-    }
-  }
   header {
     display: flex;
-    padding: 1rem 1.5rem;
     align-items: center;
-    h3 {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+    .chatbot-status {
+      flex: 0 0 auto;
+      margin: 0 2rem 0 0;
+      font-weight: 600;
+      p {
+        margin: 0;
+      }
+    }
+    .toggle-chatbot {
       flex: 1 1 100%;
-      margin: 0;
-      a {
-        color: #333;
-        text-decoration: none;
-        display: block;
-        &:hover {
-          color: #000;
+      color: #999;
+      text-decoration: none;
+      font-size: 0.8em;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      > * {
+        display: inline-block;
+      }
+      .fa-toggle-off,
+      .fa-toggle-on {
+        font-size: 2em;
+        display: inline-block;
+        margin-right: 1rem;
+      }
+      .fa-toggle-off {
+        color: #ccc;
+      }
+      .fa-toggle-on {
+        color: green;
+      }
+      &:hover {
+        .fa-toggle-off {
+          color: green;
+        }
+        .fa-toggle-on {
+          color: #333;
         }
       }
     }
-    .settings-link {
-      margin-left: 1.5rem;
-      display: inline-block;
-      flex: 0 0 auto;
-      color: #ddd;
-      font-weight: 600;
-      text-decoration: none;
-      font-size: 0.8em;
-      cursor: default;
+    .button {
+      display: block;
+      margin: 0;
+      white-space: nowrap;
     }
   }
   section {
@@ -313,23 +307,30 @@ class ChatbotPage extends Component {
         </Page.Nav>
         <Form onSubmit={this._handleSubmit}>
           <Form.Content>
-            <a
-              href="javascript:void(0);"
-              className="toggle-chatbot"
-              onClick={this._handleActivationClick}
-            >
-              {!this._isActive(account) ? (
-                <>
-                  <span>Ativar chatbot </span>
-                  <FontAwesomeIcon
-                    icon={this._isActive() ? "toggle-on" : "toggle-off"}
-                  />
-                </>
-              ) : null}
-            </a>
-            {!this._isActive() ? (
-              <p>O chatbot está desativado para esta página</p>
-            ) : null}
+            <header>
+              <div className="chatbot-status">
+                {this._isActive() ? (
+                  <p>O chatbot está ativado</p>
+                ) : (
+                  <p>O chatbot está desativado</p>
+                )}
+              </div>
+              <a
+                href="javascript:void(0);"
+                className="toggle-chatbot"
+                onClick={this._handleActivationClick}
+              >
+                <FontAwesomeIcon
+                  icon={this._isActive() ? "toggle-on" : "toggle-off"}
+                />
+                {!this._isActive() ? (
+                  <span>Ativar chatbot</span>
+                ) : (
+                  <span>Desativar chatbot</span>
+                )}
+              </a>
+              {this._isActive() ? <Button>Divulgar chatbot</Button> : null}
+            </header>
             <Form.Field label="Apresentação da Campanha">
               <textarea
                 placeholder="Descreva brevemente sobre sua campanha"
