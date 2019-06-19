@@ -33,6 +33,8 @@ const Container = styled.div`
   .tip {
     font-style: italic;
     color: #666;
+    font-size: 0.9em;
+    margin: 1rem 0 0;
   }
   .faq-select {
     font-size: 0.9em;
@@ -211,6 +213,9 @@ export default class PrivateReply extends Component {
         message: text
       },
       (err, res) => {
+        this.setState({
+          loading: false
+        });
         if (err) {
           alertStore.add(err);
         } else {
