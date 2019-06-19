@@ -249,7 +249,14 @@ export default class Comment extends Component {
               {actions ? (
                 <div className="comment-fb-actions">
                   {/* <p className="label">Responder</p> */}
-                  <Button onClick={this._handleReplyClick}>Responder</Button>
+                  <Button
+                    onClick={this._handleReplyClick}
+                    disabled={
+                      !comment.can_comment && !comment.can_reply_privately
+                    }
+                  >
+                    Responder
+                  </Button>
                 </div>
               ) : null}
             </section>
