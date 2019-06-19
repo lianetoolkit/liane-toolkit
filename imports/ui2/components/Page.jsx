@@ -20,19 +20,27 @@ const NavContainer = styled.div`
   ${props =>
     !props.plain &&
     css`
-      padding: 3rem 0 2rem 2rem;
+      padding: 2rem 0 2rem 2rem;
     `}
   h3 {
     color: #999;
     font-size: 1.75em;
     font-weight: normal;
-    margin: 0 1rem 1rem 0;
+    margin: 1rem 0 1rem 0;
+    padding-top: 1rem;
+    padding-right: 1rem;
+    border-top: 1px solid #ddd;
+    &:first-child {
+      margin-top: 1rem;
+      padding-top: 0;
+      border: 0;
+    }
   }
   .nav-content {
     a {
       display: block;
       line-height: 1;
-      color: #999;
+      color: #666;
       text-decoration: none;
       font-weight: 600;
       padding: 0.75rem 1rem 0.75rem 0;
@@ -173,7 +181,7 @@ const PageBody = styled.div`
 
 const Title = styled.h1`
   font-size: 3em;
-  margin: 4rem 0;
+  margin: 3rem 0;
 `;
 
 export default class Page extends Component {
