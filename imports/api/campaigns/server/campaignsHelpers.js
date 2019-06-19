@@ -7,6 +7,7 @@ import {
   PeopleTags,
   PeopleLists
 } from "/imports/api/facebook/people/people.js";
+import { FAQ } from "/imports/api/faq/faq.js";
 import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js";
 import { Canvas } from "/imports/api/canvas/canvas.js";
 import { Jobs } from "/imports/api/jobs/jobs.js";
@@ -661,6 +662,7 @@ const CampaignsHelpers = {
 
     this.clearCampaignJobs({ campaignId });
 
+    FAQ.remove({ campaignId });
     People.remove({ campaignId });
     PeopleLists.remove({ campaignId });
     PeopleTags.remove({ campaignId });
