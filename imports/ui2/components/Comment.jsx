@@ -215,7 +215,7 @@ export default class Comment extends Component {
               {comment.person ? (
                 <span className="name">{comment.person.name} </span>
               ) : (
-                "Desconhecido"
+                "Desconhecido "
               )}
               {this.action()}{" "}
               <span className="date">
