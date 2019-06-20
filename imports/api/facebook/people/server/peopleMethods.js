@@ -414,6 +414,8 @@ export const peopleSendPrivateReply = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
+    const comment = Comments.findOne(commentId);
+
     if (
       !Meteor.call("campaigns.hasAccount", {
         campaignId,
@@ -433,8 +435,6 @@ export const peopleSendPrivateReply = new ValidatedMethod({
     if (!message) {
       throw new Meteor.Error(401, "You must type a message");
     }
-
-    const comment = Comments.findOne(commentId);
 
     const campaignAccount = _.findWhere(campaign.accounts, {
       facebookId: comment.facebookAccountId
