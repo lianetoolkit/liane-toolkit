@@ -49,7 +49,6 @@ export const webhookUpdate = new ValidatedMethod({
     data.entry.forEach(entry => {
       if (entry.changes) {
         entry.changes.forEach(item => {
-          console.log(item);
           switch (item.value.item) {
             case "comment":
               CommentsHelpers.handleWebhook({
