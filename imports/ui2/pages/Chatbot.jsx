@@ -215,6 +215,9 @@ class ChatbotPage extends Component {
     if (active) {
       msg = "Você tem certeza que deseja remover o chatbot?";
     }
+    this.setState({
+      loading: true
+    });
     if (confirm(msg)) {
       Meteor.call(
         "campaigns.chatbot.activation",
@@ -223,6 +226,9 @@ class ChatbotPage extends Component {
           active: !active
         },
         (err, data) => {
+          this.setState({
+            loading: false
+          });
           if (err) {
             alertStore.add(err);
           } else {
