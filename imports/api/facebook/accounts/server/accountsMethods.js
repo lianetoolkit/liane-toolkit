@@ -46,40 +46,56 @@ export const webhookUpdate = new ValidatedMethod({
       logger.debug("webhookUpdate received unknown Facebook Account ID");
       return true;
     }
-    switch (data.item) {
-      case "comment":
-        CommentsHelpers.handleWebhook({ facebookAccountId, data });
-        break;
-      case "reaction":
-        LikesHelpers.handleWebhook({ facebookAccountId, data });
-        break;
-      case "album":
-      case "address":
-      case "coupon":
-      case "event":
-      case "experience":
-      case "group":
-      case "group_message":
-      case "interest":
-      case "link":
-      case "milestone":
-      case "note":
-      case "page":
-      case "picture":
-      case "platform-story":
-      case "photo":
-      case "photo-album":
-      case "post":
-      case "question":
-      case "share":
-      case "status":
-      case "story":
-      case "tag":
-      case "video":
-        EntriesHelpers.handleWebhook({ facebookAccountId, data });
-        break;
-      default:
-    }
+    data.entry.forEach(entry => {
+      if (entry.changes) {
+        entry.changes.forEach(item => {
+          console.log(item);
+          switch (item.value.item) {
+            case "comment":
+              CommentsHelpers.handleWebhook({
+                facebookAccountId,
+                data: item.value
+              });
+              break;
+            case "reaction":
+              LikesHelpers.handleWebhook({
+                facebookAccountId,
+                data: item.value
+              });
+              break;
+            case "album":
+            case "address":
+            case "coupon":
+            case "event":
+            case "experience":
+            case "group":
+            case "group_message":
+            case "interest":
+            case "link":
+            case "milestone":
+            case "note":
+            case "page":
+            case "picture":
+            case "platform-story":
+            case "photo":
+            case "photo-album":
+            case "post":
+            case "question":
+            case "share":
+            case "status":
+            case "story":
+            case "tag":
+            case "video":
+              EntriesHelpers.handleWebhook({
+                facebookAccountId,
+                data: item.value
+              });
+              break;
+            default:
+          }
+        });
+      }
+    });
     return true;
   }
 });
