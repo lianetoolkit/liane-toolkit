@@ -14,7 +14,8 @@ Entries.schema = new SimpleSchema({
   },
   type: {
     type: String,
-    index: true
+    index: true,
+    optional: true
   },
   message: {
     type: String,

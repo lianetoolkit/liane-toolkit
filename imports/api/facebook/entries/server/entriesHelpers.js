@@ -74,11 +74,8 @@ const EntriesHelpers = {
       response = Promise.await(
         FB.api(`${accountPath}/posts`, {
           fields: [
-            "object_id",
             "parent_id",
             "message",
-            "link",
-            "type",
             "created_time",
             "updated_time",
             "shares",
@@ -120,11 +117,8 @@ const EntriesHelpers = {
           createdTime: entry.created_time
         },
         $set: {
-          type: entry.type,
           message: entry.message,
-          objectId: entry.object_id,
           parentId: entry.parent_id,
-          link: entry.link,
           updatedTime: entry.updated_time,
           counts
         }
