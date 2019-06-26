@@ -35,8 +35,6 @@ export const webhookUpdate = new ValidatedMethod({
     }
     logger.debug("facebook.accounts.webhook.update called", {
       facebookAccountId,
-      type: data.item,
-      verb: data.verb,
       data
     });
     // Validate facebook account
