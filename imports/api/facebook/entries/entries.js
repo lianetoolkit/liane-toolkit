@@ -14,7 +14,8 @@ Entries.schema = new SimpleSchema({
   },
   type: {
     type: String,
-    index: true
+    index: true,
+    optional: true
   },
   message: {
     type: String,
@@ -41,7 +42,7 @@ Entries.schema = new SimpleSchema({
     type: Date
   },
   counts: {
-    type: Object,
+    type: Object
   },
   "counts.reaction": {
     type: Number
