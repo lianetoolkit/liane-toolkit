@@ -8,12 +8,13 @@ import App from "/imports/ui2/containers/App.jsx";
 import DashboardPage from "/imports/ui2/pages/Dashboard.jsx";
 import MapPage from "/imports/ui2/pages/Map.jsx";
 import PeoplePage from "/imports/ui2/pages/People.jsx";
-import ChatbotPage from "/imports/ui2/pages/Chatbot.jsx";
 import AuthPage from "/imports/ui2/pages/Auth.jsx";
 
 import FAQPage from "/imports/ui2/containers/FAQPage.jsx";
 import CommentsPage from "/imports/ui2/containers/CommentsPage.jsx";
 import AdsetPage from "/imports/ui2/pages/Adset.jsx";
+
+import ChatbotPage from "/imports/ui2/pages/chatbot/index.jsx";
 
 import CampaignSettingsPage from "/imports/ui2/pages/campaign/settings/General.jsx";
 import CampaignAccountsPage from "/imports/ui2/pages/campaign/settings/Accounts.jsx";
@@ -116,9 +117,12 @@ appRoutes.route("/faq", {
 
 appRoutes.route("/chatbot", {
   name: "App.chatbot",
-  action: function() {
+  action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Chatbot`);
-    return mount(App, { content: { component: ChatbotPage } });
+    return mount(App, {
+      content: { component: ChatbotPage },
+      module: queryParams.module
+    });
   }
 });
 
@@ -126,7 +130,9 @@ appRoutes.route("/campaign/new", {
   name: "App.campaign.new",
   action: function() {
     addTitle(`${APP_NAME} | New Campaign`);
-    return mount(App, { content: { component: NewCampaignPage } });
+    return mount(App, {
+      content: { component: NewCampaignPage }
+    });
   }
 });
 appRoutes.route("/campaign/settings", {
