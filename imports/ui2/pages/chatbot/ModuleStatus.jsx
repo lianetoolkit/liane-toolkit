@@ -72,18 +72,19 @@ const StatusIndicator = styled.span`
   border-radius: 100%;
   background: #bbb;
   margin: 0 2rem 0 0;
+  border: 1px solid #bbb;
   ${props =>
     props.active &&
     css`
       background: #00cc66;
-      border: 1px solid #00ff80;
+      border-color: #00ff80;
       box-shadow: 0 0 0.5rem #00ff80;
     `}
   ${props =>
     props.pending &&
     css`
       background: #fc0;
-      border: 1px solid #ffdf5d;
+      border-color: #ffdf5d;
       box-shadow: 0 0 0.5rem #ffdf5d;
     `}
 `;
