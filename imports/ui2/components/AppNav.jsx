@@ -260,7 +260,7 @@ export default class AppNav extends Component {
                     </li>
                   </ul>
                 </NavItem>
-                <NavItem
+                {/* <NavItem
                   href={FlowRouter.path("App.adset")}
                   name={
                     <>
@@ -268,7 +268,7 @@ export default class AppNav extends Component {
                       Criar adset
                     </>
                   }
-                />
+                /> */}
                 {/* <NavItem
                   href={FlowRouter.path("App.people")}
                   active={currentRoute.indexOf("App.people") === 0}

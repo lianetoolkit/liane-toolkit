@@ -153,6 +153,12 @@ const LoginFormContainer = styled.form`
       }
     }
   }
+  .terms {
+    margin-top: 2rem;
+    font-size: 0.9em;
+    color: #666;
+    text-align: center;
+  }
 `;
 
 export default class AuthPage extends Component {
@@ -211,14 +217,10 @@ export default class AuthPage extends Component {
               <FontAwesomeIcon icon={["fab", "facebook-square"]} /> Conecte-se
               com Facebook
             </a>
-            {/* <input type="email" placeholder="Email" />
-            <input type="password" placeholder="Senha" />
-            <input type="submit" value="Acessar painel" />
-            <nav>
-            &middot; <a href="#">Esqueci meu email</a>
-            &middot; <a href="#">Esqueci minha senha</a>
-            &middot;
-          </nav> */}
+            <p className="terms">
+              Ao conectar-se com LIANE você está de acordo com nossos termos de
+              uso e política de privacidade.
+            </p>
           </LoginFormContainer>
         </Container>
       </Page>

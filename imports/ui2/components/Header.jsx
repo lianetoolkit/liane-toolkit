@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import AppNav from "../components/AppNav.jsx";
 
@@ -50,6 +50,15 @@ const TopNav = styled.nav`
       color: #fff;
     }
   }
+  ${props =>
+    props.full &&
+    css`
+      font-size: 0.8em;
+      padding-top: 1.5rem;
+      a {
+        color: #ddd;
+      }
+    `}
 `;
 
 export default class Header extends Component {
@@ -69,8 +78,7 @@ export default class Header extends Component {
               </a>
             </h1>
           </div>
-          <TopNav>
-            <a href="#">Como funciona</a>
+          <TopNav full={!user}>
             <a
               href="https://institutoupdate.org.br"
               target="_blank"
@@ -78,7 +86,9 @@ export default class Header extends Component {
             >
               Instituto Update
             </a>
-            <a href="#">Termos de uso</a>
+            <a href="#">Termos de Uso</a>
+            <a href="#">Política de Privacidade</a>
+            <a href="#">Suporte</a>
           </TopNav>
           {user ? <AppNav campaign={campaign} campaigns={campaigns} /> : null}
         </div>
