@@ -49,6 +49,14 @@ const Container = styled.div`
       background: rgba(255, 255, 255, 0.75);
       font-size: 3em;
     `}
+  ${props =>
+    props.tiny &&
+    css`
+      padding: 0;
+      font-size: 0.9em;
+      width: auto;
+      display: inline-block;
+    `}
 `;
 
 export default class Loading extends Component {

@@ -370,6 +370,51 @@ export const campaignsUpdateChatbot = new ValidatedMethod({
   }
 });
 
+export const campaignsChatbotModuleActivation = new ValidatedMethod({
+  name: "campaigns.chatbot.moduleActivation",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    module: {
+      type: String
+    },
+    active: {
+      type: Boolean
+    }
+  }).validator(),
+  run({ campaignId, module, active }) {
+    this.unblock();
+    logger.debug("campaigns.chatbot.update called", {
+      campaignId,
+      module,
+      active
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    const allowed = Meteor.call("campaigns.canManage", { userId, campaignId });
+
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    return CampaignsHelpers.chatbotModuleActivation({
+      campaignId,
+      module,
+      active
+    });
+  }
+});
+
 export const campaignsRemove = new ValidatedMethod({
   name: "campaigns.remove",
   validate: new SimpleSchema({

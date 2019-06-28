@@ -16,6 +16,7 @@ import { FacebookAudiencesHelpers } from "/imports/api/facebook/audiences/server
 import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import _ from "underscore";
+import { set } from "lodash";
 
 const YEEKO = Meteor.settings.yeeko;
 
@@ -571,15 +572,19 @@ const CampaignsHelpers = {
       }
     }
 
+    const parsed = this.parseYeeko(res.data);
+
     // Update locally
-    return Campaigns.update(
+    Campaigns.update(
       { _id: campaignId },
       {
         $set: {
-          "facebookAccount.chatbot": this.parseYeeko(res.data)
+          "facebookAccount.chatbot": parsed
         }
       }
     );
+
+    return parsed;
   },
   updateChatbot({ campaignId, config }) {
     const campaign = Campaigns.findOne(campaignId);
@@ -615,21 +620,78 @@ const CampaignsHelpers = {
       throw new Meteor.Error(500, "Error connecting to Yeeko api");
     }
 
+    const parsed = this.parseYeeko(res.data);
+
     // Update locally (repick data from config)
     // const $set = {
     //   ...campaignAccount.chatbot,
     //   ..._.pick(config, "init_text_response", "extra_info")
     // };
-    return Campaigns.update(
+    Campaigns.update(
       {
         _id: campaignId
       },
       {
         $set: {
-          "facebookAccount.chatbot": this.parseYeeko(res.data)
+          "facebookAccount.chatbot": parsed
         }
       }
     );
+
+    return parsed;
+  },
+  chatbotModuleActivation({ campaignId, module, active }) {
+    const campaign = Campaigns.findOne(campaignId);
+    const campaignAccount = campaign.facebookAccount;
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    if (!campaignAccount) {
+      throw new Meteor.Error(404, "Facebook Account not found");
+    }
+
+    if (!campaignAccount.chatbot || !campaignAccount.chatbot.active) {
+      throw new Meteor.Error(401, "Chatbot is not active");
+    }
+
+    let chatbot = this.getChatbot({ campaignId }).data;
+
+    set(chatbot, `extra_info.${module}.active`, active);
+
+    let res;
+    try {
+      res = Promise.await(
+        axios.put(
+          `${YEEKO.url}${campaignAccount.facebookId}/?api_key=${YEEKO.apiKey}`,
+          this.unparseYeeko(chatbot)
+        )
+      );
+    } catch (err) {
+      console.log(err.response.data);
+      throw new Meteor.Error(500, "Error connecting to Yeeko api");
+    }
+
+    const parsed = this.parseYeeko(res.data);
+
+    // Update locally (repick data from config)
+    // const $set = {
+    //   ...campaignAccount.chatbot,
+    //   ..._.pick(config, "init_text_response", "extra_info")
+    // };
+    Campaigns.update(
+      {
+        _id: campaignId
+      },
+      {
+        $set: {
+          "facebookAccount.chatbot": parsed
+        }
+      }
+    );
+
+    return parsed;
   },
   deactivateChatbot({ campaignId }) {
     const campaign = Campaigns.findOne(campaignId);

@@ -53,13 +53,13 @@ class Content extends Component {
 }
 
 const ActionsContainer = styled.div`
-  ${"" /* border-top: 1px solid #ddd; */};
+  border-top: 1px solid #ddd;
 `;
 
 const ActionsContent = styled.div`
   max-width: 640px;
-  margin: 1rem auto;
-  padding: 0 4rem;
+  margin: 0 auto;
+  padding: 1rem 4rem;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;

@@ -80,13 +80,68 @@ const Container = styled.div`
 `;
 
 class ChatbotPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+      chatbot: {}
+    };
+  }
+  componentDidMount() {
+    this.fetch();
+  }
+  fetch = () => {
+    const { campaign } = this.props;
+    this.setState({
+      loading: true
+    });
+    Meteor.call(
+      "campaigns.chatbot.get",
+      { campaignId: campaign._id },
+      (err, res) => {
+        this.setState({
+          loading: false
+        });
+        if (err) {
+          alertStore.add(err);
+          this.setState({
+            chatbot: {}
+          });
+        } else {
+          this.setState({
+            chatbot: res
+          });
+        }
+      }
+    );
+  };
+  _handleChange = data => {
+    this.setState({
+      chatbot: data
+    });
+  };
   render() {
     const { module, campaign } = this.props;
+    const { loading, chatbot } = this.state;
+    if (loading) {
+      return <Loading full />;
+    }
+    let content = { component: null };
+    switch (module) {
+      case "info":
+        content.component = ModuleInfo;
+        break;
+      default:
+        content.component = GeneralSettings;
+    }
     return (
       <Container>
         <ChatbotNav module={module} />
-        {!module ? <GeneralSettings campaign={campaign} /> : null}
-        {module == "info" ? <ModuleInfo campaign={campaign} /> : null}
+        <content.component
+          campaign={campaign}
+          chatbot={chatbot}
+          onChange={this._handleChange}
+        />
       </Container>
     );
   }

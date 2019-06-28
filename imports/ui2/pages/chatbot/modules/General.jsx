@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { get, set, defaultsDeep } from "lodash";
+import { get, set } from "lodash";
 
 import { alertStore } from "/imports/ui2/containers/Alerts.jsx";
 
@@ -16,44 +16,21 @@ export default class ChatbotGeneralSettings extends Component {
     super(props);
     this.state = {
       loading: false,
-      chatbot: {},
-      formData: { ...ChatbotGeneralSettings.defaultConfig }
+      formData: {}
     };
   }
-  static defaultConfig = {
-    active: false,
-    init_text_response: false,
-    extra_info: {}
-  };
-  componentDidMount() {
-    this.fetch();
+  static getDerivedStateFromProps(props, state) {
+    if (JSON.stringify(state.formData) != JSON.stringify(props.chatbot)) {
+      console.log("changing");
+      return {
+        formData: props.chatbot
+      };
+    }
+    return null;
   }
-  fetch = () => {
-    const { campaign } = this.props;
-    this.setState({
-      loading: true
-    });
-    Meteor.call(
-      "campaigns.chatbot.get",
-      { campaignId: campaign._id },
-      (err, res) => {
-        this.setState({
-          loading: false
-        });
-        if (err) {
-          alertStore.add(err);
-          this.setState({
-            chatbot: {}
-          });
-        } else {
-          this.setState({
-            chatbot: res,
-            formData: defaultsDeep(res, ChatbotGeneralSettings.defaultConfig)
-          });
-        }
-      }
-    );
-  };
+  componentDidUpdate() {
+    console.log(this.state.formData);
+  }
   _handleActivationClick = ev => {
     ev.preventDefault();
     const { campaign } = this.props;
@@ -62,32 +39,34 @@ export default class ChatbotGeneralSettings extends Component {
     if (active) {
       msg = "Você tem certeza que deseja remover o chatbot?";
     }
-    this.setState({
-      loading: true
-    });
     if (confirm(msg)) {
+      this.setState({
+        loading: true
+      });
       Meteor.call(
         "campaigns.chatbot.activation",
         {
           campaignId: campaign._id,
           active: !active
         },
-        (err, data) => {
+        (err, res) => {
           this.setState({
             loading: false
           });
           if (err) {
             alertStore.add(err);
           } else {
+            this.setState({
+              formData: res
+            });
             alertStore.add("Atualizado", "success");
           }
-          this.fetch();
         }
       );
     }
   };
   _isActive = () => {
-    return this.state.chatbot && this.state.chatbot.active;
+    return this.state.formData && this.state.formData.active;
   };
   _handleChange = ({ target }) => {
     const { formData } = this.state;
@@ -98,11 +77,12 @@ export default class ChatbotGeneralSettings extends Component {
       target.type == "checkbox" ? target.checked : target.value
     );
     this.setState({
-      formData: {
-        ...formData,
-        ...newFormData
-      }
+      formData: newFormData
     });
+  };
+  getValue = path => {
+    const { formData } = this.state;
+    return get(formData, path);
   };
   _handleSubmit = ev => {
     ev.preventDefault();
@@ -124,6 +104,9 @@ export default class ChatbotGeneralSettings extends Component {
         if (err) {
           alertStore.add(err);
         } else {
+          this.setState({
+            formData: res
+          });
           alertStore.add("Atualizado", "success");
         }
       }
@@ -165,7 +148,7 @@ export default class ChatbotGeneralSettings extends Component {
             <input
               type="text"
               name="extra_info.candidate"
-              value={formData.extra_info.candidate}
+              value={this.getValue("extra_info.candidate")}
               disabled={!this._isActive()}
               onChange={this._handleChange}
             />
@@ -174,7 +157,7 @@ export default class ChatbotGeneralSettings extends Component {
             <input
               type="text"
               name="extra_info.candidate_number"
-              value={formData.extra_info.candidate_number}
+              value={this.getValue("extra_info.candidate_number")}
               disabled={!this._isActive()}
               onChange={this._handleChange}
               size="3"
@@ -184,7 +167,7 @@ export default class ChatbotGeneralSettings extends Component {
             <textarea
               placeholder="Descreva brevemente sobre sua campanha"
               name="extra_info.campaign_presentation"
-              value={formData.extra_info.campaign_presentation}
+              value={this.getValue("extra_info.campaign_presentation")}
               disabled={!this._isActive()}
               onChange={this._handleChange}
             />
@@ -193,7 +176,7 @@ export default class ChatbotGeneralSettings extends Component {
             <input
               type="checkbox"
               name="text_response"
-              checked={formData.text_response}
+              checked={this.getValue("text_response")}
               disabled={!this._isActive()}
               onChange={this._handleChange}
             />{" "}
