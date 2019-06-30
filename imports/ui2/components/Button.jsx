@@ -64,6 +64,10 @@ const styles = css`
     cursor: default;
     border-color: #fff;
   }
+  &.small {
+    font-size: 0.8em;
+    padding: 0.4rem 0.8rem;
+  }
   ${props =>
     props.light &&
     css`
@@ -187,11 +191,12 @@ export default class Button extends Component {
     }
   };
   render() {
-    const { children, active, primary, disabled, ...props } = this.props;
+    const { children, active, primary, small, disabled, ...props } = this.props;
     let className = "button";
     if (active) className += " active";
     if (primary) className += " primary";
     if (disabled) className += " disabled";
+    if (small) className += " small";
     return (
       <ButtonContainer
         className={className}

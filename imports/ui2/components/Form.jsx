@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 const Container = styled.form`
   width: 100%;
@@ -39,6 +39,14 @@ const FieldContainer = styled.label`
   .select__value-container {
     padding: 0.5rem 1rem;
   }
+  &:last-child {
+    margin-bottom: 0;
+  }
+  ${props =>
+    props.secondary &&
+    css`
+      font-size: 0.9em;
+    `}
 `;
 
 class Content extends Component {

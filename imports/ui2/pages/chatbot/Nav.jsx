@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
 
+import { isModuleActive } from "/imports/ui2/utils/chatbot";
+
 import Page from "/imports/ui2/components/Page.jsx";
 
 const ModuleLinkContainer = styled.a`
@@ -29,6 +31,7 @@ const ModuleLinkContainer = styled.a`
         padding-bottom: 0.25rem;
         margin-bottom: 0.25rem;
         border-bottom: 1px solid #eee;
+        padding-right: 0.5rem;
       }
       .status-label {
         font-size: 0.8em;
@@ -89,7 +92,7 @@ class ModuleLink extends Component {
 
 export default class ChatbotNav extends Component {
   render() {
-    const { module } = this.props;
+    const { chatbot, module } = this.props;
     const currentRoute = FlowRouter.current().route.name;
     return (
       <Page.Nav>
@@ -102,22 +105,35 @@ export default class ChatbotNav extends Component {
         </a>
         <h3>Módulos</h3>
         <ModuleLink
-          active={true}
+          active={isModuleActive(chatbot, "info")}
           href={FlowRouter.path("App.chatbot", {}, { module: "info" })}
           className={module == "info" ? "active" : ""}
         >
           Informações do Candidato
         </ModuleLink>
-        <ModuleLink active={false} href="javascript:void(0);">
-          Dar e receber propostas
+        <ModuleLink
+          active={isModuleActive(chatbot, "proposals")}
+          href={FlowRouter.path("App.chatbot", {}, { module: "proposals" })}
+        >
+          Apresentar e receber propostas
         </ModuleLink>
-        <ModuleLink active={true} href="javascript:void(0);">
+        <ModuleLink
+          active={isModuleActive(chatbot, "auto_reply")}
+          href="javascript:void(0);"
+        >
           Respostas automáticas
         </ModuleLink>
-        <ModuleLink active={true} pending={true} href="javascript:void(0);">
+        <ModuleLink
+          active={isModuleActive(chatbot, "notifications")}
+          pending={true}
+          href="javascript:void(0);"
+        >
           Notificações a pessoas
         </ModuleLink>
-        <ModuleLink active={false} href="javascript:void(0);">
+        <ModuleLink
+          active={isModuleActive(chatbot, "support")}
+          href="javascript:void(0);"
+        >
           Registro de apoio
         </ModuleLink>
       </Page.Nav>
