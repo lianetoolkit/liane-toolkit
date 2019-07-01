@@ -1,3 +1,4 @@
+import { CampaignsJobs } from "/imports/api/campaigns/server/campaignsJobs.js";
 import { EntriesJobs } from "/imports/api/facebook/entries/server/entriesJobs.js";
 import { AudiencesJobs } from "/imports/api/facebook/audiences/server/audiencesJobs.js";
 import { PeopleJobs } from "/imports/api/facebook/people/server/peopleJobs.js";
@@ -5,7 +6,7 @@ import { Jobs } from "../jobs.js";
 import { JobsHelpers } from "./jobsHelpers.js";
 
 // init jobs pool for workers
-JobsPool.jobs = _.extend(EntriesJobs, AudiencesJobs, PeopleJobs);
+JobsPool.jobs = _.extend(CampaignsJobs, EntriesJobs, AudiencesJobs, PeopleJobs);
 
 let _runJob;
 Meteor.startup(function() {

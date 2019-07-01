@@ -117,13 +117,20 @@ const CampaignsHelpers = {
         accessToken: token.result
       }
     });
+
     JobsHelpers.addJob({
-      jobType: "audiences.updateAccountAudience",
+      jobType: "campaigns.healthCheck",
       jobData: {
-        campaignId,
-        facebookAccountId: account.id
+        campaignId
       }
     });
+    // JobsHelpers.addJob({
+    //   jobType: "audiences.updateAccountAudience",
+    //   jobData: {
+    //     campaignId,
+    //     facebookAccountId: account.id
+    //   }
+    // });
     JobsHelpers.addJob({
       jobType: "people.updateFBUsers",
       jobData: {
