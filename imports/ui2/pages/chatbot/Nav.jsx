@@ -119,7 +119,7 @@ export default class ChatbotNav extends Component {
         </ModuleLink>
         <ModuleLink
           active={isModuleActive(chatbot, "auto_reply")}
-          href="javascript:void(0);"
+          href={FlowRouter.path("App.chatbot", {}, { module: "auto_reply" })}
         >
           Respostas automáticas
         </ModuleLink>

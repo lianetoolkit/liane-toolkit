@@ -16,6 +16,7 @@ import ChatbotNav from "./Nav.jsx";
 import GeneralSettings from "./modules/General.jsx";
 import ModuleInfo from "./modules/Info.jsx";
 import ModuleProposals from "./modules/Proposals.jsx";
+import ModuleAutoReply from "./modules/AutoReply.jsx";
 
 const Container = styled.div`
   /* max-width: 960px; */
@@ -134,6 +135,9 @@ class ChatbotPage extends Component {
         break;
       case "proposals":
         content.component = ModuleProposals;
+        break;
+      case "auto_reply":
+        content.component = ModuleAutoReply;
         break;
       default:
         content.component = GeneralSettings;
