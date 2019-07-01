@@ -181,12 +181,14 @@ export default class ChatbotProposalsModule extends Component {
     let newFormData = { ...formData };
     newFormData.extra_info.proposals.items.splice(index, 1);
     const primary = this._getPrimary();
+    let newPrimary;
     if (primary > index) {
-      set(
-        newFormData,
-        "extra_info.proposals.primary",
-        Math.max(primary - 1, 0)
-      );
+      newPrimary = Math.max(primary - 1, 0);
+    } else if (primary == index) {
+      newPrimary = -1;
+    }
+    if (!isNaN(newPrimary)) {
+      set(newFormData, "extra_info.proposals.primary", newPrimary);
     }
     this.setState({
       formData: newFormData
