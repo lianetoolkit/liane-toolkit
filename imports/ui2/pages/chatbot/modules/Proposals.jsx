@@ -83,7 +83,7 @@ class ProposalInput extends Component {
       <ProposalInputContainer>
         <div className="actions">
           <a
-            href="javacript:void(0);"
+            href="javascript:void(0);"
             onClick={this._handlePrimaryClick}
             className={isPrimary ? "active" : ""}
             data-tip={isPrimary ? "Remover como principal" : "Tornar principal"}
@@ -92,7 +92,7 @@ class ProposalInput extends Component {
             <FontAwesomeIcon icon="star" />
           </a>
           <a
-            href="javacript:void(0);"
+            href="javascript:void(0);"
             onClick={this._handleRemoveClick}
             className="remove"
             data-tip={"Remover"}
@@ -124,11 +124,7 @@ class ProposalInput extends Component {
             onChange={this._handleChange}
           />
         </Form.Field>
-        <ReactTooltip
-          id={tooltipId}
-          aria-haspopup="true"
-          effect="solid"
-        />
+        <ReactTooltip id={tooltipId} aria-haspopup="true" effect="solid" />
       </ProposalInputContainer>
     );
   }
