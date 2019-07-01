@@ -38,6 +38,7 @@
     "react-country-region-selector": "^1.4.3",
     "react-datepicker": "^1.8.0",
     "react-dom": "^16.7.0",
+    "react-intl": "^2.9.0",
     "react-leaflet": "^1.9.1",
     "react-markdown": "^3.6.0",
     "react-mounter": "^1.2.0",
