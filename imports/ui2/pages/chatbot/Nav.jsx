@@ -114,27 +114,30 @@ export default class ChatbotNav extends Component {
         <ModuleLink
           active={isModuleActive(chatbot, "proposals")}
           href={FlowRouter.path("App.chatbot", {}, { module: "proposals" })}
+          className={module == "proposals" ? "active" : ""}
         >
           Apresentar e receber propostas
         </ModuleLink>
         <ModuleLink
           active={isModuleActive(chatbot, "auto_reply")}
           href={FlowRouter.path("App.chatbot", {}, { module: "auto_reply" })}
+          className={module == "auto_reply" ? "active" : ""}
         >
           Respostas automáticas
         </ModuleLink>
         <ModuleLink
-          active={isModuleActive(chatbot, "notifications")}
-          pending={true}
-          href="javascript:void(0);"
-        >
-          Notificações a pessoas
-        </ModuleLink>
-        <ModuleLink
-          active={isModuleActive(chatbot, "support")}
-          href="javascript:void(0);"
+          active={isModuleActive(chatbot, "registration")}
+          href={FlowRouter.path("App.chatbot", {}, { module: "registration" })}
+          className={module == "registration" ? "active" : ""}
         >
           Registro de apoio
+        </ModuleLink>
+        <ModuleLink
+          active={isModuleActive(chatbot, "notifications")}
+          href={FlowRouter.path("App.chatbot", {}, { module: "notifications" })}
+          className={module == "notifications" ? "active" : ""}
+        >
+          Notificações a pessoas
         </ModuleLink>
       </Page.Nav>
     );

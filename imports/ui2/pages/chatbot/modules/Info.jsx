@@ -109,7 +109,7 @@ export default class ChatbotInfoModule extends Component {
             Habilitar biografia
           </label>
           {this.getValue("extra_info.info.biography.active") ? (
-            <Form.Field label="Biografia">
+            <Form.Field secondary label="Biografia">
               <textarea
                 name="extra_info.info.biography.text"
                 onChange={this._handleChange}
@@ -128,7 +128,7 @@ export default class ChatbotInfoModule extends Component {
           </label>
           {this.getValue("extra_info.info.party.active") ? (
             <>
-              <Form.Field label="Nome do partido/grupo/coalisão">
+              <Form.Field secondary label="Nome do partido/grupo/coalisão">
                 <input
                   type="text"
                   name="extra_info.info.party.name"
@@ -136,7 +136,7 @@ export default class ChatbotInfoModule extends Component {
                   value={this.getValue("extra_info.info.party.name")}
                 />
               </Form.Field>
-              <Form.Field label="Descrição">
+              <Form.Field secondary label="Descrição">
                 <textarea
                   name="extra_info.info.party.description"
                   onChange={this._handleChange}
@@ -155,7 +155,7 @@ export default class ChatbotInfoModule extends Component {
             Habilitar "mais informações"
           </label>
           {this.getValue("extra_info.info.more.active") ? (
-            <Form.Field label="Mais informações">
+            <Form.Field secondary label="Mais informações">
               <textarea
                 name="extra_info.info.more.text"
                 onChange={this._handleChange}
