@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
+import { FormattedMessage } from "react-intl";
 
 import AppNav from "../components/AppNav.jsx";
 
@@ -86,9 +87,21 @@ export default class Header extends Component {
             >
               Instituto Update
             </a>
-            <a href="#">Termos de Uso</a>
-            <a href="#">Política de Privacidade</a>
-            <a href="#">Suporte</a>
+            <a href="#">
+              <FormattedMessage
+                id="app.terms_of_use"
+                defaultMessage="Terms of Use"
+              />
+            </a>
+            <a href="#">
+              <FormattedMessage
+                id="app.privacy_policy"
+                defaultMessage="Privacy Policy"
+              />
+            </a>
+            <a href="#">
+              <FormattedMessage id="app.support" defaultMessage="Support" />
+            </a>
           </TopNav>
           {user ? <AppNav campaign={campaign} campaigns={campaigns} /> : null}
         </div>

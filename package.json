@@ -3,6 +3,7 @@
   "description": "An Electoral Toolkit for Political Campaigns",
   "private": false,
   "scripts": {
+    "translations": "node ./translations.js",
     "start": "meteor npm install && meteor run -p 3000 --settings=./.deploy/local/settings.json",
     "test": "meteor npm install && meteor test -p 3100 --driver-package=practicalmeteor:mocha --settings=./.deploy/local/settings.json"
   },
@@ -58,7 +59,8 @@
     "xlsx": "^0.12.13"
   },
   "devDependencies": {
-    "autoprefixer": "^6.3.1"
+    "autoprefixer": "^6.3.1",
+    "react-intl-translations-manager": "^5.0.3"
   },
   "postcss": {
     "plugins": {

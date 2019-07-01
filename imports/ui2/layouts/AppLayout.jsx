@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { IntlProvider } from "react-intl";
+
 import Modal from "../containers/Modal.jsx";
 import Alerts from "../containers/Alerts.jsx";
 import Page from "../components/Page.jsx";
@@ -16,13 +18,15 @@ export default class AppLayout extends Component {
     const { content, ready, connected } = this.props;
     if (connected && ready) {
       return (
-        <div id="app">
-          <Page {...this.props}>
-            <content.component {...this.props} />
-          </Page>
-          <Modal />
-          <Alerts />
-        </div>
+        <IntlProvider locale="en">
+          <div id="app">
+            <Page {...this.props}>
+              <content.component {...this.props} />
+            </Page>
+            <Modal />
+            <Alerts />
+          </div>
+        </IntlProvider>
       );
     } else {
       return null;
