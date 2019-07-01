@@ -9,4 +9,6 @@ if (typeof Meteor == "undefined") {
     languages: ["en", "es", "pt-BR"],
     singleMessagesFile: true
   });
+} else {
+  console.log("Skiping");
 }
