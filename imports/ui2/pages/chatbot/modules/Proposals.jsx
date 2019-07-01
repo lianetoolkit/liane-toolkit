@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
+import ReactTooltip from "react-tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { get, set } from "lodash";
 
@@ -76,7 +77,8 @@ class ProposalInput extends Component {
     }
   };
   render() {
-    const { value, isPrimary } = this.props;
+    const { value, target, isPrimary } = this.props;
+    const tooltipId = `proposal-input-${target}`;
     return (
       <ProposalInputContainer>
         <div className="actions">
@@ -84,6 +86,8 @@ class ProposalInput extends Component {
             href="javacript:void(0);"
             onClick={this._handlePrimaryClick}
             className={isPrimary ? "active" : ""}
+            data-tip={isPrimary ? "Remover como principal" : "Tornar principal"}
+            data-for={tooltipId}
           >
             <FontAwesomeIcon icon="star" />
           </a>
@@ -91,6 +95,8 @@ class ProposalInput extends Component {
             href="javacript:void(0);"
             onClick={this._handleRemoveClick}
             className="remove"
+            data-tip={"Remover"}
+            data-for={tooltipId}
           >
             <FontAwesomeIcon icon="times" />
           </a>
@@ -118,6 +124,11 @@ class ProposalInput extends Component {
             onChange={this._handleChange}
           />
         </Form.Field>
+        <ReactTooltip
+          id={tooltipId}
+          aria-haspopup="true"
+          effect="solid"
+        />
       </ProposalInputContainer>
     );
   }
@@ -302,6 +313,7 @@ export default class ChatbotProposalsModule extends Component {
                 onPrimary={this._handleProposalPrimary(i)}
                 value={proposal}
                 isPrimary={this._isPrimary(i)}
+                target={i}
               />
             ))}
             <div className="actions">
