@@ -105,7 +105,9 @@ This project uses **[Job Collection](https://github.com/vsivsi/meteor-job-collec
 
 ## Internationalization
 
-This project uses **[universe:i18n](https://github.com/vazco/meteor-universe-i18n)** for internationalization. You can find and edit translations at `/i18n/en.i18n.json`
+This project uses **[react-intl](https://github.com/formatjs/react-intl)** for internationalization. You can find and edit translations at `/locales`.
+
+Translation files are automatically generated through `npm run translations`. You can update the available strings by running this command and manually translating the desired lang file, located at `/locales/[lang].json`. _Do not manually insert new strings into the language files._
 
 ## Tests
 
