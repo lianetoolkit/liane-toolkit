@@ -26,10 +26,16 @@ export const trackRouteEntry = context => {
   // if (node && shouldScrollTop(context)) node.scrollTop = 0;
   if (shouldScrollTop(context)) window.scrollTo(0, 0);
   Meteor.setTimeout(() => {
+    const connectionId = Meteor.connection._lastSessionId;
     const userId = Meteor.userId();
     if (userId) {
-      // Woopra.track({ userId });
-      // console.log("trackRouteEntry");
+      /* TODO: Log this */
+      // console.log({
+      //   path: context.path,
+      //   connectionId,
+      //   userId,
+      //   campaignId: Session.get("campaignId")
+      // });
     }
   }, 3000);
 };

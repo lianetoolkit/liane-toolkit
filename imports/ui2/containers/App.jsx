@@ -132,11 +132,14 @@ export default withTracker(({ content }) => {
     ready.set(campaignsHandle.ready());
   }
 
+  const loadingCampaigns = !campaignsHandle.ready();
+
   return {
     user,
     connected,
     ready: ready.get(),
     isLoggedIn,
+    loadingCampaigns,
     campaigns,
     campaignId,
     campaign,

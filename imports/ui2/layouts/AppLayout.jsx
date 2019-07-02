@@ -39,12 +39,26 @@ const findLocale = language => {
 const messages = localeData[findLocale(language)] || localeData.en;
 
 export default class AppLayout extends Component {
-  componentWillReceiveProps({ isLoggedIn, connected, routeName }) {
+  componentWillReceiveProps({
+    isLoggedIn,
+    connected,
+    routeName,
+    loadingCampaigns,
+    campaigns
+  }) {
     if (connected && !isLoggedIn && routeName !== "App.auth") {
       FlowRouter.go("App.auth");
     }
-    if (connected && isLoggedIn && routeName == "App.auth") {
-      FlowRouter.go("App.dashboard");
+    if (connected && isLoggedIn) {
+      if (!loadingCampaigns && (!campaigns || !campaigns.length)) {
+        if (routeName == "App.dashboard" || routeName == "App.auth") {
+          FlowRouter.go("App.campaign.new");
+        }
+      } else {
+        if (routeName == "App.auth") {
+          FlowRouter.go("App.dashboard");
+        }
+      }
     }
   }
   render() {
