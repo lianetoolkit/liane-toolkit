@@ -1,5 +1,9 @@
 {
+  "app.logout": "Sair",
+  "app.my_account": "Minha conta",
   "app.privacy_policy": "Política de Privacidade",
   "app.support": "Suporte",
-  "app.terms_of_use": "Termos de Uso"
+  "app.terms_of_use": "Termos de Uso",
+  "campaign.campaign_new": "Nova campanha",
+  "campaign.campaign_settings": "Configurações da campanha"
 }

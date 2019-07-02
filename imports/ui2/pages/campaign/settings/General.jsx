@@ -65,13 +65,15 @@ export default class CampaignSettingsPage extends Component {
         <Nav />
         <Form onSubmit={this._handleSubmit}>
           <Form.Content>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              placeholder="Nome da campanha"
-              onChange={this._handleChange}
-            />
+            <Form.Field label="Nome da campanha">
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                placeholder="Nome da campanha"
+                onChange={this._handleChange}
+              />
+            </Form.Field>
           </Form.Content>
           <Form.Actions>
             <input

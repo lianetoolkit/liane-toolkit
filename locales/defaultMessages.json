@@ -12,6 +12,22 @@
       {
         "defaultMessage": "Support",
         "id": "app.support"
+      },
+      {
+        "defaultMessage": "Campaign settings",
+        "id": "campaign.campaign_settings"
+      },
+      {
+        "defaultMessage": "New campaign",
+        "id": "campaign.campaign_new"
+      },
+      {
+        "defaultMessage": "My account",
+        "id": "app.my_account"
+      },
+      {
+        "defaultMessage": "Logout",
+        "id": "app.logout"
       }
     ],
     "path": "messages.json"

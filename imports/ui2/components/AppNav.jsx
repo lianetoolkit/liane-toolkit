@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
+import { FormattedMessage } from "react-intl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find } from "lodash";
 
@@ -154,16 +155,24 @@ class SettingsNav extends Component {
       >
         <Dropdown.Content>
           <Dropdown.NavItem href={FlowRouter.path("App.campaign.settings")}>
-            Configurações da campanha
+            <FormattedMessage
+              id="campaign.campaign_settings"
+              defaultMessage="Campaign settings"
+            />
           </Dropdown.NavItem>
           <Dropdown.Separator />
           <Dropdown.NavItem href={FlowRouter.path("App.campaign.new")}>
-            Nova campanha
+            <FormattedMessage
+              id="campaign.campaign_new"
+              defaultMessage="New campaign"
+            />
           </Dropdown.NavItem>
           <Dropdown.Separator />
-          <Dropdown.NavItem href="#">Minha conta</Dropdown.NavItem>
+          <Dropdown.NavItem href="#">
+            <FormattedMessage id="app.my_account" defaultMessage="My account" />
+          </Dropdown.NavItem>
           <Dropdown.NavItem href="javascript:void(0);" onClick={this._logout()}>
-            Sair
+            <FormattedMessage id="app.logout" defaultMessage="Logout" />
           </Dropdown.NavItem>
         </Dropdown.Content>
       </Dropdown>

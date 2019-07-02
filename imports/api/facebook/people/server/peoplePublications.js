@@ -99,6 +99,9 @@ Meteor.publish("people.tags", function({ campaignId }) {
   const userId = this.userId;
   if (userId) {
     const campaign = Campaigns.findOne(campaignId);
+    if(!campaign) {
+      return this.ready();
+    }
     const allowed = _.findWhere(campaign.users, { userId });
     if (allowed) {
       return PeopleTags.find({ campaignId });

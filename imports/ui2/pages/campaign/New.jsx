@@ -5,6 +5,7 @@ import { alertStore } from "../../containers/Alerts.jsx";
 import Page from "../../components/Page.jsx";
 import Form from "../../components/Form.jsx";
 import SelectAccount from "../../components/facebook/SelectAccount.jsx";
+import CountrySelect from "../../components/CountrySelect.jsx";
 
 export default class NewCampaignPage extends Component {
   constructor(props) {
@@ -27,7 +28,7 @@ export default class NewCampaignPage extends Component {
   };
   _filledForm = () => {
     const { formData } = this.state;
-    return formData.name && formData.facebookAccountId;
+    return formData.name && formData.country && formData.facebookAccountId;
   };
   _handleSubmit = ev => {
     ev.preventDefault();
@@ -53,7 +54,6 @@ export default class NewCampaignPage extends Component {
         "Você deve preencher todos os campos obrigatórios",
         "error"
       );
-      console.log("nope");
     }
   };
   render() {
@@ -62,14 +62,23 @@ export default class NewCampaignPage extends Component {
       <Form onSubmit={this._handleSubmit}>
         <Form.Content>
           <Page.Title>Criando Nova Campanha</Page.Title>
-          <input
-            type="text"
-            name="name"
-            placeholder="Nome da campanha"
-            onChange={this._handleChange}
-            value={formData.name}
-          />
-          <p>Selecione uma conta de Facebook para sua campanha:</p>
+          <Form.Field label="Define um nome para sua campanha">
+            <input
+              type="text"
+              name="name"
+              placeholder="Nome da campanha"
+              onChange={this._handleChange}
+              value={formData.name}
+            />
+          </Form.Field>
+          <Form.Field label="Selecione o país de atuação da sua campanha">
+            <CountrySelect
+              name="country"
+              value={formData.country}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+          <p>Selecione a conta de Facebook utilizada por sua campanha</p>
           <SelectAccount
             name="facebookAccountId"
             onChange={this._handleChange}

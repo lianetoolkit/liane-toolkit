@@ -1,5 +1,9 @@
 {
+  "app.logout": "Logout",
+  "app.my_account": "My account",
   "app.privacy_policy": "Privacy Policy",
   "app.support": "Support",
-  "app.terms_of_use": "Terms of Use"
+  "app.terms_of_use": "Terms of Use",
+  "campaign.campaign_new": "New campaign",
+  "campaign.campaign_settings": "Campaign settings"
 }
