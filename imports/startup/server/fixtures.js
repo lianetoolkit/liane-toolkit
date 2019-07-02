@@ -58,10 +58,6 @@ if (Geolocations.find().count() == 0) {
   for (const location of geolocations) {
     Geolocations.insert(location);
   }
-  logger.debug(
-    "fixtures. audiences geolocations added:",
-    ("total": geolocations.length)
-  );
 }
 
 const audienceCategories = [

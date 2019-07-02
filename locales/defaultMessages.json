@@ -1,2 +1,19 @@
 [
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Terms of Use",
+        "id": "app.terms_of_use"
+      },
+      {
+        "defaultMessage": "Privacy Policy",
+        "id": "app.privacy_policy"
+      },
+      {
+        "defaultMessage": "Support",
+        "id": "app.support"
+      }
+    ],
+    "path": "messages.json"
+  }
 ]
