@@ -108,16 +108,3 @@ This project uses **[Job Collection](https://github.com/vsivsi/meteor-job-collec
 This project uses **[react-intl](https://github.com/formatjs/react-intl)** for internationalization. You can find and edit translations at `/locales`.
 
 Translation files are automatically generated through `npm run translations`. You can update the available strings by running this command and manually translating the desired lang file, located at `/locales/[lang].json`. _Do not manually insert new strings into the language files._
-
-## Tests
-
-This projects uses **[Mocha](https://github.com/mochajs/mocha)** framework, **[Faker](https://github.com/Marak/Faker.js)** and **[Meteor Factory](https://github.com/versolearning/meteor-factory/)** for tests.
-
-You can find tests inside server folders `../server/campaigns.tests.js` and fake models `../server/campaigns.fake.js`.
-To run the tests:
-
-```shell
-npm run test
-```
-
-It will run at http://localhost:3100
