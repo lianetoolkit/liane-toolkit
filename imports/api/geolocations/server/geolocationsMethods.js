@@ -183,12 +183,25 @@ export const searchNominatim = new ValidatedMethod({
   name: "geolocations.searchNominatim",
   validate: new SimpleSchema({
     q: {
-      type: String
+      type: String,
+      optional: true
+    },
+    city: {
+      type: String,
+      optional: true
+    },
+    state: {
+      type: String,
+      optional: true
+    },
+    country: {
+      type: String,
+      optional: true
     }
   }).validator(),
-  run({ q }) {
+  run(query) {
     this.unblock();
-    logger.debug("geolocations.searchNominatim called", { q });
+    logger.debug("geolocations.searchNominatim called", query);
 
     const userId = Meteor.userId();
     if (!userId) {
@@ -199,6 +212,6 @@ export const searchNominatim = new ValidatedMethod({
       throw new Meteor.Error(403, "Access denied");
     }
 
-    return GeolocationsHelpers.nominatimSearch({ q });
+    return GeolocationsHelpers.nominatimSearch(query);
   }
 });

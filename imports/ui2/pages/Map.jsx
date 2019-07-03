@@ -189,8 +189,14 @@ export default class MapPage extends Component {
     ev.preventDefault();
     this.setState({ map });
   };
+  _handleAddToMapClick = ev => {
+    ev.preventDefault();
+    this.setState({
+      adding: true
+    });
+  };
   render() {
-    const { map } = this.state;
+    const { map, adding } = this.state;
     return (
       <Container>
         <MapNav attached={!map}>
@@ -256,12 +262,18 @@ export default class MapPage extends Component {
                 </LayerFilter>
               </Tool>
               <Tool transparent>
-                <Button>
+                <Button
+                  href="javascript:void(0);"
+                  onClick={this._handleAddToMapClick}
+                >
                   <span className="icon">
                     <FontAwesomeIcon icon="map-marked" />
                   </span>
                   <span className="label">Adicionar ao mapa</span>
                 </Button>
+                {adding ? (
+                  <input type="text" placeholder="Buscar localização..." />
+                ) : null}
               </Tool>
             </Tools>
           </>

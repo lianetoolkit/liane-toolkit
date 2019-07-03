@@ -6,6 +6,7 @@ import Page from "../../components/Page.jsx";
 import Form from "../../components/Form.jsx";
 import SelectAccount from "../../components/facebook/SelectAccount.jsx";
 import CountrySelect from "../../components/CountrySelect.jsx";
+import GeolocationSelect from "../../components/GeolocationSelect.jsx";
 
 export default class NewCampaignPage extends Component {
   constructor(props) {
@@ -78,6 +79,9 @@ export default class NewCampaignPage extends Component {
               onChange={this._handleChange}
             />
           </Form.Field>
+          {/* {formData.country ? (
+            <GeolocationSelect country={formData.country} />
+          ) : null} */}
           <p>Selecione a conta de Facebook utilizada por sua campanha</p>
           <SelectAccount
             name="facebookAccountId"
