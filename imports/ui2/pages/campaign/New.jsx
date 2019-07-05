@@ -31,6 +31,18 @@ export default class NewCampaignPage extends Component {
     const { formData } = this.state;
     return formData.name && formData.country && formData.facebookAccountId;
   };
+  _handleGeolocationChange = ({ geolocation, type }) => {
+    this.setState({
+      formData: {
+        ...this.state.formData,
+        geolocation: {
+          type,
+          osm_id: geolocation.osm_id,
+          osm_type: geolocation.osm_type
+        }
+      }
+    });
+  };
   _handleSubmit = ev => {
     ev.preventDefault();
     if (this._filledForm()) {
@@ -80,7 +92,10 @@ export default class NewCampaignPage extends Component {
             />
           </Form.Field>
           {formData.country ? (
-            <GeolocationSelect country={formData.country} />
+            <GeolocationSelect
+              country={formData.country}
+              onChange={this._handleGeolocationChange}
+            />
           ) : null}
           <p>Selecione a conta de Facebook utilizada por sua campanha</p>
           <SelectAccount

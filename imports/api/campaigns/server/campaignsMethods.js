@@ -81,6 +81,10 @@ export const campaignsCreate = new ValidatedMethod({
     "geolocation.osm_type": {
       type: String
     },
+    "geolocation.type": {
+      type: String,
+      allowedValues: ["state", "city"]
+    },
     facebookAccountId: {
       type: String
     }
@@ -89,7 +93,7 @@ export const campaignsCreate = new ValidatedMethod({
     logger.debug("campaigns.create called", {
       name,
       country,
-      place,
+      geolocation,
       facebookAccountId
     });
 
@@ -109,18 +113,27 @@ export const campaignsCreate = new ValidatedMethod({
       );
     }
 
-    let geolocationId = false;
-    if (geolocation) {
-      geolocationId = GeolocationsHelpers.discoverAndStore(geolocation);
-    }
-
-    throw new Meteor.Error(400, "Test");
-
     const users = [{ userId, role: "owner" }];
     let insertDoc = { users, name, country };
 
     const user = Meteor.users.findOne(userId);
     const token = user.services.facebook.accessToken;
+
+    let geolocationId = false;
+    if (geolocation) {
+      try {
+        geolocationId = GeolocationsHelpers.discoverAndStore({
+          ...geolocation,
+          accessToken: token
+        });
+      } catch (e) {
+        throw new Meteor.Error(500, "Unexpected error, please try again");
+      }
+    }
+
+    if (geolocationId) {
+      insertDoc.geolocationId = geolocationId;
+    }
 
     const account = FacebookAccountsHelpers.getUserAccount({
       userId,

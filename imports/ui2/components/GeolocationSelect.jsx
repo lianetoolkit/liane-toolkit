@@ -117,20 +117,27 @@ export default class GeolocationSelect extends Component {
   _handleSelect = geolocation => ev => {
     ev.preventDefault();
     const { onChange } = this.props;
-    this.matchGeolocation(
-      geolocation.osm_id,
-      geolocation.osm_type,
-      (err, res) => {
-        if (res) {
-          this.setState({
-            selected: geolocation
-          });
-          if (onChange && typeof onChange == "function") {
-            onChange(geolocation);
-          }
-        }
-      }
-    );
+    const { region } = this.state;
+    // this.matchGeolocation(
+    //   geolocation.osm_id,
+    //   geolocation.osm_type,
+    //   (err, res) => {
+    //     if (res) {
+    //       this.setState({
+    //         selected: geolocation
+    //       });
+    //       if (onChange && typeof onChange == "function") {
+    //         onChange(geolocation);
+    //       }
+    //     }
+    //   }
+    // );
+    this.setState({
+      selected: geolocation
+    });
+    if (onChange && typeof onChange == "function") {
+      onChange({ geolocation, type: region });
+    }
   };
   _handleReset = () => {
     const { onChange } = this.props;

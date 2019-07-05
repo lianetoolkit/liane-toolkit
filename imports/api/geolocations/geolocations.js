@@ -11,6 +11,12 @@ Geolocations.schema = new SimpleSchema({
     allowedValues: ["location", "center"],
     index: true
   },
+  regionType: {
+    type: String,
+    allowedValues: ["country", "state", "city"],
+    index: true,
+    optional: true
+  },
   parentId: {
     type: String,
     optional: true,

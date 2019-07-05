@@ -63,6 +63,10 @@ const MapNav = styled.nav`
       color: #f7f7f7;
       border-color: #212121;
     }
+    &.disabled {
+      color: rgba(255, 255, 255, 0.6);
+      border-color: transparent;
+    }
   }
   ${props =>
     props.attached &&
@@ -185,6 +189,17 @@ export default class MapPage extends Component {
       map: true
     };
   }
+  componentDidMount() {
+    const { campaign } = this.props;
+    if (campaign.geolocation) {
+      const { map } = this.refs;
+      const { boundingbox } = campaign.geolocation.osm;
+      map.leafletElement.fitBounds([
+        [boundingbox[0], boundingbox[2]],
+        [boundingbox[1], boundingbox[3]]
+      ]);
+    }
+  }
   _handleNavClick = map => ev => {
     ev.preventDefault();
     this.setState({ map });
@@ -197,16 +212,18 @@ export default class MapPage extends Component {
   };
   render() {
     const { map, adding } = this.state;
+    console.log(this.props.campaign);
     return (
       <Container>
         <MapNav attached={!map}>
           <span className="nav-content">
             <a
               href="javascript:void(0);"
-              className={!map ? "active" : ""}
-              onClick={this._handleNavClick(false)}
+              // className={!map ? "active" : ""}
+              className="disabled"
+              // onClick={this._handleNavClick(false)}
             >
-              Audiência de território
+              Audiência de território (em breve)
             </a>
             <a
               href="javascript:void(0);"

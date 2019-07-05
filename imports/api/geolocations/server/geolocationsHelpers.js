@@ -1,4 +1,5 @@
 import simplifyGeojson, { simplify } from "simplify-geojson";
+import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import axios from "axios";
 
 const GeolocationsHelpers = {
@@ -9,7 +10,6 @@ const GeolocationsHelpers = {
     } catch (e) {
       throw new Meteor.Error(e);
     }
-    console.log(res);
     return res.data;
   },
   getFacebookCountryByCode({ countryCode, accessToken }) {
@@ -19,11 +19,13 @@ const GeolocationsHelpers = {
       match_country_code: true
     })[0];
   },
-  findFacebookFromNominatim({ data, regionType, accessToken }) {
+  findFacebookFromNominatim({ data, regionType, defaultQuery, accessToken }) {
     let res;
+    defaultQuery = defaultQuery || {};
     let query = {
       type: "adgeolocation",
-      access_token: accessToken
+      access_token: accessToken,
+      ...defaultQuery
     };
     switch (regionType) {
       case "country":
@@ -49,17 +51,21 @@ const GeolocationsHelpers = {
           country_code: data.address.country_code,
           q: data.namedetails.name
         };
-        const region = this.facebookSearch({
-          ...query,
-          location_types: ["region"],
-          country_code: data.address.country_code,
-          q: data.address.state
-        });
-        if (region && region.length) {
-          cityQuery["region_id"] = region[0].key;
+        if (!defaultQuery.region_id) {
+          const region = this.facebookSearch({
+            ...query,
+            location_types: ["region"],
+            country_code: data.address.country_code,
+            q: data.address.state
+          });
+          if (region && region.length) {
+            cityQuery["region_id"] = region[0].key;
+          }
         }
         res = this.facebookSearch(cityQuery);
-        res = res.filter(item => item.type == "city")[0];
+        res = res.filter(
+          item => item.type == "city" || item.type == "subcity"
+        )[0];
         break;
     }
     return res;
@@ -116,7 +122,55 @@ const GeolocationsHelpers = {
       throw new Meteor.Error(500, error.data);
     }
   },
-  discoverAndStore({ osm_id, osm_type, accessToken }) {},
+  discoverAndStore({ osm_id, osm_type, type, accessToken }) {
+    const localData = Geolocations.findOne({ "osm.osm_id": osm_id });
+
+    // Return if data already exists
+    if (localData) return localData._id;
+
+    const osm = this.getOSM({ osm_id, osm_type, withPolygon: true });
+    let defaultQuery = {};
+    if (type == "city") {
+      const osmStateRes = this.nominatimSearch({
+        state: osm.address.state,
+        country: osm.address.country
+      });
+      if (osmStateRes && osmStateRes.length) {
+        const osmState = osmStateRes[0];
+        const fbState = this.findFacebookFromNominatim({
+          accessToken,
+          data: osmState,
+          regionType: "state"
+        });
+        if (fbState) {
+          defaultQuery = { region_id: fbState.key };
+        }
+      }
+    }
+    const fbData = this.findFacebookFromNominatim({
+      accessToken,
+      defaultQuery,
+      data: osm,
+      regionType: type
+    });
+
+    let doc = {
+      name: osm.namedetails.name,
+      type: "location",
+      regionType: type,
+      osm
+    };
+    if (fbData) {
+      doc.facebook = [fbData];
+    }
+
+    const parsed = this.parse(doc);
+    const res = Geolocations.upsert(
+      { "osm.osm_id": osm.osm_id },
+      { $set: parsed }
+    );
+    return res.insertedId;
+  },
   parse(geolocation) {
     if (geolocation.osm && geolocation.osm.lat) {
       geolocation.center = [geolocation.osm.lat, geolocation.osm.lon];

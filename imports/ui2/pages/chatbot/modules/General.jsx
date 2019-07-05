@@ -21,15 +21,11 @@ export default class ChatbotGeneralSettings extends Component {
   }
   static getDerivedStateFromProps(props, state) {
     if (JSON.stringify(state.formData) != JSON.stringify(props.chatbot)) {
-      console.log("changing");
       return {
         formData: props.chatbot
       };
     }
     return null;
-  }
-  componentDidUpdate() {
-    console.log(this.state.formData);
   }
   _handleActivationClick = ev => {
     ev.preventDefault();
@@ -172,7 +168,7 @@ export default class ChatbotGeneralSettings extends Component {
               onChange={this._handleChange}
             />
           </Form.Field>
-          <label>
+          {/* <label>
             <input
               type="checkbox"
               name="text_response"
@@ -181,7 +177,7 @@ export default class ChatbotGeneralSettings extends Component {
               onChange={this._handleChange}
             />{" "}
             Ativar em mensagem inicial
-          </label>
+          </label> */}
         </Form.Content>
         <Form.Actions>
           <input
