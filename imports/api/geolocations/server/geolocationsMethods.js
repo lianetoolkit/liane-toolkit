@@ -248,10 +248,11 @@ export const matchFromOSM = new ValidatedMethod({
         regionType,
         accessToken: user.services.facebook.accessToken
       });
-      console.log(facebookData);
-      return facebookData;
+      // return facebookData;
     }
 
-    return localData;
+    return true;
+
+    // return localData;
   }
 });

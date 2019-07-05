@@ -116,6 +116,7 @@ const GeolocationsHelpers = {
       throw new Meteor.Error(500, error.data);
     }
   },
+  discoverAndStore({ osm_id, osm_type, accessToken }) {},
   parse(geolocation) {
     if (geolocation.osm && geolocation.osm.lat) {
       geolocation.center = [geolocation.osm.lat, geolocation.osm.lon];
