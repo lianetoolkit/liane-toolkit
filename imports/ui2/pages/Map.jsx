@@ -212,7 +212,6 @@ export default class MapPage extends Component {
   };
   render() {
     const { map, adding } = this.state;
-    console.log(this.props.campaign);
     return (
       <Container>
         <MapNav attached={!map}>
