@@ -79,9 +79,9 @@ export default class NewCampaignPage extends Component {
               onChange={this._handleChange}
             />
           </Form.Field>
-          {/* {formData.country ? (
+          {formData.country ? (
             <GeolocationSelect country={formData.country} />
-          ) : null} */}
+          ) : null}
           <p>Selecione a conta de Facebook utilizada por sua campanha</p>
           <SelectAccount
             name="facebookAccountId"

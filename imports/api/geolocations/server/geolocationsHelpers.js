@@ -9,6 +9,7 @@ const GeolocationsHelpers = {
     } catch (e) {
       throw new Meteor.Error(e);
     }
+    console.log(res);
     return res.data;
   },
   getFacebookCountryByCode({ countryCode, accessToken }) {
@@ -21,6 +22,7 @@ const GeolocationsHelpers = {
   findFacebookFromNominatim({ data, regionType, accessToken }) {
     let res;
     let query = {
+      type: "adgeolocation",
       access_token: accessToken
     };
     switch (regionType) {
@@ -32,19 +34,20 @@ const GeolocationsHelpers = {
           match_country_code: true
         });
         break;
-      case "region":
+      case "state":
         res = this.facebookSearch({
           ...query,
           location_types: ["region"],
           country_code: data.address.country_code,
-          q: data.address.state
+          q: data.namedetails.name
         })[0];
+        break;
       case "city":
         let cityQuery = {
           ...query,
           location_types: ["city"],
           country_code: data.address.country_code,
-          q: data.address.city
+          q: data.namedetails.name
         };
         const region = this.facebookSearch({
           ...query,
@@ -57,7 +60,9 @@ const GeolocationsHelpers = {
         }
         res = this.facebookSearch(cityQuery);
         res = res.filter(item => item.type == "city")[0];
+        break;
     }
+    return res;
   },
   nominatimSearch(query) {
     const api = "http://nominatim.openstreetmap.org/search";
@@ -66,6 +71,7 @@ const GeolocationsHelpers = {
         params: {
           format: "json",
           addressdetails: 1,
+          namedetails: 1,
           ...query
         }
       })
@@ -82,22 +88,21 @@ const GeolocationsHelpers = {
         return "W";
     }
   },
-  getOSM({ osm_id, osm_type }) {
+  getOSM({ osm_id, osm_type, withPolygon }) {
     const api = "http://nominatim.openstreetmap.org/reverse";
+    let params = {
+      osm_type: this._parseOSMType(osm_type),
+      osm_id: osm_id,
+      format: "json",
+      addressdetails: 1,
+      extratags: 1,
+      namedetails: 1
+    };
+    if (withPolygon) {
+      params["polygon_geojson"] = 1;
+    }
     try {
-      let res = Promise.await(
-        axios.get(api, {
-          params: {
-            osm_type: this._parseOSMType(osm_type),
-            osm_id: osm_id,
-            format: "json",
-            addressdetails: 1,
-            polygon_geojson: 1,
-            extratags: 1,
-            namedetails: 1
-          }
-        })
-      );
+      let res = Promise.await(axios.get(api, { params }));
       if (res.data.geojson && res.data.geojson.coordinates) {
         res.data.geojson = simplifyGeojson(
           { type: "Feature", geometry: res.data.geojson },

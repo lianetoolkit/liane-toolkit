@@ -208,10 +208,50 @@ export const searchNominatim = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    if (!Roles.userIsInRole(userId, ["admin"])) {
-      throw new Meteor.Error(403, "Access denied");
-    }
+    // if (!Roles.userIsInRole(userId, ["admin"])) {
+    //   throw new Meteor.Error(403, "Access denied");
+    // }
 
     return GeolocationsHelpers.nominatimSearch(query);
+  }
+});
+
+export const matchFromOSM = new ValidatedMethod({
+  name: "geolocations.matchFromOSM",
+  validate: new SimpleSchema({
+    id: {
+      type: Number
+    },
+    type: {
+      type: String
+    },
+    regionType: {
+      type: String
+    }
+  }).validator(),
+  run({ id, type, regionType }) {
+    this.unblock();
+    logger.debug("geolocations.matchFromOSM called", { id, type, regionType });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const localData = Geolocations.findOne({ "osm.osm_id": id });
+
+    if (!localData) {
+      const user = Meteor.users.findOne(userId);
+      const osm = GeolocationsHelpers.getOSM({ osm_id: id, osm_type: type });
+      const facebookData = GeolocationsHelpers.findFacebookFromNominatim({
+        data: osm,
+        regionType,
+        accessToken: user.services.facebook.accessToken
+      });
+      console.log(facebookData);
+      return facebookData;
+    }
+
+    return localData;
   }
 });

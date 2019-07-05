@@ -72,7 +72,7 @@ Campaigns.schema = new SimpleSchema({
     optional: true,
     index: 1
   },
-  regionId: {
+  geolocationId: {
     type: String,
     optional: true,
     index: 1

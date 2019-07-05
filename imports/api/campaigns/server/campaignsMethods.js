@@ -8,6 +8,7 @@ import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { Jobs } from "/imports/api/jobs/jobs.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { AdAccountsHelpers } from "/imports/api/facebook/adAccounts/server/adAccountsHelpers.js";
+import { GeolocationsHelpers } from "/imports/api/geolocations/server/geolocationsHelpers.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 import _ from "underscore";
 
@@ -70,14 +71,25 @@ export const campaignsCreate = new ValidatedMethod({
     country: {
       type: String
     },
+    geolocation: {
+      type: Object,
+      optional: true
+    },
+    "geolocation.osm_id": {
+      type: Number
+    },
+    "geolocation.osm_type": {
+      type: String
+    },
     facebookAccountId: {
       type: String
     }
   }).validator(),
-  run({ name, country, facebookAccountId }) {
+  run({ name, country, geolocation, facebookAccountId }) {
     logger.debug("campaigns.create called", {
       name,
       country,
+      place,
       facebookAccountId
     });
 
@@ -96,6 +108,13 @@ export const campaignsCreate = new ValidatedMethod({
         "This account is already being used by another campaign"
       );
     }
+
+    let geolocationId = false;
+    if (geolocation) {
+      geolocationId = GeolocationsHelpers.discoverAndStore(geolocation);
+    }
+
+    throw new Meteor.Error(400, "Test");
 
     const users = [{ userId, role: "owner" }];
     let insertDoc = { users, name, country };
