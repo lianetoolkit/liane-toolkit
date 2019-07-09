@@ -1,15 +1,20 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
-import L from "leaflet";
-import "leaflet.utfgrid";
+import { get } from "lodash";
 import {
   Map,
   Marker,
   Popup,
   TileLayer,
   LayerGroup,
+  FeatureGroup,
+  Circle,
   GeoJSON
 } from "react-leaflet";
+import L from "leaflet";
+import "leaflet.utfgrid";
+// import EditControl from "../components/EditControl";
+import { EditControl } from "react-leaflet-draw";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Page from "../components/Page.jsx";
@@ -200,6 +205,13 @@ export default class MapPage extends Component {
       ]);
     }
   }
+  _getCenter() {
+    const { campaign } = this.props;
+    return [
+      get(campaign, "geolocation.osm.lat") || 0,
+      get(campaign, "geolocation.osm.lon") || 0
+    ];
+  }
   _handleNavClick = map => ev => {
     ev.preventDefault();
     this.setState({ map });
@@ -240,6 +252,13 @@ export default class MapPage extends Component {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               />
+              <FeatureGroup>
+                <EditControl
+                  position="bottomright"
+                  draw={{ rectangle: false }}
+                />
+                <Circle center={this._getCenter()} radius={200} />
+              </FeatureGroup>
               {/* {layers.map(layer => (
               <TileLayer key={layer._id} url={layer.tilelayer} />
             ))}
