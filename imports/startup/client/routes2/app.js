@@ -6,10 +6,10 @@ import { pick } from "lodash";
 import App from "/imports/ui2/containers/App.jsx";
 
 import DashboardPage from "/imports/ui2/pages/Dashboard.jsx";
-import MapPage from "/imports/ui2/pages/Map.jsx";
 import PeoplePage from "/imports/ui2/pages/People.jsx";
 import AuthPage from "/imports/ui2/pages/Auth.jsx";
 
+import MapPage from "/imports/ui2/containers/MapPage.jsx";
 import FAQPage from "/imports/ui2/containers/FAQPage.jsx";
 import CommentsPage from "/imports/ui2/containers/CommentsPage.jsx";
 import AdsetPage from "/imports/ui2/pages/Adset.jsx";

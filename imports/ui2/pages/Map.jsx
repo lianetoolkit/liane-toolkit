@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
-import { get } from "lodash";
+import { get, omit } from "lodash";
 import {
   Map,
   Marker,
@@ -13,12 +13,16 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet.utfgrid";
-// import EditControl from "../components/EditControl";
-import { EditControl } from "react-leaflet-draw";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { alertStore } from "../containers/Alerts.jsx";
+
+import EditControl from "../components/EditControl.jsx";
+import Loading from "../components/Loading.jsx";
 import Page from "../components/Page.jsx";
+import Form from "../components/Form.jsx";
 import Button from "../components/Button.jsx";
+import ColorSelector from "../components/ColorSelector.jsx";
 
 const imagePath = "/";
 L.Icon.Default.imagePath = imagePath;
@@ -39,6 +43,59 @@ const Container = styled.div`
     width: 100%;
     height: 100%;
     z-index: 1;
+  }
+  .feature {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    top: 10%;
+    background: #fff;
+    border-radius: 7px 0 0 7px;
+    padding: 1rem 2rem 1rem 1rem;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
+    .close {
+      position: absolute;
+      top: 1rem;
+      right: 0.6rem;
+      color: #333;
+      font-size: 0.8em;
+    }
+    .actions {
+      font-size: 0.8em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      .delete {
+        display: block;
+        font-size: 0.8em;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+      }
+      input[type="submit"] {
+        display: block;
+      }
+    }
+  }
+  .hover-feature {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 7px;
+    font-size: 0.8em;
+    h3 {
+      margin: 0;
+    }
+    p {
+      margin: 0;
+    }
+    .color {
+      display: block;
+      float: right;
+      border-radius: 100%;
+      width: 10px;
+      height: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
   }
 `;
 
@@ -191,11 +248,13 @@ export default class MapPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
+      formData: {},
       map: true
     };
   }
   componentDidMount() {
-    const { campaign } = this.props;
+    const { campaign, mapFeatures } = this.props;
     if (campaign.geolocation) {
       const { map } = this.refs;
       const { boundingbox } = campaign.geolocation.osm;
@@ -203,6 +262,25 @@ export default class MapPage extends Component {
         [boundingbox[0], boundingbox[2]],
         [boundingbox[1], boundingbox[3]]
       ]);
+    }
+    if (mapFeatures && mapFeatures.length) {
+      // Wait for ref
+      setTimeout(() => {
+        this._renderFeatures();
+      }, 200);
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
+    const { mapFeatures } = this.props;
+    const { formData, featureId } = this.state;
+    if (JSON.stringify(mapFeatures) != JSON.stringify(prevProps.mapFeatures)) {
+      this._renderFeatures();
+    }
+    if (prevState.featureId && featureId != prevState.featureId) {
+      this._renderFeatures();
+    }
+    if (formData.color && prevState.formData.color != formData.color) {
+      this._updateFeatureStyle();
     }
   }
   _getCenter() {
@@ -212,20 +290,185 @@ export default class MapPage extends Component {
       get(campaign, "geolocation.osm.lon") || 0
     ];
   }
+  _handleMount = drawControl => {};
   _handleNavClick = map => ev => {
     ev.preventDefault();
     this.setState({ map });
   };
-  _handleAddToMapClick = ev => {
-    ev.preventDefault();
-    this.setState({
-      adding: true
+  getType = type => {
+    switch (type) {
+      case "Point":
+        return "point";
+      case "LineString":
+        return "line";
+      case "Polygon":
+        return "polygon";
+    }
+  };
+  _handleFeatureCreate = ev => {
+    const { campaign } = this.props;
+    const geojson = ev.layer.toGeoJSON();
+    this.setState({ loading: true });
+    Meteor.call(
+      "mapFeatures.create",
+      {
+        campaignId: campaign._id,
+        type: this.getType(geojson.geometry.type),
+        geometry: geojson.geometry
+      },
+      (err, res) => {
+        this.setState({ loading: false });
+        if (err) {
+          alertStore.add(err);
+        } else {
+          this.setState({
+            featureId: res,
+            formData: {}
+          });
+        }
+      }
+    );
+    return false;
+  };
+  _handleFeatureEdit = ev => {
+    ev.layers.eachLayer(layer => {
+      const id = get(layer, "feature.properties._id");
+      if (id) {
+        this.setState({ loading: true });
+        Meteor.call(
+          "mapFeatures.update",
+          {
+            id,
+            geometry: layer.toGeoJSON().geometry
+          },
+          (err, res) => {
+            this.setState({ loading: false });
+            if (err) {
+              alertStore.add(err);
+            }
+          }
+        );
+      }
     });
   };
+  _handleRemoveClick = () => {
+    const { featureId } = this.state;
+    if (confirm("Tem certeza?")) {
+      Meteor.call("mapFeatures.remove", { id: featureId }, (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          this.setState({
+            featureId: false,
+            formData: {}
+          });
+        }
+      });
+    }
+  };
+  _handleCloseClick = () => {
+    this.setState({
+      featureId: false,
+      formData: {}
+    });
+  };
+  _handleSubmit = ev => {
+    ev.preventDefault();
+    const { formData, featureId } = this.state;
+    Meteor.call(
+      "mapFeatures.update",
+      { ...formData, id: featureId },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        }
+      }
+    );
+  };
+  _renderFeatures = () => {
+    const { mapFeatures } = this.props;
+    if (this.refs.featureGroup) {
+      const layerGroup = this.refs.featureGroup.leafletElement;
+      layerGroup.clearLayers();
+      const geojson = new L.GeoJSON({
+        type: "FeatureCollection",
+        features: mapFeatures.map(feature => {
+          return {
+            type: "Feature",
+            properties: omit(feature, "geometry"),
+            geometry: feature.geometry
+          };
+        })
+      });
+      geojson.eachLayer(layer => {
+        const properties = layer.feature.properties;
+        if (properties.color) {
+          if ("setStyle" in layer) {
+            layer.setStyle({ color: properties.color });
+          }
+        }
+        if (properties.title || properties.description) {
+          layer.on("mouseover", () => {
+            this.setState({
+              hoveringFeatureId: properties._id
+            });
+          });
+          layer.on("mouseout", () => {
+            this.setState({
+              hoveringFeatureId: false
+            });
+          });
+        }
+        layer.on("click", () => {
+          this.setState({
+            featureId: properties._id,
+            formData: {}
+          });
+        });
+        layerGroup.addLayer(layer);
+      });
+    }
+  };
+  _handleFeatureChange = ({ target }) => {
+    this.setState({
+      formData: {
+        ...this.state.formData,
+        [target.name]: target.value
+      }
+    });
+  };
+  _updateFeatureStyle = () => {
+    const { featureId } = this.state;
+    this.refs.featureGroup.leafletElement.eachLayer(layer => {
+      if (layer.feature.properties._id == featureId) {
+        if ("setStyle" in layer) {
+          layer.setStyle({ color: this.getFeatureValue("color") });
+        }
+      }
+    });
+  };
+  getFeatureValue = fieldName => {
+    const { mapFeatures } = this.props;
+    const { formData, featureId } = this.state;
+    if (featureId) {
+      const feature = mapFeatures.find(f => f._id == featureId);
+      return get(formData, fieldName) || get(feature, fieldName) || "";
+    }
+  };
   render() {
-    const { map, adding } = this.state;
+    const { mapFeatures } = this.props;
+    const { loading, map, featureId, hoveringFeatureId } = this.state;
+    let feature = false;
+    if (featureId) {
+      feature = mapFeatures.find(f => f._id == featureId);
+    }
+    let hoveringFeature = false;
+    if (hoveringFeatureId) {
+      hoveringFeature = mapFeatures.find(f => f._id == hoveringFeatureId);
+    }
     return (
       <Container>
+        {loading ? <Loading full /> : null}
         <MapNav attached={!map}>
           <span className="nav-content">
             <a
@@ -252,12 +495,20 @@ export default class MapPage extends Component {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               />
-              <FeatureGroup>
+              <FeatureGroup ref="featureGroup">
                 <EditControl
                   position="bottomright"
-                  draw={{ rectangle: false }}
+                  onMounted={this._handleMount}
+                  onEdited={this._handleFeatureEdit}
+                  onCreated={this._handleFeatureCreate}
+                  draw={{
+                    rectangle: false,
+                    circle: false,
+                    circlemarker: false
+                  }}
+                  edit={{ remove: false }}
+                  addOnCreate={false}
                 />
-                <Circle center={this._getCenter()} radius={200} />
               </FeatureGroup>
               {/* {layers.map(layer => (
               <TileLayer key={layer._id} url={layer.tilelayer} />
@@ -265,6 +516,24 @@ export default class MapPage extends Component {
             {children} */}
             </Map>
             <Tools>
+              {hoveringFeature ? (
+                <Tool>
+                  <div className="hover-feature">
+                    {hoveringFeature.color ? (
+                      <span
+                        className="color"
+                        style={{ backgroundColor: hoveringFeature.color }}
+                      />
+                    ) : null}
+                    {hoveringFeature.title ? (
+                      <h3>{hoveringFeature.title}</h3>
+                    ) : null}
+                    {hoveringFeature.description ? (
+                      <p>{hoveringFeature.description}</p>
+                    ) : null}
+                  </div>
+                </Tool>
+              ) : null}
               <Tool>
                 <LayerFilter>
                   <li>
@@ -285,7 +554,7 @@ export default class MapPage extends Component {
                       </span>
                     </span>
                   </li>
-                  <li className="disabled">
+                  {/* <li className="disabled">
                     <FontAwesomeIcon icon="globe" />
                     <span>
                       Datapedia
@@ -293,24 +562,58 @@ export default class MapPage extends Component {
                         Dados de eleições passadas em parceria com Datapedia
                       </span>
                     </span>
-                  </li>
+                  </li> */}
                 </LayerFilter>
               </Tool>
-              <Tool transparent>
-                <Button
-                  href="javascript:void(0);"
-                  onClick={this._handleAddToMapClick}
-                >
+              {/* <Tool transparent>
+                <Button href="javascript:void(0);">
                   <span className="icon">
                     <FontAwesomeIcon icon="map-marked" />
                   </span>
                   <span className="label">Adicionar ao mapa</span>
                 </Button>
-                {adding ? (
-                  <input type="text" placeholder="Buscar localização..." />
-                ) : null}
-              </Tool>
+              </Tool> */}
             </Tools>
+            {feature ? (
+              <div className="feature">
+                <a
+                  href="javascript:void(0);"
+                  className="close"
+                  onClick={this._handleCloseClick}
+                >
+                  <FontAwesomeIcon icon="times" />
+                </a>
+                <Form onSubmit={this._handleSubmit}>
+                  <input
+                    type="text"
+                    placeholder="Título"
+                    name="title"
+                    value={this.getFeatureValue("title")}
+                    onChange={this._handleFeatureChange}
+                  />
+                  <textarea
+                    placeholder="Descrição"
+                    name="description"
+                    value={this.getFeatureValue("description")}
+                    onChange={this._handleFeatureChange}
+                  />
+                  <ColorSelector
+                    name="color"
+                    value={this.getFeatureValue("color")}
+                    onChange={this._handleFeatureChange}
+                  />
+                  <div className="actions">
+                    <a
+                      className="button delete"
+                      onClick={this._handleRemoveClick}
+                    >
+                      Remover
+                    </a>
+                    <input type="submit" value="Salvar alterações" />
+                  </div>
+                </Form>
+              </div>
+            ) : null}
           </>
         ) : null}
       </Container>

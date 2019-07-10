@@ -55,13 +55,16 @@ import "/imports/api/facebook/ads/server/adsMethods.js";
 import "/imports/api/geolocations/server/geolocationsMethods.js";
 import "/imports/api/geolocations/server/geolocationsPublications.js";
 
-
 // facebook accounts
 import "/imports/api/facebook/accounts/server/accountsMethods.js";
 
-// geolocations
+// map layers
 import "/imports/api/mapLayers/server/mapLayersMethods.js";
 import "/imports/api/mapLayers/server/mapLayersPublications.js";
+
+// map features
+import "/imports/api/mapFeatures/server/mapFeaturesMethods.js";
+import "/imports/api/mapFeatures/server/mapFeaturesPublications.js";
 
 // jobs
 import "/imports/api/jobs/server/jobs.js";

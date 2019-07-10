@@ -1,25 +1,23 @@
-import { PropTypes } from 'prop-types';
-import Draw from 'leaflet-draw'; // eslint-disable-line
-import isEqual from 'lodash/isEqual';
+import { PropTypes } from "prop-types";
+import Draw from "leaflet-draw"; // eslint-disable-line
+import { isEqual } from "lodash";
 
-import { MapControl, withLeaflet } from 'react-leaflet';
-import leaflet, { Map, Control } from 'leaflet';
-
-console.log(withLeaflet);
+import { MapControl, withLeaflet } from "react-leaflet";
+import leaflet, { Map, Control } from "leaflet";
 
 const eventHandlers = {
-  onEdited: 'draw:edited',
-  onDrawStart: 'draw:drawstart',
-  onDrawStop: 'draw:drawstop',
-  onDrawVertex: 'draw:drawvertex',
-  onEditStart: 'draw:editstart',
-  onEditMove: 'draw:editmove',
-  onEditResize: 'draw:editresize',
-  onEditVertex: 'draw:editvertex',
-  onEditStop: 'draw:editstop',
-  onDeleted: 'draw:deleted',
-  onDeleteStart: 'draw:deletestart',
-  onDeleteStop: 'draw:deletestop',
+  onEdited: "draw:edited",
+  onDrawStart: "draw:drawstart",
+  onDrawStop: "draw:drawstop",
+  onDrawVertex: "draw:drawvertex",
+  onEditStart: "draw:editstart",
+  onEditMove: "draw:editmove",
+  onEditResize: "draw:editresize",
+  onEditVertex: "draw:editvertex",
+  onEditStop: "draw:editstop",
+  onDeleted: "draw:deleted",
+  onDeleteStart: "draw:deletestart",
+  onDeleteStop: "draw:deletestop"
 };
 
 class EditControl extends MapControl {
@@ -35,19 +33,19 @@ class EditControl extends MapControl {
       polygon: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
       rectangle: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
       circle: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-      marker: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
+      marker: PropTypes.oneOfType([PropTypes.object, PropTypes.bool])
     }),
     edit: PropTypes.shape({
       edit: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
       remove: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
       poly: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-      allowIntersection: PropTypes.bool,
+      allowIntersection: PropTypes.bool
     }),
     position: PropTypes.oneOf([
-      'topright',
-      'topleft',
-      'bottomright',
-      'bottomleft'
+      "topright",
+      "topleft",
+      "bottomright",
+      "bottomleft"
     ]),
     leaflet: PropTypes.shape({
       map: PropTypes.instanceOf(Map),
@@ -55,18 +53,25 @@ class EditControl extends MapControl {
         addLayer: PropTypes.func.isRequired,
         removeLayer: PropTypes.func.isRequired
       })
-    })
+    }),
+    addOnCreate: PropTypes.bool
+  };
+
+  static defaultProps = {
+    addOnCreate: true
   };
 
   createLeafletElement(props) {
     return createDrawElement(props);
   }
 
-  onDrawCreate = (e) => {
-    const { onCreated } = this.props;
+  onDrawCreate = e => {
+    const { onCreated, addOnCreate } = this.props;
     const { layerContainer } = this.props.leaflet;
 
-    layerContainer.addLayer(e.layer);
+    if (addOnCreate) {
+      layerContainer.addLayer(e.layer);
+    }
     onCreated && onCreated(e);
   };
 
@@ -103,7 +108,10 @@ class EditControl extends MapControl {
     // super updates positions if thats all that changed so call this first
     super.componentDidUpdate(prevProps);
 
-    if (isEqual(this.props.draw, prevProps.draw) || this.props.position !== prevProps.position) {
+    if (
+      isEqual(this.props.draw, prevProps.draw) ||
+      this.props.position !== prevProps.position
+    ) {
       return false;
     }
 

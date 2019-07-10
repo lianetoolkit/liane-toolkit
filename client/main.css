@@ -1,4 +1,4 @@
-/* colors
+delete/* colors
  * red #cc0000
  * purple #6633cc
  * orange #ff6600
@@ -139,6 +139,19 @@ input[type="submit"] {
 button.delete,
 input[type="submit"].delete {
   background-color: #cc0000;
+}
+
+.button.delete:hover,
+.button.delete:active,
+.button.delete:focus,
+button.delete:hover,
+button.delete:active,
+button.delete:focus,
+input[type="submit"].delete:hover,
+input[type="submit"].delete:active,
+input[type="submit"].delete:focus {
+  color: #fff;
+  background-color: #333;
 }
 
 input[type="submit"]:hover,
