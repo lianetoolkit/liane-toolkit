@@ -3,13 +3,12 @@ import styled, { css } from "styled-components";
 
 const Container = styled.div`
   display: flex;
-  .color {
-  }
+  justify-content: space-between;
 `;
 
 const Color = styled.a`
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   border-radius: 4px;
   margin-right: 0.5rem;
   box-sizing: border-box;
@@ -17,6 +16,9 @@ const Color = styled.a`
   &:hover,
   &:active {
     border-width: 2px;
+  }
+  &:last-child {
+    margin-right: 0;
   }
   ${props =>
     props.active &&
@@ -27,7 +29,15 @@ const Color = styled.a`
 
 export default class ColorSelector extends Component {
   static defaultProps = {
-    colors: ["#cc0000", "#6633cc", "#ff6600", "#003399", "#ffcc00", "#006633"]
+    colors: [
+      "#cc0000",
+      "#6633cc",
+      "#ff6600",
+      "#003399",
+      "#ffcc00",
+      "#006633",
+      "#999999"
+    ]
   };
   _handleClick = color => ev => {
     ev.preventDefault();
