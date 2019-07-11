@@ -26,9 +26,8 @@ const FacebookAccountsHelpers = {
             "feed",
             "messages",
             "message_deliveries",
-            "messaging_postbacks",
-            "message_deliveries",
             "message_reads",
+            "messaging_postbacks",
             "ratings",
             "mention"
           ],

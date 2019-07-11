@@ -3,6 +3,7 @@ import { FacebookAccounts } from "../accounts.js";
 import { FacebookAccountsHelpers } from "./accountsHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
 import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
 import { CommentsHelpers } from "/imports/api/facebook/comments/server/commentsHelpers.js";
 import { EntriesHelpers } from "/imports/api/facebook/entries/server/entriesHelpers.js";
@@ -142,6 +143,10 @@ export const updateFBSubscription = new ValidatedMethod({
 
     const facebookAccountId = campaign.facebookAccount.facebookId;
     const token = campaign.facebookAccount.accessToken;
+
+    CampaignsHelpers.refreshCampaignAccountsTokens({
+      campaignId
+    });
 
     FacebookAccountsHelpers.updateFBSubscription({ facebookAccountId, token });
   }
