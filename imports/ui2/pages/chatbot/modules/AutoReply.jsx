@@ -10,6 +10,7 @@ import { alertStore } from "/imports/ui2/containers/Alerts.jsx";
 import Form from "/imports/ui2/components/Form.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
 import Loading from "/imports/ui2/components/Loading.jsx";
+import ToggleCheckbox from "/imports/ui2/components/ToggleCheckbox.jsx";
 
 import ModuleStatus from "../ModuleStatus.jsx";
 
@@ -67,7 +68,7 @@ class ReplyInput extends Component {
     if (onChange && typeof onChange == "function") {
       onChange({
         ...value,
-        [target.name]: target.value
+        [target.name]: target.type == "checkbox" ? target.checked : target.value
       });
     }
   };
@@ -124,6 +125,14 @@ class ReplyInput extends Component {
             <FontAwesomeIcon icon="times" />
           </a>
         </div>
+        <ToggleCheckbox
+          secondary
+          name="active"
+          onChange={this._handleChange}
+          checked={value.active}
+        >
+          Ativo
+        </ToggleCheckbox>
         <Form.Field label="Lista de palavras para identificar resposta">
           <CreatableSelect
             classNamePrefix="select-search"
@@ -222,7 +231,7 @@ export default class ChatbotAutoReplyModule extends Component {
     return get(formData, path);
   };
   getReplyItem = () => {
-    return { words: [], reply: "" };
+    return { words: [], reply: "", active: true };
   };
   getReplies = () => {
     const { formData } = this.state;

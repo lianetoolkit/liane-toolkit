@@ -9,6 +9,7 @@ import { alertStore } from "/imports/ui2/containers/Alerts.jsx";
 import Form from "/imports/ui2/components/Form.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
 import Loading from "/imports/ui2/components/Loading.jsx";
+import ToggleCheckbox from "/imports/ui2/components/ToggleCheckbox.jsx";
 
 import ModuleStatus from "../ModuleStatus.jsx";
 
@@ -98,17 +99,15 @@ export default class ChatbotVolunteerModule extends Component {
               campaign={campaign}
               onChange={this._handleChatbotChange}
             />
-            <label>
-              <input
-                type="checkbox"
-                name="extra_info.registration.volunteer.active"
-                checked={this.getValue(
-                  "extra_info.registration.volunteer.active"
-                )}
-                onChange={this._handleChange}
-              />{" "}
+            <ToggleCheckbox
+              name="extra_info.registration.volunteer.active"
+              checked={this.getValue(
+                "extra_info.registration.volunteer.active"
+              )}
+              onChange={this._handleChange}
+            >
               Registro de voluntários
-            </label>
+            </ToggleCheckbox>
             {this.getValue("extra_info.registration.volunteer.active") ? (
               <Form.Field
                 secondary
@@ -123,15 +122,13 @@ export default class ChatbotVolunteerModule extends Component {
                 />
               </Form.Field>
             ) : null}
-            <label>
-              <input
-                type="checkbox"
-                name="extra_info.registration.donor.active"
-                checked={this.getValue("extra_info.registration.donor.active")}
-                onChange={this._handleChange}
-              />{" "}
+            <ToggleCheckbox
+              name="extra_info.registration.donor.active"
+              checked={this.getValue("extra_info.registration.donor.active")}
+              onChange={this._handleChange}
+            >
               Registro de doadores
-            </label>
+            </ToggleCheckbox>
             {this.getValue("extra_info.registration.donor.active") ? (
               <Form.Field
                 secondary

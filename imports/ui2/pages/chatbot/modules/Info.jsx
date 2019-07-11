@@ -6,6 +6,7 @@ import { alertStore } from "/imports/ui2/containers/Alerts.jsx";
 
 import Form from "/imports/ui2/components/Form.jsx";
 import Loading from "/imports/ui2/components/Loading.jsx";
+import ToggleCheckbox from "/imports/ui2/components/ToggleCheckbox.jsx";
 
 import ModuleStatus from "../ModuleStatus.jsx";
 
@@ -99,15 +100,13 @@ export default class ChatbotInfoModule extends Component {
               value={this.getValue("extra_info.info.description")}
             />
           </Form.Field>
-          <label>
-            <input
-              type="checkbox"
-              name="extra_info.info.biography.active"
-              checked={this.getValue("extra_info.info.biography.active")}
-              onChange={this._handleChange}
-            />{" "}
+          <ToggleCheckbox
+            name="extra_info.info.biography.active"
+            checked={this.getValue("extra_info.info.biography.active")}
+            onChange={this._handleChange}
+          >
             Habilitar biografia
-          </label>
+          </ToggleCheckbox>
           {this.getValue("extra_info.info.biography.active") ? (
             <Form.Field secondary label="Biografia">
               <textarea
@@ -117,15 +116,13 @@ export default class ChatbotInfoModule extends Component {
               />
             </Form.Field>
           ) : null}
-          <label>
-            <input
-              type="checkbox"
-              name="extra_info.info.party.active"
-              onChange={this._handleChange}
-              checked={this.getValue("extra_info.info.party.active")}
-            />{" "}
+          <ToggleCheckbox
+            name="extra_info.info.party.active"
+            onChange={this._handleChange}
+            checked={this.getValue("extra_info.info.party.active")}
+          >
             Habilitar descrição do partido/grupo/coalisão
-          </label>
+          </ToggleCheckbox>
           {this.getValue("extra_info.info.party.active") ? (
             <>
               <Form.Field secondary label="Nome do partido/grupo/coalisão">
@@ -145,15 +142,13 @@ export default class ChatbotInfoModule extends Component {
               </Form.Field>
             </>
           ) : null}
-          <label>
-            <input
-              type="checkbox"
-              name="extra_info.info.more.active"
-              onChange={this._handleChange}
-              checked={this.getValue("extra_info.info.more.active")}
-            />{" "}
+          <ToggleCheckbox
+            name="extra_info.info.more.active"
+            onChange={this._handleChange}
+            checked={this.getValue("extra_info.info.more.active")}
+          >
             Habilitar "mais informações"
-          </label>
+          </ToggleCheckbox>
           {this.getValue("extra_info.info.more.active") ? (
             <Form.Field secondary label="Mais informações">
               <textarea
