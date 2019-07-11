@@ -87,13 +87,21 @@ export default class Header extends Component {
             >
               Instituto Update
             </a>
-            <a href="#">
+            <a
+              href="https://files.liane.cc/legal/terms_of_use_v1_pt-br.pdf"
+              target="_blank"
+              rel="external"
+            >
               <FormattedMessage
                 id="app.terms_of_use"
                 defaultMessage="Terms of Use"
               />
             </a>
-            <a href="#">
+            <a
+              href="https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf"
+              target="_blank"
+              rel="external"
+            >
               <FormattedMessage
                 id="app.privacy_policy"
                 defaultMessage="Privacy Policy"

@@ -218,8 +218,23 @@ export default class AuthPage extends Component {
               com Facebook
             </a>
             <p className="terms">
-              Ao conectar-se com LIANE você está de acordo com nossos termos de
-              uso e política de privacidade.
+              Ao conectar-se com LIANE você está de acordo com nossos{" "}
+              <a
+                href="https://files.liane.cc/legal/terms_of_use_v1_pt-br.pdf"
+                target="_blank"
+                rel="external"
+              >
+                termos de uso
+              </a>{" "}
+              e{" "}
+              <a
+                href="https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf"
+                target="_blank"
+                rel="external"
+              >
+                política de privacidade
+              </a>
+              .
             </p>
           </LoginFormContainer>
         </Container>
