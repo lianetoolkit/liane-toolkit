@@ -232,7 +232,11 @@ input[type="submit"]:disabled {
   border-bottom-color: rgba(0, 0, 0, 0.9);
 }
 
-/* Leaflet Draw rules*/
+/* Leaflet Draw rules */
 .sr-only {
   display: none;
+}
+
+.leaflet-editing-icon {
+  border-radius: 100%;
 }

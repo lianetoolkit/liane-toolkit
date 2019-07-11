@@ -53,6 +53,12 @@ const Container = styled.div`
     border-radius: 7px 0 0 7px;
     padding: 1rem 2rem 1rem 1rem;
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
+    width: 20%;
+    min-width: 240px;
+    input[type=text],
+    textarea {
+      width: 100%;
+    }
     .close {
       position: absolute;
       top: 1rem;
