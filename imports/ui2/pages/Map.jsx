@@ -332,6 +332,59 @@ export default class MapPage extends Component {
         return "polygon";
     }
   };
+  getGeoJSON = () => {
+    const { mapFeatures } = this.props;
+    return {
+      type: "FeatureCollection",
+      features: (mapFeatures || []).map(feature => {
+        let geojsonFeature = {
+          type: "Feature",
+          properties: omit(feature, "geometry", "campaignId"),
+          geometry: feature.geometry
+        };
+        if (feature.color) {
+          switch (feature.type) {
+            case "polygon":
+              geojsonFeature.style = {
+                fill: feature.color,
+                stroke: feature.color
+              };
+              geojsonFeature.properties.fill = feature.color;
+              geojsonFeature.properties.stroke = feature.color;
+              break;
+            case "point":
+              geojsonFeature.style = { fill: feature.color };
+              geojsonFeature.properties["marker-color"] = feature.color;
+              break;
+            case "line":
+              geojsonFeature.style = { stroke: feature.color };
+              geojsonFeature.properties.stroke = feature.color;
+              break;
+          }
+        }
+        return geojsonFeature;
+      })
+    };
+  };
+  _export = () => {
+    const { campaign } = this.props;
+    const geojson = this.getGeoJSON();
+    const text = JSON.stringify(geojson);
+    const fileName = `${campaign.name}-map.geojson`;
+    const fileType = "application/geo+json";
+    var blob = new Blob([text], { type: fileType });
+    let a = document.createElement("a");
+    a.download = fileName;
+    a.href = URL.createObjectURL(blob);
+    a.dataset.downloadurl = [fileType, a.download, a.href].join(":");
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() {
+      URL.revokeObjectURL(a.href);
+    }, 1500);
+  };
   _handleFeatureCreate = ev => {
     const { campaign } = this.props;
     const geojson = ev.layer.toGeoJSON();
@@ -413,20 +466,10 @@ export default class MapPage extends Component {
     );
   };
   _renderFeatures = () => {
-    const { mapFeatures } = this.props;
     if (this.refs.featureGroup) {
       const layerGroup = this.refs.featureGroup.leafletElement;
       layerGroup.clearLayers();
-      const geojson = new L.GeoJSON({
-        type: "FeatureCollection",
-        features: mapFeatures.map(feature => {
-          return {
-            type: "Feature",
-            properties: omit(feature, "geometry"),
-            geometry: feature.geometry
-          };
-        })
-      });
+      const geojson = new L.GeoJSON(this.getGeoJSON());
       geojson.eachLayer(layer => {
         const properties = layer.feature.properties;
         if (properties.type == "point") {
@@ -600,14 +643,16 @@ export default class MapPage extends Component {
                   </li> */}
                 </LayerFilter>
               </Tool>
-              {/* <Tool transparent>
-                <Button href="javascript:void(0);">
-                  <span className="icon">
-                    <FontAwesomeIcon icon="map-marked" />
-                  </span>
-                  <span className="label">Adicionar ao mapa</span>
-                </Button>
-              </Tool> */}
+              {mapFeatures.length ? (
+                <Tool transparent>
+                  <Button href="javascript:void(0);" onClick={this._export}>
+                    <span className="icon">
+                      <FontAwesomeIcon icon="map-marked" />
+                    </span>
+                    <span className="label">Exportar marcações</span>
+                  </Button>
+                </Tool>
+              ) : null}
             </Tools>
             {feature ? (
               <div className="feature">

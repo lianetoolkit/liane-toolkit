@@ -1,6 +1,6 @@
 import SimpleSchema from "simpl-schema";
 
-const MapFeatures = new Mongo.Collection("mapFeatures");
+const MapFeatures = new Mongo.Collection("map_features");
 
 MapFeatures.schema = new SimpleSchema({
   campaignId: {
@@ -34,10 +34,10 @@ MapFeatures.schema = new SimpleSchema({
     maxCount: 200
   },
   "geometry.coordinates.$": {
-    type: SimpleSchema.oneOf({ type: Array, maxCount: 200 }, Number)
+    type: SimpleSchema.oneOf(Number, { type: Array, maxCount: 200 })
   },
   "geometry.coordinates.$.$": {
-    type: SimpleSchema.oneOf({ type: Array, maxCount: 2 }, Number)
+    type: SimpleSchema.oneOf(Number, { type: Array, maxCount: 2 })
   },
   "geometry.coordinates.$.$.$": {
     type: Number
