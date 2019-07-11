@@ -27,9 +27,12 @@ import ColorSelector from "../components/ColorSelector.jsx";
 const imagePath = "/";
 L.Icon.Default.imagePath = imagePath;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "images/map/marker-icon-2x.png",
-  iconUrl: "images/map/marker-icon.png",
-  shadowUrl: "images/map/marker-shadow.png"
+  iconRetinaUrl: "images/map-marker.svg",
+  iconUrl: "images/map-marker.svg",
+  iconSize: [20, 27],
+  iconAnchor: [10, 26],
+  popupAnchor: [0, -10],
+  shadowUrl: ""
 });
 
 const Container = styled.div`
@@ -43,6 +46,13 @@ const Container = styled.div`
     width: 100%;
     height: 100%;
     z-index: 1;
+    background: #fff;
+    .campaign-marker-icon {
+      svg {
+        width: 100%;
+        height: auto;
+      }
+    }
   }
   .feature {
     position: absolute;
@@ -55,7 +65,7 @@ const Container = styled.div`
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
     width: 20%;
     min-width: 240px;
-    input[type=text],
+    input[type="text"],
     textarea {
       width: 100%;
     }
@@ -251,6 +261,17 @@ const LayerFilter = styled.ul`
 `;
 
 export default class MapPage extends Component {
+  static icon = (props = {}) => {
+    const marker = `<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="map-marker" class="svg-inline--fa fa-map-marker fa-w-12" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="${props.color ||
+      "#000"}" d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0z"></path></svg>`;
+    return L.divIcon({
+      html: marker,
+      iconSize: [20, 27],
+      iconAnchor: [10, 26],
+      popupAnchor: [0, -10],
+      className: "campaign-marker-icon"
+    });
+  };
   constructor(props) {
     super(props);
     this.state = {
@@ -408,6 +429,9 @@ export default class MapPage extends Component {
       });
       geojson.eachLayer(layer => {
         const properties = layer.feature.properties;
+        if (properties.type == "point") {
+          layer.setIcon(MapPage.icon(properties));
+        }
         if (properties.color) {
           if ("setStyle" in layer) {
             layer.setStyle({ color: properties.color });
@@ -449,6 +473,10 @@ export default class MapPage extends Component {
       if (layer.feature.properties._id == featureId) {
         if ("setStyle" in layer) {
           layer.setStyle({ color: this.getFeatureValue("color") });
+        } else if (layer._icon) {
+          layer._icon
+            .querySelectorAll("path")[0]
+            .setAttribute("fill", this.getFeatureValue("color"));
         }
       }
     });
@@ -500,6 +528,7 @@ export default class MapPage extends Component {
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                opacity={0.75}
               />
               <FeatureGroup ref="featureGroup">
                 <EditControl
