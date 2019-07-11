@@ -4,7 +4,7 @@ const { CampaignsHelpers } = require("./campaignsHelpers.js");
 const CampaignsJobs = {
   "campaigns.healthCheck": {
     run({ job }) {
-      logger.debug("campaigns.healtCheck job: called");
+      logger.debug("campaigns.healthCheck job: called");
       check(job && job.data && job.data.campaignId, String);
 
       const campaignId = job.data.campaignId;
