@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { CountryRegionData } from "react-country-region-selector";
 import Select from "react-select";
 
-export default class CountrySelect extends Component {
+export default class RegionSelect extends Component {
   _handleChange = selected => {
     const { name, onChange } = this.props;
     if (onChange && typeof onChange == "function") {
@@ -10,12 +10,22 @@ export default class CountrySelect extends Component {
     }
   };
   _getOptions = () => {
-    return CountryRegionData.map(c => {
-      return {
-        value: c[1],
-        label: c[0]
-      };
-    });
+    const { country } = this.props;
+    const countryIdx = CountryRegionData.findIndex(
+      c => c[0] == country || c[1] == country
+    );
+    let options = [];
+    if (countryIdx) {
+      const regions = CountryRegionData[countryIdx][2].split("|");
+      options = regions.map(region => {
+        const splitted = region.split("~");
+        return {
+          value: splitted[1],
+          label: splitted[0]
+        };
+      });
+    }
+    return options;
   };
   _getValue = () => {
     const { value } = this.props;
@@ -28,7 +38,7 @@ export default class CountrySelect extends Component {
         classNamePrefix="select-search"
         cacheOptions
         isSearchable={true}
-        placeholder="Selecione um país..."
+        placeholder="Selecione uma região..."
         options={this._getOptions()}
         onChange={this._handleChange}
         name={name}

@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
 import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
+import CountrySelect from "./CountrySelect.jsx";
+import RegionSelect from "./RegionSelect.jsx";
 import Form from "./Form.jsx";
 
 const Container = styled.div``;
@@ -118,14 +120,11 @@ export default class AddressField extends Component {
       <Container>
         <Group>
           <Form.Field label="País">
-            <CountryDropdown
+            <CountrySelect
               label="País"
-              defaultOptionLabel="Selecione um país"
               value={formData.country || country}
-              valueType="short"
-              onChange={value => {
-                this._handleChange({ target: { name: "country", value } });
-              }}
+              name="country"
+              onChange={this._handleChange}
             />
           </Form.Field>
           {formData.country || country ? (
@@ -144,17 +143,11 @@ export default class AddressField extends Component {
           <>
             <Group secondary>
               <Form.Field label="Região">
-                <RegionDropdown
+                <RegionSelect
                   country={formData.country || country}
-                  defaultOptionLabel="Selecione uma região"
-                  countryValueType="short"
-                  valueType="short"
-                  label="Estado"
                   name="region"
+                  onChange={this._handleChange}
                   value={formData.region}
-                  onChange={value => {
-                    this._handleChange({ target: { name: "region", value } });
-                  }}
                 />
               </Form.Field>
               <Form.Field label="Cidade">

@@ -17,6 +17,9 @@ const Container = styled.div`
     margin: -2rem -2rem 2rem -2rem;
     padding: 1rem 0 0;
   }
+  input[type=submit] {
+    margin-top: 1rem;
+  }
 `;
 
 export default class PersonEdit extends Component {
