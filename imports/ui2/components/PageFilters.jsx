@@ -57,6 +57,12 @@ const Container = styled.div`
       font-size: 0.8em;
       color: #999;
     }
+    .chart {
+      width: auto;
+      margin-bottom: -0.7rem;
+      margin-left: -1rem;
+      margin-right: -1rem;
+    }
   }
   h4 {
     margin: 0 0 0.5rem;

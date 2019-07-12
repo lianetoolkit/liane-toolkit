@@ -19,6 +19,7 @@ import Papa from "papaparse";
 import fs from "fs";
 import crypto from "crypto";
 import mkdirp from "mkdirp";
+import redisClient from "/imports/startup/server/redis";
 
 const recaptchaSecret = Meteor.settings.recaptcha;
 
@@ -275,6 +276,65 @@ export const peopleSearchCount = new ValidatedMethod({
   }
 });
 
+export const peopleHistory = new ValidatedMethod({
+  name: "people.history",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId }) {
+    this.unblock();
+    logger.debug("people.history called", { campaignId });
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    const oneDay = 24 * 60 * 60 * 1000;
+
+    // Loop starts a day after campaign creation
+    let fromDate = new Date(campaign.createdAt);
+    fromDate.setDate(fromDate.getDate() + 1);
+
+    // Loop ends yesterday
+    let toDate = new Date();
+    toDate.setDate(toDate.getDate() - 1);
+
+    const diffDays = Math.ceil(
+      Math.abs((fromDate.getTime() - toDate.getTime()) / oneDay)
+    );
+
+    const redisKey = `people.history.${campaignId}`;
+
+    let history = redisClient.getSync(redisKey);
+    history = history ? JSON.parse(history) : [];
+
+    let total = 0;
+
+    if (diffDays <= 4) {
+      return { total, history };
+    }
+
+    for (let d = fromDate; d <= toDate; d.setDate(d.getDate() + 1)) {
+      const formattedDate = moment(d).format("YYYY-MM-DD");
+      if (!history.hasOwnProperty(formattedDate)) {
+        history[formattedDate] = People.find({
+          createdAt: {
+            $gte: moment(formattedDate).toDate(),
+            $lte: moment(formattedDate)
+              .add(1, "day")
+              .toDate()
+          }
+        }).count();
+        total += history[formattedDate];
+      }
+    }
+
+    redisClient.setSync(redisKey, JSON.stringify(history));
+
+    return { total, history };
+  }
+});
+
 export const peopleSummaryCounts = new ValidatedMethod({
   name: "people.summaryCounts",
   validate: new SimpleSchema({
@@ -450,7 +510,6 @@ export const peopleReplyComment = new ValidatedMethod({
       });
       comment.entry = Entries.findOne(comment.entryId);
     }
-
 
     return {
       comment,

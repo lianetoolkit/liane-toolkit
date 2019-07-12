@@ -17,6 +17,7 @@ import Content from "../components/Content.jsx";
 import PageFilters from "../components/PageFilters.jsx";
 import PagePaging from "../components/PagePaging.jsx";
 import PeopleTable from "../components/PeopleTable.jsx";
+import PeopleHistoryChart from "../components/PeopleHistoryChart.jsx";
 
 import TagFilter from "../components/TagFilter.jsx";
 import PersonMetaButtons from "../components/PersonMetaButtons.jsx";
@@ -85,6 +86,7 @@ export default class PeoplePage extends Component {
         skip: 0
       })
     });
+    this.fetchHistory();
   }
   componentDidUpdate(prevProps, prevState, snapshot) {
     const { query, options } = this.state;
@@ -170,6 +172,18 @@ export default class PeoplePage extends Component {
       });
     }
   }, 200);
+  fetchHistory = () => {
+    const { campaignId } = this.props;
+    Meteor.call("people.history", { campaignId }, (err, res) => {
+      if (err) {
+        alertStore.add(err);
+      } else {
+        this.setState({
+          peopleHistory: res
+        });
+      }
+    });
+  };
   _handlePrev = () => {
     const { options } = this.state;
     if (options.skip > 0) {
@@ -250,11 +264,12 @@ export default class PeoplePage extends Component {
       }
     });
   };
-  _handleDateChange = type => value => {
+  _handleDateChange = ({ max, min }) => {
     this.setState({
       query: {
         ...this.state.query,
-        [`creation_${type}`]: value ? value.format("YYYY-MM-DD") : null
+        creation_from: min ? moment(min).format("YYYY-MM-DD") : null,
+        creation_to: max ? moment(max).format("YYYY-MM-DD") : null
       },
       options: {
         ...this.state.options,
@@ -273,15 +288,7 @@ export default class PeoplePage extends Component {
   _getDateValue = key => {
     const { campaign } = this.props;
     const { query } = this.state;
-    let defaultDate;
-    switch (key) {
-      case "creation_from":
-        defaultDate = campaign.createdAt;
-        break;
-      default:
-        defaultDate = new Date();
-    }
-    return moment(query[key] || defaultDate);
+    return query[key] ? moment(query[key]).toDate() : null;
   };
   categoriesOptions = () => {
     let options = [];
@@ -334,7 +341,8 @@ export default class PeoplePage extends Component {
       expanded,
       skip,
       count,
-      loadingCount
+      loadingCount,
+      peopleHistory
     } = this.state;
     return (
       <>
@@ -434,64 +442,38 @@ export default class PeoplePage extends Component {
                     </span>
                   </span>
                 </label>
-                <More text="Mais opções">
-                  <div className="from-to-input">
-                    <h4>Data de inserção na base</h4>
-                    <div className="input">
-                      <div className="from">
-                        <DatePicker
-                          name="creation_from"
-                          selectsStart
-                          selected={this._getDateValue("creation_from")}
-                          startDate={this._getDateValue("creation_from")}
-                          endDate={this._getDateValue("creation_to")}
-                          placeholderText="Data"
-                          onChange={this._handleDateChange("from")}
-                          minDate={new Date(campaign.createdAt)}
-                          maxDate={new Date()}
-                          isClearable={true}
-                        />
-                      </div>
-                      <span className="between">até</span>
-                      <div className="to">
-                        <DatePicker
-                          name="creation_to"
-                          selectsEnd
-                          selected={this._getDateValue("creation_to")}
-                          startDate={this._getDateValue("creation_from")}
-                          endDate={this._getDateValue("creation_to")}
-                          placeholderText="Data"
-                          onChange={this._handleDateChange("to")}
-                          minDate={new Date(campaign.createdAt)}
-                          maxDate={new Date()}
-                          isClearable={true}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="reaction-count-input">
-                    <h4>Quantidade de reações</h4>
-                    <div className="input">
-                      <span>ao menos</span>
-                      <span>
-                        <input
-                          type="number"
-                          placeholder="Quantidade"
-                          name="reaction_count"
-                          value={query.reaction_count}
-                          onChange={this._handleFormChange}
-                        />
-                      </span>
-                    </div>
-                    <Reaction.Filter
-                      showAny
-                      size="tiny"
-                      name="reaction_type"
-                      value={query.reaction_type}
-                      onChange={this._handleReactionFilterChange}
+                {peopleHistory && peopleHistory.total ? (
+                  <label>
+                    <PeopleHistoryChart
+                      data={peopleHistory}
+                      onChange={this._handleDateChange}
+                      min={this._getDateValue("creation_from")}
+                      max={this._getDateValue("creation_to")}
                     />
+                  </label>
+                ) : null}
+                <div className="reaction-count-input">
+                  <h4>Filtrar por quantidade de reações</h4>
+                  <div className="input">
+                    <span>ao menos</span>
+                    <span>
+                      <input
+                        type="number"
+                        placeholder="Quantidade"
+                        name="reaction_count"
+                        value={query.reaction_count}
+                        onChange={this._handleFormChange}
+                      />
+                    </span>
                   </div>
-                </More>
+                  <Reaction.Filter
+                    showAny
+                    size="tiny"
+                    name="reaction_type"
+                    value={query.reaction_type}
+                    onChange={this._handleReactionFilterChange}
+                  />
+                </div>
               </form>
             </div>
             <div className="actions">
