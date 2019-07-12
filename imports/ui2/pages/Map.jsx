@@ -12,7 +12,6 @@ import {
   GeoJSON
 } from "react-leaflet";
 import L from "leaflet";
-import "leaflet.utfgrid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { alertStore } from "../containers/Alerts.jsx";
