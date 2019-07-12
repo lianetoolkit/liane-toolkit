@@ -269,7 +269,8 @@ export default class PeoplePage extends Component {
       query: {
         ...this.state.query,
         creation_from: min ? moment(min).format("YYYY-MM-DD") : null,
-        creation_to: max ? moment(max).format("YYYY-MM-DD") : null
+        creation_to: max ? moment(max).format("YYYY-MM-DD") : null,
+        source: min || max ? "facebook" : null
       },
       options: {
         ...this.state.options,

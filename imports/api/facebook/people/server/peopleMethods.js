@@ -287,6 +287,11 @@ export const peopleHistory = new ValidatedMethod({
     this.unblock();
     logger.debug("people.history called", { campaignId });
 
+    const userId = Meteor.userId();
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
     const campaign = Campaigns.findOne(campaignId);
 
     const oneDay = 24 * 60 * 60 * 1000;
@@ -305,8 +310,8 @@ export const peopleHistory = new ValidatedMethod({
 
     const redisKey = `people.history.${campaignId}`;
 
-    let history = redisClient.getSync(redisKey);
-    history = history ? JSON.parse(history) : [];
+    let history;
+    history = history ? JSON.parse(history) : {};
 
     let total = 0;
 
@@ -317,7 +322,9 @@ export const peopleHistory = new ValidatedMethod({
     for (let d = fromDate; d <= toDate; d.setDate(d.getDate() + 1)) {
       const formattedDate = moment(d).format("YYYY-MM-DD");
       if (!history.hasOwnProperty(formattedDate)) {
-        history[formattedDate] = People.find({
+        const amount = People.find({
+          campaignId,
+          source: "facebook",
           createdAt: {
             $gte: moment(formattedDate).toDate(),
             $lte: moment(formattedDate)
@@ -325,11 +332,23 @@ export const peopleHistory = new ValidatedMethod({
               .toDate()
           }
         }).count();
-        total += history[formattedDate];
+        history[formattedDate] = People.find({
+          campaignId,
+          source: "facebook",
+          createdAt: {
+            $gte: moment(formattedDate).toDate(),
+            $lte: moment(formattedDate)
+              .add(1, "day")
+              .toDate()
+          }
+        }).count();
+        total += amount;
       }
     }
 
     redisClient.setSync(redisKey, JSON.stringify(history));
+
+    console.log({ total, history });
 
     return { total, history };
   }

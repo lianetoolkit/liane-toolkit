@@ -120,7 +120,7 @@ export default function PeopleHistoryChart(props) {
         </p>
       ) : (
         <p>
-          Recém-chegados na sua página.{" "}
+          Recém-chegados na sua página{" "}
           <span className="tip">Selecione o gráfico para filtrar:</span>
         </p>
       )}
