@@ -7,6 +7,8 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import { pick, debounce, defaultsDeep } from "lodash";
 
+import { alertStore } from "../containers/Alerts.jsx"
+
 import PeopleExport from "../components/PeopleExport.jsx";
 import { PersonImportButton } from "../components/PersonImport.jsx";
 import Button from "../components/Button.jsx";
