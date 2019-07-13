@@ -200,8 +200,7 @@ export default class AuthPage extends Component {
         <Container>
           <HighlightContainer>
             <h2>
-              Caixa de ferramentas para campanhas eleitorais de baixo custo e
-              alta intensidade
+              Tecnologia para Inovação Política
             </h2>
             <ButtonGroup>
               <a href="#">Como Funciona</a>
