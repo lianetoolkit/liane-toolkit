@@ -342,13 +342,11 @@ export const peopleHistory = new ValidatedMethod({
               .toDate()
           }
         }).count();
-        total += amount;
       }
+      total += history[formattedDate];
     }
 
     redisClient.setSync(redisKey, JSON.stringify(history));
-
-    console.log({ total, history });
 
     return { total, history };
   }
