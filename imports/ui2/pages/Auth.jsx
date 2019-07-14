@@ -6,10 +6,18 @@ import Page from "../components/Page.jsx";
 
 const Container = styled.div`
   flex: 1 1 100%;
+  .support-text {
+    color: #999;
+    padding: 0 2rem 1rem;
+    margin: 0 0 1rem;
+    text-align: center;
+    font-size: 0.8em;
+    border-bottom: 1px solid #eee;
+  }
 `;
 
 const HighlightContainer = styled.div`
-  padding: 6rem 0;
+  padding: 6rem 0 4rem;
   position: relative;
   border-bottom: 1px solid #666;
   display: flex;
@@ -71,8 +79,8 @@ const ButtonGroup = styled.nav`
 `;
 
 const LoginFormContainer = styled.form`
-  max-width: 500px;
-  margin: -3rem auto 6rem;
+  max-width: 400px;
+  margin: -3rem auto 4rem;
   ${"" /* background: #fff;
   padding: 4rem;
   border-radius: 1rem;
@@ -154,12 +162,127 @@ const LoginFormContainer = styled.form`
     }
   }
   .terms {
-    margin-top: 2rem;
-    font-size: 0.9em;
-    color: #666;
+    margin-top: 1rem;
+    font-size: 0.8em;
+    color: #999;
     text-align: center;
   }
 `;
+
+const Intro = styled.section`
+  max-width: 960px;
+  margin: 6rem auto 6rem;
+  padding: 0 2rem;
+  .first {
+    max-width: 750px;
+    display: flex;
+    align-items: center;
+    .intro-text {
+      flex: 1 1 100%;
+      color: #333;
+      line-height: 1.5;
+      p:first-child {
+        font-size: 1.3em;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+      }
+    }
+    .features {
+      flex: 1 1.5 100%;
+    }
+  }
+`;
+
+const Features = styled.section`
+  background: #333;
+  color: #fff;
+  margin: 0 0 2rem;
+  padding: 4rem 0;
+  div {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+  }
+  h2 {
+    flex: 1 1 auto;
+    text-align: right;
+    border-right: 2px solid #444;
+    padding: 1rem 2rem 0 0;
+    margin: 0 1rem 0 0;
+    line-height: 1.5;
+    color: #ffcc00;
+  }
+  ul {
+    flex: 1 1 auto;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 7px;
+    display: flex;
+    flex-wrap: wrap;
+    font-family: "Unica One", monospace;
+    font-weight: normal;
+    align-items: center;
+    font-size: 1.3em;
+    letter-spacing: 0.1rem;
+    li {
+      flex: 1 1 40%;
+      margin: 0;
+      padding: 1rem;
+      &:last-child {
+        border-bottom: 0;
+      }
+      .extra {
+        color: #666;
+        display: block;
+        font-size: 0.6em;
+        font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        letter-spacing: 0;
+        background: #393939;
+        border-radius: 7px;
+        padding: 0.2rem 0.3rem;
+        text-align: center;
+        line-height: 1.2;
+      }
+    }
+  }
+`;
+
+const Organization = styled.section`
+  max-width: 960px;
+  margin: 0 auto 4rem;
+  padding: 0 2rem;
+  > div {
+    margin: 0 -1rem;
+    display: flex;
+    > div {
+      margin: 0 1rem;
+    }
+  }
+`;
+
+const FeatureItemContainer = styled.li`
+  display: flex;
+  align-items: center;
+  .icon {
+    margin-right: 2rem;
+    font-size: 0.7em;
+    color: #ff6600;
+  }
+`;
+
+function FeatureItem(props) {
+  return (
+    <FeatureItemContainer>
+      <span className="icon">
+        <FontAwesomeIcon icon="star" />
+      </span>
+      {props.children}
+    </FeatureItemContainer>
+  );
+}
 
 export default class AuthPage extends Component {
   _facebookAuth = () => ev => {
@@ -199,13 +322,11 @@ export default class AuthPage extends Component {
       <Page>
         <Container>
           <HighlightContainer>
-            <h2>
-              Tecnologia para Inovação Política
-            </h2>
-            <ButtonGroup>
+            <h2>Tecnologia para Inovação Política</h2>
+            {/* <ButtonGroup>
               <a href="#">Como Funciona</a>
               <a href="#">#NãoValeTudo</a>
-            </ButtonGroup>
+            </ButtonGroup> */}
           </HighlightContainer>
           <LoginFormContainer>
             {/* <h3>Acesse sua conta</h3> */}
@@ -217,7 +338,8 @@ export default class AuthPage extends Component {
               com Facebook
             </a>
             <p className="terms">
-              Ao conectar-se com LIANE você está de acordo com nossos{" "}
+              Ao conectar-se com LIANE você está de acordo com nossos
+              <br />
               <a
                 href="https://files.liane.cc/legal/terms_of_use_v1_pt-br.pdf"
                 target="_blank"
@@ -236,6 +358,69 @@ export default class AuthPage extends Component {
               .
             </p>
           </LoginFormContainer>
+          <Intro>
+            <div className="first">
+              <div className="intro-text">
+                <p>
+                  Liane é um conjunto de tecnologias e soluções, abertas e
+                  gratuitas, desenvolvidas pelo Instituto Update para
+                  impulsionar campanhas políticas inovadoras e de baixo
+                  orçamento na América Latina.
+                </p>
+                <p>
+                  Oferece acesso a ferramentas poderosas que potencializam
+                  campanhas que buscam a inovação política, ou seja, que
+                  desenvolvem práticas para aproximar cidadãos da política,
+                  combater desigualdades e fortalecer a democracia.
+                </p>
+              </div>
+            </div>
+          </Intro>
+          <Features>
+            <div>
+              {/* <h2>Funcionalidades</h2> */}
+              <ul>
+                <FeatureItem>Canvas eleitoral para planejamento</FeatureItem>
+                <FeatureItem>Gestão de relacionamento e contatos</FeatureItem>
+                <FeatureItem>Gestão de voluntários e doadores</FeatureItem>
+                <FeatureItem>Gestão de conversas por Facebook</FeatureItem>
+                <FeatureItem>Mapeamento de ações no território</FeatureItem>
+                <FeatureItem>
+                  Análise de audiências do Facebook
+                  <span className="extra">em breve</span>
+                </FeatureItem>
+              </ul>
+            </div>
+          </Features>
+          <p className="support-text">
+            Precisa de ajuda ou gostaria de reportar um problema? Escreva para{" "}
+            <a href="mailto:contato@liane.cc">contato@liane.cc</a> e fale com
+            nossa equipe.
+          </p>
+          <Organization>
+            <div>
+              <div>
+                <h2>Instituto Update</h2>
+                <p>
+                  O Instituto Update é uma organização da sociedade civil sem
+                  fins lucrativos que fomenta a inovação política na América
+                  Latina. Desenvolve projetos de inteligência e tecnologias
+                  cívicas com o objetivo de aproximar cidadãos da política
+                  institucional e fortalecer a democracia a partir da visão de
+                  renovação política centrada na diversidade e combate às
+                  desigualdades.
+                </p>
+              </div>
+              <div>
+                <h2>Quem foi Liane</h2>
+                <p>
+                  O nome é uma homenagem à Liane Lira, amiga e ativista que
+                  faleceu em 2015 e dedicou sua vida a processos de mobilização,
+                  fortalecimento da democracia e transparência política.
+                </p>
+              </div>
+            </div>
+          </Organization>
         </Container>
       </Page>
     );
