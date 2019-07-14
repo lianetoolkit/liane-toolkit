@@ -26,6 +26,30 @@ const _fetchFacebookPageData = ({ url }) => {
   return response;
 };
 
+const commentsFields = [
+  "id",
+  "from",
+  "message",
+  "attachment",
+  "message_tags",
+  "created_time",
+  "can_comment",
+  "can_hide",
+  "can_remove",
+  // "can_reply_privately",
+  "is_hidden",
+  "is_private",
+  "comment_count",
+  "reactions.limit(0).summary(true).as(reaction)",
+  "reactions.type(LIKE).limit(0).summary(true).as(like)",
+  "reactions.type(LOVE).limit(0).summary(true).as(love)",
+  "reactions.type(WOW).limit(0).summary(true).as(wow)",
+  "reactions.type(HAHA).limit(0).summary(true).as(haha)",
+  "reactions.type(SAD).limit(0).summary(true).as(sad)",
+  "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
+  "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
+]
+
 const CommentsHelpers = {
   handleWebhook({ facebookAccountId, data }) {
     switch (data.verb) {
@@ -50,29 +74,7 @@ const CommentsHelpers = {
     try {
       comment = Promise.await(
         FB.api(data.comment_id, {
-          fields: [
-            "id",
-            "from",
-            "message",
-            "attachment",
-            "message_tags",
-            "created_time",
-            "can_comment",
-            "can_hide",
-            "can_remove",
-            "can_reply_privately",
-            "is_hidden",
-            "is_private",
-            "comment_count",
-            "reactions.limit(0).summary(true).as(reaction)",
-            "reactions.type(LIKE).limit(0).summary(true).as(like)",
-            "reactions.type(LOVE).limit(0).summary(true).as(love)",
-            "reactions.type(WOW).limit(0).summary(true).as(wow)",
-            "reactions.type(HAHA).limit(0).summary(true).as(haha)",
-            "reactions.type(SAD).limit(0).summary(true).as(sad)",
-            "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
-            "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
-          ],
+          fields: commentsFields,
           access_token: campaignWithToken.facebookAccount.accessToken
         })
       );
@@ -381,29 +383,7 @@ const CommentsHelpers = {
     try {
       response = Promise.await(
         FB.api(`${commentId}/comments`, {
-          fields: [
-            "id",
-            "from",
-            "message",
-            "attachment",
-            "message_tags",
-            "created_time",
-            "can_comment",
-            "can_hide",
-            "can_remove",
-            "can_reply_privately",
-            "is_hidden",
-            "is_private",
-            "comment_count",
-            "reactions.limit(0).summary(true).as(reaction)",
-            "reactions.type(LIKE).limit(0).summary(true).as(like)",
-            "reactions.type(LOVE).limit(0).summary(true).as(love)",
-            "reactions.type(WOW).limit(0).summary(true).as(wow)",
-            "reactions.type(HAHA).limit(0).summary(true).as(haha)",
-            "reactions.type(SAD).limit(0).summary(true).as(sad)",
-            "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
-            "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
-          ],
+          fields: commentsFields,
           limit: 1000,
           access_token: accessToken
         })
@@ -521,29 +501,7 @@ const CommentsHelpers = {
     try {
       response = Promise.await(
         FB.api(`${entryId}/comments`, {
-          fields: [
-            "id",
-            "from",
-            "message",
-            "attachment",
-            "message_tags",
-            "created_time",
-            "can_comment",
-            "can_hide",
-            "can_remove",
-            "can_reply_privately",
-            "is_hidden",
-            "is_private",
-            "comment_count",
-            "reactions.limit(0).summary(true).as(reaction)",
-            "reactions.type(LIKE).limit(0).summary(true).as(like)",
-            "reactions.type(LOVE).limit(0).summary(true).as(love)",
-            "reactions.type(WOW).limit(0).summary(true).as(wow)",
-            "reactions.type(HAHA).limit(0).summary(true).as(haha)",
-            "reactions.type(SAD).limit(0).summary(true).as(sad)",
-            "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
-            "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
-          ],
+          fields: commentsFields,
           limit: 1000,
           access_token: accessToken
         })
