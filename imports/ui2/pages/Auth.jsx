@@ -8,8 +8,8 @@ const Container = styled.div`
   flex: 1 1 100%;
   .support-text {
     color: #999;
-    padding: 0 2rem 1rem;
-    margin: 0 0 1rem;
+    padding: 0 2rem 2rem;
+    margin: 0;
     text-align: center;
     font-size: 0.8em;
     border-bottom: 1px solid #eee;
@@ -231,12 +231,19 @@ const Features = styled.section`
       flex: 1 1 40%;
       margin: 0;
       padding: 1rem;
+      position: relative;
       &:last-child {
         border-bottom: 0;
       }
+      .with-extra {
+        position: relative;
+      }
       .extra {
         color: #666;
-        display: block;
+        display: inline-block;
+        position: absolute;
+        bottom: -1.25rem;
+        left: 0rem;
         font-size: 0.6em;
         font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
         letter-spacing: 0;
@@ -251,14 +258,18 @@ const Features = styled.section`
 `;
 
 const Organization = styled.section`
-  max-width: 960px;
-  margin: 0 auto 4rem;
-  padding: 0 2rem;
-  > div {
-    margin: 0 -1rem;
-    display: flex;
+  padding: 4rem 0;
+  background: #fff;
+  .org-content {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 2rem;
     > div {
-      margin: 0 1rem;
+      margin: 0 -1rem;
+      display: flex;
+      > div {
+        margin: 0 1rem;
+      }
     }
   }
 `;
@@ -386,8 +397,10 @@ export default class AuthPage extends Component {
                 <FeatureItem>Gestão de conversas por Facebook</FeatureItem>
                 <FeatureItem>Mapeamento de ações no território</FeatureItem>
                 <FeatureItem>
-                  Análise de audiências do Facebook
-                  <span className="extra">em breve</span>
+                  <span className="with-extra">
+                    <span className="extra">em breve</span>
+                    Análise de audiências do Facebook
+                  </span>
                 </FeatureItem>
               </ul>
             </div>
@@ -398,26 +411,29 @@ export default class AuthPage extends Component {
             nossa equipe.
           </p>
           <Organization>
-            <div>
+            <div className="org-content">
               <div>
-                <h2>Instituto Update</h2>
-                <p>
-                  O Instituto Update é uma organização da sociedade civil sem
-                  fins lucrativos que fomenta a inovação política na América
-                  Latina. Desenvolve projetos de inteligência e tecnologias
-                  cívicas com o objetivo de aproximar cidadãos da política
-                  institucional e fortalecer a democracia a partir da visão de
-                  renovação política centrada na diversidade e combate às
-                  desigualdades.
-                </p>
-              </div>
-              <div>
-                <h2>Quem foi Liane</h2>
-                <p>
-                  O nome é uma homenagem à Liane Lira, amiga e ativista que
-                  faleceu em 2015 e dedicou sua vida a processos de mobilização,
-                  fortalecimento da democracia e transparência política.
-                </p>
+                <div>
+                  <h2>Instituto Update</h2>
+                  <p>
+                    O Instituto Update é uma organização da sociedade civil sem
+                    fins lucrativos que fomenta a inovação política na América
+                    Latina. Desenvolve projetos de inteligência e tecnologias
+                    cívicas com o objetivo de aproximar cidadãos da política
+                    institucional e fortalecer a democracia a partir da visão de
+                    renovação política centrada na diversidade e combate às
+                    desigualdades.
+                  </p>
+                </div>
+                <div>
+                  <h2>Quem foi Liane</h2>
+                  <p>
+                    O nome é uma homenagem à Liane Lira, amiga e ativista que
+                    faleceu em 2015 e dedicou sua vida a processos de
+                    mobilização, fortalecimento da democracia e transparência
+                    política.
+                  </p>
+                </div>
               </div>
             </div>
           </Organization>
