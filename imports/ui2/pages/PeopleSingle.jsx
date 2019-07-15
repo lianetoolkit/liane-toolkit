@@ -71,6 +71,7 @@ const InformationContainer = styled.section`
     border-bottom: 1px solid #eee;
     color: #333;
     font-size: 0.9em;
+    justify-content: space-between;
     li {
       border-width: 0;
       margin: 0 2rem 1rem 0;
@@ -97,7 +98,7 @@ const InformationContainer = styled.section`
     .person-reactions-count {
       margin-right: 2rem;
       width: auto;
-      flex: 0 0 auto;
+      flex: 1 1 auto;
       justify-content: flex-start;
       margin-bottom: 1rem;
       li {
@@ -105,7 +106,7 @@ const InformationContainer = styled.section`
       }
     }
     .person-comment-count {
-      flex: 0 0 auto;
+      flex: 1 1 auto;
       margin-bottom: 1rem;
       font-size: 0.9em;
       svg {
