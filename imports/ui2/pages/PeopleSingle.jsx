@@ -1,13 +1,20 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { modalStore } from "../containers/Modal.jsx";
 
 import Page from "../components/Page.jsx";
 import Table from "../components/Table.jsx";
+import Button from "../components/Button.jsx";
 
 import PersonMetaButtons from "../components/PersonMetaButtons.jsx";
 import PersonReactions from "../components/PersonReactions.jsx";
 import PersonSummary from "../components/PersonSummary.jsx";
 import PersonInfoTable from "../components/PersonInfoTable.jsx";
+
+import PersonEdit from "../components/PersonEdit.jsx";
+import Reply from "../components/Reply.jsx";
 
 import CommentList from "../components/CommentList.jsx";
 
@@ -74,7 +81,7 @@ const InformationContainer = styled.section`
       .copy {
         font-size: 0.8em;
         svg {
-          color: #999;
+          color: #ccc;
         }
       }
       &:first-child {
@@ -82,16 +89,50 @@ const InformationContainer = styled.section`
       }
     }
   }
-  .person-reactions-count {
-    margin-bottom: 2rem;
-    justify-content: flex-start;
-    li {
+  .interactions {
+    display: flex;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    .person-reactions-count {
       margin-right: 2rem;
+      width: auto;
+      flex: 0 0 auto;
+      justify-content: flex-start;
+      margin-bottom: 1rem;
+      li {
+        margin-right: 2rem;
+      }
+    }
+    .person-comment-count {
+      flex: 0 0 auto;
+      margin-bottom: 1rem;
+      font-size: 0.9em;
+      svg {
+        margin-right: 1rem;
+        color: #999;
+      }
+      .button {
+        margin-left: 1rem;
+      }
     }
   }
 `;
 
 class Information extends Component {
+  _getComments() {
+    const { person } = this.props;
+    if (person.counts) {
+      return person.counts.comments || 0;
+    }
+    return 0;
+  }
+  _handlePrivateReplyClick = ev => {
+    const { person } = this.props;
+    ev.preventDefault();
+    modalStore.setTitle(`Enviando mensagem privada para ${person.name}`);
+    modalStore.set(<Reply personId={person._id} messageOnly={true} />);
+  };
   render() {
     const { person, tags } = this.props;
     return (
@@ -103,7 +144,21 @@ class Information extends Component {
             tags: true
           }}
         />
-        <PersonReactions person={person} />
+        <div className="interactions">
+          <PersonReactions person={person} />
+          <p className="person-comment-count">
+            <span>
+              <FontAwesomeIcon icon="comment" /> {this._getComments()}{" "}
+              comentários
+            </span>
+            {person.canReceivePrivateReply &&
+            person.canReceivePrivateReply.length ? (
+              <Button light onClick={this._handlePrivateReplyClick}>
+                Enviar mensagem privada
+              </Button>
+            ) : null}
+          </p>
+        </div>
         <PersonInfoTable person={person} />
       </InformationContainer>
     );
@@ -124,6 +179,15 @@ class Comments extends Component {
 }
 
 export default class PeopleSingle extends Component {
+  _handleEditClick = ev => {
+    const { person } = this.props;
+    ev.preventDefault();
+    modalStore.setTitle(`Editando perfil de ${person.name}`);
+    modalStore.set(
+      <PersonEdit person={person} onSuccess={this._handleEditSuccess} />
+    );
+  };
+  _handleEditSuccess = () => {};
   render() {
     const { campaignId, person, tags, comments, section } = this.props;
     if (person) {
@@ -160,7 +224,9 @@ export default class PeopleSingle extends Component {
             >
               Comentários
             </a>
-            <a href="javascript:void(0);">Editar informações</a>
+            <a href="javascript:void(0);" onClick={this._handleEditClick}>
+              Editar informações
+            </a>
           </Page.Nav>
           <div className="person-container">
             <header className="person-header">
