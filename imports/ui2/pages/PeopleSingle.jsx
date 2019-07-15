@@ -2,10 +2,12 @@ import React, { Component } from "react";
 import styled from "styled-components";
 
 import Page from "../components/Page.jsx";
+import Table from "../components/Table.jsx";
 
 import PersonMetaButtons from "../components/PersonMetaButtons.jsx";
 import PersonReactions from "../components/PersonReactions.jsx";
 import PersonSummary from "../components/PersonSummary.jsx";
+import PersonInfoTable from "../components/PersonInfoTable.jsx";
 
 import CommentList from "../components/CommentList.jsx";
 
@@ -16,6 +18,11 @@ const Container = styled.div`
     flex: 1 1 100%;
     display: flex;
     flex-direction: column;
+    .person-content {
+      flex: 1 1 100%;
+      background: #fff;
+      overflow: auto;
+    }
   }
   header.person-header {
     flex: 0 0 auto;
@@ -44,12 +51,17 @@ const Container = styled.div`
       }
     }
   }
+`;
+
+const InformationContainer = styled.section`
+  padding: 2rem;
   .person-summary {
     display: flex;
     width: 100%;
-    ${"" /* justify-content: space-between; */}
     align-items: center;
+    padding-bottom: 2rem;
     margin-bottom: 2rem;
+    border-bottom: 1px solid #eee;
     color: #333;
     font-size: 0.9em;
     li {
@@ -71,19 +83,14 @@ const Container = styled.div`
     }
   }
   .person-reactions-count {
+    padding-bottom: 2rem;
     margin-bottom: 2rem;
+    border-bottom: 1px solid #eee;
     justify-content: flex-start;
     li {
       margin-right: 2rem;
     }
   }
-`;
-
-const InformationContainer = styled.section`
-  flex: 1 1 100%;
-  padding: 2rem;
-  max-width: 700px;
-  overflow: auto;
 `;
 
 class Information extends Component {
@@ -99,15 +106,13 @@ class Information extends Component {
           }}
         />
         <PersonReactions person={person} />
+        <PersonInfoTable person={person} />
       </InformationContainer>
     );
   }
 }
 
-const CommentsContainer = styled.section`
-  flex: 1 1 100%;
-  overflow: auto;
-`;
+const CommentsContainer = styled.section``;
 
 class Comments extends Component {
   render() {
@@ -170,10 +175,12 @@ export default class PeopleSingle extends Component {
               </div>
               <PersonMetaButtons person={person} />
             </header>
-            {!section ? <Information person={person} tags={tags} /> : null}
-            {section == "comments" ? (
-              <Comments campaignId={campaignId} comments={comments} />
-            ) : null}
+            <div className="person-content">
+              {!section ? <Information person={person} tags={tags} /> : null}
+              {section == "comments" ? (
+                <Comments campaignId={campaignId} comments={comments} />
+              ) : null}
+            </div>
           </div>
         </Container>
       );

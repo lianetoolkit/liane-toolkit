@@ -27,7 +27,6 @@ const Container = styled.table`
   tbody:active {
     position: relative;
     z-index: 5;
-    background: #fff;
   }
   tbody.active {
     ${"" /* transform: scale(1.007); */}
@@ -234,6 +233,6 @@ export default class Table extends Component {
   static SortableHead = SortableHead;
   render() {
     const { children, ...props } = this.props;
-    return <Container {...props}>{children}</Container>;
+    return <Container className="table" {...props}>{children}</Container>;
   }
 }
