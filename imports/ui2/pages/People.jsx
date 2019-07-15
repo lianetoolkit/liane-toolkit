@@ -4,7 +4,6 @@ import styled, { css } from "styled-components";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
-import DatePicker from "react-datepicker";
 import { pick, debounce, defaultsDeep } from "lodash";
 
 import { alertStore } from "../containers/Alerts.jsx"

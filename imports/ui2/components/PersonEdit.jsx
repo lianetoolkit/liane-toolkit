@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import moment from "moment";
 import Select from "react-select";
+import DatePicker from "react-datepicker";
 import { get, set } from "lodash";
 
 import { alertStore } from "../containers/Alerts.jsx";
@@ -17,7 +19,7 @@ const Container = styled.div`
     margin: -2rem -2rem 2rem -2rem;
     padding: 1rem 0 0;
   }
-  input[type=submit] {
+  input[type="submit"] {
     margin-top: 1rem;
   }
 `;
@@ -153,6 +155,14 @@ export default class PersonEdit extends Component {
     }
     return null;
   }
+  getBirthdayValue() {
+    const { formData } = this.state;
+    const value = get(formData, "basic_info.birthday");
+    if (value) {
+      return moment(value);
+    }
+    return null;
+  }
   render() {
     const { person } = this.props;
     const { tab, sectionKey, formData } = this.state;
@@ -205,6 +215,23 @@ export default class PersonEdit extends Component {
                   placeholder="Nome"
                   value={formData.name}
                   onChange={this._handleChange}
+                />
+              </Form.Field>
+              <Form.Field label="Data de nascimento">
+                <DatePicker
+                  onChange={date => {
+                    this._handleChange({
+                      target: {
+                        name: "basic_info.birthday",
+                        value: date.toDate()
+                      }
+                    });
+                  }}
+                  selected={this.getBirthdayValue()}
+                  dateFormatCalendar="MMMM"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
                 />
               </Form.Field>
               <Form.Field label="Gênero">

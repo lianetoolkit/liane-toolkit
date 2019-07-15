@@ -42,6 +42,10 @@ const FieldContainer = styled.label`
   &:last-child {
     margin-bottom: 0;
   }
+  .react-datepicker-wrapper,
+  .react-datepicker__input-container {
+    display: block;
+  }
   ${props =>
     props.secondary &&
     css`

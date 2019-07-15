@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import moment from "moment";
 import { get } from "lodash";
 
 import Table from "../components/Table.jsx";
@@ -58,6 +59,12 @@ export default class PersonInfoTable extends Component {
     const data = get(person, key);
     if (!data) {
       return <span className="not-found">Informação não cadastrada</span>;
+    }
+    if (data instanceof Date) {
+      return (
+        moment(data).format("DD/MM/YYYY") +
+        ` (${moment().diff(data, "years")} anos)`
+      );
     }
     if (Array.isArray(data)) {
       return data.join(", ");
