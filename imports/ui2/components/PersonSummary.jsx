@@ -11,15 +11,13 @@ const Container = styled.ul`
   margin: 0;
   padding: 0;
   list-style: none;
+  display: flex;
+  flex-wrap: wrap;
   li {
+    flex: 1 1 auto;
     margin: 0 0 0.75rem;
-    padding: 0 0 0.75rem;
+    padding: 0 0.75rem 0.75rem 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    &:last-child {
-      margin: 0;
-      padding: 0;
-      border-bottom: 0;
-    }
     svg {
       margin-right: 1rem;
     }
@@ -80,7 +78,7 @@ export default class PersonSummary extends Component {
     } else {
       return (
         <span className="empty">
-          {defaultText || "Informação não disponível"}
+          {defaultText || "Não cadastrado"}
         </span>
       );
     }
@@ -96,6 +94,8 @@ export default class PersonSummary extends Component {
     const { person } = this.props;
     const email = this.value("contact.email");
     const phone = this.value("contact.cellphone");
+    const instagram = this.value("social_networks.instagram");
+    const twitter = this.value("social_networks.twitter");
     return (
       <>
         <Container className="person-summary">
@@ -118,6 +118,36 @@ export default class PersonSummary extends Component {
               <FontAwesomeIcon icon="phone" /> {this.text("contact.cellphone")}
               {phone ? (
                 <CopyToClipboard text={phone} className="copy">
+                  <FontAwesomeIcon
+                    icon="copy"
+                    data-tip="Copiar"
+                    data-for={`person-summary-${person._id}`}
+                  />
+                </CopyToClipboard>
+              ) : null}
+            </li>
+          ) : null}
+          {!this.shouldHide("social_networks.instagram") ? (
+            <li>
+              <FontAwesomeIcon icon={["fab", "instagram"]} />{" "}
+              {this.text("social_networks.instagram")}
+              {instagram ? (
+                <CopyToClipboard text={instagram} className="copy">
+                  <FontAwesomeIcon
+                    icon="copy"
+                    data-tip="Copiar"
+                    data-for={`person-summary-${person._id}`}
+                  />
+                </CopyToClipboard>
+              ) : null}
+            </li>
+          ) : null}
+          {!this.shouldHide("social_networks.twitter") ? (
+            <li>
+              <FontAwesomeIcon icon={["fab", "twitter"]} />{" "}
+              {this.text("social_networks.twitter")}
+              {twitter ? (
+                <CopyToClipboard text={twitter} className="copy">
                   <FontAwesomeIcon
                     icon="copy"
                     data-tip="Copiar"

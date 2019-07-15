@@ -59,14 +59,14 @@ const InformationContainer = styled.section`
     display: flex;
     width: 100%;
     align-items: center;
-    padding-bottom: 2rem;
+    padding-bottom: 1rem;
     margin-bottom: 2rem;
     border-bottom: 1px solid #eee;
     color: #333;
     font-size: 0.9em;
     li {
       border-width: 0;
-      margin: 0 2rem 0 0;
+      margin: 0 2rem 1rem 0;
       padding: 0;
       svg {
         color: #63c;
@@ -83,9 +83,7 @@ const InformationContainer = styled.section`
     }
   }
   .person-reactions-count {
-    padding-bottom: 2rem;
     margin-bottom: 2rem;
-    border-bottom: 1px solid #eee;
     justify-content: flex-start;
     li {
       margin-right: 2rem;

@@ -1,7 +1,31 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import { get } from "lodash";
 
 import Table from "../components/Table.jsx";
+
+const dataMap = [
+  {
+    label: "Nascimento",
+    data: "campaignMeta.basic_info.birthday"
+  },
+  {
+    label: "Gênero",
+    data: "campaignMeta.basic_info.gender"
+  },
+  {
+    label: "Endereço",
+    data: "location.formattedAddress"
+  },
+  {
+    label: "Habilidades",
+    data: "campaignMeta.basic_info.skills"
+  },
+  {
+    label: "Ocupação",
+    data: "campaignMeta.basic_info.occupation"
+  }
+];
 
 const Container = styled.div`
   .table {
@@ -17,19 +41,40 @@ const Container = styled.div`
         }
       }
     }
+    td {
+      color: #111;
+    }
+  }
+  .not-found {
+    font-size: 0.8em;
+    color: #999;
+    font-style: italic;
   }
 `;
 
 export default class PersonInfoTable extends Component {
+  getValue = key => {
+    const { person } = this.props;
+    const data = get(person, key);
+    if (!data) {
+      return <span className="not-found">Informação não cadastrada</span>;
+    }
+    if (Array.isArray(data)) {
+      return data.join(", ");
+    }
+    return data;
+  };
   render() {
     return (
       <Container>
         <Table>
           <tbody>
-            <tr>
-              <th>Nascimento</th>
-              <td className="fill">xx/xx/xxxx</td>
-            </tr>
+            {dataMap.map((d, i) => (
+              <tr key={i}>
+                <th>{d.label}</th>
+                <td className="fill">{this.getValue(d.data)}</td>
+              </tr>
+            ))}
           </tbody>
         </Table>
       </Container>

@@ -47,7 +47,11 @@ import {
   faEdit,
   faEye
 } from "@fortawesome/free-solid-svg-icons";
-import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
+import {
+  faFacebookSquare,
+  faInstagram,
+  faTwitter
+} from "@fortawesome/free-brands-svg-icons";
 
 library.add(faCog);
 library.add(faDownload);
@@ -95,3 +99,5 @@ library.add(faUndoAlt);
 library.add(faEdit);
 library.add(faEye);
 library.add(faFacebookSquare);
+library.add(faInstagram);
+library.add(faTwitter);
