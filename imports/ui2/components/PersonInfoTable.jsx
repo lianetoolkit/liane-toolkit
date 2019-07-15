@@ -64,7 +64,12 @@ export default class PersonInfoTable extends Component {
     }
     return data;
   };
+  getExtra = () => {
+    const { person } = this.props;
+    return get(person, "campaignMeta.extra");
+  };
   render() {
+    const extra = this.getExtra();
     return (
       <Container>
         <Table>
@@ -77,6 +82,21 @@ export default class PersonInfoTable extends Component {
             ))}
           </tbody>
         </Table>
+        {extra && extra.length ? (
+          <>
+            <h3>Informações extras</h3>
+            <Table>
+              <tbody>
+                {extra.map((item, i) => (
+                  <tr key={i}>
+                    <th>{item.key}</th>
+                    <td className="fill">{item.val}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </>
+        ) : null}
       </Container>
     );
   }
