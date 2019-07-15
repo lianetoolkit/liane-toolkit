@@ -12,6 +12,8 @@ import AuthPage from "/imports/ui2/pages/Auth.jsx";
 import MapPage from "/imports/ui2/containers/MapPage.jsx";
 import FAQPage from "/imports/ui2/containers/FAQPage.jsx";
 import CommentsPage from "/imports/ui2/containers/CommentsPage.jsx";
+import PeopleSinglePage from "/imports/ui2/containers/PeopleSinglePage.jsx";
+
 import AdsetPage from "/imports/ui2/pages/Adset.jsx";
 
 import ChatbotPage from "/imports/ui2/pages/chatbot/index.jsx";
@@ -65,6 +67,17 @@ appRoutes.route("/people", {
         "reaction_type"
       ]),
       options: pick(queryParams, ["sort", "order"])
+    });
+  }
+});
+
+appRoutes.route("/people/:personId", {
+  name: "App.people.detail",
+  action: function(params, queryParams) {
+    addTitle(`${APP_NAME} | People`);
+    return mount(App, {
+      content: { component: PeopleSinglePage },
+      personId: params.personId
     });
   }
 });

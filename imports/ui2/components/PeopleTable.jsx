@@ -422,7 +422,13 @@ export default class PeopleTable extends Component {
                   </td>
                   <td className="fill highlight">
                     <p className="extra-actions show-on-hover">
-                      <a href="javascript:void(0);">Acessar perfil</a>
+                      <a
+                        href={FlowRouter.path("App.people.detail", {
+                          personId: person._id
+                        })}
+                      >
+                        Acessar perfil
+                      </a>
                       <a
                         href="javascript:void(0);"
                         onClick={this._handleEditClick(person)}

@@ -15,7 +15,6 @@ import Button from "../components/Button.jsx";
 import More from "../components/More.jsx";
 import Page from "../components/Page.jsx";
 
-import Content from "../components/Content.jsx";
 import PageFilters from "../components/PageFilters.jsx";
 import PagePaging from "../components/PagePaging.jsx";
 import PeopleTable from "../components/PeopleTable.jsx";
