@@ -77,7 +77,8 @@ appRoutes.route("/people/:personId", {
     addTitle(`${APP_NAME} | People`);
     return mount(App, {
       content: { component: PeopleSinglePage },
-      personId: params.personId
+      personId: params.personId,
+      section: queryParams.section
     });
   }
 });

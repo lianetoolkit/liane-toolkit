@@ -50,8 +50,10 @@ const NavContainer = styled.div`
         color: #000;
       }
       &.active {
-        ${"" /* padding: 0.75rem 1rem;
-        margin: 0.25rem 0; */} color: #000;
+        ${
+          "" /* padding: 0.75rem 1rem;
+        margin: 0.25rem 0; */
+        } color: #000;
         background: #f7f7f7;
         border-radius: 7px 0 0 7px;
       }
@@ -92,6 +94,13 @@ const NavContainer = styled.div`
         max-width: 400px;
       }
     `}
+  ${props =>
+    props.padded &&
+    css`
+      .nav-content {
+        margin-top: 2rem;
+      }
+    `}
 `;
 
 const NavContent = styled.div`
@@ -103,13 +112,9 @@ const NavContent = styled.div`
 
 class Nav extends Component {
   render() {
-    const { children, plain, ...props } = this.props;
-    if (plain) {
-      return (
-        <NavContainer {...props} plain={plain}>
-          {children}
-        </NavContainer>
-      );
+    const { children, ...props } = this.props;
+    if (props.plain) {
+      return <NavContainer {...props}>{children}</NavContainer>;
     } else {
       return (
         <NavContainer {...props}>

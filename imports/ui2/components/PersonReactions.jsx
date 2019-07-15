@@ -10,12 +10,13 @@ const Container = styled.ul`
   display: flex;
   width: 100%;
   margin: 0 0 1rem;
+  justify-content: space-between;
   padding: 0;
   list-style: none;
   li {
     margin: 0;
     padding: 0;
-    flex: 1 1 100%;
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     font-weight: 600;
@@ -33,7 +34,7 @@ export default class PersonReactions extends Component {
   }
   render() {
     return (
-      <Container>
+      <Container className="person-reactions-count">
         {reactions.map(reaction => (
           <li key={reaction}>
             <Reaction reaction={reaction} /> {this.reactionVal(reaction)}

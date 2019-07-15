@@ -59,7 +59,6 @@ class NotificationsPopup extends Component {
         triggerCount={2}
         tools={
           <div>
-            <a href="javascript:void(0);">Ver tudo</a>
             <a href="javascript:void(0);">Marcar tudo como lido</a>
             <a href="javascript:void(0);">
               <FontAwesomeIcon icon="times" className="close" />

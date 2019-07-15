@@ -1,6 +1,8 @@
 import { People, PeopleLists, PeopleTags } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
+import { Comments } from "/imports/api/facebook/comments/comments.js";
+import { Entries } from "/imports/api/facebook/entries/entries.js";
 const { Jobs } = require("/imports/api/jobs/jobs.js");
 import _ from "underscore";
 
@@ -77,7 +79,7 @@ Meteor.publish("people.importJobCount", function({ campaignId }) {
   return this.ready();
 });
 
-Meteor.publish("people.detail", function({ personId }) {
+Meteor.publishComposite("people.detail", function({ personId }) {
   logger.debug("people.detail called", { personId });
 
   const userId = this.userId;
@@ -85,9 +87,48 @@ Meteor.publish("people.detail", function({ personId }) {
     const person = People.findOne(personId);
     if (person) {
       const campaign = Campaigns.findOne(person.campaignId);
+      const facebookId = campaign.facebookAccount.facebookId;
       const allowed = _.findWhere(campaign.users, { userId });
       if (allowed) {
-        return People.find({ _id: personId });
+        return {
+          find: function() {
+            return People.find({ _id: personId });
+          },
+          children: [
+            {
+              find(person) {
+                return Comments.find({ personId: person.facebookId });
+              },
+              children(parentComment) {
+                let children = [
+                  {
+                    find: function(comment) {
+                      return Entries.find({ _id: comment.entryId });
+                    }
+                  },
+                  {
+                    find: function(comment) {
+                      return Comments.find({
+                        personId: facebookId,
+                        parentId: comment._id
+                      });
+                    }
+                  }
+                ];
+                if (parentComment.parentId) {
+                  children.push({
+                    find: function(comment) {
+                      if (comment.parentId) {
+                        return Comments.find({ _id: comment.parentId });
+                      }
+                    }
+                  });
+                }
+                return children;
+              }
+            }
+          ]
+        };
       }
     }
   }
@@ -99,7 +140,7 @@ Meteor.publish("people.tags", function({ campaignId }) {
   const userId = this.userId;
   if (userId) {
     const campaign = Campaigns.findOne(campaignId);
-    if(!campaign) {
+    if (!campaign) {
       return this.ready();
     }
     const allowed = _.findWhere(campaign.users, { userId });

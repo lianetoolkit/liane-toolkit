@@ -37,15 +37,15 @@ Meteor.publishComposite("comments.byAccount", function({
           let children = [
             {
               find: function(comment) {
-                return Entries.find({ _id: comment.entryId });
-              }
-            },
-            {
-              find: function(comment) {
                 return People.find({
                   facebookId: comment.personId,
                   campaignId
                 });
+              }
+            },
+            {
+              find: function(comment) {
+                return Entries.find({ _id: comment.entryId });
               }
             },
             {
