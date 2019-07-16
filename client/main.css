@@ -139,6 +139,7 @@ input[type="submit"] {
 button.delete,
 input[type="submit"].delete {
   background-color: #cc0000;
+  color: #fff;
 }
 
 .button.delete:hover,

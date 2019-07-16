@@ -7,6 +7,7 @@ import Select from "react-select";
 import { pick, debounce, defaultsDeep } from "lodash";
 
 import { alertStore } from "../containers/Alerts.jsx";
+import { modalStore } from "../containers/Modal.jsx";
 
 import PeopleExport from "../components/PeopleExport.jsx";
 import { PersonImportButton } from "../components/PersonImport.jsx";
@@ -18,6 +19,9 @@ import PageFilters from "../components/PageFilters.jsx";
 import PagePaging from "../components/PagePaging.jsx";
 import PeopleTable from "../components/PeopleTable.jsx";
 import PeopleHistoryChart from "../components/PeopleHistoryChart.jsx";
+
+import PeopleLists from "../components/PeopleLists.jsx";
+import PeopleExports from "../components/PeopleExports.jsx";
 
 import TagFilter from "../components/TagFilter.jsx";
 import PersonMetaButtons from "../components/PersonMetaButtons.jsx";
@@ -343,7 +347,6 @@ export default class PeoplePage extends Component {
   getSourceValue = () => {
     const { lists } = this.props;
     const { query } = this.state;
-    console.log(query.source);
     if (query.source) {
       let value = {
         value: query.source,
@@ -370,8 +373,20 @@ export default class PeoplePage extends Component {
     }
     return null;
   };
+  _handleManageImportsClick = ev => {
+    const { lists } = this.props;
+    ev.preventDefault();
+    modalStore.setTitle("Gerenciar importações");
+    modalStore.set(<PeopleLists lists={lists} />);
+  };
+  _handleManageExportsClick = ev => {
+    const { peopleExports } = this.props;
+    ev.preventDefault();
+    modalStore.setTitle("Gerenciar exportações");
+    modalStore.set(<PeopleExports peopleExports={peopleExports} />);
+  };
   render() {
-    const { campaign, importCount } = this.props;
+    const { campaign, importCount, exportCount, peopleExports } = this.props;
     const {
       loading,
       people,
@@ -505,26 +520,39 @@ export default class PeoplePage extends Component {
             <div className="actions">
               <Button.Group vertical attached>
                 <Button.WithIcon>
-                  <PeopleExport query={query} options={options}>
+                  <PeopleExport
+                    query={query}
+                    options={options}
+                    running={exportCount}
+                    peopleExports={peopleExports}
+                  >
                     Exportar resultados
                   </PeopleExport>
-                  <span className="icon">
+                  <a
+                    href="javascript:void(0);"
+                    className="icon"
+                    onClick={this._handleManageExportsClick}
+                  >
                     <FontAwesomeIcon
                       icon="cog"
                       data-tip="Gerenciar exportações"
                       data-for="people-actions"
                     />
-                  </span>
+                  </a>
                 </Button.WithIcon>
                 <Button.WithIcon>
                   <PersonImportButton importCount={importCount} />
-                  <span className="icon">
+                  <a
+                    href="javascript:void(0);"
+                    className="icon"
+                    onClick={this._handleManageImportsClick}
+                  >
                     <FontAwesomeIcon
                       icon="cog"
                       data-tip="Gerenciar importações"
                       data-for="people-actions"
                     />
-                  </span>
+                  </a>
                 </Button.WithIcon>
               </Button.Group>
             </div>

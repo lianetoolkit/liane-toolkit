@@ -7,12 +7,26 @@ export default class PeopleExport extends Component {
     super(props);
     this.state = {
       loading: false,
-      url: ""
+      url: "",
+      exportCount: (props.peopleExports && props.peopleExports.length) || 0
     };
   }
+  static getDerivedStateFromProps(props, state) {
+    if (props.peopleExports && props.peopleExports.length) {
+      return {
+        exportCount: props.peopleExports.length
+      };
+    }
+    return null;
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.exportCount < this.state.exportCount) {
+      this.setState({ url: this.props.peopleExports[0].url });
+    }
+  }
   _handleClick = ev => {
-    const { loading, url } = this.state;
-    if (loading) return false;
+    const { loading, running, url } = this.state;
+    if (loading || running) return false;
     if (!url) {
       ev.preventDefault();
       const { query, options } = this.props;
@@ -25,15 +39,13 @@ export default class PeopleExport extends Component {
           this.setState({ loading: false });
           if (err) {
             alertStore.add(err);
-          } else {
-            this.setState({ url: res });
           }
         }
       );
     }
   };
   _label = () => {
-    const { children } = this.props;
+    const { children, running } = this.props;
     const { loading, url } = this.state;
     if (url) {
       return (
@@ -42,7 +54,7 @@ export default class PeopleExport extends Component {
         </>
       );
     }
-    if (loading) {
+    if (loading || running) {
       return "Gerando arquivo...";
     }
     return children || "Exportar pessoas";
@@ -51,7 +63,11 @@ export default class PeopleExport extends Component {
     const { children, ...props } = this.props;
     const { loading, url } = this.state;
     return (
-      <a href={url || "javascript:void(0);"} onClick={this._handleClick}>
+      <a
+        href={url || "javascript:void(0);"}
+        onClick={this._handleClick}
+        target="_blank"
+      >
         {this._label()}
       </a>
     );

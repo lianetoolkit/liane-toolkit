@@ -34,6 +34,9 @@ export const JobsHelpers = {
       if (jobOptions.delay != null) {
         newJob.delay(jobOptions.delay);
       }
+      if (jobOptions.after && jobOptions.after instanceof Date) {
+        newJob.after(jobOptions.after);
+      }
       if (jobOptions.repeat != null) {
         newJob.repeat({
           wait: jobOptions.repeat.wait,

@@ -4,12 +4,13 @@ import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import {
   PeopleTags,
-  PeopleLists
+  PeopleLists,
+  PeopleExports
 } from "/imports/api/facebook/people/people.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { ReactiveVar } from "meteor/reactive-var";
 import { ClientStorage } from "meteor/ostrio:cstorage";
-import { find, map } from "lodash";
+import { find, map, sortBy } from "lodash";
 
 import AppLayout from "../layouts/AppLayout.jsx";
 
@@ -66,8 +67,10 @@ export default withTracker(({ content }) => {
 
   let campaign;
   let tags = [];
+  let peopleExports = [];
   let lists = [];
   let importCount = 0;
+  let exportCount = 0;
   if (campaignId) {
     const currentCampaignOptions = {
       transform: function(campaign) {
@@ -134,6 +137,21 @@ export default withTracker(({ content }) => {
       ? Counts.get("people.importJobCount")
       : 0;
 
+    // Import job count
+    const exportCountHandle = AppSubs.subscribe("people.exportJobCount", {
+      campaignId
+    });
+    exportCount = exportCountHandle.ready()
+      ? Counts.get("people.exportJobCount")
+      : 0;
+
+    // Exports
+    const exportsHandle = AppSubs.subscribe("people.exports", { campaignId });
+    peopleExports = exportsHandle.ready()
+      ? PeopleExports.find({ campaignId }).fetch()
+      : [];
+    peopleExports = sortBy(peopleExports, item => -new Date(item.createdAt));
+
     ready.set(
       currentCampaignHandle.ready() &&
         campaignsHandle.ready() &&
@@ -157,6 +175,8 @@ export default withTracker(({ content }) => {
     tags,
     lists,
     importCount,
+    exportCount,
+    peopleExports,
     content: content,
     routeName: FlowRouter.getRouteName()
   };

@@ -3,6 +3,7 @@ import SimpleSchema from "simpl-schema";
 const People = new Mongo.Collection("people");
 const PeopleTags = new Mongo.Collection("people_tags");
 const PeopleLists = new Mongo.Collection("people_lists");
+const PeopleExports = new Mongo.Collection("people_exports");
 
 People.schema = new SimpleSchema({
   facebookId: {
@@ -156,9 +157,49 @@ PeopleLists.schema = new SimpleSchema({
   }
 });
 
+PeopleExports.schema = new SimpleSchema({
+  campaignId: {
+    type: String,
+    index: true
+  },
+  count: {
+    type: Number,
+    index: true
+  },
+  url: {
+    type: String
+  },
+  path: {
+    type: String
+  },
+  expired: {
+    type: Boolean,
+    index: true,
+    defaultValue: false
+  },
+  expiresAt: {
+    type: Date,
+    index: true
+  },
+  createdAt: {
+    type: Date,
+    index: true,
+    autoValue() {
+      if (this.isInsert) {
+        return new Date();
+      } else if (this.isUpsert) {
+        return { $setOnInsert: new Date() };
+      } else {
+        return this.unset();
+      }
+    }
+  }
+});
+
 People.attachSchema(People.schema);
 PeopleTags.attachSchema(PeopleTags.schema);
 PeopleLists.attachSchema(PeopleLists.schema);
+PeopleExports.attachSchema(PeopleExports.schema);
 
 Meteor.startup(() => {
   if (Meteor.isServer) {
@@ -224,3 +265,4 @@ Meteor.startup(() => {
 exports.People = People;
 exports.PeopleTags = PeopleTags;
 exports.PeopleLists = PeopleLists;
+exports.PeopleExports = PeopleExports;

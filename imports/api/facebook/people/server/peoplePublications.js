@@ -1,4 +1,4 @@
-import { People, PeopleLists, PeopleTags } from "../people.js";
+import { People, PeopleLists, PeopleTags, PeopleExports } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
@@ -55,11 +55,52 @@ Meteor.publish("people.search", function({ search, options }) {
   return this.ready();
 });
 
+Meteor.publish("people.exports", function({ campaignId }) {
+  this.unblock();
+  logger.debug("people.exportJobs called", { campaignId });
+  const userId = this.userId;
+  if (Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    return PeopleExports.find(
+      { campaignId },
+      {
+        fields: {
+          campaignId: 1,
+          count: 1,
+          url: 1,
+          expired: 1,
+          expiresAt: 1,
+          createdAt: 1
+        }
+      }
+    );
+  }
+  return this.ready();
+});
+
+Meteor.publish("people.exportJobCount", function({ campaignId }) {
+  this.unblock();
+  logger.debug("people.exportJobCount called", { campaignId });
+  const userId = this.userId;
+  if (Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    Counts.publish(
+      this,
+      "people.exportJobCount",
+      Jobs.find({
+        type: "people.export",
+        "data.campaignId": campaignId,
+        status: { $ne: "failed" }
+      })
+    );
+    return;
+  }
+  return this.ready();
+});
+
 Meteor.publish("people.importJobCount", function({ campaignId }) {
   this.unblock();
-  logger.debug("people.importJobs called", { campaignId });
-  const currentUser = this.userId;
-  if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
+  logger.debug("people.importJobCount called", { campaignId });
+  const userId = this.userId;
+  if (Meteor.call("campaigns.canManage", { userId, campaignId })) {
     Counts.publish(
       this,
       "people.importJobCount",
@@ -70,11 +111,6 @@ Meteor.publish("people.importJobCount", function({ campaignId }) {
       })
     );
     return;
-  }
-
-  const userId = this.userId;
-  if (userId) {
-    const campaign = Campaigns.findOne(campaignId);
   }
   return this.ready();
 });

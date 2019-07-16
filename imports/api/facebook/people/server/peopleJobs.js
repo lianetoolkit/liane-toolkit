@@ -1,4 +1,8 @@
-import { People, PeopleLists } from "/imports/api/facebook/people/people.js";
+import {
+  People,
+  PeopleLists,
+  PeopleExports
+} from "/imports/api/facebook/people/people.js";
 import { PeopleHelpers } from "./peopleHelpers.js";
 
 const PeopleJobs = {
@@ -77,14 +81,49 @@ const PeopleJobs = {
       };
     }
   },
-  "people.removeExportFile": {
+  "people.export": {
     run({ job }) {
-      logger.debug("people.removeExportFile job: called");
-      check(job && job.data && job.data.path, String);
+      logger.debug("people.export job: called");
+      check(job && job.data && job.data.campaignId, String);
+      check(job && job.data && job.data.query, Object);
+
       let errored = false;
       try {
-        PeopleHelpers.removeExportFile({
-          path: job.data.path
+        PeopleHelpers.export({
+          campaignId: job.data.campaignId,
+          query: job.data.query
+        });
+      } catch (error) {
+        errored = true;
+        return job.fail(error.message);
+      } finally {
+        if (!errored) {
+          job.done();
+          return job.remove();
+        }
+      }
+    },
+    workerOptions: {
+      concurrency: 5
+    },
+    jobOptions() {
+      return {
+        retry: {
+          retries: 2,
+          wait: 5 * 1000
+        }
+      };
+    }
+  },
+  "people.expireExport": {
+    run({ job }) {
+      logger.debug("people.expireExport job: called");
+      check(job && job.data && job.data.exportId, String);
+      check(job && job.data && job.data.expirationDate, Date);
+      let errored = false;
+      try {
+        PeopleHelpers.expireExport({
+          exportId: job.data.exportId
         });
       } catch (error) {
         errored = true;
@@ -99,9 +138,9 @@ const PeopleJobs = {
     workerOptions: {
       concurrency: 20
     },
-    jobOptions() {
+    jobOptions(job) {
       return {
-        delay: 12 * 60 * 60 * 1000, // 12 hours until file deletion
+        after: job.data.expirationDate,
         retry: {
           retries: 0,
           wait: 5 * 1000

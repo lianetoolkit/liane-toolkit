@@ -1,14 +1,21 @@
 import { Promise } from "meteor/promise";
 import axios from "axios";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
-import { People, PeopleLists } from "/imports/api/facebook/people/people.js";
+import {
+  People,
+  PeopleLists,
+  PeopleExports
+} from "/imports/api/facebook/people/people.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
 import { Random } from "meteor/random";
 import { uniqBy, groupBy, mapKeys, flatten, get, set, cloneDeep } from "lodash";
+import Papa from "papaparse";
 import crypto from "crypto";
 import fs from "fs";
+import mkdirp from "mkdirp";
+import { flattenObject } from "/imports/utils/common.js";
 
 const googleMapsKey = Meteor.settings.googleMaps;
 
@@ -215,6 +222,193 @@ const PeopleHelpers = {
       }
       peopleBulk.execute();
     }
+  },
+  export({ campaignId, query }) {
+    let header = {};
+
+    const fileKey = crypto
+      .createHash("sha1")
+      .update(campaignId + JSON.stringify(query) + new Date().getTime())
+      .digest("hex")
+      .substr(0, 7);
+
+    const batchInterval = 10000;
+
+    const totalCount = Promise.await(
+      People.rawCollection()
+        .find(query.query, {
+          ...query.options,
+          ...{
+            limit: 0,
+            fields: {
+              name: 1,
+              facebookId: 1,
+              campaignMeta: 1,
+              counts: 1
+            }
+          }
+        })
+        .count()
+    );
+
+    const batchAmount = Math.ceil(totalCount / batchInterval);
+
+    // first batch run get all headers
+    for (let i = 0; i < batchAmount; i++) {
+      const limit = batchInterval;
+      const skip = batchInterval * i;
+      Promise.await(
+        new Promise((resolve, reject) => {
+          People.rawCollection()
+            .find(query.query, {
+              ...query.options,
+              ...{
+                limit: limit,
+                skip: skip,
+                fields: {
+                  name: 1,
+                  facebookId: 1,
+                  campaignMeta: 1,
+                  counts: 1
+                }
+              }
+            })
+            .forEach(
+              person => {
+                if (person.campaignMeta) {
+                  for (let key in person.campaignMeta) {
+                    person[key] = person.campaignMeta[key];
+                  }
+                  delete person.campaignMeta;
+                }
+                const flattenedPerson = flattenObject(person);
+                for (let key in flattenedPerson) {
+                  header[key] = true;
+                }
+              },
+              err => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve();
+                }
+              }
+            );
+        })
+      );
+    }
+
+    const fileDir = `${process.env.PWD}/generated-files/${campaignId}`;
+    const fileName = `people-export-${fileKey}.csv`;
+    const filePath = `${fileDir}/${fileName}`;
+
+    header = Object.keys(header);
+
+    Promise.await(
+      new Promise((resolve, reject) => {
+        mkdirp(fileDir, err => {
+          if (err) {
+            reject(err);
+          } else {
+            fs.writeFile(filePath, header.join(",") + "\r\n", "utf-8", err => {
+              if (err) reject(err);
+              else resolve();
+            });
+          }
+        });
+      })
+    );
+
+    let writeStream = fs.createWriteStream(filePath, { flags: "a" });
+
+    // second batch run store values
+    for (let i = 0; i < batchAmount; i++) {
+      const limit = batchInterval;
+      const skip = batchInterval * i;
+      let flattened = [];
+      Promise.await(
+        new Promise((resolve, reject) => {
+          People.rawCollection()
+            .find(query.query, {
+              ...query.options,
+              ...{
+                limit,
+                skip,
+                fields: {
+                  name: 1,
+                  facebookId: 1,
+                  campaignMeta: 1,
+                  counts: 1
+                }
+              }
+            })
+            .forEach(
+              person => {
+                if (person.campaignMeta) {
+                  for (let key in person.campaignMeta) {
+                    person[key] = person.campaignMeta[key];
+                  }
+                  delete person.campaignMeta;
+                }
+                flattened.push(flattenObject(person));
+              },
+              err => {
+                if (err) {
+                  reject(err);
+                } else {
+                  writeStream.write(
+                    Papa.unparse(
+                      {
+                        fields: header,
+                        data: flattened
+                      },
+                      {
+                        header: false
+                      }
+                    ) + "\r\n",
+                    "utf-8"
+                  );
+                  resolve();
+                }
+              }
+            );
+        })
+      );
+    }
+
+    writeStream.end();
+
+    const url = Promise.await(
+      new Promise((resolve, reject) => {
+        writeStream.on("finish", () => {
+          resolve(
+            `${Meteor.settings.filesUrl || ""}/${campaignId}/${fileName}`
+          );
+        });
+      })
+    );
+
+    // Expires 12 hours from now
+    const expirationDate = new Date(Date.now() + 12 * 60 * 60 * 1000);
+
+    const exportId = PeopleExports.insert({
+      campaignId,
+      url,
+      path: filePath,
+      count: totalCount,
+      expiresAt: expirationDate
+    });
+
+    // Create job to delete export file
+    JobsHelpers.addJob({
+      jobType: "people.expireExport",
+      jobData: {
+        exportId,
+        expirationDate
+      }
+    });
+
+    return exportId;
   },
   import({ campaignId, config, filename, data, defaultValues }) {
     let importData = [];
@@ -471,12 +665,17 @@ const PeopleHelpers = {
 
     return;
   },
-  removeExportFile({ path }) {
-    return Promise.await(
+  expireExport({ exportId }) {
+    const item = PeopleExports.findOne(exportId);
+    if (!item) return;
+    // Remove file
+    Promise.await(
       new Promise((resolve, reject) => {
-        fs.unlink(path, resolve);
+        fs.unlink(item.path, resolve);
       })
     );
+    // Update doc
+    return PeopleExports.update(exportId, { $set: { expired: true } });
   }
 };
 
