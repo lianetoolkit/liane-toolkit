@@ -57,6 +57,13 @@ const PeopleContent = styled.div`
     `}
 `;
 
+const Message = styled.p`
+  margin: 0;
+  background: #24ff91;
+  padding: 0.75rem 1rem;
+  font-size: 0.8em;
+`;
+
 export default class PeoplePage extends Component {
   constructor(props) {
     super(props);
@@ -93,6 +100,7 @@ export default class PeoplePage extends Component {
     this.fetchHistory();
   }
   componentDidUpdate(prevProps, prevState, snapshot) {
+    const { importCount } = this.props;
     const { query, options } = this.state;
     if (
       JSON.stringify(query) != JSON.stringify(prevState.query) ||
@@ -100,6 +108,10 @@ export default class PeoplePage extends Component {
     ) {
       this.setLoading();
       this.fetchPeople();
+    }
+
+    if (importCount == 0 && prevProps.importCount > 0) {
+      this.setState({ imported: true });
     }
   }
   sanitizeQueryParams = (params, allowedParams = []) => {
@@ -396,7 +408,8 @@ export default class PeoplePage extends Component {
       skip,
       count,
       loadingCount,
-      peopleHistory
+      peopleHistory,
+      imported
     } = this.state;
     return (
       <>
@@ -560,6 +573,20 @@ export default class PeoplePage extends Component {
           </PageFilters>
         </Page.Nav>
         <PeopleContent loading={loading}>
+          {imported ? (
+            <Message>
+              Uma importação foi concluída,{" "}
+              <a
+                href="javascript:void(0);"
+                onClick={() => {
+                  window.location.reload();
+                }}
+              >
+                clique aqui
+              </a>{" "}
+              para atualizar a página
+            </Message>
+          ) : null}
           <PagePaging
             skip={options.skip}
             limit={options.limit}
