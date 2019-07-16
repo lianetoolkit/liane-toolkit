@@ -175,7 +175,14 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
   }
   delete query.private_reply;
 
-  if (!query.source) delete query.source;
+  if (query.source) {
+    if (/list:/.test(query.source)) {
+      query.listId = query.source.split("list:")[1];
+      delete query.source;
+    }
+  } else {
+    delete query.source;
+  }
 
   switch (query.accountFilter) {
     case "account":

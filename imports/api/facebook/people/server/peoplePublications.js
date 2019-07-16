@@ -97,7 +97,9 @@ Meteor.publishComposite("people.detail", function({ personId }) {
           children: [
             {
               find(person) {
-                return Comments.find({ personId: person.facebookId });
+                if (person.facebookId) {
+                  return Comments.find({ personId: person.facebookId });
+                }
               },
               children(parentComment) {
                 let children = [

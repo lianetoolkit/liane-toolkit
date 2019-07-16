@@ -2,7 +2,10 @@ import { Meteor } from "meteor/meteor";
 import { withTracker } from "meteor/react-meteor-data";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
-import { PeopleTags } from "/imports/api/facebook/people/people.js";
+import {
+  PeopleTags,
+  PeopleLists
+} from "/imports/api/facebook/people/people.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { ReactiveVar } from "meteor/reactive-var";
 import { ClientStorage } from "meteor/ostrio:cstorage";
@@ -63,6 +66,7 @@ export default withTracker(({ content }) => {
 
   let campaign;
   let tags = [];
+  let lists = [];
   let importCount = 0;
   if (campaignId) {
     const currentCampaignOptions = {
@@ -117,6 +121,11 @@ export default withTracker(({ content }) => {
     });
     tags = tagsHandle.ready() ? PeopleTags.find({ campaignId }).fetch() : [];
 
+    // Lists
+    if (campaign) {
+      lists = PeopleLists.find({ campaignId }).fetch();
+    }
+
     // Import job count
     const importCountHandle = AppSubs.subscribe("people.importJobCount", {
       campaignId
@@ -146,6 +155,7 @@ export default withTracker(({ content }) => {
     campaignId,
     campaign,
     tags,
+    lists,
     importCount,
     content: content,
     routeName: FlowRouter.getRouteName()

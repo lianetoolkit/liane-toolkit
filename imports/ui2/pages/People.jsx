@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import { pick, debounce, defaultsDeep } from "lodash";
 
-import { alertStore } from "../containers/Alerts.jsx"
+import { alertStore } from "../containers/Alerts.jsx";
 
 import PeopleExport from "../components/PeopleExport.jsx";
 import { PersonImportButton } from "../components/PersonImport.jsx";
@@ -309,22 +309,60 @@ export default class PeoplePage extends Component {
     }
     return null;
   };
+  getSourceOptions = () => {
+    const { lists } = this.props;
+    let options = [
+      {
+        value: "manual",
+        label: "Manual"
+      },
+      {
+        value: "facebook",
+        label: "Facebook"
+      }
+    ];
+    if (lists.length) {
+      options.push({
+        label: "Importação",
+        options: [
+          {
+            value: "import",
+            label: "Qualquer importação"
+          },
+          ...lists.map(list => {
+            return {
+              value: `list:${list._id}`,
+              label: list.name
+            };
+          })
+        ]
+      });
+    }
+    return options;
+  };
   getSourceValue = () => {
+    const { lists } = this.props;
     const { query } = this.state;
+    console.log(query.source);
     if (query.source) {
       let value = {
         value: query.source,
         label: ""
       };
-      switch (query.source) {
-        case "facebook":
+      switch (true) {
+        case /facebook/.test(query.source):
           value.label = "Facebook";
           break;
-        case "import":
-          value.label = "Importação";
+        case /import/.test(query.source):
+          value.label = "Qualquer importação";
           break;
-        case "manual":
+        case /manual/.test(query.source):
           value.label = "Manual";
+          break;
+        case /list:/.test(query.source):
+          value.label = lists.find(
+            l => l._id == query.source.split("list:")[1]
+          ).name;
           break;
         default:
       }
@@ -371,20 +409,7 @@ export default class PeoplePage extends Component {
                 />
                 <Select
                   classNamePrefix="select"
-                  options={[
-                    {
-                      value: "import",
-                      label: "Importação"
-                    },
-                    {
-                      value: "manual",
-                      label: "Manual"
-                    },
-                    {
-                      value: "facebook",
-                      label: "Facebook"
-                    }
-                  ]}
+                  options={this.getSourceOptions()}
                   isSearchable={false}
                   isClearable={true}
                   onChange={this._handleSelectChange}

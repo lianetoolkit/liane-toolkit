@@ -19,7 +19,7 @@ export default withTracker(props => {
   let comments = [];
   const person = PersonHandle.ready() ? People.findOne(personId) : null;
 
-  if (person) {
+  if (person && person.facebookId) {
     comments = Comments.find(
       { personId: person.facebookId },
       {

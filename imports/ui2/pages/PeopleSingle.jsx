@@ -207,12 +207,17 @@ export default class PeopleSingle extends Component {
     );
   };
   _getSource = () => {
-    const { person } = this.props;
+    const { person, lists } = this.props;
+    console.log(lists);
     switch (person.source) {
       case "facebook":
         return "Facebook";
       case "import":
-        return "Importação";
+        const list = lists.find(l => l._id == person.listId);
+        if (list) {
+          return list.name;
+        }
+        return "Importação desconhecida";
       default:
         return "Desconhecido";
     }
