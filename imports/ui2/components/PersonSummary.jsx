@@ -42,6 +42,9 @@ const Container = styled.ul`
 `;
 
 export default class PersonSummary extends Component {
+  componentDidUpdate() {
+    ReactTooltip.rebuild();
+  }
   value(key) {
     const { person } = this.props;
     return person.campaignMeta ? get(person.campaignMeta, key) : false;
@@ -76,11 +79,7 @@ export default class PersonSummary extends Component {
     if (value) {
       return <span>{value}</span>;
     } else {
-      return (
-        <span className="empty">
-          {defaultText || "Não cadastrado"}
-        </span>
-      );
+      return <span className="empty">{defaultText || "Não cadastrado"}</span>;
     }
   }
   tags() {

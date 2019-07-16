@@ -30,6 +30,9 @@ export default class PersonContactIcons extends Component {
       copied: false
     };
   }
+  componentDidUpdate() {
+    ReactTooltip.rebuild();
+  }
   getMeta(key) {
     const { person } = this.props;
     return person.campaignMeta && get(person.campaignMeta, key);

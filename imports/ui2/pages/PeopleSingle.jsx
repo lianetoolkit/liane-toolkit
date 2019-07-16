@@ -34,25 +34,43 @@ const Container = styled.div`
   header.person-header {
     flex: 0 0 auto;
     display: flex;
-    padding: 2rem;
+    justify-content: space-between;
+    padding: 2rem 2rem 1rem;
     border-bottom: 1px solid #ddd;
+    flex-wrap: wrap;
     .main-info {
-      flex: 1 1 100%;
+      flex: 1 1 auto;
       h1 {
         margin: 0;
       }
       ul {
-        margin: 0;
+        margin: 0 -0.5rem;
         padding: 0;
         list-style: none;
         font-size: 0.75em;
         color: #666;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
         li {
-          display: inline-block;
-          margin-right: 1rem;
+          flex: 0 0 auto;
+          margin: 0 0.5rem 1rem;
+          &.contained {
+            background: #fff;
+            border-radius: 7px;
+            padding: 0.2rem 0.4rem;
+          }
           &.highlight {
             color: #000;
             font-weight: 600;
+          }
+          .person-meta-buttons {
+            a {
+              margin-right: 1rem;
+              svg {
+                margin-right: 0.5rem;
+              }
+            }
           }
         }
       }
@@ -188,6 +206,17 @@ export default class PeopleSingle extends Component {
       <PersonEdit person={person} onSuccess={this._handleEditSuccess} />
     );
   };
+  _getSource = () => {
+    const { person } = this.props;
+    switch (person.source) {
+      case "facebook":
+        return "Facebook";
+      case "import":
+        return "Importação";
+      default:
+        return "Desconhecido";
+    }
+  };
   _handleEditSuccess = () => {};
   render() {
     const { campaignId, person, tags, comments, section } = this.props;
@@ -234,8 +263,10 @@ export default class PeopleSingle extends Component {
               <div className="main-info">
                 <h1>{person.name}</h1>
                 <ul>
-                  <li className="highlight">Apoiador, Mobilizador</li>
-                  <li>Origem: Facebook</li>
+                  <li className="contained">Origem: {this._getSource()}</li>
+                  <li className="highlight">
+                    <PersonMetaButtons person={person} readOnly simple text />
+                  </li>
                 </ul>
               </div>
               <PersonMetaButtons person={person} />

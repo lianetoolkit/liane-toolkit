@@ -43,6 +43,7 @@ const Container = styled.div`
     width: 15px;
     height: 15px;
     padding: 0.4rem;
+    text-decoration: none;
     .loading {
       animation: rotate 2s linear infinite;
     }
@@ -237,7 +238,7 @@ export default class PersonMetaButtons extends React.Component {
     }
   }
   _metaButton(data = {}, key) {
-    const { person, size, readOnly, simple, vertical } = this.props;
+    const { person, size, readOnly, simple, text, vertical } = this.props;
     const { loading } = this.state;
 
     const hasMeta = this._hasMeta(data, key);
@@ -282,13 +283,16 @@ export default class PersonMetaButtons extends React.Component {
         className={`meta-icon ${size || ""}`}
         style={style}
         onClick={this._handleClick(key)}
-        data-tip={PersonMetaButtons.labels[key]}
+        data-tip={!text ? PersonMetaButtons.labels[key] : null}
         data-for={tooltipId}
       >
         <FontAwesomeIcon
           icon={iconName}
           className={`${loading[key] ? "loading" : ""}`}
         />
+        {text ? (
+          <span className="meta-text">{PersonMetaButtons.labels[key]}</span>
+        ) : null}
       </a>
     );
   }
