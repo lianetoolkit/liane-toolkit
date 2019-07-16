@@ -403,6 +403,7 @@ const PeopleHelpers = {
     JobsHelpers.addJob({
       jobType: "people.expireExport",
       jobData: {
+        campaignId,
         exportId,
         expirationDate
       }
@@ -543,9 +544,6 @@ const PeopleHelpers = {
     });
   },
   importPerson({ campaignId, listId, person }) {
-    const _id = Random.id();
-    let selector = { _id, campaignId };
-    let foundMatch = false;
     const _queries = () => {
       let queries = [];
       let defaultQuery = { campaignId, $or: [] };
@@ -613,6 +611,10 @@ const PeopleHelpers = {
       }
     };
 
+    const _id = Random.id();
+    let selector = { _id, campaignId };
+    let foundMatch = false;
+
     const queries = _queries();
     let matches = [];
     if (queries) {
@@ -637,6 +639,7 @@ const PeopleHelpers = {
         ...person,
         $setOnInsert: {
           source: "import",
+          formId: this.generateFormId(_id),
           listId
         }
       },
@@ -652,8 +655,6 @@ const PeopleHelpers = {
       },
       { multi: false }
     );
-
-    this.updateFormId({ _id: selector._id });
 
     // Clear empty campaign lists
     const campaignLists = PeopleLists.find({ campaignId }).fetch();

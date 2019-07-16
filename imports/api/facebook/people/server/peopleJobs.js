@@ -118,6 +118,7 @@ const PeopleJobs = {
   "people.expireExport": {
     run({ job }) {
       logger.debug("people.expireExport job: called");
+      check(job && job.data && job.data.campaignId, String);
       check(job && job.data && job.data.exportId, String);
       check(job && job.data && job.data.expirationDate, Date);
       let errored = false;

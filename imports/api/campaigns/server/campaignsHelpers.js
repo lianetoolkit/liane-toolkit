@@ -5,8 +5,11 @@ import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import {
   People,
   PeopleTags,
-  PeopleLists
+  PeopleLists,
+  PeopleExports
 } from "/imports/api/facebook/people/people.js";
+import { PeopleHelpers } from "/imports/api/facebook/people/server/peopleHelpers.js";
+import { MapFeatures } from "/imports/api/mapFeatures/mapFeatures";
 import { FAQ } from "/imports/api/faq/faq.js";
 import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js";
 import { Canvas } from "/imports/api/canvas/canvas.js";
@@ -793,6 +796,18 @@ const CampaignsHelpers = {
       throw new Meteor.Error(404, "Campaign not found");
     }
 
+    // Expire and remove exports
+    const exportJobs = Jobs.find({
+      type: "people.expireExport",
+      "data.campaignId": campaignId
+    }).fetch();
+    if (exportJobs && exportJobs.length) {
+      for (let job of exportJobs) {
+        PeopleHelpers.expireExport({ exportId: job.data.exportId });
+      }
+    }
+    PeopleExports.remove({ campaignId });
+
     this.clearCampaignJobs({ campaignId });
 
     FAQ.remove({ campaignId });
@@ -801,6 +816,7 @@ const CampaignsHelpers = {
     PeopleTags.remove({ campaignId });
     Canvas.remove({ campaignId });
     FacebookAudiences.remove({ campaignId });
+    MapFeatures.remove({ campaignId });
 
     // Facebook accounts to delete
     let accountsIds = _.pluck(campaign.accounts, "facebookId");

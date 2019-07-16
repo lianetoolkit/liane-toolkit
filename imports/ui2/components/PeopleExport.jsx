@@ -55,7 +55,7 @@ export default class PeopleExport extends Component {
       );
     }
     if (loading || running) {
-      return "Gerando arquivo...";
+      return "Processando exportação...";
     }
     return children || "Exportar pessoas";
   };
