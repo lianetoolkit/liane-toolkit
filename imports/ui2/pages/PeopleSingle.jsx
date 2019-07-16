@@ -21,6 +21,13 @@ import CommentList from "../components/CommentList.jsx";
 const Container = styled.div`
   width: 100%;
   display: flex;
+  .nav-content {
+    a {
+      svg {
+        margin-right: 1rem;
+      }
+    }
+  }
   .person-container {
     flex: 1 1 100%;
     display: flex;
@@ -208,7 +215,6 @@ export default class PeopleSingle extends Component {
   };
   _getSource = () => {
     const { person, lists } = this.props;
-    console.log(lists);
     switch (person.source) {
       case "facebook":
         return "Facebook";
@@ -229,6 +235,9 @@ export default class PeopleSingle extends Component {
       return (
         <Container>
           <Page.Nav padded full>
+            <a href={FlowRouter.path("App.people")}>
+              <FontAwesomeIcon icon="chevron-left" /> Voltar ao diretório
+            </a>
             <a
               href={FlowRouter.path(
                 "App.people.detail",
@@ -239,7 +248,7 @@ export default class PeopleSingle extends Component {
             >
               Informações
             </a>
-            <a
+            {/* <a
               href={FlowRouter.path(
                 "App.people.detail",
                 { personId: person._id },
@@ -248,7 +257,7 @@ export default class PeopleSingle extends Component {
               className={section == "reactions" ? "active" : ""}
             >
               Reações
-            </a>
+            </a> */}
             <a
               href={FlowRouter.path(
                 "App.people.detail",
