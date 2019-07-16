@@ -522,7 +522,7 @@ export default class PeoplePage extends Component {
                 <Button.WithIcon>
                   <PeopleExport
                     query={query}
-                    options={options}
+                    options={this.buildOptions(options)}
                     running={exportCount}
                     peopleExports={peopleExports}
                   >
@@ -559,7 +559,6 @@ export default class PeoplePage extends Component {
             <ReactTooltip id="people-actions" place="top" effect="solid" />
           </PageFilters>
         </Page.Nav>
-        {/* <Page.Content full compact> */}
         <PeopleContent loading={loading}>
           <PagePaging
             skip={options.skip}
@@ -583,7 +582,6 @@ export default class PeoplePage extends Component {
             />
           )}
         </PeopleContent>
-        {/* </Page.Content> */}
       </>
     );
   }
