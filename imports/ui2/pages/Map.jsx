@@ -118,7 +118,7 @@ const Container = styled.div`
     border: 0;
     i.icon {
       display: block;
-      background: #fff;
+      background: #333;
       border-radius: 100%;
       font-size: 18px;
       line-height: 22px;
@@ -127,8 +127,13 @@ const Container = styled.div`
       height: 20px;
       margin: 0;
       padding: 0;
+      svg path {
+        fill: #fff;
+      }
       &.yellow-bg {
-        background: #ffeb3b;
+        svg path {
+          fill: #d5d500;
+        }
       }
     }
   }
@@ -309,6 +314,7 @@ export default class MapPage extends Component {
     if (campaign.geolocation) {
       const { map } = this.refs;
       const { boundingbox } = campaign.geolocation.osm;
+      map.leafletElement.setMaxZoom(19);
       map.leafletElement.fitBounds([
         [boundingbox[0], boundingbox[2]],
         [boundingbox[1], boundingbox[3]]
@@ -562,6 +568,16 @@ export default class MapPage extends Component {
       }
     });
   };
+  _handlePeopleMouseOver = person => {
+    this.setState({
+      hoveringPerson: person
+    });
+  };
+  _handlePeopleMouseOut = person => {
+    this.setState({
+      hoveringPerson: false
+    });
+  };
   getFeatureValue = fieldName => {
     const { mapFeatures } = this.props;
     const { formData, featureId } = this.state;
@@ -572,7 +588,14 @@ export default class MapPage extends Component {
   };
   render() {
     const { mapFeatures, people } = this.props;
-    const { loading, layers, map, featureId, hoveringFeatureId } = this.state;
+    const {
+      loading,
+      layers,
+      map,
+      featureId,
+      hoveringFeatureId,
+      hoveringPerson
+    } = this.state;
     let feature = false;
     if (featureId) {
       feature = mapFeatures.find(f => f._id == featureId);
@@ -626,7 +649,13 @@ export default class MapPage extends Component {
                   addOnCreate={false}
                 />
               </FeatureGroup>
-              {layers.people ? <PeopleMapLayer people={people} /> : null}
+              {layers.people ? (
+                <PeopleMapLayer
+                  people={people}
+                  onMouseOver={this._handlePeopleMouseOver}
+                  onMouseOut={this._handlePeopleMouseOut}
+                />
+              ) : null}
               {/* {layers.map(layer => (
               <TileLayer key={layer._id} url={layer.tilelayer} />
             ))}
@@ -648,6 +677,14 @@ export default class MapPage extends Component {
                     {hoveringFeature.description ? (
                       <p>{hoveringFeature.description}</p>
                     ) : null}
+                  </div>
+                </Tool>
+              ) : null}
+              {hoveringPerson ? (
+                <Tool>
+                  <div className="hover-feature">
+                    <h3>{hoveringPerson.name}</h3>
+                    <p>{hoveringPerson.location.formattedAddress}</p>
                   </div>
                 </Tool>
               ) : null}
