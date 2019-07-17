@@ -134,7 +134,12 @@ Meteor.publishComposite("people.detail", function({ personId }) {
             {
               find(person) {
                 if (person.facebookId) {
-                  return Comments.find({ personId: person.facebookId });
+                  return Comments.find(
+                    { personId: person.facebookId },
+                    {
+                      sort: { created_time: -1 }
+                    }
+                  );
                 }
               },
               children(parentComment) {
@@ -146,10 +151,15 @@ Meteor.publishComposite("people.detail", function({ personId }) {
                   },
                   {
                     find: function(comment) {
-                      return Comments.find({
-                        personId: facebookId,
-                        parentId: comment._id
-                      });
+                      return Comments.find(
+                        {
+                          personId: facebookId,
+                          parentId: comment._id
+                        },
+                        {
+                          sort: { created_time: -1 }
+                        }
+                      );
                     }
                   }
                 ];

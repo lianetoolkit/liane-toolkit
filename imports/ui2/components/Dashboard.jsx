@@ -10,10 +10,11 @@ const Container = styled.div`
 const RowContainer = styled.div`
   ${"" /* max-width: 1280px; */} margin: 0 auto;
   display: flex;
-  padding: 0 1.5rem 1rem 1.5rem;
+  padding: 0 1.5rem;
   flex-grow: 1;
   box-sizing: border-box;
   width: 100%;
+  flex-wrap: wrap;
 `;
 
 const BoxContainer = styled.div`
@@ -21,7 +22,7 @@ const BoxContainer = styled.div`
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 7px;
-  margin: 0 0.5rem;
+  margin: 0 0.5rem 1rem 0.5rem;
   padding: 1rem 1.5rem;
   box-sizing: border-box;
   ${props =>

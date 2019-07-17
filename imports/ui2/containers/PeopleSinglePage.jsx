@@ -5,6 +5,8 @@ import { Comments } from "/imports/api/facebook/comments/comments";
 import { Entries } from "/imports/api/facebook/entries/entries";
 import PeopleSinglePage from "../pages/PeopleSingle.jsx";
 
+import { sortBy } from "lodash";
+
 const PersonSubs = new SubsManager();
 
 export default withTracker(props => {
@@ -35,6 +37,7 @@ export default withTracker(props => {
         }
       }
     ).fetch();
+    comments = sortBy(comments, comment => -new Date(comment.created_time));
   }
 
   return {
