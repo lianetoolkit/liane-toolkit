@@ -8,6 +8,7 @@ const Container = styled.header`
   background: #333;
   padding: 0;
   flex: 0;
+  border-bottom: 1px solid #212121;
   .header-content {
     max-width: 960px;
     padding: 0 2rem;
@@ -35,12 +36,13 @@ const Container = styled.header`
 const TopNav = styled.nav`
   display: flex;
   flex-wrap: nowrap;
-  font-weight: 600;
+  font-weight: 400;
   font-size: 0.7em;
   justify-content: flex-end;
   padding-top: 0.5rem;
+  margin-bottom: 0.2rem;
   a {
-    color: #999;
+    color: #888;
     text-decoration: none;
     display: block;
     white-space: nowrap;
@@ -56,6 +58,8 @@ const TopNav = styled.nav`
     css`
       font-size: 0.8em;
       padding-top: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0;
       a {
         color: #ddd;
       }
@@ -106,9 +110,6 @@ export default class Header extends Component {
                 id="app.privacy_policy"
                 defaultMessage="Privacy Policy"
               />
-            </a>
-            <a href="#">
-              <FormattedMessage id="app.support" defaultMessage="Support" />
             </a>
           </TopNav>
           {user ? <AppNav campaign={campaign} campaigns={campaigns} /> : null}

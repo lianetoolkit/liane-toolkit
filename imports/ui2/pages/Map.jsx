@@ -23,6 +23,8 @@ import Form from "../components/Form.jsx";
 import Button from "../components/Button.jsx";
 import ColorSelector from "../components/ColorSelector.jsx";
 
+import PeopleMapLayer from "../components/PeopleMapLayer.jsx";
+
 const imagePath = "/";
 L.Icon.Default.imagePath = imagePath;
 L.Icon.Default.mergeOptions({
@@ -110,6 +112,24 @@ const Container = styled.div`
       width: 10px;
       height: 10px;
       border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+  }
+  .people-icon {
+    border: 0;
+    i.icon {
+      display: block;
+      background: #fff;
+      border-radius: 100%;
+      font-size: 18px;
+      line-height: 22px;
+      text-align: center;
+      width: 20px;
+      height: 20px;
+      margin: 0;
+      padding: 0;
+      &.yellow-bg {
+        background: #ffeb3b;
+      }
     }
   }
 `;
@@ -551,7 +571,7 @@ export default class MapPage extends Component {
     }
   };
   render() {
-    const { mapFeatures } = this.props;
+    const { mapFeatures, people } = this.props;
     const { loading, layers, map, featureId, hoveringFeatureId } = this.state;
     let feature = false;
     if (featureId) {
@@ -606,6 +626,7 @@ export default class MapPage extends Component {
                   addOnCreate={false}
                 />
               </FeatureGroup>
+              {layers.people ? <PeopleMapLayer people={people} /> : null}
               {/* {layers.map(layer => (
               <TileLayer key={layer._id} url={layer.tilelayer} />
             ))}
