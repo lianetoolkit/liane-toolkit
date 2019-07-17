@@ -46,20 +46,22 @@ export default class AppLayout extends Component {
     loadingCampaigns,
     campaigns
   }) {
-    if (connected && !isLoggedIn && routeName !== "App.auth") {
-      FlowRouter.go("App.auth");
-    }
-    if (connected && isLoggedIn) {
-      if (!loadingCampaigns && (!campaigns || !campaigns.length)) {
-        if (routeName == "App.dashboard" || routeName == "App.auth") {
-          FlowRouter.go("App.campaign.new");
-        }
-      } else {
-        if (routeName == "App.auth") {
-          FlowRouter.go("App.dashboard");
+    FlowRouter.withReplaceState(function() {
+      if (connected && !isLoggedIn && routeName !== "App.auth") {
+        FlowRouter.go("App.auth");
+      }
+      if (connected && isLoggedIn) {
+        if (!loadingCampaigns && (!campaigns || !campaigns.length)) {
+          if (routeName == "App.dashboard" || routeName == "App.auth") {
+            FlowRouter.go("App.campaign.new");
+          }
+        } else {
+          if (routeName == "App.auth") {
+            FlowRouter.go("App.dashboard");
+          }
         }
       }
-    }
+    });
   }
   render() {
     const { content, ready, connected } = this.props;
