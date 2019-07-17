@@ -231,6 +231,7 @@ const LayerFilter = styled.ul`
     display: flex;
     align-items: center;
     cursor: pointer;
+    outline: none;
     &:first-child {
       border-radius: 7px 7px 0 0;
     }
@@ -276,6 +277,10 @@ export default class MapPage extends Component {
     this.state = {
       loading: false,
       formData: {},
+      layers: {
+        people: true,
+        custom: true
+      },
       map: true
     };
   }
@@ -298,11 +303,14 @@ export default class MapPage extends Component {
   }
   componentDidUpdate(prevProps, prevState) {
     const { mapFeatures } = this.props;
-    const { formData, featureId } = this.state;
+    const { formData, featureId, layers } = this.state;
     if (JSON.stringify(mapFeatures) != JSON.stringify(prevProps.mapFeatures)) {
       this._renderFeatures();
     }
     if (prevState.featureId && featureId != prevState.featureId) {
+      this._renderFeatures();
+    }
+    if (layers.custom != prevState.layers.custom) {
       this._renderFeatures();
     }
     if (formData.color && prevState.formData.color != formData.color) {
@@ -465,9 +473,11 @@ export default class MapPage extends Component {
     );
   };
   _renderFeatures = () => {
+    const { layers } = this.state;
     if (this.refs.featureGroup) {
       const layerGroup = this.refs.featureGroup.leafletElement;
       layerGroup.clearLayers();
+      if (!layers.custom) return;
       const geojson = new L.GeoJSON(this.getGeoJSON());
       geojson.eachLayer(layer => {
         const properties = layer.feature.properties;
@@ -523,6 +533,15 @@ export default class MapPage extends Component {
       }
     });
   };
+  _handleToggleLayerClick = layer => ev => {
+    const { layers } = this.state;
+    this.setState({
+      layers: {
+        ...layers,
+        [layer]: !layers[layer]
+      }
+    });
+  };
   getFeatureValue = fieldName => {
     const { mapFeatures } = this.props;
     const { formData, featureId } = this.state;
@@ -533,7 +552,7 @@ export default class MapPage extends Component {
   };
   render() {
     const { mapFeatures } = this.props;
-    const { loading, map, featureId, hoveringFeatureId } = this.state;
+    const { loading, layers, map, featureId, hoveringFeatureId } = this.state;
     let feature = false;
     if (featureId) {
       feature = mapFeatures.find(f => f._id == featureId);
@@ -613,7 +632,11 @@ export default class MapPage extends Component {
               ) : null}
               <Tool>
                 <LayerFilter>
-                  <li>
+                  <li
+                    onClick={this._handleToggleLayerClick("people")}
+                    tabIndex="-1"
+                    className={!layers.people ? "disabled" : ""}
+                  >
                     <FontAwesomeIcon icon="user-circle" />
                     <span>
                       Pessoas
@@ -622,7 +645,11 @@ export default class MapPage extends Component {
                       </span>
                     </span>
                   </li>
-                  <li>
+                  <li
+                    onClick={this._handleToggleLayerClick("custom")}
+                    tabIndex="-1"
+                    className={!layers.custom ? "disabled" : ""}
+                  >
                     <FontAwesomeIcon icon="map-marker" />
                     <span>
                       Marcações da campanha
