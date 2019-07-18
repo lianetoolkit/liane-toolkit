@@ -98,7 +98,6 @@ export default class PersonEdit extends Component {
     const { onSuccess, onError } = this.props;
     const { id, sectionKey, formData } = this.state;
     const campaignId = Session.get("campaignId");
-    console.log(id);
     const update = createdId => {
       Meteor.call(
         "people.metaUpdate",
@@ -135,7 +134,6 @@ export default class PersonEdit extends Component {
               onError(err);
             }
           } else {
-            console.log(res);
             this.setState({
               id: res
             });

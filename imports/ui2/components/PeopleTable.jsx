@@ -175,7 +175,6 @@ export default class PeopleTable extends Component {
     }
     let target = false;
     if (document.activeElement && document.activeElement.contains(this.node)) {
-      console.log(ev.keyCode);
       switch (ev.keyCode) {
         case 27: // esc
           if (curIndex > -1) {
