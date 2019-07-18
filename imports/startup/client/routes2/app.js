@@ -5,9 +5,7 @@ import { pick } from "lodash";
 
 import App from "/imports/ui2/containers/App.jsx";
 
-import DashboardPage from "/imports/ui2/pages/Dashboard.jsx";
 import PeoplePage from "/imports/ui2/pages/People.jsx";
-import AuthPage from "/imports/ui2/pages/Auth.jsx";
 
 import PeopleFormPage from "/imports/ui2/containers/PeopleFormPage.jsx";
 
@@ -38,7 +36,7 @@ appRoutes.route("/", {
   name: "App.dashboard",
   action: function() {
     addTitle(`${APP_NAME} | Dashboard`);
-    return mount(App, { content: { component: DashboardPage } });
+    return mount(App);
   }
 });
 

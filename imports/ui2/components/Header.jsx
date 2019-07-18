@@ -77,7 +77,9 @@ export default class Header extends Component {
             <h1>
               <a href={FlowRouter.path("App.dashboard")}>
                 <img
-                  src={user ? "/images/logo_icon.svg" : "/images/logo_dark.svg"}
+                  src={
+                    campaign ? "/images/logo_icon.svg" : "/images/logo_dark.svg"
+                  }
                   alt="Liane"
                 />
               </a>

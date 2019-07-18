@@ -43,6 +43,12 @@ const Container = styled.ul`
       }
     }
   }
+  .not-found {
+    color: #999;
+    font-style: italic;
+    margin: 0;
+    padding: 0.8rem 1.2rem;
+  }
 `;
 
 export default class SelectAccount extends Component {
@@ -117,7 +123,17 @@ export default class SelectAccount extends Component {
     return selected.indexOf(account.id) !== -1;
   };
   render() {
-    const { accounts } = this.state;
+    const { accounts, loading } = this.state;
+    if (!loading && !accounts.length) {
+      return (
+        <Container>
+          <p className="not-found">
+            Nenhuma página de Facebook foi encontrada para a criação da sua
+            campanha.
+          </p>
+        </Container>
+      );
+    }
     if (accounts.length) {
       return (
         <Container>

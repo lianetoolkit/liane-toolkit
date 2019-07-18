@@ -45,6 +45,11 @@ const Container = styled.div`
       padding: 2rem;
     }
   }
+  &.small {
+    .modal {
+      max-width: 500px;
+    }
+  }
   ${props =>
     props.active &&
     css`
@@ -84,15 +89,24 @@ export default class Modal extends Component {
     modalStore.reset();
   };
   render() {
-    const { title, children } = this.props;
+    const { title, children, locked, type } = this.props;
+    let className = "";
+    if (type) className += type + " ";
     if (children) {
       return (
-        <Container id="modal" active={!!children} tabIndex="-1">
-          <a
-            href="javascript:void(0);"
-            onClick={this._handleCloseClick}
-            className="close-background"
-          />
+        <Container
+          id="modal"
+          active={!!children}
+          className={className}
+          tabIndex="-1"
+        >
+          {!locked ? (
+            <a
+              href="javascript:void(0);"
+              onClick={this._handleCloseClick}
+              className="close-background"
+            />
+          ) : null}
           <div className="modal">
             {title ? (
               <header className="modal-header">

@@ -17,6 +17,11 @@ Meteor.users.schema = new SimpleSchema({
     type: String,
     optional: true
   },
+  type: {
+    type: String,
+    allowedValues: ["campaigner", "user"],
+    optional: true
+  },
   emails: {
     type: Array,
     optional: true

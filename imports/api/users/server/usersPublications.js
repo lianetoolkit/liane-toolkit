@@ -9,6 +9,9 @@ Meteor.publish("users.data", function() {
   if (currentUser) {
     return Meteor.users.find(currentUser, {
       fields: {
+        name: 1,
+        type: 1,
+        emails: 1,
         "services.facebook": 1,
         createdAt: 1
       }
@@ -27,6 +30,7 @@ Meteor.publish("users.all", function() {
       {
         fields: {
           name: 1,
+          type: 1,
           roles: 1,
           emails: 1,
           createdAt: 1
@@ -49,6 +53,7 @@ Meteor.publish("users.detail", function({ userId }) {
       {
         fields: {
           name: 1,
+          type: 1,
           roles: 1,
           emails: 1,
           createdAt: 1

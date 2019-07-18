@@ -3,6 +3,9 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Page from "../components/Page.jsx";
+import { alertStore } from "../containers/Alerts.jsx";
+import Button from "../components/Button.jsx";
+import Loading from "../components/Loading.jsx";
 
 const Container = styled.div`
   flex: 1 1 100%;
@@ -50,7 +53,7 @@ const HighlightContainer = styled.div`
   }
 `;
 
-const ButtonGroup = styled.nav`
+const HeaderButtons = styled.nav`
   width: 100%;
   max-width 400px;
   display: flex;
@@ -166,6 +169,29 @@ const LoginFormContainer = styled.form`
     font-size: 0.8em;
     color: #999;
     text-align: center;
+  }
+`;
+
+const UserContainer = styled.div`
+  max-width: 400px;
+  margin: -3rem auto 4rem;
+  background: #fff;
+  border-radius: 7px;
+  box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
+  padding: 2rem;
+  z-index: 2;
+  position: relative;
+  h3 {
+    font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 0 0 2rem;
+  }
+  .button.primary {
+    margin: 0 0 2rem;
+    display: block;
+  }
+  p {
+    font-size: 0.9em;
+    color: #666;
   }
 `;
 
@@ -295,33 +321,30 @@ function FeatureItem(props) {
   );
 }
 
-export default class AuthPage extends Component {
+export default class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { loading: false };
+  }
   _facebookAuth = () => ev => {
     ev.preventDefault();
+    this.setState({ loading: true });
     Meteor.loginWithFacebook(
       {
-        requestPermissions: [
-          "public_profile",
-          "email",
-          "manage_pages",
-          "publish_pages",
-          "pages_show_list",
-          "ads_management",
-          "ads_read",
-          "business_management",
-          "read_page_mailboxes",
-          "pages_messaging",
-          "pages_messaging_phone_number",
-          "pages_messaging_subscriptions"
-        ]
+        requestPermissions: ["public_profile", "email"]
       },
       err => {
         if (err) {
-          console.log(err);
+          this.setState({ loading: false });
+          alertStore.add(
+            "Erro durante autenticação, tente novamente.",
+            "error"
+          );
         } else {
           Meteor.call("users.exchangeFBToken", (err, data) => {
+            this.setState({ loading: false });
             if (err) {
-              console.log(err);
+              alertStore.add(err);
             }
           });
         }
@@ -329,46 +352,84 @@ export default class AuthPage extends Component {
     );
   };
   render() {
+    const { isLoggedIn } = this.props;
+    const { loading } = this.state;
+    const user = Meteor.user();
     return (
       <Page>
+        {loading ? <Loading full /> : null}
         <Container>
           <HighlightContainer>
             <h2>Tecnologia para Inovação Política</h2>
-            {/* <ButtonGroup>
+            {/* <HeaderButtons>
               <a href="#">Como Funciona</a>
               <a href="#">#NãoValeTudo</a>
-            </ButtonGroup> */}
+            </HeaderButtons> */}
           </HighlightContainer>
-          <LoginFormContainer>
-            {/* <h3>Acesse sua conta</h3> */}
-            <a
-              className="facebook-button button"
-              onClick={this._facebookAuth()}
-            >
-              <FontAwesomeIcon icon={["fab", "facebook-square"]} /> Conecte-se
-              com Facebook
-            </a>
-            <p className="terms">
-              Ao conectar-se com LIANE você está de acordo com nossos
-              <br />
+          {!isLoggedIn ? (
+            <LoginFormContainer>
+              {/* <h3>Acesse sua conta</h3> */}
               <a
-                href="https://files.liane.cc/legal/terms_of_use_v1_pt-br.pdf"
-                target="_blank"
-                rel="external"
+                className="facebook-button button"
+                onClick={this._facebookAuth()}
               >
-                termos de uso
-              </a>{" "}
-              e{" "}
-              <a
-                href="https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf"
-                target="_blank"
-                rel="external"
-              >
-                política de privacidade
+                <FontAwesomeIcon icon={["fab", "facebook-square"]} /> Conecte-se
+                com Facebook
               </a>
-              .
-            </p>
-          </LoginFormContainer>
+              <p className="terms">
+                Ao conectar-se com LIANE você está de acordo com nossos
+                <br />
+                <a
+                  href="https://files.liane.cc/legal/terms_of_use_v1_pt-br.pdf"
+                  target="_blank"
+                  rel="external"
+                >
+                  termos de uso
+                </a>{" "}
+                e{" "}
+                <a
+                  href="https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf"
+                  target="_blank"
+                  rel="external"
+                >
+                  política de privacidade
+                </a>
+                .
+              </p>
+            </LoginFormContainer>
+          ) : (
+            <UserContainer>
+              <h3>
+                Conectado como <strong>{user.name}</strong>
+              </h3>
+              {!user.type ? (
+                <p>Aguardando definição de categoria de conta.</p>
+              ) : (
+                <div>
+                  {user.type == "campaigner" ? (
+                    <Button primary href={FlowRouter.path("App.campaign.new")}>
+                      Criar nova campanha
+                    </Button>
+                  ) : null}
+                  <p>
+                    Para conectar-se a uma campanha existente envie seu email ao
+                    responsável para que ele possa adicioná-lo:
+                  </p>
+                  <input type="text" disabled value={user.emails[0].address} />
+                  <Button.Group>
+                    <Button>Minha conta</Button>
+                    <Button
+                      onClick={() => {
+                        Meteor.logout();
+                      }}
+                    >
+                      Sair
+                    </Button>
+                  </Button.Group>
+                </div>
+              )}
+            </UserContainer>
+          )}
           <Intro>
             <div className="first">
               <div className="intro-text">

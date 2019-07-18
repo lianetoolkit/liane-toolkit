@@ -9,9 +9,13 @@ window.locales = ["en-US", "es", "pt-BR"];
 
 import localeData from "/locales";
 
+import Home from "/imports/ui2/pages/Home.jsx";
+import DashboardPage from "/imports/ui2/pages/Dashboard.jsx";
+
 import Modal from "../containers/Modal.jsx";
 import Alerts from "../containers/Alerts.jsx";
 import Page from "../components/Page.jsx";
+import AuthConfirm from "../components/AuthConfirm.jsx";
 
 const language =
   (navigator.languages && navigator.languages[0]) ||
@@ -39,32 +43,25 @@ const findLocale = language => {
 const messages = localeData[findLocale(language)] || localeData.en;
 
 export default class AppLayout extends Component {
-  componentWillReceiveProps({
-    isLoggedIn,
-    connected,
-    routeName,
-    loadingCampaigns,
-    campaigns
-  }) {
+  componentWillReceiveProps({ isLoggedIn, connected, routeName }) {
     FlowRouter.withReplaceState(function() {
-      if (connected && !isLoggedIn && routeName !== "App.auth") {
-        FlowRouter.go("App.auth");
-      }
-      if (connected && isLoggedIn) {
-        if (!loadingCampaigns && (!campaigns || !campaigns.length)) {
-          if (routeName == "App.dashboard" || routeName == "App.auth") {
-            FlowRouter.go("App.campaign.new");
-          }
-        } else {
-          if (routeName == "App.auth") {
-            FlowRouter.go("App.dashboard");
-          }
-        }
+      if (connected && !isLoggedIn && routeName !== "App.dashboard") {
+        FlowRouter.go("App.dashboard");
       }
     });
   }
   render() {
-    const { content, ready, connected } = this.props;
+    const { ready, connected, isLoggedIn, campaign, user } = this.props;
+    let content;
+    if (!this.props.content) {
+      if (campaign) {
+        content = { component: DashboardPage };
+      } else {
+        content = { component: Home };
+      }
+    } else {
+      content = this.props.content;
+    }
     if (connected && ready) {
       return (
         <IntlProvider locale={language} messages={messages}>
@@ -74,6 +71,7 @@ export default class AppLayout extends Component {
             </Page>
             <Modal />
             <Alerts />
+            {user ? <AuthConfirm user={user} /> : null}
           </div>
         </IntlProvider>
       );

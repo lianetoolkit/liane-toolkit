@@ -55,7 +55,6 @@ const validatePermissions = scopes => {
     "ads_management",
     "ads_read",
     "business_management",
-    "read_page_mailboxes",
     "pages_messaging",
     "pages_messaging_phone_number",
     "pages_messaging_subscriptions"
@@ -91,6 +90,44 @@ export const validateFBToken = new ValidatedMethod({
       throw new Meteor.Error(401, "Missing scope permissions");
     }
     return;
+  }
+});
+
+export const setUserType = new ValidatedMethod({
+  name: "users.setType",
+  validate: new SimpleSchema({
+    type: {
+      type: String,
+      allowedValues: ["campaigner", "user"]
+    },
+    token: {
+      type: String
+    },
+    secret: {
+      type: String
+    }
+  }).validator(),
+  run({ type, token, secret }) {
+    const userId = Meteor.userId();
+    logger.debug("users.setType called", { userId });
+
+    if (!userId) {
+      throw new Meteor.Error(400, "You must be logged in");
+    }
+
+    const credential = Facebook.retrieveCredential(token, secret);
+
+    if (credential && credential.serviceData.accessToken) {
+      const token = UsersHelpers.exchangeFBToken({
+        token: credential.serviceData.accessToken
+      });
+      Meteor.users.update(userId, {
+        $set: {
+          type,
+          "services.facebook.accessToken": token.result
+        }
+      });
+    }
   }
 });
 

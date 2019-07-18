@@ -21,10 +21,13 @@ const AppSubs = new SubsManager();
 
 export default withTracker(({ content }) => {
   const campaignsHandle = AppSubs.subscribe("campaigns.byUser");
+  const userHandle = AppSubs.subscribe("users.data");
 
   const connected = Meteor.status().connected;
-  const user = Meteor.user();
   const isLoggedIn = Meteor.userId() !== null;
+  const user = userHandle.ready()
+    ? Meteor.users.findOne(Meteor.userId())
+    : null;
 
   let campaigns = [];
 

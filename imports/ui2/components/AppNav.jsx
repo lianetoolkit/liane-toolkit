@@ -143,8 +143,11 @@ class SettingsNav extends Component {
   _logout = () => ev => {
     ev.preventDefault();
     Meteor.logout();
+    window.location.reload();
   };
   render() {
+    const { campaign } = this.props;
+    const user = Meteor.user();
     return (
       <Dropdown
         width="200px"
@@ -153,20 +156,28 @@ class SettingsNav extends Component {
         trigger={<FontAwesomeIcon icon="cog" />}
       >
         <Dropdown.Content>
-          <Dropdown.NavItem href={FlowRouter.path("App.campaign.settings")}>
-            <FormattedMessage
-              id="campaign.campaign_settings"
-              defaultMessage="Campaign settings"
-            />
-          </Dropdown.NavItem>
-          <Dropdown.Separator />
-          <Dropdown.NavItem href={FlowRouter.path("App.campaign.new")}>
-            <FormattedMessage
-              id="campaign.campaign_new"
-              defaultMessage="New campaign"
-            />
-          </Dropdown.NavItem>
-          <Dropdown.Separator />
+          {campaign ? (
+            <>
+              <Dropdown.NavItem href={FlowRouter.path("App.campaign.settings")}>
+                <FormattedMessage
+                  id="campaign.campaign_settings"
+                  defaultMessage="Campaign settings"
+                />
+              </Dropdown.NavItem>
+              <Dropdown.Separator />
+            </>
+          ) : null}
+          {user.type == "campaigner" ? (
+            <>
+              <Dropdown.NavItem href={FlowRouter.path("App.campaign.new")}>
+                <FormattedMessage
+                  id="campaign.campaign_new"
+                  defaultMessage="New campaign"
+                />
+              </Dropdown.NavItem>
+              <Dropdown.Separator />
+            </>
+          ) : null}
           <Dropdown.NavItem href="#">
             <FormattedMessage id="app.my_account" defaultMessage="My account" />
           </Dropdown.NavItem>
@@ -305,7 +316,7 @@ export default class AppNav extends Component {
             ) : null}
           </div>
           <div className="meta link-group">
-            <SettingsNav />
+            <SettingsNav campaign={campaign} />
             <NotificationsNav className="icon-link">
               <FontAwesomeIcon icon="bell" />
             </NotificationsNav>

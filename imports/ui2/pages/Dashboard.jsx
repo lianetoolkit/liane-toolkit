@@ -13,7 +13,8 @@ export default class DashboardPage extends Component {
     };
   }
   componentDidMount() {
-    this.fetchCounts();
+    const { campaignId } = this.props;
+    if (campaignId) this.fetchCounts();
   }
   fetchCounts() {
     const { campaignId } = this.props;
@@ -28,6 +29,7 @@ export default class DashboardPage extends Component {
   render() {
     const { counts } = this.state;
     const { campaignId } = this.props;
+    if (!campaignId) return null;
     return (
       <Dashboard>
         <Dashboard.Row>

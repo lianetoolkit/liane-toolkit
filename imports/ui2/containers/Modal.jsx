@@ -6,6 +6,8 @@ import Modal from "../components/Modal.jsx";
 
 const title = new ReactiveVar(false);
 const content = new ReactiveVar(false);
+const locked = new ReactiveVar(false);
+const type = new ReactiveVar(false);
 
 let onClose = false;
 
@@ -19,10 +21,18 @@ class ModalStore {
       onClose = cb;
     }
   }
+  lock() {
+    locked.set(true);
+  }
+  setType(val) {
+    type.set(val);
+  }
   reset(force) {
-    if (force || !onClose || onClose()) {
+    if (!locked.get() || force || !onClose || onClose()) {
       title.set(false);
       content.set(false);
+      locked.set(false);
+      type.set(false);
       onClose = false;
     }
   }
@@ -33,6 +43,8 @@ export const modalStore = new ModalStore();
 export default withTracker(() => {
   return {
     children: content.get(),
-    title: title.get()
+    title: title.get(),
+    locked: locked.get(),
+    type: type.get()
   };
 })(Modal);
