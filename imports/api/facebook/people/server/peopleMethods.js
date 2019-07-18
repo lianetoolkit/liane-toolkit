@@ -809,6 +809,10 @@ export const peopleCreate = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
+    if (!name) {
+      throw new Meteor.Error(400, "You must provide a name");
+    }
+
     return People.insert({
       campaignId,
       name,
