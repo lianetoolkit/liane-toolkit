@@ -54,6 +54,7 @@ const Container = styled.div`
     margin: 2rem -2rem 2rem;
     border: 1px solid #ddd;
     border-radius: 7px;
+    background: #fff;
   }
   .facebook-connect {
     .button {

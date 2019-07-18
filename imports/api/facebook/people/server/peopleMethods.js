@@ -1205,8 +1205,6 @@ export const peopleFormConnectFacebook = new ValidatedMethod({
   }).validator(),
   run({ token, secret, campaignId }) {
     logger.debug("peopleForm.connectFacebook called", {
-      token,
-      secret,
       campaignId
     });
 
@@ -1245,6 +1243,9 @@ export const peopleFormConnectFacebook = new ValidatedMethod({
               campaignId,
               name: data.name,
               "campaignMeta.contact.email": data.email
+            },
+            $setOnInsert: {
+              source: "form"
             }
           }
         );
