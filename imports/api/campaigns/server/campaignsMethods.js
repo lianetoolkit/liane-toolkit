@@ -246,12 +246,31 @@ export const campaignsUpdate = new ValidatedMethod({
     if (data.forms) {
       if (data.forms.slug) {
         const minimumLength = 5;
-        const reservedSlugs = ["admin", "campaign", "f"];
+        const reservedSlugs = [
+          "admin",
+          "campaign",
+          "f",
+          "people",
+          "map",
+          "canvas",
+          "user",
+          "settings",
+          "help",
+          "support"
+        ];
         if (
           data.forms.slug.length < minimumLength ||
           reservedSlugs.indexOf(data.forms.slug) !== -1
         ) {
           throw new Meteor.Error(400, "Form slug is not valid.");
+        }
+        if (
+          Campaigns.find({
+            "forms.slug": data.forms.slug,
+            _id: { $nin: [campaign._id] }
+          }).fetch().length
+        ) {
+          throw new Meteor.Error(400, "Slug already in use");
         }
         $set["forms.slug"] = data.forms.slug;
       } else {
