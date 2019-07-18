@@ -368,7 +368,6 @@ export default class PeopleForm extends Component {
                 </a>
                 .
               </p>
-              {/* <PeoplePrivacyPolicy /> */}
               <input type="submit" value="Enviar" />
             </Form>
           </Container>
