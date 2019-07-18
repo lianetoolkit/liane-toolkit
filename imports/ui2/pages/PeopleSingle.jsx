@@ -9,6 +9,7 @@ import Table from "../components/Table.jsx";
 import Button from "../components/Button.jsx";
 
 import PersonMetaButtons from "../components/PersonMetaButtons.jsx";
+import PersonFormInfo from "../components/PersonFormInfo.jsx";
 import PersonReactions from "../components/PersonReactions.jsx";
 import PersonSummary from "../components/PersonSummary.jsx";
 import PersonInfoTable from "../components/PersonInfoTable.jsx";
@@ -185,6 +186,7 @@ class Information extends Component {
             ) : null}
           </p>
         </div>
+        <PersonFormInfo person={person} />
         <PersonInfoTable person={person} />
       </InformationContainer>
     );

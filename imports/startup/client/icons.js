@@ -45,7 +45,9 @@ import {
   faQuestion,
   faUndoAlt,
   faEdit,
-  faEye
+  faEye,
+  faSync,
+  faLink
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faFacebookSquare,
@@ -98,6 +100,8 @@ library.add(faQuestion);
 library.add(faUndoAlt);
 library.add(faEdit);
 library.add(faEye);
+library.add(faSync);
+library.add(faLink);
 library.add(faFacebookSquare);
 library.add(faInstagram);
 library.add(faTwitter);
