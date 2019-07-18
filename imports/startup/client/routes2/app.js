@@ -52,18 +52,6 @@ appRoutes.route("/f/:formId?", {
   }
 });
 
-appRoutes.route("/f/:campaignSlug/:formId?", {
-  name: "App.campaignForm",
-  action: function(params, queryParams) {
-    addTitle(`${APP_NAME}`);
-    console.log(params, queryParams);
-    return mount(PeopleFormPage, {
-      campaignSlug: params.campaignSlug,
-      formId: params.formId
-    });
-  }
-});
-
 appRoutes.route("/auth", {
   name: "App.auth",
   action: function() {
@@ -193,5 +181,16 @@ appRoutes.route("/campaign/settings/actions", {
   action: function() {
     addTitle(`${APP_NAME} | Campaign Actions`);
     return mount(App, { content: { component: CampaignActionsPage } });
+  }
+});
+
+appRoutes.route("/:campaignSlug/:formId?", {
+  name: "App.campaignForm",
+  action: function(params, queryParams) {
+    addTitle(`${APP_NAME}`);
+    return mount(PeopleFormPage, {
+      campaignSlug: params.campaignSlug,
+      formId: params.formId
+    });
   }
 });

@@ -1,11 +1,14 @@
+import { Campaigns } from "/imports/api/campaigns/campaigns";
 import { ClientStorage } from "meteor/ostrio:cstorage";
 
-export const getFormUrl = (formId, campaign = false) => {
-  campaign = campaign || ClientStorage.get("campaign");
+export const getFormUrl = (formId, campaignId = false) => {
+  campaignId = campaignId || ClientStorage.get("campaign");
+  const campaign = Campaigns.findOne(campaignId);
   const base = Meteor.absoluteUrl();
-  const prefix = "f/";
+  let prefix = "f/";
   let path = "";
   if (campaign.forms && campaign.forms.slug) {
+    prefix = "";
     path += campaign.forms.slug + "/";
   }
   if (formId) {

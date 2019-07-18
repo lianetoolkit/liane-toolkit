@@ -14,7 +14,6 @@ export default class SettingsNav extends Component {
         >
           Configurações gerais
         </a>
-        <a href="javascript:void(0);">Formulários</a>
         <a
           href={FlowRouter.path("App.campaign.accounts")}
           className={currentRoute == "App.campaign.accounts" ? "active" : ""}

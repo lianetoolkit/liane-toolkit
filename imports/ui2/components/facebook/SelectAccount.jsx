@@ -19,7 +19,7 @@ const Container = styled.ul`
       display: flex;
       align-items: center;
       text-decoration: none;
-      h3 {
+      h4 {
         flex: 1 1 100%;
         margin: 0;
         font-size: 1em;
@@ -130,7 +130,7 @@ export default class SelectAccount extends Component {
                 href="javascript:void(0);"
                 onClick={this._handleClick(account)}
               >
-                <h3>{account.name}</h3>
+                <h4>{account.name}</h4>
                 {this._isSelected(account) ? (
                   <FontAwesomeIcon icon="check" />
                 ) : null}

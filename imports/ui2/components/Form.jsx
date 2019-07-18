@@ -17,6 +17,12 @@ const FormContent = styled.div`
   max-width: 640px;
   margin: 3rem auto;
   padding: 0 3rem;
+  h3 {
+    margin-top: 3rem;
+    padding-bottom: 1rem;
+    color: #666;
+    border-bottom: 1px solid #ddd;
+  }
 `;
 
 const FieldContainer = styled.label`
@@ -28,6 +34,18 @@ const FieldContainer = styled.label`
     display: block;
     font-size: 0.8em;
     margin-bottom: 0.25rem;
+  }
+  .input-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    input, textarea { border: 0; margin: 0; }
+    .prefix {
+      font-size: 0.9em;
+      color: #999;
+      padding: 0 0.5rem 0 1rem;
+    }
   }
   input[type="text"],
   input[type="email"],
@@ -51,6 +69,12 @@ const FieldContainer = styled.label`
     css`
       font-size: 0.9em;
     `}
+  ${props =>
+    props.big &&
+    css`
+      font-size: 1.2em;
+    `}
+  ${props => props.grouped && css``}
 `;
 
 class Content extends Component {
@@ -126,11 +150,14 @@ class Actions extends Component {
 
 class Field extends Component {
   render() {
-    const { label, children, ...props } = this.props;
+    const { label, children, prefix, ...props } = this.props;
     return (
       <FieldContainer {...props}>
         <span className="label">{label}</span>
-        {children}
+        <div className="input-container">
+          {prefix ? <span className="prefix">{prefix}</span> : null}
+          {children}
+        </div>
       </FieldContainer>
     );
   }
