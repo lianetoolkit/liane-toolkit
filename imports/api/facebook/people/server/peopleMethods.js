@@ -1219,19 +1219,24 @@ export const peopleFormConnectFacebook = new ValidatedMethod({
     );
 
     if (credential.serviceData && credential.serviceData.accessToken) {
-      const data = Promise.await(
-        FB.api(credential.serviceData.id, {
-          fields: ["id", "name", "email"],
-          access_token: credential.serviceData.accessToken
-        })
-      );
-      const pagesIds = Promise.await(
-        FB.api(credential.serviceData.id + "/ids_for_pages", {
-          app: Meteor.settings.facebook.clientId,
-          access_token: pageToken,
-          appsecret_proof: secretProof.update(pageToken).digest("hex")
-        })
-      );
+      let data, pagesIds;
+      try {
+        data = Promise.await(
+          FB.api(credential.serviceData.id, {
+            fields: ["id", "name", "email"],
+            access_token: credential.serviceData.accessToken
+          })
+        );
+        pagesIds = Promise.await(
+          FB.api(credential.serviceData.id + "/ids_for_pages", {
+            app: Meteor.settings.facebook.clientId,
+            access_token: pageToken,
+            appsecret_proof: secretProof.update(pageToken).digest("hex")
+          })
+        );
+      } catch (err) {
+        throw new Meteor.Error(500, "Unexpected error, please try again.");
+      }
       const facebookId = pagesIds.data.find(
         pageId => pageId.page.id == campaign.facebookAccount.facebookId
       ).id;

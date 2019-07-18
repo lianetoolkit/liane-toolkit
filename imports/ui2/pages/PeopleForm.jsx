@@ -7,7 +7,7 @@ import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DatePicker from "react-datepicker";
 
-import { alertStore } from "../containers/Alerts.jsx";
+import Alerts, { alertStore } from "../containers/Alerts.jsx";
 
 import AddressField from "../components/AddressField.jsx";
 import SkillsField from "../components/SkillsField.jsx";
@@ -372,6 +372,7 @@ export default class PeopleForm extends Component {
               <input type="submit" value="Enviar" />
             </Form>
           </Container>
+          <Alerts />
         </>
       );
     } else {
