@@ -1212,12 +1212,8 @@ export const peopleFormConnectFacebook = new ValidatedMethod({
 
     const credential = Facebook.retrieveCredential(token, secret);
 
-    console.log(credential);
-
     const campaign = Campaigns.findOne(campaignId);
     const pageToken = campaign.facebookAccount.accessToken;
-
-    console.log(pageToken);
 
     const secretProof = crypto.createHmac(
       "sha256",
