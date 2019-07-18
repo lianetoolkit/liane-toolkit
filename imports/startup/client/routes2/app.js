@@ -22,6 +22,7 @@ import ChatbotPage from "/imports/ui2/pages/chatbot/index.jsx";
 
 import CampaignSettingsPage from "/imports/ui2/pages/campaign/settings/General.jsx";
 import CampaignAccountsPage from "/imports/ui2/pages/campaign/settings/Accounts.jsx";
+import CampaignTeamPage from "/imports/ui2/pages/campaign/settings/Team.jsx";
 import CampaignActionsPage from "/imports/ui2/pages/campaign/settings/Actions.jsx";
 import NewCampaignPage from "/imports/ui2/containers/campaign/New.jsx";
 
@@ -169,11 +170,18 @@ appRoutes.route("/campaign/settings", {
     return mount(App, { content: { component: CampaignSettingsPage } });
   }
 });
-appRoutes.route("/campaign/settings/accounts", {
-  name: "App.campaign.accounts",
+appRoutes.route("/campaign/settings/facebook", {
+  name: "App.campaign.facebook",
   action: function() {
-    addTitle(`${APP_NAME} | Campaign Accounts`);
+    addTitle(`${APP_NAME} | Campaign Facebook Settings`);
     return mount(App, { content: { component: CampaignAccountsPage } });
+  }
+});
+appRoutes.route("/campaign/settings/team", {
+  name: "App.campaign.team",
+  action: function() {
+    addTitle(`${APP_NAME} | Campaign Team`);
+    return mount(App, { content: { component: CampaignTeamPage } });
   }
 });
 appRoutes.route("/campaign/settings/actions", {

@@ -645,11 +645,10 @@ export const removeUser = new ValidatedMethod({
     }
 
     const campaign = Campaigns.findOne(campaignId);
-    if (!campaign) {
-      throw new Meteor.Error(401, "This campaign does not exist");
-    }
 
-    if (Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    if (
+      !Meteor.call("campaigns.canManage", { userId: currentUser, campaignId })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 

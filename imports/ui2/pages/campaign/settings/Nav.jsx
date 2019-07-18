@@ -15,12 +15,17 @@ export default class SettingsNav extends Component {
           Configurações gerais
         </a>
         <a
-          href={FlowRouter.path("App.campaign.accounts")}
-          className={currentRoute == "App.campaign.accounts" ? "active" : ""}
+          href={FlowRouter.path("App.campaign.facebook")}
+          className={currentRoute == "App.campaign.facebook" ? "active" : ""}
         >
           Contas de Facebook
         </a>
-        <a href="javascript:void(0);">Equipe</a>
+        <a
+          href={FlowRouter.path("App.campaign.team")}
+          className={currentRoute == "App.campaign.team" ? "active" : ""}
+        >
+          Equipe
+        </a>
         <a
           href={FlowRouter.path("App.campaign.actions")}
           className={currentRoute == "App.campaign.actions" ? "active" : ""}
