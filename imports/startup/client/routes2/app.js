@@ -9,6 +9,8 @@ import DashboardPage from "/imports/ui2/pages/Dashboard.jsx";
 import PeoplePage from "/imports/ui2/pages/People.jsx";
 import AuthPage from "/imports/ui2/pages/Auth.jsx";
 
+import PeopleFormPage from "/imports/ui2/containers/PeopleFormPage.jsx";
+
 import MapPage from "/imports/ui2/containers/MapPage.jsx";
 import FAQPage from "/imports/ui2/containers/FAQPage.jsx";
 import CommentsPage from "/imports/ui2/containers/CommentsPage.jsx";
@@ -36,6 +38,29 @@ appRoutes.route("/", {
   action: function() {
     addTitle(`${APP_NAME} | Dashboard`);
     return mount(App, { content: { component: DashboardPage } });
+  }
+});
+
+appRoutes.route("/f/:formId?", {
+  name: "App.peopleForm",
+  action: function(params, queryParams) {
+    addTitle(`${APP_NAME} | Ajude a campanha!`);
+    return mount(PeopleFormPage, {
+      formId: params.formId,
+      campaignId: queryParams.c
+    });
+  }
+});
+
+appRoutes.route("/f/:campaignSlug/:formId?", {
+  name: "App.campaignForm",
+  action: function(params, queryParams) {
+    addTitle(`${APP_NAME}`);
+    console.log(params, queryParams);
+    return mount(PeopleFormPage, {
+      campaignSlug: params.campaignSlug,
+      formId: params.formId
+    });
   }
 });
 

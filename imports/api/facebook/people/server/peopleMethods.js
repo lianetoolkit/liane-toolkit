@@ -15,6 +15,7 @@ import { get, set, merge, pick, compact, uniq } from "lodash";
 import cep from "cep-promise";
 import { Random } from "meteor/random";
 import redisClient from "/imports/startup/server/redis";
+import crypto from "crypto";
 
 const recaptchaSecret = Meteor.settings.recaptcha;
 
@@ -1211,16 +1212,38 @@ export const peopleFormConnectFacebook = new ValidatedMethod({
 
     const credential = Facebook.retrieveCredential(token, secret);
 
+    console.log(credential);
+
+    const campaign = Campaigns.findOne(campaignId);
+    const pageToken = campaign.facebookAccount.accessToken;
+
+    console.log(pageToken);
+
+    const secretProof = crypto.createHmac(
+      "sha256",
+      Meteor.settings.facebook.clientSecret
+    );
+
     if (credential.serviceData && credential.serviceData.accessToken) {
       const data = Promise.await(
-        FB.api("me", {
+        FB.api(credential.serviceData.id, {
           fields: ["id", "name", "email"],
           access_token: credential.serviceData.accessToken
         })
       );
-      if (data && data.id) {
+      const pagesIds = Promise.await(
+        FB.api(credential.serviceData.id + "/ids_for_pages", {
+          app: Meteor.settings.facebook.clientId,
+          access_token: pageToken,
+          appsecret_proof: secretProof.update(pageToken).digest("hex")
+        })
+      );
+      const facebookId = pagesIds.data.find(
+        pageId => pageId.page.id == campaign.facebookAccount.facebookId
+      ).id;
+      if (data && facebookId) {
         People.upsert(
-          { campaignId, facebookId: data.id },
+          { campaignId, facebookId },
           {
             $set: {
               campaignId,
@@ -1229,7 +1252,7 @@ export const peopleFormConnectFacebook = new ValidatedMethod({
             }
           }
         );
-        const person = People.findOne({ campaignId, facebookId: data.id });
+        const person = People.findOne({ campaignId, facebookId });
         let formId = person.formId;
         if (!formId) formId = PeopleHelpers.updateFormId({ person });
         return formId;
@@ -1264,7 +1287,7 @@ export const peopleFormSubmit = new ValidatedMethod({
       optional: true
     },
     birthday: {
-      type: String,
+      type: Date,
       optional: true
     },
     address: {

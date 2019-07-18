@@ -231,21 +231,8 @@ Meteor.publishComposite("people.form.detail", function({ formId }) {
             {
               fields: {
                 name: 1,
+                country: 1,
                 "forms.crm": 1
-              }
-            }
-          );
-        }
-      },
-      {
-        find() {
-          return Contexts.find(
-            {
-              _id: campaign.contextId
-            },
-            {
-              fields: {
-                country: 1
               }
             }
           );

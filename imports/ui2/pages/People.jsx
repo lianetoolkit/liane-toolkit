@@ -329,12 +329,16 @@ export default class PeoplePage extends Component {
     const { lists } = this.props;
     let options = [
       {
+        value: "facebook",
+        label: "Facebook"
+      },
+      {
         value: "manual",
         label: "Manual"
       },
       {
-        value: "facebook",
-        label: "Facebook"
+        value: "form",
+        label: "Formulário"
       }
     ];
     if (lists.length) {
@@ -373,6 +377,9 @@ export default class PeoplePage extends Component {
           break;
         case /manual/.test(query.source):
           value.label = "Manual";
+          break;
+        case /form/.test(query.source):
+          value.label = "Formulário";
           break;
         case /list:/.test(query.source):
           value.label = lists.find(

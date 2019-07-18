@@ -218,6 +218,8 @@ export default class PeopleSingle extends Component {
     switch (person.source) {
       case "facebook":
         return "Facebook";
+      case "form":
+        return "Formulário";
       case "import":
         const list = lists.find(l => l._id == person.listId);
         if (list) {

@@ -109,28 +109,12 @@ Meteor.publishComposite("campaigns.publicDetail", function({
       return Campaigns.find(selector, {
         fields: {
           name: 1,
-          contextId: 1,
+          country: 1,
           "forms.slug": 1,
           "forms.crm": 1
         }
       });
-    },
-    children: [
-      {
-        find: function(campaign) {
-          return Contexts.find(
-            {
-              _id: campaign.contextId
-            },
-            {
-              fields: {
-                country: 1
-              }
-            }
-          );
-        }
-      }
-    ]
+    }
   };
 });
 
@@ -148,6 +132,7 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
           },
           {
             fields: {
+              country: 1,
               users: 1,
               accounts: 1,
               facebookAccount: 1,

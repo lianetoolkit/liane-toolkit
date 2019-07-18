@@ -297,7 +297,7 @@ export default class PersonMetaButtons extends React.Component {
     );
   }
   render() {
-    const { person, vertical, ...props } = this.props;
+    const { person, vertical, text, ...props } = this.props;
     let tooltipId = "person-meta-buttons";
     if (person) {
       tooltipId += `-${person._id}`;
@@ -312,11 +312,13 @@ export default class PersonMetaButtons extends React.Component {
         {this._metaButton(person ? person.campaignMeta : false, "voter")}
         {this._metaButton(person ? person.campaignMeta : false, "non-voter")}
         {this._metaButton(person ? person.campaignMeta : false, "troll")}
-        <ReactTooltip
-          id={tooltipId}
-          place={vertical ? "top" : "bottom"}
-          effect="solid"
-        />
+        {!text ? (
+          <ReactTooltip
+            id={tooltipId}
+            place={vertical ? "top" : "bottom"}
+            effect="solid"
+          />
+        ) : null}
       </Container>
     );
   }

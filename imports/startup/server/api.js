@@ -40,6 +40,7 @@ import "/imports/api/facebook/comments/server/commentsPublications.js";
 // people
 import "/imports/api/facebook/people/server/peopleMethods.js";
 import "/imports/api/facebook/people/server/peoplePublications.js";
+import "/imports/api/facebook/people/server/peopleRest.js";
 
 // audiences
 import "/imports/api/facebook/audiences/server/audiencesMethods.js";

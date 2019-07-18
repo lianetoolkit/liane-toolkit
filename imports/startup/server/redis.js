@@ -12,10 +12,6 @@ client.on("error", error => {
 
 client.on("connect", () => {
   logger.info("Connected to Redis Server");
-
-  deleteByPattern(
-    "audiences::result::be8d7a1e356f69923c79c18220c184e1f96115e7::*"
-  );
 });
 
 export default client;
