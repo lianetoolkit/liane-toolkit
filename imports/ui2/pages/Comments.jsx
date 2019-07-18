@@ -228,7 +228,7 @@ export default class CommentsPage extends Component {
                     Declarações de voto
                   </label>
                 </PageFilters.Category>
-                <label>
+                <label className="boxed">
                   <input
                     type="checkbox"
                     onChange={this._handleCheckboxChange}
@@ -238,7 +238,7 @@ export default class CommentsPage extends Component {
                   />
                   Ocultar respostas à comentários
                 </label>
-                <label>
+                <label className="boxed">
                   <input
                     type="checkbox"
                     onChange={this._handleCheckboxChange}
@@ -247,7 +247,7 @@ export default class CommentsPage extends Component {
                   />
                   Comentários sem respostas da página
                 </label>
-                <label>
+                <label className="boxed">
                   <input
                     type="checkbox"
                     onChange={this._handleCheckboxChange}
@@ -256,7 +256,7 @@ export default class CommentsPage extends Component {
                   />
                   Comentários que podem receber mensagem privada
                 </label>
-                <label>
+                <label className="boxed">
                   <input
                     type="checkbox"
                     onChange={this._handleCheckboxChange}

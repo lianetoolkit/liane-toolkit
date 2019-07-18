@@ -40,8 +40,20 @@ const FieldContainer = styled.label`
     align-items: center;
     border: 1px solid #ddd;
     border-radius: 7px;
-    input, textarea { border: 0; margin: 0; }
+    > * {
+      flex: 1 1 100%;
+      margin: 0;
+      border: 0;
+    }
+    input,
+    textarea,
+    .select-search__control,
+    .select__control {
+      border: 0;
+      margin: 0;
+    }
     .prefix {
+      flex: 0 0 auto;
       font-size: 0.9em;
       color: #999;
       padding: 0 0.5rem 0 1rem;

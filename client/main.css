@@ -170,14 +170,14 @@ input[type="submit"]:disabled {
 #app .select-search__control {
   background: transparent;
   border-radius: 7px;
-  margin: 0 0 1rem;
+  margin: 0;
 }
 
 #app .select__control,
 #app .select__control--is-focused,
 #app .select-search__control,
 #app .select-search__control--is-focused {
-  border: 1px solid #ddd;
+  border: 0;
   box-shadow: none;
 }
 

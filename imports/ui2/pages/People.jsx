@@ -13,6 +13,7 @@ import PeopleExport from "../components/PeopleExport.jsx";
 import { PersonImportButton } from "../components/PersonImport.jsx";
 import Button from "../components/Button.jsx";
 import More from "../components/More.jsx";
+import Form from "../components/Form.jsx";
 import Page from "../components/Page.jsx";
 
 import PageFilters from "../components/PageFilters.jsx";
@@ -466,26 +467,30 @@ export default class PeoplePage extends Component {
                   value={query.q}
                   className="main-input"
                 />
-                <Select
-                  classNamePrefix="select"
-                  options={this.categoriesOptions()}
-                  isSearchable={false}
-                  isClearable={true}
-                  onChange={this._handleSelectChange}
-                  name="category"
-                  value={this.getCategoryValue()}
-                  placeholder="Filtrar por categoria"
-                />
-                <Select
-                  classNamePrefix="select"
-                  options={this.getSourceOptions()}
-                  isSearchable={false}
-                  isClearable={true}
-                  onChange={this._handleSelectChange}
-                  name="source"
-                  value={this.getSourceValue()}
-                  placeholder="Filtrar por origem"
-                />
+                <Form.Field>
+                  <Select
+                    classNamePrefix="select"
+                    options={this.categoriesOptions()}
+                    isSearchable={false}
+                    isClearable={true}
+                    onChange={this._handleSelectChange}
+                    name="category"
+                    value={this.getCategoryValue()}
+                    placeholder="Filtrar por categoria"
+                  />
+                </Form.Field>
+                <Form.Field>
+                  <Select
+                    classNamePrefix="select"
+                    options={this.getSourceOptions()}
+                    isSearchable={false}
+                    isClearable={true}
+                    onChange={this._handleSelectChange}
+                    name="source"
+                    value={this.getSourceValue()}
+                    placeholder="Filtrar por origem"
+                  />
+                </Form.Field>
                 {this.props.tags && this.props.tags.length ? (
                   <TagFilter
                     tags={this.props.tags}
@@ -495,7 +500,7 @@ export default class PeoplePage extends Component {
                     placeholder="Filtrar por tag"
                   />
                 ) : null}
-                <label>
+                <label className="boxed">
                   <input
                     type="checkbox"
                     checked={query.form}
@@ -509,7 +514,7 @@ export default class PeoplePage extends Component {
                     </span>
                   </span>
                 </label>
-                <label>
+                <label className="boxed">
                   <input
                     type="checkbox"
                     checked={query.commented}
@@ -523,7 +528,7 @@ export default class PeoplePage extends Component {
                     </span>
                   </span>
                 </label>
-                <label>
+                <label className="boxed">
                   <input
                     type="checkbox"
                     checked={query.private_reply}
@@ -538,7 +543,7 @@ export default class PeoplePage extends Component {
                   </span>
                 </label>
                 {peopleHistory && peopleHistory.total ? (
-                  <label>
+                  <label className="boxed">
                     <PeopleHistoryChart
                       data={peopleHistory}
                       onChange={this._handleDateChange}

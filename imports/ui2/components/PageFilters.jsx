@@ -36,7 +36,7 @@ const Container = styled.div`
       }
     }
   }
-  label {
+  label.boxed {
     display: flex;
     align-items: center;
     border-radius: 7px;
