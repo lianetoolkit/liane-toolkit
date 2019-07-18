@@ -20,6 +20,8 @@ import PagePaging from "../components/PagePaging.jsx";
 import PeopleTable from "../components/PeopleTable.jsx";
 import PeopleHistoryChart from "../components/PeopleHistoryChart.jsx";
 
+import PersonEdit from "../components/PersonEdit.jsx";
+
 import PeopleLists from "../components/PeopleLists.jsx";
 import PeopleExports from "../components/PeopleExports.jsx";
 
@@ -32,6 +34,7 @@ const PeopleContent = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100%;
+  position: relative;
   .people-nav {
     flex: 0 0 auto;
   }
@@ -40,6 +43,7 @@ const PeopleContent = styled.div`
     overflow-x: hidden;
     overflow-y: auto;
     transition: opacity 0.1s linear;
+    padding-bottom: 4rem;
   }
   .not-found {
     font-size: 1.5em;
@@ -55,6 +59,22 @@ const PeopleContent = styled.div`
         opacity: 0.25;
       }
     `}
+  .new-person {
+    position: absolute;
+    bottom: 1rem;
+    right: 2rem;
+    .button {
+      background: #003399;
+      border: 0;
+      color: #fff;
+      margin: 0;
+      &:hover,
+      &:active,
+      &:focus {
+        background: #333;
+      }
+    }
+  }
 `;
 
 const Message = styled.p`
@@ -404,6 +424,20 @@ export default class PeoplePage extends Component {
     modalStore.setTitle("Gerenciar exportações");
     modalStore.set(<PeopleExports peopleExports={peopleExports} />);
   };
+  _handleNewClick = ev => {
+    ev.preventDefault();
+    modalStore.setTitle("Criando nova pessoa");
+    modalStore.set(
+      <PersonEdit
+        person={{}}
+        onSuccess={(res, type, data) => {
+          if (type == "created") {
+            modalStore.setTitle(`Editando perfil de ${data.name}`);
+          }
+        }}
+      />
+    );
+  };
   render() {
     const { campaign, importCount, exportCount, peopleExports } = this.props;
     const {
@@ -615,6 +649,9 @@ export default class PeoplePage extends Component {
               scrollable
             />
           )}
+          <div className="new-person">
+            <Button onClick={this._handleNewClick}>+ Nova pessoa</Button>
+          </div>
         </PeopleContent>
       </>
     );

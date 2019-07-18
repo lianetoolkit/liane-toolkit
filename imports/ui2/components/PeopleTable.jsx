@@ -175,6 +175,7 @@ export default class PeopleTable extends Component {
     }
     let target = false;
     if (document.activeElement && document.activeElement.contains(this.node)) {
+      console.log(ev.keyCode);
       switch (ev.keyCode) {
         case 27: // esc
           if (curIndex > -1) {
@@ -202,6 +203,12 @@ export default class PeopleTable extends Component {
             );
           }
           break;
+        case 13: // (Enter) access profile
+          if (curIndex > -1) {
+            FlowRouter.go("App.people.detail", {
+              personId: people[curIndex]._id
+            });
+          }
         default:
       }
     }

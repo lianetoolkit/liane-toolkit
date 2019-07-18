@@ -41,7 +41,7 @@ export default class PersonEdit extends Component {
     };
   }
   static getDerivedStateFromProps({ person }, state) {
-    if (person._id !== state.id) {
+    if (person._id && person._id !== state.id) {
       return {
         id: person._id,
         formData: {
@@ -97,29 +97,58 @@ export default class PersonEdit extends Component {
     ev.preventDefault();
     const { onSuccess, onError } = this.props;
     const { id, sectionKey, formData } = this.state;
-    Meteor.call(
-      "people.metaUpdate",
-      {
-        campaignId: Session.get("campaignId"),
-        personId: id,
-        name: formData.name,
-        sectionKey,
-        data: formData[sectionKey]
-      },
-      (err, res) => {
-        if (!err) {
-          alertStore.add("Perfil atualizado com sucesso.", "success");
-          if (onSuccess) {
-            onSuccess(res);
-          }
-        } else {
-          alertStore.add(err);
-          if (onError) {
-            onError(err);
+    const campaignId = Session.get("campaignId");
+    console.log(id);
+    const update = createdId => {
+      Meteor.call(
+        "people.metaUpdate",
+        {
+          campaignId: Session.get("campaignId"),
+          personId: id || createdId,
+          name: formData.name,
+          sectionKey,
+          data: formData[sectionKey]
+        },
+        (err, res) => {
+          if (!err) {
+            alertStore.add("Perfil atualizado com sucesso.", "success");
+            if (onSuccess) {
+              onSuccess(res, "updated", formData);
+            }
+          } else {
+            alertStore.add(err);
+            if (onError) {
+              onError(err);
+            }
           }
         }
-      }
-    );
+      );
+    };
+    if (!id) {
+      Meteor.call(
+        "people.create",
+        { name: formData.name, campaignId },
+        (err, res) => {
+          if (err) {
+            alertStore.add(err);
+            if (onError) {
+              onError(err);
+            }
+          } else {
+            console.log(res);
+            this.setState({
+              id: res
+            });
+            update(res);
+            if (onSuccess) {
+              onSuccess(res, "created", formData);
+            }
+          }
+        }
+      );
+    } else {
+      update();
+    }
   };
   genderOptions = [
     {

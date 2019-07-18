@@ -811,7 +811,8 @@ export const peopleCreate = new ValidatedMethod({
 
     return People.insert({
       campaignId,
-      name
+      name,
+      source: "manual"
     });
   }
 });
