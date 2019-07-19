@@ -4,11 +4,11 @@ import { mount } from "react-mounter";
 import { pick } from "lodash";
 
 import App from "/imports/ui2/containers/App.jsx";
-
-import PeoplePage from "/imports/ui2/pages/People.jsx";
+import MyAccount from "/imports/ui2/pages/MyAccount.jsx";
 
 import PeopleFormPage from "/imports/ui2/containers/PeopleFormPage.jsx";
 
+import PeoplePage from "/imports/ui2/pages/People.jsx";
 import MapPage from "/imports/ui2/containers/MapPage.jsx";
 import FAQPage from "/imports/ui2/containers/FAQPage.jsx";
 import CommentsPage from "/imports/ui2/containers/CommentsPage.jsx";
@@ -51,11 +51,11 @@ appRoutes.route("/f/:formId?", {
   }
 });
 
-appRoutes.route("/auth", {
-  name: "App.auth",
+appRoutes.route("/account", {
+  name: "App.account",
   action: function() {
-    addTitle(`${APP_NAME} | Authentication`);
-    return mount(App, { content: { component: AuthPage } });
+    addTitle(`${APP_NAME} | My account`);
+    return mount(App, { content: { component: MyAccount } });
   }
 });
 

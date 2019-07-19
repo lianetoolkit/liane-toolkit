@@ -178,7 +178,7 @@ class SettingsNav extends Component {
               <Dropdown.Separator />
             </>
           ) : null}
-          <Dropdown.NavItem href="#">
+          <Dropdown.NavItem href={FlowRouter.path("App.account")}>
             <FormattedMessage id="app.my_account" defaultMessage="My account" />
           </Dropdown.NavItem>
           <Dropdown.NavItem href="javascript:void(0);" onClick={this._logout()}>

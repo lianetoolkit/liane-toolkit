@@ -1,6 +1,9 @@
 import { Promise } from "meteor/promise";
 import _ from "underscore";
 
+import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
+import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+
 const UsersHelpers = {
   supervise({ userId }) {
     check(userId, String);
@@ -91,6 +94,35 @@ const UsersHelpers = {
     return Meteor.users.findOne({
       "services.facebook.accessToken": token
     });
+  },
+  removeUser({ userId }) {
+    check(userId, String);
+
+    if (!userId) throw new Meteor.Error(400, "Missing user id");
+
+    const user = Meteor.users.findOne(userId);
+
+    if (!user) throw new Meteor.Error(404, "User not found");
+
+    // Remove user campaigns
+    const userCampaigns = Campaigns.find({ creatorId: userId }).fetch();
+    for (const campaign of userCampaigns) {
+      CampaignsHelpers.removeCampaign({ campaignId: campaign._id });
+    }
+
+    // Revoke Facebook permissions
+    try {
+      Promise.await(
+        FB.api(user.services.facebook.id + "/permissions", "DELETE", {
+          access_token: user.services.facebook.accessToken
+        })
+      );
+    } catch (err) {
+      console.log(err);
+      console.log("error revoking facebook permissions");
+    }
+
+    return Meteor.users.remove(userId);
   }
 };
 

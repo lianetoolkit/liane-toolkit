@@ -417,7 +417,9 @@ export default class Home extends Component {
                   </p>
                   <input type="text" disabled value={user.emails[0].address} />
                   <Button.Group>
-                    <Button>Minha conta</Button>
+                    <Button href={FlowRouter.path("App.account")}>
+                      Minha conta
+                    </Button>
                     <Button
                       onClick={() => {
                         Meteor.logout();

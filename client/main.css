@@ -133,6 +133,7 @@ input[type="submit"] {
   font-weight: 600;
   letter-spacing: 0.03rem;
   margin: 0;
+  text-decoration: none;
 }
 
 .button.delete,
@@ -161,8 +162,8 @@ input[type="submit"]:focus {
   background: #333;
 }
 input[type="submit"]:disabled {
-  background: #bbb;
-  color: #fff;
+  background: #bbb !important;
+  color: #fff !important;
   cursor: default;
 }
 

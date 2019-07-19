@@ -150,7 +150,22 @@ export const removeUser = new ValidatedMethod({
       throw new Meteor.Error(403, "Access denied");
     }
 
-    return Meteor.users.remove(userId);
+    return UsersHelpers.removeUser({ userId });
+  }
+});
+
+export const removeSelfUser = new ValidatedMethod({
+  name: "users.removeSelf",
+  validate() {},
+  run() {
+    logger.debug("users.removeSelf called");
+
+    const currentUser = Meteor.userId();
+    if (!currentUser) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    return UsersHelpers.removeUser({ userId: currentUser });
   }
 });
 
