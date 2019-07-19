@@ -122,7 +122,10 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
   this.unblock();
   const currentUser = this.userId;
   logger.debug("campaigns.detail pub", { campaignId });
-  if (currentUser) {
+  if (
+    currentUser &&
+    Meteor.call("campaigns.canManage", { campaignId, userId: currentUser })
+  ) {
     return {
       find: function() {
         return Campaigns.find(
