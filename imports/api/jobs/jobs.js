@@ -8,5 +8,8 @@ Meteor.startup(() => {
     Jobs.rawCollection().createIndex({
       type: 1
     });
+    Jobs.rawCollection().createIndex({
+      status: 1
+    });
   }
 });

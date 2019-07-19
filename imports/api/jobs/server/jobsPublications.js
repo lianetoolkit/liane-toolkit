@@ -1,5 +1,32 @@
 const { Jobs } = require("/imports/api/jobs/jobs.js");
 
+Meteor.publish("jobs.byCampaign", function({ campaignId, type, status }) {
+  this.unblock();
+  const currentUser = this.userId;
+  if (
+    currentUser &&
+    Meteor.call("campaigns.canManage", { campaignId, userId: currentUser })
+  ) {
+    let selector = { "data.campaignId": campaignId };
+    if (type) {
+      selector.type = type;
+    }
+    if (status) {
+      selector.status = status;
+    }
+    return Jobs.find(selector, {
+      fields: {
+        repeated: 1,
+        status: 1,
+        data: 1,
+        type: 1
+      }
+    });
+  } else {
+    return this.ready();
+  }
+});
+
 Meteor.publish("admin.jobs.counter", function({ search }) {
   this.unblock();
   const currentUser = this.userId;
@@ -19,7 +46,7 @@ Meteor.publish("admin.jobs", function({ search, limit, orderBy, fields }) {
       sort: {},
       limit: Math.min(limit, 1000)
     };
-    if(fields) {
+    if (fields) {
       options.fields = fields;
     }
     if (orderBy) options["sort"][orderBy.field] = orderBy.ordering;
