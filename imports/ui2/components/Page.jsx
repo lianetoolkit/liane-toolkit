@@ -211,7 +211,7 @@ export default class Page extends Component {
         <Header
           campaigns={campaigns}
           campaign={campaign}
-          notifications={notifications}
+          notifications={notifications || []}
         />
         <PageBody id="main" tabIndex="-1">
           {children}

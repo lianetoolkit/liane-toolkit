@@ -78,7 +78,7 @@ export default class DashboardPage extends Component {
             </div>
           </Dashboard.Box>
         </Dashboard.Row>
-        <Dashboard.Row>
+        {/* <Dashboard.Row>
           <Dashboard.Box grow="2">
             <Dashboard.Title>Teste</Dashboard.Title>
             <p>Teste</p>
@@ -152,7 +152,7 @@ export default class DashboardPage extends Component {
           <Dashboard.Box>
             <p>Teste</p>
           </Dashboard.Box>
-        </Dashboard.Row>
+        </Dashboard.Row> */}
       </Dashboard>
     );
   }
