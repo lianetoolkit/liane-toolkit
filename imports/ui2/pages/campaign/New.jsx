@@ -4,6 +4,7 @@ import { alertStore } from "../../containers/Alerts.jsx";
 
 import Page from "../../components/Page.jsx";
 import Form from "../../components/Form.jsx";
+import Loading from "../../components/Loading.jsx";
 import SelectAccount from "../../components/facebook/SelectAccount.jsx";
 import CountrySelect from "../../components/CountrySelect.jsx";
 import GeolocationSelect from "../../components/GeolocationSelect.jsx";
@@ -74,6 +75,7 @@ export default class NewCampaignPage extends Component {
     return (
       <Form onSubmit={this._handleSubmit}>
         <Form.Content>
+          {loading ? <Loading full /> : null}
           <Page.Title>Criando Nova Campanha</Page.Title>
           <Form.Field label="Define um nome para sua campanha">
             <input
