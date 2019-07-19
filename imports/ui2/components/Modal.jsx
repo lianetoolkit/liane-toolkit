@@ -95,7 +95,6 @@ export default class Modal extends Component {
     if (children) {
       return (
         <Container
-          id="modal"
           active={!!children}
           className={className}
           tabIndex="-1"

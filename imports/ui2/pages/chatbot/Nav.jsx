@@ -103,6 +103,12 @@ export default class ChatbotNav extends Component {
         >
           Configurações gerais
         </a>
+        <a
+          href={FlowRouter.path("App.chatbot", {}, { module: "actions" })}
+          className={module == "actions" ? "active" : ""}
+        >
+          Ações
+        </a>
         <h3>Módulos</h3>
         <ModuleLink
           active={isModuleActive(chatbot, "info")}

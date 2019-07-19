@@ -11,6 +11,61 @@ import Content from "/imports/ui2/components/Content.jsx";
 import Loading from "/imports/ui2/components/Loading.jsx";
 import Form from "/imports/ui2/components/Form.jsx";
 
+const Container = styled.div`
+  header {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+    .chatbot-status {
+      flex: 0 0 auto;
+      margin: 0 2rem 0 0;
+      font-weight: 600;
+      p {
+        margin: 0;
+      }
+    }
+    .toggle-chatbot {
+      flex: 1 1 100%;
+      color: #999;
+      text-decoration: none;
+      font-size: 0.8em;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      > * {
+        display: inline-block;
+      }
+      .fa-toggle-off,
+      .fa-toggle-on {
+        font-size: 2em;
+        display: inline-block;
+        margin-right: 1rem;
+      }
+      .fa-toggle-off {
+        color: #ccc;
+      }
+      .fa-toggle-on {
+        color: green;
+      }
+      &:hover {
+        .fa-toggle-off {
+          color: green;
+        }
+        .fa-toggle-on {
+          color: #333;
+        }
+      }
+    }
+    .button {
+      display: block;
+      margin: 0;
+      white-space: nowrap;
+    }
+  }
+`;
+
 export default class ChatbotGeneralSettings extends Component {
   constructor(props) {
     super(props);
@@ -27,23 +82,23 @@ export default class ChatbotGeneralSettings extends Component {
     }
     return null;
   }
-  _handleActivationClick = ev => {
+  _handleTestClick = ev => {
     ev.preventDefault();
     const { campaign } = this.props;
-    const active = get(campaign.facebookAccount, "chatbot.active");
-    let msg = "Você tem certeza que deseja ativar o chatbot?";
-    if (active) {
-      msg = "Você tem certeza que deseja remover o chatbot?";
+    const test = get(campaign.facebookAccount, "chatbot.config.test");
+    let msg = "Você tem certeza que deseja tornar o chatbot público?";
+    if (!test) {
+      msg = "Você tem certeza que deseja tornar o chatbot privado para testes?";
     }
     if (confirm(msg)) {
       this.setState({
         loading: true
       });
       Meteor.call(
-        "chatbot.activation",
+        "chatbot.testMode",
         {
           campaignId: campaign._id,
-          active: !active
+          test: !test
         },
         (err, res) => {
           this.setState({
@@ -52,17 +107,19 @@ export default class ChatbotGeneralSettings extends Component {
           if (err) {
             alertStore.add(err);
           } else {
-            this.setState({
-              formData: res
-            });
             alertStore.add("Atualizado", "success");
           }
         }
       );
     }
   };
+  _isTest = () => {
+    const { campaign } = this.props;
+    return get(campaign.facebookAccount, "chatbot.config.test");
+  };
   _isActive = () => {
-    return this.state.formData && this.state.formData.active;
+    const { campaign } = this.props;
+    return get(campaign.facebookAccount, "chatbot.config.active");
   };
   _handleChange = ({ target }) => {
     const { formData } = this.state;
@@ -101,7 +158,7 @@ export default class ChatbotGeneralSettings extends Component {
           alertStore.add(err);
         } else {
           this.setState({
-            formData: res
+            formData: res.config
           });
           alertStore.add("Atualizado", "success");
         }
@@ -116,68 +173,70 @@ export default class ChatbotGeneralSettings extends Component {
     return (
       <Form onSubmit={this._handleSubmit}>
         <Form.Content>
-          <header>
-            <div className="chatbot-status">
-              {this._isActive() ? (
-                <p>O chatbot está ativado</p>
-              ) : (
-                <p>O chatbot está desativado</p>
-              )}
-            </div>
-            <a
-              href="javascript:void(0);"
-              className="toggle-chatbot"
-              onClick={this._handleActivationClick}
-            >
-              <FontAwesomeIcon
-                icon={this._isActive() ? "toggle-on" : "toggle-off"}
+          <Container>
+            <header>
+              <div className="chatbot-status">
+                {!this._isTest() ? (
+                  <p>O chatbot está público</p>
+                ) : (
+                  <p>O chatbot está em modo de testes</p>
+                )}
+              </div>
+              <a
+                href="javascript:void(0);"
+                className="toggle-chatbot"
+                onClick={this._handleTestClick}
+              >
+                <FontAwesomeIcon
+                  icon={!this._isTest() ? "toggle-on" : "toggle-off"}
+                />
+                {this._isTest() ? (
+                  <span>Tornar público</span>
+                ) : (
+                  <span>Tornar privado</span>
+                )}
+              </a>
+              {!this._isTest() ? <Button>Divulgar chatbot</Button> : null}
+            </header>
+            <Form.Field label="Nome para apresentar candidatura">
+              <input
+                type="text"
+                name="extra_info.candidate"
+                value={this.getValue("extra_info.candidate")}
+                disabled={!this._isActive()}
+                onChange={this._handleChange}
               />
-              {!this._isActive() ? (
-                <span>Ativar chatbot</span>
-              ) : (
-                <span>Desativar chatbot</span>
-              )}
-            </a>
-            {this._isActive() ? <Button>Divulgar chatbot</Button> : null}
-          </header>
-          <Form.Field label="Nome para apresentar candidatura">
-            <input
-              type="text"
-              name="extra_info.candidate"
-              value={this.getValue("extra_info.candidate")}
-              disabled={!this._isActive()}
-              onChange={this._handleChange}
-            />
-          </Form.Field>
-          <Form.Field label="Número da candidatura (se aplicável)">
-            <input
-              type="text"
-              name="extra_info.candidate_number"
-              value={this.getValue("extra_info.candidate_number")}
-              disabled={!this._isActive()}
-              onChange={this._handleChange}
-              size="3"
-            />
-          </Form.Field>
-          <Form.Field label="Apresentação">
-            <textarea
-              placeholder="Descreva brevemente sobre sua campanha"
-              name="extra_info.campaign_presentation"
-              value={this.getValue("extra_info.campaign_presentation")}
-              disabled={!this._isActive()}
-              onChange={this._handleChange}
-            />
-          </Form.Field>
-          {/* <label>
-            <input
-              type="checkbox"
-              name="text_response"
-              checked={this.getValue("text_response")}
-              disabled={!this._isActive()}
-              onChange={this._handleChange}
-            />{" "}
-            Ativar em mensagem inicial
-          </label> */}
+            </Form.Field>
+            <Form.Field label="Número da candidatura (se aplicável)">
+              <input
+                type="text"
+                name="extra_info.candidate_number"
+                value={this.getValue("extra_info.candidate_number")}
+                disabled={!this._isActive()}
+                onChange={this._handleChange}
+                size="3"
+              />
+            </Form.Field>
+            <Form.Field label="Apresentação">
+              <textarea
+                placeholder="Descreva brevemente sobre sua campanha"
+                name="extra_info.campaign_presentation"
+                value={this.getValue("extra_info.campaign_presentation")}
+                disabled={!this._isActive()}
+                onChange={this._handleChange}
+              />
+            </Form.Field>
+            {/* <label>
+                <input
+                type="checkbox"
+                name="text_response"
+                checked={this.getValue("text_response")}
+                disabled={!this._isActive()}
+                onChange={this._handleChange}
+              />{" "}
+              Ativar em mensagem inicial
+            </label> */}
+          </Container>
         </Form.Content>
         <Form.Actions>
           <input

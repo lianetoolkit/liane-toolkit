@@ -14,6 +14,7 @@ import Form from "/imports/ui2/components/Form.jsx";
 import ChatbotNav from "./Nav.jsx";
 
 import GeneralSettings from "./modules/General.jsx";
+import Actions from "./modules/Actions.jsx";
 import ModuleInfo from "./modules/Info.jsx";
 import ModuleProposals from "./modules/Proposals.jsx";
 import ModuleAutoReply from "./modules/AutoReply.jsx";
@@ -24,64 +25,71 @@ const Container = styled.div`
   /* max-width: 960px; */
   width: 100%;
   display: flex;
-  header {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 2rem;
-    margin-bottom: 2rem;
-    .chatbot-status {
-      flex: 0 0 auto;
-      margin: 0 2rem 0 0;
-      font-weight: 600;
-      p {
-        margin: 0;
-      }
-    }
-    .toggle-chatbot {
-      flex: 1 1 100%;
-      color: #999;
-      text-decoration: none;
-      font-size: 0.8em;
-      line-height: 1;
-      display: flex;
-      align-items: center;
-      > * {
-        display: inline-block;
-      }
-      .fa-toggle-off,
-      .fa-toggle-on {
-        font-size: 2em;
-        display: inline-block;
-        margin-right: 1rem;
-      }
-      .fa-toggle-off {
-        color: #ccc;
-      }
-      .fa-toggle-on {
-        color: green;
-      }
-      &:hover {
-        .fa-toggle-off {
-          color: green;
-        }
-        .fa-toggle-on {
-          color: #333;
-        }
-      }
-    }
-    .button {
-      display: block;
-      margin: 0;
-      white-space: nowrap;
-    }
-  }
   section {
     &.disabled > * {
       opacity: 0.5;
     }
   }
 `;
+
+const CreateContainer = styled.div`
+  display: flex;
+  flex: 1 1 100%;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-size: 1.2em;
+  p {
+    color: #999;
+    font-style: italic;
+  }
+  .button {
+    padding: 1rem 2rem;
+  }
+`;
+
+class CreateChatbot extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false
+    };
+  }
+  _handleClick = () => {
+    const { campaign, onCreate } = this.props;
+    this.setState({
+      loading: true
+    });
+    Meteor.call(
+      "chatbot.activation",
+      {
+        campaignId: campaign._id,
+        active: true
+      },
+      (err, res) => {
+        this.setState({
+          loading: false
+        });
+        if (err) {
+          alertStore.add(err);
+        } else {
+          onCreate && onCreate();
+        }
+      }
+    );
+  };
+  render() {
+    const { loading } = this.state;
+    return (
+      <CreateContainer>
+        <p>O chatbot não está habilitado</p>
+        <Button primary onClick={this._handleClick} disabled={loading}>
+          Habilitar chatbot
+        </Button>
+      </CreateContainer>
+    );
+  }
+}
 
 class ChatbotPage extends Component {
   constructor(props) {
@@ -94,30 +102,29 @@ class ChatbotPage extends Component {
   componentDidMount() {
     this.fetch();
   }
+  componentDidUpdate(prevProps, prevState) {
+    const { campaign } = this.props;
+    const { loading, chatbot } = this.state;
+  }
   fetch = () => {
     const { campaign } = this.props;
     this.setState({
       loading: true
     });
-    Meteor.call(
-      "chatbot.get",
-      { campaignId: campaign._id },
-      (err, res) => {
+    Meteor.call("chatbot.get", { campaignId: campaign._id }, (err, res) => {
+      if (err) {
+        alertStore.add(err);
         this.setState({
-          loading: false
+          loading: false,
+          chatbot: {}
         });
-        if (err) {
-          alertStore.add(err);
-          this.setState({
-            chatbot: {}
-          });
-        } else {
-          this.setState({
-            chatbot: res
-          });
-        }
+      } else {
+        this.setState({
+          loading: false,
+          chatbot: res
+        });
       }
-    );
+    });
   };
   _handleChange = data => {
     this.setState({
@@ -132,6 +139,9 @@ class ChatbotPage extends Component {
     }
     let content = { component: null };
     switch (module) {
+      case "actions":
+        content.component = Actions;
+        break;
       case "info":
         content.component = ModuleInfo;
         break;
@@ -152,12 +162,21 @@ class ChatbotPage extends Component {
     }
     return (
       <Container>
-        <ChatbotNav chatbot={chatbot} module={module} />
-        <content.component
-          campaign={campaign}
-          chatbot={chatbot}
-          onChange={this._handleChange}
-        />
+        {!loading && (!chatbot || !chatbot.config || !chatbot.config.idPage) ? (
+          <CreateChatbot campaign={campaign} onCreate={this.fetch} />
+        ) : (
+          <>
+            <ChatbotNav
+              chatbot={campaign.facebookAccount.chatbot}
+              module={module}
+            />
+            <content.component
+              campaign={campaign}
+              chatbot={campaign.facebookAccount.chatbot}
+              onChange={this._handleChange}
+            />
+          </>
+        )}
       </Container>
     );
   }

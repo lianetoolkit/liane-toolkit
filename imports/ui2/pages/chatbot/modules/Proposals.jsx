@@ -52,6 +52,9 @@ const ProposalInputContainer = styled.div`
       }
     }
   }
+  .button {
+    font-size: 0.8em;
+  }
 `;
 
 class ProposalInput extends Component {
@@ -66,8 +69,10 @@ class ProposalInput extends Component {
   };
   _handleRemoveClick = () => {
     const { onRemove } = this.props;
-    if (onRemove && typeof onRemove == "function") {
-      onRemove();
+    if (confirm("Você tem certeza?")) {
+      if (onRemove && typeof onRemove == "function") {
+        onRemove();
+      }
     }
   };
   _handlePrimaryClick = () => {
@@ -109,13 +114,6 @@ class ProposalInput extends Component {
             onChange={this._handleChange}
           />
         </Form.Field>
-        <Form.Field secondary label="Descrição da proposta">
-          <textarea
-            name="description"
-            value={value.description}
-            onChange={this._handleChange}
-          />
-        </Form.Field>
         <Form.Field secondary label="Pergunta para contribuição na proposta">
           <input
             type="text"
@@ -124,6 +122,14 @@ class ProposalInput extends Component {
             onChange={this._handleChange}
           />
         </Form.Field>
+        <Form.Field secondary label="Descrição da proposta">
+          <textarea
+            name="description"
+            value={value.description}
+            onChange={this._handleChange}
+          />
+        </Form.Field>
+        <input type="submit" value="Salvar proposta" />
         <ReactTooltip id={tooltipId} aria-haspopup="true" effect="solid" />
       </ProposalInputContainer>
     );
@@ -326,13 +332,6 @@ export default class ChatbotProposalsModule extends Component {
             </div>
           </Container>
         </Form.Content>
-        <Form.Actions>
-          <input
-            type="submit"
-            value="Atualizar configurações"
-            onClick={this._handleSubmit}
-          />
-        </Form.Actions>
       </Form>
     );
   }
