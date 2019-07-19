@@ -5,7 +5,7 @@ if (!Meteor.settings.public.server || Meteor.settings.public.server == "main") {
   import "./accounts.js";
   import "./api.js";
   // import "./fixtures.js";
-  import "./connection.js";
+  import "./accessLogs.js";
 } else {
   import "/imports/api/jobs/server/jobs.js";
 }

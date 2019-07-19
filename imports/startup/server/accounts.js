@@ -2,8 +2,6 @@ import { Accounts } from "meteor/accounts-base";
 import { Random } from "meteor/random";
 import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
 
-import { AccessLogs } from "/imports/api/accessLogs/accessLogs.js";
-
 Accounts.emailTemplates.siteName = Meteor.settings.public.appName;
 Accounts.emailTemplates.from = `${Meteor.settings.public.appName} <${
   Meteor.settings.public.appEmail
@@ -42,12 +40,6 @@ Accounts.onLogin(function(data) {
       );
     }
   }
-  AccessLogs.insert({
-    type: "open",
-    userId: data.user._id,
-    connectionId: data.connection.id,
-    ip: data.connection.clientAddress
-  });
 });
 
 Accounts.onCreateUser(function(options, user) {

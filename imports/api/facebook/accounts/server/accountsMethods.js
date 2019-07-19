@@ -98,6 +98,28 @@ export const webhookUpdate = new ValidatedMethod({
   }
 });
 
+export const getAccountsPublicData = new ValidatedMethod({
+  name: "facebook.accounts.public",
+  validate() {},
+  run() {
+    this.unblock();
+    return FacebookAccounts.find(
+      {},
+      {
+        fields: {
+          name: 1,
+          facebookId: 1
+        }
+      },
+      {
+        sort: {
+          name: 1
+        }
+      }
+    ).fetch();
+  }
+});
+
 export const getUserAccounts = new ValidatedMethod({
   name: "facebook.accounts.getUserAccounts",
   validate() {},

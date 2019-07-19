@@ -14,16 +14,18 @@ export const accessLog = new ValidatedMethod({
   }).validator(),
   run({ type, path }) {
     this.unblock();
-    if (!this.userId) return;
-    let doc = {
-      connectionId: this.connection.id,
-      ip: this.connection.clientAddress,
-      userId: this.userId,
-      type
-    };
-    if (path) {
-      doc.path = path;
+    if (Meteor.settings.public.deployMode !== "local") {
+      if (!this.userId) return;
+      let doc = {
+        connectionId: this.connection.id,
+        ip: this.connection.clientAddress,
+        userId: this.userId,
+        type
+      };
+      if (path) {
+        doc.path = path;
+      }
+      AccessLogs.insert(doc);
     }
-    AccessLogs.insert(doc);
   }
 });
