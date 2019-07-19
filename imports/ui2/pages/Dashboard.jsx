@@ -63,12 +63,20 @@ export default class DashboardPage extends Component {
   }
   isFirstRun = props => {
     const { entriesJob, runningEntriesJobs } = props || this.props;
-    return entriesJob && entriesJob.repeated < 2 && runningEntriesJobs.length;
+    return (
+      entriesJob &&
+      entriesJob.repeated < 2 &&
+      (entriesJob.status == "running" || runningEntriesJobs.length)
+    );
   };
   render() {
     const { campaignId, entriesJob } = this.props;
     const { ready, counts } = this.state;
-    if (!campaignId || !entriesJob || entriesJob.repeated == 0)
+    if (
+      !campaignId ||
+      !entriesJob ||
+      (entriesJob.repeated == 0 && entriesJob.status !== "running")
+    )
       return <Loading full />;
     if (this.isFirstRun()) {
       return (
