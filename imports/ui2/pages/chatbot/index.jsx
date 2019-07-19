@@ -123,7 +123,7 @@ class ChatbotPage extends Component {
       } else {
         this.setState({
           loading: false,
-          chatbot: res
+          chatbot: res.config
         });
       }
     });
@@ -167,17 +167,17 @@ class ChatbotPage extends Component {
     }
     return (
       <Container>
-        {!loading && (!chatbot || !chatbot.config || !chatbot.config.idPage) ? (
+        {!loading && (!chatbot || !chatbot.idPage) ? (
           <CreateChatbot campaign={campaign} onCreate={this.fetch} />
         ) : (
           <>
             <ChatbotNav
-              chatbot={campaign.facebookAccount.chatbot}
+              chatbot={campaign.facebookAccount.chatbot.config}
               module={module}
             />
             <content.component
               campaign={campaign}
-              chatbot={campaign.facebookAccount.chatbot}
+              chatbot={campaign.facebookAccount.chatbot.config}
               onChange={this._handleChange}
             />
           </>

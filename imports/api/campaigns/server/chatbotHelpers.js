@@ -82,6 +82,11 @@ const ChatbotHelpers = {
   },
   getChatbot({ campaignId }) {
     const campaign = Campaigns.findOne(campaignId);
+    // console.log(
+    //   Promise.await(
+    //     axios.get(getYeekoUrl(campaign.facebookAccount.facebookId, "axes/"))
+    //   )
+    // );
     if (!campaign.facebookAccount) {
       throw new Meteor.Error(404, "Facebook Account not found");
     }
@@ -197,9 +202,7 @@ const ChatbotHelpers = {
       throw new Meteor.Error(404, "Facebook Account not found");
     }
 
-    if (!campaignAccount.chatbot || !campaignAccount.chatbot.active) {
-      throw new Meteor.Error(401, "Chatbot is not active");
-    }
+    console.log(config);
 
     // Yeeko
     const defaultConfig = this.getChatbotDefaultConfig({ campaignId });
@@ -243,20 +246,16 @@ const ChatbotHelpers = {
       throw new Meteor.Error(404, "Facebook Account not found");
     }
 
-    if (!campaignAccount.chatbot || !campaignAccount.chatbot.active) {
-      throw new Meteor.Error(401, "Chatbot is not active");
-    }
-
     let chatbot = this.getChatbot({ campaignId }).data;
 
-    set(chatbot, `extra_info.${module}.active`, active);
+    set(chatbot, `config.extra_info.${module}.active`, active);
 
     let res;
     try {
       res = Promise.await(
         axios.put(
           getYeekoUrl(campaignAccount.facebookId),
-          this.unparseYeeko(chatbot)
+          this.unparseYeeko(chatbot.config)
         )
       );
     } catch (err) {
@@ -329,13 +328,10 @@ const ChatbotHelpers = {
       throw new Meteor.Error(404, "Facebook Account not found");
     }
 
-    const config = this.unparseYeeko(this.getChatbot({ campaignId }).data);
-
     let res;
     try {
       res = Promise.await(
         axios.put(getYeekoUrl(campaignAccount.facebookId), {
-          ...config,
           test
         })
       );

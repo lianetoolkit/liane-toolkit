@@ -64,10 +64,10 @@ export default class ChatbotVolunteerModule extends Component {
           alertStore.add(err);
         } else {
           this.setState({
-            formData: res
+            formData: res.config
           });
           alertStore.add("Atualizado", "success");
-          this._handleChatbotChange(res);
+          this._handleChatbotChange(res.config);
         }
       }
     );

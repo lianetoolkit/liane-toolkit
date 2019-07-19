@@ -132,7 +132,7 @@ export default class ChatbotModuleStatus extends Component {
         } else {
           alertStore.add("Modulo ativado", "success");
           if (onChange && typeof onChange == "function") {
-            onChange(res);
+            onChange(res.config);
           }
         }
       }

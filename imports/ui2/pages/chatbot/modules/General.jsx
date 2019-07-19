@@ -144,6 +144,7 @@ export default class ChatbotGeneralSettings extends Component {
     this.setState({
       loading: true
     });
+    console.log(formData);
     Meteor.call(
       "chatbot.update",
       {
@@ -203,7 +204,6 @@ export default class ChatbotGeneralSettings extends Component {
                 type="text"
                 name="extra_info.candidate"
                 value={this.getValue("extra_info.candidate")}
-                disabled={!this._isActive()}
                 onChange={this._handleChange}
               />
             </Form.Field>
@@ -212,7 +212,6 @@ export default class ChatbotGeneralSettings extends Component {
                 type="text"
                 name="extra_info.candidate_number"
                 value={this.getValue("extra_info.candidate_number")}
-                disabled={!this._isActive()}
                 onChange={this._handleChange}
                 size="3"
               />
@@ -222,20 +221,9 @@ export default class ChatbotGeneralSettings extends Component {
                 placeholder="Descreva brevemente sobre sua campanha"
                 name="extra_info.campaign_presentation"
                 value={this.getValue("extra_info.campaign_presentation")}
-                disabled={!this._isActive()}
                 onChange={this._handleChange}
               />
             </Form.Field>
-            {/* <label>
-                <input
-                type="checkbox"
-                name="text_response"
-                checked={this.getValue("text_response")}
-                disabled={!this._isActive()}
-                onChange={this._handleChange}
-              />{" "}
-              Ativar em mensagem inicial
-            </label> */}
           </Container>
         </Form.Content>
         <Form.Actions>

@@ -99,8 +99,7 @@ export default class MyAccount extends Component {
             Conectado como <strong>{user.name}</strong>
           </h2>
           <p>
-            Para conectar-se a uma campanha existente envie seu email ao
-            responsável para que ele possa adicioná-lo:
+            Para conectar-se a uma campanha existente envie seu email para a pessoa responsável pela mesma:
           </p>
           <input type="text" disabled value={user.emails[0].address} />
         </div>
