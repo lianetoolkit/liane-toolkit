@@ -194,6 +194,8 @@ export default class PeopleForm extends Component {
     const { formData } = this.state;
     if (loading) {
       return <Loading full />;
+    } else if (!loading && !campaign) {
+      return <h1 style={{ textAlign: "center" }}>404</h1>;
     } else if (person && campaign) {
       return (
         <>
