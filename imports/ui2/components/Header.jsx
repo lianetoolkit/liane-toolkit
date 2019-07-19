@@ -70,7 +70,6 @@ export default class Header extends Component {
   render() {
     const { campaign, campaigns, notifications } = this.props;
     const user = Meteor.user();
-    console.log(notifications);
     return (
       <Container>
         <div className="header-content">

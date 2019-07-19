@@ -102,7 +102,6 @@ export default class FAQSelect extends Component {
     }
   }
   fetch = () => {
-    console.log("fetch?");
     const { campaignId, onLoad } = this.props;
     this.setState({ loading: true });
     Meteor.call("faq.query", { campaignId }, (err, res) => {

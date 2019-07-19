@@ -39,7 +39,6 @@ export default class TagFilter extends Component {
   }
   componentDidMount() {
     if (!this.props.tags || !this.props.tags.length) {
-      console.log("calling method");
       Meteor.call(
         "people.getTags",
         { campaignId: Session.get("campaignId") },
