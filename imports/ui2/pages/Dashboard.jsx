@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
+import { alertStore } from "../containers/Alerts.jsx";
+
 import Page from "../components/Page.jsx";
 import Dashboard from "../components/Dashboard.jsx";
 import Button from "../components/Button.jsx";
@@ -48,6 +50,7 @@ export default class DashboardPage extends Component {
     const { entriesJob, runningEntriesJobs } = this.state;
     if (!this.isFirstRun() && this.isFirstRun(prevProps)) {
       this.fetchCounts();
+      alertStore.add("Coleta concluída", "success");
     }
   }
   fetchCounts() {
