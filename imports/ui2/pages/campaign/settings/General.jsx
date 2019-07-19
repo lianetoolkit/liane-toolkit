@@ -66,10 +66,11 @@ export default class CampaignSettingsPage extends Component {
     return get(formData, key);
   };
   render() {
+    const { campaign } = this.props;
     const { active, formData } = this.state;
     return (
       <>
-        <Nav />
+        <Nav campaign={campaign} />
         <Form onSubmit={this._handleSubmit}>
           <Form.Content>
             <Form.Field label="Nome da campanha" big>

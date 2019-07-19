@@ -67,7 +67,7 @@ export default class CampaignTeamPage extends Component {
     const { formData } = this.state;
     return (
       <>
-        <Nav />
+        <Nav campaign={campaign} />
         <Form onSubmit={this._handleSubmit}>
           <Form.Content>
             <h2>Equipe</h2>

@@ -491,9 +491,7 @@ export const campaignsRemove = new ValidatedMethod({
       throw new Meteor.Error(401, "This campaign does not exist");
     }
 
-    const allowed =
-      Meteor.call("campaigns.canManage", { userId, campaignId }) ||
-      Roles.userIsInRole(userId, ["admin"]);
+    const allowed = campaign.creatorId == userId;
 
     if (!allowed) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -657,7 +655,10 @@ export const removeUser = new ValidatedMethod({
     }
 
     if (userId == campaign.creatorId) {
-      throw new Meteor.Error(401, "You can't remove the creator of the campaign");
+      throw new Meteor.Error(
+        401,
+        "You can't remove the creator of the campaign"
+      );
     }
 
     const campaignUser = _.findWhere(campaign.users, { userId });

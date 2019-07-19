@@ -26,7 +26,7 @@ export default class CampaignActionsPage extends Component {
     if (campaign) {
       return (
         <>
-          <Nav />
+          <Nav campaign={campaign} />
           <Form onSubmit={ev => ev.preventDefault()}>
             <Form.Content>
               <button className="delete" onClick={this._handleClick}>

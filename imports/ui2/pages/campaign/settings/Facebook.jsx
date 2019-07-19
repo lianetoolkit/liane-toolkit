@@ -66,7 +66,7 @@ export default class CampaignFacebookPage extends Component {
       const accounts = campaign.accounts || [];
       return (
         <>
-          <Nav />
+          <Nav campaign={campaign} />
           <Form onSubmit={this._handleSubmit}>
             <Form.Content>
               <p>

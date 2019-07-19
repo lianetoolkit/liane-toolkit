@@ -1,9 +1,12 @@
+import { ClientStorage } from "meteor/ostrio:cstorage";
 import React, { Component } from "react";
 
 import Page from "../../../components/Page.jsx";
 
 export default class SettingsNav extends Component {
   render() {
+    const { campaign } = this.props;
+    const userId = Meteor.userId();
     const currentRoute = FlowRouter.current().route.name;
     return (
       <Page.Nav>
@@ -26,12 +29,14 @@ export default class SettingsNav extends Component {
         >
           Equipe
         </a>
-        <a
-          href={FlowRouter.path("App.campaign.actions")}
-          className={currentRoute == "App.campaign.actions" ? "active" : ""}
-        >
-          Ações
-        </a>
+        {campaign.creatorId == userId ? (
+          <a
+            href={FlowRouter.path("App.campaign.actions")}
+            className={currentRoute == "App.campaign.actions" ? "active" : ""}
+          >
+            Ações
+          </a>
+        ) : null}
       </Page.Nav>
     );
   }
