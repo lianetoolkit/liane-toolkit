@@ -6,6 +6,16 @@ import { set } from "lodash";
 
 const YEEKO = Meteor.settings.yeeko;
 
+const getYeekoUrl = (facebookId, path = "") => {
+  let url = YEEKO.url;
+  if (facebookId) {
+    url += facebookId + "/";
+  }
+  url += path;
+  url += `?api_key=${YEEKO.apiKey}`;
+  return url;
+};
+
 const ChatbotHelpers = {
   getChatbotDefaultConfig({ campaignId }) {
     const campaign = Campaigns.findOne(campaignId);
@@ -71,11 +81,7 @@ const ChatbotHelpers = {
     let res;
     try {
       res = Promise.await(
-        axios.get(
-          `${YEEKO.url}${campaign.facebookAccount.facebookId}?api_key=${
-            YEEKO.apiKey
-          }`
-        )
+        axios.get(getYeekoUrl(campaign.facebookAccount.facebookId))
       );
     } catch (err) {
       console.log(err);
@@ -89,7 +95,7 @@ const ChatbotHelpers = {
       ) {
         Campaigns.update(
           { _id: campaign._id },
-          { $set: { "facebookAccount.chatbot": parsed } }
+          { $set: { "facebookAccount.chatbot.config": parsed } }
         );
       }
       return {
@@ -102,7 +108,7 @@ const ChatbotHelpers = {
         campaign.facebookAccount.chatbot.active
       ) {
         Campaigns.update(campaign._id, {
-          $set: { "facebookAccount.chatbot.active": false }
+          $set: { "facebookAccount.chatbot.config.active": false }
         });
       }
       return {
@@ -129,7 +135,7 @@ const ChatbotHelpers = {
     if (chatbot.source == "local") {
       try {
         res = Promise.await(
-          axios.post(`${YEEKO.url}?api_key=${YEEKO.apiKey}`, {
+          axios.post(getYeekoUrl(), {
             ...this.unparseYeeko(config),
             active: true
           })
@@ -144,13 +150,10 @@ const ChatbotHelpers = {
     } else if (chatbot.source == "yeeko") {
       try {
         res = Promise.await(
-          axios.put(
-            `${YEEKO.url}${campaignAccount.facebookId}?api_key=${YEEKO.apiKey}`,
-            {
-              // ...this.unparseYeeko(config),
-              active: true
-            }
-          )
+          axios.put(getYeekoUrl(campaign.facebookAccount.facebookId), {
+            // ...this.unparseYeeko(config),
+            active: true
+          })
         );
       } catch (err) {
         console.log(err);
@@ -165,7 +168,7 @@ const ChatbotHelpers = {
       { _id: campaignId },
       {
         $set: {
-          "facebookAccount.chatbot": parsed
+          "facebookAccount.chatbot.config": parsed
         }
       }
     );
@@ -193,13 +196,10 @@ const ChatbotHelpers = {
     let res;
     try {
       res = Promise.await(
-        axios.put(
-          `${YEEKO.url}${campaignAccount.facebookId}/?api_key=${YEEKO.apiKey}`,
-          {
-            ...this.unparseYeeko(defaultConfig),
-            ...this.unparseYeeko(config)
-          }
-        )
+        axios.put(getYeekoUrl(campaignAccount.facebookId), {
+          ...this.unparseYeeko(defaultConfig),
+          ...this.unparseYeeko(config)
+        })
       );
     } catch (err) {
       console.log(err.response.data);
@@ -214,7 +214,7 @@ const ChatbotHelpers = {
       },
       {
         $set: {
-          "facebookAccount.chatbot": parsed
+          "facebookAccount.chatbot.config": parsed
         }
       }
     );
@@ -245,7 +245,7 @@ const ChatbotHelpers = {
     try {
       res = Promise.await(
         axios.put(
-          `${YEEKO.url}${campaignAccount.facebookId}/?api_key=${YEEKO.apiKey}`,
+          getYeekoUrl(campaignAccount.facebookId),
           this.unparseYeeko(chatbot)
         )
       );
@@ -262,7 +262,7 @@ const ChatbotHelpers = {
       },
       {
         $set: {
-          "facebookAccount.chatbot": parsed
+          "facebookAccount.chatbot.config": parsed
         }
       }
     );
@@ -286,13 +286,10 @@ const ChatbotHelpers = {
     let res;
     try {
       res = Promise.await(
-        axios.put(
-          `${YEEKO.url}${campaignAccount.facebookId}/?api_key=${YEEKO.apiKey}`,
-          {
-            ...config,
-            active: false
-          }
-        )
+        axios.put(getYeekoUrl(campaignAccount.facebookId), {
+          ...config,
+          active: false
+        })
       );
     } catch (err) {
       console.log(err);
@@ -305,7 +302,7 @@ const ChatbotHelpers = {
       },
       {
         $set: {
-          "facebookAccount.chatbot": this.parseYeeko(res.data)
+          "facebookAccount.chatbot.config": this.parseYeeko(res.data)
         }
       }
     );
@@ -324,9 +321,7 @@ const ChatbotHelpers = {
 
     try {
       const yeekoRes = Promise.await(
-        axios.delete(
-          `${YEEKO.url}${campaignAccount.facebookId}/?api_key=${YEEKO.apiKey}`
-        )
+        axios.delete(getYeekoUrl(campaignAccount.facebookId))
       );
     } catch (err) {
       console.log(err);
@@ -337,7 +332,7 @@ const ChatbotHelpers = {
       { _id: campaignId },
       {
         $set: {
-          "facebookAccount.chatbot.active": false
+          "facebookAccount.chatbot.config.active": false
         }
       }
     );
