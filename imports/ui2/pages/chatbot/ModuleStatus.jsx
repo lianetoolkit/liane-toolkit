@@ -20,6 +20,8 @@ const Container = styled.header`
     align-items: center;
     h3 {
       margin: 0;
+      padding: 0;
+      border: 0;
     }
     p {
       margin: 0;
@@ -117,7 +119,7 @@ export default class ChatbotModuleStatus extends Component {
       loading: true
     });
     Meteor.call(
-      "campaigns.chatbot.moduleActivation",
+      "chatbot.moduleActivation",
       {
         campaignId: campaign._id,
         module: name,

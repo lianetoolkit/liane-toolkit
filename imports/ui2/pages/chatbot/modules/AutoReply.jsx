@@ -205,7 +205,7 @@ export default class ChatbotAutoReplyModule extends Component {
       loading: true
     });
     Meteor.call(
-      "campaigns.chatbot.update",
+      "chatbot.update",
       {
         campaignId: campaign._id,
         config: formData

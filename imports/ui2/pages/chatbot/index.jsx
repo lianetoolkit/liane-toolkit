@@ -100,7 +100,7 @@ class ChatbotPage extends Component {
       loading: true
     });
     Meteor.call(
-      "campaigns.chatbot.get",
+      "chatbot.get",
       { campaignId: campaign._id },
       (err, res) => {
         this.setState({

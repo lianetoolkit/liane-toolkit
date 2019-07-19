@@ -40,7 +40,7 @@ export default class ChatbotGeneralSettings extends Component {
         loading: true
       });
       Meteor.call(
-        "campaigns.chatbot.activation",
+        "chatbot.activation",
         {
           campaignId: campaign._id,
           active: !active
@@ -88,7 +88,7 @@ export default class ChatbotGeneralSettings extends Component {
       loading: true
     });
     Meteor.call(
-      "campaigns.chatbot.update",
+      "chatbot.update",
       {
         campaignId: campaign._id,
         config: formData

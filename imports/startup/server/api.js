@@ -18,6 +18,9 @@ import "/imports/api/audienceCategories/server/audienceCategoriesPublications.js
 import "/imports/api/campaigns/server/campaignsMethods.js";
 import "/imports/api/campaigns/server/campaignsPublications.js";
 
+// chatbot
+import "/imports/api/campaigns/server/chatbotMethods.js";
+
 // faq
 import "/imports/api/faq/server/faqMethods.js";
 import "/imports/api/faq/server/faqPublications.js";

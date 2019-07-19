@@ -46,7 +46,7 @@ export default class ChatbotInfoModule extends Component {
       loading: true
     });
     Meteor.call(
-      "campaigns.chatbot.update",
+      "chatbot.update",
       {
         campaignId: campaign._id,
         config: formData
