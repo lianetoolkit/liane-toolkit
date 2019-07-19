@@ -61,6 +61,9 @@ Campaigns.schema = new SimpleSchema({
   name: {
     type: String
   },
+  creatorId: {
+    type: String
+  },
   users: {
     type: Array
   },

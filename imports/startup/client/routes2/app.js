@@ -19,7 +19,7 @@ import AdsetPage from "/imports/ui2/pages/Adset.jsx";
 import ChatbotPage from "/imports/ui2/pages/chatbot/index.jsx";
 
 import CampaignSettingsPage from "/imports/ui2/pages/campaign/settings/General.jsx";
-import CampaignAccountsPage from "/imports/ui2/pages/campaign/settings/Accounts.jsx";
+import CampaignFacebookPage from "/imports/ui2/pages/campaign/settings/Facebook.jsx";
 import CampaignTeamPage from "/imports/ui2/pages/campaign/settings/Team.jsx";
 import CampaignActionsPage from "/imports/ui2/pages/campaign/settings/Actions.jsx";
 import NewCampaignPage from "/imports/ui2/containers/campaign/New.jsx";
@@ -172,7 +172,7 @@ appRoutes.route("/campaign/settings/facebook", {
   name: "App.campaign.facebook",
   action: function() {
     addTitle(`${APP_NAME} | Campaign Facebook Settings`);
-    return mount(App, { content: { component: CampaignAccountsPage } });
+    return mount(App, { content: { component: CampaignFacebookPage } });
   }
 });
 appRoutes.route("/campaign/settings/team", {

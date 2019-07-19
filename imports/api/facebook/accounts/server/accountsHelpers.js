@@ -16,21 +16,23 @@ const _fetchFacebookPageData = ({ url }) => {
   return response;
 };
 
+const SUBSCRIPTION_FIELDS = [
+  "feed",
+  "messages",
+  "message_deliveries",
+  "message_reads",
+  "messaging_postbacks",
+  "messaging_optins"
+];
+
 const FacebookAccountsHelpers = {
   updateFBSubscription({ facebookAccountId, token }) {
     check(facebookAccountId, String);
+    check(token, String);
     try {
-      const fbRes = Promise.await(
+      Promise.await(
         FB.api(`${facebookAccountId}/subscribed_apps`, "post", {
-          subscribed_fields: [
-            "feed",
-            "messages",
-            "message_deliveries",
-            "message_reads",
-            "messaging_postbacks",
-            "ratings",
-            "mention"
-          ],
+          subscribed_fields: SUBSCRIPTION_FIELDS,
           access_token: token
         })
       );

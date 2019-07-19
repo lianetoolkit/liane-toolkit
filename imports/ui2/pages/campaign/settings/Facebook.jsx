@@ -7,7 +7,7 @@ import Form from "../../../components/Form.jsx";
 import Button from "../../../components/Button.jsx";
 import SelectAccount from "../../../components/facebook/SelectAccount.jsx";
 
-export default class CampaignAccountsPage extends Component {
+export default class CampaignFacebookPage extends Component {
   constructor(props) {
     super(props);
     this.state = {

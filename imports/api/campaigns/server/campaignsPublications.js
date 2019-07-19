@@ -133,6 +133,7 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
           {
             fields: {
               country: 1,
+              creatorId: 1,
               users: 1,
               accounts: 1,
               facebookAccount: 1,

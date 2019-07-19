@@ -114,7 +114,7 @@ export const campaignsCreate = new ValidatedMethod({
     }
 
     const users = [{ userId, role: "owner" }];
-    let insertDoc = { users, name, country };
+    let insertDoc = { users, name, country, creatorId: userId };
 
     const user = Meteor.users.findOne(userId);
     const token = user.services.facebook.accessToken;
@@ -654,6 +654,10 @@ export const removeUser = new ValidatedMethod({
 
     if (currentUser == userId) {
       throw new Meteor.Error(401, "You can't remove yourself");
+    }
+
+    if (userId == campaign.creatorId) {
+      throw new Meteor.Error(401, "You can't remove the creator of the campaign");
     }
 
     const campaignUser = _.findWhere(campaign.users, { userId });

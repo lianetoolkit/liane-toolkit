@@ -101,7 +101,6 @@ export default withTracker(({ content }) => {
         campaign.tags = PeopleTags.find({
           campaignId: campaign._id
         }).fetch();
-        campaign.creatorId = campaign.users[0].userId;
         campaign.users = Meteor.users
           .find({
             _id: { $in: map(campaign.users, "userId") }

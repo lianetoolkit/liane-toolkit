@@ -177,10 +177,9 @@ const CampaignsHelpers = {
             "messages",
             "message_deliveries",
             "messaging_postbacks",
+            "messaging_optins",
             "message_deliveries",
-            "message_reads",
-            "ratings",
-            "mention"
+            "message_reads"
           ],
           access_token: token.result
         })
