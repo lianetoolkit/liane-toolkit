@@ -199,10 +199,20 @@ export default class Page extends Component {
     document.getElementById("main").focus();
   }
   render() {
-    const { campaigns, campaign, children, ...props } = this.props;
+    const {
+      campaigns,
+      campaign,
+      notifications,
+      children,
+      ...props
+    } = this.props;
     return (
       <Container {...props}>
-        <Header campaigns={campaigns} campaign={campaign} />
+        <Header
+          campaigns={campaigns}
+          campaign={campaign}
+          notifications={notifications}
+        />
         <PageBody id="main" tabIndex="-1">
           {children}
         </PageBody>

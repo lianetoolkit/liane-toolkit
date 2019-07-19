@@ -50,16 +50,19 @@ class NotificationItem extends Component {
 
 class NotificationsPopup extends Component {
   render() {
-    const { children, ...props } = this.props;
+    const { notifications, children, ...props } = this.props;
+    const hasUnread = notifications.filter(n => !n.read).length;
     return (
       <AppNavDropdown
         title="Notifications"
         {...props}
         trigger={children}
-        triggerCount={2}
+        triggerCount={notifications.length ? notifications.length : null}
         tools={
           <div>
-            <a href="javascript:void(0);">Marcar tudo como lido</a>
+            {hasUnread ? (
+              <a href="javascript:void(0);">Marcar tudo como lido</a>
+            ) : null}
             <a href="javascript:void(0);">
               <FontAwesomeIcon icon="times" className="close" />
             </a>
@@ -68,7 +71,16 @@ class NotificationsPopup extends Component {
       >
         {/* <AppNavDropdown.Tools /> */}
         <AppNavDropdown.Content>
-          <NotificationItem unread={true} date={new Date()}>
+          {notifications.map(notification => (
+            <NotificationItem
+              key={notification._id}
+              unread={!notification.read}
+              date={notification.createdAt}
+            >
+              {notification.text}
+            </NotificationItem>
+          ))}
+          {/* <NotificationItem unread={true} date={new Date()}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
             sodales ac erat ut faucibus dasdas sd.
           </NotificationItem>
@@ -87,7 +99,19 @@ class NotificationsPopup extends Component {
           <NotificationItem date={new Date(0)}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
             sodales ac erat ut faucibus.
-          </NotificationItem>
+          </NotificationItem> */}
+          {!notifications.length ? (
+            <p
+              style={{
+                color: "#666",
+                fontStyle: "italic",
+                textAlign: "center",
+                margin: "2rem 0"
+              }}
+            >
+              Nenhuma notificação por enquanto!
+            </p>
+          ) : null}
         </AppNavDropdown.Content>
       </AppNavDropdown>
     );

@@ -223,7 +223,7 @@ class CampaignNav extends Component {
 
 export default class AppNav extends Component {
   render() {
-    const { campaigns, campaign } = this.props;
+    const { campaigns, campaign, notifications } = this.props;
     const currentRoute = FlowRouter.current().route.name;
     return (
       <Container>
@@ -317,7 +317,10 @@ export default class AppNav extends Component {
           </div>
           <div className="meta link-group">
             <SettingsNav campaign={campaign} />
-            <NotificationsNav className="icon-link">
+            <NotificationsNav
+              className="icon-link"
+              notifications={notifications}
+            >
               <FontAwesomeIcon icon="bell" />
             </NotificationsNav>
           </div>

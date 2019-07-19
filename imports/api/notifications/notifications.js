@@ -3,6 +3,16 @@ import SimpleSchema from "simpl-schema";
 const Notifications = new Mongo.Collection("notifications");
 
 Notifications.schema = new SimpleSchema({
+  userId: {
+    type: String,
+    optional: true,
+    index: true
+  },
+  campaignId: {
+    type: String,
+    optional: true,
+    index: true
+  },
   text: {
     type: String
   },
@@ -11,7 +21,8 @@ Notifications.schema = new SimpleSchema({
   },
   read: {
     type: Boolean,
-    defaultValue: false
+    defaultValue: false,
+    index: true
   },
   createdAt: {
     type: Date,

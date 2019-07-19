@@ -1,6 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import { withTracker } from "meteor/react-meteor-data";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+import { Notifications } from "/imports/api/notifications/notifications.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import {
   PeopleTags,
@@ -22,6 +23,7 @@ const AppSubs = new SubsManager();
 export default withTracker(({ content }) => {
   const campaignsHandle = AppSubs.subscribe("campaigns.byUser");
   const userHandle = AppSubs.subscribe("users.data");
+  const notificationsHandle = AppSubs.subscribe("notifications.byUser");
 
   const connected = Meteor.status().connected;
   const isLoggedIn = Meteor.userId() !== null;
@@ -30,12 +32,17 @@ export default withTracker(({ content }) => {
     : null;
 
   let campaigns = [];
+  let notifications = [];
 
   if (connected && isLoggedIn && user) {
     campaigns = campaignsHandle.ready()
       ? Campaigns.find({
           users: { $elemMatch: { userId: user._id } }
         }).fetch()
+      : [];
+
+    notifications = notificationsHandle.ready()
+      ? Notifications.find().fetch()
       : [];
   }
 
@@ -171,6 +178,7 @@ export default withTracker(({ content }) => {
     connected,
     ready: ready.get(),
     isLoggedIn,
+    notifications,
     loadingCampaigns,
     campaigns,
     campaignId,

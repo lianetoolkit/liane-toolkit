@@ -67,6 +67,9 @@ import "/imports/api/mapLayers/server/mapLayersPublications.js";
 import "/imports/api/mapFeatures/server/mapFeaturesMethods.js";
 import "/imports/api/mapFeatures/server/mapFeaturesPublications.js";
 
+// notifications
+import "/imports/api/notifications/server/notificationsPublications.js";
+
 // jobs
 import "/imports/api/jobs/server/jobs.js";
 import "/imports/api/jobs/server/jobsMethods.js";

@@ -68,8 +68,9 @@ const TopNav = styled.nav`
 
 export default class Header extends Component {
   render() {
-    const { campaign, campaigns } = this.props;
+    const { campaign, campaigns, notifications } = this.props;
     const user = Meteor.user();
+    console.log(notifications);
     return (
       <Container>
         <div className="header-content">
@@ -114,7 +115,13 @@ export default class Header extends Component {
               />
             </a>
           </TopNav>
-          {user ? <AppNav campaign={campaign} campaigns={campaigns} /> : null}
+          {user ? (
+            <AppNav
+              campaign={campaign}
+              campaigns={campaigns}
+              notifications={notifications}
+            />
+          ) : null}
         </div>
       </Container>
     );
