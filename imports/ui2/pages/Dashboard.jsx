@@ -1,35 +1,89 @@
 import React, { Component } from "react";
+import styled from "styled-components";
 
 import Page from "../components/Page.jsx";
 import Dashboard from "../components/Dashboard.jsx";
 import Button from "../components/Button.jsx";
+import Loading from "../components/Loading.jsx";
 import PeopleBlock from "../components/blocks/PeopleBlock.jsx";
+
+const FirstRunContainer = styled.div`
+  flex: 1 1 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  .first-run-content {
+    max-width: 500px;
+    background: #fff;
+    border-radius: 7px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
+    padding: 2rem;
+    h2 {
+      font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      margin: 0;
+    }
+    p {
+      font-size: 0.8em;
+      font-style: italic;
+      color: #999;
+    }
+  }
+`;
 
 export default class DashboardPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      counts: {}
+      counts: {},
+      ready: false
     };
   }
   componentDidMount() {
     const { campaignId } = this.props;
     if (campaignId) this.fetchCounts();
   }
+  componentDidUpdate(prevProps, prevState) {
+    const { entriesJob, runningEntriesJobs } = this.state;
+    if (!this.isFirstRun() && this.isFirstRun(prevProps)) {
+      this.fetchCounts();
+    }
+  }
   fetchCounts() {
     const { campaignId } = this.props;
     Meteor.call("campaigns.counts", { campaignId }, (err, res) => {
       if (!err) {
         this.setState({
-          counts: res
+          counts: res,
+          ready: !this.isFirstRun()
         });
       }
     });
   }
+  isFirstRun = props => {
+    const { entriesJob, runningEntriesJobs } = props || this.props;
+    return entriesJob && entriesJob.repeated < 2 && runningEntriesJobs.length;
+  };
   render() {
-    const { counts } = this.state;
-    const { campaignId } = this.props;
-    if (!campaignId) return null;
+    const { campaignId, entriesJob } = this.props;
+    const { ready, counts } = this.state;
+    if (!campaignId || !entriesJob) return <Loading full />;
+    if (this.isFirstRun()) {
+      return (
+        <FirstRunContainer>
+          <div className="first-run-content">
+            <h2>Executando primeira coleta de dados</h2>
+            <Loading />
+            <p>
+              Aguarde esta coleta terminar para continuar utilizando a
+              plataforma.
+            </p>
+          </div>
+        </FirstRunContainer>
+      );
+    }
+    if (!ready) return <Loading full />;
     return (
       <Dashboard>
         <Dashboard.Row>

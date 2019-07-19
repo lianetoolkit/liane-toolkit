@@ -9,6 +9,7 @@ import {
   PeopleExports
 } from "/imports/api/facebook/people/people.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
+import { Jobs } from "/imports/api/jobs/jobs.js";
 import { ReactiveVar } from "meteor/reactive-var";
 import { ClientStorage } from "meteor/ostrio:cstorage";
 import { find, map, sortBy } from "lodash";
@@ -79,6 +80,10 @@ export default withTracker(({ content }) => {
   let tags = [];
   let peopleExports = [];
   let lists = [];
+
+  let entriesJob;
+  let runningEntriesJobs = [];
+
   let importCount = 0;
   let exportCount = 0;
   if (campaignId) {
@@ -139,6 +144,15 @@ export default withTracker(({ content }) => {
       lists = PeopleLists.find({ campaignId }).fetch();
     }
 
+    // Campaign jobs
+    const jobsHandle = AppSubs.subscribe("jobs.byCampaign", { campaignId });
+    if (jobsHandle.ready()) {
+      entriesJob = Jobs.findOne({ type: "entries.updateAccountEntries" });
+      runningEntriesJobs = Jobs.find({
+        type: "entries.updateEntryInteractions"
+      }).fetch();
+    }
+
     // Import job count
     const importCountHandle = AppSubs.subscribe("people.importJobCount", {
       campaignId
@@ -173,6 +187,8 @@ export default withTracker(({ content }) => {
 
   const loadingCampaigns = !campaignsHandle.ready();
 
+  console.log({ entriesJob, runningEntriesJobs });
+
   return {
     user,
     connected,
@@ -185,6 +201,8 @@ export default withTracker(({ content }) => {
     campaign,
     tags,
     lists,
+    entriesJob,
+    runningEntriesJobs,
     importCount,
     exportCount,
     peopleExports,
