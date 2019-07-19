@@ -187,8 +187,6 @@ export default withTracker(({ content }) => {
 
   const loadingCampaigns = !campaignsHandle.ready();
 
-  console.log({ entriesJob, runningEntriesJobs });
-
   return {
     user,
     connected,
