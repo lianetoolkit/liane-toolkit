@@ -68,7 +68,8 @@ export default class DashboardPage extends Component {
   render() {
     const { campaignId, entriesJob } = this.props;
     const { ready, counts } = this.state;
-    if (!campaignId || !entriesJob) return <Loading full />;
+    if (!campaignId || !entriesJob || entriesJob.repeated == 0)
+      return <Loading full />;
     if (this.isFirstRun()) {
       return (
         <FirstRunContainer>
