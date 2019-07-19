@@ -6,18 +6,35 @@ import { debounce } from "lodash";
 import { alertStore } from "../containers/Alerts.jsx";
 
 import Form from "./Form.jsx";
+import Loading from "./Loading.jsx";
 
 const Container = styled.div`
   margin: 0 0 1rem;
+  border-radius: 7px;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  .select-type {
+    display: flex;
+    justify-content: space-around;
+    label {
+      margin: 0;
+    }
+  }
+  input[type="text"] {
+    margin: 1rem 0 0;
+  }
   .results {
     list-style: none;
-    margin: 0;
+    margin: 1rem 0 0;
     padding: 0;
     li {
       margin: 0 0 1px;
       cursor: pointer;
       outline: none;
     }
+  }
+  .selected {
+    margin: -1rem;
   }
 `;
 
@@ -102,7 +119,7 @@ export default class GeolocationSelect extends Component {
     if (target.value) {
       this.search();
     } else {
-      this.setState({ results: [] });
+      this.setState({ results: [], loading: false });
     }
   };
   _handleRegionChange = ({ target }) => {
@@ -118,20 +135,6 @@ export default class GeolocationSelect extends Component {
     ev.preventDefault();
     const { onChange } = this.props;
     const { region } = this.state;
-    // this.matchGeolocation(
-    //   geolocation.osm_id,
-    //   geolocation.osm_type,
-    //   (err, res) => {
-    //     if (res) {
-    //       this.setState({
-    //         selected: geolocation
-    //       });
-    //       if (onChange && typeof onChange == "function") {
-    //         onChange(geolocation);
-    //       }
-    //     }
-    //   }
-    // );
     this.setState({
       selected: geolocation
     });
@@ -145,15 +148,15 @@ export default class GeolocationSelect extends Component {
       selected: null
     });
     if (onChange && typeof onChange == "function") {
-      onChange(null);
+      onChange({ geolocation: null, type: null });
     }
   };
   render() {
-    const { selected, results, region, search } = this.state;
+    const { loading, selected, results, region, search } = this.state;
     return (
       <Container>
         {selected ? (
-          <GeolocationItem>
+          <GeolocationItem className="selected">
             <a
               href="javascript:void(0);"
               className="reset"
@@ -169,26 +172,28 @@ export default class GeolocationSelect extends Component {
           </GeolocationItem>
         ) : (
           <>
-            <label>
-              <input
-                type="radio"
-                name="regionType"
-                value="state"
-                onChange={this._handleRegionChange}
-                checked={region == "state" ? true : false}
-              />{" "}
-              Estado/Província
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="regionType"
-                value="city"
-                onChange={this._handleRegionChange}
-                checked={region == "city" ? true : false}
-              />{" "}
-              Cidade
-            </label>
+            <div className="select-type">
+              <label>
+                <input
+                  type="radio"
+                  name="regionType"
+                  value="state"
+                  onChange={this._handleRegionChange}
+                  checked={region == "state" ? true : false}
+                />{" "}
+                Estado/Província
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="regionType"
+                  value="city"
+                  onChange={this._handleRegionChange}
+                  checked={region == "city" ? true : false}
+                />{" "}
+                Cidade
+              </label>
+            </div>
             {region ? (
               <input
                 type="text"
@@ -217,6 +222,7 @@ export default class GeolocationSelect extends Component {
                 ))}
               </ul>
             ) : null}
+            {loading ? <Loading /> : null}
           </>
         )}
       </Container>

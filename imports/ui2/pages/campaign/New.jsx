@@ -30,19 +30,34 @@ export default class NewCampaignPage extends Component {
   };
   _filledForm = () => {
     const { formData } = this.state;
-    return formData.name && formData.country && formData.facebookAccountId;
+    return (
+      formData.name &&
+      formData.country &&
+      formData.facebookAccountId &&
+      formData.geolocation &&
+      formData.geolocation.osm_id
+    );
   };
   _handleGeolocationChange = ({ geolocation, type }) => {
-    this.setState({
-      formData: {
-        ...this.state.formData,
-        geolocation: {
-          type,
-          osm_id: geolocation.osm_id,
-          osm_type: geolocation.osm_type
+    if (geolocation) {
+      this.setState({
+        formData: {
+          ...this.state.formData,
+          geolocation: {
+            type,
+            osm_id: geolocation.osm_id,
+            osm_type: geolocation.osm_type
+          }
         }
-      }
-    });
+      });
+    } else {
+      this.setState({
+        formData: {
+          ...this.state.formData,
+          geolocation: {}
+        }
+      });
+    }
   };
   _handleSubmit = ev => {
     ev.preventDefault();
