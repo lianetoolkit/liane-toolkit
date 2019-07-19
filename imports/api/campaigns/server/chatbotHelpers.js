@@ -48,7 +48,6 @@ const ChatbotHelpers = {
   },
   parseYeeko(data) {
     let result = {};
-    console.log(data);
     for (const key in data) {
       let item;
       switch (key) {
@@ -92,7 +91,10 @@ const ChatbotHelpers = {
         axios.get(getYeekoUrl(campaign.facebookAccount.facebookId))
       );
     } catch (err) {
-      console.log(err);
+      if (!err.response || err.response.status != 404) {
+        throw new Meteor.Error(500, "Unexpected error");
+        console.log(err);
+      }
     }
     if (res && res.data) {
       const parsed = this.parseYeeko(res.data);

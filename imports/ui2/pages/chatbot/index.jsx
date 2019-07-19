@@ -5,6 +5,7 @@ import { get, set, defaultsDeep } from "lodash";
 
 import { alertStore } from "/imports/ui2/containers/Alerts.jsx";
 
+import UnexpectedError from "/imports/ui2/components/UnexpectedError.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
 import Page from "/imports/ui2/components/Page.jsx";
 import Content from "/imports/ui2/components/Content.jsx";
@@ -115,6 +116,7 @@ class ChatbotPage extends Component {
       if (err) {
         alertStore.add(err);
         this.setState({
+          errored: true,
           loading: false,
           chatbot: {}
         });
@@ -133,7 +135,7 @@ class ChatbotPage extends Component {
   };
   render() {
     const { module, campaign } = this.props;
-    const { loading, chatbot } = this.state;
+    const { errored, loading, chatbot } = this.state;
     if (loading) {
       return <Loading full />;
     }
@@ -159,6 +161,9 @@ class ChatbotPage extends Component {
         break;
       default:
         content.component = GeneralSettings;
+    }
+    if (errored) {
+      return <UnexpectedError />;
     }
     return (
       <Container>
