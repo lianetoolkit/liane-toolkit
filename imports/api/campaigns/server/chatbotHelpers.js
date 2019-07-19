@@ -48,11 +48,16 @@ const ChatbotHelpers = {
   },
   parseYeeko(data) {
     let result = {};
+    console.log(data);
     for (const key in data) {
       let item;
       switch (key) {
         case "extra_info":
-          item = JSON.parse(data[key]);
+          if (data[key]) {
+            item = JSON.parse(data[key]);
+          } else {
+            item = {};
+          }
           break;
         default:
           item = data[key];
