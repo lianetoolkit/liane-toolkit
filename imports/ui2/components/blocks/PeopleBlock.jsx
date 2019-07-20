@@ -46,6 +46,8 @@ const Container = styled.section`
     flex: 1 1 100%;
     overflow-y: auto;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
   }
   table {
     width: 100%;
@@ -68,9 +70,18 @@ const Container = styled.section`
     }
   }
   .not-found {
-    margin: 4rem 2rem;
+    margin: 0;
+    flex: 1 1 100%;
     color: #999;
     font-style: italic;
+    font-size: 0.9em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    span {
+      margin: 0 2rem;
+    }
   }
 `;
 
@@ -136,7 +147,7 @@ export default class PeopleBlock extends Component {
           ) : null}
           {!loading && !people.length ? (
             <p className="not-found">
-              Ainda não há nenhuma pessoa nesta categoria!
+              <span>Ainda não há nenhuma pessoa nesta categoria!</span>
             </p>
           ) : null}
         </div>
