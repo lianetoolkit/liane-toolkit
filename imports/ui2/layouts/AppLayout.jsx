@@ -42,10 +42,12 @@ const findLocale = language => {
 
 const messages = localeData[findLocale(language)] || localeData.en;
 
+const publicRoutes = ["App.dashboard", "App.transparency"];
+
 export default class AppLayout extends Component {
   componentWillReceiveProps({ isLoggedIn, connected, routeName }) {
     FlowRouter.withReplaceState(function() {
-      if (connected && !isLoggedIn && routeName !== "App.dashboard") {
+      if (connected && !isLoggedIn && publicRoutes.indexOf(routeName) == -1) {
         FlowRouter.go("App.dashboard");
       }
     });

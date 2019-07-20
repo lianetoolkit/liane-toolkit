@@ -5,6 +5,7 @@ import { pick } from "lodash";
 
 import App from "/imports/ui2/containers/App.jsx";
 import MyAccount from "/imports/ui2/pages/MyAccount.jsx";
+import Transparency from "/imports/ui2/pages/Transparency.jsx";
 
 import PeopleFormPage from "/imports/ui2/containers/PeopleFormPage.jsx";
 
@@ -37,6 +38,14 @@ appRoutes.route("/", {
   action: function() {
     addTitle(`${APP_NAME} | Dashboard`);
     return mount(App);
+  }
+});
+
+appRoutes.route("/transparency", {
+  name: "App.transparency",
+  action: function() {
+    addTitle(`${APP_NAME} | Transparency`);
+    return mount(App, { content: { component: Transparency } });
   }
 });
 

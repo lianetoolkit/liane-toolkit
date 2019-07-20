@@ -103,7 +103,7 @@ export const getAccountsPublicData = new ValidatedMethod({
   validate() {},
   run() {
     this.unblock();
-    return FacebookAccounts.find(
+    const accounts = FacebookAccounts.find(
       {},
       {
         fields: {
@@ -117,6 +117,10 @@ export const getAccountsPublicData = new ValidatedMethod({
         }
       }
     ).fetch();
+    return accounts.map(acc => {
+      delete acc._id;
+      return acc;
+    });
   }
 });
 
