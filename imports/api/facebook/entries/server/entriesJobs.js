@@ -141,8 +141,8 @@ const EntriesJobs = {
     jobOptions({ jobData }) {
       const options = {
         retry: {
-          retries: 4,
-          wait: 5 * 60 * 1000
+          retries: 3,
+          wait: 10 * 1000
         }
       };
       return options;

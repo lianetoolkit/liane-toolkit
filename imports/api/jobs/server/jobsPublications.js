@@ -18,7 +18,7 @@ Meteor.publish("jobs.byCampaign", function({ campaignId, type, status }) {
       fields: {
         repeated: 1,
         status: 1,
-        data: 1,
+        "data.campaignId": 1,
         type: 1
       }
     });

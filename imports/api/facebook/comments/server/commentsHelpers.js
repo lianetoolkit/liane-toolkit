@@ -48,7 +48,7 @@ const commentsFields = [
   "reactions.type(SAD).limit(0).summary(true).as(sad)",
   "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
   "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
-]
+];
 
 const CommentsHelpers = {
   handleWebhook({ facebookAccountId, data }) {
@@ -89,12 +89,13 @@ const CommentsHelpers = {
         data: {
           comment_id: data.parent_id,
           post_id: data.post_id,
-          adminReplied: data.from.id == facebookAccountId
+          adminReplied: data.from ? data.from.id == facebookAccountId : false
         }
       });
     }
-    const from = comment.from;
-    comment.personId = from.id;
+    if (comment.from) {
+      comment.personId = comment.from.id;
+    }
     if (data.post_id) {
       comment.entryId = data.post_id;
     }
@@ -428,52 +429,53 @@ const CommentsHelpers = {
     let commentedPeople = [];
 
     const addCommentToBulk = ({ comment, bulk }) => {
-      if (comment.from) {
-        commentedPeople.push({ ...comment.from, comment });
-        comment.personId = comment.from.id;
-        comment.name = comment.from.name;
-        comment.entryId = entryId;
-        comment.facebookAccountId = facebookAccountId;
-        comment.reaction_count = this.getReactionCountFromFBData({ comment });
-        const commentId = comment.id;
-        delete comment.id;
-        delete comment.from;
-        // Remove raw reaction count
-        delete comment.reaction;
-        delete comment.like;
-        delete comment.love;
-        delete comment.wow;
-        delete comment.haha;
-        delete comment.sad;
-        delete comment.angry;
-        delete comment.thankful;
-        if (comment.reaction_count && comment.reaction_count.reaction > 0) {
-          LikesHelpers.handleCommentsReactions({
-            facebookAccountId,
-            entryId,
-            commentId,
-            accessToken
-          });
-        }
-        bulk
-          .find({ _id: commentId })
-          .upsert()
-          .update({
-            $set: comment
-          });
+      if (!comment.from) return;
+      commentedPeople.push({ ...comment.from, comment });
+      comment.personId = comment.from.id;
+      comment.name = comment.from.name;
+      comment.entryId = entryId;
+      comment.facebookAccountId = facebookAccountId;
+      comment.reaction_count = this.getReactionCountFromFBData({ comment });
+      const commentId = comment.id;
+      delete comment.id;
+      delete comment.from;
+      // Remove raw reaction count
+      delete comment.reaction;
+      delete comment.like;
+      delete comment.love;
+      delete comment.wow;
+      delete comment.haha;
+      delete comment.sad;
+      delete comment.angry;
+      delete comment.thankful;
+      if (comment.reaction_count && comment.reaction_count.reaction > 0) {
+        LikesHelpers.handleCommentsReactions({
+          facebookAccountId,
+          entryId,
+          commentId,
+          accessToken
+        });
       }
+      bulk
+        .find({ _id: commentId })
+        .upsert()
+        .update({
+          $set: comment
+        });
     };
 
     const _insertBulk = ({ data }) => {
       const bulk = Comments.rawCollection().initializeUnorderedBulkOp();
       for (const comment of data) {
-        if (comment.comment_count > 0) {
+        if (comment.from && comment.comment_count > 0) {
           const replies = this.getCommentReplies({
             commentId: comment.id,
             accessToken
           });
           comment.adminReplied =
-            replies.findIndex(c => c.from.id == facebookAccountId) != -1;
+            replies.findIndex(c =>
+              c.from ? c.from.id == facebookAccountId : false
+            ) != -1;
           for (const reply of replies) {
             addCommentToBulk({
               comment: {
@@ -487,14 +489,16 @@ const CommentsHelpers = {
         addCommentToBulk({ comment, bulk });
       }
 
-      bulk.execute(
-        Meteor.bindEnvironment((e, result) => {
-          this.updatePeopleCommentsCount({
-            facebookAccountId,
-            commentedPeople
-          });
-        })
-      );
+      if (commentedPeople.length) {
+        bulk.execute(
+          Meteor.bindEnvironment((e, result) => {
+            this.updatePeopleCommentsCount({
+              facebookAccountId,
+              commentedPeople
+            });
+          })
+        );
+      }
     };
 
     let response;

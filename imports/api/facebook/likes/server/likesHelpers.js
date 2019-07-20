@@ -37,6 +37,7 @@ const LikesHelpers = {
     }
   },
   upsertReaction({ facebookAccountId, data }) {
+    if (!data.from) return;
     let reaction = {
       facebookAccountId,
       entryId: data.post_id,
@@ -133,6 +134,7 @@ const LikesHelpers = {
     }
   },
   removeReaction({ facebookAccountId, data }) {
+    if (!data.from) return;
     let query = {
       personId: data.from.id,
       entryId: data.post_id
@@ -273,10 +275,14 @@ const LikesHelpers = {
     accessToken
   }) {
     check(facebookAccountId, String);
-    check(entryId, String);
     check(accessToken, String);
 
+    if (!entryId && !objectId) {
+      throw new Meteor.Error(500, "Object ID or Entry ID must be defined");
+    }
+
     logger.debug("LikesHelpers.getObjectReactions called", {
+      entryId,
       objectId
     });
 
