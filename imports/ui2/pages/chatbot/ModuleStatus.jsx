@@ -99,6 +99,7 @@ export default class ChatbotModuleStatus extends Component {
     };
   }
   _isActive = () => {
+    if (this.props.hasOwnProperty("isActive")) return this.props.isActive;
     const { chatbot, name } = this.props;
     return get(chatbot, `extra_info.${name}.active`);
   };
@@ -110,37 +111,45 @@ export default class ChatbotModuleStatus extends Component {
       return "Inativo";
     }
   };
+  _isLoading = () => {
+    if (this.props.hasOwnProperty("loading")) return this.props.loading;
+    return this.state.loading;
+  };
   _handleActivationClick = () => {
-    const { campaign, name, onChange } = this.props;
-    const { loading } = this.state;
-    const active = this._isActive();
-    if (loading) return false;
-    this.setState({
-      loading: true
-    });
-    Meteor.call(
-      "chatbot.moduleActivation",
-      {
-        campaignId: campaign._id,
-        module: name,
-        active: !active
-      },
-      (err, res) => {
-        this.setState({ loading: false });
-        if (err) {
-          alertStore.add(err);
-        } else {
-          alertStore.add("Modulo ativado", "success");
-          if (onChange && typeof onChange == "function") {
-            onChange(res.config);
+    const { campaign, name, onChange, onActivation } = this.props;
+    if (onActivation) {
+      if (this._isLoading()) return false;
+      onActivation();
+    } else {
+      const loading = this._isLoading();
+      const active = this._isActive();
+      if (loading) return false;
+      this.setState({
+        loading: true
+      });
+      Meteor.call(
+        "chatbot.moduleActivation",
+        {
+          campaignId: campaign._id,
+          module: name,
+          active: !active
+        },
+        (err, res) => {
+          this.setState({ loading: false });
+          if (err) {
+            alertStore.add(err);
+          } else {
+            alertStore.add("Modulo ativado", "success");
+            if (onChange && typeof onChange == "function") {
+              onChange(res.config);
+            }
           }
         }
-      }
-    );
+      );
+    }
   };
   render() {
     const { label } = this.props;
-    const { loading } = this.state;
     return (
       <Container>
         <div className="module-status">
@@ -155,7 +164,7 @@ export default class ChatbotModuleStatus extends Component {
           className="toggle-module"
           onClick={this._handleActivationClick}
         >
-          {loading ? <Loading tiny /> : null}
+          {this._isLoading() ? <Loading tiny /> : null}
           {!this._isActive() ? <span>Ativar</span> : <span>Desativar</span>}
           <FontAwesomeIcon
             icon={this._isActive() ? "toggle-on" : "toggle-off"}

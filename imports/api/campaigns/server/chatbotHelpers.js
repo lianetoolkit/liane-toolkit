@@ -202,8 +202,6 @@ const ChatbotHelpers = {
       throw new Meteor.Error(404, "Facebook Account not found");
     }
 
-    console.log(config);
-
     // Yeeko
     const defaultConfig = this.getChatbotDefaultConfig({ campaignId });
     let res;
@@ -380,6 +378,116 @@ const ChatbotHelpers = {
         }
       }
     );
+  },
+  proposalsActivation({ campaignId, active }) {
+    const campaign = Campaigns.findOne(campaignId);
+    let res;
+    try {
+      res = Promise.await(
+        axios.put(
+          getYeekoUrl(campaign.facebookAccount.facebookId, "axes/config/"),
+          { active }
+        )
+      );
+    } catch (err) {
+      if (err) {
+        console.log(err);
+        throw new Meteor.Error(500, "Unexpected error");
+      }
+    }
+
+    Campaigns.update(
+      { _id: campaignId },
+      {
+        $set: {
+          "facebookAccount.chatbot.customModules.proposals": active
+        }
+      }
+    );
+    return res.data;
+  },
+  getProposals({ campaignId }) {
+    const campaign = Campaigns.findOne(campaignId);
+    let res;
+    try {
+      res = Promise.await(
+        axios.get(getYeekoUrl(campaign.facebookAccount.facebookId, "axes/"))
+      );
+    } catch (err) {
+      if (err) {
+        throw new Meteor.Error(500, "Unexpected error");
+      }
+    }
+    return res.data;
+  },
+  upsertProposal({ campaignId, proposal }) {
+    const campaign = Campaigns.findOne(campaignId);
+    let res;
+    try {
+      if (proposal.yeeko_id) {
+        res = Promise.await(
+          axios.put(
+            getYeekoUrl(
+              campaign.facebookAccount.facebookId,
+              `axes/${proposal.yeeko_id}/`
+            ),
+            proposal
+          )
+        );
+      } else {
+        res = Promise.await(
+          axios.post(
+            getYeekoUrl(campaign.facebookAccount.facebookId, "axes/"),
+            proposal
+          )
+        );
+      }
+    } catch (err) {
+      if (err) {
+        console.log(err);
+        throw new Meteor.Error(500, "Unexpected error");
+      }
+    }
+    return res.data;
+  },
+  removeProposal({ campaignId, proposalId }) {
+    const campaign = Campaigns.findOne(campaignId);
+    let res;
+    try {
+      res = Promise.await(
+        axios.delete(
+          getYeekoUrl(
+            campaign.facebookAccount.facebookId,
+            `axes/${proposalId}/`
+          )
+        )
+      );
+    } catch (err) {
+      if (err) {
+        console.log(err);
+        throw new Meteor.Error(500, "Unexpected error");
+      }
+    }
+    return res.data;
+  },
+  setPrimaryProposal({ campaignId, proposalId }) {
+    const campaign = Campaigns.findOne(campaignId);
+    if (proposalId == -1) proposalId = null;
+    let res;
+    try {
+      res = Promise.await(
+        axios.put(
+          getYeekoUrl(campaign.facebookAccount.facebookId, "axes/config/"),
+          { primary_id: proposalId }
+        )
+      );
+    } catch (err) {
+      if (err) {
+        console.log(err);
+        throw new Meteor.Error(500, "Unexpected error");
+      }
+    }
+    return res.data;
   }
 };
 

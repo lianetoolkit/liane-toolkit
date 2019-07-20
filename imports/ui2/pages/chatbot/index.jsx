@@ -97,7 +97,8 @@ class ChatbotPage extends Component {
     super(props);
     this.state = {
       loading: false,
-      chatbot: {}
+      chatbot: {},
+      moduleData: {}
     };
   }
   componentDidMount() {
@@ -106,6 +107,7 @@ class ChatbotPage extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { campaign } = this.props;
     const { loading, chatbot } = this.state;
+    console.log(this.state);
   }
   fetch = () => {
     const { campaign } = this.props;
@@ -173,6 +175,9 @@ class ChatbotPage extends Component {
           <>
             <ChatbotNav
               chatbot={campaign.facebookAccount.chatbot.config}
+              customModules={
+                campaign.facebookAccount.chatbot.customModules || {}
+              }
               module={module}
             />
             <content.component

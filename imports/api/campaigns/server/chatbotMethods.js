@@ -234,3 +234,171 @@ export const chatbotModuleActivation = new ValidatedMethod({
     });
   }
 });
+
+export const proposalsActivation = new ValidatedMethod({
+  name: "chatbot.proposalsActivation",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    active: {
+      type: Boolean
+    }
+  }).validator(),
+  run({ campaignId, active }) {
+    this.unblock();
+    logger.debug("chatbot.proposalsActivation called", { campaignId, active });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    const allowed = Meteor.call("campaigns.canManage", { userId, campaignId });
+
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    return ChatbotHelpers.proposalsActivation({ campaignId, active });
+  }
+});
+
+export const getProposals = new ValidatedMethod({
+  name: "chatbot.getProposals",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId }) {
+    this.unblock();
+    logger.debug("chatbot.getProposals called", { campaignId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    const allowed = Meteor.call("campaigns.canManage", { userId, campaignId });
+
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    return ChatbotHelpers.getProposals({ campaignId });
+  }
+});
+
+export const upsertProposal = new ValidatedMethod({
+  name: "chatbot.upsertProposal",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    proposal: {
+      type: Object,
+      blackbox: true
+    }
+  }).validator(),
+  run({ campaignId, proposal }) {
+    this.unblock();
+    logger.debug("chatbot.upsertProposal called", { campaignId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    const allowed = Meteor.call("campaigns.canManage", { userId, campaignId });
+
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    return ChatbotHelpers.upsertProposal({ campaignId, proposal });
+  }
+});
+
+export const removeProposal = new ValidatedMethod({
+  name: "chatbot.removeProposal",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    proposalId: {
+      type: Number
+    }
+  }).validator(),
+  run({ campaignId, proposalId }) {
+    this.unblock();
+    logger.debug("chatbot.removeProposal called", { campaignId, proposalId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    const allowed = Meteor.call("campaigns.canManage", { userId, campaignId });
+
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    return ChatbotHelpers.removeProposal({ campaignId, proposalId });
+  }
+});
+
+export const setPrimaryProposal = new ValidatedMethod({
+  name: "chatbot.setPrimaryProposal",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    proposalId: {
+      type: Number
+    }
+  }).validator(),
+  run({ campaignId, proposalId }) {
+    this.unblock();
+    logger.debug("chatbot.removeProposal called", { campaignId, proposalId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    const allowed = Meteor.call("campaigns.canManage", { userId, campaignId });
+
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    return ChatbotHelpers.setPrimaryProposal({ campaignId, proposalId });
+  }
+});

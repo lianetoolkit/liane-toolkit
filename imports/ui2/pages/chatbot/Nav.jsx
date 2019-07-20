@@ -92,7 +92,7 @@ class ModuleLink extends Component {
 
 export default class ChatbotNav extends Component {
   render() {
-    const { chatbot, module } = this.props;
+    const { chatbot, customModules, module } = this.props;
     const currentRoute = FlowRouter.current().route.name;
     return (
       <Page.Nav>
@@ -111,35 +111,35 @@ export default class ChatbotNav extends Component {
         </a>
         <h3>Módulos</h3>
         <ModuleLink
-          active={isModuleActive(chatbot, "info")}
+          active={isModuleActive(chatbot, customModules, "info")}
           href={FlowRouter.path("App.chatbot", {}, { module: "info" })}
           className={module == "info" ? "active" : ""}
         >
           Informações do Candidato
         </ModuleLink>
         <ModuleLink
-          active={isModuleActive(chatbot, "proposals")}
+          active={isModuleActive(chatbot, customModules, "proposals")}
           href={FlowRouter.path("App.chatbot", {}, { module: "proposals" })}
           className={module == "proposals" ? "active" : ""}
         >
           Apresentar e receber propostas
         </ModuleLink>
         <ModuleLink
-          active={isModuleActive(chatbot, "auto_reply")}
+          active={isModuleActive(chatbot, customModules, "auto_reply")}
           href={FlowRouter.path("App.chatbot", {}, { module: "auto_reply" })}
           className={module == "auto_reply" ? "active" : ""}
         >
           Respostas automáticas
         </ModuleLink>
         <ModuleLink
-          active={isModuleActive(chatbot, "registration")}
+          active={isModuleActive(chatbot, customModules, "registration")}
           href={FlowRouter.path("App.chatbot", {}, { module: "registration" })}
           className={module == "registration" ? "active" : ""}
         >
           Registro de apoio
         </ModuleLink>
         <ModuleLink
-          active={isModuleActive(chatbot, "notifications")}
+          active={isModuleActive(chatbot, customModules, "notifications")}
           href={FlowRouter.path("App.chatbot", {}, { module: "notifications" })}
           className={module == "notifications" ? "active" : ""}
         >

@@ -12,7 +12,7 @@ import Loading from "/imports/ui2/components/Loading.jsx";
 
 import ModuleStatus from "../ModuleStatus.jsx";
 
-const ProposalInputContainer = styled.div`
+const ProposalContainer = styled.div`
   background: #fcfcfc;
   border: 1px solid #ddd;
   border-radius: 7px;
@@ -57,45 +57,99 @@ const ProposalInputContainer = styled.div`
   }
 `;
 
-class ProposalInput extends Component {
-  _handleChange = ({ target }) => {
-    const { value, onChange } = this.props;
-    if (onChange && typeof onChange == "function") {
-      onChange({
-        ...value,
-        [target.name]: target.value
-      });
+class Proposal extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      formData: {}
+    };
+  }
+  static getDerivedStateFromProps(props, state) {
+    if (props.proposal.id && props.proposal.id != state.formData.id) {
+      return {
+        formData: props.proposal
+      };
     }
+    return null;
+  }
+  componentDidMount() {
+    const { proposal } = this.props;
+    this.setState({
+      formData: proposal
+    });
+  }
+  _handleChange = ({ target }) => {
+    const { formData } = this.state;
+    this.setState({
+      formData: {
+        ...formData,
+        [target.name]: target.value
+      }
+    });
   };
   _handleRemoveClick = () => {
-    const { onRemove } = this.props;
-    if (confirm("Você tem certeza?")) {
-      if (onRemove && typeof onRemove == "function") {
-        onRemove();
-      }
+    const { proposal, campaignId, onRemove } = this.props;
+    if (!proposal.id) {
+      onRemove(undefined);
+    } else if (confirm("Você tem certeza?")) {
+      Meteor.call(
+        "chatbot.removeProposal",
+        { campaignId, proposalId: proposal.id },
+        (err, res) => {
+          if (err) {
+            alertStore.add(err);
+          } else if (onRemove && typeof onRemove == "function") {
+            onRemove(proposal.id);
+          }
+        }
+      );
     }
   };
   _handlePrimaryClick = () => {
-    const { onPrimary } = this.props;
+    const { proposal, onPrimary } = this.props;
     if (onPrimary && typeof onPrimary == "function") {
-      onPrimary();
+      onPrimary(proposal.id);
     }
   };
+  _handleSubmit = ev => {
+    ev.preventDefault();
+    const { campaignId, onSubmit } = this.props;
+    const { formData } = this.state;
+    Meteor.call(
+      "chatbot.upsertProposal",
+      { campaignId, proposal: formData },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          this.setState({
+            formData: res
+          });
+          onSubmit && onSubmit(res);
+        }
+      }
+    );
+  };
   render() {
-    const { value, target, isPrimary } = this.props;
+    const { target, isPrimary } = this.props;
+    const { formData } = this.state;
     const tooltipId = `proposal-input-${target}`;
     return (
-      <ProposalInputContainer>
+      <ProposalContainer>
         <div className="actions">
-          <a
-            href="javascript:void(0);"
-            onClick={this._handlePrimaryClick}
-            className={isPrimary ? "active" : ""}
-            data-tip={isPrimary ? "Remover como principal" : "Tornar principal"}
-            data-for={tooltipId}
-          >
-            <FontAwesomeIcon icon="star" />
-          </a>
+          {formData.id ? (
+            <a
+              href="javascript:void(0);"
+              onClick={this._handlePrimaryClick}
+              className={isPrimary ? "active" : ""}
+              data-tip={
+                isPrimary ? "Remover como principal" : "Tornar principal"
+              }
+              data-for={tooltipId}
+            >
+              <FontAwesomeIcon icon="star" />
+            </a>
+          ) : null}
           <a
             href="javascript:void(0);"
             onClick={this._handleRemoveClick}
@@ -110,7 +164,7 @@ class ProposalInput extends Component {
           <input
             type="text"
             name="title"
-            value={value.title}
+            value={formData.title}
             onChange={this._handleChange}
           />
         </Form.Field>
@@ -118,20 +172,24 @@ class ProposalInput extends Component {
           <input
             type="text"
             name="question"
-            value={value.question}
+            value={formData.question}
             onChange={this._handleChange}
           />
         </Form.Field>
         <Form.Field secondary label="Descrição da proposta">
           <textarea
-            name="description"
-            value={value.description}
+            name="proposal"
+            value={formData.proposal}
             onChange={this._handleChange}
           />
         </Form.Field>
-        <input type="submit" value="Salvar proposta" />
+        <input
+          type="submit"
+          value="Salvar proposta"
+          onClick={this._handleSubmit}
+        />
         <ReactTooltip id={tooltipId} aria-haspopup="true" effect="solid" />
-      </ProposalInputContainer>
+      </ProposalContainer>
     );
   }
 }
@@ -151,150 +209,125 @@ export default class ChatbotProposalsModule extends Component {
     super(props);
     this.state = {
       loading: false,
-      formData: {}
+      loadingActivation: false,
+      proposals: {}
     };
   }
-  static getDerivedStateFromProps(props, state) {
-    if (JSON.stringify(state.formData) != JSON.stringify(props.chatbot)) {
-      return {
-        formData: props.chatbot
-      };
-    }
-    return null;
+  componentDidMount() {
+    this.fetch();
   }
-  _handleChange = ({ target }) => {
-    const { formData } = this.state;
-    let newFormData = { ...formData };
-    set(
-      newFormData,
-      target.name,
-      target.type == "checkbox" ? target.checked : target.value
-    );
-    this.setState({
-      formData: newFormData
-    });
-  };
-  _handleProposalChange = index => proposal => {
-    const { formData } = this.state;
-    let newFormData = { ...formData };
-    set(newFormData, `extra_info.proposals.items[${index}]`, proposal);
-    this.setState({
-      formData: newFormData
-    });
-  };
-  _handleProposalRemove = index => () => {
-    const { formData } = this.state;
-    let newFormData = { ...formData };
-    newFormData.extra_info.proposals.items.splice(index, 1);
-    const primary = this._getPrimary();
-    let newPrimary;
-    if (primary > index) {
-      newPrimary = Math.max(primary - 1, 0);
-    } else if (primary == index) {
-      newPrimary = -1;
-    }
-    if (!isNaN(newPrimary)) {
-      set(newFormData, "extra_info.proposals.primary", newPrimary);
-    }
-    this.setState({
-      formData: newFormData
-    });
-  };
-  _handleProposalPrimary = index => () => {
-    const { formData } = this.state;
-    let newFormData = { ...formData };
-    const primary = this._getPrimary();
-    set(
-      newFormData,
-      `extra_info.proposals.primary`,
-      primary == index ? -1 : index
-    );
-    this.setState({
-      formData: newFormData
-    });
-  };
-  _handleProposalAdd = () => {
-    const { formData } = this.state;
-    let newFormData = { ...formData };
-    const items = get(newFormData, "extra_info.proposals.items");
-    let index = 1;
-    if (items && items.length) {
-      index = items.length;
-    }
-    set(
-      newFormData,
-      `extra_info.proposals.items[${index}]`,
-      this.getProposalItem()
-    );
-    this.setState({ formData: newFormData });
-  };
-  _handleSubmit = ev => {
-    ev.preventDefault();
+  // componentDidUpdate(prevProps, prevState) {
+  //   const { onChange } = this.props;
+  //   const { proposals } = this.state;
+  //   if (JSON.stringify(prevState.proposals) !== JSON.stringify(proposals)) {
+  //     onChange && onChange({ proposals });
+  //   }
+  // }
+  fetch = () => {
     const { campaign } = this.props;
-    const { formData } = this.state;
-    this.setState({
-      loading: true
-    });
+    this.setState({ loading: true });
     Meteor.call(
-      "chatbot.update",
-      {
-        campaignId: campaign._id,
-        config: formData
-      },
+      "chatbot.getProposals",
+      { campaignId: campaign._id },
       (err, res) => {
-        this.setState({
-          loading: false
-        });
+        this.setState({ loading: false });
         if (err) {
           alertStore.add(err);
         } else {
+          console.log(res);
           this.setState({
-            formData: res.config
+            proposals: res
           });
-          alertStore.add("Atualizado", "success");
-          this._handleChatbotChange(res.config);
         }
       }
     );
   };
-  getProposalItem = () => {
-    return { title: "", description: "", question: "" };
-  };
   getProposals = () => {
-    const { formData } = this.state;
-    let proposals = get(formData, "extra_info.proposals.items");
-    if (!proposals || !proposals.length) {
-      return [this.getProposalItem()];
+    const { proposals } = this.state;
+    console.log(proposals);
+    if (proposals.items && proposals.items.length) {
+      return proposals.items;
     }
-    return proposals;
+    return [{ title: "", proposal: "", question: "" }];
   };
-  _getPrimary = () => {
-    const { formData } = this.state;
-    return get(formData, "extra_info.proposals.primary") || 0;
+  _handleProposalAdd = () => {
+    const { proposals } = this.state;
+    this.setState({
+      proposals: {
+        ...proposals,
+        items: [...proposals.items, { title: "", proposal: "", question: "" }]
+      }
+    });
   };
-  _isPrimary = index => {
-    const { formData } = this.state;
-    const primary = get(formData, "extra_info.proposals.primary") || 0;
-    return index == primary;
+  _handleProposalSubmit = proposal => {
+    const { proposals } = this.state;
+    this.setState({
+      proposals: {
+        ...proposals,
+        items: [...proposals.items.slice(0, -1), proposal]
+      }
+    });
   };
   _canAddProposal = () => {
-    const { formData } = this.state;
-    return !!get(formData, "extra_info.proposals.items");
+    const proposals = this.getProposals();
+    return !proposals.filter(p => !p.id).length;
   };
-  getValue = path => {
-    const { formData } = this.state;
-    return get(formData, path);
+  _isActive = () => {
+    const { proposals } = this.state;
+    return proposals && proposals.active;
   };
-  _handleChatbotChange = data => {
-    const { onChange } = this.props;
-    if (onChange && typeof onChange == "function") {
-      onChange(data);
-    }
+  _handlePrimary = proposalId => {
+    const { campaign } = this.props;
+    const { proposals } = this.state;
+    if (proposals.primary_id == proposalId) proposalId = -1;
+    Meteor.call(
+      "chatbot.setPrimaryProposal",
+      { campaignId: campaign._id, proposalId },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          this.setState({
+            proposals: res
+          });
+        }
+      }
+    );
+  };
+  _handleRemove = proposalId => {
+    const { proposals } = this.state;
+    this.setState({
+      proposals: {
+        ...proposals,
+        items: proposals.items.filter(p => p.id !== proposalId)
+      }
+    });
+  };
+  _handleActivationClick = () => {
+    const { campaign } = this.props;
+    this.setState({ loadingActivation: true });
+    Meteor.call(
+      "chatbot.proposalsActivation",
+      {
+        campaignId: campaign._id,
+        active: !this._isActive()
+      },
+      (err, res) => {
+        this.setState({ loadingActivation: false });
+        if (err) {
+          alertStore.add(err);
+        } else {
+          this.setState({
+            proposals: res
+          });
+        }
+      }
+    );
   };
   render() {
     const { campaign, chatbot } = this.props;
-    const { loading, formData } = this.state;
-    const proposals = this.getProposals();
+    const { loading, loadingActivation, proposals } = this.state;
+    const items = this.getProposals();
     if (loading) {
       return <Loading full />;
     }
@@ -307,29 +340,35 @@ export default class ChatbotProposalsModule extends Component {
               label="Apresentar e receber propostas"
               chatbot={chatbot}
               campaign={campaign}
+              onActivation={this._handleActivationClick}
+              isActive={this._isActive()}
+              loading={loadingActivation}
               onChange={this._handleChatbotChange}
             />
-            {proposals.map((proposal, i) => (
-              <ProposalInput
-                key={i}
-                onChange={this._handleProposalChange(i)}
-                onRemove={this._handleProposalRemove(i)}
-                onPrimary={this._handleProposalPrimary(i)}
-                value={proposal}
-                isPrimary={this._isPrimary(i)}
-                target={i}
+            {items.map((proposal, i) => (
+              <Proposal
+                key={proposal.yeeko_id || i}
+                target={proposal.yeeko_id || i}
+                campaignId={campaign._id}
+                proposal={proposal}
+                onPrimary={this._handlePrimary}
+                isPrimary={proposals.primary_id == proposal.id}
+                onRemove={this._handleRemove}
+                onSubmit={this._handleProposalSubmit}
               />
             ))}
-            <div className="actions">
-              <Button
-                secondary
-                small
-                onClick={this._handleProposalAdd}
-                disabled={!this._canAddProposal()}
-              >
-                Adicionar nova proposta
-              </Button>
-            </div>
+            {items.length < 8 ? (
+              <div className="actions">
+                <Button
+                  secondary
+                  small
+                  onClick={this._handleProposalAdd}
+                  disabled={!this._canAddProposal()}
+                >
+                  Adicionar nova proposta
+                </Button>
+              </div>
+            ) : null}
           </Container>
         </Form.Content>
       </Form>
