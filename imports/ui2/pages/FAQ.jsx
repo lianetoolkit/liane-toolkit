@@ -196,6 +196,25 @@ class FAQEdit extends Component {
 }
 
 const Container = styled.div`
+  max-width: 960px;
+  margin: 0 auto;
+  .intro {
+    display: flex;
+    max-width: 600px;
+    margin: 4rem auto;
+    align-items: center;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 7px;
+    box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
+    padding: 2rem;
+    p {
+      margin: 0 2rem 0 0;
+    }
+    .button {
+      white-space: nowrap;
+    }
+  }
   .page-actions {
     text-align: right;
     margin: 0 0 2rem;
@@ -334,58 +353,75 @@ export default class FAQPage extends Component {
     }
     return (
       <Page.Content full>
-        <Page.Title>Perguntas Frequentes</Page.Title>
         <Container>
-          <div className="page-actions">
-            <Button className="button new-faq" onClick={this._handleNewClick}>
-              + Criar nova resposta de pergunta frequente
-            </Button>
-          </div>
-          <section className="faq-list">
-            {faq.map(item => (
-              <article key={item._id} className="faq-item">
-                <header>
-                  <h2>
-                    <a
-                      href="javascript:void(0);"
-                      onClick={this._handleViewClick(item)}
-                    >
-                      {item.question}
-                    </a>
-                  </h2>
-                </header>
-                <section>
-                  <p>{item.answer}</p>
-                  <aside className="item-actions">
-                    <CopyToClipboard
-                      text={item.answer}
-                      data-tip="Copiar"
-                      data-for={`faq-${item._id}`}
-                    >
-                      <FontAwesomeIcon icon="copy" />
-                    </CopyToClipboard>
-                    <a
-                      href="javascript:void(0);"
-                      onClick={this._handleViewClick(item)}
-                      data-tip="Visualizar"
-                      data-for={`faq-${item._id}`}
-                    >
-                      <FontAwesomeIcon icon="eye" />
-                    </a>
-                    <a
-                      href="javascript:void(0);"
-                      onClick={this._handleEditClick(item)}
-                      data-tip="Editar"
-                      data-for={`faq-${item._id}`}
-                    >
-                      <FontAwesomeIcon icon="edit" />
-                    </a>
-                  </aside>
-                  <ReactTooltip id={`faq-${item._id}`} effect="solid" />
-                </section>
-              </article>
-            ))}
-          </section>
+          <Page.Title>Perguntas Frequentes</Page.Title>
+          {!faq.length ? (
+            <div className="intro">
+              <p>
+                Crie respostas a perguntas frequentes para otimizar a
+                comunicação da campanha com seu público.
+              </p>
+              <Button primary onClick={this._handleNewClick}>
+                Criar primeira resposta
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="page-actions">
+                <Button
+                  className="button new-faq"
+                  onClick={this._handleNewClick}
+                >
+                  + Criar nova resposta de pergunta frequente
+                </Button>
+              </div>
+              <section className="faq-list">
+                {faq.map(item => (
+                  <article key={item._id} className="faq-item">
+                    <header>
+                      <h2>
+                        <a
+                          href="javascript:void(0);"
+                          onClick={this._handleViewClick(item)}
+                        >
+                          {item.question}
+                        </a>
+                      </h2>
+                    </header>
+                    <section>
+                      <p>{item.answer}</p>
+                      <aside className="item-actions">
+                        <CopyToClipboard
+                          text={item.answer}
+                          data-tip="Copiar"
+                          data-for={`faq-${item._id}`}
+                        >
+                          <FontAwesomeIcon icon="copy" />
+                        </CopyToClipboard>
+                        <a
+                          href="javascript:void(0);"
+                          onClick={this._handleViewClick(item)}
+                          data-tip="Visualizar"
+                          data-for={`faq-${item._id}`}
+                        >
+                          <FontAwesomeIcon icon="eye" />
+                        </a>
+                        <a
+                          href="javascript:void(0);"
+                          onClick={this._handleEditClick(item)}
+                          data-tip="Editar"
+                          data-for={`faq-${item._id}`}
+                        >
+                          <FontAwesomeIcon icon="edit" />
+                        </a>
+                      </aside>
+                      <ReactTooltip id={`faq-${item._id}`} effect="solid" />
+                    </section>
+                  </article>
+                ))}
+              </section>
+            </>
+          )}
         </Container>
       </Page.Content>
     );
