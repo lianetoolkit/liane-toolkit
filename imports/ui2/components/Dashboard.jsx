@@ -27,10 +27,6 @@ const BoxContainer = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  h3 {
-    margin: 0 0 2rem;
-    font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  }
   ${props =>
     props.primary &&
     css`
