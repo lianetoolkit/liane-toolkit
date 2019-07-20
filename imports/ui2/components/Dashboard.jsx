@@ -99,6 +99,7 @@ const BoxContainer = styled.div`
         font-size: 0.9em;
         display: flex;
         align-items: center;
+        justify-content: center;
         p {
           margin: 0 0 1rem;
         }
