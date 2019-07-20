@@ -89,23 +89,17 @@ export default class Modal extends Component {
     modalStore.reset();
   };
   render() {
-    const { title, children, locked, type } = this.props;
+    const { title, children, type } = this.props;
     let className = "";
     if (type) className += type + " ";
     if (children) {
       return (
-        <Container
-          active={!!children}
-          className={className}
-          tabIndex="-1"
-        >
-          {!locked ? (
-            <a
-              href="javascript:void(0);"
-              onClick={this._handleCloseClick}
-              className="close-background"
-            />
-          ) : null}
+        <Container active={!!children} className={className} tabIndex="-1">
+          <a
+            href="javascript:void(0);"
+            onClick={this._handleCloseClick}
+            className="close-background"
+          />
           <div className="modal">
             {title ? (
               <header className="modal-header">

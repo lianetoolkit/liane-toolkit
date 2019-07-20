@@ -108,7 +108,9 @@ class Confirm extends Component {
           Atenção: Para criar uma campanha você deve ter acesso administrativo à
           página de Facebook que gostaria de utilizar.
         </p>
-        <Button primary onClick={this._handleSubmit}>Definir tipo de conta</Button>
+        <Button primary onClick={this._handleSubmit}>
+          Definir tipo de conta
+        </Button>
       </AuthOptions>
     );
   }
@@ -118,9 +120,11 @@ export default class AuthConfirm extends Component {
   componentDidMount() {
     const { user } = this.props;
     if (user && !user.type) {
-      modalStore.lock();
       modalStore.setType("small");
-      modalStore.set(<Confirm user={user} />);
+      modalStore.set(<Confirm user={user} />, () => {
+        // Keep from closing
+        return false;
+      });
     }
   }
   render() {
