@@ -147,7 +147,7 @@ export default class PeopleBlock extends Component {
           ) : null}
           {!loading && !people.length ? (
             <p className="not-found">
-              <span>Ainda não há pessoas nesta categoria!</span>
+              <span>Ainda não há pessoas nesta categoria</span>
             </p>
           ) : null}
         </div>

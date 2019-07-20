@@ -130,8 +130,7 @@ export default class DashboardPage extends Component {
           <Dashboard.Box primary={true}>
             <p>
               Sua base possui um total de{" "}
-              <strong>{counts.people} pessoas</strong>, que realizaram um total
-              de <strong>{counts.comments} comentários</strong> e{" "}
+              <strong>{counts.people} pessoas</strong>, que realizaram <strong>{counts.comments} comentários</strong> e{" "}
               <strong>{counts.likes} reações</strong> a publicações.
             </p>
             <div className="links">
