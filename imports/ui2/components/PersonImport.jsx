@@ -77,7 +77,8 @@ const ItemConfigContainer = styled.div`
   display: flex;
   align-items: center;
   margin: 0 0 1rem;
-  > div {
+  > div,
+  label {
     flex: 1 1 100%;
     input,
     .select-search__control,
@@ -175,6 +176,8 @@ export class PersonImportButton extends React.Component {
   _handleClose = () => {
     if (confirm("Tem certeza que deseja cancelar a importação?")) {
       this.setState({ importData: null, importFilename: "" });
+      this.importInput.value = null;
+      this.importInput.dispatchEvent(new Event("input", { bubbles: true }));
       return true;
     }
   };
@@ -292,7 +295,7 @@ class ItemConfig extends React.Component {
         <span className="arrow">
           <FontAwesomeIcon icon="arrow-right" />
         </span>
-        <div>
+        <Form.Field>
           <Select
             classNamePrefix="select-search"
             isSearchable={true}
@@ -302,7 +305,7 @@ class ItemConfig extends React.Component {
             placeholder="Pular"
             onChange={this._handleSelectChange}
           />
-        </div>
+        </Form.Field>
         {value == "custom" ? (
           <div>
             <input
@@ -431,7 +434,10 @@ export default class PeopleImport extends React.Component {
               label="Default tags for this import"
             />
           </Form.Field>
-          <Form.Field label="Selecione categorias padrão para todas as entradas da importação">
+          <Form.Field
+            simple
+            label="Selecione categorias padrão para todas as entradas da importação"
+          >
             <PersonMetaButtons
               size="big"
               onChange={this._handleMetaButtons}

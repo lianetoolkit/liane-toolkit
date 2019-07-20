@@ -86,7 +86,11 @@ const FieldContainer = styled.label`
     css`
       font-size: 1.2em;
     `}
-  ${props => props.grouped && css``}
+  ${props => props.simple && css`
+    .input-container {
+      border: 0;
+    }
+  `}
 `;
 
 class Content extends Component {
