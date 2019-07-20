@@ -492,13 +492,15 @@ export default class PeoplePage extends Component {
                   />
                 </Form.Field>
                 {this.props.tags && this.props.tags.length ? (
-                  <TagFilter
-                    tags={this.props.tags}
-                    onChange={this._handleFormChange}
-                    name="tag"
-                    value={query.tag}
-                    placeholder="Filtrar por tag"
-                  />
+                  <Form.Field>
+                    <TagFilter
+                      tags={this.props.tags}
+                      onChange={this._handleFormChange}
+                      name="tag"
+                      value={query.tag}
+                      placeholder="Filtrar por tag"
+                    />
+                  </Form.Field>
                 ) : null}
                 <label className="boxed">
                   <input
