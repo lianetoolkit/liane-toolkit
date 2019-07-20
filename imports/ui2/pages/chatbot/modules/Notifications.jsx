@@ -96,6 +96,8 @@ export default class ChatbotNotificationsModule extends Component {
               label="Notificações a pessoas"
               chatbot={chatbot}
               campaign={campaign}
+              hideActivation={true}
+              loading={false}
               onChange={this._handleChatbotChange}
             />
           </Container>

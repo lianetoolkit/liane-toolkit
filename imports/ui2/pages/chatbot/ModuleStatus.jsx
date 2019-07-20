@@ -149,7 +149,7 @@ export default class ChatbotModuleStatus extends Component {
     }
   };
   render() {
-    const { label } = this.props;
+    const { label, hideActivation } = this.props;
     return (
       <Container>
         <div className="module-status">
@@ -159,17 +159,19 @@ export default class ChatbotModuleStatus extends Component {
             <p>{this._statusLabel()}</p>
           </div>
         </div>
-        <a
-          href="javascript:void(0);"
-          className="toggle-module"
-          onClick={this._handleActivationClick}
-        >
-          {this._isLoading() ? <Loading tiny /> : null}
-          {!this._isActive() ? <span>Ativar</span> : <span>Desativar</span>}
-          <FontAwesomeIcon
-            icon={this._isActive() ? "toggle-on" : "toggle-off"}
-          />
-        </a>
+        {!hideActivation ? (
+          <a
+            href="javascript:void(0);"
+            className="toggle-module"
+            onClick={this._handleActivationClick}
+          >
+            {this._isLoading() ? <Loading tiny /> : null}
+            {!this._isActive() ? <span>Ativar</span> : <span>Desativar</span>}
+            <FontAwesomeIcon
+              icon={this._isActive() ? "toggle-on" : "toggle-off"}
+            />
+          </a>
+        ) : null}
       </Container>
     );
   }
