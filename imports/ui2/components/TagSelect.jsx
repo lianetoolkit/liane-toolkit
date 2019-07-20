@@ -28,6 +28,7 @@ export default class TagSelect extends Component {
     );
   }
   _handleCreateOption = label => {
+    const { onChange, name } = this.props;
     Meteor.call(
       "people.createTag",
       {
@@ -36,6 +37,7 @@ export default class TagSelect extends Component {
       },
       (err, res) => {
         if (!err) {
+          onChange({ target: { name, value: res } });
           this.setState({
             options: [
               {
