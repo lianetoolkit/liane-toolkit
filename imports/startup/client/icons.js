@@ -47,12 +47,14 @@ import {
   faEdit,
   faEye,
   faSync,
+  faMarker,
   faLink
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faFacebookSquare,
   faInstagram,
-  faTwitter
+  faTwitter,
+  faFacebookMessenger
 } from "@fortawesome/free-brands-svg-icons";
 
 library.add(faCog);
@@ -101,7 +103,9 @@ library.add(faUndoAlt);
 library.add(faEdit);
 library.add(faEye);
 library.add(faSync);
+library.add(faMarker);
 library.add(faLink);
 library.add(faFacebookSquare);
 library.add(faInstagram);
 library.add(faTwitter);
+library.add(faFacebookMessenger);

@@ -3,22 +3,24 @@ import styled from "styled-components";
 
 import PersonContactIcons from "../PersonContactIcons.jsx";
 import Button from "../Button.jsx";
+import Loading from "../Loading.jsx";
 
 const Container = styled.section`
+  flex: 1 1 100%;
   display: flex;
   flex-direction: column;
-  height: 300px;
+  min-height: 300px;
   overflow: hidden;
   header {
     border-radius: 7px 7px 0 0;
     flex: 0 0 auto;
     background: #fc0;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1rem;
     margin-top: -1px;
     margin-left: -1px;
     margin-right: -1px;
     h3 {
-      font-size: 0.8em;
+      font-size: 1em;
       color: #fff;
       margin: 0;
     }
@@ -26,11 +28,18 @@ const Container = styled.section`
   footer {
     flex: 0 0 auto;
     font-size: 0.8em;
+    margin-bottom: -1px;
+    margin-left: -1px;
+    margin-right: -1px;
+    a.button {
+      border-top-left-radius: 0 !important;
+      border-top-right-radius: 0 !important;
+    }
     a.button:first-child {
-      border-radius: 0 0 0 7px;
+      border-bottom-left-radius: 7px;
     }
     a.button:last-child {
-      border-radius: 0 0 7px 0;
+      border-bottom-right-radius: 7px;
     }
   }
   .people-table {
@@ -53,21 +62,35 @@ const Container = styled.section`
         white-space: normal;
         width: auto;
       }
+      a {
+        text-decoration: none;
+      }
     }
+  }
+  .not-found {
+    margin: 4rem 2rem;
+    color: #999;
+    font-style: italic;
   }
 `;
 
 export default class PeopleBlock extends Component {
   constructor(props) {
     super(props);
-    this.state = { people: [] };
+    this.state = { people: [], loading: false };
   }
   componentDidMount() {
     this.fetchPeople();
   }
   fetchPeople = () => {
     const { query } = this.props;
+    this.setState({
+      loading: true
+    });
     Meteor.call("people.search", query, (err, data) => {
+      this.setState({
+        loading: false
+      });
       if (!err) {
         this.setState({
           people: data
@@ -77,7 +100,7 @@ export default class PeopleBlock extends Component {
   };
   render() {
     const { title, color } = this.props;
-    const { people } = this.state;
+    const { loading, people } = this.state;
     return (
       <Container>
         <header
@@ -88,12 +111,21 @@ export default class PeopleBlock extends Component {
           <h3>{title}</h3>
         </header>
         <div className="people-table">
-          {people.length ? (
+          {loading ? <Loading /> : null}
+          {!loading && people.length ? (
             <table>
               <tbody>
                 {people.map(person => (
                   <tr key={person._id}>
-                    <td>{person.name}</td>
+                    <td>
+                      <a
+                        href={FlowRouter.path("App.people.detail", {
+                          personId: person._id
+                        })}
+                      >
+                        {person.name}
+                      </a>
+                    </td>
                     <td>
                       <PersonContactIcons person={person} />
                     </td>
@@ -102,13 +134,20 @@ export default class PeopleBlock extends Component {
               </tbody>
             </table>
           ) : null}
+          {!loading && !people.length ? (
+            <p className="not-found">
+              Ainda não há nenhuma pessoa nesta categoria!
+            </p>
+          ) : null}
         </div>
-        <footer>
-          <Button.Group>
-            <Button>Exportar {title}</Button>
-            <Button>Marcar novos</Button>
-          </Button.Group>
-        </footer>
+        {!loading ? (
+          <footer>
+            <Button.Group>
+              {people.length ? <Button>Exportar {title}</Button> : null}
+              <Button>Marcar novos</Button>
+            </Button.Group>
+          </footer>
+        ) : null}
       </Container>
     );
   }

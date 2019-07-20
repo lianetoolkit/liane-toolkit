@@ -25,6 +25,12 @@ const BoxContainer = styled.div`
   margin: 0 0.5rem 1rem 0.5rem;
   padding: 1rem 1.5rem;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  h3 {
+    margin: 0 0 2rem;
+    font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
   ${props =>
     props.primary &&
     css`
@@ -43,7 +49,7 @@ const BoxContainer = styled.div`
           margin-bottom: 0.25rem;
         }
         a {
-          color: rgba(255,255,255,0.5);
+          color: rgba(255, 255, 255, 0.5);
           text-decoration: none;
           font-size: 0.8em;
         }
@@ -71,6 +77,43 @@ const BoxContainer = styled.div`
   .button {
     font-size: 0.8em;
   }
+  ${props =>
+    props.minimal &&
+    css`
+      background: transparent;
+      border: 0;
+      header {
+        text-align: center;
+        margin: 0 0 1rem;
+        flex: 0 0 auto;
+        svg {
+          font-size: 3em;
+          color: #999;
+          margin: 1rem 0;
+        }
+        h3 {
+          text-align: center;
+          font-weight: 600;
+          margin: 0;
+          font-size: 1.5em;
+        }
+      }
+      section {
+        flex: 1 1 100%;
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        p {
+          margin: 0 0 1rem;
+        }
+      }
+      footer {
+        a.button {
+          margin: 0;
+          display: block;
+        }
+      }
+    `}
 `;
 
 const BoxTitle = styled.h3`
@@ -90,10 +133,11 @@ class Row extends Component {
 
 class Box extends Component {
   render() {
-    const { grow, children, ...props } = this.props;
+    const { minimal, grow, children, ...props } = this.props;
     const flexGrow = grow || 1;
     return (
       <BoxContainer
+        minimal={minimal}
         style={{
           flex: flexGrow
         }}

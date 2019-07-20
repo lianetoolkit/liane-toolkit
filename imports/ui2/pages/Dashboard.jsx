@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { alertStore } from "../containers/Alerts.jsx";
 
 import Page from "../components/Page.jsx";
@@ -144,81 +146,54 @@ export default class DashboardPage extends Component {
             </div>
           </Dashboard.Box>
         </Dashboard.Row>
-        {/* <Dashboard.Row>
-          <Dashboard.Box grow="2">
-            <Dashboard.Title>Teste</Dashboard.Title>
-            <p>Teste</p>
+        <Dashboard.Row>
+          <Dashboard.Box minimal>
+            <header>
+              <FontAwesomeIcon icon={["fab", "facebook-messenger"]} />
+              <h3>Chatbot</h3>
+            </header>
+            <section>
+              <p>
+                Configure seu chatbot para espalhar sua mensagem e conseguir
+                apoiadores.
+              </p>
+            </section>
+            <footer>
+              <Button href={FlowRouter.path("App.chatbot")}>
+                Configurar Chatbot
+              </Button>
+            </footer>
           </Dashboard.Box>
-          <Dashboard.Box>
-            <p>Teste</p>
+          <Dashboard.Box minimal>
+            <header>
+              <FontAwesomeIcon icon="map-marked" />
+              <h3>Território</h3>
+            </header>
+            <section>
+              <p>Utilize o mapa para sua estratégia de território.</p>
+            </section>
+            <footer>
+              <Button href={FlowRouter.path("App.map")}>Criar mapa</Button>
+            </footer>
           </Dashboard.Box>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-          <Dashboard.Box>
-            <p>Teste</p>
+          <Dashboard.Box minimal>
+            <header>
+              <FontAwesomeIcon icon="marker" />
+              <h3>Perguntas frequentes</h3>
+            </header>
+            <section>
+              <p>
+                Configure respostas a perguntas frequentes para facilitar a
+                comunicação da sua campanha.
+              </p>
+            </section>
+            <footer>
+              <Button href={FlowRouter.path("App.faq")}>
+                Escrever respostas
+              </Button>
+            </footer>
           </Dashboard.Box>
         </Dashboard.Row>
-        <Dashboard.Row>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-        </Dashboard.Row>
-        <Dashboard.Row>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-        </Dashboard.Row>
-        <Dashboard.Row>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-        </Dashboard.Row>
-        <Dashboard.Row>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-        </Dashboard.Row>
-        <Dashboard.Row>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-        </Dashboard.Row>
-        <Dashboard.Row>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-          <Dashboard.Box>
-            <p>Teste</p>
-          </Dashboard.Box>
-        </Dashboard.Row> */}
       </Dashboard>
     );
   }
