@@ -78,7 +78,7 @@ export default class PeopleLists extends Component {
                     <td>{item.count} people</td>
                     <td>
                       {item.expired ? (
-                        "Exportação expirou"
+                        "This export file has expired"
                       ) : (
                         <a href={item.url} target="_blank" className="button">
                           Download
