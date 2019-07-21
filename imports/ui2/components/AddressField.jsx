@@ -82,15 +82,16 @@ export default class AddressField extends Component {
     );
   }, 200);
   _handleZipcodeChange = ({ target }) => {
-    const zipcode = target.value;
+    const { country } = this.props;
     const { formData } = this.state;
+    const zipcode = target.value;
     this.setState({
       formData: {
         ...formData,
         zipcode
       }
     });
-    this._updateFromZipcodeData(formData.country, zipcode);
+    this._updateFromZipcodeData(formData.country || country, zipcode);
   };
   _handleChange = ({ target }) => {
     this.setState({

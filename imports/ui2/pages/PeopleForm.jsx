@@ -120,6 +120,9 @@ const Container = styled.div`
       margin: 0 auto;
     }
   }
+  .button {
+    margin: 0;
+  }
 `;
 
 class PeopleForm extends Component {
@@ -203,6 +206,14 @@ class PeopleForm extends Component {
     let data = { ...formData, campaignId: campaign._id };
     if (formId) {
       data.formId = formId;
+    }
+    if (!data.name) {
+      alertStore.add("Name is required", "error");
+      return;
+    }
+    if (!data.email) {
+      alertStore.add("Email is required", "error");
+      return;
     }
     Meteor.call("peopleForm.submit", data, (err, res) => {
       if (err) {
@@ -337,7 +348,6 @@ class PeopleForm extends Component {
                   onChange={target => this._handleChange({ target })}
                 />
                 <Button
-                  className=""
                   onClick={ev => {
                     ev.preventDefault();
                     this.setState({ contribute: !contribute });
