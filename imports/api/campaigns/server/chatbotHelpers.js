@@ -424,12 +424,12 @@ const ChatbotHelpers = {
     const campaign = Campaigns.findOne(campaignId);
     let res;
     try {
-      if (proposal.yeeko_id) {
+      if (proposal.id) {
         res = Promise.await(
           axios.put(
             getYeekoUrl(
               campaign.facebookAccount.facebookId,
-              `axes/${proposal.yeeko_id}/`
+              `axes/${proposal.id}/`
             ),
             proposal
           )

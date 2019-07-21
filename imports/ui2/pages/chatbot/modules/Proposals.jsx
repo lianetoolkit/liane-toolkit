@@ -122,10 +122,12 @@ class Proposal extends Component {
         if (err) {
           alertStore.add(err);
         } else {
+          console.log(res);
+          onSubmit && onSubmit(res, formData.id ? "update" : "insert");
           this.setState({
             formData: res
           });
-          onSubmit && onSubmit(res);
+          alertStore.add("Updated", "success");
         }
       }
     );
@@ -253,14 +255,16 @@ export default class ChatbotProposalsModule extends Component {
       }
     });
   };
-  _handleProposalSubmit = proposal => {
-    const { proposals } = this.state;
-    this.setState({
-      proposals: {
-        ...proposals,
-        items: [...proposals.items.slice(0, -1), proposal]
-      }
-    });
+  _handleProposalSubmit = (proposal, requestType) => {
+    if (requestType == "insert") {
+      const { proposals } = this.state;
+      this.setState({
+        proposals: {
+          ...proposals,
+          items: [...proposals.items.slice(0, -1), proposal]
+        }
+      });
+    }
   };
   _canAddProposal = () => {
     const proposals = this.getProposals();
