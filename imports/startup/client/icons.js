@@ -54,7 +54,8 @@ import {
   faFacebookSquare,
   faInstagram,
   faTwitter,
-  faFacebookMessenger
+  faFacebookMessenger,
+  faWhatsapp
 } from "@fortawesome/free-brands-svg-icons";
 
 library.add(faCog);
@@ -109,3 +110,4 @@ library.add(faFacebookSquare);
 library.add(faInstagram);
 library.add(faTwitter);
 library.add(faFacebookMessenger);
+library.add(faWhatsapp);

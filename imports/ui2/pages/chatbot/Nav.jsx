@@ -1,9 +1,32 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { isModuleActive } from "/imports/ui2/utils/chatbot";
 
 import Page from "/imports/ui2/components/Page.jsx";
+import Button from "/imports/ui2/components/Button.jsx";
+
+const Container = styled.div`
+  a.button {
+    margin: 1rem 1rem 1rem 0;
+    border-radius: 7px;
+    background-color: #3b5998;
+    color: #fff;
+    text-align: center;
+    display: block;
+    svg {
+      font-size: 1.2em;
+      margin-right: 0.5rem;
+    }
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: #333;
+      color: #fff;
+    }
+  }
+`;
 
 const ModuleLinkContainer = styled.a`
   padding-right: 0 !important;
@@ -96,55 +119,75 @@ export default class ChatbotNav extends Component {
     const currentRoute = FlowRouter.current().route.name;
     return (
       <Page.Nav>
-        <h3>Chatbot settings</h3>
-        <a
-          href={FlowRouter.path("App.chatbot")}
-          className={!module ? "active" : ""}
-        >
-          General settings
-        </a>
-        <a
-          href={FlowRouter.path("App.chatbot", {}, { module: "actions" })}
-          className={module == "actions" ? "active" : ""}
-        >
-          Actions
-        </a>
-        <h3>Modules</h3>
-        <ModuleLink
-          active={isModuleActive(chatbot, customModules, "info")}
-          href={FlowRouter.path("App.chatbot", {}, { module: "info" })}
-          className={module == "info" ? "active" : ""}
-        >
-          Candidate information
-        </ModuleLink>
-        <ModuleLink
-          active={isModuleActive(chatbot, customModules, "proposals")}
-          href={FlowRouter.path("App.chatbot", {}, { module: "proposals" })}
-          className={module == "proposals" ? "active" : ""}
-        >
-          Present axes and receive proposals
-        </ModuleLink>
-        <ModuleLink
-          active={isModuleActive(chatbot, customModules, "auto_reply")}
-          href={FlowRouter.path("App.chatbot", {}, { module: "auto_reply" })}
-          className={module == "auto_reply" ? "active" : ""}
-        >
-          Automated replies
-        </ModuleLink>
-        <ModuleLink
-          active={isModuleActive(chatbot, customModules, "registration")}
-          href={FlowRouter.path("App.chatbot", {}, { module: "registration" })}
-          className={module == "registration" ? "active" : ""}
-        >
-          Support registration
-        </ModuleLink>
-        <ModuleLink
-          active={isModuleActive(chatbot, customModules, "notifications")}
-          href={FlowRouter.path("App.chatbot", {}, { module: "notifications" })}
-          className={module == "notifications" ? "active" : ""}
-        >
-          Send notifications
-        </ModuleLink>
+        <Container>
+          <h3>Chatbot settings</h3>
+          <a
+            href={FlowRouter.path("App.chatbot")}
+            className={!module ? "active" : ""}
+          >
+            General settings
+          </a>
+          <a
+            href={FlowRouter.path("App.chatbot", {}, { module: "actions" })}
+            className={module == "actions" ? "active" : ""}
+          >
+            Actions
+          </a>
+          {chatbot.url_test_button ? (
+            <Button
+              href={chatbot.url_test_button}
+              rel="external"
+              target="_blank"
+            >
+              <FontAwesomeIcon icon={["fab", "facebook-messenger"]} /> Test your
+              chatbot
+            </Button>
+          ) : null}
+          <h3>Modules</h3>
+          <ModuleLink
+            active={isModuleActive(chatbot, customModules, "info")}
+            href={FlowRouter.path("App.chatbot", {}, { module: "info" })}
+            className={module == "info" ? "active" : ""}
+          >
+            Candidate information
+          </ModuleLink>
+          <ModuleLink
+            active={isModuleActive(chatbot, customModules, "proposals")}
+            href={FlowRouter.path("App.chatbot", {}, { module: "proposals" })}
+            className={module == "proposals" ? "active" : ""}
+          >
+            Present axes and receive proposals
+          </ModuleLink>
+          <ModuleLink
+            active={isModuleActive(chatbot, customModules, "auto_reply")}
+            href={FlowRouter.path("App.chatbot", {}, { module: "auto_reply" })}
+            className={module == "auto_reply" ? "active" : ""}
+          >
+            Automated replies
+          </ModuleLink>
+          <ModuleLink
+            active={isModuleActive(chatbot, customModules, "registration")}
+            href={FlowRouter.path(
+              "App.chatbot",
+              {},
+              { module: "registration" }
+            )}
+            className={module == "registration" ? "active" : ""}
+          >
+            Support registration
+          </ModuleLink>
+          <ModuleLink
+            active={isModuleActive(chatbot, customModules, "notifications")}
+            href={FlowRouter.path(
+              "App.chatbot",
+              {},
+              { module: "notifications" }
+            )}
+            className={module == "notifications" ? "active" : ""}
+          >
+            Send notifications
+          </ModuleLink>
+        </Container>
       </Page.Nav>
     );
   }

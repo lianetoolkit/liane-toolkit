@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { get, set } from "lodash";
 
 import { alertStore } from "/imports/ui2/containers/Alerts.jsx";
+import { modalStore } from "/imports/ui2/containers/Modal.jsx";
 
 import Button from "/imports/ui2/components/Button.jsx";
 import Page from "/imports/ui2/components/Page.jsx";
@@ -66,6 +67,32 @@ const Container = styled.div`
   }
 `;
 
+const PublishContainer = styled.div`
+  h3 {
+    font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 0 0 2rem;
+  }
+  p {
+    margin: 0 0 0.5rem;
+  }
+  a.button.whatsapp {
+    background: #25d366;
+    color: #fff;
+    margin: 0;
+    display: block;
+    text-align: center;
+    svg {
+      margin-right: 1rem;
+      font-size: 1.2em;
+    }
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: #075e54;
+    }
+  }
+`;
+
 export default class ChatbotGeneralSettings extends Component {
   constructor(props) {
     super(props);
@@ -112,6 +139,26 @@ export default class ChatbotGeneralSettings extends Component {
         }
       );
     }
+  };
+  _handlePublishClick = () => {
+    const { campaign } = this.props;
+    const config = get(campaign.facebookAccount, "chatbot.config");
+    modalStore.setType("small");
+    modalStore.set(
+      <PublishContainer>
+        <h3>Publish your chatbot</h3>
+        <p>Link to your chatbot:</p>
+        <input type="text" value={config.broadcast.url} disabled />
+        <Button
+          className="button whatsapp"
+          href={config.broadcast.whatsapp}
+          target="_blank"
+          rel="external"
+        >
+          <FontAwesomeIcon icon={["fab", "whatsapp"]} /> Send using WhatsApp
+        </Button>
+      </PublishContainer>
+    );
   };
   _isTest = () => {
     const { campaign } = this.props;
@@ -197,7 +244,11 @@ export default class ChatbotGeneralSettings extends Component {
                   <span>Make private</span>
                 )}
               </a>
-              {!this._isTest() ? <Button>Publish chatbot</Button> : null}
+              {!this._isTest() ? (
+                <Button onClick={this._handlePublishClick}>
+                  Publish chatbot
+                </Button>
+              ) : null}
             </header>
             <Form.Field label="Name to present candidate">
               <input
