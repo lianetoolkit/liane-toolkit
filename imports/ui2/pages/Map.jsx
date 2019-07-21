@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import styled, { css } from "styled-components";
 import { get, omit } from "lodash";
 import {
@@ -34,6 +40,25 @@ L.Icon.Default.mergeOptions({
   iconAnchor: [10, 26],
   popupAnchor: [0, -10],
   shadowUrl: ""
+});
+
+const messages = defineMessages({
+  formTitle: {
+    id: "app.forms.title",
+    defaultMessage: "Title"
+  },
+  formDescription: {
+    id: "app.forms.description",
+    defaultMessage: "Description"
+  },
+  formSave: {
+    id: "app.forms.save",
+    defaultMessage: "Save"
+  },
+  confirm: {
+    id: "app.confirm",
+    defaultMessage: "Are you sure?"
+  }
 });
 
 const Container = styled.div`
@@ -221,7 +246,6 @@ const Tool = styled.div`
       display: block;
       flex: 1 1 auto;
       text-align: center;
-      padding: 0.75rem 1rem;
     }
     .icon {
       background: rgba(255, 255, 255, 0.1);
@@ -231,6 +255,7 @@ const Tool = styled.div`
     }
     .label {
       font-size: 0.8em;
+      padding: 0.75rem 0;
     }
     &:hover,
     &:active,
@@ -285,7 +310,7 @@ const LayerFilter = styled.ul`
   }
 `;
 
-export default class MapPage extends Component {
+class MapPage extends Component {
   static icon = (props = {}) => {
     const marker = `<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="map-marker" class="svg-inline--fa fa-map-marker fa-w-12" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="${props.color ||
       "#000"}" d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0z"></path></svg>`;
@@ -465,8 +490,9 @@ export default class MapPage extends Component {
     });
   };
   _handleRemoveClick = () => {
+    const { intl } = this.props;
     const { featureId } = this.state;
-    if (confirm("Tem certeza?")) {
+    if (confirm(intl.formatMessage(messages.confirm))) {
       Meteor.call("mapFeatures.remove", { id: featureId }, (err, res) => {
         if (err) {
           alertStore.add(err);
@@ -587,7 +613,7 @@ export default class MapPage extends Component {
     }
   };
   render() {
-    const { mapFeatures, people } = this.props;
+    const { intl, mapFeatures, people } = this.props;
     const {
       loading,
       layers,
@@ -615,14 +641,18 @@ export default class MapPage extends Component {
               className="disabled"
               // onClick={this._handleNavClick(false)}
             >
-              Audiência de território (em breve)
+              <FormattedMessage
+                id="app.map.nav.territory"
+                defaultMessage="Territory Audience"
+              />{" "}
+              (<FormattedMessage id="app.soon" defaultMessage="soon" />)
             </a>
             <a
               href="javascript:void(0);"
               className={map ? "active" : ""}
               onClick={this._handleNavClick(true)}
             >
-              Mapa
+              <FormattedMessage id="app.map.nav.map" defaultMessage="Map" />
             </a>
           </span>
         </MapNav>
@@ -697,9 +727,15 @@ export default class MapPage extends Component {
                   >
                     <FontAwesomeIcon icon="user-circle" />
                     <span>
-                      Pessoas
+                      <FormattedMessage
+                        id="app.map.filters.people.title"
+                        defaultMessage="People"
+                      />
                       <span className="description">
-                        Pessoas do diretório que possuem endereço cadastrado
+                        <FormattedMessage
+                          id="app.map.filters.people.description"
+                          defaultMessage="People from the directory that have registered address"
+                        />
                       </span>
                     </span>
                   </li>
@@ -710,9 +746,15 @@ export default class MapPage extends Component {
                   >
                     <FontAwesomeIcon icon="map-marker" />
                     <span>
-                      Marcações da campanha
+                      <FormattedMessage
+                        id="app.map.filters.custom.title"
+                        defaultMessage="Campaign additions"
+                      />
                       <span className="description">
-                        Pontos customizados adicionados pela campanha
+                        <FormattedMessage
+                          id="app.map.filters.custom.description"
+                          defaultMessage="Custom map features added by the campaign"
+                        />
                       </span>
                     </span>
                   </li>
@@ -733,7 +775,12 @@ export default class MapPage extends Component {
                     <span className="icon">
                       <FontAwesomeIcon icon="map-marked" />
                     </span>
-                    <span className="label">Exportar marcações</span>
+                    <span className="label">
+                      <FormattedMessage
+                        id="app.map.export"
+                        defaultMessage="Export campaign additions"
+                      />
+                    </span>
                   </Button>
                 </Tool>
               ) : null}
@@ -750,13 +797,13 @@ export default class MapPage extends Component {
                 <Form onSubmit={this._handleSubmit}>
                   <input
                     type="text"
-                    placeholder="Título"
+                    placeholder={intl.formatMessage(messages.formTitle)}
                     name="title"
                     value={this.getFeatureValue("title")}
                     onChange={this._handleFeatureChange}
                   />
                   <textarea
-                    placeholder="Descrição"
+                    placeholder={intl.formatMessage(messages.formDescription)}
                     name="description"
                     value={this.getFeatureValue("description")}
                     onChange={this._handleFeatureChange}
@@ -771,9 +818,15 @@ export default class MapPage extends Component {
                       className="button delete"
                       onClick={this._handleRemoveClick}
                     >
-                      Remover
+                      <FormattedMessage
+                        id="app.forms.remove"
+                        defaultMessage="Remove"
+                      />
                     </a>
-                    <input type="submit" value="Salvar alterações" />
+                    <input
+                      type="submit"
+                      value={intl.formatMessage(messages.formSave)}
+                    />
                   </div>
                 </Form>
               </div>
@@ -784,3 +837,9 @@ export default class MapPage extends Component {
     );
   }
 }
+
+MapPage.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(MapPage);

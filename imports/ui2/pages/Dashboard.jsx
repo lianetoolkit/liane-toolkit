@@ -1,4 +1,11 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+  FormattedHTMLMessage
+} from "react-intl";
 import styled from "styled-components";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,6 +17,17 @@ import Dashboard from "../components/Dashboard.jsx";
 import Button from "../components/Button.jsx";
 import Loading from "../components/Loading.jsx";
 import PeopleBlock from "../components/blocks/PeopleBlock.jsx";
+
+const messages = defineMessages({
+  donors: {
+    id: "app.dashboard.donors.title",
+    defaultMessage: "Donors"
+  },
+  volunteers: {
+    id: "app.dashboard.volunteers.title",
+    defaultMessage: "Volunteers"
+  }
+});
 
 const FirstRunContainer = styled.div`
   flex: 1 1 100%;
@@ -36,7 +54,7 @@ const FirstRunContainer = styled.div`
   }
 `;
 
-export default class DashboardPage extends Component {
+class DashboardPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -75,7 +93,7 @@ export default class DashboardPage extends Component {
     );
   };
   render() {
-    const { campaignId, entriesJob } = this.props;
+    const { intl, campaignId, entriesJob } = this.props;
     const { ready, counts } = this.state;
     if (
       !campaignId ||
@@ -87,11 +105,18 @@ export default class DashboardPage extends Component {
       return (
         <FirstRunContainer>
           <div className="first-run-content">
-            <h2>Executando primeira coleta de dados</h2>
+            <h2>
+              <FormattedMessage
+                id="app.first_run.title"
+                defaultMessage="Running first data fetch"
+              />
+            </h2>
             <Loading />
             <p>
-              Aguarde esta coleta terminar para continuar utilizando a
-              plataforma.
+              <FormattedMessage
+                id="app.first_run.message"
+                defaultMessage="Soon you will be able to continue using the platform."
+              />
             </p>
           </div>
         </FirstRunContainer>
@@ -103,7 +128,7 @@ export default class DashboardPage extends Component {
         <Dashboard.Row>
           <Dashboard.Box grow="2" attached>
             <PeopleBlock
-              title="Doadores"
+              title={intl.formatMessage(messages.donors)}
               color="#46dd46"
               query={{
                 campaignId,
@@ -116,7 +141,7 @@ export default class DashboardPage extends Component {
           </Dashboard.Box>
           <Dashboard.Box grow="2" attached>
             <PeopleBlock
-              title="Voluntários"
+              title={intl.formatMessage(messages.volunteers)}
               color="#ffa500"
               query={{
                 campaignId,
@@ -129,18 +154,32 @@ export default class DashboardPage extends Component {
           </Dashboard.Box>
           <Dashboard.Box primary={true}>
             <p>
-              Sua base possui um total de{" "}
-              <strong>{counts.people} pessoas</strong>, que realizaram <strong>{counts.comments} comentários</strong> e{" "}
-              <strong>{counts.likes} reações</strong> a publicações.
+              <FormattedHTMLMessage
+                id="app.dashboard.crm.info"
+                defaultMessage="Your database has a total of <strong>{people} people</strong>, that contributed with <strong>{comments} comments</strong> and <strong>{reactions} reactions</strong> to your posts."
+                values={{
+                  people: counts.people,
+                  comments: counts.comments,
+                  reactions: counts.likes
+                }}
+              />
             </p>
             <div className="links">
               <p>
                 <Button href={FlowRouter.path("App.people")}>
-                  Diretório de pessoas
+                  <FormattedMessage
+                    id="app.dashboard.crm.directory"
+                    defaultMessage="People directory"
+                  />
                 </Button>
               </p>
               <p>
-                <a href={FlowRouter.path("App.comments")}>Gerir comentários</a>
+                <a href={FlowRouter.path("App.comments")}>
+                  <FormattedMessage
+                    id="app.dashboard.crm.comments"
+                    defaultMessage="Manage comments"
+                  />
+                </a>
               </p>
             </div>
           </Dashboard.Box>
@@ -153,42 +192,72 @@ export default class DashboardPage extends Component {
             </header>
             <section>
               <p>
-                Configure seu chatbot para espalhar sua mensagem e conseguir
-                apoiadores.
+                <FormattedMessage
+                  id="app.dashboard.chatbot.intro"
+                  defaultMessage="Configure your chatbot to spread your message and gather supporters"
+                />
               </p>
             </section>
             <footer>
               <Button href={FlowRouter.path("App.chatbot")}>
-                Configurar Chatbot
+                <FormattedMessage
+                  id="app.dashboard.chatbot.button"
+                  defaultMessage="Setup Chatbot"
+                />
               </Button>
             </footer>
           </Dashboard.Box>
           <Dashboard.Box minimal>
             <header>
               <FontAwesomeIcon icon="map-marked" />
-              <h3>Território</h3>
+              <h3>
+                <FormattedMessage
+                  id="app.dashboard.territory.title"
+                  defaultMessage="Territory"
+                />
+              </h3>
             </header>
             <section>
-              <p>Utilize o mapa para sua estratégia de território.</p>
+              <p>
+                <FormattedMessage
+                  id="app.dashboard.territory.intro"
+                  defaultMessage="Use a map to better strategize your territory actions"
+                />
+              </p>
             </section>
             <footer>
-              <Button href={FlowRouter.path("App.map")}>Criar mapa</Button>
+              <Button href={FlowRouter.path("App.map")}>
+                <FormattedMessage
+                  id="app.dashboard.territory.button"
+                  defaultMessage="Create a map"
+                />
+              </Button>
             </footer>
           </Dashboard.Box>
           <Dashboard.Box minimal>
             <header>
               <FontAwesomeIcon icon="marker" />
-              <h3>Perguntas frequentes</h3>
+              <h3>
+                <FormattedMessage
+                  id="app.dashboard.faq.title"
+                  defaultMessage="Frequently Asked Questions"
+                />
+              </h3>
             </header>
             <section>
               <p>
-                Configure respostas a perguntas frequentes para facilitar a
-                comunicação da sua campanha.
+                <FormattedMessage
+                  id="app.dashboard.faq.intro"
+                  defaultMessage="Optimize your campaign communications setting up answers to frequently asked questions."
+                />
               </p>
             </section>
             <footer>
               <Button href={FlowRouter.path("App.faq")}>
-                Escrever respostas
+                <FormattedMessage
+                  id="app.dashboard.faq.button"
+                  defaultMessage="Write Answers"
+                />
               </Button>
             </footer>
           </Dashboard.Box>
@@ -197,3 +266,9 @@ export default class DashboardPage extends Component {
     );
   }
 }
+
+DashboardPage.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(DashboardPage);

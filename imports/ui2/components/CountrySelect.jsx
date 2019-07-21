@@ -1,8 +1,16 @@
 import React, { Component } from "react";
+import { injectIntl, intlShape, defineMessages } from "react-intl";
 import { CountryRegionData } from "react-country-region-selector";
 import Select from "react-select";
 
-export default class CountrySelect extends Component {
+const messages = defineMessages({
+  placeholder: {
+    id: "app.country_select.placeholder",
+    defaultMessage: "Select a country..."
+  }
+});
+
+class CountrySelect extends Component {
   _handleChange = selected => {
     const { name, onChange } = this.props;
     if (onChange && typeof onChange == "function") {
@@ -22,13 +30,13 @@ export default class CountrySelect extends Component {
     return this._getOptions().find(option => option.value == value);
   };
   render() {
-    const { name } = this.props;
+    const { intl, name } = this.props;
     return (
       <Select
         classNamePrefix="select-search"
         cacheOptions
         isSearchable={true}
-        placeholder="Selecione um país..."
+        placeholder={intl.formatMessage(messages.placeholder)}
         options={this._getOptions()}
         onChange={this._handleChange}
         name={name}
@@ -37,3 +45,9 @@ export default class CountrySelect extends Component {
     );
   }
 }
+
+CountrySelect.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(CountrySelect);

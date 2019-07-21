@@ -1,4 +1,11 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+  FormattedHTMLMessage
+} from "react-intl";
 
 import { alertStore } from "../../containers/Alerts.jsx";
 
@@ -9,7 +16,26 @@ import SelectAccount from "../../components/facebook/SelectAccount.jsx";
 import CountrySelect from "../../components/CountrySelect.jsx";
 import GeolocationSelect from "../../components/GeolocationSelect.jsx";
 
-export default class NewCampaignPage extends Component {
+const messages = defineMessages({
+  nameLabel: {
+    id: "app.campaign.form.name.label",
+    defaultMessage: "Define a name for your campaign"
+  },
+  namePlaceholder: {
+    id: "app.campaign.form.name.placeholder",
+    defaultMessage: "Campaign name"
+  },
+  countryLabel: {
+    id: "app.campaign.form.country.label",
+    defaultMessage: "Select the country for your campaign"
+  },
+  submitLabel: {
+    id: "app.campaign.form.submit",
+    defaultMessage: "Register campaign"
+  }
+});
+
+class NewCampaignPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -86,22 +112,28 @@ export default class NewCampaignPage extends Component {
     }
   };
   render() {
+    const { intl } = this.props;
     const { loading, formData } = this.state;
     return (
       <Form onSubmit={this._handleSubmit}>
         <Form.Content>
           {loading ? <Loading full /> : null}
-          <Page.Title>Criando Nova Campanha</Page.Title>
-          <Form.Field label="Define um nome para sua campanha">
+          <Page.Title>
+            <FormattedMessage
+              id="app.title.new_campaign"
+              defaultMessage="Creating new campaign"
+            />
+          </Page.Title>
+          <Form.Field label={intl.formatMessage(messages.nameLabel)}>
             <input
               type="text"
               name="name"
-              placeholder="Nome da campanha"
+              placeholder={intl.formatMessage(messages.namePlaceholder)}
               onChange={this._handleChange}
               value={formData.name}
             />
           </Form.Field>
-          <Form.Field label="Selecione o país de atuação da sua campanha">
+          <Form.Field label={intl.formatMessage(messages.countryLabel)}>
             <CountrySelect
               name="country"
               value={formData.country}
@@ -114,7 +146,12 @@ export default class NewCampaignPage extends Component {
               onChange={this._handleGeolocationChange}
             />
           ) : null}
-          <p>Selecione a conta de Facebook utilizada por sua campanha</p>
+          <p>
+            <FormattedMessage
+              id="app.campaign.form.select_account"
+              defaultMessage="Select the Facebook account to be used by your campaign"
+            />
+          </p>
           <SelectAccount
             name="facebookAccountId"
             onChange={this._handleChange}
@@ -125,10 +162,16 @@ export default class NewCampaignPage extends Component {
           <input
             type="submit"
             disabled={!this._filledForm() || loading}
-            value="Cadastrar campanha"
+            value={intl.formatMessage(messages.submitLabel)}
           />
         </Form.Actions>
       </Form>
     );
   }
 }
+
+NewCampaignPage.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(NewCampaignPage);

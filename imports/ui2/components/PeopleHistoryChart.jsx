@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 import styled from "styled-components";
 import { Chart } from "react-charts";
 import moment from "moment";
@@ -109,19 +110,36 @@ export default function PeopleHistoryChart(props) {
     <Container>
       {max || min ? (
         <p className="filtering-label">
-          Visualizando pessoas que interagiram pela primeira vez entre{" "}
-          <strong>
-            {moment(min).format("DD/MM")} - {moment(max).format("DD/MM")}
-          </strong>
-          .{" "}
+          <FormattedMessage
+            id="app.people.history_chart.filter_title"
+            defaultMessage="Showing people that interacted for the first time between {date}."
+            values={{
+              date: (
+                <strong>
+                  {moment(min).format("DD/MM")} - {moment(max).format("DD/MM")}
+                </strong>
+              )
+            }}
+          />
           <a href="javacript:void(0);" onClick={clearBrush}>
-            Limpar seleção
+            <FormattedMessage
+              id="app.people.history_chart.clear"
+              defaultMessage="Clear selection"
+            />
           </a>
         </p>
       ) : (
         <p>
-          Recém-chegados na sua página{" "}
-          <span className="tip">Selecione o gráfico para filtrar:</span>
+          <FormattedMessage
+            id="app.people.history_chart.title"
+            defaultMessage="Page newcomers"
+          />
+          <span className="tip">
+            <FormattedMessage
+              id="app.people.history_chart.filter"
+              defaultMessage="Click and drag the chart below to filter:"
+            />
+          </span>
         </p>
       )}
       <div className="chart">
@@ -137,7 +155,11 @@ export default function PeopleHistoryChart(props) {
         <div className="info">
           <p>
             <strong>{moment(focused.date).format("DD/MM")}</strong>{" "}
-            {focused.amount} novas pessoas
+            <FormattedMessage
+              id="app.people.history_chart.new_label"
+              defaultMessage="{amount} new people"
+              values={{ amount: focused.amount }}
+            />
           </p>
         </div>
       ) : null}

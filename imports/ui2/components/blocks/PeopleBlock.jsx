@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 import styled from "styled-components";
 
 import PersonContactIcons from "../PersonContactIcons.jsx";
@@ -147,15 +148,33 @@ export default class PeopleBlock extends Component {
           ) : null}
           {!loading && !people.length ? (
             <p className="not-found">
-              <span>Ainda não há pessoas nesta categoria</span>
+              <span>
+                <FormattedMessage
+                  id="app.dashboard.people.not_found"
+                  defaultMessage="This category is still empty"
+                />
+              </span>
             </p>
           ) : null}
         </div>
         {!loading ? (
           <footer>
             <Button.Group>
-              {people.length ? <Button>Exportar {title}</Button> : null}
-              <Button>Marcar novos</Button>
+              {people.length ? (
+                <Button>
+                  <FormattedMessage
+                    id="app.dashboard.people.export"
+                    defaultMessage="Export"
+                  />{" "}
+                  {title}
+                </Button>
+              ) : null}
+              <Button>
+                <FormattedMessage
+                  id="app.dashboard.people.add_from_db"
+                  defaultMessage="Add from directory"
+                />
+              </Button>
             </Button.Group>
           </footer>
         ) : null}

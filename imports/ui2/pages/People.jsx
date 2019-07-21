@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import ReactTooltip from "react-tooltip";
 import styled, { css } from "styled-components";
 import moment from "moment";
@@ -27,8 +33,65 @@ import PeopleLists from "../components/PeopleLists.jsx";
 import PeopleExports from "../components/PeopleExports.jsx";
 
 import TagFilter from "../components/TagFilter.jsx";
-import PersonMetaButtons from "../components/PersonMetaButtons.jsx";
+import PersonMetaButtons, {
+  labels as categoriesLabels
+} from "../components/PersonMetaButtons.jsx";
 import Reaction from "../components/Reaction.jsx";
+
+const messages = defineMessages({
+  manualLabel: {
+    id: "app.people.source.manual.label",
+    defaultMessage: "Manual"
+  },
+  formLabel: {
+    id: "app.people.source.form.label",
+    defaultMessage: "Form"
+  },
+  importLabel: {
+    id: "app.people.source.import.label",
+    defaultMessage: "Import"
+  },
+  anyImportLabel: {
+    id: "app.people.source.any_import.label",
+    defaultMessage: "Any import"
+  },
+  manageImports: {
+    id: "app.people.imports.manage.title",
+    defaultMessage: "Manage imports"
+  },
+  manageExports: {
+    id: "app.people.exports.manage.title",
+    defaultMessage: "Manage exports"
+  },
+  newPersonTitle: {
+    id: "app.people.new.title",
+    defaultMessage: "Creating new profile"
+  },
+  editingPersonTitle: {
+    id: "app.people.edit.title",
+    defaultMessage: "Editing {name}"
+  },
+  searchPlaceholder: {
+    id: "app.people.filters.text.placeholder",
+    defaultMessage: "Search by name"
+  },
+  categoryPlaceholder: {
+    id: "app.people.filters.category.placeholder",
+    defaultMessage: "Filter by category"
+  },
+  sourcePlaceholder: {
+    id: "app.people.filters.source.placeholder",
+    defaultMessage: "Filter by source"
+  },
+  tagPlaceholder: {
+    id: "app.people.filters.tag.placeholder",
+    defaultMessage: "Filter by tag"
+  },
+  reactionAmount: {
+    id: "app.people.filters.reactions.amount",
+    defaultMessage: "Amount"
+  }
+});
 
 const PeopleContent = styled.div`
   display: flex;
@@ -85,7 +148,7 @@ const Message = styled.p`
   font-size: 0.8em;
 `;
 
-export default class PeoplePage extends Component {
+class PeoplePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -329,25 +392,27 @@ export default class PeoplePage extends Component {
     return query[key] ? moment(query[key]).toDate() : null;
   };
   categoriesOptions = () => {
+    const { intl } = this.props;
     let options = [];
-    for (let key in PersonMetaButtons.labels) {
+    for (let key of PersonMetaButtons.keys) {
       options.push({
         value: key,
-        label: PersonMetaButtons.labels[key]
+        label: intl.formatMessage(categoriesLabels[key])
       });
     }
     return options;
   };
   getCategoryValue = () => {
+    const { intl } = this.props;
     const { query } = this.state;
     if (query.category) {
-      const label = PersonMetaButtons.labels[query.category];
+      const label = intl.formatMessage(categoriesLabels[query.category]);
       return { value: query.category, label };
     }
     return null;
   };
   getSourceOptions = () => {
-    const { lists } = this.props;
+    const { intl, lists } = this.props;
     let options = [
       {
         value: "facebook",
@@ -355,20 +420,20 @@ export default class PeoplePage extends Component {
       },
       {
         value: "manual",
-        label: "Manual"
+        label: intl.formatMessage(messages.manualLabel)
       },
       {
         value: "form",
-        label: "Formulário"
+        label: intl.formatMessage(messages.formLabel)
       }
     ];
     if (lists.length) {
       options.push({
-        label: "Importação",
+        label: intl.formatMessage(messages.importLabel),
         options: [
           {
             value: "import",
-            label: "Qualquer importação"
+            label: intl.formatMessage(messages.anyImportLabel)
           },
           ...lists.map(list => {
             return {
@@ -394,13 +459,13 @@ export default class PeoplePage extends Component {
           value.label = "Facebook";
           break;
         case /import/.test(query.source):
-          value.label = "Qualquer importação";
+          value.label = intl.formatMessage(messages.anyImportLabel);
           break;
         case /manual/.test(query.source):
-          value.label = "Manual";
+          value.label = intl.formatMessage(messages.manualLabel);
           break;
         case /form/.test(query.source):
-          value.label = "Formulário";
+          value.label = intl.formatMessage(messages.formLabel);
           break;
         case /list:/.test(query.source):
           value.label = lists.find(
@@ -414,33 +479,44 @@ export default class PeoplePage extends Component {
     return null;
   };
   _handleManageImportsClick = ev => {
-    const { lists } = this.props;
+    const { intl, lists } = this.props;
     ev.preventDefault();
-    modalStore.setTitle("Gerenciar importações");
+    modalStore.setTitle(intl.formatMessage(messages.manageImports));
     modalStore.set(<PeopleLists lists={lists} />);
   };
   _handleManageExportsClick = ev => {
-    const { peopleExports } = this.props;
+    const { intl, peopleExports } = this.props;
     ev.preventDefault();
-    modalStore.setTitle("Gerenciar exportações");
+    modalStore.setTitle(intl.formatMessage(messages.manageExports));
     modalStore.set(<PeopleExports peopleExports={peopleExports} />);
   };
   _handleNewClick = ev => {
+    const { intl } = this.props;
     ev.preventDefault();
-    modalStore.setTitle("Criando nova pessoa");
+    modalStore.setTitle(intl.formatMessage(messages.newPersonTitle));
     modalStore.set(
       <PersonEdit
         person={{}}
         onSuccess={(res, type, data) => {
           if (type == "created") {
-            modalStore.setTitle(`Editando perfil de ${data.name}`);
+            modalStore.setTitle(
+              intl.formatMessage(messages.editingPersonTitle, {
+                name: data.name
+              })
+            );
           }
         }}
       />
     );
   };
   render() {
-    const { campaign, importCount, exportCount, peopleExports } = this.props;
+    const {
+      intl,
+      campaign,
+      importCount,
+      exportCount,
+      peopleExports
+    } = this.props;
     const {
       loading,
       people,
@@ -461,7 +537,7 @@ export default class PeoplePage extends Component {
               <form onSubmit={ev => ev.preventDefault()}>
                 <input
                   type="text"
-                  placeholder="Buscar por nome"
+                  placeholder={intl.formatMessage(messages.searchPlaceholder)}
                   onChange={this._handleFormChange}
                   name="q"
                   value={query.q}
@@ -476,7 +552,9 @@ export default class PeoplePage extends Component {
                     onChange={this._handleSelectChange}
                     name="category"
                     value={this.getCategoryValue()}
-                    placeholder="Filtrar por categoria"
+                    placeholder={intl.formatMessage(
+                      messages.categoryPlaceholder
+                    )}
                   />
                 </Form.Field>
                 <Form.Field>
@@ -488,7 +566,7 @@ export default class PeoplePage extends Component {
                     onChange={this._handleSelectChange}
                     name="source"
                     value={this.getSourceValue()}
-                    placeholder="Filtrar por origem"
+                    placeholder={intl.formatMessage(messages.sourcePlaceholder)}
                   />
                 </Form.Field>
                 {this.props.tags && this.props.tags.length ? (
@@ -498,7 +576,7 @@ export default class PeoplePage extends Component {
                       onChange={this._handleFormChange}
                       name="tag"
                       value={query.tag}
-                      placeholder="Filtrar por tag"
+                      placeholder={intl.formatMessage(messages.tagPlaceholder)}
                     />
                   </Form.Field>
                 ) : null}
@@ -510,9 +588,15 @@ export default class PeoplePage extends Component {
                     name="form"
                   />
                   <span>
-                    Formulário
+                    <FormattedMessage
+                      id="app.people.filters.form.title"
+                      defaultMessage="Form"
+                    />
                     <span className="tip">
-                      Apenas pessoas que preencheram o formulário.
+                      <FormattedMessage
+                        id="app.people.filters.form.description"
+                        defaultMessage="Show only people that have filled out the campaign form."
+                      />
                     </span>
                   </span>
                 </label>
@@ -524,9 +608,15 @@ export default class PeoplePage extends Component {
                     name="commented"
                   />
                   <span>
-                    Comentários
+                    <FormattedMessage
+                      id="app.people.filters.comments.title"
+                      defaultMessage="Comments"
+                    />
                     <span className="tip">
-                      Apenas pessoas que comentaram ao menos 1 vez.
+                      <FormattedMessage
+                        id="app.people.filters.comments.description"
+                        defaultMessage="Show only people that have commented at least once."
+                      />
                     </span>
                   </span>
                 </label>
@@ -538,9 +628,15 @@ export default class PeoplePage extends Component {
                     name="private_reply"
                   />
                   <span>
-                    Mensagens privadas
+                    <FormattedMessage
+                      id="app.people.filters.private_reply.title"
+                      defaultMessage="Private replies"
+                    />
                     <span className="tip">
-                      Apenas pessoas que podem receber mensagens privadas.
+                      <FormattedMessage
+                        id="app.people.filters.private_reply.description"
+                        defaultMessage="Show only people that can receive a private reply."
+                      />
                     </span>
                   </span>
                 </label>
@@ -555,13 +651,25 @@ export default class PeoplePage extends Component {
                   </label>
                 ) : null}
                 <div className="reaction-count-input">
-                  <h4>Filtrar por quantidade de reações</h4>
+                  <h4>
+                    <FormattedMessage
+                      id="app.people.filters.reactions.title"
+                      defaultMessage="Filter by reaction amount"
+                    />
+                  </h4>
                   <div className="input">
-                    <span>ao menos</span>
+                    <span>
+                      <FormattedMessage
+                        id="app.people.filters.reactions.at_least"
+                        defaultMessage="at least"
+                      />
+                    </span>
                     <span>
                       <input
                         type="number"
-                        placeholder="Quantidade"
+                        placeholder={intl.formatMessage(
+                          messages.reactionAmount
+                        )}
                         name="reaction_count"
                         value={query.reaction_count}
                         onChange={this._handleFormChange}
@@ -587,7 +695,10 @@ export default class PeoplePage extends Component {
                     running={exportCount}
                     peopleExports={peopleExports}
                   >
-                    Exportar resultados
+                    <FormattedMessage
+                      id="app.people.export.label"
+                      defaultMessage="Export results"
+                    />
                   </PeopleExport>
                   <a
                     href="javascript:void(0);"
@@ -596,7 +707,7 @@ export default class PeoplePage extends Component {
                   >
                     <FontAwesomeIcon
                       icon="cog"
-                      data-tip="Gerenciar exportações"
+                      data-tip={intl.formatMessage(messages.manageExports)}
                       data-for="people-actions"
                     />
                   </a>
@@ -610,7 +721,7 @@ export default class PeoplePage extends Component {
                   >
                     <FontAwesomeIcon
                       icon="cog"
-                      data-tip="Gerenciar importações"
+                      data-tip={intl.formatMessage(messages.manageImports)}
                       data-for="people-actions"
                     />
                   </a>
@@ -664,3 +775,9 @@ export default class PeoplePage extends Component {
     );
   }
 }
+
+PeoplePage.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(PeoplePage);

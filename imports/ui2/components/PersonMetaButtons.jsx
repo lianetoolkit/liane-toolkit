@@ -1,8 +1,50 @@
 import React from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+  FormattedHTMLMessage
+} from "react-intl";
 import ReactTooltip from "react-tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled, { css } from "styled-components";
 import { alertStore } from "../containers/Alerts.jsx";
+
+export const labels = defineMessages({
+  supporter: {
+    id: "app.people.category.supporter",
+    defaultMessage: "Supporter"
+  },
+  volunteer: {
+    id: "app.people.category.volunteer",
+    defaultMessage: "Volunteer"
+  },
+  mobilizer: {
+    id: "app.people.category.mobilizer",
+    defaultMessage: "Mobilizer"
+  },
+  donor: {
+    id: "app.people.category.donor",
+    defaultMessage: "Donor"
+  },
+  influencer: {
+    id: "app.people.category.influencer",
+    defaultMessage: "Influencer"
+  },
+  voter: {
+    id: "app.people.category.voter",
+    defaultMessage: "Declared vote"
+  },
+  "non-voter": {
+    id: "app.people.category.non_voter",
+    defaultMessage: "Can't vote"
+  },
+  troll: {
+    id: "app.people.category.troll",
+    defaultMessage: "Troll"
+  }
+});
 
 const Container = styled.div`
   @keyframes rotate {
@@ -108,7 +150,7 @@ const Container = styled.div`
     `}
 `;
 
-export default class PersonMetaButtons extends React.Component {
+class PersonMetaButtons extends React.Component {
   static keys = [
     "supporter",
     "volunteer",
@@ -146,6 +188,10 @@ export default class PersonMetaButtons extends React.Component {
     };
     this._handleClick = this._handleClick.bind(this);
   }
+  getLabel = key => {
+    const { intl } = this.props;
+    return intl.formatMessage(labels[key]);
+  };
   _handleClick(key) {
     let { person, readOnly, onChange } = this.props;
     if (readOnly) {
@@ -212,7 +258,7 @@ export default class PersonMetaButtons extends React.Component {
     }
   }
   _metaIconLabel(key) {
-    return PersonMetaButtons.labels[key];
+    return this.getLabel(key);
   }
   _metaIconColor(key) {
     return PersonMetaButtons.colors[key];
@@ -283,16 +329,14 @@ export default class PersonMetaButtons extends React.Component {
         className={`meta-icon ${size || ""}`}
         style={style}
         onClick={this._handleClick(key)}
-        data-tip={!text ? PersonMetaButtons.labels[key] : null}
+        data-tip={!text ? this.getLabel(key) : null}
         data-for={tooltipId}
       >
         <FontAwesomeIcon
           icon={iconName}
           className={`${loading[key] ? "loading" : ""}`}
         />
-        {text ? (
-          <span className="meta-text">{PersonMetaButtons.labels[key]}</span>
-        ) : null}
+        {text ? <span className="meta-text">{this.getLabel(key)}</span> : null}
       </a>
     );
   }
@@ -323,3 +367,9 @@ export default class PersonMetaButtons extends React.Component {
     );
   }
 }
+
+PersonMetaButtons.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(PersonMetaButtons);

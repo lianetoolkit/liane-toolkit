@@ -1,4 +1,11 @@
 import React from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+  FormattedHTMLMessage
+} from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ClientStorage } from "meteor/ostrio:cstorage";
@@ -20,7 +27,7 @@ const fields = {
     suggestions: ["email", "e mail", "email address", "e mail address"]
   },
   "campaignMeta.contact.cellphone": {
-    label: "Celular",
+    label: "Phone",
     suggestions: ["phone", "cellphone", "celular"]
   },
   "campaignMeta.social_networks.twitter": {
@@ -110,7 +117,42 @@ const ItemConfigContainer = styled.div`
   }
 `;
 
-export class PersonImportButton extends React.Component {
+const messages = defineMessages({
+  importButton: {
+    id: "app.people.import.importing_label",
+    defaultMessage: "Importing {filename}..."
+  },
+  started: {
+    id: "app.people.import.started_label",
+    defaultMessage: "Import started"
+  },
+  unexpectedError: {
+    id: "app.unexpected_error",
+    defaultMessage: "An unexpected error occurred."
+  },
+  confirm: {
+    id: "app.confirm",
+    defaultMessage: "Are you sure?"
+  },
+  selectTags: {
+    id: "app.people.import.select_tags",
+    defaultMessage: "Select default tags for all entries from this import"
+  },
+  selectTagsLabel: {
+    id: "app.people.import.select_tags_label",
+    defaultMessage: "Default tags for this import"
+  },
+  selectCategories: {
+    id: "app.people.import.select_categories",
+    defaultMessage: "Select default categories for all entries from this import"
+  },
+  startImport: {
+    id: "app.people.import.start_label",
+    defaultMessage: "Start import"
+  }
+});
+
+class ImportButton extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -120,10 +162,12 @@ export class PersonImportButton extends React.Component {
     };
   }
   componentDidUpdate(prevProps, prevState) {
-    const { importCount } = this.props;
+    const { intl, importCount } = this.props;
     const { importData, importFilename } = this.state;
     if (importFilename != prevState.importFilename && importData) {
-      modalStore.setTitle(`Importando ${importFilename}`);
+      modalStore.setTitle(
+        intl.formatMessage(messages.importButton, { filename: importFilename })
+      );
       modalStore.set(
         <PeopleImport
           data={importData}
@@ -162,19 +206,18 @@ export class PersonImportButton extends React.Component {
     reader.readAsArrayBuffer(file);
   };
   _handleImportSubmit = (err, res) => {
+    const { intl } = this.props;
     if (!err) {
       this.setState({ importData: null, importFilename: "" });
-      alertStore.add("Importação iniciada");
+      alertStore.add(intl.formatMessage(messages.started));
       modalStore.reset(true);
     } else {
-      alertStore.add(
-        "Ocorreu um erro inesperado durante a importação",
-        "error"
-      );
+      alertStore.add(intl.formatMessage(messages.unexpectedError), "error");
     }
   };
   _handleClose = () => {
-    if (confirm("Tem certeza que deseja cancelar a importação?")) {
+    const { intl } = this.props;
+    if (confirm(intl.formatMessage(messages.confirm))) {
       this.setState({ importData: null, importFilename: "" });
       this.importInput.value = null;
       this.importInput.dispatchEvent(new Event("input", { bubbles: true }));
@@ -197,12 +240,29 @@ export class PersonImportButton extends React.Component {
           onClick={this._handleImportClick}
           className={importCount ? "disabled" : ""}
         >
-          {importCount ? `Importando... (${importCount})` : "Importar planilha"}
+          {importCount ? (
+            <FormattedMessage
+              id="app.people.import.importing_count"
+              defaultMessage="Importing... ({count})"
+              values={{ count: importCount }}
+            />
+          ) : (
+            <FormattedMessage
+              id="app.people.import.button_label"
+              defaultMessage="Import spreadsheet"
+            />
+          )}
         </a>
       </>
     );
   }
 }
+
+ImportButton.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export const PersonImportButton = injectIntl(ImportButton);
 
 class ItemConfig extends React.Component {
   constructor(props) {
@@ -266,11 +326,11 @@ class ItemConfig extends React.Component {
       };
     });
     options.unshift({
-      label: "Campo customizado",
+      label: "Custom field",
       value: "custom"
     });
     options.unshift({
-      label: "Pular campo",
+      label: "Skip field",
       value: "skip"
     });
     return options;
@@ -302,7 +362,7 @@ class ItemConfig extends React.Component {
             isClearable={false}
             value={this.getValue()}
             options={this._getOptions()}
-            placeholder="Pular"
+            placeholder="Skip"
             onChange={this._handleSelectChange}
           />
         </Form.Field>
@@ -312,7 +372,7 @@ class ItemConfig extends React.Component {
               type="text"
               className="custom-field-name-input"
               value={customField}
-              placeholder="Nome do campo"
+              placeholder="Field name"
               onChange={this._handleCustomChange}
             />
           </div>
@@ -328,7 +388,7 @@ const Container = styled.div`
   }
 `;
 
-export default class PeopleImport extends React.Component {
+class PeopleImport extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -350,7 +410,8 @@ export default class PeopleImport extends React.Component {
   };
   _handleModalOpen() {}
   _handleModalClose() {
-    if (confirm("Are you sure you'd like to cancel import?")) {
+    const { intl } = this.props;
+    if (confirm(intl.formatMessage(messages.confirm))) {
       this.setState({
         data: []
       });
@@ -406,37 +467,52 @@ export default class PeopleImport extends React.Component {
     );
   }
   render() {
-    const { data } = this.props;
+    const { intl, data } = this.props;
     const { tags, labels, loading } = this.state;
     const headers = this._getHeaders();
     return (
       <Container>
         <Form onSubmit={this._handleSubmit}>
-          <p>Associe as colunas da sua planilha aos dados da base.</p>
+          <p>
+            <FormattedMessage
+              id="app.people.import.assign_columns"
+              defaultMessage="Assign your spreadsheet columns to the appropriate field from the database"
+            />
+          </p>
           <ItemConfigContainer className="header">
             <div>
-              <h4>Cabeçalho da planilha</h4>
+              <h4>
+                <FormattedMessage
+                  id="app.people.import.spreadsheet_header"
+                  defaultMessage="Spreadsheet header"
+                />
+              </h4>
             </div>
             <span className="arrow">
               <FontAwesomeIcon icon="arrow-right" />
             </span>
             <div>
-              <h4>Campo</h4>
+              <h4>
+                <FormattedMessage
+                  id="app.people.import.field_label"
+                  defaultMessage="Field"
+                />
+              </h4>
             </div>
           </ItemConfigContainer>
           {headers.map((header, i) => (
             <ItemConfig key={i} header={header} onChange={this._handleChange} />
           ))}
-          <Form.Field label="Selecione tags padrão para todas as entradas da importação">
+          <Form.Field label={intl.formatMessage(messages.selectTags)}>
             <TagSelect
               onChange={this._handleTagChange}
               value={tags}
-              label="Default tags for this import"
+              label={intl.formatMessage(messages.selectTagsLabel)}
             />
           </Form.Field>
           <Form.Field
             simple
-            label="Selecione categorias padrão para todas as entradas da importação"
+            label={intl.formatMessage(messages.selectCategories)}
           >
             <PersonMetaButtons
               size="big"
@@ -451,7 +527,10 @@ export default class PeopleImport extends React.Component {
           active={labels}
           label="Default labels for this import"
         /> */}
-          <input type="submit" value="Iniciar importação" />
+          <input
+            type="submit"
+            value={intl.formatMessage(messages.startImport)}
+          />
           {/* <Button primary fluid disabled={loading} icon>
           <Icon name={loading ? "spinner" : "download"} loading={loading} />{" "}
           Start import
@@ -461,3 +540,9 @@ export default class PeopleImport extends React.Component {
     );
   }
 }
+
+PeopleImport.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(PeopleImport);

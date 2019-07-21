@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage, FormattedHTMLMessage } from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -82,8 +83,8 @@ const HeaderButtons = styled.nav`
 `;
 
 const LoginFormContainer = styled.form`
-  max-width: 400px;
-  margin: -3rem auto 4rem;
+  margin: -3rem 2rem 4rem;
+  text-align: center;
   ${"" /* background: #fff;
   padding: 4rem;
   border-radius: 1rem;
@@ -97,6 +98,8 @@ const LoginFormContainer = styled.form`
   }
   input,
   .button {
+    margin: 0 auto;
+    max-width: 400px;
     display: block;
     width: 100%;
     box-sizing: border-box;
@@ -116,6 +119,8 @@ const LoginFormContainer = styled.form`
   }
   input[type="submit"],
   .facebook-button {
+    display: block;
+    max-width: 400px;
     background: transparent;
     color: #333;
     font-size: 0.8em;
@@ -125,7 +130,7 @@ const LoginFormContainer = styled.form`
     line-height: 1.5;
     cursor: pointer;
     padding: 1rem;
-    margin: 1.5rem 0 0;
+    margin: 1.5rem auto 0;
     font-size: 1.2em;
     background: #ffcc00;
     font-family: "Unica One", monospace;
@@ -360,72 +365,81 @@ export default class Home extends Component {
         {loading ? <Loading full /> : null}
         <Container>
           <HighlightContainer>
-            <h2>Tecnologia para Inovação Política</h2>
-            {/* <HeaderButtons>
-              <a href="#">Como Funciona</a>
-              <a href="#">#NãoValeTudo</a>
-            </HeaderButtons> */}
+            <h2>
+              <FormattedMessage
+                id="app.slogan"
+                defaultMessage="Technology for Political Innovation"
+              />
+            </h2>
           </HighlightContainer>
           {!isLoggedIn ? (
             <LoginFormContainer>
-              {/* <h3>Acesse sua conta</h3> */}
               <a
                 className="facebook-button button"
                 onClick={this._facebookAuth()}
               >
-                <FontAwesomeIcon icon={["fab", "facebook-square"]} /> Conecte-se
-                com Facebook
+                <FontAwesomeIcon icon={["fab", "facebook-square"]} />
+                <FormattedMessage
+                  id="app.facebook_login"
+                  defaultMessage="Connect with Facebook"
+                />
               </a>
               <p className="terms">
-                Ao conectar-se com LIANE você está de acordo com nossos
-                <br />
-                <a
-                  href="https://files.liane.cc/legal/terms_of_use_v1_pt-br.pdf"
-                  target="_blank"
-                  rel="external"
-                >
-                  termos de uso
-                </a>{" "}
-                e{" "}
-                <a
-                  href="https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf"
-                  target="_blank"
-                  rel="external"
-                >
-                  política de privacidade
-                </a>
-                .
+                <FormattedHTMLMessage
+                  id="app.terms_and_policy"
+                  defaultMessage="By registering in LIANE you agree with our <a href='https://files.liane.cc/legal/terms_of_use_v1_pt-br.pdf' target='_blank' rel='external'>terms of use</a> and <a href='https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf' target='_blank' rel='external' >privacy policy</a>."
+                />
               </p>
             </LoginFormContainer>
           ) : (
             <UserContainer>
               <h3>
-                Conectado como <strong>{user.name}</strong>
+                <FormattedMessage
+                  id="app.connected_as"
+                  defaultMessage="Connected as"
+                />{" "}
+                <strong>{user.name}</strong>
               </h3>
               {!user.type ? (
-                <p>Aguardando definição de categoria de conta.</p>
+                <p>
+                  <FormattedMessage
+                    id="app.waiting_user_type"
+                    defaultMessage="Waiting selection of user type."
+                  />
+                </p>
               ) : (
                 <div>
                   {user.type == "campaigner" ? (
                     <Button primary href={FlowRouter.path("App.campaign.new")}>
-                      Criar nova campanha
+                      <FormattedMessage
+                        id="app.create_campaign"
+                        defaultMessage="Create new campaign"
+                      />
                     </Button>
                   ) : null}
                   <p>
-                    Para conectar-se a uma campanha existente envie seu email ao
-                    responsável para que ele possa adicioná-lo:
+                    <FormattedMessage
+                      id="app.connect_campaign"
+                      defaultMessage="Connect with an existing campaign by forwarding your email to the person responsible"
+                    />
                   </p>
                   <input type="text" disabled value={user.emails[0].address} />
                   <Button.Group>
                     <Button href={FlowRouter.path("App.account")}>
-                      Minha conta
+                      <FormattedMessage
+                        id="app.my_account"
+                        defaultMessage="My account"
+                      />
                     </Button>
                     <Button
                       onClick={() => {
                         Meteor.logout();
                       }}
                     >
-                      Sair
+                      <FormattedMessage
+                        id="app.logout"
+                        defaultMessage="Logout"
+                      />
                     </Button>
                   </Button.Group>
                 </div>
@@ -436,16 +450,16 @@ export default class Home extends Component {
             <div className="first">
               <div className="intro-text">
                 <p>
-                  Liane é um conjunto de tecnologias e soluções, abertas e
-                  gratuitas, desenvolvidas pelo Instituto Update para
-                  impulsionar campanhas políticas inovadoras e de baixo
-                  orçamento na América Latina.
+                  <FormattedMessage
+                    id="app.intro_text_1"
+                    defaultMessage="Liane is a set of technologies and solutions, open e free, developed by Instituto Update to boost innovative and low-cost political campaigns in Latin America."
+                  />
                 </p>
                 <p>
-                  Oferece acesso a ferramentas poderosas que potencializam
-                  campanhas que buscam a inovação política, ou seja, que
-                  desenvolvem práticas para aproximar cidadãos da política,
-                  combater desigualdades e fortalecer a democracia.
+                  <FormattedMessage
+                    id="app.intro_text_2"
+                    defaultMessage="Offers access to powerful tools empowering campaigns that seeks political innovation, that is, developing practices to bring citizens closer to politics, fight inequalities and strengthen democracy."
+                  />
                 </p>
               </div>
             </div>
@@ -454,24 +468,55 @@ export default class Home extends Component {
             <div>
               {/* <h2>Funcionalidades</h2> */}
               <ul>
-                <FeatureItem>Canvas eleitoral para planejamento</FeatureItem>
-                <FeatureItem>Gestão de relacionamento e contatos</FeatureItem>
-                <FeatureItem>Gestão de voluntários e doadores</FeatureItem>
-                <FeatureItem>Gestão de conversas por Facebook</FeatureItem>
-                <FeatureItem>Mapeamento de ações no território</FeatureItem>
+                <FeatureItem>
+                  <FormattedMessage
+                    id="app.features.canvas"
+                    defaultMessage="Electoral canvas for planning"
+                  />
+                </FeatureItem>
+                <FeatureItem>
+                  <FormattedMessage
+                    id="app.features.crm"
+                    defaultMessage="Contacts and relationship management"
+                  />
+                </FeatureItem>
+                <FeatureItem>
+                  <FormattedMessage
+                    id="app.features.volunteers_donors"
+                    defaultMessage="Donors and volunteers management"
+                  />
+                </FeatureItem>
+                <FeatureItem>
+                  <FormattedMessage
+                    id="app.features.conversations"
+                    defaultMessage="Manage Facebook conversations"
+                  />
+                </FeatureItem>
+                <FeatureItem>
+                  <FormattedMessage
+                    id="app.features.map"
+                    defaultMessage="Mapping of actions in the territory"
+                  />
+                </FeatureItem>
                 <FeatureItem>
                   <span className="with-extra">
-                    <span className="extra">em breve</span>
-                    Análise de audiências do Facebook
+                    <span className="extra">
+                      <FormattedMessage id="app.soon" defaultMessage="soon" />
+                    </span>
+                    <FormattedMessage
+                      id="app.features.audience"
+                      defaultMessage="Facebook audience analysis"
+                    />
                   </span>
                 </FeatureItem>
               </ul>
             </div>
           </Features>
           <p className="support-text">
-            Precisa de ajuda ou gostaria de reportar um problema? Escreva para{" "}
-            <a href="mailto:contato@liane.cc">contato@liane.cc</a> e fale com
-            nossa equipe.
+            <FormattedHTMLMessage
+              id="app.support_message"
+              defaultMessage="Need help or would like to report a problem? Write to <a href='mailto:contato@liane.cc'>contato@liane.cc</a> and talk to our team."
+            />
           </p>
           <Organization>
             <div className="org-content">

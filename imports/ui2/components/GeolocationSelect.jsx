@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { debounce } from "lodash";
@@ -7,6 +13,13 @@ import { alertStore } from "../containers/Alerts.jsx";
 
 import Form from "./Form.jsx";
 import Loading from "./Loading.jsx";
+
+const messages = defineMessages({
+  searchPlaceholder: {
+    id: "app.geolocation_select.search.placeholder",
+    defaultMessage: "Search for a location..."
+  }
+});
 
 const Container = styled.div`
   margin: 0 0 1rem;
@@ -59,7 +72,7 @@ const GeolocationItem = styled.div`
   }
 `;
 
-export default class GeolocationSelect extends Component {
+class GeolocationSelect extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -152,6 +165,7 @@ export default class GeolocationSelect extends Component {
     }
   };
   render() {
+    const { intl } = this.props;
     const { loading, selected, results, region, search } = this.state;
     return (
       <Container>
@@ -181,7 +195,10 @@ export default class GeolocationSelect extends Component {
                   onChange={this._handleRegionChange}
                   checked={region == "state" ? true : false}
                 />{" "}
-                Estado/Província
+                <FormattedMessage
+                  id="app.geolocation_select.state.label"
+                  defaultMessage="State/Province"
+                />
               </label>
               <label>
                 <input
@@ -191,13 +208,16 @@ export default class GeolocationSelect extends Component {
                   onChange={this._handleRegionChange}
                   checked={region == "city" ? true : false}
                 />{" "}
-                Cidade
+                <FormattedMessage
+                  id="app.geolocation_select.city.label"
+                  defaultMessage="City"
+                />
               </label>
             </div>
             {region ? (
               <input
                 type="text"
-                placeholder="Busque por uma localização..."
+                placeholder={intl.formatMessage(messages.searchPlaceholder)}
                 value={search}
                 onChange={this._handleChange}
               />
@@ -229,3 +249,9 @@ export default class GeolocationSelect extends Component {
     );
   }
 }
+
+GeolocationSelect.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(GeolocationSelect);
