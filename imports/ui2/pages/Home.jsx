@@ -452,13 +452,13 @@ export default class Home extends Component {
                 <p>
                   <FormattedMessage
                     id="app.intro_text_1"
-                    defaultMessage="Liane is a set of technologies and solutions, open e free, developed by Instituto Update to boost innovative and low-cost political campaigns in Latin America."
+                    defaultMessage="Liane is a set of open and free technologies and solutions, developed by Instituto Update to boost innovative and low-cost political campaigns in Latin America."
                   />
                 </p>
                 <p>
                   <FormattedMessage
                     id="app.intro_text_2"
-                    defaultMessage="Offers access to powerful tools empowering campaigns that seeks political innovation, that is, developing practices to bring citizens closer to politics, fight inequalities and strengthen democracy."
+                    defaultMessage="Offers access to powerful tools empowering campaigns that seeks political innovation, that being the development of practices to bring citizens closer to politics, fight inequalities and strengthen democracy."
                   />
                 </p>
               </div>

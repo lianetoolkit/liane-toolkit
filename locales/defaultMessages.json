@@ -142,6 +142,22 @@
         "id": "app.dashboard.faq.button"
       },
       {
+        "defaultMessage": "Campaign settings",
+        "id": "campaign.campaign_settings"
+      },
+      {
+        "defaultMessage": "New campaign",
+        "id": "campaign.campaign_new"
+      },
+      {
+        "defaultMessage": "My account",
+        "id": "app.my_account"
+      },
+      {
+        "defaultMessage": "Logout",
+        "id": "app.logout"
+      },
+      {
         "defaultMessage": "Importing {filename}...",
         "id": "app.people.import.importing_label"
       },
@@ -226,22 +242,6 @@
         "id": "app.people.category.troll"
       },
       {
-        "defaultMessage": "Campaign settings",
-        "id": "campaign.campaign_settings"
-      },
-      {
-        "defaultMessage": "New campaign",
-        "id": "campaign.campaign_new"
-      },
-      {
-        "defaultMessage": "My account",
-        "id": "app.my_account"
-      },
-      {
-        "defaultMessage": "Logout",
-        "id": "app.logout"
-      },
-      {
         "defaultMessage": "Technology for Political Innovation",
         "id": "app.slogan"
       },
@@ -270,11 +270,11 @@
         "id": "app.connect_campaign"
       },
       {
-        "defaultMessage": "Liane is a set of technologies and solutions, open e free, developed by Instituto Update to boost innovative and low-cost political campaigns in Latin America.",
+        "defaultMessage": "Liane is a set of open and free technologies and solutions, developed by Instituto Update to boost innovative and low-cost political campaigns in Latin America.",
         "id": "app.intro_text_1"
       },
       {
-        "defaultMessage": "Offers access to powerful tools empowering campaigns that seeks political innovation, that is, developing practices to bring citizens closer to politics, fight inequalities and strengthen democracy.",
+        "defaultMessage": "Offers access to powerful tools empowering campaigns that seeks political innovation, that being the development of practices to bring citizens closer to politics, fight inequalities and strengthen democracy.",
         "id": "app.intro_text_2"
       },
       {
