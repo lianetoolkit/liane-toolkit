@@ -119,7 +119,7 @@ class ReplyInput extends Component {
             href="javascript:void(0);"
             onClick={this._handleRemoveClick}
             className="remove"
-            data-tip={"Remover"}
+            data-tip={"Delete"}
             data-for={tooltipId}
           >
             <FontAwesomeIcon icon="times" />
@@ -131,14 +131,14 @@ class ReplyInput extends Component {
           onChange={this._handleChange}
           checked={value.active}
         >
-          Ativo
+          Active
         </ToggleCheckbox>
-        <Form.Field label="Lista de palavras para identificar resposta">
+        <Form.Field label="Word list to identify response">
           <CreatableSelect
             classNamePrefix="select-search"
             cacheOptions
             isMulti
-            placeholder="Palavras..."
+            placeholder="Type new words..."
             options={wordsOptions}
             name="words"
             onCreateOption={this._handleWordCreate}
@@ -146,7 +146,7 @@ class ReplyInput extends Component {
             value={this._getWordsValue()}
           />
         </Form.Field>
-        <Form.Field secondary label="Resposta automática">
+        <Form.Field secondary label="Response">
           <textarea
             name="reply"
             value={value.reply}
@@ -220,7 +220,7 @@ export default class ChatbotAutoReplyModule extends Component {
           this.setState({
             formData: res.config
           });
-          alertStore.add("Atualizado", "success");
+          alertStore.add("Updated", "success");
           this._handleChatbotChange(res.config);
         }
       }
@@ -295,7 +295,7 @@ export default class ChatbotAutoReplyModule extends Component {
           <Container>
             <ModuleStatus
               name="auto_reply"
-              label="Respostas automáticas"
+              label="Automated replies"
               chatbot={chatbot}
               campaign={campaign}
               onChange={this._handleChatbotChange}
@@ -316,17 +316,13 @@ export default class ChatbotAutoReplyModule extends Component {
                 onClick={this._handleReplyAdd}
                 disabled={!this._canAddReply()}
               >
-                Adicionar nova resposta automática
+                Add new automated reply
               </Button>
             </div>
           </Container>
         </Form.Content>
         <Form.Actions>
-          <input
-            type="submit"
-            value="Atualizar configurações"
-            onClick={this._handleSubmit}
-          />
+          <input type="submit" value="Save" onClick={this._handleSubmit} />
         </Form.Actions>
       </Form>
     );

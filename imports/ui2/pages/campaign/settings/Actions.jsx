@@ -8,9 +8,7 @@ export default class CampaignActionsPage extends Component {
     ev.preventDefault();
     const { campaignId } = this.props;
     if (
-      confirm(
-        "Tem certeza que deseja remover permanentemente a campanha e seus dados?"
-      )
+      confirm("Are you sure you'd like to permanently remove your campaign?")
     ) {
       Meteor.call("campaigns.remove", { campaignId }, (err, data) => {
         if (err) {
@@ -30,11 +28,11 @@ export default class CampaignActionsPage extends Component {
           <Form onSubmit={ev => ev.preventDefault()}>
             <Form.Content>
               <button className="delete" onClick={this._handleClick}>
-                Remover campanha e todos os seus dados
+                Remove campaign and all its data
               </button>
               <hr />
               <p>
-                <strong>Atenção</strong>: Essa ação é irreversível!
+                <strong>Attention</strong>: This action is irreversible!
               </p>
             </Form.Content>
           </Form>

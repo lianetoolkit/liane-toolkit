@@ -43,7 +43,7 @@ export default class PersonContactIcons extends Component {
     if (data) {
       return data;
     }
-    return "Não disponível";
+    return "Not available";
   }
   filledForm() {
     const { person } = this.props;
@@ -69,29 +69,20 @@ export default class PersonContactIcons extends Component {
     if (person) {
       return (
         <Container>
-          {/* <PopupLabel
-            text={this.getLabelText("contact.email")}
-            disabled={!email}
-            extra={email ? "Clique para copiar" : false}
-            position="center"
-            onClick={this._handleClick}
-            onMouseLeave={this._handleMouseLeave}
-          > */}
           <CopyToClipboard
             disabled={!email}
             text={email}
             className={email ? "active" : ""}
-            data-tip={email ? `${email} (copiar)` : null}
+            data-tip={email ? `${email} (copy)` : null}
             data-for={`person-contact-icons-${person._id}`}
           >
             <FontAwesomeIcon icon="envelope" />
           </CopyToClipboard>
-          {/* </PopupLabel> */}
           <CopyToClipboard
             disabled={!phone}
             text={phone}
             className={phone ? "active" : ""}
-            data-tip={phone ? `${phone} (copiar)` : null}
+            data-tip={phone ? `${phone} (copy)` : null}
             data-for={`person-contact-icons-${person._id}`}
           >
             <FontAwesomeIcon icon="phone" />
@@ -101,8 +92,8 @@ export default class PersonContactIcons extends Component {
             className={form ? "active" : ""}
             data-tip={
               form
-                ? "Preencheu o formulário (copiar link)"
-                : "Não preencheu o formulário (copiar link)"
+                ? "Filled the form (copy link)"
+                : "Did not filled the form (copy link)"
             }
             data-for={`person-contact-icons-${person._id}`}
           >

@@ -65,7 +65,7 @@ export default class ChatbotNotificationsModule extends Component {
           this.setState({
             formData: res.config
           });
-          alertStore.add("Atualizado", "success");
+          alertStore.add("Updated", "success");
           this._handleChatbotChange(res);
         }
       }
@@ -93,7 +93,7 @@ export default class ChatbotNotificationsModule extends Component {
           <Container>
             <ModuleStatus
               name="notifications"
-              label="Notificações a pessoas"
+              label="Send notifications"
               chatbot={chatbot}
               campaign={campaign}
               hideActivation={true}
@@ -102,13 +102,13 @@ export default class ChatbotNotificationsModule extends Component {
             />
           </Container>
         </Form.Content>
-        <Form.Actions>
+        {/* <Form.Actions>
           <input
             type="submit"
-            value="Atualizar configurações"
+            value="Save"
             onClick={this._handleSubmit}
           />
-        </Form.Actions>
+        </Form.Actions> */}
       </Form>
     );
   }

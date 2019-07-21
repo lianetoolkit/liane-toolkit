@@ -7,23 +7,23 @@ import Table from "../components/Table.jsx";
 
 const dataMap = [
   {
-    label: "Nascimento",
+    label: "Birthday",
     data: "campaignMeta.basic_info.birthday"
   },
   {
-    label: "Gênero",
+    label: "Gender",
     data: "campaignMeta.basic_info.gender"
   },
   {
-    label: "Endereço",
+    label: "Address",
     data: "location.formattedAddress"
   },
   {
-    label: "Habilidades",
+    label: "Skills",
     data: "campaignMeta.basic_info.skills"
   },
   {
-    label: "Ocupação",
+    label: "Job/Occupation",
     data: "campaignMeta.basic_info.occupation"
   }
 ];
@@ -58,12 +58,12 @@ export default class PersonInfoTable extends Component {
     const { person } = this.props;
     const data = get(person, key);
     if (!data) {
-      return <span className="not-found">Informação não cadastrada</span>;
+      return <span className="not-found">Information not registered</span>;
     }
     if (data instanceof Date) {
       return (
         moment(data).format("DD/MM/YYYY") +
-        ` (${moment().diff(data, "years")} anos)`
+        ` (${moment().diff(data, "years")} years old)`
       );
     }
     if (Array.isArray(data)) {
@@ -91,7 +91,7 @@ export default class PersonInfoTable extends Component {
         </Table>
         {extra && extra.length ? (
           <>
-            <h3>Informações extras</h3>
+            <h3>Extra info</h3>
             <Table>
               <tbody>
                 {extra.map((item, i) => (

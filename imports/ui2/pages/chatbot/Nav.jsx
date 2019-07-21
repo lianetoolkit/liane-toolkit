@@ -68,9 +68,9 @@ const ModuleLinkContainer = styled.a`
 class ModuleLink extends Component {
   statusLabel = () => {
     const { active, pending } = this.props;
-    if (pending) return "Configuração pendente";
-    if (active) return "Ativo";
-    return "Inativo";
+    if (pending) return "Pending";
+    if (active) return "Active";
+    return "Inactive";
   };
   render() {
     const { children, ...props } = this.props;
@@ -96,54 +96,54 @@ export default class ChatbotNav extends Component {
     const currentRoute = FlowRouter.current().route.name;
     return (
       <Page.Nav>
-        <h3>Configurações do chatbot</h3>
+        <h3>Chatbot settings</h3>
         <a
           href={FlowRouter.path("App.chatbot")}
           className={!module ? "active" : ""}
         >
-          Configurações gerais
+          General settings
         </a>
         <a
           href={FlowRouter.path("App.chatbot", {}, { module: "actions" })}
           className={module == "actions" ? "active" : ""}
         >
-          Ações
+          Actions
         </a>
-        <h3>Módulos</h3>
+        <h3>Modules</h3>
         <ModuleLink
           active={isModuleActive(chatbot, customModules, "info")}
           href={FlowRouter.path("App.chatbot", {}, { module: "info" })}
           className={module == "info" ? "active" : ""}
         >
-          Informações do Candidato
+          Candidate information
         </ModuleLink>
         <ModuleLink
           active={isModuleActive(chatbot, customModules, "proposals")}
           href={FlowRouter.path("App.chatbot", {}, { module: "proposals" })}
           className={module == "proposals" ? "active" : ""}
         >
-          Apresentar e receber propostas
+          Present axes and receive proposals
         </ModuleLink>
         <ModuleLink
           active={isModuleActive(chatbot, customModules, "auto_reply")}
           href={FlowRouter.path("App.chatbot", {}, { module: "auto_reply" })}
           className={module == "auto_reply" ? "active" : ""}
         >
-          Respostas automáticas
+          Automated replies
         </ModuleLink>
         <ModuleLink
           active={isModuleActive(chatbot, customModules, "registration")}
           href={FlowRouter.path("App.chatbot", {}, { module: "registration" })}
           className={module == "registration" ? "active" : ""}
         >
-          Registro de apoio
+          Support registration
         </ModuleLink>
         <ModuleLink
           active={isModuleActive(chatbot, customModules, "notifications")}
           href={FlowRouter.path("App.chatbot", {}, { module: "notifications" })}
           className={module == "notifications" ? "active" : ""}
         >
-          Notificações a pessoas
+          Send notifications
         </ModuleLink>
       </Page.Nav>
     );

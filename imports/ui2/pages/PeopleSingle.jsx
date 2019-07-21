@@ -157,7 +157,7 @@ class Information extends Component {
   _handlePrivateReplyClick = ev => {
     const { person } = this.props;
     ev.preventDefault();
-    modalStore.setTitle(`Enviando mensagem privada para ${person.name}`);
+    modalStore.setTitle(`Sending private reply to ${person.name}`);
     modalStore.set(<Reply personId={person._id} messageOnly={true} />);
   };
   render() {
@@ -175,13 +175,12 @@ class Information extends Component {
           <PersonReactions person={person} />
           <p className="person-comment-count">
             <span>
-              <FontAwesomeIcon icon="comment" /> {this._getComments()}{" "}
-              comentários
+              <FontAwesomeIcon icon="comment" /> {this._getComments()} comments
             </span>
             {person.canReceivePrivateReply &&
             person.canReceivePrivateReply.length ? (
               <Button light onClick={this._handlePrivateReplyClick}>
-                Enviar mensagem privada
+                Send private reply
               </Button>
             ) : null}
           </p>
@@ -210,7 +209,7 @@ export default class PeopleSingle extends Component {
   _handleEditClick = ev => {
     const { person } = this.props;
     ev.preventDefault();
-    modalStore.setTitle(`Editando perfil de ${person.name}`);
+    modalStore.setTitle(`Editing ${person.name}`);
     modalStore.set(
       <PersonEdit person={person} onSuccess={this._handleEditSuccess} />
     );
@@ -221,15 +220,15 @@ export default class PeopleSingle extends Component {
       case "facebook":
         return "Facebook";
       case "form":
-        return "Formulário";
+        return "Form";
       case "import":
         const list = lists.find(l => l._id == person.listId);
         if (list) {
           return list.name;
         }
-        return "Importação desconhecida";
+        return "Unknown import";
       default:
-        return "Desconhecido";
+        return "Unknown";
     }
   };
   _handleEditSuccess = () => {};
@@ -240,7 +239,7 @@ export default class PeopleSingle extends Component {
         <Container>
           <Page.Nav padded full>
             <a href={FlowRouter.path("App.people")}>
-              <FontAwesomeIcon icon="chevron-left" /> Voltar ao diretório
+              <FontAwesomeIcon icon="chevron-left" /> Back to the directory
             </a>
             <a
               href={FlowRouter.path(
@@ -250,7 +249,7 @@ export default class PeopleSingle extends Component {
               )}
               className={!section ? "active" : ""}
             >
-              Informações
+              Profile
             </a>
             {/* <a
               href={FlowRouter.path(
@@ -270,10 +269,10 @@ export default class PeopleSingle extends Component {
               )}
               className={section == "comments" ? "active" : ""}
             >
-              Comentários
+              Comments
             </a>
             <a href="javascript:void(0);" onClick={this._handleEditClick}>
-              Editar informações
+              Edit profile
             </a>
           </Page.Nav>
           <div className="person-container">
@@ -281,7 +280,7 @@ export default class PeopleSingle extends Component {
               <div className="main-info">
                 <h1>{person.name}</h1>
                 <ul>
-                  <li className="contained">Origem: {this._getSource()}</li>
+                  <li className="contained">Source: {this._getSource()}</li>
                   <li className="highlight">
                     <PersonMetaButtons person={person} readOnly simple text />
                   </li>

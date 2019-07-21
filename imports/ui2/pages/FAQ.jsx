@@ -46,17 +46,17 @@ class FAQView extends Component {
   _handleEditClick = ev => {
     const { item } = this.props;
     ev.preventDefault();
-    modalStore.setTitle("Editando resposta");
+    modalStore.setTitle("Editing answer");
     modalStore.set(<FAQEdit item={item} />);
   };
   _handleRemoveClick = ev => {
     const { item } = this.props;
-    if (confirm("Tem certeza que deseja remover esta resposta?")) {
+    if (confirm("Are you sure you'd like to remove this answer?")) {
       Meteor.call("faq.remove", { _id: item._id }, (err, res) => {
         if (err) {
           alertStore.add(err);
         } else {
-          alertStore.add("Removido com sucesso", "success");
+          alertStore.add("Removed", "success");
           modalStore.reset();
         }
       });
@@ -71,13 +71,13 @@ class FAQView extends Component {
         <p>{item.answer}</p>
         <aside>
           <CopyToClipboard text={item.answer}>
-            <FontAwesomeIcon icon="copy" /> Copiar para área de transferência
+            <FontAwesomeIcon icon="copy" /> Copy to clipboard
           </CopyToClipboard>
           <a href="javascript:void(0);" onClick={this._handleEditClick}>
-            <FontAwesomeIcon icon="edit" /> Editar
+            <FontAwesomeIcon icon="edit" /> Edit
           </a>
           <a href="javascript:void(0);" onClick={this._handleRemoveClick}>
-            <FontAwesomeIcon icon="times" /> Remover
+            <FontAwesomeIcon icon="times" /> Remove
           </a>
         </aside>
       </ViewContainer>
@@ -127,7 +127,7 @@ class FAQEdit extends Component {
           if (err) {
             alertStore.add(err);
           } else {
-            alertStore.add("Resposta criada com sucesso", "success");
+            alertStore.add("Created", "success");
             if (typeof onSuccess == "function") {
               onSuccess(res);
             }
@@ -142,7 +142,7 @@ class FAQEdit extends Component {
         if (err) {
           alertStore.add(err);
         } else {
-          alertStore.add("Resposta atualizada com sucesso", "success");
+          alertStore.add("Updated", "success");
           if (typeof onSuccess == "function") {
             onSuccess(res);
           }
@@ -158,37 +158,29 @@ class FAQEdit extends Component {
       }
     });
   };
-  submitLabel = () => {
-    const { formData } = this.state;
-    if (formData._id) {
-      return "Atualizar resposta";
-    } else {
-      return "Criar resposta";
-    }
-  };
   render() {
     const { formData, loading } = this.state;
     return (
       <EditContainer>
         <Form onSubmit={this._handleSubmit}>
-          <Form.Field label="Pergunta frequente">
+          <Form.Field label="Question">
             <input
               type="text"
-              placeholder="Descreva a pergunta frequente"
+              placeholder="Describe the question"
               onChange={this._handleChange}
               name="question"
               value={formData.question}
             />
           </Form.Field>
-          <Form.Field label="Resposta">
+          <Form.Field label="Answer">
             <textarea
-              placeholder="Escreva a resposta padrão para esta pergunta"
+              placeholder="Type the default answer to this question"
               onChange={this._handleChange}
               name="answer"
               value={formData.answer}
             />
           </Form.Field>
-          <input disabled={loading} type="submit" value={this.submitLabel()} />
+          <input disabled={loading} type="submit" value="Save" />
         </Form>
       </EditContainer>
     );
@@ -329,7 +321,7 @@ export default class FAQPage extends Component {
   _handleNewClick = ev => {
     const { campaignId } = this.props;
     ev.preventDefault();
-    modalStore.setTitle(`Criando nova resposta`);
+    modalStore.setTitle(`New answer`);
     modalStore.set(
       <FAQEdit campaignId={campaignId} onSuccess={this._handleCreateSuccess} />
     );
@@ -343,7 +335,7 @@ export default class FAQPage extends Component {
   };
   _handleEditClick = item => ev => {
     ev.preventDefault();
-    modalStore.setTitle("Editando resposta");
+    modalStore.setTitle("Editing answer");
     modalStore.set(<FAQEdit item={item} />);
   };
   render() {
@@ -354,15 +346,15 @@ export default class FAQPage extends Component {
     return (
       <Page.Content full>
         <Container>
-          <Page.Title>Perguntas Frequentes</Page.Title>
+          <Page.Title>Frequently Asked Questions</Page.Title>
           {!faq.length ? (
             <div className="intro">
               <p>
-                Crie respostas a perguntas frequentes para otimizar a
-                comunicação da campanha com seu público.
+                Create answers to frequently asked questions to optimize your
+                campaign communication.
               </p>
               <Button primary onClick={this._handleNewClick}>
-                Criar primeira resposta
+                Create your first answer
               </Button>
             </div>
           ) : (
@@ -372,7 +364,7 @@ export default class FAQPage extends Component {
                   className="button new-faq"
                   onClick={this._handleNewClick}
                 >
-                  + Criar nova resposta de pergunta frequente
+                  + Create new answer
                 </Button>
               </div>
               <section className="faq-list">
@@ -393,7 +385,7 @@ export default class FAQPage extends Component {
                       <aside className="item-actions">
                         <CopyToClipboard
                           text={item.answer}
-                          data-tip="Copiar"
+                          data-tip="Copy"
                           data-for={`faq-${item._id}`}
                         >
                           <FontAwesomeIcon icon="copy" />
@@ -401,7 +393,7 @@ export default class FAQPage extends Component {
                         <a
                           href="javascript:void(0);"
                           onClick={this._handleViewClick(item)}
-                          data-tip="Visualizar"
+                          data-tip="View"
                           data-for={`faq-${item._id}`}
                         >
                           <FontAwesomeIcon icon="eye" />
@@ -409,7 +401,7 @@ export default class FAQPage extends Component {
                         <a
                           href="javascript:void(0);"
                           onClick={this._handleEditClick(item)}
-                          data-tip="Editar"
+                          data-tip="Edit"
                           data-for={`faq-${item._id}`}
                         >
                           <FontAwesomeIcon icon="edit" />

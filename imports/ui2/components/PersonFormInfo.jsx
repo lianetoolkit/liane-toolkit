@@ -108,32 +108,26 @@ export default class PersonFormInfo extends Component {
         <label>
           <FontAwesomeIcon icon="align-left" />
           {person ? (
-            <span>
-              {filled ? "Preencheu o formulário" : "Não preencheu o formulário"}
-            </span>
+            <span>{filled ? "Filled form" : "Hasn't filled form"}</span>
           ) : null}
           <input type="text" disabled value={url} />
         </label>
         <span className="actions">
-          <CopyToClipboard
-            data-tip="Copiar link"
-            data-for={tooltipId}
-            text={url}
-          >
+          <CopyToClipboard data-tip="Copy link" data-for={tooltipId} text={url}>
             <FontAwesomeIcon icon="copy" />
           </CopyToClipboard>
           <a
             href={url}
             target="_blank"
             data-for={tooltipId}
-            data-tip="Acessar formulário"
+            data-tip="View form"
           >
             <FontAwesomeIcon icon="link" />
           </a>
           {person ? (
             <a
               href="javascript:void(0)"
-              data-tip="Gerar nova URL"
+              data-tip="Generate new URL"
               data-for={tooltipId}
               onClick={this._handleRegenerateClick}
             >

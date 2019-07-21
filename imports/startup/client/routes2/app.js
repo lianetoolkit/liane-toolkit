@@ -36,7 +36,7 @@ const appRoutes = FlowRouter.group({
 appRoutes.route("/", {
   name: "App.dashboard",
   action: function() {
-    addTitle(`${APP_NAME} | Dashboard`);
+    addTitle(`${APP_NAME} | Technology for Political Innovation`);
     return mount(App);
   }
 });
@@ -52,7 +52,7 @@ appRoutes.route("/transparency", {
 appRoutes.route("/f/:formId?", {
   name: "App.peopleForm",
   action: function(params, queryParams) {
-    addTitle(`${APP_NAME} | Ajude a campanha!`);
+    addTitle(`${APP_NAME} | Help the campaign!`);
     return mount(PeopleFormPage, {
       formId: params.formId,
       campaignId: queryParams.c
@@ -137,7 +137,7 @@ appRoutes.route("/adset", {
 appRoutes.route("/map", {
   name: "App.map",
   action: function() {
-    addTitle(`${APP_NAME} | Território`);
+    addTitle(`${APP_NAME} | Territory`);
     return mount(App, { content: { component: MapPage } });
   }
 });
@@ -145,7 +145,7 @@ appRoutes.route("/map", {
 appRoutes.route("/faq", {
   name: "App.faq",
   action: function() {
-    addTitle(`${APP_NAME} | Perguntas frequentes`);
+    addTitle(`${APP_NAME} | Frequently Asked Questions`);
     return mount(App, { content: { component: FAQPage } });
   }
 });

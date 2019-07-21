@@ -81,7 +81,7 @@ export default class ChatbotGeneralSettings extends Component {
   }
   _handleRemoveClick = () => {
     const { campaign } = this.props;
-    if (confirm("Você tem certeza?")) {
+    if (confirm("Are you sure?")) {
       Meteor.call(
         "chatbot.remove",
         { campaignId: campaign._id },
@@ -89,7 +89,7 @@ export default class ChatbotGeneralSettings extends Component {
           if (err) {
             alertStore.add(err);
           } else {
-            alertStore.add("Chatbot removido", "success");
+            alertStore.add("Removed", "success");
             FlowRouter.go("App.chatbot");
             window.location.reload();
           }
@@ -101,9 +101,9 @@ export default class ChatbotGeneralSettings extends Component {
     ev.preventDefault();
     const { campaign } = this.props;
     const test = get(campaign.facebookAccount, "chatbot.config.test");
-    let msg = "Você tem certeza que deseja tornar o chatbot público?";
+    let msg = "Are you sure you'd like to make your chatbot public?";
     if (!test) {
-      msg = "Você tem certeza que deseja tornar o chatbot privado para testes?";
+      msg = "Are you sure you'd like to make your chatbot private for testing?";
     }
     if (confirm(msg)) {
       this.setState({
@@ -122,7 +122,7 @@ export default class ChatbotGeneralSettings extends Component {
           if (err) {
             alertStore.add(err);
           } else {
-            alertStore.add("Atualizado", "success");
+            alertStore.add("Updated", "success");
           }
         }
       );
@@ -136,9 +136,9 @@ export default class ChatbotGeneralSettings extends Component {
     ev.preventDefault();
     const { campaign } = this.props;
     const active = get(campaign.facebookAccount, "chatbot.config.active");
-    let msg = "Você tem certeza que deseja ativar o chatbot?";
+    let msg = "Are you sure you'd like to activate your chatbot?";
     if (active) {
-      msg = "Você tem certeza que deseja desativar o chatbot?";
+      msg = "Are you sure you'd like to deactivate your chatbot?";
     }
     if (confirm(msg)) {
       this.setState({
@@ -157,7 +157,7 @@ export default class ChatbotGeneralSettings extends Component {
           if (err) {
             alertStore.add(err);
           } else {
-            alertStore.add("Atualizado", "success");
+            alertStore.add("Updated", "success");
           }
         }
       );
@@ -196,9 +196,9 @@ export default class ChatbotGeneralSettings extends Component {
                 icon={!this._isTest() ? "toggle-on" : "toggle-off"}
               />
               {this._isTest() ? (
-                <span>Tornar público</span>
+                <span>Make public</span>
               ) : (
-                <span>Tornar privado</span>
+                <span>Make private</span>
               )}
             </a>
             <a
@@ -210,9 +210,9 @@ export default class ChatbotGeneralSettings extends Component {
                 icon={this._isActive() ? "toggle-on" : "toggle-off"}
               />
               {!this._isActive() ? (
-                <span>Ativar chatbot</span>
+                <span>Activate chatbot</span>
               ) : (
-                <span>Desativar chatbot</span>
+                <span>Deactivate chatbot</span>
               )}
             </a>
             <a
@@ -220,7 +220,7 @@ export default class ChatbotGeneralSettings extends Component {
               href="javacript:void(0);"
               onClick={this._handleRemoveClick}
             >
-              Remover chatbot e suas configurações
+              Delete chatbot and all its settings
             </a>
           </Container>
         </Form.Content>

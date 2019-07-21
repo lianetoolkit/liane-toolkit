@@ -169,7 +169,7 @@ export default class CommentList extends Component {
     const { personMeta } = this.state;
     const isTroll = this.isTroll(comment);
     if (!comment.person) {
-      alertStore.add("Pessoa não identificada", "error");
+      alertStore.add("Person not found", "error");
       return;
     }
     Meteor.call(
@@ -210,10 +210,8 @@ export default class CommentList extends Component {
   _handleResolveClick = comment => () => {
     const { campaignId } = this.props;
     const resolve = !comment.resolved;
-    const label = resolve ? "resolvido" : "não resolvido";
-    if (
-      confirm(`Tem certeza que deseja marcar este comentário como ${label}?`)
-    ) {
+    const label = resolve ? "resolved" : "unresolved";
+    if (confirm(`Are you sure you'd like to mark this comment as ${label}?`)) {
       Meteor.call(
         "comments.resolve",
         { campaignId, commentId: comment._id, resolve },
@@ -221,7 +219,7 @@ export default class CommentList extends Component {
           if (err) {
             alertStore.add(err);
           } else {
-            alertStore.add(`Marcado como ${label}`, "success");
+            alertStore.add(`Marked as ${label}`, "success");
           }
         }
       );
@@ -237,23 +235,12 @@ export default class CommentList extends Component {
             <div className="comment-content">
               <Comment comment={comment} actions={true} />
             </div>
-            {/* <div className="comment-reply">
-              <p className="action-label">Reagir e responder</p>
-              <Reaction.Filter
-                target={comment._id}
-                onChange={this._handleReactionChange(comment._id)}
-              />
-              <Button.Group>
-                <Button>Responder</Button>
-                <Button>Inbox</Button>
-              </Button.Group>
-            </div> */}
             <div className="comment-actions">
-              <p className="action-label">Classificar</p>
+              <p className="action-label">Actions</p>
               <div className="action-icons">
                 <a
                   href="javascript:void(0);"
-                  data-tip="Marcar como pergunta"
+                  data-tip="Mark as question"
                   className={
                     this.hasCategory(comment, "question") ? "active" : ""
                   }
@@ -263,7 +250,7 @@ export default class CommentList extends Component {
                 </a>
                 <a
                   href="javascript:void(0);"
-                  data-tip="Marcar como declaração de voto"
+                  data-tip="Mark as vote declaration"
                   className={this.hasCategory(comment, "vote") ? "active" : ""}
                   onClick={this._handleCategoryClick(comment, "vote")}
                 >
@@ -271,7 +258,7 @@ export default class CommentList extends Component {
                 </a>
                 <a
                   href="javascript:void(0);"
-                  data-tip="Marcar pessoa como troll"
+                  data-tip="Mark this person as troll"
                   className={this.isTroll(comment) ? "active troll" : "troll"}
                   onClick={this._handleTrollClick(comment)}
                 >
@@ -287,9 +274,7 @@ export default class CommentList extends Component {
               <a
                 href="javascript:void(0);"
                 data-tip={
-                  comment.resolved
-                    ? "Marcar como não resolvido"
-                    : "Marcar como resolvido"
+                  comment.resolved ? "Mark as unresolved" : "Mark as resolved"
                 }
                 onClick={this._handleResolveClick(comment)}
               >

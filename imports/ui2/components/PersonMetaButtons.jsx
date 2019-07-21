@@ -172,13 +172,13 @@ class PersonMetaButtons extends React.Component {
     troll: "#ff5656"
   };
   static labels = {
-    supporter: "Apoiador",
-    volunteer: "Voluntário",
-    mobilizer: "Mobilizador",
-    donor: "Doador",
-    influencer: "Influenciador",
-    voter: "Declarou voto",
-    "non-voter": "Não pode votar",
+    supporter: "Supporter",
+    volunteer: "Volunteer",
+    mobilizer: "Mobilizer",
+    donor: "Donor",
+    influencer: "Influencer",
+    voter: "Declared vote",
+    "non-voter": "Cant't vote",
     troll: "Troll"
   };
   constructor(props) {

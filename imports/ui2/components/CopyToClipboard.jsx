@@ -27,9 +27,9 @@ export default class CopyToClipboard extends Component {
     this.textarea.select();
     try {
       document.execCommand("copy");
-      alertStore.add("Copiado!");
+      alertStore.add("Copied!");
     } catch (err) {
-      alertStore.add("Não foi possível copiar...", "error");
+      alertStore.add("Unable to copy...", "error");
     }
     node.removeChild(this.textarea);
   };

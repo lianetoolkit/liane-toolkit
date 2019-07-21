@@ -38,7 +38,7 @@ export default class RegionSelect extends Component {
         classNamePrefix="select-search"
         cacheOptions
         isSearchable={true}
-        placeholder="Selecione uma região..."
+        placeholder="Select a region..."
         options={this._getOptions()}
         onChange={this._handleChange}
         name={name}

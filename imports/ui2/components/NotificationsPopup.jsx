@@ -61,7 +61,7 @@ class NotificationsPopup extends Component {
         tools={
           <div>
             {hasUnread ? (
-              <a href="javascript:void(0);">Marcar tudo como lido</a>
+              <a href="javascript:void(0);">Mark all as read</a>
             ) : null}
             <a href="javascript:void(0);">
               <FontAwesomeIcon icon="times" className="close" />
@@ -109,7 +109,7 @@ class NotificationsPopup extends Component {
                 margin: "2rem 0"
               }}
             >
-              Nenhuma notificação por enquanto!
+              No notifications for now!
             </p>
           ) : null}
         </AppNavDropdown.Content>

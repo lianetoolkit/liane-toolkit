@@ -88,28 +88,28 @@ class Confirm extends Component {
     const { type } = this.state;
     return (
       <AuthOptions>
-        <p>Selecione abaixo seu tipo de conta</p>
+        <p>Select below your account type</p>
         <Button.Group vertical toggler>
           <Button
             active={type == "user"}
             onClick={this._handleTypeClick("user")}
           >
-            <FontAwesomeIcon icon="users" /> Vou participar de uma campanha
-            existente
+            <FontAwesomeIcon icon="users" /> I'll participate in an existing
+            campaign
           </Button>
           <Button
             active={type == "campaigner"}
             onClick={this._handleTypeClick("campaigner")}
           >
-            <FontAwesomeIcon icon="star" /> Quero criar uma campanha
+            <FontAwesomeIcon icon="star" /> I want to create a campaign
           </Button>
         </Button.Group>
         <p>
-          Atenção: Para criar uma campanha você deve ter acesso administrativo à
-          página de Facebook que gostaria de utilizar.
+          Warning: To create a campaign you must have administrative access to
+          the Facebook page you'd like to use.
         </p>
         <Button primary onClick={this._handleSubmit}>
-          Definir tipo de conta
+          Choose account type
         </Button>
       </AuthOptions>
     );

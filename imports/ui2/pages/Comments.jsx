@@ -171,19 +171,19 @@ export default class CommentsPage extends Component {
                     onClick={this._handleQueryResolveClick(false)}
                     active={!this.isQueryingResolved()}
                   >
-                    Não resolvidas
+                    Unresolved
                   </Button>
                   <Button
                     onClick={this._handleQueryResolveClick(true)}
                     active={this.isQueryingResolved()}
                   >
-                    Resolvidas
+                    Resolved
                   </Button>
                 </Button.Group>
                 <input
                   className="main-input"
                   type="text"
-                  placeholder="Buscar por texto"
+                  placeholder="Text search"
                   name="q"
                   onChange={this._handleChange}
                   // value={query.q}
@@ -199,7 +199,7 @@ export default class CommentsPage extends Component {
                     <span className="icon">
                       <FontAwesomeIcon icon="dot-circle" />
                     </span>
-                    Todos os comentários
+                    All comments
                   </label>
                   <label
                     className={queryingCategory == "question" ? "active" : ""}
@@ -213,7 +213,7 @@ export default class CommentsPage extends Component {
                     <span className="icon">
                       <FontAwesomeIcon icon="question" />
                     </span>
-                    Marcados como pergunta
+                    Marked as question
                   </label>
                   <label className={queryingCategory == "vote" ? "active" : ""}>
                     <input
@@ -225,7 +225,7 @@ export default class CommentsPage extends Component {
                     <span className="icon">
                       <FontAwesomeIcon icon="thumbs-up" />
                     </span>
-                    Declarações de voto
+                    Vote declarations
                   </label>
                 </PageFilters.Category>
                 <label className="boxed">
@@ -236,7 +236,7 @@ export default class CommentsPage extends Component {
                     checked={this.isQueryingHideReplies()}
                     disabled={this.isQueryingUnreplied()}
                   />
-                  Ocultar respostas à comentários
+                  Hide comment replies
                 </label>
                 <label className="boxed">
                   <input
@@ -245,7 +245,7 @@ export default class CommentsPage extends Component {
                     name="unreplied"
                     checked={this.isQueryingUnreplied()}
                   />
-                  Comentários sem respostas da página
+                  Comments without page response
                 </label>
                 <label className="boxed">
                   <input
@@ -254,7 +254,7 @@ export default class CommentsPage extends Component {
                     name="privateReply"
                     checked={this.isQueryingPrivateReply()}
                   />
-                  Comentários que podem receber mensagem privada
+                  Comments that can receive a private reply
                 </label>
                 <label className="boxed">
                   <input
@@ -263,7 +263,7 @@ export default class CommentsPage extends Component {
                     name="mention"
                     checked={this.isQueryingMention()}
                   />
-                  Comentários com menções
+                  Comments with mentions
                 </label>
               </form>
             </div>

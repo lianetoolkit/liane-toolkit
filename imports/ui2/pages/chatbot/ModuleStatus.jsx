@@ -106,9 +106,9 @@ export default class ChatbotModuleStatus extends Component {
   _statusLabel = () => {
     const active = this._isActive();
     if (active) {
-      return "Ativo";
+      return "Active";
     } else {
-      return "Inativo";
+      return "Inactive";
     }
   };
   _isLoading = () => {
@@ -139,7 +139,7 @@ export default class ChatbotModuleStatus extends Component {
           if (err) {
             alertStore.add(err);
           } else {
-            alertStore.add("Modulo ativado", "success");
+            alertStore.add("Activated", "success");
             if (onChange && typeof onChange == "function") {
               onChange(res.config);
             }
@@ -166,7 +166,11 @@ export default class ChatbotModuleStatus extends Component {
             onClick={this._handleActivationClick}
           >
             {this._isLoading() ? <Loading tiny /> : null}
-            {!this._isActive() ? <span>Ativar</span> : <span>Desativar</span>}
+            {!this._isActive() ? (
+              <span>Activate</span>
+            ) : (
+              <span>Deactivate</span>
+            )}
             <FontAwesomeIcon
               icon={this._isActive() ? "toggle-on" : "toggle-off"}
             />

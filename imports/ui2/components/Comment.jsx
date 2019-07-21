@@ -77,7 +77,6 @@ const Container = styled.article`
   .comment-admin-replies {
     flex: 1 1 0;
     font-size: 0.8em;
-    ${"" /* margin-top: 1rem; */}
     .label {
       font-size: 0.9em;
       color: #999;
@@ -126,11 +125,11 @@ class Count extends Component {
   label = () => {
     const { total } = this.props;
     if (!total || total == 0) {
-      return "Nenhum comentário";
+      return "No comments";
     } else if (total == 1) {
-      return "1 comentário";
+      return "1 comment";
     } else {
-      return `${total} comentários`;
+      return `${total} comments`;
     }
   };
   render() {
@@ -148,11 +147,11 @@ export default class Comment extends Component {
       return (
         <>
           <a href={url} target="_blank">
-            respondeu
+            replied
           </a>{" "}
-          um{" "}
+          a{" "}
           <a href={parentUrl} target="_blank">
-            comentário
+            comment
           </a>
         </>
       );
@@ -161,11 +160,11 @@ export default class Comment extends Component {
       return (
         <>
           <a href={url} target="_blank">
-            comentou
+            commented
           </a>{" "}
-          uma{" "}
+          on a{" "}
           <a href={postUrl} target="_blank">
-            publicação
+            post
           </a>
         </>
       );
@@ -201,7 +200,7 @@ export default class Comment extends Component {
     const { comment } = this.props;
     ev.preventDefault();
     modalStore.setTitle(
-      `Respondendo ${comment.person ? comment.person.name : "desconhecido"}`
+      `Replying ${comment.person ? comment.person.name : "unknown person"}`
     );
     modalStore.set(<Reply comment={comment} defaultSendAs="comment" />);
   };
@@ -215,7 +214,7 @@ export default class Comment extends Component {
               {comment.person ? (
                 <span className="name">{comment.person.name} </span>
               ) : (
-                "Desconhecido "
+                "Unknown "
               )}
               {this.action()}{" "}
               <span className="date">
@@ -238,7 +237,7 @@ export default class Comment extends Component {
             <section className="comment-admin-replies">
               {comment.adminReplies && comment.adminReplies.length ? (
                 <>
-                  <p className="label">Você respondeu</p>
+                  <p className="label">You replied</p>
                   {comment.adminReplies.map(reply => (
                     <p className="reply" key={reply._id}>
                       {reply.message}
@@ -248,14 +247,13 @@ export default class Comment extends Component {
               ) : null}
               {actions ? (
                 <div className="comment-fb-actions">
-                  {/* <p className="label">Responder</p> */}
                   <Button
                     onClick={this._handleReplyClick}
                     disabled={
                       !comment.can_comment && !comment.can_reply_privately
                     }
                   >
-                    Responder
+                    Reply
                   </Button>
                 </div>
               ) : null}

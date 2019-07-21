@@ -91,7 +91,7 @@ class Proposal extends Component {
     const { proposal, campaignId, onRemove } = this.props;
     if (!proposal.id) {
       onRemove(undefined);
-    } else if (confirm("Você tem certeza?")) {
+    } else if (confirm("Are you sure?")) {
       Meteor.call(
         "chatbot.removeProposal",
         { campaignId, proposalId: proposal.id },
@@ -142,9 +142,7 @@ class Proposal extends Component {
               href="javascript:void(0);"
               onClick={this._handlePrimaryClick}
               className={isPrimary ? "active" : ""}
-              data-tip={
-                isPrimary ? "Remover como principal" : "Tornar principal"
-              }
+              data-tip={isPrimary ? "Remove as primary" : "Make it primary"}
               data-for={tooltipId}
             >
               <FontAwesomeIcon icon="star" />
@@ -154,13 +152,13 @@ class Proposal extends Component {
             href="javascript:void(0);"
             onClick={this._handleRemoveClick}
             className="remove"
-            data-tip={"Remover"}
+            data-tip={"Delete"}
             data-for={tooltipId}
           >
             <FontAwesomeIcon icon="times" />
           </a>
         </div>
-        <Form.Field label="Título da proposta">
+        <Form.Field label="Axis title">
           <input
             type="text"
             name="title"
@@ -168,7 +166,7 @@ class Proposal extends Component {
             onChange={this._handleChange}
           />
         </Form.Field>
-        <Form.Field secondary label="Pergunta para contribuição na proposta">
+        <Form.Field secondary label="Question for proposal contribution">
           <input
             type="text"
             name="question"
@@ -176,18 +174,14 @@ class Proposal extends Component {
             onChange={this._handleChange}
           />
         </Form.Field>
-        <Form.Field secondary label="Descrição da proposta">
+        <Form.Field secondary label="Axis description">
           <textarea
             name="proposal"
             value={formData.proposal}
             onChange={this._handleChange}
           />
         </Form.Field>
-        <input
-          type="submit"
-          value="Salvar proposta"
-          onClick={this._handleSubmit}
-        />
+        <input type="submit" value="Save" onClick={this._handleSubmit} />
         <ReactTooltip id={tooltipId} aria-haspopup="true" effect="solid" />
       </ProposalContainer>
     );
@@ -337,7 +331,7 @@ export default class ChatbotProposalsModule extends Component {
           <Container>
             <ModuleStatus
               name="proposals"
-              label="Apresentar e receber propostas"
+              label="Present axes and receive proposals"
               chatbot={chatbot}
               campaign={campaign}
               onActivation={this._handleActivationClick}
@@ -365,7 +359,7 @@ export default class ChatbotProposalsModule extends Component {
                   onClick={this._handleProposalAdd}
                   disabled={!this._canAddProposal()}
                 >
-                  Adicionar nova proposta
+                  Add new axis
                 </Button>
               </div>
             ) : null}

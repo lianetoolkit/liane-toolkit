@@ -66,9 +66,7 @@ export default class PeopleLists extends Component {
   _handleRemoveClick = listId => ev => {
     ev.preventDefault();
     if (
-      confirm(
-        "Tem certeza que deseja remover todas as pessoas importadas dessa lista?"
-      )
+      confirm("Are you sure you'd like to remove all people from this import?")
     ) {
       this.setState({ loading: true });
       Meteor.call("peopleLists.remove", { listId }, (err, res) => {
@@ -92,9 +90,9 @@ export default class PeopleLists extends Component {
             <Table compact>
               <thead>
                 <tr>
-                  <th>Nome</th>
-                  <th>Data</th>
-                  <th>Pessoas</th>
+                  <th>Name</th>
+                  <th>Date</th>
+                  <th>People</th>
                   <th />
                 </tr>
               </thead>
@@ -103,14 +101,14 @@ export default class PeopleLists extends Component {
                   <tr key={list._id}>
                     <td>{list.name}</td>
                     <td>{moment(list.createdAt).format("L")}</td>
-                    <td>{counts[list._id]} pessoas importadas</td>
+                    <td>{counts[list._id]} imported people</td>
                     <td>
                       <a
                         href="javascript:void(0);"
                         className="button delete"
                         onClick={this._handleRemoveClick(list._id)}
                       >
-                        Remover
+                        Remove
                       </a>
                     </td>
                   </tr>
@@ -118,11 +116,11 @@ export default class PeopleLists extends Component {
               </tbody>
             </Table>
             <p className="tip">
-              Ao remover uma lista você remove também suas pessoas importadas.
+              By removing a list, youl'll remove all people imported from it.
             </p>
           </>
         ) : (
-          <p className="not-found">Nenhuma importação encontrada</p>
+          <p className="not-found">No import found</p>
         )}
       </Container>
     );

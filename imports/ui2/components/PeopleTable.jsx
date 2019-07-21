@@ -193,7 +193,7 @@ export default class PeopleTable extends Component {
           break;
         case 69: // (e)dit
           if (curIndex > -1) {
-            modalStore.setTitle(`Editando perfil de ${people[curIndex].name}`);
+            modalStore.setTitle(`Editing ${people[curIndex].name}`);
             modalStore.set(
               <PersonEdit
                 person={people[curIndex]}
@@ -273,7 +273,7 @@ export default class PeopleTable extends Component {
   };
   _handleEditClick = person => ev => {
     ev.preventDefault();
-    modalStore.setTitle(`Editando perfil de ${person.name}`);
+    modalStore.setTitle(`Editing ${person.name}`);
     modalStore.set(
       <PersonEdit person={person} onSuccess={this._handleEditSuccess} />
     );
@@ -341,7 +341,7 @@ export default class PeopleTable extends Component {
   };
   _handlePrivateReplyClick = person => ev => {
     ev.preventDefault();
-    modalStore.setTitle(`Enviando mensagem privada para ${person.name}`);
+    modalStore.setTitle(`Sending private reply to ${person.name}`);
     modalStore.set(<Reply personId={person._id} messageOnly={true} />);
   };
   render() {
@@ -359,26 +359,26 @@ export default class PeopleTable extends Component {
                   onClick={this._handleSortClick("name", "asc")}
                   sorted={this.getSort("name")}
                 >
-                  Nome
+                  Name
                 </Table.SortableHead>
                 <Table.SortableHead
                   onClick={this._handleSortClick("likes")}
                   sorted={this.getSort("likes")}
                 >
-                  Reações
+                  Reactions
                 </Table.SortableHead>
                 <Table.SortableHead
                   onClick={this._handleSortClick("comments")}
                   sorted={this.getSort("comments")}
                 >
-                  Comentários
+                  Comments
                 </Table.SortableHead>
-                <th>Contatos</th>
+                <th>Contact</th>
                 <Table.SortableHead
                   onClick={this._handleSortClick("lastInteraction")}
                   sorted={this.getSort("lastInteraction")}
                 >
-                  Última interação
+                  Last interaction
                 </Table.SortableHead>
               </tr>
             </thead>
@@ -423,7 +423,7 @@ export default class PeopleTable extends Component {
                     >
                       {this.hasMeta(person)
                         ? this.personCategoriesText(person)
-                        : "Editar categorias"}
+                        : "Edit categories"}
                     </ReactTooltip>
                   </td>
                   <td className="fill highlight">
@@ -433,13 +433,13 @@ export default class PeopleTable extends Component {
                           personId: person._id
                         })}
                       >
-                        Acessar perfil
+                        Access profile
                       </a>
                       <a
                         href="javascript:void(0);"
                         onClick={this._handleEditClick(person)}
                       >
-                        Editar
+                        Edit
                       </a>
                     </p>
                     <span className="person-name">{person.name}</span>
@@ -481,7 +481,7 @@ export default class PeopleTable extends Component {
                       <p className="person-comment-count">
                         <span>
                           <FontAwesomeIcon icon="comment" />{" "}
-                          {this._getComments(person)} comentários
+                          {this._getComments(person)} comments
                         </span>
                         {person.canReceivePrivateReply &&
                         person.canReceivePrivateReply.length ? (
@@ -489,7 +489,7 @@ export default class PeopleTable extends Component {
                             light
                             onClick={this._handlePrivateReplyClick(person)}
                           >
-                            Enviar mensagem privada
+                            Send private reply
                           </Button>
                         ) : null}
                       </p>

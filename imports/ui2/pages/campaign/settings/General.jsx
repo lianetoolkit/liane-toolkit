@@ -54,7 +54,7 @@ export default class CampaignSettingsPage extends Component {
       const { formData } = this.state;
       Meteor.call("campaigns.update", formData, (err, data) => {
         if (!err) {
-          alertStore.add("Campanha atualizada", "success");
+          alertStore.add("Updated", "success");
         } else {
           alertStore.add(err);
         }
@@ -73,36 +73,32 @@ export default class CampaignSettingsPage extends Component {
         <Nav campaign={campaign} />
         <Form onSubmit={this._handleSubmit}>
           <Form.Content>
-            <Form.Field label="Nome da campanha" big>
+            <Form.Field label="Campaign name" big>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
-                placeholder="Nome da campanha"
+                placeholder="Campaign name"
                 onChange={this._handleChange}
               />
             </Form.Field>
-            <h3>Configurações do formulário</h3>
+            <h3>Form settings</h3>
             <p>
-              Utilize o formulário de CRM para convidar seu público a fazer
-              parte da sua campanha! Além do link abaixo, há também um link
-              exclusivo para cada pessoa existente na sua base de dados,
-              facilitando a integração dos dados.
+              Use the form to invite your audience to your campaign! Besides the
+              link below, there's also an exclusive link for each person in your
+              directory, improving data integration.
             </p>
             <PersonFormInfo />
-            <Form.Field
-              label="Configurar caminho de url do formulário"
-              prefix={FlowRouter.url("")}
-            >
+            <Form.Field label="Set form url path" prefix={FlowRouter.url("")}>
               <input
                 type="text"
-                placeholder="MinhaCampanha"
+                placeholder="MyCampaign"
                 name="forms.slug"
                 value={this.getValue("forms.slug")}
                 onChange={this._handleChange}
               />
             </Form.Field>
-            <Form.Field label="Título para o formulário">
+            <Form.Field label="Form title">
               <input
                 type="text"
                 name="forms.crm.header"
@@ -110,7 +106,7 @@ export default class CampaignSettingsPage extends Component {
                 onChange={this._handleChange}
               />
             </Form.Field>
-            <Form.Field label="Texto de apresentação do formulário">
+            <Form.Field label="Form presentation text">
               <textarea
                 name="forms.crm.text"
                 value={this.getValue("forms.crm.text")}
@@ -119,11 +115,7 @@ export default class CampaignSettingsPage extends Component {
             </Form.Field>
           </Form.Content>
           <Form.Actions>
-            <input
-              type="submit"
-              disabled={!this._filledForm()}
-              value="Atualizar campanha"
-            />
+            <input type="submit" disabled={!this._filledForm()} value="Save" />
           </Form.Actions>
         </Form>
       </>

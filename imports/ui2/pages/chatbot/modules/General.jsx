@@ -86,9 +86,9 @@ export default class ChatbotGeneralSettings extends Component {
     ev.preventDefault();
     const { campaign } = this.props;
     const test = get(campaign.facebookAccount, "chatbot.config.test");
-    let msg = "Você tem certeza que deseja tornar o chatbot público?";
+    let msg = "Are you sure you'd like to make your chatbot public?";
     if (!test) {
-      msg = "Você tem certeza que deseja tornar o chatbot privado para testes?";
+      msg = "Are you sure you'd like to make your chatbot private for testing?";
     }
     if (confirm(msg)) {
       this.setState({
@@ -107,7 +107,7 @@ export default class ChatbotGeneralSettings extends Component {
           if (err) {
             alertStore.add(err);
           } else {
-            alertStore.add("Atualizado", "success");
+            alertStore.add("Updated", "success");
           }
         }
       );
@@ -161,7 +161,7 @@ export default class ChatbotGeneralSettings extends Component {
           this.setState({
             formData: res.config
           });
-          alertStore.add("Atualizado", "success");
+          alertStore.add("Updated", "success");
         }
       }
     );
@@ -178,9 +178,9 @@ export default class ChatbotGeneralSettings extends Component {
             <header>
               <div className="chatbot-status">
                 {!this._isTest() ? (
-                  <p>O chatbot está público</p>
+                  <p>Chatbot is public</p>
                 ) : (
-                  <p>O chatbot está em modo de testes</p>
+                  <p>Chatbot is in test mode</p>
                 )}
               </div>
               <a
@@ -192,14 +192,14 @@ export default class ChatbotGeneralSettings extends Component {
                   icon={!this._isTest() ? "toggle-on" : "toggle-off"}
                 />
                 {this._isTest() ? (
-                  <span>Tornar público</span>
+                  <span>Make public</span>
                 ) : (
-                  <span>Tornar privado</span>
+                  <span>Make private</span>
                 )}
               </a>
-              {!this._isTest() ? <Button>Divulgar chatbot</Button> : null}
+              {!this._isTest() ? <Button>Publish chatbot</Button> : null}
             </header>
-            <Form.Field label="Nome para apresentar candidatura">
+            <Form.Field label="Name to present candidate">
               <input
                 type="text"
                 name="extra_info.candidate"
@@ -207,7 +207,7 @@ export default class ChatbotGeneralSettings extends Component {
                 onChange={this._handleChange}
               />
             </Form.Field>
-            <Form.Field label="Número da candidatura (se aplicável)">
+            <Form.Field label="Candidate number (if applicable)">
               <input
                 type="text"
                 name="extra_info.candidate_number"
@@ -216,9 +216,9 @@ export default class ChatbotGeneralSettings extends Component {
                 size="3"
               />
             </Form.Field>
-            <Form.Field label="Apresentação">
+            <Form.Field label="Presentation">
               <textarea
-                placeholder="Descreva brevemente sobre sua campanha"
+                placeholder="Briefly describe your campaign"
                 name="extra_info.campaign_presentation"
                 value={this.getValue("extra_info.campaign_presentation")}
                 onChange={this._handleChange}
@@ -227,11 +227,7 @@ export default class ChatbotGeneralSettings extends Component {
           </Container>
         </Form.Content>
         <Form.Actions>
-          <input
-            type="submit"
-            value="Atualizar configurações"
-            onClick={this._handleSubmit}
-          />
+          <input type="submit" value="Save" onClick={this._handleSubmit} />
         </Form.Actions>
       </Form>
     );

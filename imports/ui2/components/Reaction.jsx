@@ -178,11 +178,11 @@ class Count extends Component {
   label = () => {
     const { total } = this.props;
     if (!total || total == 0) {
-      return "Nenhuma reação";
+      return "No reaction";
     } else if (total == 1) {
-      return "1 reação";
+      return "1 reaction";
     } else {
-      return `${total} reações`;
+      return `${total} reactions`;
     }
   };
   render() {

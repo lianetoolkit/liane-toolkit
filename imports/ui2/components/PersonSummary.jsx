@@ -79,7 +79,7 @@ export default class PersonSummary extends Component {
     if (value) {
       return <span>{value}</span>;
     } else {
-      return <span className="empty">{defaultText || "Não cadastrado"}</span>;
+      return <span className="empty">{defaultText || "Not registered"}</span>;
     }
   }
   tags() {
@@ -87,7 +87,7 @@ export default class PersonSummary extends Component {
     if (tags.length) {
       return tags.join(", ");
     }
-    return <span className="empty">Não existem tags associadas</span>;
+    return <span className="empty">No tags assigned</span>;
   }
   render() {
     const { person } = this.props;
@@ -105,7 +105,7 @@ export default class PersonSummary extends Component {
                 <CopyToClipboard text={email} className="copy">
                   <FontAwesomeIcon
                     icon="copy"
-                    data-tip="Copiar"
+                    data-tip="Copy"
                     data-for={`person-summary-${person._id}`}
                   />
                 </CopyToClipboard>
@@ -119,7 +119,7 @@ export default class PersonSummary extends Component {
                 <CopyToClipboard text={phone} className="copy">
                   <FontAwesomeIcon
                     icon="copy"
-                    data-tip="Copiar"
+                    data-tip="Copy"
                     data-for={`person-summary-${person._id}`}
                   />
                 </CopyToClipboard>
@@ -134,7 +134,7 @@ export default class PersonSummary extends Component {
                 <CopyToClipboard text={instagram} className="copy">
                   <FontAwesomeIcon
                     icon="copy"
-                    data-tip="Copiar"
+                    data-tip="Copy"
                     data-for={`person-summary-${person._id}`}
                   />
                 </CopyToClipboard>
@@ -149,7 +149,7 @@ export default class PersonSummary extends Component {
                 <CopyToClipboard text={twitter} className="copy">
                   <FontAwesomeIcon
                     icon="copy"
-                    data-tip="Copiar"
+                    data-tip="Copy"
                     data-for={`person-summary-${person._id}`}
                   />
                 </CopyToClipboard>

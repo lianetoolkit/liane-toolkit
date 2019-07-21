@@ -241,32 +241,32 @@ export default class AppNav extends Component {
                 ) : null}
                 <NavItem
                   href={FlowRouter.path("App.map")}
-                  name="Inteligência e Estratégia"
+                  name="Intelligence and Strategy"
                 >
                   <ul>
                     <li>
                       <a href="javascript:void(0);" className="disabled">
-                        Minha audiência <span>Em breve</span>
+                        My audience <span>soon</span>
                       </a>
                     </li>
                     <li>
-                      <a href={FlowRouter.path("App.map")}>Territórios</a>
+                      <a href={FlowRouter.path("App.map")}>Territories</a>
                     </li>
                   </ul>
                 </NavItem>
                 <NavItem
                   href={FlowRouter.path("App.people")}
-                  name="Pessoas e Comunicação"
+                  name="People and Communication"
                 >
                   <ul>
                     <li>
                       <a href={FlowRouter.path("App.people")}>
-                        Diretório de pessoas
+                        People directory
                       </a>
                     </li>
                     <li>
                       <a href={FlowRouter.path("App.comments")}>
-                        Gestão de comentários
+                        Manage comments
                       </a>
                     </li>
                     <li>
@@ -274,7 +274,7 @@ export default class AppNav extends Component {
                     </li>
                     <li>
                       <a href={FlowRouter.path("App.faq")}>
-                        Perguntas frequentes
+                        Frequently asked questions
                       </a>
                     </li>
                   </ul>
@@ -283,7 +283,7 @@ export default class AppNav extends Component {
                   href="https://canvas.liane.cc"
                   target="_blank"
                   rel="external"
-                  name="Canvas Eleitoral"
+                  name="Electoral Canvas"
                 />
                 {/* <NavItem
                   href={FlowRouter.path("App.adset")}

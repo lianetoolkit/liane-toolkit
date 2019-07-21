@@ -20,8 +20,8 @@ const Container = styled.div`
 export default function() {
   return (
     <Container>
-      <h2>Erro inesperado</h2>
-      <p>Tente novamente mais tarde.</p>
+      <h2>Unexpected error</h2>
+      <p>Please, try again later.</p>
     </Container>
-  )
+  );
 }

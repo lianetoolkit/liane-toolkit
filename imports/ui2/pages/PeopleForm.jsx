@@ -4,6 +4,17 @@ import { get } from "lodash";
 import { OAuth } from "meteor/oauth";
 import moment from "moment";
 
+import Recaptcha from "react-recaptcha";
+import { IntlProvider, addLocaleData } from "react-intl";
+
+import en from "react-intl/locale-data/en";
+import es from "react-intl/locale-data/es";
+import pt from "react-intl/locale-data/pt";
+addLocaleData([...en, ...es, ...pt]);
+window.locales = ["en-US", "es", "pt-BR"];
+
+import localeData from "/locales";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DatePicker from "react-datepicker";
 
@@ -11,12 +22,36 @@ import Alerts, { alertStore } from "../containers/Alerts.jsx";
 
 import AddressField from "../components/AddressField.jsx";
 import SkillsField from "../components/SkillsField.jsx";
-// import PeoplePrivacyPolicy from "/imports/ui/components/people/PeoplePrivacyPolicy.jsx";
-import Recaptcha from "react-recaptcha";
+
 import { getFormUrl } from "../utils/people.js";
 import Loading from "../components/Loading.jsx";
 import Button from "../components/Button.jsx";
 import Form from "../components/Form.jsx";
+
+const language =
+  (navigator.languages && navigator.languages[0]) ||
+  navigator.language ||
+  navigator.userLanguage;
+
+const findLocale = language => {
+  let locale = false;
+  const languageWRC = language.toLowerCase().split(/[_-]+/)[0];
+  for (const key in localeData) {
+    let keyWRC = key.toLowerCase().split(/[_-]+/)[0];
+    if (
+      !locale &&
+      (key == language ||
+        key == languageWRC ||
+        keyWRC == languageWRC ||
+        keyWRC == language)
+    ) {
+      locale = key;
+    }
+  }
+  return locale;
+};
+
+const messages = localeData[findLocale(language)] || localeData.en;
 
 const recaptchaSiteKey = Meteor.settings.public.recaptcha;
 
@@ -87,7 +122,7 @@ const Container = styled.div`
   }
 `;
 
-export default class PeopleForm extends Component {
+class PeopleForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -198,184 +233,186 @@ export default class PeopleForm extends Component {
       return <h1 style={{ textAlign: "center" }}>404</h1>;
     } else if (person && campaign) {
       return (
-        <>
-          <Header>
-            <div className="header-content">
-              <h1>
-                <a href={FlowRouter.path("App.dashboard")}>
-                  <img src="/images/logo_icon.svg" alt="Liane" />
-                </a>
-              </h1>
-            </div>
-          </Header>
-          <Container id="app">
-            <h2>
-              Olá
-              {person.name ? <span> {person.name}</span> : null}!
-            </h2>
-            {person._id ? (
-              <p className="not-you">
-                Não é você?{" "}
-                <a href={getFormUrl(false, campaign)}>Clique aqui</a>.
-              </p>
-            ) : null}
-            <p>
-              {campaign.forms && campaign.forms.crm ? (
-                <span>{campaign.forms.crm.header}</span>
-              ) : (
-                <span>
-                  Nós, da candidatura {campaign.name}, queremos pedir sua ajuda!
-                </span>
-              )}
-            </p>
-            <p>
-              {campaign.forms && campaign.forms.crm ? (
-                <span>{campaign.forms.crm.text}</span>
-              ) : (
-                <span>
-                  Preencha os dados abaixo que a gente possa saber mais sobre
-                  você.
-                </span>
-              )}
-            </p>
-            {!person.facebookId ? (
-              <div className="facebook-connect">
-                <Button
-                  fluid
-                  color="facebook"
-                  icon
-                  onClick={this._handleFacebookClick}
-                >
-                  <FontAwesomeIcon icon={["fab", "facebook-square"]} /> Connect
-                  your Facebook profile
-                </Button>
+        <IntlProvider locale={language} messages={messages}>
+          <>
+            <Header>
+              <div className="header-content">
+                <h1>
+                  <a href={FlowRouter.path("App.dashboard")}>
+                    <img src="/images/logo_icon.svg" alt="Liane" />
+                  </a>
+                </h1>
               </div>
-            ) : null}
-            <Form onSubmit={this._handleSubmit}>
-              {!person.name ? (
-                <Form.Field label="Nome">
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={this._handleChange}
-                  />
-                </Form.Field>
+            </Header>
+            <Container id="app">
+              <h2>
+                Hi
+                {person.name ? <span> {person.name}</span> : null}!
+              </h2>
+              {person._id ? (
+                <p className="not-you">
+                  Not you? <a href={getFormUrl(false, campaign)}>Click here</a>.
+                </p>
               ) : null}
-              <Form.Field label="Email">
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={this._handleChange}
-                />
-              </Form.Field>
-              <Form.Field label="Telefone">
-                <input
-                  type="text"
-                  name="cellphone"
-                  value={formData.cellphone}
-                  onChange={this._handleChange}
-                />
-              </Form.Field>
-              <Form.Field label="Data de nascimento">
-                <DatePicker
-                  onChange={date => {
-                    this._handleChange({
-                      target: {
-                        name: "birthday",
-                        value: date.toDate()
-                      }
-                    });
-                  }}
-                  selected={this.getBirthdayValue()}
-                  dateFormatCalendar="MMMM"
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                />
-              </Form.Field>
-              <AddressField
-                name="address"
-                country={campaign.country}
-                value={formData.address}
-                onChange={target => this._handleChange({ target })}
-              />
-              <Button
-                className=""
-                onClick={ev => {
-                  ev.preventDefault();
-                  this.setState({ contribute: !contribute });
-                }}
-              >
-                Quero participar da campanha!
-              </Button>
-              {contribute ? (
-                <div className="contribute">
-                  <Form.Field label="O que você saber fazer?">
-                    <SkillsField
-                      name="skills"
-                      value={formData.skills || []}
+              <p>
+                {campaign.forms && campaign.forms.crm ? (
+                  <span>{campaign.forms.crm.header}</span>
+                ) : (
+                  <span>
+                    We, from the campaign {campaign.name}, would like to ask for
+                    your help!
+                  </span>
+                )}
+              </p>
+              <p>
+                {campaign.forms && campaign.forms.crm ? (
+                  <span>{campaign.forms.crm.text}</span>
+                ) : (
+                  <span>
+                    Fill the information below so you can know more about you.
+                  </span>
+                )}
+              </p>
+              {!person.facebookId ? (
+                <div className="facebook-connect">
+                  <Button
+                    fluid
+                    color="facebook"
+                    icon
+                    onClick={this._handleFacebookClick}
+                  >
+                    <FontAwesomeIcon icon={["fab", "facebook-square"]} />{" "}
+                    Connect your Facebook profile
+                  </Button>
+                </div>
+              ) : null}
+              <Form onSubmit={this._handleSubmit}>
+                {!person.name ? (
+                  <Form.Field label="Name">
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
                       onChange={this._handleChange}
                     />
                   </Form.Field>
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="supporter"
-                      checked={formData.supporter}
-                      onChange={this._handleChange}
-                    />
-                    Se a gente te mandar conteúdo, você compartilha nas suas
-                    redes?
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="mobilizer"
-                      checked={formData.mobilizer}
-                      onChange={this._handleChange}
-                    />
-                    Você puxaria um evento no seu bairro ou trabalho?
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="donor"
-                      checked={formData.donor}
-                      onChange={this._handleChange}
-                    />
-                    Você doaria dinheiro para a campanha?
-                  </label>
-                </div>
-              ) : null}
-              {/* <Divider /> */}
-              {!person.facebookId && recaptchaSiteKey ? (
-                <div className="recaptcha-container">
-                  <Recaptcha
-                    sitekey={recaptchaSiteKey}
-                    render="explicit"
-                    verifyCallback={this._handleRecaptcha}
+                ) : null}
+                <Form.Field label="Email">
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={this._handleChange}
                   />
-                  {/* <Divider hidden /> */}
-                </div>
-              ) : null}
-              <p className="policy">
-                Ao enviar este formulário você concorda com nossa{" "}
-                <a
-                  href="https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf"
-                  target="_blank"
-                  rel="external"
+                </Form.Field>
+                <Form.Field label="Phone">
+                  <input
+                    type="text"
+                    name="cellphone"
+                    value={formData.cellphone}
+                    onChange={this._handleChange}
+                  />
+                </Form.Field>
+                <Form.Field label="Birthday">
+                  <DatePicker
+                    onChange={date => {
+                      this._handleChange({
+                        target: {
+                          name: "birthday",
+                          value: date.toDate()
+                        }
+                      });
+                    }}
+                    selected={this.getBirthdayValue()}
+                    dateFormatCalendar="MMMM"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                  />
+                </Form.Field>
+                <AddressField
+                  name="address"
+                  country={campaign.country}
+                  value={formData.address}
+                  onChange={target => this._handleChange({ target })}
+                />
+                <Button
+                  className=""
+                  onClick={ev => {
+                    ev.preventDefault();
+                    this.setState({ contribute: !contribute });
+                  }}
                 >
-                  Política de Privacidade
-                </a>
-                .
-              </p>
-              <input type="submit" value="Enviar" />
-            </Form>
-          </Container>
-          <Alerts />
-        </>
+                  I'd like to participate!
+                </Button>
+                {contribute ? (
+                  <div className="contribute">
+                    <Form.Field label="What can you do?">
+                      <SkillsField
+                        name="skills"
+                        value={formData.skills || []}
+                        onChange={this._handleChange}
+                      />
+                    </Form.Field>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="supporter"
+                        checked={formData.supporter}
+                        onChange={this._handleChange}
+                      />
+                      If we send you content, will you share in your social
+                      networks?
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="mobilizer"
+                        checked={formData.mobilizer}
+                        onChange={this._handleChange}
+                      />
+                      Would you produce en event in your neighborhood or
+                      workplace?
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="donor"
+                        checked={formData.donor}
+                        onChange={this._handleChange}
+                      />
+                      Would you donate money to the campaign?
+                    </label>
+                  </div>
+                ) : null}
+                {/* <Divider /> */}
+                {!person.facebookId && recaptchaSiteKey ? (
+                  <div className="recaptcha-container">
+                    <Recaptcha
+                      sitekey={recaptchaSiteKey}
+                      render="explicit"
+                      verifyCallback={this._handleRecaptcha}
+                    />
+                    {/* <Divider hidden /> */}
+                  </div>
+                ) : null}
+                <p className="policy">
+                  By submitting this form you agree with our{" "}
+                  <a
+                    href="https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf"
+                    target="_blank"
+                    rel="external"
+                  >
+                    Privacy Policy
+                  </a>
+                  .
+                </p>
+                <input type="submit" value="Send" />
+              </Form>
+            </Container>
+            <Alerts />
+          </>
+        </IntlProvider>
       );
     } else {
       return (
@@ -391,3 +428,5 @@ export default class PeopleForm extends Component {
     }
   }
 }
+
+export default PeopleForm;

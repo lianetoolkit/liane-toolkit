@@ -83,9 +83,9 @@ class CreateChatbot extends Component {
     const { loading } = this.state;
     return (
       <CreateContainer>
-        <p>O chatbot não está habilitado</p>
+        <p>Chatbot is not enabled</p>
         <Button primary onClick={this._handleClick} disabled={loading}>
-          Habilitar chatbot
+          Enable chatbot
         </Button>
       </CreateContainer>
     );

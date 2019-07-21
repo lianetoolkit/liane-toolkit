@@ -96,10 +96,11 @@ export default class MyAccount extends Component {
       <Container>
         <div className="info">
           <h2>
-            Conectado como <strong>{user.name}</strong>
+            Connected as <strong>{user.name}</strong>
           </h2>
           <p>
-            Para conectar-se a uma campanha existente envie seu email para a pessoa responsável pela mesma:
+            Connect with an existing campaign by forwarding your email to the
+            person responsible
           </p>
           <input type="text" disabled value={user.emails[0].address} />
         </div>
@@ -108,8 +109,9 @@ export default class MyAccount extends Component {
           className="button delete"
           onClick={this._handleRemoveClick}
         >
-          Remover minha conta, campanha e todos meus dados associados na
-          plataforma, bem como revogar as permissões de Facebook concedidas.
+          Click here to delete your account, campaign and all data associated to
+          this platform, as well as revoke previously granted Facebook
+          permissions.
         </a>
       </Container>
     );

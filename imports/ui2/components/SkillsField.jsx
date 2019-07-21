@@ -12,31 +12,31 @@ export default class SkillsField extends Component {
     },
     {
       value: "video",
-      label: "Vídeo"
+      label: "Video"
     },
     {
       value: "event_production",
-      label: "Produção de eventos"
+      label: "Event production"
     },
     {
       value: "editor",
-      label: "Redação"
+      label: "Writing/editing"
     },
     {
       value: "photographer",
-      label: "Fotografia"
+      label: "Photography"
     },
     {
       value: "social_media",
-      label: "Mídias sociais"
+      label: "Social media"
     },
     {
       value: "web",
-      label: "Desenvolvimento Web"
+      label: "Web Development"
     },
     {
       value: "panflation",
-      label: "Panfletagem"
+      label: "Panflation"
     }
   ];
   constructor(props) {
@@ -100,7 +100,7 @@ export default class SkillsField extends Component {
         classNamePrefix="select-search"
         cacheOptions
         isMulti
-        placeholder="Habilidades..."
+        placeholder="Skills..."
         options={options}
         onCreateOption={this._handleCreateOption}
         onChange={this._handleChange}

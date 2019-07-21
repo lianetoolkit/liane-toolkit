@@ -60,9 +60,9 @@ export default class PeopleLists extends Component {
             <Table compact>
               <thead>
                 <tr>
-                  <th>Data</th>
-                  <th>Prazo de expiração</th>
-                  <th>Pessoas</th>
+                  <th>Date</th>
+                  <th>Expiration</th>
+                  <th>People</th>
                   <th />
                 </tr>
               </thead>
@@ -75,7 +75,7 @@ export default class PeopleLists extends Component {
                     <td className="expiration">
                       {moment(item.expiresAt).fromNow()}
                     </td>
-                    <td>{item.count} pessoas</td>
+                    <td>{item.count} people</td>
                     <td>
                       {item.expired ? (
                         "Exportação expirou"
@@ -91,7 +91,7 @@ export default class PeopleLists extends Component {
             </Table>
           </>
         ) : (
-          <p className="not-found">Nenhum arquivo de exportação encontrado</p>
+          <p className="not-found">No export file found</p>
         )}
       </Container>
     );

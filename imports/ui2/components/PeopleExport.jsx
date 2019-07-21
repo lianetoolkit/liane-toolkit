@@ -50,14 +50,14 @@ export default class PeopleExport extends Component {
     if (url) {
       return (
         <>
-          <FontAwesomeIcon icon="download" /> Baixar arquivo
+          <FontAwesomeIcon icon="download" /> Download file
         </>
       );
     }
     if (loading || running) {
-      return "Processando exportação...";
+      return "Processing export...";
     }
-    return children || "Exportar pessoas";
+    return children || "Export people";
   };
   render() {
     const { children, ...props } = this.props;

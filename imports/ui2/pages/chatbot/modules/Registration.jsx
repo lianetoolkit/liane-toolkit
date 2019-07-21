@@ -66,7 +66,7 @@ export default class ChatbotVolunteerModule extends Component {
           this.setState({
             formData: res.config
           });
-          alertStore.add("Atualizado", "success");
+          alertStore.add("Updated", "success");
           this._handleChatbotChange(res.config);
         }
       }
@@ -94,7 +94,7 @@ export default class ChatbotVolunteerModule extends Component {
           <Container>
             <ModuleStatus
               name="registration"
-              label="Registro de apoio"
+              label="Support registration"
               chatbot={chatbot}
               campaign={campaign}
               onChange={this._handleChatbotChange}
@@ -106,12 +106,12 @@ export default class ChatbotVolunteerModule extends Component {
               )}
               onChange={this._handleChange}
             >
-              Registro de voluntários
+              Volunteers registration
             </ToggleCheckbox>
             {this.getValue("extra_info.registration.volunteer.active") ? (
               <Form.Field
                 secondary
-                label="Texto inicial para registro de voluntários"
+                label="Initial text for volunteer registration"
               >
                 <textarea
                   name="extra_info.registration.volunteer.text"
@@ -127,13 +127,10 @@ export default class ChatbotVolunteerModule extends Component {
               checked={this.getValue("extra_info.registration.donor.active")}
               onChange={this._handleChange}
             >
-              Registro de doadores
+              Donors registration
             </ToggleCheckbox>
             {this.getValue("extra_info.registration.donor.active") ? (
-              <Form.Field
-                secondary
-                label="Texto inicial para registro de doadores"
-              >
+              <Form.Field secondary label="Initial text for donor registration">
                 <textarea
                   name="extra_info.registration.donor.text"
                   onChange={this._handleChange}
@@ -144,11 +141,7 @@ export default class ChatbotVolunteerModule extends Component {
           </Container>
         </Form.Content>
         <Form.Actions>
-          <input
-            type="submit"
-            value="Atualizar configurações"
-            onClick={this._handleSubmit}
-          />
+          <input type="submit" value="Save" onClick={this._handleSubmit} />
         </Form.Actions>
       </Form>
     );

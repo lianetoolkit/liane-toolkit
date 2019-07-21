@@ -10,12 +10,12 @@ export default class SettingsNav extends Component {
     const currentRoute = FlowRouter.current().route.name;
     return (
       <Page.Nav>
-        <h3>Configurações da campanha</h3>
+        <h3>Campaign settings</h3>
         <a
           href={FlowRouter.path("App.campaign.settings")}
           className={currentRoute == "App.campaign.settings" ? "active" : ""}
         >
-          Configurações gerais
+          General
         </a>
         {/* <a
           href={FlowRouter.path("App.campaign.facebook")}
@@ -27,14 +27,14 @@ export default class SettingsNav extends Component {
           href={FlowRouter.path("App.campaign.team")}
           className={currentRoute == "App.campaign.team" ? "active" : ""}
         >
-          Equipe
+          Team
         </a>
         {campaign.creatorId == userId ? (
           <a
             href={FlowRouter.path("App.campaign.actions")}
             className={currentRoute == "App.campaign.actions" ? "active" : ""}
           >
-            Ações
+            Actions
           </a>
         ) : null}
       </Page.Nav>

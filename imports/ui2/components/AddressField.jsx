@@ -46,19 +46,6 @@ export default class AddressField extends Component {
       this.setState({ formData });
     }
   }
-  // static getDerivedStateFromProps(props, state) {
-  //   const { formData } = state;
-  //   if (
-  //     props.value &&
-  //     JSON.stringify(formData) != JSON.stringify(props.value)
-  //   ) {
-  //     console.log("deriving state form props", props.value);
-  //     return {
-  //       formData: { ...props.value }
-  //     };
-  //   }
-  //   return null;
-  // }
   componentDidUpdate(prevProps, prevState) {
     const { country, onChange, name } = this.props;
     const { formData } = this.state;
@@ -119,20 +106,20 @@ export default class AddressField extends Component {
     return (
       <Container>
         <Group>
-          <Form.Field label="País">
+          <Form.Field label="Country">
             <CountrySelect
-              label="País"
+              label="Country"
               value={formData.country || country}
               name="country"
               onChange={this._handleChange}
             />
           </Form.Field>
           {formData.country || country ? (
-            <Form.Field label="CEP">
+            <Form.Field label="Zipcode">
               <input
                 type="text"
                 name="zipcode"
-                placeholder="Digite um cep"
+                placeholder="Type a zipcode"
                 value={formData.zipcode}
                 onChange={this._handleZipcodeChange}
               />
@@ -142,7 +129,7 @@ export default class AddressField extends Component {
         {formData.country || country ? (
           <>
             <Group secondary>
-              <Form.Field label="Região">
+              <Form.Field label="Region">
                 <RegionSelect
                   country={formData.country || country}
                   name="region"
@@ -150,7 +137,7 @@ export default class AddressField extends Component {
                   value={formData.region}
                 />
               </Form.Field>
-              <Form.Field label="Cidade">
+              <Form.Field label="City">
                 <input
                   type="text"
                   name="city"
@@ -158,7 +145,7 @@ export default class AddressField extends Component {
                   onChange={this._handleChange}
                 />
               </Form.Field>
-              <Form.Field label="Bairro">
+              <Form.Field label="Neighbourhood">
                 <input
                   type="text"
                   name="neighbourhood"
@@ -168,7 +155,7 @@ export default class AddressField extends Component {
               </Form.Field>
             </Group>
             <Group secondary>
-              <Form.Field label="Endereço" className="grow">
+              <Form.Field label="Street address" className="grow">
                 <input
                   type="text"
                   name="street"
@@ -176,7 +163,7 @@ export default class AddressField extends Component {
                   onChange={this._handleChange}
                 />
               </Form.Field>
-              <Form.Field label="Número">
+              <Form.Field label="Number">
                 <input
                   type="text"
                   name="number"
@@ -184,7 +171,7 @@ export default class AddressField extends Component {
                   onChange={this._handleChange}
                 />
               </Form.Field>
-              <Form.Field label="Complemento">
+              <Form.Field label="Complement">
                 <input
                   type="text"
                   name="complement"

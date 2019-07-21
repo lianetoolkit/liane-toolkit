@@ -68,13 +68,10 @@ export default class TransparencyPage extends Component {
     return (
       <Page.Content full>
         <Container>
-          <h1>Transparência</h1>
+          <h1>Transparency</h1>
           {accounts.length ? (
             <>
-              <p>
-                Segue abaixo a lista de páginas que fazem uso da nossa
-                plataforma:
-              </p>
+              <p>List of Facebook pages registered in our platform:</p>
               <Table>
                 <tbody>
                   {accounts.map(account => (
@@ -96,13 +93,13 @@ export default class TransparencyPage extends Component {
             </>
           ) : (
             <p className="not-found">
-              Nenhuma página de Facebook foi encontrada na nossa base de dados.
+              No Facebook pages were found in our platform.
             </p>
           )}
           <p className="support-text">
-            Precisa de ajuda ou gostaria de reportar um problema? Escreva para{" "}
-            <a href="mailto:contato@liane.cc">contato@liane.cc</a> e fale com
-            nossa equipe.
+            Need help or would like to report a problem? Write to{" "}
+            <a href="mailto:contato@liane.cc">contato@liane.cc</a> and talk to
+            our team.
           </p>
         </Container>
       </Page.Content>

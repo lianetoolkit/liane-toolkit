@@ -97,10 +97,7 @@ export default class PrivateReply extends Component {
           disabledMessage: true
         });
         if (messageOnly) {
-          alertStore.add(
-            "Comentário não pode receber mensagem privada",
-            "error"
-          );
+          alertStore.add("Comment cannot receive a private reply", "error");
           modalStore.reset();
         }
       }
@@ -121,7 +118,7 @@ export default class PrivateReply extends Component {
           alertStore.add(err);
         } else {
           alertStore.add(
-            "Não foi possível encontrar um comentário para enviar mensagem privada",
+            "Unable to find a comment to reply privately to",
             "error"
           );
           modalStore.reset();
@@ -169,7 +166,7 @@ export default class PrivateReply extends Component {
   sendPrivateReply = () => {
     const { text, comment } = this.state;
     if (!text) {
-      alertStore.add("Mensagem não definida", "error");
+      alertStore.add("You must send a message", "error");
       return;
     }
     this.setState({
@@ -190,7 +187,7 @@ export default class PrivateReply extends Component {
         if (err) {
           alertStore.add(err);
         } else {
-          alertStore.add("Mensagem enviada", "success");
+          alertStore.add("Sent", "success");
           modalStore.reset();
         }
       }
@@ -199,7 +196,7 @@ export default class PrivateReply extends Component {
   sendCommentResponse = () => {
     const { text, comment } = this.state;
     if (!text) {
-      alertStore.add("Mensagem não definida", "error");
+      alertStore.add("You must send a message", "error");
       return;
     }
     this.setState({
@@ -219,7 +216,7 @@ export default class PrivateReply extends Component {
         if (err) {
           alertStore.add(err);
         } else {
-          alertStore.add("Comentário enviado", "success");
+          alertStore.add("Sent", "success");
           modalStore.reset();
         }
       }
@@ -276,7 +273,7 @@ export default class PrivateReply extends Component {
       return (
         <Container>
           <div className="comment">
-            <p>Você está respondendo:</p>
+            <p>You are replying:</p>
             <Comment comment={comment} />
           </div>
           {!loading ? (
@@ -292,7 +289,7 @@ export default class PrivateReply extends Component {
                     disabled={!faq || !faq.length}
                     onKeyPress={e => e.key === "Enter" && e.preventDefault()}
                   />{" "}
-                  Enviar mensagem pré-definida
+                  Send predefined message
                 </label>
                 <label>
                   <input
@@ -303,14 +300,14 @@ export default class PrivateReply extends Component {
                     checked={type == "write"}
                     onKeyPress={e => e.key === "Enter" && e.preventDefault()}
                   />{" "}
-                  Escrever nova mensagem
+                  Write new message
                 </label>
               </div>
               {!loading && (!faq || !faq.length) ? (
                 <p className="tip">
-                  Você pode utilizar mensagens pré-definidas ao criar{" "}
+                  You can use predefined messages by creating{" "}
                   <a href={FlowRouter.path("App.faq")} target="_blank">
-                    respostas para perguntas frequentes
+                    answers to frequently asked questions
                   </a>
                   .
                 </p>
@@ -318,7 +315,7 @@ export default class PrivateReply extends Component {
               {type == "write" || edit ? (
                 <textarea
                   className="message-text"
-                  placeholder="Escreva uma mensagem para enviar"
+                  placeholder="Write a message to send"
                   onChange={this._handleTextChange}
                   value={text}
                 />
@@ -336,7 +333,7 @@ export default class PrivateReply extends Component {
                       checked={sendAs == "comment"}
                       onChange={this._handleSendAsChange}
                     />
-                    Enviar como resposta ao comentário
+                    Send as a comment reply
                   </label>
                   <label className={disabledMessage ? "disabled" : ""}>
                     <input
@@ -347,17 +344,15 @@ export default class PrivateReply extends Component {
                       onChange={this._handleSendAsChange}
                       disabled={disabledMessage}
                     />
-                    Enviar como mensagem privada{" "}
-                    {disabledMessage ? "(Não disponível)" : ""}
+                    Send as a private reply{" "}
+                    {disabledMessage ? "(Unavailable)" : ""}
                   </label>
                 </div>
               ) : null}
               <Button.Group>
                 {type == "faq" ? (
                   <Button disabled={!text} onClick={this._handleEditClick}>
-                    {!edit
-                      ? "Selecionar e editar mensagem"
-                      : "Voltar para seleção"}
+                    {!edit ? "Select and edit message" : "Back to selection"}
                   </Button>
                 ) : null}
                 <Button
@@ -366,8 +361,8 @@ export default class PrivateReply extends Component {
                   onClick={this._handleSendClick}
                 >
                   {sendAs == "message"
-                    ? "Enviar mensagem privada"
-                    : "Enviar resposta ao comentário"}
+                    ? "Send private reply"
+                    : "Send comment reply"}
                 </Button>
               </Button.Group>
             </Form>

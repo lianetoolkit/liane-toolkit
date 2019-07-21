@@ -70,7 +70,7 @@ export default class CampaignTeamPage extends Component {
         <Nav campaign={campaign} />
         <Form onSubmit={this._handleSubmit}>
           <Form.Content>
-            <h2>Equipe</h2>
+            <h2>Team</h2>
             <Table>
               <tbody>
                 {campaign.users.map(campaignUser => (
@@ -81,7 +81,7 @@ export default class CampaignTeamPage extends Component {
                       {campaignUser._id == campaign.creatorId ? (
                         <FontAwesomeIcon
                           icon="star"
-                          data-tip="Criador da campanha"
+                          data-tip="Campaign creator"
                         />
                       ) : null}
                       {campaignUser._id != campaign.creatorId &&
@@ -89,7 +89,7 @@ export default class CampaignTeamPage extends Component {
                         <a
                           className="remove"
                           href="javascript:void(0);"
-                          data-tip="Remover usuário"
+                          data-tip="Remover user"
                           onClick={this._handleRemoveClick(campaignUser)}
                         >
                           <FontAwesomeIcon icon="ban" />
@@ -100,10 +100,10 @@ export default class CampaignTeamPage extends Component {
                 ))}
               </tbody>
             </Table>
-            <h3>Adicionar novos membros</h3>
+            <h3>Add new members</h3>
             <p>
-              Para adicionar novos membros o usuário deve estar cadastrado na
-              plataforma. Utilize o email de cadastro do Facebook.
+              To add new members the user must be registered in the platform.
+              Use the same email used on Facebook.
             </p>
             <Form.Field label="Email">
               <input
@@ -113,7 +113,7 @@ export default class CampaignTeamPage extends Component {
                 onChange={this._handleChange}
               />
             </Form.Field>
-            <input type="submit" value="Adicionar membro" />
+            <input type="submit" value="Add member" />
           </Form.Content>
         </Form>
         <ReactTooltip place="top" effect="solid" />

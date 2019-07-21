@@ -154,7 +154,7 @@ export default class FAQSelect extends Component {
       <Container className="faq-select">
         <input
           type="text"
-          placeholder="Buscar perguntas frequentes..."
+          placeholder="Search..."
           onChange={this._handleChange}
           onKeyPress={e => e.key === "Enter" && e.preventDefault()}
         />

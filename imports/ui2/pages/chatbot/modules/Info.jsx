@@ -88,12 +88,12 @@ export default class ChatbotInfoModule extends Component {
         <Form.Content>
           <ModuleStatus
             name="info"
-            label="Informações do candidato"
+            label="Candidate information"
             chatbot={chatbot}
             campaign={campaign}
             onChange={this._handleChatbotChange}
           />
-          <Form.Field label="Informação básica da candidatura">
+          <Form.Field label="Basic information about the candidate">
             <textarea
               name="extra_info.info.description"
               onChange={this._handleChange}
@@ -105,10 +105,10 @@ export default class ChatbotInfoModule extends Component {
             checked={this.getValue("extra_info.info.biography.active")}
             onChange={this._handleChange}
           >
-            Habilitar biografia
+            Enable biography
           </ToggleCheckbox>
           {this.getValue("extra_info.info.biography.active") ? (
-            <Form.Field secondary label="Biografia">
+            <Form.Field secondary label="Biography">
               <textarea
                 name="extra_info.info.biography.text"
                 onChange={this._handleChange}
@@ -121,11 +121,11 @@ export default class ChatbotInfoModule extends Component {
             onChange={this._handleChange}
             checked={this.getValue("extra_info.info.party.active")}
           >
-            Habilitar descrição do partido/grupo/coalisão
+            Enable description of party/group/coalition
           </ToggleCheckbox>
           {this.getValue("extra_info.info.party.active") ? (
             <>
-              <Form.Field secondary label="Nome do partido/grupo/coalisão">
+              <Form.Field secondary label="Name of the party/group/coalition">
                 <input
                   type="text"
                   name="extra_info.info.party.name"
@@ -133,7 +133,7 @@ export default class ChatbotInfoModule extends Component {
                   value={this.getValue("extra_info.info.party.name")}
                 />
               </Form.Field>
-              <Form.Field secondary label="Descrição">
+              <Form.Field secondary label="Description">
                 <textarea
                   name="extra_info.info.party.description"
                   onChange={this._handleChange}
@@ -147,10 +147,10 @@ export default class ChatbotInfoModule extends Component {
             onChange={this._handleChange}
             checked={this.getValue("extra_info.info.more.active")}
           >
-            Habilitar "mais informações"
+            Enable "more information"
           </ToggleCheckbox>
           {this.getValue("extra_info.info.more.active") ? (
-            <Form.Field secondary label="Mais informações">
+            <Form.Field secondary label="More information">
               <textarea
                 name="extra_info.info.more.text"
                 onChange={this._handleChange}
@@ -160,11 +160,7 @@ export default class ChatbotInfoModule extends Component {
           ) : null}
         </Form.Content>
         <Form.Actions>
-          <input
-            type="submit"
-            value="Atualizar configurações"
-            onClick={this._handleSubmit}
-          />
+          <input type="submit" value="Save" onClick={this._handleSubmit} />
         </Form.Actions>
       </Form>
     );

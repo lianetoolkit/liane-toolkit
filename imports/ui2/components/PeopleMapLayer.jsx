@@ -70,7 +70,7 @@ export default class PeopleMapLayer extends Component {
   _handleClick = ev => {
     console.log(ev);
     ev.target.openPopup();
-  }
+  };
   render() {
     const { people } = this.props;
     if (people && people.length) {
@@ -93,15 +93,12 @@ export default class PeopleMapLayer extends Component {
                       personId: person._id
                     })}
                   >
-                    Perfil
+                    Profile
                   </a>
                   <h2>{person.name}</h2>
                   <PersonMetaButtons person={person} readOnly simple text />
                   <p className="address">{person.location.formattedAddress}</p>
-                  <PersonSummary
-                    person={person}
-                    hideIfEmpty={true}
-                  />
+                  <PersonSummary person={person} hideIfEmpty={true} />
                 </PersonPopup>
               </Popup>
             </Marker>

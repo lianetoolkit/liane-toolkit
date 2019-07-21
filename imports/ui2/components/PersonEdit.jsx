@@ -110,7 +110,7 @@ export default class PersonEdit extends Component {
         },
         (err, res) => {
           if (!err) {
-            alertStore.add("Perfil atualizado com sucesso.", "success");
+            alertStore.add("Profile updated", "success");
             if (onSuccess) {
               onSuccess(res, "updated", formData);
             }
@@ -151,27 +151,27 @@ export default class PersonEdit extends Component {
   genderOptions = [
     {
       value: "cis_woman",
-      label: "Mulher cisgênero"
+      label: "Cisgender woman"
     },
     {
       value: "cis_man",
-      label: "Homem cisgênero"
+      label: "Cisgender man"
     },
     {
       value: "trans_woman",
-      label: "Mulher transsexual"
+      label: "Trans woman"
     },
     {
       value: "trans_man",
-      label: "Homem transsexual"
+      label: "Trans man"
     },
     {
       value: "transvestite",
-      label: "Travesti"
+      label: "Transvestite"
     },
     {
       value: "non_binary",
-      label: "Não binário"
+      label: "Non binary"
     }
   ];
   getGenderValue() {
@@ -202,49 +202,49 @@ export default class PersonEdit extends Component {
               className={tab == "basic_info" ? "active" : ""}
               onClick={this._handleNavClick("basic_info")}
             >
-              Geral
+              General
             </a>
             <a
               href="javascript:void(0);"
               className={tab == "address" ? "active" : ""}
               onClick={this._handleNavClick("address", "basic_info")}
             >
-              Endereço
+              Address
             </a>
             <a
               href="javascript:void(0);"
               className={tab == "contact" ? "active" : ""}
               onClick={this._handleNavClick("contact")}
             >
-              Contato
+              Contact info
             </a>
             <a
               href="javascript:void(0);"
               className={tab == "social_networks" ? "active" : ""}
               onClick={this._handleNavClick("social_networks")}
             >
-              Rede sociais
+              Social networks
             </a>
             <a
               href="javascript:void(0);"
               className={tab == "extra" ? "active" : ""}
               onClick={this._handleNavClick("extra")}
             >
-              Campos extras
+              Extra fields
             </a>
           </TabNav>
           {tab == "basic_info" ? (
             <div>
-              <Form.Field label="Nome">
+              <Form.Field label="Name">
                 <input
                   type="text"
                   name="name"
-                  placeholder="Nome"
+                  placeholder="Name"
                   value={formData.name}
                   onChange={this._handleChange}
                 />
               </Form.Field>
-              <Form.Field label="Data de nascimento">
+              <Form.Field label="Birthday">
                 <DatePicker
                   onChange={date => {
                     this._handleChange({
@@ -261,27 +261,27 @@ export default class PersonEdit extends Component {
                   dropdownMode="select"
                 />
               </Form.Field>
-              <Form.Field label="Gênero">
+              <Form.Field label="Gender">
                 <Select
                   classNamePrefix="select"
                   name="basic_info.gender"
-                  placeholder="Gênero"
+                  placeholder="Gender"
                   isSearchable={false}
                   value={this.getGenderValue()}
                   onChange={this._handleSelectChange}
                   options={this.genderOptions}
                 />
               </Form.Field>
-              <Form.Field label="Ocupação">
+              <Form.Field label="Job/Occupation">
                 <input
                   type="text"
                   name="basic_info.occupation"
-                  placeholder="Ocupação"
+                  placeholder="Job/Occupation"
                   value={formData.basic_info.occupation}
                   onChange={this._handleChange}
                 />
               </Form.Field>
-              <Form.Field label="Habilidades">
+              <Form.Field label="Skills">
                 <SkillsField
                   name="basic_info.skills"
                   onChange={this._handleChange}
@@ -315,11 +315,11 @@ export default class PersonEdit extends Component {
                   value={formData.contact.email}
                 />
               </Form.Field>
-              <Form.Field label="Telefone celular">
+              <Form.Field label="Phone number">
                 <input
                   type="text"
                   name="contact.cellphone"
-                  placeholder="Telefone celular"
+                  placeholder="Phone number"
                   onChange={this._handleChange}
                   value={formData.contact.cellphone}
                 />
@@ -351,8 +351,8 @@ export default class PersonEdit extends Component {
           {tab == "extra" ? (
             <div>
               <p>
-                Adicione campos adicionais sobre essa pessoa. Por exemplo,{" "}
-                <span style={{ fontStyle: "italic" }}>signo: escorpião</span>.
+                Add extra fields for this profile. E.g.,{" "}
+                <span style={{ fontStyle: "italic" }}>sign: scorpio</span>.
               </p>
               <ExtraFields
                 onChange={this._handleExtraFieldsChange}
@@ -360,7 +360,7 @@ export default class PersonEdit extends Component {
               />
             </div>
           ) : null}
-          <input type="submit" value="Salvar alterações" />
+          <input type="submit" value="Save" />
         </Form>
       </Container>
     );

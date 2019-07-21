@@ -121,8 +121,8 @@ export default class ExtraFields extends Component {
         <table>
           <thead>
             <tr>
-              <th>Nome do campo</th>
-              <th>Valor</th>
+              <th>Field name</th>
+              <th>Value</th>
               <th />
             </tr>
           </thead>
@@ -132,7 +132,7 @@ export default class ExtraFields extends Component {
                 <td>
                   <input
                     type="text"
-                    placeholder="Nome"
+                    placeholder="Name"
                     value={item.key}
                     name={`data[${i}].key`}
                     onChange={this._handleChange}
@@ -141,7 +141,7 @@ export default class ExtraFields extends Component {
                 <td>
                   <input
                     type="text"
-                    placeholder="Valor"
+                    placeholder="Value"
                     value={item.val}
                     name={`data[${i}].val`}
                     onChange={this._handleChange}
@@ -150,7 +150,7 @@ export default class ExtraFields extends Component {
                 <td>
                   <a
                     href="javascript:void(0);"
-                    title="Remover campo"
+                    title="Remove field"
                     className="remove"
                     onClick={this._handleRemoveClick(i)}
                   >
@@ -162,7 +162,7 @@ export default class ExtraFields extends Component {
           </tbody>
         </table>
         <Button href="javascript:void(0);" onClick={this._handleAddNewClick}>
-          + Novo campo
+          + New extra field
         </Button>
       </Container>
     );

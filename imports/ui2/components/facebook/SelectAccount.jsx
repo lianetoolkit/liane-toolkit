@@ -128,8 +128,8 @@ export default class SelectAccount extends Component {
       return (
         <Container>
           <p className="not-found">
-            Nenhuma página de Facebook foi encontrada para a criação da sua
-            campanha.
+            No Facebook page was found. You must have a Facebook page to create
+            a campaign.
           </p>
         </Container>
       );

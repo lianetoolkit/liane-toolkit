@@ -57,15 +57,15 @@ export default class PagePaging extends Component {
     return (
       <Container className="page-paging">
         {isNaN(count) ? (
-          <p>Calculando...</p>
+          <p>Calculating...</p>
         ) : (
           <p>
             {!count
-              ? "Nenhum resultado"
-              : `Exibindo ${skip * limit + 1}-${Math.min(
+              ? "No results"
+              : `Showing ${skip * limit + 1}-${Math.min(
                   count,
                   skip * limit + limit
-                )} de ${count}`}
+                )} out of ${count}`}
           </p>
         )}
         {children}

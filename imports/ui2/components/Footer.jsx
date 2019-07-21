@@ -22,7 +22,7 @@ export default class Footer extends Component {
     return (
       <Container>
         <div className="footer-content">
-          <p>Um projeto do Instituto Update</p>
+          <p>A project by Instituto Update</p>
         </div>
       </Container>
     );

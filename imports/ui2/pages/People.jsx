@@ -734,16 +734,16 @@ class PeoplePage extends Component {
         <PeopleContent loading={loading}>
           {imported ? (
             <Message>
-              Uma importação foi concluída,{" "}
+              An import has ended,{" "}
               <a
                 href="javascript:void(0);"
                 onClick={() => {
                   window.location.reload();
                 }}
               >
-                clique aqui
+                click here
               </a>{" "}
-              para atualizar a página
+              to refresh the page.
             </Message>
           ) : null}
           <PagePaging
@@ -755,7 +755,7 @@ class PeoplePage extends Component {
             onPrev={this._handlePrev}
           />
           {!loading && (!people || !people.length) ? (
-            <p className="not-found">Nenhum resultado encontrado.</p>
+            <p className="not-found">No results found.</p>
           ) : (
             <PeopleTable
               tags={this.props.tags}
@@ -768,7 +768,7 @@ class PeoplePage extends Component {
             />
           )}
           <div className="new-person">
-            <Button onClick={this._handleNewClick}>+ Nova pessoa</Button>
+            <Button onClick={this._handleNewClick}>+ New person</Button>
           </div>
         </PeopleContent>
       </>
