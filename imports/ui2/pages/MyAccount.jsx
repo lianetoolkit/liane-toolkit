@@ -53,10 +53,10 @@ class ConfirmRemove extends Component {
     return (
       <div>
         <p>
-          Remover minha conta, campanha e todos meus dados associados na
-          plataforma, bem como revogar as permissões de Facebook concedidas.
+          Delete account, campaign and all data associated to this platform, as
+          well as revoke previously granted Facebook permissions
         </p>
-        <Form.Field label="Digite seu email completo para confirmar a remoção:">
+        <Form.Field label="Type your email to confirm the deletion:">
           <input
             type="text"
             onChange={({ target }) => {
@@ -68,7 +68,7 @@ class ConfirmRemove extends Component {
           disabled={!valid}
           className="button delete"
           type="submit"
-          value="Remover permanentemente"
+          value="Delete permanently"
           onClick={this._handleSubmit}
         />
       </div>
