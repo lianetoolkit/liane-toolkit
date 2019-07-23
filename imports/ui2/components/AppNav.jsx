@@ -1,11 +1,31 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import styled, { css } from "styled-components";
-import { FormattedMessage } from "react-intl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find } from "lodash";
 
 import Dropdown from "./AppNavDropdown.jsx";
 import NotificationsNav from "./NotificationsPopup.jsx";
+
+const messages = defineMessages({
+  intelligenceStrategy: {
+    id: "app.nav.intelligence_strategy",
+    defaultMessage: "Intelligence and Strategy"
+  },
+  peopleCommunication: {
+    id: "app.nav.people_communication",
+    defaultMessage: "People and Communication"
+  },
+  electoralCanvas: {
+    id: "app.nav.electoral_canvas",
+    defaultMessage: "Electoral Canvas"
+  }
+});
 
 const Container = styled.nav`
   width: 100%;
@@ -86,7 +106,7 @@ const NavItemContainer = styled.li`
             color: #ddd;
             padding: 0.5rem 1rem;
             border: 0;
-            span {
+            span.info {
               font-size: 0.6em;
               font-style: italic;
             }
@@ -221,9 +241,9 @@ class CampaignNav extends Component {
   }
 }
 
-export default class AppNav extends Component {
+class AppNav extends Component {
   render() {
-    const { campaigns, campaign, notifications } = this.props;
+    const { intl, campaigns, campaign, notifications } = this.props;
     const currentRoute = FlowRouter.current().route.name;
     return (
       <Container>
@@ -241,32 +261,54 @@ export default class AppNav extends Component {
                 ) : null}
                 <NavItem
                   href={FlowRouter.path("App.map")}
-                  name="Intelligence and Strategy"
+                  name={intl.formatMessage(messages.intelligenceStrategy)}
                 >
                   <ul>
                     <li>
                       <a href="javascript:void(0);" className="disabled">
-                        My audience <span>soon</span>
+                        <FormattedMessage
+                          id="app.nav.my_audience"
+                          defaultMessage="My audience"
+                        />{" "}
+                        <span className="info">
+                          (
+                          <FormattedMessage
+                            id="app.soon"
+                            defaultMessage="soon"
+                          />
+                          )
+                        </span>
                       </a>
                     </li>
                     <li>
-                      <a href={FlowRouter.path("App.map")}>Territories</a>
+                      <a href={FlowRouter.path("App.map")}>
+                        <FormattedMessage
+                          id="app.nav.territories"
+                          defaultMessage="Territories"
+                        />
+                      </a>
                     </li>
                   </ul>
                 </NavItem>
                 <NavItem
                   href={FlowRouter.path("App.people")}
-                  name="People and Communication"
+                  name={intl.formatMessage(messages.peopleCommunication)}
                 >
                   <ul>
                     <li>
                       <a href={FlowRouter.path("App.people")}>
-                        People directory
+                        <FormattedMessage
+                          id="app.nav.people_directory"
+                          defaultMessage="People directory"
+                        />
                       </a>
                     </li>
                     <li>
                       <a href={FlowRouter.path("App.comments")}>
-                        Manage comments
+                        <FormattedMessage
+                          id="app.nav.manage_comments"
+                          defaultMessage="Manage comments"
+                        />
                       </a>
                     </li>
                     <li>
@@ -274,7 +316,10 @@ export default class AppNav extends Component {
                     </li>
                     <li>
                       <a href={FlowRouter.path("App.faq")}>
-                        Frequently asked questions
+                        <FormattedMessage
+                          id="app.nav.faq"
+                          defaultMessage="Frequently asked questions"
+                        />
                       </a>
                     </li>
                   </ul>
@@ -283,35 +328,8 @@ export default class AppNav extends Component {
                   href="https://canvas.liane.cc"
                   target="_blank"
                   rel="external"
-                  name="Electoral Canvas"
+                  name={intl.formatMessage(messages.electoralCanvas)}
                 />
-                {/* <NavItem
-                  href={FlowRouter.path("App.adset")}
-                  name={
-                    <>
-                      <FontAwesomeIcon icon={["fab", "facebook-square"]} />{" "}
-                      Criar adset
-                    </>
-                  }
-                /> */}
-                {/* <NavItem
-                  href={FlowRouter.path("App.people")}
-                  active={currentRoute.indexOf("App.people") === 0}
-                >
-                  Pessoas
-                </NavItem>
-                <NavItem
-                  href={FlowRouter.path("App.map")}
-                  active={currentRoute.indexOf("App.map") === 0}
-                >
-                  Locais
-                </NavItem>
-                <NavItem
-                  href={FlowRouter.path("App.chatbot")}
-                  active={currentRoute.indexOf("App.chatbot") === 0}
-                >
-                  Chatbot
-                </NavItem> */}
               </ul>
             ) : null}
           </div>
@@ -329,3 +347,9 @@ export default class AppNav extends Component {
     );
   }
 }
+
+AppNav.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(AppNav);

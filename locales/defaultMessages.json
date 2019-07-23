@@ -38,6 +38,18 @@
         "id": "app.address.complement.label"
       },
       {
+        "defaultMessage": "Intelligence and Strategy",
+        "id": "app.nav.intelligence_strategy"
+      },
+      {
+        "defaultMessage": "People and Communication",
+        "id": "app.nav.people_communication"
+      },
+      {
+        "defaultMessage": "Electoral Canvas",
+        "id": "app.nav.electoral_canvas"
+      },
+      {
         "defaultMessage": "Campaign settings",
         "id": "app.nav.campaign_settings"
       },
@@ -52,6 +64,30 @@
       {
         "defaultMessage": "Logout",
         "id": "app.logout"
+      },
+      {
+        "defaultMessage": "My audience",
+        "id": "app.nav.my_audience"
+      },
+      {
+        "defaultMessage": "soon",
+        "id": "app.soon"
+      },
+      {
+        "defaultMessage": "Territories",
+        "id": "app.nav.territories"
+      },
+      {
+        "defaultMessage": "People directory",
+        "id": "app.nav.people_directory"
+      },
+      {
+        "defaultMessage": "Manage comments",
+        "id": "app.nav.manage_comments"
+      },
+      {
+        "defaultMessage": "Frequently asked questions",
+        "id": "app.nav.faq"
       },
       {
         "defaultMessage": "This category is still empty",
@@ -278,54 +314,6 @@
         "id": "app.dashboard.faq.button"
       },
       {
-        "defaultMessage": "Title",
-        "id": "app.forms.title"
-      },
-      {
-        "defaultMessage": "Description",
-        "id": "app.forms.description"
-      },
-      {
-        "defaultMessage": "Save",
-        "id": "app.forms.save"
-      },
-      {
-        "defaultMessage": "Territory Audience",
-        "id": "app.map.nav.territory"
-      },
-      {
-        "defaultMessage": "soon",
-        "id": "app.soon"
-      },
-      {
-        "defaultMessage": "Map",
-        "id": "app.map.nav.map"
-      },
-      {
-        "defaultMessage": "People",
-        "id": "app.map.filters.people.title"
-      },
-      {
-        "defaultMessage": "People from the directory that have registered address",
-        "id": "app.map.filters.people.description"
-      },
-      {
-        "defaultMessage": "Campaign additions",
-        "id": "app.map.filters.custom.title"
-      },
-      {
-        "defaultMessage": "Custom map features added by the campaign",
-        "id": "app.map.filters.custom.description"
-      },
-      {
-        "defaultMessage": "Export campaign additions",
-        "id": "app.map.export"
-      },
-      {
-        "defaultMessage": "Remove",
-        "id": "app.forms.remove"
-      },
-      {
         "defaultMessage": "Technology for Political Innovation",
         "id": "app.slogan"
       },
@@ -388,6 +376,50 @@
       {
         "defaultMessage": "Need help or would like to report a problem? Write to <a href='mailto:contato@liane.cc'>contato@liane.cc</a> and talk to our team.",
         "id": "app.support_message"
+      },
+      {
+        "defaultMessage": "Title",
+        "id": "app.forms.title"
+      },
+      {
+        "defaultMessage": "Description",
+        "id": "app.forms.description"
+      },
+      {
+        "defaultMessage": "Save",
+        "id": "app.forms.save"
+      },
+      {
+        "defaultMessage": "Territory Audience",
+        "id": "app.map.nav.territory"
+      },
+      {
+        "defaultMessage": "Map",
+        "id": "app.map.nav.map"
+      },
+      {
+        "defaultMessage": "People",
+        "id": "app.map.filters.people.title"
+      },
+      {
+        "defaultMessage": "People from the directory that have registered address",
+        "id": "app.map.filters.people.description"
+      },
+      {
+        "defaultMessage": "Campaign additions",
+        "id": "app.map.filters.custom.title"
+      },
+      {
+        "defaultMessage": "Custom map features added by the campaign",
+        "id": "app.map.filters.custom.description"
+      },
+      {
+        "defaultMessage": "Export campaign additions",
+        "id": "app.map.export"
+      },
+      {
+        "defaultMessage": "Remove",
+        "id": "app.forms.remove"
       },
       {
         "defaultMessage": "Manual",
