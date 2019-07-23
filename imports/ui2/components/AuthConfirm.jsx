@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 import styled from "styled-components";
 import { OAuth } from "meteor/oauth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -88,28 +89,45 @@ class Confirm extends Component {
     const { type } = this.state;
     return (
       <AuthOptions>
-        <p>Select below your account type</p>
+        <p>
+          <FormattedMessage
+            id="app.account_select.select_label"
+            defaultMessage="Select below your account type"
+          />
+        </p>
         <Button.Group vertical toggler>
           <Button
             active={type == "user"}
             onClick={this._handleTypeClick("user")}
           >
-            <FontAwesomeIcon icon="users" /> I'll participate in an existing
-            campaign
+            <FontAwesomeIcon icon="users" />{" "}
+            <FormattedMessage
+              id="app.account_select.select_option_user"
+              defaultMessage="I'll participate in an existing campaign"
+            />
           </Button>
           <Button
             active={type == "campaigner"}
             onClick={this._handleTypeClick("campaigner")}
           >
-            <FontAwesomeIcon icon="star" /> I want to create a campaign
+            <FontAwesomeIcon icon="star" />{" "}
+            <FormattedMessage
+              id="app.account_select.select_option_campaigner"
+              defaultMessage="I want to create a campaign"
+            />
           </Button>
         </Button.Group>
         <p>
-          Warning: To create a campaign you must have administrative access to
-          the Facebook page you'd like to use.
+          <FormattedMessage
+            id="app.account_select.warning"
+            defaultMessage="Warning: To create a campaign you must have administrative access to the Facebook page you'd like to use."
+          />
         </p>
         <Button primary onClick={this._handleSubmit}>
-          Choose account type
+          <FormattedMessage
+            id="app.account_select.submit"
+            defaultMessage="Choose account type"
+          />
         </Button>
       </AuthOptions>
     );

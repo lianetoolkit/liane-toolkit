@@ -1,4 +1,9 @@
 {
+  "app.account_select.select_label": "Select below your account type",
+  "app.account_select.select_option_campaigner": "I want to create a campaign",
+  "app.account_select.select_option_user": "I'll participate in an existing campaign",
+  "app.account_select.submit": "Choose account type",
+  "app.account_select.warning": "Warning: To create a campaign you must have administrative access to the Facebook page you'd like to use.",
   "app.address.city.label": "City",
   "app.address.complement.label": "Complement",
   "app.address.country.label": "Country",
