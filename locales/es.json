@@ -11,7 +11,7 @@
   "app.create_campaign": "Create new campaign",
   "app.dashboard.chatbot.button": "Setup Chatbot",
   "app.dashboard.chatbot.intro": "Configure your chatbot to spread your message and gather supporters",
-  "app.dashboard.crm.comments": "Manage comments",
+  "app.dashboard.crm.comments": "Manejar comentarios",
   "app.dashboard.crm.directory": "People directory",
   "app.dashboard.crm.info": "Your database has a total of <strong>{people} people</strong>, that contributed with <strong>{comments} comments</strong> and <strong>{reactions} reactions</strong> to your posts.",
   "app.dashboard.donors.title": "Donors",
