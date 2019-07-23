@@ -2,6 +2,22 @@
   {
     "descriptors": [
       {
+        "defaultMessage": "Campaign settings",
+        "id": "app.nav.campaign_settings"
+      },
+      {
+        "defaultMessage": "New campaign",
+        "id": "app.nav.campaign_new"
+      },
+      {
+        "defaultMessage": "My account",
+        "id": "app.my_account"
+      },
+      {
+        "defaultMessage": "Logout",
+        "id": "app.logout"
+      },
+      {
         "defaultMessage": "This category is still empty",
         "id": "app.dashboard.people.not_found"
       },
@@ -56,106 +72,6 @@
       {
         "defaultMessage": "{amount} new people",
         "id": "app.people.history_chart.new_label"
-      },
-      {
-        "defaultMessage": "Define a name for your campaign",
-        "id": "app.campaign.form.name.label"
-      },
-      {
-        "defaultMessage": "Campaign name",
-        "id": "app.campaign.form.name.placeholder"
-      },
-      {
-        "defaultMessage": "Select the country for your campaign",
-        "id": "app.campaign.form.country.label"
-      },
-      {
-        "defaultMessage": "Register campaign",
-        "id": "app.campaign.form.submit"
-      },
-      {
-        "defaultMessage": "Creating new campaign",
-        "id": "app.title.new_campaign"
-      },
-      {
-        "defaultMessage": "Select the Facebook account to be used by your campaign",
-        "id": "app.campaign.form.select_account"
-      },
-      {
-        "defaultMessage": "Donors",
-        "id": "app.dashboard.donors.title"
-      },
-      {
-        "defaultMessage": "Volunteers",
-        "id": "app.dashboard.volunteers.title"
-      },
-      {
-        "defaultMessage": "Running first data fetch",
-        "id": "app.first_run.title"
-      },
-      {
-        "defaultMessage": "Soon you will be able to continue using the platform.",
-        "id": "app.first_run.message"
-      },
-      {
-        "defaultMessage": "Your database has a total of <strong>{people} people</strong>, that contributed with <strong>{comments} comments</strong> and <strong>{reactions} reactions</strong> to your posts.",
-        "id": "app.dashboard.crm.info"
-      },
-      {
-        "defaultMessage": "People directory",
-        "id": "app.dashboard.crm.directory"
-      },
-      {
-        "defaultMessage": "Manage comments",
-        "id": "app.dashboard.crm.comments"
-      },
-      {
-        "defaultMessage": "Configure your chatbot to spread your message and gather supporters",
-        "id": "app.dashboard.chatbot.intro"
-      },
-      {
-        "defaultMessage": "Setup Chatbot",
-        "id": "app.dashboard.chatbot.button"
-      },
-      {
-        "defaultMessage": "Territory",
-        "id": "app.dashboard.territory.title"
-      },
-      {
-        "defaultMessage": "Use a map to better strategize your territory actions",
-        "id": "app.dashboard.territory.intro"
-      },
-      {
-        "defaultMessage": "Create a map",
-        "id": "app.dashboard.territory.button"
-      },
-      {
-        "defaultMessage": "Frequently Asked Questions",
-        "id": "app.dashboard.faq.title"
-      },
-      {
-        "defaultMessage": "Optimize your campaign communications setting up answers to frequently asked questions.",
-        "id": "app.dashboard.faq.intro"
-      },
-      {
-        "defaultMessage": "Write Answers",
-        "id": "app.dashboard.faq.button"
-      },
-      {
-        "defaultMessage": "Campaign settings",
-        "id": "campaign.campaign_settings"
-      },
-      {
-        "defaultMessage": "New campaign",
-        "id": "campaign.campaign_new"
-      },
-      {
-        "defaultMessage": "My account",
-        "id": "app.my_account"
-      },
-      {
-        "defaultMessage": "Logout",
-        "id": "app.logout"
       },
       {
         "defaultMessage": "Importing {filename}...",
@@ -240,6 +156,90 @@
       {
         "defaultMessage": "Troll",
         "id": "app.people.category.troll"
+      },
+      {
+        "defaultMessage": "Define a name for your campaign",
+        "id": "app.campaign.form.name.label"
+      },
+      {
+        "defaultMessage": "Campaign name",
+        "id": "app.campaign.form.name.placeholder"
+      },
+      {
+        "defaultMessage": "Select the country for your campaign",
+        "id": "app.campaign.form.country.label"
+      },
+      {
+        "defaultMessage": "Register campaign",
+        "id": "app.campaign.form.submit"
+      },
+      {
+        "defaultMessage": "Creating new campaign",
+        "id": "app.title.new_campaign"
+      },
+      {
+        "defaultMessage": "Select the Facebook account to be used by your campaign",
+        "id": "app.campaign.form.select_account"
+      },
+      {
+        "defaultMessage": "Donors",
+        "id": "app.dashboard.donors.title"
+      },
+      {
+        "defaultMessage": "Volunteers",
+        "id": "app.dashboard.volunteers.title"
+      },
+      {
+        "defaultMessage": "Running first data fetch",
+        "id": "app.first_run.title"
+      },
+      {
+        "defaultMessage": "Soon you will be able to continue using the platform.",
+        "id": "app.first_run.message"
+      },
+      {
+        "defaultMessage": "Your database has a total of <strong>{people} people</strong>, that contributed with <strong>{comments} comments</strong> and <strong>{reactions} reactions</strong> to your posts.",
+        "id": "app.dashboard.crm.info"
+      },
+      {
+        "defaultMessage": "People directory",
+        "id": "app.dashboard.crm.directory"
+      },
+      {
+        "defaultMessage": "Manage comments",
+        "id": "app.dashboard.crm.comments"
+      },
+      {
+        "defaultMessage": "Configure your chatbot to spread your message and gather supporters",
+        "id": "app.dashboard.chatbot.intro"
+      },
+      {
+        "defaultMessage": "Setup Chatbot",
+        "id": "app.dashboard.chatbot.button"
+      },
+      {
+        "defaultMessage": "Territory",
+        "id": "app.dashboard.territory.title"
+      },
+      {
+        "defaultMessage": "Use a map to better strategize your territory actions",
+        "id": "app.dashboard.territory.intro"
+      },
+      {
+        "defaultMessage": "Create a map",
+        "id": "app.dashboard.territory.button"
+      },
+      {
+        "defaultMessage": "Frequently Asked Questions",
+        "id": "app.dashboard.faq.title"
+      },
+      {
+        "defaultMessage": "Optimize your campaign communications setting up answers to frequently asked questions.",
+        "id": "app.dashboard.faq.intro"
+      },
+      {
+        "defaultMessage": "Write Answers",
+        "id": "app.dashboard.faq.button"
       },
       {
         "defaultMessage": "Technology for Political Innovation",

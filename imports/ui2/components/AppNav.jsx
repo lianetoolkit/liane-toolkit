@@ -160,7 +160,7 @@ class SettingsNav extends Component {
             <>
               <Dropdown.NavItem href={FlowRouter.path("App.campaign.settings")}>
                 <FormattedMessage
-                  id="campaign.campaign_settings"
+                  id="app.nav.campaign_settings"
                   defaultMessage="Campaign settings"
                 />
               </Dropdown.NavItem>
@@ -171,7 +171,7 @@ class SettingsNav extends Component {
             <>
               <Dropdown.NavItem href={FlowRouter.path("App.campaign.new")}>
                 <FormattedMessage
-                  id="campaign.campaign_new"
+                  id="app.nav.campaign_new"
                   defaultMessage="New campaign"
                 />
               </Dropdown.NavItem>

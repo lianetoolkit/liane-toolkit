@@ -52,6 +52,8 @@
   "app.map.nav.map": "Map",
   "app.map.nav.territory": "Territory Audience",
   "app.my_account": "My account",
+  "app.nav.campaign_new": "New campaign",
+  "app.nav.campaign_settings": "Campaign settings",
   "app.people.category.donor": "Donor",
   "app.people.category.influencer": "Influencer",
   "app.people.category.mobilizer": "Mobilizer",
@@ -106,7 +108,5 @@
   "app.terms_of_use": "Terms of Use",
   "app.title.new_campaign": "Creating new campaign",
   "app.unexpected_error": "An unexpected error occurred.",
-  "app.waiting_user_type": "Waiting selection of user type.",
-  "campaign.campaign_new": "New campaign",
-  "campaign.campaign_settings": "Campaign settings"
+  "app.waiting_user_type": "Waiting selection of user type."
 }
