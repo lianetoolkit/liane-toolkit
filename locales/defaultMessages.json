@@ -2,6 +2,42 @@
   {
     "descriptors": [
       {
+        "defaultMessage": "Country",
+        "id": "app.address.country.label"
+      },
+      {
+        "defaultMessage": "Zipcode",
+        "id": "app.address.zipcode.label"
+      },
+      {
+        "defaultMessage": "Type a zipcode",
+        "id": "app.address.zipcode.placeholder"
+      },
+      {
+        "defaultMessage": "Region",
+        "id": "app.address.region.label"
+      },
+      {
+        "defaultMessage": "City",
+        "id": "app.address.city.label"
+      },
+      {
+        "defaultMessage": "Neighbourhood",
+        "id": "app.address.neighbourhood.label"
+      },
+      {
+        "defaultMessage": "Street address",
+        "id": "app.address.street_address.label"
+      },
+      {
+        "defaultMessage": "Number",
+        "id": "app.address.number.label"
+      },
+      {
+        "defaultMessage": "Complement",
+        "id": "app.address.complement.label"
+      },
+      {
         "defaultMessage": "Campaign settings",
         "id": "app.nav.campaign_settings"
       },
@@ -242,6 +278,54 @@
         "id": "app.dashboard.faq.button"
       },
       {
+        "defaultMessage": "Title",
+        "id": "app.forms.title"
+      },
+      {
+        "defaultMessage": "Description",
+        "id": "app.forms.description"
+      },
+      {
+        "defaultMessage": "Save",
+        "id": "app.forms.save"
+      },
+      {
+        "defaultMessage": "Territory Audience",
+        "id": "app.map.nav.territory"
+      },
+      {
+        "defaultMessage": "soon",
+        "id": "app.soon"
+      },
+      {
+        "defaultMessage": "Map",
+        "id": "app.map.nav.map"
+      },
+      {
+        "defaultMessage": "People",
+        "id": "app.map.filters.people.title"
+      },
+      {
+        "defaultMessage": "People from the directory that have registered address",
+        "id": "app.map.filters.people.description"
+      },
+      {
+        "defaultMessage": "Campaign additions",
+        "id": "app.map.filters.custom.title"
+      },
+      {
+        "defaultMessage": "Custom map features added by the campaign",
+        "id": "app.map.filters.custom.description"
+      },
+      {
+        "defaultMessage": "Export campaign additions",
+        "id": "app.map.export"
+      },
+      {
+        "defaultMessage": "Remove",
+        "id": "app.forms.remove"
+      },
+      {
         "defaultMessage": "Technology for Political Innovation",
         "id": "app.slogan"
       },
@@ -298,60 +382,12 @@
         "id": "app.features.map"
       },
       {
-        "defaultMessage": "soon",
-        "id": "app.soon"
-      },
-      {
         "defaultMessage": "Facebook audience analysis",
         "id": "app.features.audience"
       },
       {
         "defaultMessage": "Need help or would like to report a problem? Write to <a href='mailto:contato@liane.cc'>contato@liane.cc</a> and talk to our team.",
         "id": "app.support_message"
-      },
-      {
-        "defaultMessage": "Title",
-        "id": "app.forms.title"
-      },
-      {
-        "defaultMessage": "Description",
-        "id": "app.forms.description"
-      },
-      {
-        "defaultMessage": "Save",
-        "id": "app.forms.save"
-      },
-      {
-        "defaultMessage": "Territory Audience",
-        "id": "app.map.nav.territory"
-      },
-      {
-        "defaultMessage": "Map",
-        "id": "app.map.nav.map"
-      },
-      {
-        "defaultMessage": "People",
-        "id": "app.map.filters.people.title"
-      },
-      {
-        "defaultMessage": "People from the directory that have registered address",
-        "id": "app.map.filters.people.description"
-      },
-      {
-        "defaultMessage": "Campaign additions",
-        "id": "app.map.filters.custom.title"
-      },
-      {
-        "defaultMessage": "Custom map features added by the campaign",
-        "id": "app.map.filters.custom.description"
-      },
-      {
-        "defaultMessage": "Export campaign additions",
-        "id": "app.map.export"
-      },
-      {
-        "defaultMessage": "Remove",
-        "id": "app.forms.remove"
       },
       {
         "defaultMessage": "Manual",

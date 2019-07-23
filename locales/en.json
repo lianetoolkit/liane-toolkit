@@ -1,4 +1,13 @@
 {
+  "app.address.city.label": "City",
+  "app.address.complement.label": "Complement",
+  "app.address.country.label": "Country",
+  "app.address.neighbourhood.label": "Neighbourhood",
+  "app.address.number.label": "Number",
+  "app.address.region.label": "Region",
+  "app.address.street_address.label": "Street address",
+  "app.address.zipcode.label": "Zipcode",
+  "app.address.zipcode.placeholder": "Type a zipcode",
   "app.campaign.form.country.label": "Select the country for your campaign",
   "app.campaign.form.name.label": "Define a name for your campaign",
   "app.campaign.form.name.placeholder": "Campaign name",
