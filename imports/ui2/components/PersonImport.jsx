@@ -169,7 +169,7 @@ class ImportButton extends React.Component {
         intl.formatMessage(messages.importButton, { filename: importFilename })
       );
       modalStore.set(
-        <PeopleImport
+        <PeopleImportIntl
           data={importData}
           filename={importFilename}
           campaignId={Session.get("campaignId")}
@@ -545,4 +545,6 @@ PeopleImport.propTypes = {
   intl: intlShape.isRequired
 };
 
-export default injectIntl(PeopleImport);
+const PeopleImportIntl = injectIntl(PeopleImport);
+
+export default PeopleImportIntl;
