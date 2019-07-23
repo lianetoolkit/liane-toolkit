@@ -1,4 +1,11 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+  FormattedHTMLMessage
+} from "react-intl";
 import styled from "styled-components";
 import moment from "moment";
 
@@ -7,6 +14,33 @@ import { modalStore } from "../containers/Modal.jsx";
 import Button from "./Button.jsx";
 import Reaction from "./Reaction.jsx";
 import Reply from "./Reply.jsx";
+
+const messages = defineMessages({
+  countNoComments: {
+    id: "app.comments.counts.no_comments",
+    defaultMessage: "No comments"
+  },
+  countOneComment: {
+    id: "app.comments.counts.one_comment",
+    defaultMessage: "1 comment"
+  },
+  countAnyComments: {
+    id: "app.comments.counts.any_comments",
+    defaultMessage: "{count} comments"
+  },
+  replyUnknownPerson: {
+    id: "app.reply.unknown_person",
+    defaultMessage: "unknown person"
+  },
+  replyTitle: {
+    id: "app.reply.title",
+    defaultMessage: "Replying {name}"
+  },
+  commentUnknown: {
+    id: "app.comment.header.unknown_name",
+    defaultMessage: "Unknown person"
+  }
+});
 
 const Container = styled.article`
   header {
@@ -123,13 +157,13 @@ const CountContainer = styled.div`
 
 class Count extends Component {
   label = () => {
-    const { total } = this.props;
+    const { intl, total } = this.props;
     if (!total || total == 0) {
-      return "No comments";
+      return intl.formatMessage(messages.countNoComments);
     } else if (total == 1) {
-      return "1 comment";
+      return intl.formatMessage(messages.countOneComment);
     } else {
-      return `${total} comments`;
+      return intl.formatMessage(messages.countAnyComments, { count: total });
     }
   };
   render() {
@@ -137,36 +171,34 @@ class Count extends Component {
   }
 }
 
-export default class Comment extends Component {
-  static Count = Count;
+Count.propTypes = {
+  intl: intlShape.isRequired
+};
+
+const CountIntl = injectIntl(Count);
+
+class Comment extends Component {
+  static Count = CountIntl;
   action = () => {
     const { comment } = this.props;
     const url = this.getCommentUrl();
     if (comment.parent) {
       const parentUrl = this.getParentUrl();
       return (
-        <>
-          <a href={url} target="_blank">
-            replied
-          </a>{" "}
-          a{" "}
-          <a href={parentUrl} target="_blank">
-            comment
-          </a>
-        </>
+        <FormattedHTMLMessage
+          id="app.comment.header.reply_header"
+          defaultMessage="<a href='{url}' target='_blank'>replied</a> a <a href='{parent_url}' target='_blank'>comment</a>"
+          values={{ url, parent_url: parentUrl }}
+        />
       );
     } else {
       const postUrl = this.getPostUrl();
       return (
-        <>
-          <a href={url} target="_blank">
-            commented
-          </a>{" "}
-          on a{" "}
-          <a href={postUrl} target="_blank">
-            post
-          </a>
-        </>
+        <FormattedHTMLMessage
+          id="app.comment.header.comment_header"
+          defaultMessage="<a href='{url}' target='_blank'>commented</a> on a <a href='{post_url}' target='_blank'>post</a>"
+          values={{ url, post_url: postUrl }}
+        />
       );
     }
   };
@@ -197,15 +229,17 @@ export default class Comment extends Component {
     return `https://www.facebook.com/permalink.php?${encoded}`;
   };
   _handleReplyClick = ev => {
-    const { comment } = this.props;
+    const { intl, comment } = this.props;
     ev.preventDefault();
-    modalStore.setTitle(
-      `Replying ${comment.person ? comment.person.name : "unknown person"}`
-    );
+    const name = comment.person
+      ? comment.person.name
+      : intl.formatMessage(messages.replyUnknownPerson);
+    const title = intl.formatMessage(messages.replyTitle, { name });
+    modalStore.setTitle(title);
     modalStore.set(<Reply comment={comment} defaultSendAs="comment" />);
   };
   render() {
-    const { comment, actions } = this.props;
+    const { intl, comment, actions } = this.props;
     if (comment) {
       return (
         <Container>
@@ -214,7 +248,7 @@ export default class Comment extends Component {
               {comment.person ? (
                 <span className="name">{comment.person.name} </span>
               ) : (
-                "Unknown "
+                intl.formatMessage(messages.commentUnknown)
               )}
               {this.action()}{" "}
               <span className="date">
@@ -237,7 +271,12 @@ export default class Comment extends Component {
             <section className="comment-admin-replies">
               {comment.adminReplies && comment.adminReplies.length ? (
                 <>
-                  <p className="label">You replied</p>
+                  <p className="label">
+                    <FormattedMessage
+                      id="app.coment.you_replied"
+                      defaultMessage="You replied"
+                    />
+                  </p>
                   {comment.adminReplies.map(reply => (
                     <p className="reply" key={reply._id}>
                       {reply.message}
@@ -253,7 +292,10 @@ export default class Comment extends Component {
                       !comment.can_comment && !comment.can_reply_privately
                     }
                   >
-                    Reply
+                    <FormattedMessage
+                      id="app.comment.reply_button"
+                      defaultMessage="Reply"
+                    />
                   </Button>
                 </div>
               ) : null}
@@ -265,3 +307,9 @@ export default class Comment extends Component {
     return null;
   }
 }
+
+Comment.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(Comment);
