@@ -79,9 +79,10 @@ const EntriesHelpers = {
     );
   },
   updateInteractionCount({ entryId, facebookAccountId }) {
-    const entry = Entries.findOne(entryId);
+    let entry = Entries.findOne(entryId);
     if (!entry) {
       this.upsertEntry({ facebookAccountId, data: { post_id: entryId } });
+      entry = Entries.findOne(entryId);
     }
     let counts = Object.assign({}, entry.counts || {});
     counts.comment = Comments.find({ entryId }).count();
