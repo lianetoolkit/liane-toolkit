@@ -78,8 +78,11 @@ const EntriesHelpers = {
       this.getUpdateObjFromFBData({ facebookAccountId, entry })
     );
   },
-  updateInteractionCount({ entryId }) {
+  updateInteractionCount({ entryId, facebookAccountId }) {
     const entry = Entries.findOne(entryId);
+    if (!entry) {
+      this.upsertEntry({ facebookAccountId, data: { post_id: entryId } });
+    }
     let counts = Object.assign({}, entry.counts || {});
     counts.comment = Comments.find({ entryId }).count();
     counts.reaction = Likes.find({

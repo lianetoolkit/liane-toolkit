@@ -70,7 +70,10 @@ const LikesHelpers = {
     );
 
     // Update entry interaction count
-    EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
+    EntriesHelpers.updateInteractionCount({
+      entryId: data.post_id,
+      facebookAccountId
+    });
 
     // Upsert person
     if (reaction.personId) {

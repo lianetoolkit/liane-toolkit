@@ -130,7 +130,10 @@ const CommentsHelpers = {
 
     // Update entry interaction count
     if (data.post_id) {
-      EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
+      EntriesHelpers.updateInteractionCount({
+        entryId: data.post_id,
+        facebookAccountId
+      });
     }
 
     // Upsert person
