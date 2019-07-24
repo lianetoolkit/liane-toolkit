@@ -133,7 +133,7 @@ export default class ChatbotNav extends Component {
           >
             Actions
           </a>
-          {chatbot.url_test_button ? (
+          {chatbot && chatbot.url_test_button ? (
             <Button
               href={chatbot.url_test_button}
               rel="external"

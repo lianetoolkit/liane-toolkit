@@ -107,7 +107,6 @@ class ChatbotPage extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { campaign } = this.props;
     const { loading, chatbot } = this.state;
-    console.log(this.state);
   }
   fetch = () => {
     const { campaign } = this.props;

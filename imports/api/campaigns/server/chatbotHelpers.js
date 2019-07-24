@@ -41,7 +41,6 @@ const ChatbotHelpers = {
       tokenPage: campaignAccount.accessToken,
       title: account.name,
       fanPage: `https://facebook.com/${account.facebookId}`,
-      description: "test",
       menu_autoconfigurable: true,
       menu_principal: true
     };

@@ -217,7 +217,7 @@ export default class ChatbotGeneralSettings extends Component {
             </a>
             <a
               className="button delete"
-              href="javacript:void(0);"
+              href="javascript:void(0);"
               onClick={this._handleRemoveClick}
             >
               Delete chatbot and all its settings

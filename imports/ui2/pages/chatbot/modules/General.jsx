@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { get, set } from "lodash";
+import { clone, get, set, setWith } from "lodash";
 
 import { alertStore } from "/imports/ui2/containers/Alerts.jsx";
 import { modalStore } from "/imports/ui2/containers/Modal.jsx";
@@ -101,13 +101,22 @@ export default class ChatbotGeneralSettings extends Component {
       formData: {}
     };
   }
-  static getDerivedStateFromProps(props, state) {
-    if (JSON.stringify(state.formData) != JSON.stringify(props.chatbot)) {
-      return {
-        formData: props.chatbot
-      };
+  // static getDerivedStateFromProps(props, state) {
+  //   if (JSON.stringify(state.formData) != JSON.stringify(props.chatbot)) {
+  //     return {
+  //       formData: props.chatbot
+  //     };
+  //   }
+  //   return null;
+  // }
+  componentDidMount() {
+    this.setState({ formData: this.props.chatbot });
+  }
+  componentDidUpdate(prevProps) {
+    const { chatbot } = this.props;
+    if (JSON.stringify(prevProps.chatbot) != JSON.stringify(chatbot)) {
+      this.setState({ formData: chatbot });
     }
-    return null;
   }
   _handleTestClick = ev => {
     ev.preventDefault();
@@ -170,14 +179,14 @@ export default class ChatbotGeneralSettings extends Component {
   };
   _handleChange = ({ target }) => {
     const { formData } = this.state;
-    let newFormData = { ...formData };
-    set(
-      newFormData,
-      target.name,
-      target.type == "checkbox" ? target.checked : target.value
-    );
+    let newFormData = Object.assign({}, formData);
     this.setState({
-      formData: newFormData
+      formData: setWith(
+        clone(newFormData),
+        target.name,
+        target.type == "checkbox" ? target.checked : target.value,
+        clone
+      )
     });
   };
   getValue = path => {
@@ -186,12 +195,11 @@ export default class ChatbotGeneralSettings extends Component {
   };
   _handleSubmit = ev => {
     ev.preventDefault();
-    const { campaign } = this.props;
+    const { campaign, onChange } = this.props;
     const { formData } = this.state;
     this.setState({
       loading: true
     });
-    console.log(formData);
     Meteor.call(
       "chatbot.update",
       {
@@ -209,6 +217,7 @@ export default class ChatbotGeneralSettings extends Component {
             formData: res.config
           });
           alertStore.add("Updated", "success");
+          onChange && onChange(res.config);
         }
       }
     );
@@ -270,15 +279,15 @@ export default class ChatbotGeneralSettings extends Component {
             <Form.Field label="Presentation">
               <textarea
                 placeholder="Briefly describe your campaign"
-                name="extra_info.campaign_presentation"
-                value={this.getValue("extra_info.campaign_presentation")}
+                name="welcome"
+                value={this.getValue("welcome")}
                 onChange={this._handleChange}
               />
             </Form.Field>
           </Container>
         </Form.Content>
         <Form.Actions>
-          <input type="submit" value="Save" onClick={this._handleSubmit} />
+          <input type="submit" value="Save" />
         </Form.Actions>
       </Form>
     );
