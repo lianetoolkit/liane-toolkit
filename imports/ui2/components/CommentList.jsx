@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 
@@ -8,6 +14,42 @@ import { alertStore } from "../containers/Alerts.jsx";
 
 import Comment from "../components/Comment.jsx";
 import Reaction from "../components/Reaction.jsx";
+
+const messages = defineMessages({
+  personNotFound: {
+    id: "app.person_not_found",
+    defaultMessage: "Person not found"
+  },
+  commentResolved: {
+    id: "app.comment.resolved",
+    defaultMessage: "resolved"
+  },
+  commentUnresolved: {
+    id: "app.comment.unresolved",
+    defaultMessage: "unresolved"
+  },
+  confirmResolution: {
+    id: "app.comment.confirm_resolution",
+    defaultMessage:
+      "Are you sure you'd like to mark this comment as {resolution}"
+  },
+  tagQuestion: {
+    id: "app.comment.tag_as.question",
+    defaultMessage: "Mark as question"
+  },
+  tagVote: {
+    id: "app.comment.tag_as.vote",
+    defaultMessage: "Mark as vote declaration"
+  },
+  tagTroll: {
+    id: "app.comment.tag_as.troll",
+    defaultMessage: "Mark this person as troll"
+  },
+  tagAs: {
+    id: "app.comment.tag_as",
+    defaultMessage: "Mark as"
+  }
+});
 
 const CommentContainer = styled.article`
   border-bottom: 1px solid #ddd;
@@ -121,7 +163,7 @@ const CommentContainer = styled.article`
   }
 `;
 
-export default class CommentList extends Component {
+class CommentList extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -166,10 +208,11 @@ export default class CommentList extends Component {
     );
   };
   _handleTrollClick = comment => () => {
+    const { intl } = this.props;
     const { personMeta } = this.state;
     const isTroll = this.isTroll(comment);
     if (!comment.person) {
-      alertStore.add("Person not found", "error");
+      alertStore.add(intl.formatMessage(messages.person_not_found), "error");
       return;
     }
     Meteor.call(
@@ -202,16 +245,20 @@ export default class CommentList extends Component {
         if (err) {
           alertStore.add(err);
         } else {
-          alertStore.add("Sucesso", "success");
+          alertStore.add("Updated", "success");
         }
       }
     );
   };
   _handleResolveClick = comment => () => {
-    const { campaignId } = this.props;
+    const { intl, campaignId } = this.props;
     const resolve = !comment.resolved;
-    const label = resolve ? "resolved" : "unresolved";
-    if (confirm(`Are you sure you'd like to mark this comment as ${label}?`)) {
+    const label = resolve
+      ? intl.formatMessage(messages.commentResolved)
+      : intl.formatMessage(messages.commentUnresolved);
+    if (
+      confirm(intl.formatMessage(messages.confirmResolution, { tag: label }))
+    ) {
       Meteor.call(
         "comments.resolve",
         { campaignId, commentId: comment._id, resolve },
@@ -219,14 +266,14 @@ export default class CommentList extends Component {
           if (err) {
             alertStore.add(err);
           } else {
-            alertStore.add(`Marked as ${label}`, "success");
+            alertStore.add("Updated", "success");
           }
         }
       );
     }
   };
   render() {
-    const { comments } = this.props;
+    const { intl, comments } = this.props;
     if (!comments || !comments.length) return null;
     return (
       <div className="comments">
@@ -236,11 +283,16 @@ export default class CommentList extends Component {
               <Comment comment={comment} actions={true} />
             </div>
             <div className="comment-actions">
-              <p className="action-label">Actions</p>
+              <p className="action-label">
+                <FormattedMessage
+                  id="app.comment.actions_title"
+                  defaultMessage="Actions"
+                />
+              </p>
               <div className="action-icons">
                 <a
                   href="javascript:void(0);"
-                  data-tip="Mark as question"
+                  data-tip={intl.formatMessage(messages.tagQuestion)}
                   className={
                     this.hasCategory(comment, "question") ? "active" : ""
                   }
@@ -250,7 +302,7 @@ export default class CommentList extends Component {
                 </a>
                 <a
                   href="javascript:void(0);"
-                  data-tip="Mark as vote declaration"
+                  data-tip={intl.formatMessage(messages.tagVote)}
                   className={this.hasCategory(comment, "vote") ? "active" : ""}
                   onClick={this._handleCategoryClick(comment, "vote")}
                 >
@@ -258,7 +310,7 @@ export default class CommentList extends Component {
                 </a>
                 <a
                   href="javascript:void(0);"
-                  data-tip="Mark this person as troll"
+                  data-tip={intl.formatMessage(messages.tagTroll)}
                   className={this.isTroll(comment) ? "active troll" : "troll"}
                   onClick={this._handleTrollClick(comment)}
                 >
@@ -274,7 +326,11 @@ export default class CommentList extends Component {
               <a
                 href="javascript:void(0);"
                 data-tip={
-                  comment.resolved ? "Mark as unresolved" : "Mark as resolved"
+                  intl.formatMessage(messages.tagAs) +
+                  " " +
+                  (comment.resolved
+                    ? intl.formatMessage(messages.commentUnresolved)
+                    : intl.formatMessage(messages.commentResolved))
                 }
                 onClick={this._handleResolveClick(comment)}
               >
@@ -290,3 +346,9 @@ export default class CommentList extends Component {
     );
   }
 }
+
+CommentList.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(CommentList);
