@@ -215,9 +215,6 @@ export default class AppMenu extends React.Component {
                 </Message>
               ) : null}
               <Menu vertical inverted fluid>
-                {/* <Menu.Item>
-                  <Icon name="alarm" /> Actions
-                </Menu.Item> */}
                 <Menu.Item
                   name="campaignPeople"
                   active={currentRoute.indexOf("App.campaignCanvas") === 0}
@@ -226,15 +223,6 @@ export default class AppMenu extends React.Component {
                   })}
                 >
                   <Icon name="options" /> Canvas
-                </Menu.Item>
-                <Menu.Item
-                  name="campaignPeople"
-                  active={currentRoute.indexOf("App.campaignPeople") === 0}
-                  href={FlowRouter.path("App.campaignPeople", {
-                    campaignId: currentCampaign._id
-                  })}
-                >
-                  <Icon name="address book" /> People
                 </Menu.Item>
                 <Menu.Item
                   name="campaignAudience"
@@ -246,24 +234,6 @@ export default class AppMenu extends React.Component {
                   <Icon name="star" /> Audience
                 </Menu.Item>
                 <Menu.Item
-                  name="campaignMaps"
-                  active={currentRoute.indexOf("App.campaignMaps") === 0}
-                  href={FlowRouter.path("App.campaignMaps", {
-                    campaignId: currentCampaign._id
-                  })}
-                >
-                  <Icon name="map" /> Maps
-                </Menu.Item>
-                {/* <Menu.Item
-                  name="campaignEntries"
-                  active={currentRoute.indexOf("App.campaignEntries") === 0}
-                  href={FlowRouter.path("App.campaignEntries", {
-                    campaignId: currentCampaign._id
-                  })}
-                >
-                  <Icon name="comments" /> Facebook Posts
-                </Menu.Item> */}
-                <Menu.Item
                   name="campaignSettings"
                   active={currentRoute.indexOf("App.campaignSettings") === 0}
                   href={FlowRouter.path("App.campaignSettings", {
@@ -272,15 +242,6 @@ export default class AppMenu extends React.Component {
                 >
                   <Icon name="settings" /> Settings
                 </Menu.Item>
-                {/* <Menu.Item
-                  name="campaignEntries"
-                  active={currentRoute.indexOf("App.campaignLists") === 0}
-                  href={FlowRouter.path("App.campaignLists", {
-                    campaignId: currentCampaign._id
-                  })}
-                >
-                  <Icon name="spy" /> Monitoring Lists
-                </Menu.Item> */}
               </Menu>
             </div>
           ) : null}

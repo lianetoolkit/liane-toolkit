@@ -53,7 +53,7 @@ const FacebookAudiencesHelpers = {
     }).fetch();
 
     if (!adAccountId) {
-      CampaignsHelpers.suspendAdAccount({ campaignId: campaign._id });
+      // CampaignsHelpers.suspendAdAccount({ campaignId: campaign._id });
       throw new Meteor.Error("Campaign has no ad account.");
     }
 
@@ -303,11 +303,13 @@ const FacebookAudiencesHelpers = {
         case 272:
         case 200:
         case 2641:
-          CampaignsHelpers.suspendAdAccount({ campaignId: payload.campaignId });
-          AdAccountsHelpers.removeUserByToken({
-            token: payload.accessToken,
-            adAccountId: payload.adAccountId
-          });
+          console.log("ERROR");
+          console.log(errorCode, error.response);
+          // CampaignsHelpers.suspendAdAccount({ campaignId: payload.campaignId });
+          // AdAccountsHelpers.removeUserByToken({
+          //   token: payload.accessToken,
+          //   adAccountId: payload.adAccountId
+          // });
           break;
       }
     }
