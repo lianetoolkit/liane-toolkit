@@ -447,7 +447,7 @@ class PeoplePage extends Component {
     return options;
   };
   getSourceValue = () => {
-    const { lists } = this.props;
+    const { intl, lists } = this.props;
     const { query } = this.state;
     if (query.source) {
       let value = {
