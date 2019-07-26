@@ -458,7 +458,7 @@ const PeopleHelpers = {
         }
       }
       if (customFields.length) {
-        obj.$addToSet["campaignMeta.extra.extra"] = { $each: customFields };
+        obj.$addToSet["campaignMeta.extra"] = { $each: customFields };
       }
       importData.push(obj);
     });
