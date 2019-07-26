@@ -6,6 +6,25 @@ import {
 import { PeopleHelpers } from "./peopleHelpers.js";
 
 const PeopleJobs = {
+  /* TODO */
+  "people.upsertPerson": {
+    run({ job }) {
+      logger.debug("people.upsertPerson job: called");
+    },
+    workerOptions: {
+      concurrency: 1,
+      pollInterval: 2500
+    },
+    jobOptions() {
+      const options = {
+        retry: {
+          retries: 5,
+          wait: 5 * 1000
+        }
+      };
+      return options;
+    }
+  },
   "people.updateFBUsers": {
     run({ job }) {
       logger.debug("people.updateFBUsers job: called");
