@@ -108,6 +108,19 @@ const PeopleHelpers = {
     }
     return People.update(personId, { $set: { "counts.all": counts } });
   },
+  geocodePerson({ personId }) {
+    if (!personId) return;
+    const person = People.findOne(personId);
+    let location;
+    try {
+      location = Promise.await(
+        this.geocode({
+          address: get(person, "campaignMeta.basic_info.address")
+        })
+      );
+    } catch (err) {}
+    People.update(personId, { $set: { location } });
+  },
   geocode({ address }) {
     let str = "";
     if (address.country) {
@@ -655,6 +668,8 @@ const PeopleHelpers = {
       },
       { multi: false }
     );
+
+    this.geocodePerson({ personId: selector._id });
 
     // Clear empty campaign lists
     const campaignLists = PeopleLists.find({ campaignId }).fetch();
