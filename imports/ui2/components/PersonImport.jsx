@@ -179,7 +179,7 @@ class ImportButton extends React.Component {
       );
     }
     if (importCount == 0 && prevProps.importCount > 0) {
-      alertStore.add("Importação concluída", "success", { verbose: true });
+      alertStore.add("Import finished", "success", { verbose: true });
     }
   }
   _handleImportClick = ev => {
