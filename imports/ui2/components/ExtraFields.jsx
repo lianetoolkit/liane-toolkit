@@ -1,8 +1,29 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import styled from "styled-components";
 import { setWith, get, clone } from "lodash";
 
 import Button from "./Button.jsx";
+
+const messages = defineMessages({
+  namePlaceholder: {
+    id: "app.extra_fields.name.placeholder",
+    defaultMessage: "Name"
+  },
+  valuePlaceholder: {
+    id: "app.extra_fields.value.placeholder",
+    defaultMessage: "Value"
+  },
+  removeTitle: {
+    id: "app.extra_fields.remove.title",
+    defaultMessage: "Remove field"
+  }
+});
 
 const Container = styled.div`
   table {
@@ -53,7 +74,7 @@ const Container = styled.div`
   }
 `;
 
-export default class ExtraFields extends Component {
+class ExtraFields extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -115,14 +136,25 @@ export default class ExtraFields extends Component {
     });
   };
   render() {
+    const { intl } = this.props;
     const { value } = this.state;
     return (
       <Container>
         <table>
           <thead>
             <tr>
-              <th>Field name</th>
-              <th>Value</th>
+              <th>
+                <FormattedMessage
+                  id="app.extra_fields.name.label"
+                  defaultMessage="Field name"
+                />
+              </th>
+              <th>
+                <FormattedMessage
+                  id="app.extra_fields.value.label"
+                  defaultMessage="Value"
+                />
+              </th>
               <th />
             </tr>
           </thead>
@@ -132,7 +164,7 @@ export default class ExtraFields extends Component {
                 <td>
                   <input
                     type="text"
-                    placeholder="Name"
+                    placeholder={intl.formatMessage(messages.namePlaceholder)}
                     value={item.key}
                     name={`data[${i}].key`}
                     onChange={this._handleChange}
@@ -141,7 +173,7 @@ export default class ExtraFields extends Component {
                 <td>
                   <input
                     type="text"
-                    placeholder="Value"
+                    placeholder={intl.formatMessage(messages.valuePlaceholder)}
                     value={item.val}
                     name={`data[${i}].val`}
                     onChange={this._handleChange}
@@ -150,7 +182,7 @@ export default class ExtraFields extends Component {
                 <td>
                   <a
                     href="javascript:void(0);"
-                    title="Remove field"
+                    title={intl.formatMessage(messages.removeTitle)}
                     className="remove"
                     onClick={this._handleRemoveClick(i)}
                   >
@@ -162,9 +194,19 @@ export default class ExtraFields extends Component {
           </tbody>
         </table>
         <Button href="javascript:void(0);" onClick={this._handleAddNewClick}>
-          + New extra field
+          +{" "}
+          <FormattedMessage
+            id="app.extra_fields.new_field.label"
+            defaultMessage="New extra field"
+          />
         </Button>
       </Container>
     );
   }
 }
+
+ExtraFields.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(ExtraFields);
