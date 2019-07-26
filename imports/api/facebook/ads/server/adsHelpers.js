@@ -27,7 +27,7 @@ const AdsHelpers = {
 
     adAccountId = adAccountId.replace("act_", "");
     if (!adAccountUsers.length) {
-      CampaignsHelpers.suspendAdAccount({ campaignId: campaign._id });
+      // CampaignsHelpers.suspendAdAccount({ campaignId: campaign._id });
       throw new Meteor.Error("Ad account has no admin users on the app");
     }
 
@@ -109,7 +109,7 @@ const AdsHelpers = {
 
     adAccountId = adAccountId.replace("act_", "");
     if (!adAccountUsers.length) {
-      CampaignsHelpers.suspendAdAccount({ campaignId: campaign._id });
+      // CampaignsHelpers.suspendAdAccount({ campaignId: campaign._id });
       throw new Meteor.Error("Ad account has no admin users on the app");
     }
 

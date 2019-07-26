@@ -32,7 +32,7 @@ const FacebookAudiencesHelpers = {
   _getTokens({ adAccountId, campaignId }) {
     const adAccountUsers = AdAccountsHelpers.getUsers({ adAccountId });
     if (!adAccountUsers.length) {
-      CampaignsHelpers.suspendAdAccount({ campaignId: campaignId });
+      // CampaignsHelpers.suspendAdAccount({ campaignId: campaignId });
       throw new Meteor.Error("Ad account has no admin users on the app");
     }
     return adAccountUsers.map(user => user.services.facebook.accessToken);
@@ -318,7 +318,7 @@ const FacebookAudiencesHelpers = {
     const adAccount = AdAccounts.findOne(adAccountId);
     const user = UsersHelpers.getUserByToken({ token: accessToken });
     if (!user) {
-      throw new Meteor.Error("fatal", "User token has changed.");
+      // throw new Meteor.Error("fatal", "User token has changed.");
     }
     if (!campaign) {
       throw new Meteor.Error("fatal", "Campaign does not exist");
@@ -336,7 +336,7 @@ const FacebookAudiencesHelpers = {
       throw new Meteor.Error("fatal", "Campaign ad account changed");
     }
     if (!adAccount.users.find(u => u.id == user.services.facebook.id)) {
-      throw new Meteor.Error("fatal", "User not part of this ad account");
+      // throw new Meteor.Error("fatal", "User not part of this ad account");
     }
   },
   validateResultByAvg({

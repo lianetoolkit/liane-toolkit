@@ -83,14 +83,14 @@ const CampaignsHelpers = {
     };
 
     FacebookAccounts.upsert({ facebookId: account.id }, upsertObj);
-    JobsHelpers.addJob({
-      jobType: "entries.updateAccountEntries",
-      jobData: {
-        campaignId,
-        facebookId: account.id,
-        accessToken: token.result
-      }
-    });
+    // JobsHelpers.addJob({
+    //   jobType: "entries.updateAccountEntries",
+    //   jobData: {
+    //     campaignId,
+    //     facebookId: account.id,
+    //     accessToken: token.result
+    //   }
+    // });
     JobsHelpers.addJob({
       jobType: "audiences.updateAccountAudience",
       jobData: {
@@ -98,13 +98,13 @@ const CampaignsHelpers = {
         facebookAccountId: account.id
       }
     });
-    JobsHelpers.addJob({
-      jobType: "people.updateFBUsers",
-      jobData: {
-        campaignId,
-        facebookAccountId: account.id
-      }
-    });
+    // JobsHelpers.addJob({
+    //   jobType: "people.updateFBUsers",
+    //   jobData: {
+    //     campaignId,
+    //     facebookAccountId: account.id
+    //   }
+    // });
     return;
   },
   removeAccount({ campaignId, facebookId }) {

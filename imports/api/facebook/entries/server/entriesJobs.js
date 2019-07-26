@@ -22,12 +22,12 @@ const EntriesJobs = {
       const likeDateEstimate = job._doc.repeated > 0 && isRecent;
       let errored = false;
       try {
-        EntriesHelpers.updateAccountEntries({
-          campaignId,
-          facebookId,
-          likeDateEstimate,
-          forceUpdate: false
-        });
+        // EntriesHelpers.updateAccountEntries({
+        //   campaignId,
+        //   facebookId,
+        //   likeDateEstimate,
+        //   forceUpdate: false
+        // });
       } catch (error) {
         errored = true;
         return job.fail(error.message);
@@ -65,12 +65,12 @@ const EntriesJobs = {
       const facebookId = job.data.facebookId;
       let errored = false;
       try {
-        EntriesHelpers.updateAccountEntries({
-          campaignId,
-          facebookId,
-          likeDateEstimate: false,
-          forceUpdate: true
-        });
+        // EntriesHelpers.updateAccountEntries({
+        //   campaignId,
+        //   facebookId,
+        //   likeDateEstimate: false,
+        //   forceUpdate: true
+        // });
       } catch (error) {
         errored = true;
         return job.fail(error.message);
@@ -114,14 +114,14 @@ const EntriesJobs = {
 
       let errored = false;
       try {
-        EntriesHelpers.updateEntryInteractions({
-          interactionTypes,
-          facebookAccountId,
-          accessToken,
-          entryId,
-          campaignId,
-          likeDateEstimate
-        });
+        // EntriesHelpers.updateEntryInteractions({
+        //   interactionTypes,
+        //   facebookAccountId,
+        //   accessToken,
+        //   entryId,
+        //   campaignId,
+        //   likeDateEstimate
+        // });
       } catch (error) {
         errored = true;
         job.fail(error.message);
@@ -155,11 +155,11 @@ const EntriesJobs = {
       check(job && job.data && job.data.facebookAccountId, String);
       check(job && job.data && job.data.entryId, String);
       const { campaignId, facebookAccountId, entryId } = job.data;
-      LikesHelpers.updatePeopleLikesCountByEntry({
-        campaignId,
-        facebookAccountId,
-        entryId
-      });
+      // LikesHelpers.updatePeopleLikesCountByEntry({
+      //   campaignId,
+      //   facebookAccountId,
+      //   entryId
+      // });
       job.done();
       return job.remove();
     },
@@ -183,11 +183,11 @@ const EntriesJobs = {
       check(job && job.data && job.data.facebookAccountId, String);
       check(job && job.data && job.data.entryId, String);
       const { campaignId, facebookAccountId, entryId } = job.data;
-      CommentsHelpers.updatePeopleCommentsCountByEntry({
-        campaignId,
-        facebookAccountId,
-        entryId
-      });
+      // CommentsHelpers.updatePeopleCommentsCountByEntry({
+      //   campaignId,
+      //   facebookAccountId,
+      //   entryId
+      // });
       job.done();
       return job.remove();
     },

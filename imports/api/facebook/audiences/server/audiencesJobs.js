@@ -79,6 +79,7 @@ const AudiencesJobs = {
         );
       } catch (error) {
         if(error.error == "fatal") {
+          console.log("ERROR", error);
           return job.remove();
         } else {
           job.fail(error.message);

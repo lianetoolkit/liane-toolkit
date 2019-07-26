@@ -23,11 +23,11 @@ if (Meteor.settings.public.deployMode === "local") {
     const startTime = new Date().getTime();
     const { data } = job;
     const jobType = job.type;
-    logger.debug("JobsHelpers.runJob: called", {
-      jobType,
-      jobId: job.doc._id,
-      jobData: data
-    });
+    // logger.debug("JobsHelpers.runJob: called", {
+    //   jobType,
+    //   jobId: job.doc._id,
+    //   jobData: data
+    // });
     JobsPool.jobs[jobType].run({ job });
     return callback();
   };
@@ -37,11 +37,11 @@ if (Meteor.settings.public.deployMode === "local") {
     const { data } = job;
     const jobType = job.type;
     try {
-      logger.debug("JobsHelpers.runJob: called", {
-        jobType,
-        jobId: job.doc._id,
-        jobData: data
-      });
+      // logger.debug("JobsHelpers.runJob: called", {
+      //   jobType,
+      //   jobId: job.doc._id,
+      //   jobData: data
+      // });
       return JobsPool.jobs[jobType].run({ job });
     } catch (error) {
       logger.warn("JobsHelpers.runJob: unexpected error catched", {
