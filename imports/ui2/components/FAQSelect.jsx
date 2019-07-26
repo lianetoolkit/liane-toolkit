@@ -1,5 +1,13 @@
 import React, { Component } from "react";
+import { injectIntl, intlShape, defineMessages } from "react-intl";
 import styled from "styled-components";
+
+const messages = defineMessages({
+  searchPlaceholder: {
+    id: "app.faq.search.placeholder",
+    defaultMessage: "Search for answers..."
+  }
+});
 
 const Container = styled.div`
   input {
@@ -75,7 +83,7 @@ const Container = styled.div`
   }
 `;
 
-export default class FAQSelect extends Component {
+class FAQSelect extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -147,6 +155,7 @@ export default class FAQSelect extends Component {
     });
   };
   render() {
+    const { intl } = this.props;
     const { loading, selected, isSearching, faq, searchResults } = this.state;
     const data = isSearching ? searchResults : faq;
     if (loading) return null;
@@ -154,7 +163,7 @@ export default class FAQSelect extends Component {
       <Container className="faq-select">
         <input
           type="text"
-          placeholder="Search..."
+          placeholder={intl.formatMessage(messages.searchPlaceholder)}
           onChange={this._handleChange}
           onKeyPress={e => e.key === "Enter" && e.preventDefault()}
         />
@@ -179,3 +188,9 @@ export default class FAQSelect extends Component {
     );
   }
 }
+
+FAQSelect.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(FAQSelect);

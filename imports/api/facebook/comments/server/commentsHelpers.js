@@ -81,20 +81,24 @@ const CommentsHelpers = {
     } catch (error) {
       throw new Meteor.Error(error);
     }
-    if (data.parent_id && data.parent_id !== data.post_id) {
+    if (comment.parent_id && comment.parent_id !== comment.post_id) {
       comment.parentId = data.parent_id;
       // Refetch parent comment
       this.upsertComment({
         facebookAccountId,
         data: {
-          comment_id: data.parent_id,
-          post_id: data.post_id,
-          adminReplied: data.from ? data.from.id == facebookAccountId : false
+          comment_id: comment.parent_id,
+          post_id: comment.post_id,
+          adminReplied: comment.from
+            ? comment.from.id == facebookAccountId
+            : false
         }
       });
     }
+    let from;
     if (comment.from) {
-      comment.personId = comment.from.id;
+      from = { ...comment.from };
+      comment.personId = from.id;
     }
     if (data.post_id) {
       comment.entryId = data.post_id;
