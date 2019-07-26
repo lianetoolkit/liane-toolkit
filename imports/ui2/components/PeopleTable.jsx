@@ -21,6 +21,21 @@ import Reply from "./Reply.jsx";
 
 const Container = styled.div`
   width: 100%;
+  .person-tags {
+    margin-left: 1rem;
+    font-size: 0.8em;
+    svg {
+      font-size: 0.8em;
+      color: #ccc;
+      margin-right: 0.5rem;
+    }
+    .tag-item {
+      background: #f0f0f0;
+      border-radius: 7px;
+      padding: 0.1rem 0.5rem;
+      margin-right: 0.25rem;
+    }
+  }
   .extra-actions {
     position: absolute;
     top: 0;
@@ -344,6 +359,16 @@ export default class PeopleTable extends Component {
     modalStore.setTitle(`Sending private reply to ${person.name}`);
     modalStore.set(<Reply personId={person._id} messageOnly={true} />);
   };
+  getTags(person) {
+    const { tags } = this.props;
+    const personTags = get(person, "campaignMeta.basic_info.tags");
+    if (personTags && personTags.length && tags && tags.length) {
+      return tags
+        .filter(tag => personTags.indexOf(tag._id) !== -1)
+        .map(tag => tag.name);
+    }
+    return [];
+  }
   render() {
     const { people, onChange, onSort, ...props } = this.props;
     const { expanded } = this.state;
@@ -442,7 +467,18 @@ export default class PeopleTable extends Component {
                         Edit
                       </a>
                     </p>
-                    <span className="person-name">{person.name}</span>
+                    <span className="person-name">
+                      {person.name}
+                      {!this.isExpanded(person) &&
+                      this.getTags(person).length ? (
+                        <span className="person-tags">
+                          <FontAwesomeIcon icon="tag" />
+                          {this.getTags(person).map(tag => (
+                            <span className="tag-item">{tag}</span>
+                          ))}
+                        </span>
+                      ) : null}
+                    </span>
                   </td>
                   <td className="small icon-number">
                     <FontAwesomeIcon icon="dot-circle" />
