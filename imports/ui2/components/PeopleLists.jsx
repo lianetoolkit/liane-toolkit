@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import styled from "styled-components";
 import moment from "moment";
 
@@ -7,6 +13,14 @@ import { alertStore } from "../containers/Alerts.jsx";
 import Loading from "./Loading.jsx";
 import Table from "./Table.jsx";
 import Button from "./Button.jsx";
+
+const messages = defineMessages({
+  confirm: {
+    id: "app.people.lists.confirm_remove",
+    defaultMessage:
+      "Are you sure you'd like to remove all people from this import?"
+  }
+});
 
 const Container = styled.div`
   margin: -2rem;
@@ -31,7 +45,7 @@ const Container = styled.div`
   }
 `;
 
-export default class PeopleLists extends Component {
+class PeopleLists extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -64,10 +78,9 @@ export default class PeopleLists extends Component {
     });
   };
   _handleRemoveClick = listId => ev => {
+    const { intl } = this.props;
     ev.preventDefault();
-    if (
-      confirm("Are you sure you'd like to remove all people from this import?")
-    ) {
+    if (confirm(intl.formatMessage(messages.confirm))) {
       this.setState({ loading: true });
       Meteor.call("peopleLists.remove", { listId }, (err, res) => {
         this.setState({ loading: false });
@@ -90,9 +103,24 @@ export default class PeopleLists extends Component {
             <Table compact>
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Date</th>
-                  <th>People</th>
+                  <th>
+                    <FormattedMessage
+                      id="app.people.lists.table_header.name"
+                      defaultMessage="Name"
+                    />
+                  </th>
+                  <th>
+                    <FormattedMessage
+                      id="app.people.lists.table_header.date"
+                      defaultMessage="Date"
+                    />
+                  </th>
+                  <th>
+                    <FormattedMessage
+                      id="app.people.lists.table_header.people"
+                      defaultMessage="People"
+                    />
+                  </th>
                   <th />
                 </tr>
               </thead>
@@ -101,14 +129,23 @@ export default class PeopleLists extends Component {
                   <tr key={list._id}>
                     <td>{list.name}</td>
                     <td>{moment(list.createdAt).format("L")}</td>
-                    <td>{counts[list._id]} imported people</td>
+                    <td>
+                      <FormattedMessage
+                        id="app.people.lists.table_body.people"
+                        defaultMessage="{count} imported people"
+                        values={{ count: counts[list._id] }}
+                      />
+                    </td>
                     <td>
                       <a
                         href="javascript:void(0);"
                         className="button delete"
                         onClick={this._handleRemoveClick(list._id)}
                       >
-                        Remove
+                        <FormattedMessage
+                          id="app.people.lists.table_body.remove"
+                          defaultMessage="Remove"
+                        />
                       </a>
                     </td>
                   </tr>
@@ -116,13 +153,27 @@ export default class PeopleLists extends Component {
               </tbody>
             </Table>
             <p className="tip">
-              By removing a list, youl'll remove all people imported from it.
+              <FormattedMessage
+                id="app.people.lists.table_body.remove_warning"
+                defaultMessage="By removing a list, youl'll remove all people imported from it."
+              />
             </p>
           </>
         ) : (
-          <p className="not-found">No import found</p>
+          <p className="not-found">
+            <FormattedMessage
+              id="app.people.lists.table_body.not_found"
+              defaultMessage="No import found"
+            />
+          </p>
         )}
       </Container>
     );
   }
 }
+
+PeopleLists.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(PeopleLists);
