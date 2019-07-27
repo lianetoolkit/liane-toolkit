@@ -18,8 +18,7 @@ export default withTracker(props => {
   const skip = (page - 1) * limit;
 
   let query = {
-    // personId: {},
-    // personId: { $nin: [facebookId] },
+    personId: { $nin: [facebookId] },
     created_time: { $exists: true },
     resolved: { $ne: true }
   };
