@@ -38,58 +38,6 @@
         "id": "app.address.complement.label"
       },
       {
-        "defaultMessage": "Intelligence and Strategy",
-        "id": "app.nav.intelligence_strategy"
-      },
-      {
-        "defaultMessage": "People and Communication",
-        "id": "app.nav.people_communication"
-      },
-      {
-        "defaultMessage": "Electoral Canvas",
-        "id": "app.nav.electoral_canvas"
-      },
-      {
-        "defaultMessage": "Campaign settings",
-        "id": "app.nav.campaign_settings"
-      },
-      {
-        "defaultMessage": "New campaign",
-        "id": "app.nav.campaign_new"
-      },
-      {
-        "defaultMessage": "My account",
-        "id": "app.my_account"
-      },
-      {
-        "defaultMessage": "Logout",
-        "id": "app.logout"
-      },
-      {
-        "defaultMessage": "My audience",
-        "id": "app.nav.my_audience"
-      },
-      {
-        "defaultMessage": "soon",
-        "id": "app.soon"
-      },
-      {
-        "defaultMessage": "Territories",
-        "id": "app.nav.territories"
-      },
-      {
-        "defaultMessage": "People directory",
-        "id": "app.nav.people_directory"
-      },
-      {
-        "defaultMessage": "Manage comments",
-        "id": "app.nav.manage_comments"
-      },
-      {
-        "defaultMessage": "Frequently asked questions",
-        "id": "app.nav.faq"
-      },
-      {
         "defaultMessage": "Select below your account type",
         "id": "app.account_select.select_label"
       },
@@ -108,6 +56,18 @@
       {
         "defaultMessage": "Choose account type",
         "id": "app.account_select.submit"
+      },
+      {
+        "defaultMessage": "This category is still empty",
+        "id": "app.dashboard.people.not_found"
+      },
+      {
+        "defaultMessage": "Export",
+        "id": "app.dashboard.people.export"
+      },
+      {
+        "defaultMessage": "Add from directory",
+        "id": "app.dashboard.people.add_from_db"
       },
       {
         "defaultMessage": "No comments",
@@ -150,6 +110,10 @@
         "id": "app.comment.reply_button"
       },
       {
+        "defaultMessage": "Select a country...",
+        "id": "app.country_select.placeholder"
+      },
+      {
         "defaultMessage": "Person not found",
         "id": "app.person_not_found"
       },
@@ -186,28 +150,36 @@
         "id": "app.comment.actions_title"
       },
       {
-        "defaultMessage": "This category is still empty",
-        "id": "app.dashboard.people.not_found"
+        "defaultMessage": "Name",
+        "id": "app.extra_fields.name.placeholder"
       },
       {
-        "defaultMessage": "Export",
-        "id": "app.dashboard.people.export"
+        "defaultMessage": "Value",
+        "id": "app.extra_fields.value.placeholder"
       },
       {
-        "defaultMessage": "Add from directory",
-        "id": "app.dashboard.people.add_from_db"
+        "defaultMessage": "Remove field",
+        "id": "app.extra_fields.remove.title"
       },
       {
-        "defaultMessage": "Select a country...",
-        "id": "app.country_select.placeholder"
+        "defaultMessage": "Field name",
+        "id": "app.extra_fields.name.label"
       },
       {
-        "defaultMessage": "Terms of Use",
-        "id": "app.terms_of_use"
+        "defaultMessage": "Value",
+        "id": "app.extra_fields.value.label"
       },
       {
-        "defaultMessage": "Privacy Policy",
-        "id": "app.privacy_policy"
+        "defaultMessage": "New extra field",
+        "id": "app.extra_fields.new_field.label"
+      },
+      {
+        "defaultMessage": "Search for answers...",
+        "id": "app.faq.search.placeholder"
+      },
+      {
+        "defaultMessage": "A project by Instituto Update",
+        "id": "app.footer.project_by"
       },
       {
         "defaultMessage": "Search for a location...",
@@ -220,6 +192,46 @@
       {
         "defaultMessage": "City",
         "id": "app.geolocation_select.city.label"
+      },
+      {
+        "defaultMessage": "Terms of Use",
+        "id": "app.terms_of_use"
+      },
+      {
+        "defaultMessage": "Privacy Policy",
+        "id": "app.privacy_policy"
+      },
+      {
+        "defaultMessage": "Mark all as read",
+        "id": "app.notifications.mark_all_as_read"
+      },
+      {
+        "defaultMessage": "No notifications for now!",
+        "id": "app.notifications.not_found"
+      },
+      {
+        "defaultMessage": "No results",
+        "id": "app.paging.no_results"
+      },
+      {
+        "defaultMessage": "Showing {page_start}-{page_end} out of {total}",
+        "id": "app.paging.results"
+      },
+      {
+        "defaultMessage": "Calculating...",
+        "id": "app.paging.loading"
+      },
+      {
+        "defaultMessage": "Download file",
+        "id": "app.people.exports.download"
+      },
+      {
+        "defaultMessage": "Processing export...",
+        "id": "app.people.exports.processing"
+      },
+      {
+        "defaultMessage": "Export people",
+        "id": "app.people.exports.button_label"
       },
       {
         "defaultMessage": "Showing people that interacted for the first time between {date}.",
@@ -240,6 +252,34 @@
       {
         "defaultMessage": "{amount} new people",
         "id": "app.people.history_chart.new_label"
+      },
+      {
+        "defaultMessage": "Date",
+        "id": "app.people.exports.table_header.date"
+      },
+      {
+        "defaultMessage": "Expiration",
+        "id": "app.people.exports.table_header.expiration"
+      },
+      {
+        "defaultMessage": "People",
+        "id": "app.people.exports.table_header.people"
+      },
+      {
+        "defaultMessage": "{count} people",
+        "id": "app.people.exports.table_body.people_count"
+      },
+      {
+        "defaultMessage": "This export file has expired",
+        "id": "app.people.exports.table_body.expired"
+      },
+      {
+        "defaultMessage": "Download",
+        "id": "app.people.exports.table_body.download"
+      },
+      {
+        "defaultMessage": "No export file found",
+        "id": "app.people.exports.table_body.not_found"
       },
       {
         "defaultMessage": "Importing {filename}...",
@@ -324,6 +364,58 @@
       {
         "defaultMessage": "Troll",
         "id": "app.people.category.troll"
+      },
+      {
+        "defaultMessage": "Intelligence and Strategy",
+        "id": "app.nav.intelligence_strategy"
+      },
+      {
+        "defaultMessage": "People and Communication",
+        "id": "app.nav.people_communication"
+      },
+      {
+        "defaultMessage": "Electoral Canvas",
+        "id": "app.nav.electoral_canvas"
+      },
+      {
+        "defaultMessage": "Campaign settings",
+        "id": "app.nav.campaign_settings"
+      },
+      {
+        "defaultMessage": "New campaign",
+        "id": "app.nav.campaign_new"
+      },
+      {
+        "defaultMessage": "My account",
+        "id": "app.my_account"
+      },
+      {
+        "defaultMessage": "Logout",
+        "id": "app.logout"
+      },
+      {
+        "defaultMessage": "My audience",
+        "id": "app.nav.my_audience"
+      },
+      {
+        "defaultMessage": "soon",
+        "id": "app.soon"
+      },
+      {
+        "defaultMessage": "Territories",
+        "id": "app.nav.territories"
+      },
+      {
+        "defaultMessage": "People directory",
+        "id": "app.nav.people_directory"
+      },
+      {
+        "defaultMessage": "Manage comments",
+        "id": "app.nav.manage_comments"
+      },
+      {
+        "defaultMessage": "Frequently asked questions",
+        "id": "app.nav.faq"
       },
       {
         "defaultMessage": "Define a name for your campaign",
@@ -603,7 +695,7 @@
       },
       {
         "defaultMessage": "Export results",
-        "id": "app.people.export.label"
+        "id": "app.people.export_results.label"
       }
     ],
     "path": "messages.json"

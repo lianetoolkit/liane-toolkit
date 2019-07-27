@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -61,7 +62,12 @@ class NotificationsPopup extends Component {
         tools={
           <div>
             {hasUnread ? (
-              <a href="javascript:void(0);">Mark all as read</a>
+              <a href="javascript:void(0);">
+                <FormattedMessage
+                  id="app.notifications.mark_all_as_read"
+                  defaultMessage="Mark all as read"
+                />
+              </a>
             ) : null}
             <a href="javascript:void(0);">
               <FontAwesomeIcon icon="times" className="close" />
@@ -80,26 +86,6 @@ class NotificationsPopup extends Component {
               {notification.text}
             </NotificationItem>
           ))}
-          {/* <NotificationItem unread={true} date={new Date()}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
-            sodales ac erat ut faucibus dasdas sd.
-          </NotificationItem>
-          <NotificationItem unread={true} date={new Date()}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
-            sodales ac erat ut faucibus.
-          </NotificationItem>
-          <NotificationItem date={new Date(0)}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
-            sodales ac erat ut faucibus.
-          </NotificationItem>
-          <NotificationItem date={new Date(0)}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
-            sodales ac erat ut faucibus.
-          </NotificationItem>
-          <NotificationItem date={new Date(0)}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
-            sodales ac erat ut faucibus.
-          </NotificationItem> */}
           {!notifications.length ? (
             <p
               style={{
@@ -109,7 +95,10 @@ class NotificationsPopup extends Component {
                 margin: "2rem 0"
               }}
             >
-              No notifications for now!
+              <FormattedMessage
+                id="app.notifications.not_found"
+                defaultMessage="No notifications for now!"
+              />
             </p>
           ) : null}
         </AppNavDropdown.Content>

@@ -696,7 +696,7 @@ class PeoplePage extends Component {
                     peopleExports={peopleExports}
                   >
                     <FormattedMessage
-                      id="app.people.export.label"
+                      id="app.people.export_results.label"
                       defaultMessage="Export results"
                     />
                   </PeopleExport>

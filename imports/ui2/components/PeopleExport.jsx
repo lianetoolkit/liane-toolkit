@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { alertStore } from "../containers/Alerts.jsx";
 
@@ -50,14 +51,30 @@ export default class PeopleExport extends Component {
     if (url) {
       return (
         <>
-          <FontAwesomeIcon icon="download" /> Download file
+          <FontAwesomeIcon icon="download" />{" "}
+          <FormattedMessage
+            id="app.people.exports.download"
+            defaultMessage="Download file"
+          />
         </>
       );
     }
     if (loading || running) {
-      return "Processing export...";
+      return (
+        <FormattedMessage
+          id="app.people.exports.processing"
+          defaultMessage="Processing export..."
+        />
+      );
     }
-    return children || "Export people";
+    return (
+      children || (
+        <FormattedMessage
+          id="app.people.exports.button_label"
+          defaultMessage="Export people"
+        />
+      )
+    );
   };
   render() {
     const { children, ...props } = this.props;

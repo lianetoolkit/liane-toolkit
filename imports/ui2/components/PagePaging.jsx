@@ -1,6 +1,23 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+const messages = defineMessages({
+  noResults: {
+    id: "app.paging.no_results",
+    defaultMessage: "No results"
+  },
+  results: {
+    id: "app.paging.results",
+    defaultMessage: "Showing {page_start}-{page_end} out of {total}"
+  }
+});
 
 const Container = styled.nav`
   display: flex;
@@ -31,7 +48,7 @@ const Container = styled.nav`
   }
 `;
 
-export default class PagePaging extends Component {
+class PagePaging extends Component {
   handlePrev = () => {
     const { onPrev } = this.props;
     if (onPrev) {
@@ -53,19 +70,25 @@ export default class PagePaging extends Component {
     return count && skip * limit + limit < count;
   };
   render() {
-    const { skip, limit, count, loading, children } = this.props;
+    const { intl, skip, limit, count, loading, children } = this.props;
     return (
       <Container className="page-paging">
         {isNaN(count) ? (
-          <p>Calculating...</p>
+          <p>
+            <FormattedMessage
+              id="app.paging.loading"
+              defaultMessage="Calculating..."
+            />
+          </p>
         ) : (
           <p>
             {!count
-              ? "No results"
-              : `Showing ${skip * limit + 1}-${Math.min(
-                  count,
-                  skip * limit + limit
-                )} out of ${count}`}
+              ? intl.formatMessage(messages.noResults)
+              : intl.formatMessage(messages.results, {
+                  page_start: skip * limit + 1,
+                  page_end: Math.min(count, skip * limit + limit),
+                  total: count
+                })}
           </p>
         )}
         {children}
@@ -88,3 +111,9 @@ export default class PagePaging extends Component {
     );
   }
 }
+
+PagePaging.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(PagePaging);

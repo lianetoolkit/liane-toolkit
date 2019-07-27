@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 import styled from "styled-components";
 
 const Container = styled.footer`
@@ -22,7 +23,12 @@ export default class Footer extends Component {
     return (
       <Container>
         <div className="footer-content">
-          <p>A project by Instituto Update</p>
+          <p>
+            <FormattedMessage
+              id="app.footer.project_by"
+              defaultMessage="A project by Instituto Update"
+            />
+          </p>
         </div>
       </Container>
     );

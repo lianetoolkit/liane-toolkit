@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 import styled from "styled-components";
 import moment from "moment";
 
@@ -60,9 +61,24 @@ export default class PeopleLists extends Component {
             <Table compact>
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Expiration</th>
-                  <th>People</th>
+                  <th>
+                    <FormattedMessage
+                      id="app.people.exports.table_header.date"
+                      defaultMessage="Date"
+                    />
+                  </th>
+                  <th>
+                    <FormattedMessage
+                      id="app.people.exports.table_header.expiration"
+                      defaultMessage="Expiration"
+                    />
+                  </th>
+                  <th>
+                    <FormattedMessage
+                      id="app.people.exports.table_header.people"
+                      defaultMessage="People"
+                    />
+                  </th>
                   <th />
                 </tr>
               </thead>
@@ -75,13 +91,25 @@ export default class PeopleLists extends Component {
                     <td className="expiration">
                       {moment(item.expiresAt).fromNow()}
                     </td>
-                    <td>{item.count} people</td>
+                    <td>
+                      <FormattedMessage
+                        id="app.people.exports.table_body.people_count"
+                        defaultMessage="{count} people"
+                        values={{ count: item.count }}
+                      />
+                    </td>
                     <td>
                       {item.expired ? (
-                        "This export file has expired"
+                        <FormattedMessage
+                          id="app.people.exports.table_body.expired"
+                          defaultMessage="This export file has expired"
+                        />
                       ) : (
                         <a href={item.url} target="_blank" className="button">
-                          Download
+                          <FormattedMessage
+                            id="app.people.exports.table_body.download"
+                            defaultMessage="Download"
+                          />
                         </a>
                       )}
                     </td>
@@ -91,7 +119,12 @@ export default class PeopleLists extends Component {
             </Table>
           </>
         ) : (
-          <p className="not-found">No export file found</p>
+          <p className="not-found">
+            <FormattedMessage
+              id="app.people.exports.table_body.not_found"
+              defaultMessage="No export file found"
+            />
+          </p>
         )}
       </Container>
     );
