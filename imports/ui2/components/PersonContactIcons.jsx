@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { injectIntl, intlShape, defineMessages } from "react-intl";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,6 +8,25 @@ import { get } from "lodash";
 import { getFormUrl } from "../utils/people";
 
 import CopyToClipboard from "./CopyToClipboard.jsx";
+
+const messages = defineMessages({
+  notAvailable: {
+    id: "app.people.contact_icons.not_available",
+    defaultMessage: "Not available"
+  },
+  copy: {
+    id: "app.people.contact_icons.data_copy",
+    defaultMessage: "{data} (copy)"
+  },
+  filledForm: {
+    id: "app.people.contact_icons.filled_form",
+    defaultMessage: "Filled the form (copy link)"
+  },
+  notFilledForm: {
+    id: "app.people.contact_icons.not_filled_form",
+    defaultMessage: "Did not filled the form (copy link)"
+  }
+});
 
 const Container = styled.div`
   a {
@@ -23,7 +43,7 @@ const Container = styled.div`
   }
 `;
 
-export default class PersonContactIcons extends Component {
+class PersonContactIcons extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -38,12 +58,12 @@ export default class PersonContactIcons extends Component {
     return person.campaignMeta && get(person.campaignMeta, key);
   }
   getLabelText(key) {
-    const { person } = this.props;
+    const { intl, person } = this.props;
     const data = get(person, `campaignMeta.${key}`);
     if (data) {
       return data;
     }
-    return "Not available";
+    return intl.formatMessage(messages.notAvailable);
   }
   filledForm() {
     const { person } = this.props;
@@ -61,7 +81,7 @@ export default class PersonContactIcons extends Component {
     });
   };
   render() {
-    const { person } = this.props;
+    const { intl, person } = this.props;
     const { copied } = this.state;
     const email = this.getMeta("contact.email");
     const phone = this.getMeta("contact.cellphone");
@@ -73,7 +93,9 @@ export default class PersonContactIcons extends Component {
             disabled={!email}
             text={email}
             className={email ? "active" : ""}
-            data-tip={email ? `${email} (copy)` : null}
+            data-tip={
+              email ? intl.formatMessage(messages.copy, { data: email }) : null
+            }
             data-for={`person-contact-icons-${person._id}`}
           >
             <FontAwesomeIcon icon="envelope" />
@@ -82,7 +104,9 @@ export default class PersonContactIcons extends Component {
             disabled={!phone}
             text={phone}
             className={phone ? "active" : ""}
-            data-tip={phone ? `${phone} (copy)` : null}
+            data-tip={
+              phone ? intl.formatMessage(messages.copy, { data: phone }) : null
+            }
             data-for={`person-contact-icons-${person._id}`}
           >
             <FontAwesomeIcon icon="phone" />
@@ -92,8 +116,8 @@ export default class PersonContactIcons extends Component {
             className={form ? "active" : ""}
             data-tip={
               form
-                ? "Filled the form (copy link)"
-                : "Did not filled the form (copy link)"
+                ? intl.formatMessage(messages.filledForm)
+                : intl.formatMessage(messages.notFilledForm)
             }
             data-for={`person-contact-icons-${person._id}`}
           >
@@ -111,3 +135,9 @@ export default class PersonContactIcons extends Component {
     }
   }
 }
+
+PersonContactIcons.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(PersonContactIcons);

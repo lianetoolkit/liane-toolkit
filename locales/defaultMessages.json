@@ -90,18 +90,6 @@
         "id": "app.nav.faq"
       },
       {
-        "defaultMessage": "This category is still empty",
-        "id": "app.dashboard.people.not_found"
-      },
-      {
-        "defaultMessage": "Export",
-        "id": "app.dashboard.people.export"
-      },
-      {
-        "defaultMessage": "Add from directory",
-        "id": "app.dashboard.people.add_from_db"
-      },
-      {
         "defaultMessage": "Select below your account type",
         "id": "app.account_select.select_label"
       },
@@ -120,6 +108,18 @@
       {
         "defaultMessage": "Choose account type",
         "id": "app.account_select.submit"
+      },
+      {
+        "defaultMessage": "This category is still empty",
+        "id": "app.dashboard.people.not_found"
+      },
+      {
+        "defaultMessage": "Export",
+        "id": "app.dashboard.people.export"
+      },
+      {
+        "defaultMessage": "Add from directory",
+        "id": "app.dashboard.people.add_from_db"
       },
       {
         "defaultMessage": "No comments",
@@ -202,6 +202,10 @@
         "id": "app.country_select.placeholder"
       },
       {
+        "defaultMessage": "A project by Instituto Update",
+        "id": "app.footer.project_by"
+      },
+      {
         "defaultMessage": "Name",
         "id": "app.extra_fields.name.placeholder"
       },
@@ -226,14 +230,6 @@
         "id": "app.extra_fields.new_field.label"
       },
       {
-        "defaultMessage": "Search for answers...",
-        "id": "app.faq.search.placeholder"
-      },
-      {
-        "defaultMessage": "A project by Instituto Update",
-        "id": "app.footer.project_by"
-      },
-      {
         "defaultMessage": "Search for a location...",
         "id": "app.geolocation_select.search.placeholder"
       },
@@ -244,6 +240,10 @@
       {
         "defaultMessage": "City",
         "id": "app.geolocation_select.city.label"
+      },
+      {
+        "defaultMessage": "Search for answers...",
+        "id": "app.faq.search.placeholder"
       },
       {
         "defaultMessage": "Terms of Use",
@@ -274,6 +274,18 @@
         "id": "app.paging.loading"
       },
       {
+        "defaultMessage": "Download file",
+        "id": "app.people.exports.download"
+      },
+      {
+        "defaultMessage": "Processing export...",
+        "id": "app.people.exports.processing"
+      },
+      {
+        "defaultMessage": "Export people",
+        "id": "app.people.exports.button_label"
+      },
+      {
         "defaultMessage": "Date",
         "id": "app.people.exports.table_header.date"
       },
@@ -300,38 +312,6 @@
       {
         "defaultMessage": "No export file found",
         "id": "app.people.exports.table_body.not_found"
-      },
-      {
-        "defaultMessage": "Download file",
-        "id": "app.people.exports.download"
-      },
-      {
-        "defaultMessage": "Processing export...",
-        "id": "app.people.exports.processing"
-      },
-      {
-        "defaultMessage": "Export people",
-        "id": "app.people.exports.button_label"
-      },
-      {
-        "defaultMessage": "Showing people that interacted for the first time between {date}.",
-        "id": "app.people.history_chart.filter_title"
-      },
-      {
-        "defaultMessage": "Clear selection",
-        "id": "app.people.history_chart.clear"
-      },
-      {
-        "defaultMessage": "Page newcomers",
-        "id": "app.people.history_chart.title"
-      },
-      {
-        "defaultMessage": "Click and drag the chart below to filter:",
-        "id": "app.people.history_chart.filter"
-      },
-      {
-        "defaultMessage": "{amount} new people",
-        "id": "app.people.history_chart.new_label"
       },
       {
         "defaultMessage": "Are you sure you'd like to remove all people from this import?",
@@ -412,6 +392,42 @@
       {
         "defaultMessage": "Send private reply",
         "id": "app.people.table_body.private_reply_button"
+      },
+      {
+        "defaultMessage": "Not available",
+        "id": "app.people.contact_icons.not_available"
+      },
+      {
+        "defaultMessage": "{data} (copy)",
+        "id": "app.people.contact_icons.data_copy"
+      },
+      {
+        "defaultMessage": "Filled the form (copy link)",
+        "id": "app.people.contact_icons.filled_form"
+      },
+      {
+        "defaultMessage": "Did not filled the form (copy link)",
+        "id": "app.people.contact_icons.not_filled_form"
+      },
+      {
+        "defaultMessage": "Showing people that interacted for the first time between {date}.",
+        "id": "app.people.history_chart.filter_title"
+      },
+      {
+        "defaultMessage": "Clear selection",
+        "id": "app.people.history_chart.clear"
+      },
+      {
+        "defaultMessage": "Page newcomers",
+        "id": "app.people.history_chart.title"
+      },
+      {
+        "defaultMessage": "Click and drag the chart below to filter:",
+        "id": "app.people.history_chart.filter"
+      },
+      {
+        "defaultMessage": "{amount} new people",
+        "id": "app.people.history_chart.new_label"
       },
       {
         "defaultMessage": "Importing {filename}...",
@@ -646,50 +662,6 @@
         "id": "app.support_message"
       },
       {
-        "defaultMessage": "Title",
-        "id": "app.forms.title"
-      },
-      {
-        "defaultMessage": "Description",
-        "id": "app.forms.description"
-      },
-      {
-        "defaultMessage": "Save",
-        "id": "app.forms.save"
-      },
-      {
-        "defaultMessage": "Territory Audience",
-        "id": "app.map.nav.territory"
-      },
-      {
-        "defaultMessage": "Map",
-        "id": "app.map.nav.map"
-      },
-      {
-        "defaultMessage": "People",
-        "id": "app.map.filters.people.title"
-      },
-      {
-        "defaultMessage": "People from the directory that have registered address",
-        "id": "app.map.filters.people.description"
-      },
-      {
-        "defaultMessage": "Campaign additions",
-        "id": "app.map.filters.custom.title"
-      },
-      {
-        "defaultMessage": "Custom map features added by the campaign",
-        "id": "app.map.filters.custom.description"
-      },
-      {
-        "defaultMessage": "Export campaign additions",
-        "id": "app.map.export"
-      },
-      {
-        "defaultMessage": "Remove",
-        "id": "app.forms.remove"
-      },
-      {
         "defaultMessage": "Manual",
         "id": "app.people.source.manual.label"
       },
@@ -772,6 +744,50 @@
       {
         "defaultMessage": "Export results",
         "id": "app.people.export_results.label"
+      },
+      {
+        "defaultMessage": "Title",
+        "id": "app.forms.title"
+      },
+      {
+        "defaultMessage": "Description",
+        "id": "app.forms.description"
+      },
+      {
+        "defaultMessage": "Save",
+        "id": "app.forms.save"
+      },
+      {
+        "defaultMessage": "Territory Audience",
+        "id": "app.map.nav.territory"
+      },
+      {
+        "defaultMessage": "Map",
+        "id": "app.map.nav.map"
+      },
+      {
+        "defaultMessage": "People",
+        "id": "app.map.filters.people.title"
+      },
+      {
+        "defaultMessage": "People from the directory that have registered address",
+        "id": "app.map.filters.people.description"
+      },
+      {
+        "defaultMessage": "Campaign additions",
+        "id": "app.map.filters.custom.title"
+      },
+      {
+        "defaultMessage": "Custom map features added by the campaign",
+        "id": "app.map.filters.custom.description"
+      },
+      {
+        "defaultMessage": "Export campaign additions",
+        "id": "app.map.export"
+      },
+      {
+        "defaultMessage": "Remove",
+        "id": "app.forms.remove"
       }
     ],
     "path": "messages.json"
