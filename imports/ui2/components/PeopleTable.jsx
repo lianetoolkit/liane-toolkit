@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import ReactDOM from "react-dom";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
@@ -18,6 +24,21 @@ import PersonReactions from "./PersonReactions.jsx";
 import PersonEdit from "./PersonEdit.jsx";
 import PersonContactIcons from "./PersonContactIcons.jsx";
 import Reply from "./Reply.jsx";
+
+const messages = defineMessages({
+  editingPersonTitle: {
+    id: "app.people.edit.title",
+    defaultMessage: "Editing {name}"
+  },
+  sendingPrivateReplyTitle: {
+    id: "app.people.sending_pr.title",
+    defaultMessage: "Sending private reply to {name}"
+  },
+  editCategories: {
+    id: "app.people.table_body.edit_categories",
+    defaultMessage: "Edit categories"
+  }
+});
 
 const Container = styled.div`
   width: 100%;
@@ -148,7 +169,7 @@ class PersonMetaCircles extends Component {
   }
 }
 
-export default class PeopleTable extends Component {
+class PeopleTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -287,8 +308,11 @@ export default class PeopleTable extends Component {
     }
   };
   _handleEditClick = person => ev => {
+    const { intl } = this.props;
     ev.preventDefault();
-    modalStore.setTitle(`Editing ${person.name}`);
+    modalStore.setTitle(
+      intl.formatMessage(messages.editingPersonTitle, { name: person.name })
+    );
     modalStore.set(
       <PersonEdit person={person} onSuccess={this._handleEditSuccess} />
     );
@@ -355,8 +379,9 @@ export default class PeopleTable extends Component {
     return false;
   };
   _handlePrivateReplyClick = person => ev => {
+    const { intl } = this.props;
     ev.preventDefault();
-    modalStore.setTitle(`Sending private reply to ${person.name}`);
+    modalStore.setTitle(intl.formatMessage(messages.sendingPrivateReplyTitle));
     modalStore.set(<Reply personId={person._id} messageOnly={true} />);
   };
   getTags(person) {
@@ -370,7 +395,7 @@ export default class PeopleTable extends Component {
     return [];
   }
   render() {
-    const { people, onChange, onSort, ...props } = this.props;
+    const { intl, people, onChange, onSort, ...props } = this.props;
     const { expanded } = this.state;
     return (
       <Container className="people-table">
@@ -384,26 +409,43 @@ export default class PeopleTable extends Component {
                   onClick={this._handleSortClick("name", "asc")}
                   sorted={this.getSort("name")}
                 >
-                  Name
+                  <FormattedMessage
+                    id="app.people.table_header.name"
+                    defaultMessage="Name"
+                  />
                 </Table.SortableHead>
                 <Table.SortableHead
                   onClick={this._handleSortClick("likes")}
                   sorted={this.getSort("likes")}
                 >
-                  Reactions
+                  <FormattedMessage
+                    id="app.people.table_header.reactions"
+                    defaultMessage="Reactions"
+                  />
                 </Table.SortableHead>
                 <Table.SortableHead
                   onClick={this._handleSortClick("comments")}
                   sorted={this.getSort("comments")}
                 >
-                  Comments
+                  <FormattedMessage
+                    id="app.people.table_header.comments"
+                    defaultMessage="Comments"
+                  />
                 </Table.SortableHead>
-                <th>Contact</th>
+                <th>
+                  <FormattedMessage
+                    id="app.people.table_header.contact"
+                    defaultMessage="Contact"
+                  />
+                </th>
                 <Table.SortableHead
                   onClick={this._handleSortClick("lastInteraction")}
                   sorted={this.getSort("lastInteraction")}
                 >
-                  Last interaction
+                  <FormattedMessage
+                    id="app.people.table_header.last_interaction"
+                    defaultMessage="Last interaction"
+                  />
                 </Table.SortableHead>
               </tr>
             </thead>
@@ -448,7 +490,7 @@ export default class PeopleTable extends Component {
                     >
                       {this.hasMeta(person)
                         ? this.personCategoriesText(person)
-                        : "Edit categories"}
+                        : intl.formatMessage(messages.editCategories)}
                     </ReactTooltip>
                   </td>
                   <td className="fill highlight">
@@ -458,13 +500,19 @@ export default class PeopleTable extends Component {
                           personId: person._id
                         })}
                       >
-                        Access profile
+                        <FormattedMessage
+                          id="app.people.table_body.access_profile"
+                          defaultMessage="Access profile"
+                        />
                       </a>
                       <a
                         href="javascript:void(0);"
                         onClick={this._handleEditClick(person)}
                       >
-                        Edit
+                        <FormattedMessage
+                          id="app.people.table_body.edit"
+                          defaultMessage="Edit"
+                        />
                       </a>
                     </p>
                     <span className="person-name">
@@ -517,7 +565,11 @@ export default class PeopleTable extends Component {
                       <p className="person-comment-count">
                         <span>
                           <FontAwesomeIcon icon="comment" />{" "}
-                          {this._getComments(person)} comments
+                          <FormattedMessage
+                            id="app.people.table_body.comment_count"
+                            defaultMessage="{amount} comments"
+                            values={{ amount: this._getComments(person) }}
+                          />
                         </span>
                         {person.canReceivePrivateReply &&
                         person.canReceivePrivateReply.length ? (
@@ -525,7 +577,10 @@ export default class PeopleTable extends Component {
                             light
                             onClick={this._handlePrivateReplyClick(person)}
                           >
-                            Send private reply
+                            <FormattedMessage
+                              id="app.people.table_body.private_reply_button"
+                              defaultMessage="Send private reply"
+                            />
                           </Button>
                         ) : null}
                       </p>
@@ -541,3 +596,9 @@ export default class PeopleTable extends Component {
     );
   }
 }
+
+PeopleTable.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(PeopleTable);

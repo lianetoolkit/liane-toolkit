@@ -90,6 +90,18 @@
         "id": "app.nav.faq"
       },
       {
+        "defaultMessage": "This category is still empty",
+        "id": "app.dashboard.people.not_found"
+      },
+      {
+        "defaultMessage": "Export",
+        "id": "app.dashboard.people.export"
+      },
+      {
+        "defaultMessage": "Add from directory",
+        "id": "app.dashboard.people.add_from_db"
+      },
+      {
         "defaultMessage": "Select below your account type",
         "id": "app.account_select.select_label"
       },
@@ -108,18 +120,6 @@
       {
         "defaultMessage": "Choose account type",
         "id": "app.account_select.submit"
-      },
-      {
-        "defaultMessage": "This category is still empty",
-        "id": "app.dashboard.people.not_found"
-      },
-      {
-        "defaultMessage": "Export",
-        "id": "app.dashboard.people.export"
-      },
-      {
-        "defaultMessage": "Add from directory",
-        "id": "app.dashboard.people.add_from_db"
       },
       {
         "defaultMessage": "No comments",
@@ -226,20 +226,12 @@
         "id": "app.extra_fields.new_field.label"
       },
       {
-        "defaultMessage": "A project by Instituto Update",
-        "id": "app.footer.project_by"
-      },
-      {
         "defaultMessage": "Search for answers...",
         "id": "app.faq.search.placeholder"
       },
       {
-        "defaultMessage": "Terms of Use",
-        "id": "app.terms_of_use"
-      },
-      {
-        "defaultMessage": "Privacy Policy",
-        "id": "app.privacy_policy"
+        "defaultMessage": "A project by Instituto Update",
+        "id": "app.footer.project_by"
       },
       {
         "defaultMessage": "Search for a location...",
@@ -252,6 +244,22 @@
       {
         "defaultMessage": "City",
         "id": "app.geolocation_select.city.label"
+      },
+      {
+        "defaultMessage": "Terms of Use",
+        "id": "app.terms_of_use"
+      },
+      {
+        "defaultMessage": "Privacy Policy",
+        "id": "app.privacy_policy"
+      },
+      {
+        "defaultMessage": "Mark all as read",
+        "id": "app.notifications.mark_all_as_read"
+      },
+      {
+        "defaultMessage": "No notifications for now!",
+        "id": "app.notifications.not_found"
       },
       {
         "defaultMessage": "No results",
@@ -294,12 +302,36 @@
         "id": "app.people.exports.table_body.not_found"
       },
       {
-        "defaultMessage": "Mark all as read",
-        "id": "app.notifications.mark_all_as_read"
+        "defaultMessage": "Download file",
+        "id": "app.people.exports.download"
       },
       {
-        "defaultMessage": "No notifications for now!",
-        "id": "app.notifications.not_found"
+        "defaultMessage": "Processing export...",
+        "id": "app.people.exports.processing"
+      },
+      {
+        "defaultMessage": "Export people",
+        "id": "app.people.exports.button_label"
+      },
+      {
+        "defaultMessage": "Showing people that interacted for the first time between {date}.",
+        "id": "app.people.history_chart.filter_title"
+      },
+      {
+        "defaultMessage": "Clear selection",
+        "id": "app.people.history_chart.clear"
+      },
+      {
+        "defaultMessage": "Page newcomers",
+        "id": "app.people.history_chart.title"
+      },
+      {
+        "defaultMessage": "Click and drag the chart below to filter:",
+        "id": "app.people.history_chart.filter"
+      },
+      {
+        "defaultMessage": "{amount} new people",
+        "id": "app.people.history_chart.new_label"
       },
       {
         "defaultMessage": "Are you sure you'd like to remove all people from this import?",
@@ -334,36 +366,52 @@
         "id": "app.people.lists.table_body.not_found"
       },
       {
-        "defaultMessage": "Download file",
-        "id": "app.people.exports.download"
+        "defaultMessage": "Editing {name}",
+        "id": "app.people.edit.title"
       },
       {
-        "defaultMessage": "Processing export...",
-        "id": "app.people.exports.processing"
+        "defaultMessage": "Sending private reply to {name}",
+        "id": "app.people.sending_pr.title"
       },
       {
-        "defaultMessage": "Export people",
-        "id": "app.people.exports.button_label"
+        "defaultMessage": "Edit categories",
+        "id": "app.people.table_body.edit_categories"
       },
       {
-        "defaultMessage": "Showing people that interacted for the first time between {date}.",
-        "id": "app.people.history_chart.filter_title"
+        "defaultMessage": "Name",
+        "id": "app.people.table_header.name"
       },
       {
-        "defaultMessage": "Clear selection",
-        "id": "app.people.history_chart.clear"
+        "defaultMessage": "Reactions",
+        "id": "app.people.table_header.reactions"
       },
       {
-        "defaultMessage": "Page newcomers",
-        "id": "app.people.history_chart.title"
+        "defaultMessage": "Comments",
+        "id": "app.people.table_header.comments"
       },
       {
-        "defaultMessage": "Click and drag the chart below to filter:",
-        "id": "app.people.history_chart.filter"
+        "defaultMessage": "Contact",
+        "id": "app.people.table_header.contact"
       },
       {
-        "defaultMessage": "{amount} new people",
-        "id": "app.people.history_chart.new_label"
+        "defaultMessage": "Last interaction",
+        "id": "app.people.table_header.last_interaction"
+      },
+      {
+        "defaultMessage": "Access profile",
+        "id": "app.people.table_body.access_profile"
+      },
+      {
+        "defaultMessage": "Edit",
+        "id": "app.people.table_body.edit"
+      },
+      {
+        "defaultMessage": "{amount} comments",
+        "id": "app.people.table_body.comment_count"
+      },
+      {
+        "defaultMessage": "Send private reply",
+        "id": "app.people.table_body.private_reply_button"
       },
       {
         "defaultMessage": "Importing {filename}...",
@@ -534,50 +582,6 @@
         "id": "app.dashboard.faq.button"
       },
       {
-        "defaultMessage": "Title",
-        "id": "app.forms.title"
-      },
-      {
-        "defaultMessage": "Description",
-        "id": "app.forms.description"
-      },
-      {
-        "defaultMessage": "Save",
-        "id": "app.forms.save"
-      },
-      {
-        "defaultMessage": "Territory Audience",
-        "id": "app.map.nav.territory"
-      },
-      {
-        "defaultMessage": "Map",
-        "id": "app.map.nav.map"
-      },
-      {
-        "defaultMessage": "People",
-        "id": "app.map.filters.people.title"
-      },
-      {
-        "defaultMessage": "People from the directory that have registered address",
-        "id": "app.map.filters.people.description"
-      },
-      {
-        "defaultMessage": "Campaign additions",
-        "id": "app.map.filters.custom.title"
-      },
-      {
-        "defaultMessage": "Custom map features added by the campaign",
-        "id": "app.map.filters.custom.description"
-      },
-      {
-        "defaultMessage": "Export campaign additions",
-        "id": "app.map.export"
-      },
-      {
-        "defaultMessage": "Remove",
-        "id": "app.forms.remove"
-      },
-      {
         "defaultMessage": "Technology for Political Innovation",
         "id": "app.slogan"
       },
@@ -642,6 +646,50 @@
         "id": "app.support_message"
       },
       {
+        "defaultMessage": "Title",
+        "id": "app.forms.title"
+      },
+      {
+        "defaultMessage": "Description",
+        "id": "app.forms.description"
+      },
+      {
+        "defaultMessage": "Save",
+        "id": "app.forms.save"
+      },
+      {
+        "defaultMessage": "Territory Audience",
+        "id": "app.map.nav.territory"
+      },
+      {
+        "defaultMessage": "Map",
+        "id": "app.map.nav.map"
+      },
+      {
+        "defaultMessage": "People",
+        "id": "app.map.filters.people.title"
+      },
+      {
+        "defaultMessage": "People from the directory that have registered address",
+        "id": "app.map.filters.people.description"
+      },
+      {
+        "defaultMessage": "Campaign additions",
+        "id": "app.map.filters.custom.title"
+      },
+      {
+        "defaultMessage": "Custom map features added by the campaign",
+        "id": "app.map.filters.custom.description"
+      },
+      {
+        "defaultMessage": "Export campaign additions",
+        "id": "app.map.export"
+      },
+      {
+        "defaultMessage": "Remove",
+        "id": "app.forms.remove"
+      },
+      {
         "defaultMessage": "Manual",
         "id": "app.people.source.manual.label"
       },
@@ -668,10 +716,6 @@
       {
         "defaultMessage": "Creating new profile",
         "id": "app.people.new.title"
-      },
-      {
-        "defaultMessage": "Editing {name}",
-        "id": "app.people.edit.title"
       },
       {
         "defaultMessage": "Search by name",
