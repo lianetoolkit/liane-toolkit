@@ -23,6 +23,7 @@ import PersonSummary from "./PersonSummary.jsx";
 import PersonReactions from "./PersonReactions.jsx";
 import PersonEdit from "./PersonEdit.jsx";
 import PersonContactIcons from "./PersonContactIcons.jsx";
+import PersonTags from "./PersonTags.jsx";
 import Reply from "./Reply.jsx";
 
 const messages = defineMessages({
@@ -395,7 +396,7 @@ class PeopleTable extends Component {
     return [];
   }
   render() {
-    const { intl, people, onChange, onSort, ...props } = this.props;
+    const { intl, people, tags, onChange, onSort, ...props } = this.props;
     const { expanded } = this.state;
     return (
       <Container className="people-table">
@@ -517,14 +518,8 @@ class PeopleTable extends Component {
                     </p>
                     <span className="person-name">
                       {person.name}
-                      {!this.isExpanded(person) &&
-                      this.getTags(person).length ? (
-                        <span className="person-tags">
-                          <FontAwesomeIcon icon="tag" />
-                          {this.getTags(person).map(tag => (
-                            <span className="tag-item">{tag}</span>
-                          ))}
-                        </span>
+                      {!this.isExpanded(person) ? (
+                        <PersonTags tags={tags} person={person} />
                       ) : null}
                     </span>
                   </td>

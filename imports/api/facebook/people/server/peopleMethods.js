@@ -19,6 +19,39 @@ import crypto from "crypto";
 
 const recaptchaSecret = Meteor.settings.recaptcha;
 
+export const peopleDetail = new ValidatedMethod({
+  name: "people.detail",
+  validate: new SimpleSchema({
+    personId: {
+      type: String
+    }
+  }).validator(),
+  run({ personId }) {
+    logger.debug("people.detail called", { personId });
+
+    const userId = Meteor.userId();
+    const person = People.findOne(personId);
+
+    if (!person) throw new Meteor.Error(404, "Person not found");
+
+    if (
+      !Meteor.call("campaigns.canManage", {
+        campaignId: person.campaignId,
+        userId
+      })
+    )
+      throw new Meteor.Error(400, "Not allowed");
+
+    person.tags = PeopleTags.find({
+      _id: { $in: get(person, "campaignMeta.basic_info.tags") }
+    }).fetch();
+
+    console.log(person.tags);
+
+    return person;
+  }
+});
+
 export const resolveZipcode = new ValidatedMethod({
   name: "people.resolveZipcode",
   validate: new SimpleSchema({
@@ -1240,6 +1273,7 @@ export const peopleFormConnectFacebook = new ValidatedMethod({
           })
         );
       } catch (err) {
+        console.log(err);
         throw new Meteor.Error(500, "Unexpected error, please try again.");
       }
       const facebookId = pagesIds.data.find(

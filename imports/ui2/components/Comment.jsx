@@ -15,6 +15,8 @@ import Button from "./Button.jsx";
 import Reaction from "./Reaction.jsx";
 import Reply from "./Reply.jsx";
 
+import PersonNamePopup from "./PersonNamePopup.jsx";
+
 const messages = defineMessages({
   countNoComments: {
     id: "app.comments.counts.no_comments",
@@ -61,6 +63,12 @@ const Container = styled.article`
         color: #333;
         font-weight: 600;
         font-size: 1.1em;
+        a {
+          color: #333;
+          &:hover {
+            color: #000;
+          }
+        }
       }
       .date {
         color: #ccc;
@@ -246,10 +254,13 @@ class Comment extends Component {
           <header>
             <h3>
               {comment.person ? (
-                <span className="name">{comment.person.name} </span>
+                <PersonNamePopup
+                  name={comment.person.name}
+                  personId={comment.person._id}
+                />
               ) : (
                 intl.formatMessage(messages.commentUnknown)
-              )}
+              )}{" "}
               {this.action()}{" "}
               <span className="date">
                 {moment(comment.created_time).fromNow()}
