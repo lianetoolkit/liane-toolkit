@@ -40,7 +40,7 @@ export default class TagSelect extends Component {
           onChange({
             target: {
               name,
-              value: [...value, res]
+              value: [...(value || []), res]
             }
           });
           this.setState({
