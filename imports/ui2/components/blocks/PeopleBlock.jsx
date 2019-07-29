@@ -157,7 +157,7 @@ export default class PeopleBlock extends Component {
             </p>
           ) : null}
         </div>
-        {!loading ? (
+        {/* {!loading ? (
           <footer>
             <Button.Group>
               {people.length ? (
@@ -177,7 +177,7 @@ export default class PeopleBlock extends Component {
               </Button>
             </Button.Group>
           </footer>
-        ) : null}
+        ) : null} */}
       </Container>
     );
   }
