@@ -168,7 +168,7 @@ class ChatbotPage extends Component {
     }
     return (
       <Container>
-        {!loading && (!chatbot || !chatbot.idPage) ? (
+        {!loading && (!chatbot || !chatbot.pid) ? (
           <CreateChatbot campaign={campaign} onCreate={this.fetch} />
         ) : (
           <>

@@ -37,7 +37,7 @@ const ChatbotHelpers = {
     });
 
     return {
-      idPage: account.facebookId,
+      pid: account.facebookId,
       tokenPage: campaignAccount.accessToken,
       title: account.name,
       fanPage: `https://facebook.com/${account.facebookId}`,
