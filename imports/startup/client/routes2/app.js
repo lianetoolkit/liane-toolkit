@@ -112,6 +112,7 @@ appRoutes.route("/comments", {
       content: { component: CommentsPage },
       query: pick(queryParams, [
         "q",
+        "entry",
         "resolved",
         "category",
         "mention",

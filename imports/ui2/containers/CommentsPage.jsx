@@ -48,6 +48,10 @@ export default withTracker(props => {
     query.can_reply_privately = true;
   }
 
+  if (queryParams.entry) {
+    query.entryId = queryParams.entry;
+  }
+
   let commentsHandle, loading;
   let comments = [];
 

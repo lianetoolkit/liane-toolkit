@@ -78,4 +78,12 @@ Entries.schema = new SimpleSchema({
 
 Entries.attachSchema(Entries.schema);
 
+Meteor.startup(() => {
+  if (Meteor.isServer) {
+    Entries.rawCollection().createIndex({
+      message: "text"
+    });
+  }
+});
+
 exports.Entries = Entries;

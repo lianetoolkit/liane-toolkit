@@ -5,10 +5,12 @@ import { debounce } from "lodash";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import Form from "../components/Form.jsx";
 import Page from "../components/Page.jsx";
 import PageFilters from "../components/PageFilters.jsx";
 import PagePaging from "../components/PagePaging.jsx";
 import Button from "../components/Button.jsx";
+import EntrySelect from "../components/EntrySelect.jsx";
 import CommentList from "../components/CommentList.jsx";
 
 const Container = styled.div`
@@ -188,6 +190,13 @@ export default class CommentsPage extends Component {
                   onChange={this._handleChange}
                   // value={query.q}
                 />
+                <Form.Field>
+                  <EntrySelect
+                    name="entry"
+                    onChange={this._handleChange}
+                    value={FlowRouter.getQueryParam("entry")}
+                  />
+                </Form.Field>
                 <PageFilters.Category hiddenInput>
                   <label className={!queryingCategory ? "active" : ""}>
                     <input
