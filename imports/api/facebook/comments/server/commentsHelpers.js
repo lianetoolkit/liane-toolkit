@@ -134,10 +134,14 @@ const CommentsHelpers = {
 
     // Update entry interaction count
     if (data.post_id) {
-      EntriesHelpers.updateInteractionCount({
-        entryId: data.post_id,
-        facebookAccountId
-      });
+      try {
+        EntriesHelpers.updateInteractionCount({
+          entryId: data.post_id,
+          facebookAccountId
+        });
+      } catch (e) {
+        logger.debug("Entry update failed", e);
+      }
     }
 
     // Upsert person
@@ -259,7 +263,11 @@ const CommentsHelpers = {
     Comments.remove(comment._id);
 
     // Update entry
-    EntriesHelpers.updateInteractionCount({ entryId: comment.entryId });
+    try {
+      EntriesHelpers.updateInteractionCount({ entryId: comment.entryId });
+    } catch (e) {
+      logger.debug("Entry update failed", e);
+    }
 
     // Update person
     const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({

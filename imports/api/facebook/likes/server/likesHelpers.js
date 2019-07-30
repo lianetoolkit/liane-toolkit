@@ -70,10 +70,14 @@ const LikesHelpers = {
     );
 
     // Update entry interaction count
-    EntriesHelpers.updateInteractionCount({
-      entryId: data.post_id,
-      facebookAccountId
-    });
+    try {
+      EntriesHelpers.updateInteractionCount({
+        entryId: data.post_id,
+        facebookAccountId
+      });
+    } catch (e) {
+      logger.debug("Entry update failed", e);
+    }
 
     // Upsert person
     if (reaction.personId) {
@@ -150,7 +154,11 @@ const LikesHelpers = {
     Likes.remove(query);
 
     // Update entry
-    EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
+    try {
+      EntriesHelpers.updateInteractionCount({ entryId: data.post_id });
+    } catch (e) {
+      logger.debug("Entry update failed", e);
+    }
 
     // Update person
     const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
