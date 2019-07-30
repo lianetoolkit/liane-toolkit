@@ -6,6 +6,11 @@ MapFeatures.schema = new SimpleSchema({
   campaignId: {
     type: String
   },
+  mapLayerId: {
+    type: String,
+    index: true,
+    optional: true
+  },
   title: {
     type: String,
     optional: true

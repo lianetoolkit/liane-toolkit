@@ -62,6 +62,10 @@ export const updateMapFeature = new ValidatedMethod({
       type: String,
       optional: true
     },
+    mapLayerId: {
+      type: String,
+      optional: true
+    },
     description: {
       type: String,
       optional: true
@@ -80,7 +84,7 @@ export const updateMapFeature = new ValidatedMethod({
       optional: true
     }
   }).validator(),
-  run({ id, title, description, color, type, geometry }) {
+  run({ id, title, mapLayerId, description, color, type, geometry }) {
     this.unblock();
     logger.debug("mapFeatures.update", { id });
 
@@ -107,6 +111,7 @@ export const updateMapFeature = new ValidatedMethod({
     let $set = {};
 
     if (title) $set.title = title;
+    if (mapLayerId) $set.mapLayerId = mapLayerId;
     if (description) $set.description = description;
     if (color) $set.color = color;
     if (type) $set.type = type;

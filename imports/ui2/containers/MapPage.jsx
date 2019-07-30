@@ -1,6 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import { withTracker } from "meteor/react-meteor-data";
 import { MapFeatures } from "/imports/api/mapFeatures/mapFeatures";
+import { MapLayers } from "/imports/api/mapLayers/mapLayers";
 import { People } from "/imports/api/facebook/people/people";
 import MapPage from "../pages/Map.jsx";
 
@@ -11,12 +12,19 @@ export default withTracker(props => {
   const mapFeaturesHandle = MapSubs.subscribe("mapFeatures.byCampaign", {
     campaignId
   });
+  const mapLayersHandle = MapSubs.subscribe("mapLayers.byCampaign", {
+    campaignId
+  });
   const peopleHandle = MapSubs.subscribe("people.map", { campaignId });
 
   const loading = !mapFeaturesHandle.ready() || !peopleHandle.ready();
 
   const mapFeatures = mapFeaturesHandle.ready()
     ? MapFeatures.find({ campaignId }).fetch()
+    : [];
+
+  const mapLayers = mapLayersHandle.ready()
+    ? MapLayers.find({ campaignId }).fetch()
     : [];
 
   const people = peopleHandle.ready()
@@ -29,6 +37,7 @@ export default withTracker(props => {
   return {
     loading,
     mapFeatures,
+    mapLayers,
     people
   };
 })(MapPage);

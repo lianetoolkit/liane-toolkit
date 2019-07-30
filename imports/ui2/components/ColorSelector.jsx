@@ -47,7 +47,7 @@ export default class ColorSelector extends Component {
   render() {
     const { colors, value } = this.props;
     return (
-      <Container>
+      <Container className="color-selector">
         {colors.map((color, i) => (
           <Color
             href="javascript:void(0);"

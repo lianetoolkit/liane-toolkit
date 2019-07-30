@@ -31,6 +31,8 @@ import ColorSelector from "../components/ColorSelector.jsx";
 
 import PeopleMapLayer from "../components/PeopleMapLayer.jsx";
 
+import MapLayerSelect from "../components/MapLayerSelect.jsx";
+
 const imagePath = "/";
 L.Icon.Default.imagePath = imagePath;
 L.Icon.Default.mergeOptions({
@@ -50,6 +52,10 @@ const messages = defineMessages({
   formDescription: {
     id: "app.forms.description",
     defaultMessage: "Description"
+  },
+  formMapLayerLabel: {
+    id: "app.map.layer_select_label",
+    defaultMessage: "Select or create a map layer"
   },
   formSave: {
     id: "app.forms.save",
@@ -95,6 +101,9 @@ const Container = styled.div`
     textarea {
       width: 100%;
     }
+    .color-selector {
+      margin: 0 0 1rem;
+    }
     .close {
       position: absolute;
       top: 1rem;
@@ -107,7 +116,6 @@ const Container = styled.div`
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 1rem;
       .delete {
         display: block;
         font-size: 0.8em;
@@ -613,7 +621,7 @@ class MapPage extends Component {
     }
   };
   render() {
-    const { intl, mapFeatures, people } = this.props;
+    const { intl, mapFeatures, mapLayers, people } = this.props;
     const {
       loading,
       layers,
@@ -813,6 +821,15 @@ class MapPage extends Component {
                     value={this.getFeatureValue("color")}
                     onChange={this._handleFeatureChange}
                   />
+                  <Form.Field
+                    label={intl.formatMessage(messages.formMapLayerLabel)}
+                  >
+                    <MapLayerSelect
+                      name="mapLayerId"
+                      value={this.getFeatureValue("mapLayerId")}
+                      onChange={this._handleFeatureChange}
+                    />
+                  </Form.Field>
                   <div className="actions">
                     <a
                       className="button delete"
