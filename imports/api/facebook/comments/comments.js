@@ -62,7 +62,8 @@ Comments.schema = new SimpleSchema({
   },
   message: {
     type: String,
-    index: true
+    index: true,
+    optional: true
   },
   attachment: {
     type: Object,
