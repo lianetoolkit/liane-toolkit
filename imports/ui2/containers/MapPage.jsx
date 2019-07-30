@@ -4,6 +4,7 @@ import { MapFeatures } from "/imports/api/mapFeatures/mapFeatures";
 import { MapLayers } from "/imports/api/mapLayers/mapLayers";
 import { People } from "/imports/api/facebook/people/people";
 import MapPage from "../pages/Map.jsx";
+import { uniq } from "lodash";
 
 const MapSubs = new SubsManager();
 
@@ -23,8 +24,10 @@ export default withTracker(props => {
     ? MapFeatures.find({ campaignId }).fetch()
     : [];
 
+  const layersIds = uniq(mapFeatures.map(f => f.mapLayerId));
+
   const mapLayers = mapLayersHandle.ready()
-    ? MapLayers.find({ campaignId }).fetch()
+    ? MapLayers.find({ campaignId, _id: { $in: layersIds } }).fetch()
     : [];
 
   const people = peopleHandle.ready()

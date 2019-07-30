@@ -281,7 +281,7 @@ const LayerFilter = styled.ul`
   padding: 0;
   list-style: none;
   font-size: 0.8em;
-  li {
+  > li {
     background: #fff;
     border-bottom: 1px solid #ddd;
     padding: 0.75rem 1rem;
@@ -298,6 +298,10 @@ const LayerFilter = styled.ul`
     }
     svg {
       margin: 0 1rem 0 0;
+      flex: 0 0 auto;
+    }
+    .filter-main-content {
+      flex: 1 1 auto;
     }
     &:hover {
       background: #f0f0f0;
@@ -305,7 +309,7 @@ const LayerFilter = styled.ul`
     &.disabled {
       color: #999;
     }
-    span {
+    span.filter-title {
       font-weight: 600;
     }
     span.description {
@@ -314,6 +318,51 @@ const LayerFilter = styled.ul`
       font-style: italic;
       color: #666;
       display: block;
+    }
+  }
+  li.map-layers-filter {
+    display: block;
+    .map-layers-list {
+      margin: -0.75rem -1rem;
+      padding: 0;
+      width: auto;
+      display: block;
+      &.has-filter {
+        li {
+          color: #999;
+          svg {
+            color: #999;
+          }
+          &.active {
+            svg {
+              color: green;
+            }
+            color: #000;
+          }
+        }
+      }
+      li {
+        background: #fff;
+        margin: 0;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+        svg {
+          color: #ccc;
+        }
+        h4 {
+          margin: 0;
+          font-weight: normal;
+        }
+        &:last-child {
+          border-bottom: 0;
+          border-radius: 0 0 7px 7px;
+        }
+        &:hover {
+          background: #f0f0f0;
+        }
+      }
     }
   }
 `;
@@ -335,6 +384,7 @@ class MapPage extends Component {
     this.state = {
       loading: false,
       formData: {},
+      featureLayers: [],
       layers: {
         people: true,
         custom: true
@@ -362,7 +412,7 @@ class MapPage extends Component {
   }
   componentDidUpdate(prevProps, prevState) {
     const { mapFeatures } = this.props;
-    const { formData, featureId, layers } = this.state;
+    const { formData, featureId, layers, featureLayers } = this.state;
     if (JSON.stringify(mapFeatures) != JSON.stringify(prevProps.mapFeatures)) {
       this._renderFeatures();
     }
@@ -370,6 +420,9 @@ class MapPage extends Component {
       this._renderFeatures();
     }
     if (layers.custom != prevState.layers.custom) {
+      this._renderFeatures();
+    }
+    if (prevState.featureLayers != featureLayers) {
       this._renderFeatures();
     }
     if (formData.color && prevState.formData.color != formData.color) {
@@ -533,7 +586,7 @@ class MapPage extends Component {
     );
   };
   _renderFeatures = () => {
-    const { layers } = this.state;
+    const { featureLayers, layers } = this.state;
     if (this.refs.featureGroup) {
       const layerGroup = this.refs.featureGroup.leafletElement;
       layerGroup.clearLayers();
@@ -567,7 +620,12 @@ class MapPage extends Component {
             formData: {}
           });
         });
-        layerGroup.addLayer(layer);
+        if (
+          !featureLayers.length ||
+          featureLayers.indexOf(properties.mapLayerId) !== -1 ||
+          !properties.mapLayerId
+        )
+          layerGroup.addLayer(layer);
       });
     }
   };
@@ -602,6 +660,19 @@ class MapPage extends Component {
       }
     });
   };
+  _handleFeatureLayerClick = mapLayer => ev => {
+    ev.preventDefault();
+    const { featureLayers } = this.state;
+    if (featureLayers.indexOf(mapLayer._id) == -1) {
+      this.setState({
+        featureLayers: [...featureLayers, mapLayer._id]
+      });
+    } else {
+      this.setState({
+        featureLayers: [...featureLayers].filter(l => l != mapLayer._id)
+      });
+    }
+  };
   _handlePeopleMouseOver = person => {
     this.setState({
       hoveringPerson: person
@@ -624,6 +695,7 @@ class MapPage extends Component {
     const { intl, mapFeatures, mapLayers, people } = this.props;
     const {
       loading,
+      featureLayers,
       layers,
       map,
       featureId,
@@ -734,11 +806,13 @@ class MapPage extends Component {
                     className={!layers.people ? "disabled" : ""}
                   >
                     <FontAwesomeIcon icon="user-circle" />
-                    <span>
-                      <FormattedMessage
-                        id="app.map.filters.people.title"
-                        defaultMessage="People"
-                      />
+                    <span className="filter-main-content">
+                      <span className="filter-title">
+                        <FormattedMessage
+                          id="app.map.filters.people.title"
+                          defaultMessage="People"
+                        />
+                      </span>
                       <span className="description">
                         <FormattedMessage
                           id="app.map.filters.people.description"
@@ -753,11 +827,13 @@ class MapPage extends Component {
                     className={!layers.custom ? "disabled" : ""}
                   >
                     <FontAwesomeIcon icon="map-marker" />
-                    <span>
-                      <FormattedMessage
-                        id="app.map.filters.custom.title"
-                        defaultMessage="Campaign additions"
-                      />
+                    <span className="filter-main-content">
+                      <span className="filter-title">
+                        <FormattedMessage
+                          id="app.map.filters.custom.title"
+                          defaultMessage="Campaign additions"
+                        />
+                      </span>
                       <span className="description">
                         <FormattedMessage
                           id="app.map.filters.custom.description"
@@ -766,6 +842,36 @@ class MapPage extends Component {
                       </span>
                     </span>
                   </li>
+                  {mapLayers && mapLayers.length ? (
+                    <li className="map-layers-filter">
+                      <ul
+                        className={`map-layers-list ${
+                          featureLayers.length ? "has-filter" : ""
+                        }`}
+                      >
+                        {mapLayers.map(mapLayer => (
+                          <li
+                            key={mapLayer._id}
+                            onClick={this._handleFeatureLayerClick(mapLayer)}
+                            className={
+                              featureLayers.indexOf(mapLayer._id) != -1
+                                ? "active"
+                                : ""
+                            }
+                          >
+                            <FontAwesomeIcon
+                              icon={
+                                featureLayers.indexOf(mapLayer._id) != -1
+                                  ? "toggle-on"
+                                  : "toggle-off"
+                              }
+                            />
+                            <h4>{mapLayer.title}</h4>
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  ) : null}
                   {/* <li className="disabled">
                     <FontAwesomeIcon icon="globe" />
                     <span>
