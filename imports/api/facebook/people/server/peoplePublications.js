@@ -199,29 +199,29 @@ Meteor.publish("people.tags", function({ campaignId }) {
   return this.ready();
 });
 
-Meteor.publishComposite("people.form.detail", function({ formId }) {
-  logger.debug("people.form.detail called", { formId });
-  const person = People.findOne({ formId });
+Meteor.publishComposite("people.form.detail", function({ formId, psid }) {
+  logger.debug("people.form.detail called", { formId, psid });
+  let selector = {};
+  if (formId) selector = { formId };
+  if (psid) selector = { facebookId: psid };
+  const person = People.findOne(selector);
   if (!person) {
     return this.ready();
   }
   const campaign = Campaigns.findOne({ _id: person.campaignId });
   return {
     find: function() {
-      return People.find(
-        { formId },
-        {
-          fields: {
-            name: 1,
-            facebookId: 1,
-            "campaignMeta.contact": 1,
-            "campaignMeta.basic_info": 1,
-            "campaignMeta.donor": 1,
-            "campaignMeta.supporter": 1,
-            "campaignMeta.mobilizer": 1
-          }
+      return People.find(selector, {
+        fields: {
+          name: 1,
+          facebookId: 1,
+          "campaignMeta.contact": 1,
+          "campaignMeta.basic_info": 1,
+          "campaignMeta.donor": 1,
+          "campaignMeta.supporter": 1,
+          "campaignMeta.mobilizer": 1
         }
-      );
+      });
     },
     children: [
       {

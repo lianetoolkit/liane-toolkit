@@ -55,7 +55,10 @@ appRoutes.route("/f/:formId?", {
     addTitle(`${APP_NAME} | Help the campaign!`);
     return mount(PeopleFormPage, {
       formId: params.formId,
-      campaignId: queryParams.c
+      campaignId: queryParams.c,
+      psid: queryParams.psid,
+      donor: queryParams.hasOwnProperty("donor"),
+      volunteer: queryParams.hasOwnProperty("volunteer")
     });
   }
 });

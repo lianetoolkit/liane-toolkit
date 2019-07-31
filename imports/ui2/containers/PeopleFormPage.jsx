@@ -3,16 +3,22 @@ import { withTracker } from "meteor/react-meteor-data";
 import { People } from "/imports/api/facebook/people/people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import PeopleForm from "/imports/ui2/pages/PeopleForm.jsx";
+import { set } from "lodash";
 
 const PeopleFormSubs = new SubsManager();
 
 export default withTracker(props => {
   let loading = true;
   let person, campaign;
-  if (props.formId) {
-    const personHandle = PeopleFormSubs.subscribe("people.form.detail", {
-      formId: props.formId
-    });
+  let personData = {};
+  if (props.formId || props.psid) {
+    let selector = {};
+    if (props.formId) selector = { formId: props.formId };
+    if (props.psid) selector = { psid: props.psid };
+    const personHandle = PeopleFormSubs.subscribe(
+      "people.form.detail",
+      selector
+    );
     loading = !personHandle.ready();
     person = personHandle.ready() ? People.findOne() : null;
     campaign = personHandle.ready() ? Campaigns.findOne() : null;
@@ -30,10 +36,19 @@ export default withTracker(props => {
     );
     loading = !campaignHandle.ready();
     campaign = campaignHandle.ready() ? Campaigns.findOne() : null;
+  } else {
+    loading = false;
+  }
+  if (props.donor) {
+    set(personData, "donor", true);
+  }
+  if (props.volunteer) {
+    set(personData, "volunteer", true);
   }
   return {
     loading,
     person,
+    personData,
     campaign
   };
 })(PeopleForm);

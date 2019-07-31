@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { get } from "lodash";
+import { get, merge } from "lodash";
 import { OAuth } from "meteor/oauth";
 import moment from "moment";
 
@@ -186,23 +186,26 @@ class PeopleForm extends Component {
     this._handleSubmit = this._handleSubmit.bind(this);
   }
   componentWillReceiveProps(nextProps) {
-    const { person } = this.props;
+    const { person, personData } = this.props;
     if (nextProps.person && (!person || nextProps.person._id !== person._id)) {
       // Autofill with available data?
-      this.setState({
-        formData: {
-          ...this.state.formData,
-          name: get(nextProps.person, "name"),
-          email: get(nextProps.person, "campaignMeta.contact.email"),
-          cellphone: get(nextProps.person, "campaignMeta.contact.cellphone"),
-          birthday: get(nextProps.person, "campaignMeta.basic_info.birthday"),
-          address: get(nextProps.person, "campaignMeta.basic_info.address"),
-          skills: get(nextProps.person, "campaignMeta.basic_info.skills"),
-          supporter: get(nextProps.person, "campaignMeta.supporter"),
-          mobilizer: get(nextProps.person, "campaignMeta.mobilizer"),
-          donor: get(nextProps.person, "campaignMeta.donor")
-        }
-      });
+      let formData = {
+        ...this.state.formData,
+        name: get(nextProps.person, "name"),
+        email: get(nextProps.person, "campaignMeta.contact.email"),
+        cellphone: get(nextProps.person, "campaignMeta.contact.cellphone"),
+        birthday: get(nextProps.person, "campaignMeta.basic_info.birthday"),
+        address: get(nextProps.person, "campaignMeta.basic_info.address"),
+        skills: get(nextProps.person, "campaignMeta.basic_info.skills"),
+        supporter: get(nextProps.person, "campaignMeta.supporter"),
+        mobilizer: get(nextProps.person, "campaignMeta.mobilizer"),
+        donor: get(nextProps.person, "campaignMeta.donor"),
+        volunteer: get(nextProps.person, "campaignMeta.volunteer")
+      };
+      merge(formData, personData);
+      const contribute =
+        formData.donor || formData.mobilizer || formData.supporter;
+      this.setState({ formData, contribute });
     }
   }
   _handleChange = ({ target }) => {
@@ -248,13 +251,25 @@ class PeopleForm extends Component {
       requestPermissions: []
     });
   }
+  _displayParticipateButton = () => {
+    const { person } = this.props;
+    return !(
+      person.campaignMeta &&
+      (person.campaignMeta.donor ||
+        person.campaignMeta.supporter ||
+        person.campaignMeta.mobilizer)
+    );
+  };
   _handleSubmit(ev) {
     ev.preventDefault();
-    const { intl, formId, campaign } = this.props;
+    const { intl, formId, person, campaign } = this.props;
     const { formData } = this.state;
     let data = { ...formData, campaignId: campaign._id };
     if (formId) {
       data.formId = formId;
+    }
+    if (person.facebookId) {
+      data.facebookId = person.facebookId;
     }
     if (!data.name) {
       alertStore.add(intl.formatMessage(messages.requiredName), "error");
@@ -274,6 +289,8 @@ class PeopleForm extends Component {
       if (res) {
         FlowRouter.go("/f/" + res);
         this.setState({ sent: true, loading: false });
+      } else {
+        this.setState({ loading: false });
       }
     });
   }
@@ -444,17 +461,19 @@ class PeopleForm extends Component {
                     value={formData.address}
                     onChange={target => this._handleChange({ target })}
                   />
-                  <Button
-                    onClick={ev => {
-                      ev.preventDefault();
-                      this.setState({ contribute: !contribute });
-                    }}
-                  >
-                    <FormattedMessage
-                      id="app.people_form.participate_label"
-                      defaultMessage="I'd like to participate"
-                    />
-                  </Button>
+                  {this._displayParticipateButton() ? (
+                    <Button
+                      onClick={ev => {
+                        ev.preventDefault();
+                        this.setState({ contribute: !contribute });
+                      }}
+                    >
+                      <FormattedMessage
+                        id="app.people_form.participate_label"
+                        defaultMessage="I'd like to participate"
+                      />
+                    </Button>
+                  ) : null}
                   {contribute ? (
                     <div className="contribute">
                       <Form.Field

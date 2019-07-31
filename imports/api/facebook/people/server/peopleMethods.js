@@ -1313,6 +1313,10 @@ export const peopleFormSubmit = new ValidatedMethod({
       type: String,
       optional: true
     },
+    facebookId: {
+      type: String,
+      optional: true
+    },
     recaptcha: {
       type: String,
       optional: true
@@ -1384,10 +1388,14 @@ export const peopleFormSubmit = new ValidatedMethod({
     donor: {
       type: Boolean,
       optional: true
+    },
+    volunteer: {
+      type: Boolean,
+      optional: true
     }
   }).validator(),
   run(formData) {
-    const { campaignId, formId, recaptcha, ...data } = formData;
+    const { campaignId, formId, facebookId, recaptcha, ...data } = formData;
     logger.debug("peopleForm.submit called", { campaignId, formId });
 
     let $set = {
@@ -1409,13 +1417,14 @@ export const peopleFormSubmit = new ValidatedMethod({
         case "supporter":
         case "mobilizer":
         case "donor":
+        case "volunteer":
           $set[`campaignMeta.${key}`] = data[key];
         default:
           $set[key] = data[key];
       }
     }
 
-    if (!formId && recaptchaSecret) {
+    if (!(formId || facebookId) && recaptchaSecret) {
       if (recaptcha) {
         const res = Promise.await(
           axios.request({
@@ -1462,12 +1471,13 @@ export const peopleFormSubmit = new ValidatedMethod({
       update.$unset = $unset;
     }
 
-    if (formId) {
-      const person = People.findOne({ formId });
+    if (formId || facebookId) {
+      let selector = formId ? { formId } : { facebookId };
+      const person = People.findOne(selector);
       if (!person) {
         throw new Meteor.Error(400, "Unauthorized request");
       }
-      People.update({ formId }, update);
+      People.update(selector, update);
       newFormId = PeopleHelpers.getFormId({
         personId: person._id,
         generate: true
