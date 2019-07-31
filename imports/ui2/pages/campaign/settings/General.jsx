@@ -113,6 +113,13 @@ export default class CampaignSettingsPage extends Component {
                 onChange={this._handleChange}
               />
             </Form.Field>
+            <Form.Field label="After form submission text">
+              <textarea
+                name="forms.crm.thanks"
+                value={this.getValue("forms.crm.thanks")}
+                onChange={this._handleChange}
+              />
+            </Form.Field>
           </Form.Content>
           <Form.Actions>
             <input type="submit" disabled={!this._filledForm()} value="Save" />

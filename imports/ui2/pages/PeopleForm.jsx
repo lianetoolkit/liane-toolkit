@@ -73,7 +73,7 @@ const messages = defineMessages({
     defaultMessage: "Email is required"
   },
   thankYou: {
-    id: "app.people_form.thanks",
+    id: "app.people_form.thank_you",
     defaultMessage: "Thank you!"
   },
   nameLabel: {
@@ -177,6 +177,8 @@ class PeopleForm extends Component {
     super(props);
     this.state = {
       formData: {},
+      loading: false,
+      sent: false,
       contribute: false
     };
     this._handleFacebookClick = this._handleFacebookClick.bind(this);
@@ -262,6 +264,7 @@ class PeopleForm extends Component {
       alertStore.add(intl.formatMessage(messages.requiredEmail), "error");
       return;
     }
+    this.setState({ loading: true });
     Meteor.call("peopleForm.submit", data, (err, res) => {
       if (err) {
         alertStore.add(err);
@@ -270,6 +273,7 @@ class PeopleForm extends Component {
       }
       if (res) {
         FlowRouter.go("/f/" + res);
+        this.setState({ sent: true, loading: false });
       }
     });
   }
@@ -283,8 +287,8 @@ class PeopleForm extends Component {
   }
   render() {
     const { intl, loading, person, campaign } = this.props;
-    const { formData, contribute } = this.state;
-    if (loading) {
+    const { sent, formData, contribute } = this.state;
+    if (loading || this.state.loading) {
       return <Loading full />;
     } else if (!loading && !campaign) {
       return <h1 style={{ textAlign: "center" }}>404</h1>;
@@ -301,202 +305,229 @@ class PeopleForm extends Component {
             </div>
           </Header>
           <Container id="app">
-            <h2>
-              {person.name ? (
-                <FormattedMessage
-                  id="app.people_form.welcome_logged_in"
-                  defaultMessage="Hi {name}!"
-                  values={{ name: person.name }}
-                />
-              ) : (
-                <FormattedMessage
-                  id="app.people_form.welcome_anonymous"
-                  defaultMessage="Hi!"
-                />
-              )}
-            </h2>
-            {person._id ? (
-              <p className="not-you">
-                <FormattedMessage
-                  id="app.people_form.not_you"
-                  defaultMessage="Not you?"
-                />{" "}
-                <a href={getFormUrl(false, campaign)}>
+            {sent ? (
+              <>
+                <h2>
                   <FormattedMessage
-                    id="app.people_form.click_here"
-                    defaultMessage="Click here"
+                    id="app.people_form.thank_you"
+                    defaultMessage="Thank you!"
                   />
-                </a>
-                .
-              </p>
-            ) : null}
-            <p>
-              {campaign.forms && campaign.forms.crm ? (
-                <span>{campaign.forms.crm.header}</span>
-              ) : (
-                <FormattedMessage
-                  id="app.people_form.default_header"
-                  defaultMessage="We, from the campaign {campaign_name}, would like to ask for your help!"
-                  values={{ campaign_name: campaign.name }}
-                />
-              )}
-            </p>
-            <p>
-              {campaign.forms && campaign.forms.crm ? (
-                <span>{campaign.forms.crm.text}</span>
-              ) : (
-                <FormattedMessage
-                  id="app.people_form.default_text"
-                  defaultMessage="Fill the information below so you can know more about you."
-                />
-              )}
-            </p>
-            {!person.facebookId ? (
-              <div className="facebook-connect">
-                <Button
-                  fluid
-                  color="facebook"
-                  icon
-                  onClick={this._handleFacebookClick}
-                >
-                  <FontAwesomeIcon icon={["fab", "facebook-square"]} />{" "}
-                  <FormattedMessage
-                    id="app.people_form.facebook_connect_label"
-                    defaultMessage="Connect your Facebook profile"
-                  />
-                </Button>
-              </div>
-            ) : null}
-            <Form onSubmit={this._handleSubmit}>
-              {!person.name ? (
-                <Form.Field label={intl.formatMessage(messages.nameLabel)}>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={this._handleChange}
-                  />
-                </Form.Field>
-              ) : null}
-              <Form.Field label={intl.formatMessage(messages.emailLabel)}>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={this._handleChange}
-                />
-              </Form.Field>
-              <Form.Field label={intl.formatMessage(messages.phoneLabel)}>
-                <input
-                  type="text"
-                  name="cellphone"
-                  value={formData.cellphone}
-                  onChange={this._handleChange}
-                />
-              </Form.Field>
-              <Form.Field label={intl.formatMessage(messages.birthdayLabel)}>
-                <DatePicker
-                  onChange={date => {
-                    this._handleChange({
-                      target: {
-                        name: "birthday",
-                        value: date.toDate()
-                      }
-                    });
-                  }}
-                  selected={this.getBirthdayValue()}
-                  dateFormatCalendar="MMMM"
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                />
-              </Form.Field>
-              <AddressField
-                name="address"
-                country={campaign.country}
-                value={formData.address}
-                onChange={target => this._handleChange({ target })}
-              />
-              <Button
-                onClick={ev => {
-                  ev.preventDefault();
-                  this.setState({ contribute: !contribute });
-                }}
-              >
-                <FormattedMessage
-                  id="app.people_form.participate_label"
-                  defaultMessage="I'd like to participate"
-                />
-              </Button>
-              {contribute ? (
-                <div className="contribute">
-                  <Form.Field label={intl.formatMessage(messages.skillsLabel)}>
-                    <SkillsField
-                      name="skills"
-                      value={formData.skills || []}
+                </h2>
+                <p>
+                  {campaign.forms && campaign.forms.crm ? (
+                    campaign.forms.crm.thanks
+                  ) : (
+                    <FormattedMessage
+                      id="app.people_form.thank_you_text"
+                      defaultMessage="Your participation means a lot to us."
+                    />
+                  )}
+                </p>
+              </>
+            ) : (
+              <>
+                <h2>
+                  {person.name ? (
+                    <FormattedMessage
+                      id="app.people_form.welcome_logged_in"
+                      defaultMessage="Hi {name}!"
+                      values={{ name: person.name }}
+                    />
+                  ) : (
+                    <FormattedMessage
+                      id="app.people_form.welcome_anonymous"
+                      defaultMessage="Hi!"
+                    />
+                  )}
+                </h2>
+                {person._id ? (
+                  <p className="not-you">
+                    <FormattedMessage
+                      id="app.people_form.not_you"
+                      defaultMessage="Not you?"
+                    />{" "}
+                    <a href={getFormUrl(false, campaign)}>
+                      <FormattedMessage
+                        id="app.people_form.click_here"
+                        defaultMessage="Click here"
+                      />
+                    </a>
+                    .
+                  </p>
+                ) : null}
+                <p>
+                  {campaign.forms && campaign.forms.crm ? (
+                    <span>{campaign.forms.crm.header}</span>
+                  ) : (
+                    <FormattedMessage
+                      id="app.people_form.default_header"
+                      defaultMessage="We, from the campaign {campaign_name}, would like to ask for your help!"
+                      values={{ campaign_name: campaign.name }}
+                    />
+                  )}
+                </p>
+                <p>
+                  {campaign.forms && campaign.forms.crm ? (
+                    <span>{campaign.forms.crm.text}</span>
+                  ) : (
+                    <FormattedMessage
+                      id="app.people_form.default_text"
+                      defaultMessage="Fill the information below so you can know more about you."
+                    />
+                  )}
+                </p>
+                {!person.facebookId ? (
+                  <div className="facebook-connect">
+                    <Button
+                      fluid
+                      color="facebook"
+                      icon
+                      onClick={this._handleFacebookClick}
+                    >
+                      <FontAwesomeIcon icon={["fab", "facebook-square"]} />{" "}
+                      <FormattedMessage
+                        id="app.people_form.facebook_connect_label"
+                        defaultMessage="Connect your Facebook profile"
+                      />
+                    </Button>
+                  </div>
+                ) : null}
+                <Form onSubmit={this._handleSubmit}>
+                  {!person.name ? (
+                    <Form.Field label={intl.formatMessage(messages.nameLabel)}>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={this._handleChange}
+                      />
+                    </Form.Field>
+                  ) : null}
+                  <Form.Field label={intl.formatMessage(messages.emailLabel)}>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
                       onChange={this._handleChange}
                     />
                   </Form.Field>
-                  <label>
+                  <Form.Field label={intl.formatMessage(messages.phoneLabel)}>
                     <input
-                      type="checkbox"
-                      name="supporter"
-                      checked={formData.supporter}
+                      type="text"
+                      name="cellphone"
+                      value={formData.cellphone}
                       onChange={this._handleChange}
                     />
-                    <FormattedMessage
-                      id="app.people_form.supporter_label"
-                      defaultMessage="If we send you content, will you share in your social networks?"
+                  </Form.Field>
+                  <Form.Field
+                    label={intl.formatMessage(messages.birthdayLabel)}
+                  >
+                    <DatePicker
+                      onChange={date => {
+                        this._handleChange({
+                          target: {
+                            name: "birthday",
+                            value: date.toDate()
+                          }
+                        });
+                      }}
+                      selected={this.getBirthdayValue()}
+                      dateFormatCalendar="MMMM"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
                     />
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="mobilizer"
-                      checked={formData.mobilizer}
-                      onChange={this._handleChange}
-                    />
-                    <FormattedMessage
-                      id="app.people_form.mobilizer_label"
-                      defaultMessage="Would you produce en event in your neighborhood or workplace?"
-                    />
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="donor"
-                      checked={formData.donor}
-                      onChange={this._handleChange}
-                    />
-                    <FormattedMessage
-                      id="app.people_form.donor_label"
-                      defaultMessage="Would you donate money to the campaign?"
-                    />
-                  </label>
-                </div>
-              ) : null}
-              {/* <Divider /> */}
-              {!person.facebookId && recaptchaSiteKey ? (
-                <div className="recaptcha-container">
-                  <Recaptcha
-                    sitekey={recaptchaSiteKey}
-                    render="explicit"
-                    verifyCallback={this._handleRecaptcha}
+                  </Form.Field>
+                  <AddressField
+                    name="address"
+                    country={campaign.country}
+                    value={formData.address}
+                    onChange={target => this._handleChange({ target })}
                   />
-                  {/* <Divider hidden /> */}
-                </div>
-              ) : null}
-              <p className="policy">
-                <FormattedHTMLMessage
-                  id="app.people_form.privacy_policy"
-                  defaultMessage='By submitting this form you agree with our <a href="https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf" target="_blank" rel="external">Privacy Policy</a>.'
-                />
-              </p>
-              <input
-                type="submit"
-                value={intl.formatMessage(messages.sendLabel)}
-              />
-            </Form>
+                  <Button
+                    onClick={ev => {
+                      ev.preventDefault();
+                      this.setState({ contribute: !contribute });
+                    }}
+                  >
+                    <FormattedMessage
+                      id="app.people_form.participate_label"
+                      defaultMessage="I'd like to participate"
+                    />
+                  </Button>
+                  {contribute ? (
+                    <div className="contribute">
+                      <Form.Field
+                        label={intl.formatMessage(messages.skillsLabel)}
+                      >
+                        <SkillsField
+                          name="skills"
+                          value={formData.skills || []}
+                          onChange={this._handleChange}
+                        />
+                      </Form.Field>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="supporter"
+                          checked={formData.supporter}
+                          onChange={this._handleChange}
+                        />
+                        <FormattedMessage
+                          id="app.people_form.supporter_label"
+                          defaultMessage="If we send you content, will you share in your social networks?"
+                        />
+                      </label>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="mobilizer"
+                          checked={formData.mobilizer}
+                          onChange={this._handleChange}
+                        />
+                        <FormattedMessage
+                          id="app.people_form.mobilizer_label"
+                          defaultMessage="Would you produce en event in your neighborhood or workplace?"
+                        />
+                      </label>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="donor"
+                          checked={formData.donor}
+                          onChange={this._handleChange}
+                        />
+                        <FormattedMessage
+                          id="app.people_form.donor_label"
+                          defaultMessage="Would you donate money to the campaign?"
+                        />
+                      </label>
+                    </div>
+                  ) : null}
+                  {/* <Divider /> */}
+                  {!person.facebookId && recaptchaSiteKey ? (
+                    <div className="recaptcha-container">
+                      <Recaptcha
+                        sitekey={recaptchaSiteKey}
+                        render="explicit"
+                        verifyCallback={this._handleRecaptcha}
+                      />
+                      {/* <Divider hidden /> */}
+                    </div>
+                  ) : null}
+                  <p className="policy">
+                    <FormattedHTMLMessage
+                      id="app.people_form.privacy_policy"
+                      defaultMessage='By submitting this form you agree with our <a href="https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf" target="_blank" rel="external">Privacy Policy</a>.'
+                    />
+                  </p>
+                  <input
+                    type="submit"
+                    value={intl.formatMessage(messages.sendLabel)}
+                  />
+                </Form>
+              </>
+            )}
           </Container>
           <Alerts />
         </>
