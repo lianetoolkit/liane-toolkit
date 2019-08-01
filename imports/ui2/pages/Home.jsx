@@ -524,22 +524,24 @@ export default class Home extends Component {
                 <div>
                   <h2>Instituto Update</h2>
                   <p>
-                    O Instituto Update é uma organização da sociedade civil sem
-                    fins lucrativos que fomenta a inovação política na América
-                    Latina. Desenvolve projetos de inteligência e tecnologias
-                    cívicas com o objetivo de aproximar cidadãos da política
-                    institucional e fortalecer a democracia a partir da visão de
-                    renovação política centrada na diversidade e combate às
-                    desigualdades.
+                    <FormattedMessage
+                      id="app.home.instituto_update"
+                      defaultMessage="Instituto Update is a not-for-profit civil society organization that fosters political innovation in Latin America. Develops intelligence and civic technology projects to bring citizens closer to politics and strengthen democracy based on the vision of political renovation centered on diversity and combating inequalities."
+                    />
                   </p>
                 </div>
                 <div>
-                  <h2>Quem foi Liane</h2>
+                  <h2>
+                    <FormattedMessage
+                      id="app.home.liane_header"
+                      defaultMessage="Who was Liane?"
+                    />
+                  </h2>
                   <p>
-                    O nome é uma homenagem à Liane Lira, amiga e ativista que
-                    faleceu em 2015 e dedicou sua vida a processos de
-                    mobilização, fortalecimento da democracia e transparência
-                    política.
+                    <FormattedMessage
+                      id="app.home.liane_text"
+                      defaultMessage="The name is a tribute to Liane Lira, friend and activist who passed away in 2015 and dedicated her life to processes of mobilization, strengthening democracy and political transparency."
+                    />
                   </p>
                 </div>
               </div>
