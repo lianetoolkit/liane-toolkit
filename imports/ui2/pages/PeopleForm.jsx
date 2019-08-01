@@ -393,7 +393,7 @@ class PeopleForm extends Component {
                     />
                   )}
                 </p>
-                {!person.facebookId ? (
+                {/* {!person.facebookId ? (
                   <div className="facebook-connect">
                     <Button
                       fluid
@@ -408,7 +408,7 @@ class PeopleForm extends Component {
                       />
                     </Button>
                   </div>
-                ) : null}
+                ) : null} */}
                 <Form onSubmit={this._handleSubmit}>
                   {!person.name ? (
                     <Form.Field label={intl.formatMessage(messages.nameLabel)}>
