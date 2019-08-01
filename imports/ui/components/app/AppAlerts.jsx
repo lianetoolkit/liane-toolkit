@@ -10,12 +10,15 @@ export default class AppAlerts extends React.Component {
       permissions: [
         "public_profile",
         "email",
+        "publish_pages",
         "manage_pages",
         "pages_show_list",
         "ads_management",
         "ads_read",
         "business_management",
-        "read_page_mailboxes"
+        "pages_messaging",
+        "pages_messaging_phone_number",
+        "pages_messaging_subscriptions"
       ]
     };
     this._handlePermissionsClick = this._handlePermissionsClick.bind(this);
@@ -78,7 +81,8 @@ export default class AppAlerts extends React.Component {
             <br />
             <a href="#" onClick={this._handlePermissionsClick}>
               Click here to authorize
-            </a>.
+            </a>
+            .
           </span>
         );
       default:
