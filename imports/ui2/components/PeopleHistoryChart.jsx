@@ -121,7 +121,7 @@ export default function PeopleHistoryChart(props) {
               )
             }}
           />
-          <a href="javacript:void(0);" onClick={clearBrush}>
+          <a href="javascript:void(0);" onClick={clearBrush}>
             <FormattedMessage
               id="app.people.history_chart.clear"
               defaultMessage="Clear selection"
