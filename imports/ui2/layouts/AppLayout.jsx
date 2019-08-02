@@ -40,7 +40,7 @@ const findLocale = language => {
   return locale;
 };
 
-const messages = localeData.es || localeData[findLocale(language)] || localeData.en;
+const messages = localeData[findLocale(language)] || localeData.en;
 
 const publicRoutes = ["App.dashboard", "App.transparency"];
 

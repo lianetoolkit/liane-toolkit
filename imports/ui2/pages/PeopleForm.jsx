@@ -59,7 +59,7 @@ const findLocale = language => {
   return locale;
 };
 
-const localeMessages = localeData.es || localeData[findLocale(language)] || localeData.en;
+const localeMessages = localeData[findLocale(language)] || localeData.en;
 
 const recaptchaSiteKey = Meteor.settings.public.recaptcha;
 
