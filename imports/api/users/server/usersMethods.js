@@ -86,9 +86,6 @@ export const validateFBToken = new ValidatedMethod({
     if (!response.data || (response.data && !response.data.is_valid)) {
       throw new Meteor.Error(401, "Invalid access token");
     }
-    if (response.data && !validatePermissions(response.data.scopes)) {
-      throw new Meteor.Error(401, "Missing scope permissions");
-    }
     return;
   }
 });

@@ -45,42 +45,42 @@ export default class App extends React.Component {
       }
       FlowRouter.go(loginPath);
     } else if (currentToken && currentToken != prevToken) {
-      Meteor.call(
-        "users.validateToken",
-        { token: currentToken },
-        (err, res) => {
-          if (err) {
-            Meteor.linkWithFacebook(
-              {
-                requestPermissions: [
-                  "public_profile",
-                  "email",
-                  "publish_pages",
-                  "manage_pages",
-                  "pages_show_list",
-                  "ads_management",
-                  "ads_read",
-                  "business_management",
-                  "pages_messaging",
-                  "pages_messaging_phone_number",
-                  "pages_messaging_subscriptions"
-                ]
-              },
-              err => {
-                if (err) {
-                  console.log(err);
-                } else {
-                  Meteor.call("users.exchangeFBToken", (err, data) => {
-                    if (err) {
-                      console.log(err);
-                    }
-                  });
-                }
-              }
-            );
-          }
-        }
-      );
+      // Meteor.call(
+      //   "users.validateToken",
+      //   { token: currentToken },
+      //   (err, res) => {
+      //     if (err) {
+      //       Meteor.linkWithFacebook(
+      //         {
+      //           requestPermissions: [
+      //             "public_profile",
+      //             "email",
+      //             "publish_pages",
+      //             "manage_pages",
+      //             "pages_show_list",
+      //             "ads_management",
+      //             "ads_read",
+      //             "business_management",
+      //             "pages_messaging",
+      //             "pages_messaging_phone_number",
+      //             "pages_messaging_subscriptions"
+      //           ]
+      //         },
+      //         err => {
+      //           if (err) {
+      //             console.log(err);
+      //           } else {
+      //             Meteor.call("users.exchangeFBToken", (err, data) => {
+      //               if (err) {
+      //                 console.log(err);
+      //               }
+      //             });
+      //           }
+      //         }
+      //       );
+      //     }
+      // }
+      // );
     }
   }
 
