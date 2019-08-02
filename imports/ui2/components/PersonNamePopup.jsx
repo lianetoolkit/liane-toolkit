@@ -5,6 +5,7 @@ import { alertStore } from "../containers/Alerts.jsx";
 
 import PersonMetaButtons from "./PersonMetaButtons.jsx";
 import PersonTags from "./PersonTags.jsx";
+import PersonFormInfo from "./PersonFormInfo.jsx";
 import Loading from "./Loading.jsx";
 
 const Container = styled.span`
@@ -16,7 +17,7 @@ const PopupContainer = styled.div`
   position: absolute;
   left: 100%;
   top: 0;
-  width: 300px;
+  width: 340px;
   padding: 0 1rem;
   .person-popup-content {
     background: #fff;
@@ -112,6 +113,7 @@ export default class PersonNamePopup extends Component {
                     person={person}
                     onChange={this._handleChange}
                   />
+                  <PersonFormInfo person={person} simple />
                   <PersonTags tags={person.tags} person={person} />
                 </>
               )}

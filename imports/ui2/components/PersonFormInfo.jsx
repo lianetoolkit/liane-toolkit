@@ -53,6 +53,19 @@ const Container = styled.div`
       }
     }
   }
+  ${props => props.simple && css`
+    font-size: 0.8em;
+    margin: 0 0 1rem;
+    .fa-align-left {
+      font-size: 0.9em;
+    }
+    input[type=text] {
+      padding: 0.5rem;
+    }
+    .actions a {
+      padding: 0.25rem 0.5rem;
+    }
+  `}
   ${props =>
     props.filled &&
     css`
@@ -94,7 +107,7 @@ export default class PersonFormInfo extends Component {
     );
   };
   render() {
-    const { person } = this.props;
+    const { person, simple } = this.props;
     const { loading } = this.state;
     const url = getFormUrl(person ? person.formId : false);
     let filled = true;
@@ -104,10 +117,15 @@ export default class PersonFormInfo extends Component {
       tooltipId += person._id;
     }
     return (
-      <Container filled={!!filled} loading={loading}>
+      <Container
+        className="form-info"
+        simple={simple}
+        filled={!!filled}
+        loading={loading}
+      >
         <label>
           <FontAwesomeIcon icon="align-left" />
-          {person ? (
+          {person && !simple ? (
             <span>{filled ? "Filled form" : "Hasn't filled form"}</span>
           ) : null}
           <input type="text" disabled value={url} />
