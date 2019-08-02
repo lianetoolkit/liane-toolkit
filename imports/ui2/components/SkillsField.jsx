@@ -11,6 +11,10 @@ import { uniq } from "lodash";
 import CreatableSelect from "react-select/lib/Creatable";
 
 const messages = defineMessages({
+  placeholder: {
+    id: "app.skills.placeholder",
+    defaultMessage: "Skills..."
+  },
   designLabel: {
     id: "app.skills.design_label",
     defaultMessage: "Design"
@@ -170,14 +174,14 @@ class SkillsField extends Component {
     return builtValue;
   };
   render() {
-    const { name } = this.props;
+    const { intl, name } = this.props;
     const { options } = this.state;
     return (
       <CreatableSelect
         classNamePrefix="select-search"
         cacheOptions
         isMulti
-        placeholder="Skills..."
+        placeholder={intl.formatMessage(messages.placeholder)}
         options={options}
         onCreateOption={this._handleCreateOption}
         onChange={this._handleChange}
