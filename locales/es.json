@@ -152,7 +152,7 @@
   "app.people.history_chart.title": "Nuevos seguidores",
   "app.people.import.assign_columns": "Asigna las columnas de tu hoja de cálculo al campo apropiado de la base de datos",
   "app.people.import.button_label": "Importar hoja de cálculo",
-  "app.people.import.field_label": "Cammpo",
+  "app.people.import.field_label": "Campo",
   "app.people.import.importing_count": "Importando... ({count})",
   "app.people.import.importing_label": "Importando {filename}...",
   "app.people.import.select_categories": "Selecciona las categorías automáticas para todas las entradas de esta importación",
