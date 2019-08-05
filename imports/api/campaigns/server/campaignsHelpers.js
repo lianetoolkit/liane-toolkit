@@ -473,7 +473,8 @@ const CampaignsHelpers = {
       }).count();
       if (accountCampaignsCount <= 1) {
         FacebookAccountsHelpers.removeAccount({
-          facebookAccountId: account.facebookId
+          facebookAccountId: account.facebookId,
+          token: campaign.facebookAccount.accessToken
         });
       }
     }

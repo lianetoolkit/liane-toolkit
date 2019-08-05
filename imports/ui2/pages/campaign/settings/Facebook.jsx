@@ -28,22 +28,6 @@ export default class CampaignFacebookPage extends Component {
     ev.preventDefault();
     const { campaignId } = this.props;
     const { formData } = this.state;
-    if (formData.accounts && formData.accounts.length) {
-      Meteor.call(
-        "campaigns.updateAccounts",
-        {
-          campaignId,
-          accounts: formData.accounts
-        },
-        (err, data) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(data);
-          }
-        }
-      );
-    }
   };
   _handleSubscriptionClick = ev => {
     ev.preventDefault();

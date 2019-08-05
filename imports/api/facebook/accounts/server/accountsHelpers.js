@@ -41,10 +41,20 @@ const FacebookAccountsHelpers = {
       throw new Meteor.Error(500, "Error trying to subscribe");
     }
   },
-  removeAccount({ facebookAccountId }) {
+  removeAccount({ facebookAccountId, token }) {
     const account = FacebookAccounts.findOne({ facebookId: facebookAccountId });
     if (!account) {
       throw new Meteor.Error(404, "Facebook Account not found");
+    }
+
+    try {
+      Promise.await(
+        FB.api(`${facebookAccountId}/subscribed_apps`, "delete", {
+          access_token: token
+        })
+      );
+    } catch (err) {
+      console.log(err);
     }
 
     Likes.remove({ facebookAccountId });
