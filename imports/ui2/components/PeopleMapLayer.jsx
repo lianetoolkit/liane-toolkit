@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Marker, Popup, FeatureGroup } from "react-leaflet";
+import MarkerClusterGroup from "react-leaflet-markercluster";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import PersonMetaButtons from "./PersonMetaButtons.jsx";
@@ -76,33 +77,37 @@ export default class PeopleMapLayer extends Component {
     if (people && people.length) {
       return (
         <FeatureGroup onAdd={this._handleAdd}>
-          {people.map(person => (
-            <Marker
-              icon={PeopleMapLayer.icon(person)}
-              key={person._id}
-              position={person.location.coordinates}
-              // onClick={this._handleClick}
-              // onMouseOver={this._handleMouseOver(person)}
-              // onMouseOut={this._handleMouseOut(person)}
-            >
-              <Popup>
-                <PersonPopup>
-                  <a
-                    className="link"
-                    href={FlowRouter.path("App.people.detail", {
-                      personId: person._id
-                    })}
-                  >
-                    Profile
-                  </a>
-                  <h2>{person.name}</h2>
-                  <PersonMetaButtons person={person} readOnly simple text />
-                  <p className="address">{person.location.formattedAddress}</p>
-                  <PersonSummary person={person} hideIfEmpty={true} />
-                </PersonPopup>
-              </Popup>
-            </Marker>
-          ))}
+          <MarkerClusterGroup>
+            {people.map(person => (
+              <Marker
+                icon={PeopleMapLayer.icon(person)}
+                key={person._id}
+                position={person.location.coordinates}
+                // onClick={this._handleClick}
+                // onMouseOver={this._handleMouseOver(person)}
+                // onMouseOut={this._handleMouseOut(person)}
+              >
+                <Popup>
+                  <PersonPopup>
+                    <a
+                      className="link"
+                      href={FlowRouter.path("App.people.detail", {
+                        personId: person._id
+                      })}
+                    >
+                      Profile
+                    </a>
+                    <h2>{person.name}</h2>
+                    <PersonMetaButtons person={person} readOnly simple text />
+                    <p className="address">
+                      {person.location.formattedAddress}
+                    </p>
+                    <PersonSummary person={person} hideIfEmpty={true} />
+                  </PersonPopup>
+                </Popup>
+              </Marker>
+            ))}
+          </MarkerClusterGroup>
         </FeatureGroup>
       );
     } else {

@@ -210,6 +210,14 @@ input[type="submit"]:disabled {
   color: #999;
 }
 
+#app .marker-cluster {
+  background-color: rgba(0,0,0,0.15);
+}
+
+#app .marker-cluster div {
+  background-color: #fff;
+}
+
 /* React Tooltip */
 .__react_component_tooltip {
   font-size: 12px;
