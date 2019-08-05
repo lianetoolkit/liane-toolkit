@@ -3,9 +3,13 @@ import { get, set } from "lodash";
 
 import { alertStore } from "../../../containers/Alerts.jsx";
 
+import Select from "react-select";
+
 import Nav from "./Nav.jsx";
 import Form from "../../../components/Form.jsx";
 import PersonFormInfo from "../../../components/PersonFormInfo.jsx";
+
+import { languages } from "/locales";
 
 export default class CampaignSettingsPage extends Component {
   constructor(props) {
@@ -65,6 +69,32 @@ export default class CampaignSettingsPage extends Component {
     const { formData } = this.state;
     return get(formData, key);
   };
+  _getFormLanguageOptions = () => {
+    return [
+      {
+        label: "Default (browser language)",
+        value: ""
+      }
+    ].concat(
+      Object.keys(languages).map(key => {
+        return {
+          label: languages[key],
+          value: key
+        };
+      })
+    );
+  };
+  _getFormLanguageValue = () => {
+    const { formData } = this.state;
+    let key = get(formData, "forms.crm.language");
+    if (key) {
+      return {
+        label: languages[key],
+        value: key
+      };
+    }
+    return null;
+  };
   render() {
     const { campaign } = this.props;
     const { active, formData } = this.state;
@@ -96,6 +126,25 @@ export default class CampaignSettingsPage extends Component {
                 name="forms.slug"
                 value={this.getValue("forms.slug")}
                 onChange={this._handleChange}
+              />
+            </Form.Field>
+            <Form.Field label="Form language">
+              <Select
+                classNamePrefix="select-search"
+                cacheOptions
+                isSearchable={true}
+                placeholder="Default (browser language)"
+                options={this._getFormLanguageOptions()}
+                onChange={selected => {
+                  this._handleChange({
+                    target: {
+                      name: "forms.crm.language",
+                      value: selected.value
+                    }
+                  });
+                }}
+                name="forms.crm.language"
+                value={this._getFormLanguageValue()}
               />
             </Form.Field>
             <Form.Field label="Form title">

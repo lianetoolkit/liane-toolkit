@@ -126,6 +126,10 @@ Campaigns.schema = new SimpleSchema({
     type: Object,
     optional: true
   },
+  "forms.crm.language": {
+    type: String,
+    optional: true
+  },
   "forms.crm.header": {
     type: String
   },

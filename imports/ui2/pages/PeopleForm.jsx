@@ -36,31 +36,6 @@ import Loading from "../components/Loading.jsx";
 import Button from "../components/Button.jsx";
 import Form from "../components/Form.jsx";
 
-const language =
-  (navigator.languages && navigator.languages[0]) ||
-  navigator.language ||
-  navigator.userLanguage;
-
-const findLocale = language => {
-  let locale = false;
-  const languageWRC = language.toLowerCase().split(/[_-]+/)[0];
-  for (const key in localeData) {
-    let keyWRC = key.toLowerCase().split(/[_-]+/)[0];
-    if (
-      !locale &&
-      (key == language ||
-        key == languageWRC ||
-        keyWRC == languageWRC ||
-        keyWRC == language)
-    ) {
-      locale = key;
-    }
-  }
-  return locale;
-};
-
-const localeMessages = localeData[findLocale(language)] || localeData.en;
-
 const recaptchaSiteKey = Meteor.settings.public.recaptcha;
 
 const messages = defineMessages({
@@ -574,6 +549,31 @@ const PeopleFormIntl = injectIntl(PeopleForm);
 
 class IntlContainer extends Component {
   render() {
+    console.log(this.props);
+    const language =
+      get(this.props, "campaign.forms.crm.language") ||
+      (navigator.languages && navigator.languages[0]) ||
+      navigator.language ||
+      navigator.userLanguage;
+
+    const findLocale = language => {
+      let locale = false;
+      const languageWRC = language.toLowerCase().split(/[_-]+/)[0];
+      for (const key in localeData) {
+        let keyWRC = key.toLowerCase().split(/[_-]+/)[0];
+        if (
+          !locale &&
+          (key == language ||
+            key == languageWRC ||
+            keyWRC == languageWRC ||
+            keyWRC == language)
+        ) {
+          locale = key;
+        }
+      }
+      return locale;
+    };
+    const localeMessages = localeData[findLocale(language)] || localeData.en;
     return (
       <IntlProvider locale={language} messages={localeMessages}>
         <PeopleFormIntl {...this.props} />
