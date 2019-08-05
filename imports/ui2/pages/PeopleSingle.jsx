@@ -18,6 +18,7 @@ import PersonEdit from "../components/PersonEdit.jsx";
 import Reply from "../components/Reply.jsx";
 
 import CommentList from "../components/CommentList.jsx";
+import PersonReactionList from "../components/PersonReactionList.jsx";
 
 const Container = styled.div`
   width: 100%;
@@ -265,6 +266,16 @@ export default class PeopleSingle extends Component {
               href={FlowRouter.path(
                 "App.people.detail",
                 { personId: person._id },
+                { section: "reactions" }
+              )}
+              className={section == "reactions" ? "active" : ""}
+            >
+              Reactions
+            </a>
+            <a
+              href={FlowRouter.path(
+                "App.people.detail",
+                { personId: person._id },
                 { section: "comments" }
               )}
               className={section == "comments" ? "active" : ""}
@@ -290,6 +301,9 @@ export default class PeopleSingle extends Component {
             </header>
             <div className="person-content">
               {!section ? <Information person={person} tags={tags} /> : null}
+              {section == "reactions" ? (
+                <PersonReactionList personId={person._id} />
+              ) : null}
               {section == "comments" ? (
                 <Comments campaignId={campaignId} comments={comments} />
               ) : null}

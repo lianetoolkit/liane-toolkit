@@ -38,6 +38,7 @@ import "/imports/api/facebook/entries/server/entriesMethods.js";
 
 // likes
 import "/imports/api/facebook/likes/server/likesPublications.js";
+import "/imports/api/facebook/likes/server/likesMethods.js";
 
 // comments
 import "/imports/api/facebook/comments/server/commentsMethods.js";
