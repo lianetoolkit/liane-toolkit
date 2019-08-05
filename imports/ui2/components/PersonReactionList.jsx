@@ -45,7 +45,6 @@ export default class PersonReactionList extends Component {
     }
   }
   _fetch() {
-    console.log("fetching");
     const { personId } = this.props;
     const { options } = this.state;
     this.setState({ loading: true });
