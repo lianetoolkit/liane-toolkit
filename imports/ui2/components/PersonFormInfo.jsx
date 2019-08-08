@@ -53,19 +53,21 @@ const Container = styled.div`
       }
     }
   }
-  ${props => props.simple && css`
-    font-size: 0.8em;
-    margin: 0 0 1rem;
-    .fa-align-left {
-      font-size: 0.9em;
-    }
-    input[type=text] {
-      padding: 0.5rem;
-    }
-    .actions a {
-      padding: 0.25rem 0.5rem;
-    }
-  `}
+  ${props =>
+    props.simple &&
+    css`
+      font-size: 0.8em;
+      margin: 0 0 1rem;
+      .fa-align-left {
+        font-size: 0.9em;
+      }
+      input[type="text"] {
+        padding: 0.5rem;
+      }
+      .actions a {
+        padding: 0.25rem 0.5rem;
+      }
+    `}
   ${props =>
     props.filled &&
     css`
@@ -88,7 +90,8 @@ export default class PersonFormInfo extends Component {
       loading: false
     };
   }
-  _handleRegenerateClick = () => {
+  _handleRegenerateClick = ev => {
+    ev.preventDefault();
     const { person } = this.props;
     this.setState({
       loading: true
@@ -144,7 +147,7 @@ export default class PersonFormInfo extends Component {
           </a>
           {person ? (
             <a
-              href="javascript:void(0)"
+              href="javascript:void(0);"
               data-tip="Generate new URL"
               data-for={tooltipId}
               onClick={this._handleRegenerateClick}
