@@ -45,7 +45,7 @@ const Container = styled.div`
   width: 100%;
   .person-tags {
     margin-left: 1rem;
-    font-size: 0.8em;
+    font-size: 0.7em;
     svg {
       font-size: 0.8em;
       color: #ccc;
@@ -53,8 +53,9 @@ const Container = styled.div`
     }
     .tag-item {
       background: #f0f0f0;
+      color: #666;
       border-radius: 7px;
-      padding: 0.1rem 0.5rem;
+      padding: 0.2rem 0.4rem;
       margin-right: 0.25rem;
     }
   }
