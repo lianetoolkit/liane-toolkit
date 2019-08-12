@@ -150,7 +150,7 @@ export default withTracker(({ content }) => {
       entriesJob = Jobs.findOne({ type: "entries.updateAccountEntries" });
       runningEntriesJobs = Jobs.find({
         type: "entries.updateEntryInteractions",
-        status: { $nin: ["failed"] }
+        status: { $nin: ["failed", "completed"] }
       }).fetch();
     }
 
