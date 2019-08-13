@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import Loading from "../Loading.jsx";
+
 const Container = styled.ul`
   margin: 0;
   padding: 0 0 2px;
@@ -124,6 +126,9 @@ export default class SelectAccount extends Component {
   };
   render() {
     const { accounts, loading } = this.state;
+    if (loading) {
+      return <Loading />;
+    }
     if (!loading && !accounts.length) {
       return (
         <Container>
