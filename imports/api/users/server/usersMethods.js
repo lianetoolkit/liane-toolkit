@@ -93,6 +93,23 @@ export const validateFBToken = new ValidatedMethod({
   }
 });
 
+export const validateCampaigner = new ValidatedMethod({
+  name: "users.validateCampaigner",
+  validate() {},
+  run() {
+    this.unblock();
+    const userId = Meteor.userId();
+    const user = Meteor.users.findOne(userId);
+    if (!userId || !user) {
+      throw new Meteor.Error(400, "Invalid user");
+    }
+    const tokenData = UsersHelpers.debugFBToken({
+      token: user.services.facebook.accessToken
+    });
+    return user.type == "campaigner" && validatePermissions(tokenData.scopes);
+  }
+});
+
 export const setUserType = new ValidatedMethod({
   name: "users.setType",
   validate: new SimpleSchema({
