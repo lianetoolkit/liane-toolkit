@@ -82,7 +82,7 @@ const FacebookAccountsHelpers = {
     try {
       const response = Promise.await(
         FB.api("me/accounts", {
-          fields: ["name", "fan_count", "category", "access_token"],
+          fields: ["name", "fan_count", "category", "access_token", "tasks"],
           limit: 10,
           access_token: accessToken
         })
@@ -101,6 +101,8 @@ const FacebookAccountsHelpers = {
     } catch (error) {
       throw new Meteor.Error(500, "Error trying to fetch your accounts");
     }
+
+    data = data.filter(account => account.tasks.indexOf("MANAGE") != -1);
 
     return { result: data };
   },
