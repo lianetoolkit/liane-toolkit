@@ -23,7 +23,7 @@ export default class OrLine extends Component {
   render() {
     const text = this.props.children || "or";
     return (
-      <Container>
+      <Container className="or-line">
         <span className="or-text">{text}</span>
       </Container>
     );

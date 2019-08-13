@@ -7,6 +7,7 @@ import Page from "../components/Page.jsx";
 import { alertStore } from "../containers/Alerts.jsx";
 import Button from "../components/Button.jsx";
 import Loading from "../components/Loading.jsx";
+import OrLine from "../components/OrLine.jsx";
 
 const Container = styled.div`
   flex: 1 1 100%;
@@ -197,6 +198,9 @@ const UserContainer = styled.div`
   p {
     font-size: 0.9em;
     color: #666;
+  }
+  .button-group {
+    margin-top: 2rem;
   }
 `;
 
@@ -410,18 +414,25 @@ export default class Home extends Component {
               ) : (
                 <div>
                   {user.type == "campaigner" ? (
-                    <Button primary href={FlowRouter.path("App.campaign.new")}>
-                      <FormattedMessage
-                        id="app.create_campaign"
-                        defaultMessage="Create new campaign"
-                      />
-                    </Button>
+                    <>
+                      <Button
+                        primary
+                        href={FlowRouter.path("App.campaign.new")}
+                      >
+                        <FormattedMessage
+                          id="app.create_campaign"
+                          defaultMessage="Create new campaign"
+                        />
+                      </Button>
+                      <OrLine />
+                    </>
                   ) : null}
                   <p>
                     <FormattedMessage
                       id="app.connect_campaign"
                       defaultMessage="Connect with an existing campaign by forwarding your email to the person responsible"
                     />
+                    :
                   </p>
                   <input type="text" disabled value={user.emails[0].address} />
                   <Button.Group>
