@@ -187,17 +187,13 @@ class SettingsNav extends Component {
               <Dropdown.Separator />
             </>
           ) : null}
-          {user.type == "campaigner" ? (
-            <>
-              <Dropdown.NavItem href={FlowRouter.path("App.campaign.new")}>
-                <FormattedMessage
-                  id="app.nav.campaign_new"
-                  defaultMessage="New campaign"
-                />
-              </Dropdown.NavItem>
-              <Dropdown.Separator />
-            </>
-          ) : null}
+          <Dropdown.NavItem href={FlowRouter.path("App.campaign.new")}>
+            <FormattedMessage
+              id="app.nav.campaign_new"
+              defaultMessage="New campaign"
+            />
+          </Dropdown.NavItem>
+          <Dropdown.Separator />
           <Dropdown.NavItem href={FlowRouter.path("App.account")}>
             <FormattedMessage id="app.my_account" defaultMessage="My account" />
           </Dropdown.NavItem>

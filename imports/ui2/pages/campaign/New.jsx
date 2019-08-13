@@ -15,6 +15,7 @@ import Loading from "../../components/Loading.jsx";
 import SelectAccount from "../../components/facebook/SelectAccount.jsx";
 import CountrySelect from "../../components/CountrySelect.jsx";
 import GeolocationSelect from "../../components/GeolocationSelect.jsx";
+import UserUpgrade from "../../components/UserUpgrade.jsx";
 
 const messages = defineMessages({
   nameLabel: {
@@ -32,6 +33,10 @@ const messages = defineMessages({
   submitLabel: {
     id: "app.campaign.form.submit",
     defaultMessage: "Register campaign"
+  },
+  requiredFields: {
+    id: "app.campaign.form.required_fields_warning",
+    defaultMessage: "You must fill all the required fields"
   }
 });
 
@@ -39,6 +44,8 @@ class NewCampaignPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      ready: false,
+      isValidCampaigner: false,
       loading: false,
       formData: {
         name: "",
@@ -46,6 +53,22 @@ class NewCampaignPage extends Component {
       }
     };
   }
+  componentDidMount() {
+    this._validate();
+  }
+  _validate = () => {
+    this.setState({ ready: false });
+    Meteor.call("users.validateCampaigner", (err, res) => {
+      if (err) {
+        alertStore.add(err);
+      } else {
+        this.setState({
+          ready: true,
+          isValidCampaigner: res
+        });
+      }
+    });
+  };
   _handleChange = ({ target }) => {
     this.setState({
       formData: {
@@ -87,7 +110,9 @@ class NewCampaignPage extends Component {
   };
   _handleSubmit = ev => {
     ev.preventDefault();
-    if (this._filledForm()) {
+    const { intl } = this.props;
+    const { loading } = this.state;
+    if (this._filledForm() && !loading) {
       const { formData } = this.state;
       this.setState({
         loading: true
@@ -105,15 +130,18 @@ class NewCampaignPage extends Component {
         }
       });
     } else {
-      alertStore.add(
-        "Você deve preencher todos os campos obrigatórios",
-        "error"
-      );
+      alertStore.add(intl.formatMessage(messages.requiredFields), "error");
     }
   };
   render() {
     const { intl } = this.props;
-    const { loading, formData } = this.state;
+    const { ready, isValidCampaigner, loading, formData } = this.state;
+    if (!ready) {
+      return <Loading full />;
+    }
+    if (!isValidCampaigner) {
+      return <UserUpgrade onSuccess={this._validate} />;
+    }
     return (
       <Form onSubmit={this._handleSubmit}>
         <Form.Content>

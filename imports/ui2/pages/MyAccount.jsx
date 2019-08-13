@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
+import OrLine from "../components/OrLine.jsx";
 import Form from "../components/Form.jsx";
 import Button from "../components/Button.jsx";
 import { alertStore } from "../containers/Alerts.jsx";
@@ -15,12 +16,22 @@ const Container = styled.div`
   background: #fff;
   display: flex;
   flex-direction: column;
+  overflow: auto;
   .info {
     flex: 1 1 100%;
+    margin: 0 0 3rem;
   }
   h2 {
     font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    margin: 0 0 2rem;
+    margin: 0 0 0.5rem;
+  }
+  .account-type {
+    color: #666;
+    margin: 0 0 3rem;
+  }
+  .button {
+    display: block;
+    margin: 0;
   }
   .button.delete {
     border-radius: 7px;
@@ -90,6 +101,17 @@ export default class MyAccount extends Component {
       }
     });
   };
+  _getAccountTypeLabel = () => {
+    const user = Meteor.user();
+    switch (user.type) {
+      case "campaigner":
+        return "Campaigner";
+      case "user":
+        return "Collaborator";
+      default:
+        return "Unknown";
+    }
+  };
   render() {
     const user = Meteor.user();
     return (
@@ -98,9 +120,16 @@ export default class MyAccount extends Component {
           <h2>
             Connected as <strong>{user.name}</strong>
           </h2>
+          <p className="account-type">
+            Account type: <strong>{this._getAccountTypeLabel()}</strong>
+          </p>
+          <Button primary href={FlowRouter.path("App.campaign.new")}>
+            Create a campaign
+          </Button>
+          <OrLine />
           <p>
             Connect with an existing campaign by forwarding your email to the
-            person responsible
+            person responsible:
           </p>
           <input type="text" disabled value={user.emails[0].address} />
         </div>
