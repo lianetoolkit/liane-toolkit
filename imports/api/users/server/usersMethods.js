@@ -55,9 +55,7 @@ const validatePermissions = scopes => {
     "ads_management",
     "ads_read",
     "business_management",
-    "pages_messaging",
-    "pages_messaging_phone_number",
-    "pages_messaging_subscriptions"
+    "pages_messaging"
   ];
   return !difference(permissions, scopes || []).length;
 };
