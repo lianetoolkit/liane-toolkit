@@ -10,7 +10,7 @@ import styled, { css } from "styled-components";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
-import { pick, debounce, defaultsDeep } from "lodash";
+import { get, pick, debounce, defaultsDeep } from "lodash";
 
 import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
@@ -509,6 +509,10 @@ class PeoplePage extends Component {
       />
     );
   };
+  _hasChatbot = () => {
+    const { campaign } = this.props;
+    return !!get(campaign, "facebookAccount.chatbot.config.active");
+  };
   render() {
     const {
       intl,
@@ -763,6 +767,7 @@ class PeoplePage extends Component {
               options={options}
               onChange={this._handlePeopleChange}
               onSort={this._handleTableSort}
+              chatColumn={this._hasChatbot()}
               compact
               scrollable
             />

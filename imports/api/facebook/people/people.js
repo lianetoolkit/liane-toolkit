@@ -100,6 +100,12 @@ People.schema = new SimpleSchema({
   "location.coordinates.$": {
     type: Number
   },
+  chatbotStatus: {
+    type: String,
+    allowedValues: ["bot", "pending", "admin"],
+    optional: true,
+    index: true
+  },
   createdAt: {
     type: Date,
     index: true,
