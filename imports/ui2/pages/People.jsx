@@ -511,7 +511,8 @@ class PeoplePage extends Component {
   };
   _hasChatbot = () => {
     const { campaign } = this.props;
-    return !!get(campaign, "facebookAccount.chatbot.config.active");
+    const config = get(campaign, "facebookAccount.chatbot.config");
+    return config && config.active && !config.test;
   };
   render() {
     const {
