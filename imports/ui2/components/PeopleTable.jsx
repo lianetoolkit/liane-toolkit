@@ -417,7 +417,11 @@ class PeopleTable extends Component {
                 <th />
                 {chatColumn ? (
                   <th>
-                    <FontAwesomeIcon icon={["fab", "facebook-messenger"]} />
+                    <FontAwesomeIcon
+                      icon={["fab", "facebook-messenger"]}
+                      data-tip="Chatbot conversation status"
+                      data-for="people-table-header-tip"
+                    />
                   </th>
                 ) : null}
                 <Table.SortableHead
@@ -608,6 +612,12 @@ class PeopleTable extends Component {
             ))}
           </Table>
         ) : null}
+        <ReactTooltip
+          id="people-table-header-tip"
+          aria-haspopup="true"
+          place="top"
+          effect="solid"
+        />
       </Container>
     );
   }
