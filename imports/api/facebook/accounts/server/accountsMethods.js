@@ -124,6 +124,53 @@ export const getAccountsPublicData = new ValidatedMethod({
   }
 });
 
+export const hasSubsMessaging = new ValidatedMethod({
+  name: "facebook.accounts.hasSubsMessaging",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId }) {
+    this.unblock();
+    logger.debug("facebook.accounts.hasSubsMessaging called", { campaignId });
+
+    const userId = Meteor.userId();
+
+    if (!Meteor.call("campaigns.canManage", { campaignId, userId }))
+      throw new Meteor.Error(400, "Access denied");
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    const token = campaign.facebookAccount.accessToken;
+
+    let res;
+    try {
+      res = Promise.await(
+        FB.api("me/messaging_feature_review", {
+          access_token: token
+        })
+      );
+    } catch (err) {
+      console.log(err);
+      throw new Meteor.Error(500, "Unexpected Error");
+    }
+
+    let status = false;
+
+    if (res && res.data) {
+      const subsFeature = res.data.find(
+        f => f.feature == "subscription_messaging"
+      );
+      if (subsFeature) {
+        status = subsFeature.status;
+      }
+    }
+
+    return status;
+  }
+});
+
 export const getUserAccounts = new ValidatedMethod({
   name: "facebook.accounts.getUserAccounts",
   validate() {},

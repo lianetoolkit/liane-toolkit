@@ -30,6 +30,24 @@ export default class ChatbotNotificationsModule extends Component {
     }
     return null;
   }
+  componentDidMount() {
+    this._fetchSubscription();
+  }
+  _fetchSubscription = () => {
+    const { campaign } = this.props;
+    Meteor.call(
+      "facebook.accounts.hasSubsMessaging",
+      { campaignId: campaign._id },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          console.log(res);
+          this.setState({ status: res });
+        }
+      }
+    );
+  };
   _handleChange = ({ target }) => {
     const { formData } = this.state;
     let newFormData = { ...formData };
