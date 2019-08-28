@@ -67,6 +67,9 @@ Picker.route("/subscription/:pid/people", (params, req, res, next) => {
     if (data.hasOwnProperty("phone")) {
       $set["campaignMeta.contact.cellphone"] = data.phone;
     }
+    if (data.hasOwnProperty("conversationId")) {
+      $set["campaignMeta.chatbotConversationId"] = data.conversationId;
+    }
     if (body.hasOwnProperty("status")) {
       if (!body.status || body.status == null || body.status == undefined) {
         $unset["chatbotStatus"] = "";
