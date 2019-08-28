@@ -356,6 +356,11 @@ export const peopleHistory = new ValidatedMethod({
       return { total, history };
     }
 
+    if (diffDays > 14) {
+      fromDate = new Date();
+      fromDate.setDate(fromDate.getDate() - 15);
+    }
+
     for (let d = fromDate; d <= toDate; d.setDate(d.getDate() + 1)) {
       const formattedDate = moment(d).format("YYYY-MM-DD");
       if (!history.hasOwnProperty(formattedDate)) {
