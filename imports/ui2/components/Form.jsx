@@ -86,11 +86,26 @@ const FieldContainer = styled.label`
     css`
       font-size: 1.2em;
     `}
-  ${props => props.simple && css`
+  ${props =>
+    props.simple &&
+    css`
+      .input-container {
+        border: 0;
+      }
+    `}
+  &.radio-list {
     .input-container {
-      border: 0;
+      padding: 1rem;
+      label {
+        display: flex;
+        align-items: center;
+        font-weight: normal;
+        input {
+          margin-right: 0.5rem;
+        }
+      }
     }
-  `}
+  }
 `;
 
 class Content extends Component {

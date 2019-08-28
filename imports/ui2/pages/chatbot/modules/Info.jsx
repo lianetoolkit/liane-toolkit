@@ -80,6 +80,7 @@ export default class ChatbotInfoModule extends Component {
   render() {
     const { campaign, chatbot } = this.props;
     const { loading, formData } = this.state;
+    const partyType = this.getValue("extra_info.info.party.party_type");
     if (loading) {
       return <Loading full />;
     }
@@ -121,11 +122,56 @@ export default class ChatbotInfoModule extends Component {
             onChange={this._handleChange}
             checked={this.getValue("extra_info.info.party.active")}
           >
-            Enable description of party/group/coalition
+            Enable description of party/group/coalition/movement
           </ToggleCheckbox>
           {this.getValue("extra_info.info.party.active") ? (
             <>
-              <Form.Field secondary label="Name of the party/group/coalition">
+              <Form.Field secondary label="Type" className="radio-list">
+                <label>
+                  <input
+                    type="radio"
+                    name="extra_info.info.party.party_type"
+                    value="party"
+                    checked={partyType == "party" || !partyType}
+                    onChange={this._handleChange}
+                  />{" "}
+                  Party
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="extra_info.info.party.party_type"
+                    value="coalition"
+                    checked={partyType == "coalition"}
+                    onChange={this._handleChange}
+                  />{" "}
+                  Coalition
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="extra_info.info.party.party_type"
+                    value="group"
+                    checked={partyType == "group"}
+                    onChange={this._handleChange}
+                  />{" "}
+                  Group
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="extra_info.info.party.party_type"
+                    value="movement"
+                    checked={partyType == "movement"}
+                    onChange={this._handleChange}
+                  />{" "}
+                  Movement
+                </label>
+              </Form.Field>
+              <Form.Field
+                secondary
+                label="Name of the party/group/coalition/movement"
+              >
                 <input
                   type="text"
                   name="extra_info.info.party.name"
