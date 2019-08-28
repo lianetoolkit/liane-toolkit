@@ -359,16 +359,6 @@ export const peopleHistory = new ValidatedMethod({
     for (let d = fromDate; d <= toDate; d.setDate(d.getDate() + 1)) {
       const formattedDate = moment(d).format("YYYY-MM-DD");
       if (!history.hasOwnProperty(formattedDate)) {
-        const amount = People.find({
-          campaignId,
-          source: "facebook",
-          createdAt: {
-            $gte: moment(formattedDate).toDate(),
-            $lte: moment(formattedDate)
-              .add(1, "day")
-              .toDate()
-          }
-        }).count();
         history[formattedDate] = People.find({
           campaignId,
           source: "facebook",
