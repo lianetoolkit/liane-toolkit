@@ -47,6 +47,10 @@ const messages = defineMessages({
     id: "app.people_form.email_required",
     defaultMessage: "Email is required"
   },
+  requiredEmailOrPhone: {
+    id: "app.people_form.email_phone_required",
+    defaultMessage: "Email or phone is required"
+  },
   thankYou: {
     id: "app.people_form.thank_you",
     defaultMessage: "Thank you!"
@@ -250,8 +254,11 @@ class PeopleForm extends Component {
       alertStore.add(intl.formatMessage(messages.requiredName), "error");
       return;
     }
-    if (!data.email) {
-      alertStore.add(intl.formatMessage(messages.requiredEmail), "error");
+    if (!data.email && !data.cellphone) {
+      alertStore.add(
+        intl.formatMessage(messages.requiredEmailOrPhone),
+        "error"
+      );
       return;
     }
     this.setState({ loading: true });

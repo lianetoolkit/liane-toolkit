@@ -1326,7 +1326,8 @@ export const peopleFormSubmit = new ValidatedMethod({
       type: String
     },
     email: {
-      type: String
+      type: String,
+      optional: true
     },
     cellphone: {
       type: String,
@@ -1398,6 +1399,10 @@ export const peopleFormSubmit = new ValidatedMethod({
   run(formData) {
     const { campaignId, formId, facebookId, recaptcha, ...data } = formData;
     logger.debug("peopleForm.submit called", { campaignId, formId });
+
+    if (!data.email && !data.cellphone) {
+      throw new Meteor.Error(400, "Email or phone is required");
+    }
 
     let $set = {
       filledForm: true
