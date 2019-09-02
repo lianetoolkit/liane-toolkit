@@ -167,8 +167,6 @@ export const hasSubsMessaging = new ValidatedMethod({
       }
     }
 
-    return "APPROVED";
-
     return status;
   }
 });
