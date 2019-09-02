@@ -52,9 +52,9 @@ const validatePermissions = scopes => {
     "publish_pages",
     "manage_pages",
     "pages_show_list",
-    "ads_management",
-    "ads_read",
-    "business_management",
+    // "ads_management",
+    // "ads_read",
+    // "business_management",
     "pages_messaging"
   ];
   return !difference(permissions, scopes || []).length;

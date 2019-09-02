@@ -38,9 +38,9 @@ export default class UserUpgrade extends Component {
       "manage_pages",
       "publish_pages",
       "pages_show_list",
-      "ads_management",
-      "ads_read",
-      "business_management",
+      // "ads_management",
+      // "ads_read",
+      // "business_management",
       "pages_messaging",
       "pages_messaging_phone_number",
       "pages_messaging_subscriptions"

@@ -1,4 +1,6 @@
 import SimpleSchema from "simpl-schema";
+import axios from "axios";
+import moment from "moment";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { ChatbotHelpers } from "./chatbotHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
@@ -400,5 +402,69 @@ export const setPrimaryProposal = new ValidatedMethod({
     }
 
     return ChatbotHelpers.setPrimaryProposal({ campaignId, proposalId });
+  }
+});
+
+export const sendNotification = new ValidatedMethod({
+  name: "chatbot.sendNotification",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    message: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, message }) {
+    this.unblock();
+    logger.debug("chatbot.sendNotification called", { campaignId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    const allowed = Meteor.call("campaigns.canManage", { userId, campaignId });
+
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    const lastDate = campaign.facebookAccount.chatbot.lastNotificationDate;
+
+    if (
+      lastDate &&
+      moment(lastDate)
+        .add(48, "hours")
+        .isAfter(moment())
+    ) {
+      throw new Meteor.Error(400, "Rate limited");
+    }
+
+    const url = ChatbotHelpers.getYeekoUrl(
+      campaign.facebookAccount.facebookId,
+      "send_message"
+    );
+
+    let res;
+    try {
+      res = Promise.await(axios.post(url, { msg: message }));
+    } catch (err) {
+      console.log(err);
+      throw new Meteor.Error(500, "Unexpected error");
+    }
+
+    Campaigns.update(campaignId, {
+      $set: {
+        "facebookAccount.chatbot.lastNotificationDate": new Date()
+      }
+    });
+
+    return true;
   }
 });

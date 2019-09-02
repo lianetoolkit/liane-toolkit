@@ -17,6 +17,7 @@ const getYeekoUrl = (facebookId, path = "") => {
 };
 
 const ChatbotHelpers = {
+  getYeekoUrl,
   chatbotObject({ campaignId }) {
     return Campaigns.findOne(campaignId).facebookAccount.chatbot;
   },
