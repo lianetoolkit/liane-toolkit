@@ -112,6 +112,7 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
     fields: {
       name: 1,
       facebookId: 1,
+      facebookAccountId: 1,
       campaignId: 1,
       counts: 1,
       chatbotStatus: 1,
