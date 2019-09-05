@@ -18,7 +18,7 @@ if (Meteor.settings.public.deployMode !== "local") {
         geoData = res.data;
       })
       .finally(() => {
-        if (geoData && geoData.country) insertDoc.country = res.data.country;
+        if (geoData && geoData.country) insertDoc.country = geoData.country;
         AccessLogs.insert(insertDoc);
       });
   });
