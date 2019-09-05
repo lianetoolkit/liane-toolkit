@@ -1,14 +1,26 @@
 import { Accounts } from "meteor/accounts-base";
 import { AccessLogs } from "/imports/api/accessLogs/accessLogs";
+import axios from "axios";
 
 if (Meteor.settings.public.deployMode !== "local") {
   Accounts.onLogin(function(data) {
-    AccessLogs.insert({
+    const ip = data.connection.clientAddress;
+    let insertDoc = {
+      ip,
       type: "open",
       userId: data.user._id,
-      connectionId: data.connection.id,
-      ip: data.connection.clientAddress
-    });
+      connectionId: data.connection.id
+    };
+    let geoData = false;
+    axios
+      .get(`https://get.geojs.io/v1/country/${ip}.json`)
+      .then(res => {
+        geoData = res.data;
+      })
+      .finally(() => {
+        if (geoData && geoData.country) insertDoc.country = res.data.country;
+        AccessLogs.insert(insertDoc);
+      });
   });
 
   Meteor.onConnection(function(connection) {

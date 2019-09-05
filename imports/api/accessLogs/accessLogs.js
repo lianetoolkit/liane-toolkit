@@ -11,6 +11,11 @@ AccessLogs.schema = new SimpleSchema({
     type: String,
     index: true
   },
+  country: {
+    type: String,
+    index: true,
+    optional: true
+  },
   userId: {
     type: String,
     index: true
