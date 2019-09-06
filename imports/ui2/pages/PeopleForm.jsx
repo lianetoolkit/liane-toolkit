@@ -35,6 +35,7 @@ import { getFormUrl } from "../utils/people.js";
 import Loading from "../components/Loading.jsx";
 import Button from "../components/Button.jsx";
 import Form from "../components/Form.jsx";
+import CountryExclusive from "../components/CountryExclusive.jsx";
 
 const recaptchaSiteKey = Meteor.settings.public.recaptcha;
 
@@ -517,10 +518,30 @@ class PeopleForm extends Component {
                     </div>
                   ) : null}
                   <p className="policy">
-                    <FormattedHTMLMessage
-                      id="app.people_form.privacy_policy"
-                      defaultMessage='By submitting this form you agree with our <a href="https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf" target="_blank" rel="external">Privacy Policy</a>.'
-                    />
+                    <CountryExclusive
+                      country="CO"
+                      defaultContent={
+                        <FormattedHTMLMessage
+                          id="app.people_form.privacy_policy"
+                          defaultMessage='By submitting this form you agree with our <a href="https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf" target="_blank" rel="external">Privacy Policy</a>.'
+                        />
+                      }
+                    >
+                      <span>
+                        Al enviar este formulario autorizas a que tus datos
+                        personales sean recolectados y tratados, de conformidad
+                        con la política de protección de datos personales del
+                        Instituto Update / Extituto de Política Abierta, la cual
+                        está disponible en el siguiente enlace:{" "}
+                        <a
+                          href="https://files.liane.cc/legal/politica_privacidad_extituto_v1.pdf"
+                          target="_blank"
+                          rel="external"
+                        >
+                          https://files.liane.cc/legal/politica_privacidad_extituto_v1.pdf
+                        </a>
+                      </span>
+                    </CountryExclusive>
                   </p>
                   <input
                     type="submit"
@@ -556,7 +577,6 @@ const PeopleFormIntl = injectIntl(PeopleForm);
 
 class IntlContainer extends Component {
   render() {
-    console.log(this.props);
     const language =
       get(this.props, "campaign.forms.crm.language") ||
       (navigator.languages && navigator.languages[0]) ||

@@ -2,7 +2,30 @@ import SimpleSchema from "simpl-schema";
 import { UsersHelpers } from "./usersHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { difference } from "lodash";
+import axios from "axios";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
+
+export const getCountry = new ValidatedMethod({
+  name: "users.getCountry",
+  validate() {},
+  run() {
+    const ip = this.connection.clientAddress;
+    let res;
+    try {
+      res = Promise.await(
+        axios.get(`https://get.geojs.io/v1/country/${ip}.json`)
+      );
+    } catch (err) {
+      console.log(err);
+    }
+
+    if (res && res.data && res.data.country) {
+      return res.data.country;
+    }
+
+    return false;
+  }
+});
 
 export const updateUser = new ValidatedMethod({
   name: "users.update",
