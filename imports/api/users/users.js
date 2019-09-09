@@ -41,6 +41,11 @@ Meteor.users.schema = new SimpleSchema({
     optional: true,
     blackbox: true
   },
+  language: {
+    type: String,
+    optional: true,
+    index: true
+  },
   createdAt: {
     type: Date
   },

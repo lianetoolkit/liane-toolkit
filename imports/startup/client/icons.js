@@ -48,7 +48,8 @@ import {
   faEye,
   faSync,
   faMarker,
-  faLink
+  faLink,
+  faGlobeAmericas
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faFacebookSquare,
@@ -106,6 +107,7 @@ library.add(faEye);
 library.add(faSync);
 library.add(faMarker);
 library.add(faLink);
+library.add(faGlobeAmericas);
 library.add(faFacebookSquare);
 library.add(faInstagram);
 library.add(faTwitter);

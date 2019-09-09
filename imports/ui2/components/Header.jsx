@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
 import { FormattedMessage } from "react-intl";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ClientStorage } from "meteor/ostrio:cstorage";
+
+import { alertStore } from "../containers/Alerts.jsx";
 
 import AppNav from "../components/AppNav.jsx";
 
@@ -41,7 +45,10 @@ const TopNav = styled.nav`
   justify-content: flex-end;
   padding-top: 0.5rem;
   margin-bottom: 0.2rem;
-  a {
+  position: relative;
+  z-index: 11;
+  a,
+  span {
     color: #888;
     text-decoration: none;
     display: block;
@@ -51,6 +58,42 @@ const TopNav = styled.nav`
     &:focus,
     &:active {
       color: #fff;
+      ul {
+        display: block;
+      }
+    }
+    position: relative;
+    ul {
+      position: absolute;
+      display: none;
+      top: 0;
+      right: 0;
+      list-style: none;
+      margin: 0.5rem 0 0;
+      padding: 0.7rem 0 0;
+      font-size: 0.9em;
+      li {
+        background: #444;
+        margin: 0;
+        padding: 0.25rem 0.5rem;
+        &:first-child {
+          padding-top: 0.5rem;
+          border-radius: 7px 7px 0 0;
+        }
+        &:last-child {
+          padding-bottom: 0.5rem;
+          border-radius: 0 0 7px 7px;
+        }
+        a {
+          color: #888;
+          margin: 0;
+          &:hover,
+          &:focus,
+          &:active {
+            color: #fff;
+          }
+        }
+      }
     }
   }
   ${props =>
@@ -67,6 +110,22 @@ const TopNav = styled.nav`
 `;
 
 export default class Header extends Component {
+  _handleLanguageClick = language => ev => {
+    ev.preventDefault();
+    const user = Meteor.user();
+    ClientStorage.set("language", language);
+    if (user) {
+      Meteor.call("users.setLanguage", { language }, (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          window.location.reload();
+        }
+      });
+    } else {
+      window.location.reload();
+    }
+  };
   render() {
     const { campaign, campaigns, notifications } = this.props;
     const user = Meteor.user();
@@ -113,6 +172,35 @@ export default class Header extends Component {
                 defaultMessage="Privacy Policy"
               />
             </a>
+            <span>
+              <FontAwesomeIcon icon="globe-americas" />
+              <ul>
+                <li>
+                  <a
+                    href="javascript:void(0);"
+                    onClick={this._handleLanguageClick("en")}
+                  >
+                    English
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="javascript:void(0);"
+                    onClick={this._handleLanguageClick("es")}
+                  >
+                    Español
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="javascript:void(0);"
+                    onClick={this._handleLanguageClick("pt-BR")}
+                  >
+                    Português (Brasil)
+                  </a>
+                </li>
+              </ul>
+            </span>
           </TopNav>
           {user ? (
             <AppNav

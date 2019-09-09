@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { IntlProvider, addLocaleData } from "react-intl";
+import { ClientStorage } from "meteor/ostrio:cstorage";
 
 import en from "react-intl/locale-data/en";
 import es from "react-intl/locale-data/es";
@@ -17,7 +18,7 @@ import Alerts from "../containers/Alerts.jsx";
 import Page from "../components/Page.jsx";
 import AuthConfirm from "../components/AuthConfirm.jsx";
 
-const language =
+let language =
   (navigator.languages && navigator.languages[0]) ||
   navigator.language ||
   navigator.userLanguage;
@@ -40,8 +41,6 @@ const findLocale = language => {
   return locale;
 };
 
-const messages = localeData[findLocale(language)] || localeData.en;
-
 const publicRoutes = ["App.dashboard", "App.transparency"];
 
 export default class AppLayout extends Component {
@@ -54,6 +53,10 @@ export default class AppLayout extends Component {
   }
   render() {
     const { ready, connected, isLoggedIn, campaign, user } = this.props;
+    const sessionLanguage = ClientStorage.get("language");
+    if (user && user.language) language = user.language;
+    if (sessionLanguage) language = sessionLanguage;
+    const messages = localeData[findLocale(language)] || localeData.en;
     let content;
     if (!this.props.content) {
       if (campaign) {

@@ -5,6 +5,25 @@ import { difference } from "lodash";
 import axios from "axios";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 
+export const setLanguage = new ValidatedMethod({
+  name: "users.setLanguage",
+  validate: new SimpleSchema({
+    language: {
+      type: String
+    }
+  }).validator(),
+  run({ language }) {
+    const userId = Meteor.userId();
+    logger.debug("users.setLanguage called", { userId, language });
+
+    if (!userId) {
+      throw new Meteor.Error(401, "You are not logged in");
+    }
+
+    return Meteor.users.update(userId, { $set: { language } });
+  }
+});
+
 export const getCountry = new ValidatedMethod({
   name: "users.getCountry",
   validate() {},

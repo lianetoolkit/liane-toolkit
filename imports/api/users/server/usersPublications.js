@@ -13,6 +13,7 @@ Meteor.publish("users.data", function() {
         type: 1,
         emails: 1,
         "services.facebook": 1,
+        language: 1,
         createdAt: 1
       }
     });
