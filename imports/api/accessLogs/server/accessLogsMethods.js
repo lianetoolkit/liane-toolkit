@@ -14,7 +14,7 @@ export const accessLog = new ValidatedMethod({
   }).validator(),
   run({ type, path }) {
     this.unblock();
-    if (Meteor.settings.public.deployMode !== "local") {
+    // if (Meteor.settings.public.deployMode !== "local") {
       if (!this.userId) return;
       let doc = {
         connectionId: this.connection.id,
@@ -26,6 +26,6 @@ export const accessLog = new ValidatedMethod({
         doc.path = path;
       }
       AccessLogs.insert(doc);
-    }
+    // }
   }
 });

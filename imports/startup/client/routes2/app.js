@@ -25,6 +25,8 @@ import CampaignTeamPage from "/imports/ui2/pages/campaign/settings/Team.jsx";
 import CampaignActionsPage from "/imports/ui2/pages/campaign/settings/Actions.jsx";
 import NewCampaignPage from "/imports/ui2/containers/campaign/New.jsx";
 
+import AdminPage from "/imports/ui2/pages/admin/Admin.jsx";
+
 import { APP_NAME, addTitle, trackRouteEntry } from "./utils.js";
 
 // app routes
@@ -200,6 +202,14 @@ appRoutes.route("/campaign/settings/actions", {
   action: function() {
     addTitle(`${APP_NAME} | Campaign Actions`);
     return mount(App, { content: { component: CampaignActionsPage } });
+  }
+});
+
+appRoutes.route("/admin", {
+  name: "App.admin",
+  action: function(params) {
+    addTitle(`${APP_NAME} | Administration`);
+    return mount(App, { content: { component: AdminPage } });
   }
 });
 

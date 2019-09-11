@@ -2,7 +2,7 @@ import { Accounts } from "meteor/accounts-base";
 import { AccessLogs } from "/imports/api/accessLogs/accessLogs";
 import axios from "axios";
 
-if (Meteor.settings.public.deployMode !== "local") {
+// if (Meteor.settings.public.deployMode !== "local") {
   Accounts.onLogin(function(data) {
     const ip = data.connection.clientAddress;
     let insertDoc = {
@@ -39,4 +39,4 @@ if (Meteor.settings.public.deployMode !== "local") {
       }
     });
   });
-}
+// }

@@ -18,6 +18,8 @@ import Alerts from "../containers/Alerts.jsx";
 import Page from "../components/Page.jsx";
 import AuthConfirm from "../components/AuthConfirm.jsx";
 
+import { FeedbackButton } from "../components/Feedback.jsx";
+
 let language =
   (navigator.languages && navigator.languages[0]) ||
   navigator.language ||
@@ -77,6 +79,7 @@ export default class AppLayout extends Component {
             <Modal />
             <Alerts />
             {user ? <AuthConfirm user={user} /> : null}
+            <FeedbackButton />
           </div>
         </IntlProvider>
       );
