@@ -2,22 +2,55 @@ import React, { Component } from "react";
 
 import Page from "/imports/ui2/components/Page.jsx";
 
-export default class AdminPage extends Component {
+import TicketsContainer from "/imports/ui2/containers/admin/Tickets.jsx";
+
+class AdminContainer extends Component {
   render() {
+    const { children } = this.props;
     return (
       <>
-        <Page.Nav>
+        <Page.Nav full>
           <h3>Administration</h3>
-          <a href="javascript:void(0);">Campaigns</a>
-          <a href="javascript:void(0);">Tickets</a>
-          <a href="javascript:void(0);">Users</a>
-          <a href="javascript:void(0);">Jobs</a>
-          <a href="javascript:void(0);">Geolocations</a>
+          <a href={FlowRouter.path("App.admin", { section: "campaigns" })}>
+            Campaigns
+          </a>
+          <a href={FlowRouter.path("App.admin", { section: "tickets" })}>
+            Tickets
+          </a>
+          <a href={FlowRouter.path("App.admin", { section: "users" })}>Users</a>
+          <a href={FlowRouter.path("App.admin", { section: "jobs" })}>Jobs</a>
+          <a href={FlowRouter.path("App.admin", { section: "geolocations" })}>
+            Geolocations
+          </a>
         </Page.Nav>
-        <Page.Content>
-          <h2>Administration</h2>
-        </Page.Content>
+        {children}
       </>
     );
   }
 }
+
+export class Index extends Component {
+  render() {
+    return null;
+  }
+}
+
+export default {
+  getSection(section = "") {
+    let children = null;
+    switch (section) {
+      case "":
+        children = <Index />;
+        break;
+      case "tickets":
+        children = <TicketsContainer />;
+        break;
+      default:
+        children = <h2>404 - Not Found</h2>;
+        break;
+    }
+    return function() {
+      return <AdminContainer>{children}</AdminContainer>;
+    };
+  }
+};

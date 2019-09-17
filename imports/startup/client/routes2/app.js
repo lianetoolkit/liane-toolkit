@@ -205,11 +205,13 @@ appRoutes.route("/campaign/settings/actions", {
   }
 });
 
-appRoutes.route("/admin", {
+appRoutes.route("/admin/:section?", {
   name: "App.admin",
   action: function(params) {
     addTitle(`${APP_NAME} | Administration`);
-    return mount(App, { content: { component: AdminPage } });
+    return mount(App, {
+      content: { component: AdminPage.getSection(params.section) }
+    });
   }
 });
 

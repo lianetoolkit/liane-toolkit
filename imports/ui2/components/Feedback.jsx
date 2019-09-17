@@ -31,6 +31,7 @@ export class FeedbackForm extends Component {
     this.state = {
       formData: {
         category: "bug",
+        subject: "",
         message: ""
       }
     };
@@ -69,6 +70,7 @@ export class FeedbackForm extends Component {
         version: browser.version
       }
     };
+    // console.log(data);
     Meteor.call("feedback.new", data, (err, res) => {
       if (err) {
         alertStore.add(err);
@@ -83,7 +85,7 @@ export class FeedbackForm extends Component {
     return (
       <Form onSubmit={this._handleSubmit}>
         <Form.Field label="What would like to message us about?">
-          <select onChange={this._handleChange}>
+          <select name="category" onChange={this._handleChange}>
             <option value="bug">Report a problem</option>
             <option value="suggestion">Give a suggestion</option>
             <option value="question">Ask a question</option>
@@ -105,6 +107,9 @@ export class FeedbackForm extends Component {
             value={formData.email}
             onChange={this._handleChange}
           />
+        </Form.Field>
+        <Form.Field label="Subject">
+          <input type="text" name="subject" onChange={this._handleChange} />
         </Form.Field>
         <Form.Field label="Your message">
           <textarea name="message" onChange={this._handleChange} />

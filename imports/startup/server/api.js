@@ -3,6 +3,7 @@ import "/imports/api/accessLogs/server/accessLogsMethods.js";
 
 // feeedback
 import "/imports/api/feedback/server/feedbackMethods.js";
+import "/imports/api/feedback/server/feedbackPublications.js";
 
 // users
 import "/imports/api/users/server/usersMethods.js";

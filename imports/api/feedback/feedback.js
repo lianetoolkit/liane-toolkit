@@ -23,8 +23,17 @@ Feedback.schema = new SimpleSchema({
   email: {
     type: String
   },
+  subject: {
+    type: String
+  },
   message: {
     type: String
+  },
+  resolved: {
+    type: Boolean,
+    defaultValue: false,
+    optional: true,
+    index: true
   },
   createdAt: {
     type: Date,
