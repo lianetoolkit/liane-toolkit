@@ -21,7 +21,7 @@ const ready = new ReactiveVar(false);
 
 const AppSubs = new SubsManager();
 
-export default withTracker(({ content }) => {
+export default withTracker(() => {
   const campaignsHandle = AppSubs.subscribe("campaigns.byUser");
   const userHandle = AppSubs.subscribe("users.data");
   const notificationsHandle = AppSubs.subscribe("notifications.byUser");
@@ -205,7 +205,6 @@ export default withTracker(({ content }) => {
     importCount,
     exportCount,
     peopleExports,
-    content: content,
     routeName: FlowRouter.getRouteName()
   };
 })(AppLayout);

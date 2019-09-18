@@ -38,18 +38,18 @@ export class Index extends Component {
 export default {
   getSection(section = "") {
     let children = null;
-    switch (section) {
-      case "":
-        children = <Index />;
-        break;
-      case "tickets":
-        children = <TicketsContainer />;
-        break;
-      default:
-        children = <h2>404 - Not Found</h2>;
-        break;
-    }
-    return function() {
+    return function(props) {
+      switch (section) {
+        case "":
+          children = <Index {...props} />;
+          break;
+        case "tickets":
+          children = <TicketsContainer {...props} />;
+          break;
+        default:
+          children = <h2>404 - Not Found</h2>;
+          break;
+      }
       return <AdminContainer>{children}</AdminContainer>;
     };
   }

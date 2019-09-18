@@ -1,10 +1,17 @@
 import { Feedback } from "/imports/api/feedback/feedback";
 
-Meteor.publish("feedback.all", function() {
+Meteor.publishComposite("feedback.all", function({ query, options }) {
   this.unblock();
   const userId = this.userId;
   if (userId && Roles.userIsInRole(userId, ["admin"])) {
-    return Feedback.find();
+    return {
+      find: function() {
+        return Feedback.find(
+          query || {},
+          options || { sort: { createdAt: -1 } }
+        );
+      }
+    };
   }
   return this.ready();
 });
