@@ -13,6 +13,8 @@ export default withTracker(props => {
 
   console.log(skip);
 
+  const query = {};
+
   const options = {
     sort: { createdAt: -1 },
     limit,
@@ -23,7 +25,7 @@ export default withTracker(props => {
   };
 
   const ticketsHandle = FeedbackSubs.subscribe("feedback.all", {
-    query: {},
+    query,
     options: {
       sort: options.sort,
       limit: options.limit,
@@ -33,11 +35,13 @@ export default withTracker(props => {
 
   const loading = !ticketsHandle.ready();
   const tickets = ticketsHandle.ready()
-    ? Feedback.find({}, options).fetch()
+    ? Feedback.find(query, options).fetch()
     : [];
 
   return {
     loading,
+    page,
+    limit,
     tickets
   };
 })(TicketsPage);

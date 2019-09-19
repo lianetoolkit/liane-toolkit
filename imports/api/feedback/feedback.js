@@ -29,9 +29,10 @@ Feedback.schema = new SimpleSchema({
   message: {
     type: String
   },
-  resolved: {
-    type: Boolean,
-    defaultValue: false,
+  status: {
+    type: String,
+    defaultValue: "new",
+    allowedValues: ["progress", "resolved", "new"],
     optional: true,
     index: true
   },

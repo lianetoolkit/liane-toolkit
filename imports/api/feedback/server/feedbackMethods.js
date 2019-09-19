@@ -68,8 +68,6 @@ export const sendFeedback = new ValidatedMethod({
     if (userId) doc["userId"] = userId;
     if (context) doc["context"] = context;
 
-    console.log(doc);
-
     Feedback.insert(doc);
 
     if (mailTransporter) {
@@ -90,5 +88,19 @@ export const sendFeedback = new ValidatedMethod({
           logger.debug("");
         });
     }
+  }
+});
+
+export const queryCount = new ValidatedMethod({
+  name: "feedback.queryCount",
+  validate: new SimpleSchema({
+    query: {
+      type: Object,
+      blackbox: true,
+      optional: true
+    }
+  }).validator(),
+  run({ query }) {
+    return Feedback.find(query || {}).count();
   }
 });
