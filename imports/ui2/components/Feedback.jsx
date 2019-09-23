@@ -1,10 +1,63 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import styled from "styled-components";
 import { detect } from "detect-browser";
 
 import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
 import Form from "./Form.jsx";
+
+const messages = defineMessages({
+  modalTitle: {
+    id: "app.feedback.modal_title",
+    defaultMessage: "Feedback"
+  },
+  submit: {
+    id: "app.feedback.submit",
+    defaultMessage: "Send feedback"
+  },
+  categoryLabel: {
+    id: "app.feedback.form.category_label",
+    defaultMessage: "What would like to message us about?"
+  },
+  categoryOptionBug: {
+    id: "app.feedback.form.categories.bug",
+    defaultMessage: "Report a problem"
+  },
+  categoryOptionSuggestion: {
+    id: "app.feedback.form.categories.suggestion",
+    defaultMessage: "Give a suggestion"
+  },
+  categoryOptionQuestion: {
+    id: "app.feedback.form.categories.question",
+    defaultMessage: "Ask a question"
+  },
+  categoryOptionOther: {
+    id: "app.feedback.form.categories.other",
+    defaultMessage: "Something else"
+  },
+  nameLabel: {
+    id: "app.feedback.form.name_label",
+    defaultMessage: "Your name"
+  },
+  emailLabel: {
+    id: "app.feedback.form.email_label",
+    defaultMessage: "Contact email"
+  },
+  subjectLabel: {
+    id: "app.feedback.form.subject_label",
+    defaultMessage: "Subject"
+  },
+  messageLabel: {
+    id: "app.feedback.form.message_label",
+    defaultMessage: "Your message"
+  }
+});
 
 const FeedbackButtonContainer = styled.a`
   position: fixed;
@@ -25,7 +78,7 @@ const FeedbackButtonContainer = styled.a`
   }
 `;
 
-export class FeedbackForm extends Component {
+class FeedbackForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -81,18 +134,27 @@ export class FeedbackForm extends Component {
     });
   };
   render() {
+    const { intl } = this.props;
     const { formData } = this.state;
     return (
       <Form onSubmit={this._handleSubmit}>
-        <Form.Field label="What would like to message us about?">
+        <Form.Field label={intl.formatMessage(messages.categoryLabel)}>
           <select name="category" onChange={this._handleChange}>
-            <option value="bug">Report a problem</option>
-            <option value="suggestion">Give a suggestion</option>
-            <option value="question">Ask a question</option>
-            <option value="other">Something else</option>
+            <option value="bug">
+              {intl.formatMessage(messages.categoryOptionBug)}
+            </option>
+            <option value="suggestion">
+              {intl.formatMessage(messages.categoryOptionSuggestion)}
+            </option>
+            <option value="question">
+              {intl.formatMessage(messages.categoryOptionQuestion)}
+            </option>
+            <option value="other">
+              {intl.formatMessage(messages.categoryOptionOther)}
+            </option>
           </select>
         </Form.Field>
-        <Form.Field label="Name">
+        <Form.Field label={intl.formatMessage(messages.nameLabel)}>
           <input
             type="text"
             name="name"
@@ -100,7 +162,7 @@ export class FeedbackForm extends Component {
             onChange={this._handleChange}
           />
         </Form.Field>
-        <Form.Field label="Contact email">
+        <Form.Field label={intl.formatMessage(messages.emailLabel)}>
           <input
             type="email"
             name="email"
@@ -108,23 +170,30 @@ export class FeedbackForm extends Component {
             onChange={this._handleChange}
           />
         </Form.Field>
-        <Form.Field label="Subject">
+        <Form.Field label={intl.formatMessage(messages.subjectLabel)}>
           <input type="text" name="subject" onChange={this._handleChange} />
         </Form.Field>
-        <Form.Field label="Your message">
+        <Form.Field label={intl.formatMessage(messages.messageLabel)}>
           <textarea name="message" onChange={this._handleChange} />
         </Form.Field>
-        <input type="submit" value="Send feedback" />
+        <input type="submit" value={intl.formatMessage(messages.submit)} />
       </Form>
     );
   }
 }
 
-export class FeedbackButton extends Component {
+FeedbackForm.propTypes = {
+  intl: intlShape.isRequired
+};
+
+const FeedbackFormIntl = injectIntl(FeedbackForm);
+
+class Button extends Component {
   _handleClick = ev => {
+    const { intl } = this.props;
     ev.preventDefault();
-    modalStore.setTitle("Feedback");
-    modalStore.set(<FeedbackForm />);
+    modalStore.setTitle(intl.formatMessage(messages.modalTitle));
+    modalStore.set(<FeedbackFormIntl />);
   };
   render() {
     return (
@@ -132,8 +201,17 @@ export class FeedbackButton extends Component {
         href="javascript:void(0);"
         onClick={this._handleClick}
       >
-        Feedback/Report a problem
+        <FormattedMessage
+          id="app.feedback.button_label"
+          defaultMessage="Feedback/Report a problem"
+        />
       </FeedbackButtonContainer>
     );
   }
 }
+
+Button.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export const FeedbackButton = injectIntl(Button);

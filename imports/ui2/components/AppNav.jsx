@@ -165,6 +165,10 @@ class SettingsNav extends Component {
     Meteor.logout();
     window.location.reload();
   };
+  _isAdmin = () => {
+    const user = Meteor.user();
+    return user && user.roles.indexOf("admin") != -1;
+  };
   render() {
     const { campaign } = this.props;
     const user = Meteor.user();
@@ -197,6 +201,14 @@ class SettingsNav extends Component {
           <Dropdown.NavItem href={FlowRouter.path("App.account")}>
             <FormattedMessage id="app.my_account" defaultMessage="My account" />
           </Dropdown.NavItem>
+          {this._isAdmin() ? (
+            <Dropdown.NavItem href={FlowRouter.path("App.admin")}>
+              <FormattedMessage
+                id="app.admin_label"
+                defaultMessage="Administration"
+              />
+            </Dropdown.NavItem>
+          ) : null}
           <Dropdown.NavItem href="javascript:void(0);" onClick={this._logout()}>
             <FormattedMessage id="app.logout" defaultMessage="Logout" />
           </Dropdown.NavItem>

@@ -7,11 +7,9 @@ const FeedbackSubs = new SubsManager();
 
 export default withTracker(props => {
   const queryParams = props.query;
-  const limit = 2;
+  const limit = 10;
   const page = parseInt(queryParams.page || 1);
   const skip = (page - 1) * limit;
-
-  console.log(skip);
 
   const query = {};
 
@@ -38,10 +36,21 @@ export default withTracker(props => {
     ? Feedback.find(query, options).fetch()
     : [];
 
+  let ticket = null;
+  if (queryParams.id) {
+    const singleTicketHandle = FeedbackSubs.subscribe("feedback.detail", {
+      feedbackId: queryParams.id
+    });
+    ticket = singleTicketHandle.ready()
+      ? Feedback.findOne(queryParams.id)
+      : null;
+  }
+
   return {
     loading,
     page,
     limit,
-    tickets
+    tickets,
+    ticket
   };
 })(TicketsPage);

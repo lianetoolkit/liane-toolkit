@@ -16,6 +16,32 @@ if (Meteor.settings.email && Meteor.settings.email.mail) {
   });
 }
 
+export const updateStatus = new ValidatedMethod({
+  name: "feedback.updateStatus",
+  validate: new SimpleSchema({
+    id: {
+      type: String
+    },
+    status: {
+      type: String
+    }
+  }).validator(),
+  run({ id, status }) {
+    logger.debug("feed.updateStatus called", { id, status });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    if (!Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(403, "Access denied");
+    }
+
+    return Feedback.update(id, { $set: { status } });
+  }
+});
+
 export const sendFeedback = new ValidatedMethod({
   name: "feedback.new",
   validate: new SimpleSchema({
@@ -68,9 +94,10 @@ export const sendFeedback = new ValidatedMethod({
     if (userId) doc["userId"] = userId;
     if (context) doc["context"] = context;
 
-    Feedback.insert(doc);
+    const id = Feedback.insert(doc);
 
     if (mailTransporter) {
+      const url = Meteor.absoluteUrl("/admin/tickets?id=" + id);
       mailTransporter
         .sendMail({
           from: `"Liane" <${mailConfig.username}>`,
@@ -82,10 +109,12 @@ export const sendFeedback = new ValidatedMethod({
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Subject:</strong> ${subject}</p>
         <p><strong>Message:</strong><br/>${message}</p>
+        <hr/>
+        <p>Manage this ticket: <a href="${url}">${url}</a></p>
         `
         })
         .catch(err => {
-          logger.debug("");
+          logger.debug("error sending email", err);
         });
     }
   }

@@ -48,7 +48,7 @@ const TopNav = styled.nav`
   position: relative;
   z-index: 11;
   a,
-  span {
+  .dropdown-item {
     color: #888;
     text-decoration: none;
     display: block;
@@ -172,7 +172,7 @@ export default class Header extends Component {
                 defaultMessage="Privacy Policy"
               />
             </a>
-            <span>
+            <span className="dropdown-item">
               <FontAwesomeIcon icon="globe-americas" />
               <ul>
                 <li>

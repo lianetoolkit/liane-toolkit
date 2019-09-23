@@ -58,12 +58,12 @@
         "id": "app.account_select.submit"
       },
       {
-        "defaultMessage": "Select a country...",
-        "id": "app.country_select.placeholder"
-      },
-      {
         "defaultMessage": "This category is still empty",
         "id": "app.dashboard.people.not_found"
+      },
+      {
+        "defaultMessage": "Select a country...",
+        "id": "app.country_select.placeholder"
       },
       {
         "defaultMessage": "Name",
@@ -88,6 +88,54 @@
       {
         "defaultMessage": "New extra field",
         "id": "app.extra_fields.new_field.label"
+      },
+      {
+        "defaultMessage": "Feedback",
+        "id": "app.feedback.modal_title"
+      },
+      {
+        "defaultMessage": "Send feedback",
+        "id": "app.feedback.submit"
+      },
+      {
+        "defaultMessage": "What would like to message us about?",
+        "id": "app.feedback.form.category_label"
+      },
+      {
+        "defaultMessage": "Report a problem",
+        "id": "app.feedback.form.categories.bug"
+      },
+      {
+        "defaultMessage": "Give a suggestion",
+        "id": "app.feedback.form.categories.suggestion"
+      },
+      {
+        "defaultMessage": "Ask a question",
+        "id": "app.feedback.form.categories.question"
+      },
+      {
+        "defaultMessage": "Something else",
+        "id": "app.feedback.form.categories.other"
+      },
+      {
+        "defaultMessage": "Your name",
+        "id": "app.feedback.form.name_label"
+      },
+      {
+        "defaultMessage": "Contact email",
+        "id": "app.feedback.form.email_label"
+      },
+      {
+        "defaultMessage": "Subject",
+        "id": "app.feedback.form.subject_label"
+      },
+      {
+        "defaultMessage": "Your message",
+        "id": "app.feedback.form.message_label"
+      },
+      {
+        "defaultMessage": "Feedback/Report a problem",
+        "id": "app.feedback.button_label"
       },
       {
         "defaultMessage": "Search for answers...",
@@ -126,6 +174,74 @@
         "id": "app.notifications.not_found"
       },
       {
+        "defaultMessage": "Showing people that interacted for the first time between {date}.",
+        "id": "app.people.history_chart.filter_title"
+      },
+      {
+        "defaultMessage": "Clear selection",
+        "id": "app.people.history_chart.clear"
+      },
+      {
+        "defaultMessage": "Page newcomers",
+        "id": "app.people.history_chart.title"
+      },
+      {
+        "defaultMessage": "Click and drag the chart below to filter:",
+        "id": "app.people.history_chart.filter"
+      },
+      {
+        "defaultMessage": "{amount} new people",
+        "id": "app.people.history_chart.new_label"
+      },
+      {
+        "defaultMessage": "Are you sure you'd like to remove all people from this import?",
+        "id": "app.people.lists.confirm_remove"
+      },
+      {
+        "defaultMessage": "Name",
+        "id": "app.people.lists.table_header.name"
+      },
+      {
+        "defaultMessage": "Date",
+        "id": "app.people.lists.table_header.date"
+      },
+      {
+        "defaultMessage": "People",
+        "id": "app.people.lists.table_header.people"
+      },
+      {
+        "defaultMessage": "{count} imported people",
+        "id": "app.people.lists.table_body.people"
+      },
+      {
+        "defaultMessage": "Remove",
+        "id": "app.people.lists.table_body.remove"
+      },
+      {
+        "defaultMessage": "By removing a list, youl'll remove all people imported from it.",
+        "id": "app.people.lists.table_body.remove_warning"
+      },
+      {
+        "defaultMessage": "No import found",
+        "id": "app.people.lists.table_body.not_found"
+      },
+      {
+        "defaultMessage": "Not available",
+        "id": "app.people.contact_icons.not_available"
+      },
+      {
+        "defaultMessage": "{data} (copy)",
+        "id": "app.people.contact_icons.data_copy"
+      },
+      {
+        "defaultMessage": "Filled the form (copy link)",
+        "id": "app.people.contact_icons.filled_form"
+      },
+      {
+        "defaultMessage": "Did not filled the form (copy link)",
+        "id": "app.people.contact_icons.not_filled_form"
+      },
+      {
         "defaultMessage": "No results",
         "id": "app.paging.no_results"
       },
@@ -136,18 +252,6 @@
       {
         "defaultMessage": "Calculating...",
         "id": "app.paging.loading"
-      },
-      {
-        "defaultMessage": "Download file",
-        "id": "app.people.exports.download"
-      },
-      {
-        "defaultMessage": "Processing export...",
-        "id": "app.people.exports.processing"
-      },
-      {
-        "defaultMessage": "Export people",
-        "id": "app.people.exports.button_label"
       },
       {
         "defaultMessage": "Date",
@@ -178,20 +282,16 @@
         "id": "app.people.exports.table_body.not_found"
       },
       {
-        "defaultMessage": "Not available",
-        "id": "app.people.contact_icons.not_available"
+        "defaultMessage": "Download file",
+        "id": "app.people.exports.download"
       },
       {
-        "defaultMessage": "{data} (copy)",
-        "id": "app.people.contact_icons.data_copy"
+        "defaultMessage": "Processing export...",
+        "id": "app.people.exports.processing"
       },
       {
-        "defaultMessage": "Filled the form (copy link)",
-        "id": "app.people.contact_icons.filled_form"
-      },
-      {
-        "defaultMessage": "Did not filled the form (copy link)",
-        "id": "app.people.contact_icons.not_filled_form"
+        "defaultMessage": "Export people",
+        "id": "app.people.exports.button_label"
       },
       {
         "defaultMessage": "Skills...",
@@ -256,38 +356,6 @@
       {
         "defaultMessage": "Select the Facebook account to be used by your campaign",
         "id": "app.campaign.form.select_account"
-      },
-      {
-        "defaultMessage": "Are you sure you'd like to remove all people from this import?",
-        "id": "app.people.lists.confirm_remove"
-      },
-      {
-        "defaultMessage": "Name",
-        "id": "app.people.lists.table_header.name"
-      },
-      {
-        "defaultMessage": "Date",
-        "id": "app.people.lists.table_header.date"
-      },
-      {
-        "defaultMessage": "People",
-        "id": "app.people.lists.table_header.people"
-      },
-      {
-        "defaultMessage": "{count} imported people",
-        "id": "app.people.lists.table_body.people"
-      },
-      {
-        "defaultMessage": "Remove",
-        "id": "app.people.lists.table_body.remove"
-      },
-      {
-        "defaultMessage": "By removing a list, youl'll remove all people imported from it.",
-        "id": "app.people.lists.table_body.remove_warning"
-      },
-      {
-        "defaultMessage": "No import found",
-        "id": "app.people.lists.table_body.not_found"
       },
       {
         "defaultMessage": "Donors",
@@ -374,6 +442,10 @@
         "id": "app.my_account"
       },
       {
+        "defaultMessage": "Administration",
+        "id": "app.admin_label"
+      },
+      {
         "defaultMessage": "Logout",
         "id": "app.logout"
       },
@@ -402,64 +474,40 @@
         "id": "app.nav.faq"
       },
       {
-        "defaultMessage": "No comments",
-        "id": "app.comments.counts.no_comments"
+        "defaultMessage": "Person not found",
+        "id": "app.person_not_found"
       },
       {
-        "defaultMessage": "1 comment",
-        "id": "app.comments.counts.one_comment"
+        "defaultMessage": "resolved",
+        "id": "app.comment.resolved"
       },
       {
-        "defaultMessage": "{count} comments",
-        "id": "app.comments.counts.any_comments"
+        "defaultMessage": "unresolved",
+        "id": "app.comment.unresolved"
       },
       {
-        "defaultMessage": "unknown person",
-        "id": "app.reply.unknown_person"
+        "defaultMessage": "Are you sure you'd like to mark this comment as {resolution}",
+        "id": "app.comment.confirm_resolution"
       },
       {
-        "defaultMessage": "Replying {name}",
-        "id": "app.reply.title"
+        "defaultMessage": "Mark as question",
+        "id": "app.comment.tag_as.question"
       },
       {
-        "defaultMessage": "Unknown person",
-        "id": "app.comment.header.unknown_name"
+        "defaultMessage": "Mark as vote declaration",
+        "id": "app.comment.tag_as.vote"
       },
       {
-        "defaultMessage": "<a href='{url}' target='_blank'>replied</a> a <a href='{parent_url}' target='_blank'>comment</a>",
-        "id": "app.comment.header.reply_header"
+        "defaultMessage": "Mark this person as troll",
+        "id": "app.comment.tag_as.troll"
       },
       {
-        "defaultMessage": "<a href='{url}' target='_blank'>commented</a> on a <a href='{post_url}' target='_blank'>post</a>",
-        "id": "app.comment.header.comment_header"
+        "defaultMessage": "Mark as",
+        "id": "app.comment.tag_as"
       },
       {
-        "defaultMessage": "You replied",
-        "id": "app.coment.you_replied"
-      },
-      {
-        "defaultMessage": "Reply",
-        "id": "app.comment.reply_button"
-      },
-      {
-        "defaultMessage": "Showing people that interacted for the first time between {date}.",
-        "id": "app.people.history_chart.filter_title"
-      },
-      {
-        "defaultMessage": "Clear selection",
-        "id": "app.people.history_chart.clear"
-      },
-      {
-        "defaultMessage": "Page newcomers",
-        "id": "app.people.history_chart.title"
-      },
-      {
-        "defaultMessage": "Click and drag the chart below to filter:",
-        "id": "app.people.history_chart.filter"
-      },
-      {
-        "defaultMessage": "{amount} new people",
-        "id": "app.people.history_chart.new_label"
+        "defaultMessage": "Actions",
+        "id": "app.comment.actions_title"
       },
       {
         "defaultMessage": "Importing {filename}...",
@@ -544,42 +592,6 @@
       {
         "defaultMessage": "Troll",
         "id": "app.people.category.troll"
-      },
-      {
-        "defaultMessage": "Person not found",
-        "id": "app.person_not_found"
-      },
-      {
-        "defaultMessage": "resolved",
-        "id": "app.comment.resolved"
-      },
-      {
-        "defaultMessage": "unresolved",
-        "id": "app.comment.unresolved"
-      },
-      {
-        "defaultMessage": "Are you sure you'd like to mark this comment as {resolution}",
-        "id": "app.comment.confirm_resolution"
-      },
-      {
-        "defaultMessage": "Mark as question",
-        "id": "app.comment.tag_as.question"
-      },
-      {
-        "defaultMessage": "Mark as vote declaration",
-        "id": "app.comment.tag_as.vote"
-      },
-      {
-        "defaultMessage": "Mark this person as troll",
-        "id": "app.comment.tag_as.troll"
-      },
-      {
-        "defaultMessage": "Mark as",
-        "id": "app.comment.tag_as"
-      },
-      {
-        "defaultMessage": "Actions",
-        "id": "app.comment.actions_title"
       },
       {
         "defaultMessage": "Technology for Political Innovation",
@@ -876,6 +888,46 @@
       {
         "defaultMessage": "By submitting this form you agree with our <a href=\"https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf\" target=\"_blank\" rel=\"external\">Privacy Policy</a>.",
         "id": "app.people_form.privacy_policy"
+      },
+      {
+        "defaultMessage": "No comments",
+        "id": "app.comments.counts.no_comments"
+      },
+      {
+        "defaultMessage": "1 comment",
+        "id": "app.comments.counts.one_comment"
+      },
+      {
+        "defaultMessage": "{count} comments",
+        "id": "app.comments.counts.any_comments"
+      },
+      {
+        "defaultMessage": "unknown person",
+        "id": "app.reply.unknown_person"
+      },
+      {
+        "defaultMessage": "Replying {name}",
+        "id": "app.reply.title"
+      },
+      {
+        "defaultMessage": "Unknown person",
+        "id": "app.comment.header.unknown_name"
+      },
+      {
+        "defaultMessage": "<a href='{url}' target='_blank'>replied</a> a <a href='{parent_url}' target='_blank'>comment</a>",
+        "id": "app.comment.header.reply_header"
+      },
+      {
+        "defaultMessage": "<a href='{url}' target='_blank'>commented</a> on a <a href='{post_url}' target='_blank'>post</a>",
+        "id": "app.comment.header.comment_header"
+      },
+      {
+        "defaultMessage": "You replied",
+        "id": "app.coment.you_replied"
+      },
+      {
+        "defaultMessage": "Reply",
+        "id": "app.comment.reply_button"
       },
       {
         "defaultMessage": "Title",
