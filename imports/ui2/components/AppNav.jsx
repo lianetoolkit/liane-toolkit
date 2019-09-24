@@ -167,7 +167,12 @@ class SettingsNav extends Component {
   };
   _isAdmin = () => {
     const user = Meteor.user();
-    return user && user.roles.indexOf("admin") != -1;
+    return (
+      user &&
+      user.roles &&
+      Array.isArray(user.roles) &&
+      user.roles.indexOf("admin") != -1
+    );
   };
   render() {
     const { campaign } = this.props;
