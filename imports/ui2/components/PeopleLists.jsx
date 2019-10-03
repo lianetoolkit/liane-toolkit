@@ -127,7 +127,12 @@ class PeopleLists extends Component {
               <tbody>
                 {lists.map(list => (
                   <tr key={list._id}>
-                    <td>{list.name}</td>
+                    <td
+                      className="fill"
+                      style={{ width: "100%", wordBreak: "break-all" }}
+                    >
+                      {list.name}
+                    </td>
                     <td>{moment(list.createdAt).format("L")}</td>
                     <td>
                       <FormattedMessage
