@@ -77,8 +77,7 @@ export default withTracker(props => {
     campaignId: props.campaignId,
     query,
     options: {
-      limit,
-      skip
+      limit: limit + skip
     }
   });
   loading = !commentsHandle.ready();
