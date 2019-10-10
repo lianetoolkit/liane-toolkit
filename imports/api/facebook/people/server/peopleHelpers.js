@@ -448,6 +448,18 @@ const PeopleHelpers = {
           }
         }
       }
+      if (defaultValues.country) {
+        defaultPerson.$set["campaignMeta.basic_info.address.country"] =
+          defaultValues.country;
+      }
+      if (defaultValues.region) {
+        defaultPerson.$set["campaignMeta.basic_info.address.region"] =
+          defaultValues.region;
+      }
+      if (defaultValues.city) {
+        defaultPerson.$set["campaignMeta.basic_info.address.city"] =
+          defaultValues.city;
+      }
     }
 
     // Add data
