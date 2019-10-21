@@ -52,7 +52,15 @@ export const createMapLayer = new ValidatedMethod({
       description
     };
 
-    return MapLayers.insert(insertDoc);
+    const res = MapLayers.insert(insertDoc);
+
+    Meteor.call("log", {
+      type: "map.layers.add",
+      campaignId,
+      data: { mapLayerId: res }
+    });
+
+    return res;
   }
 });
 
@@ -76,6 +84,13 @@ export const updateMapLayer = new ValidatedMethod({
     };
 
     MapLayers.update({ _id }, { $set: updateDoc });
+
+    Meteor.call("log", {
+      type: "map.layers.edit",
+      campaignId,
+      data: { mapLayerId: _id }
+    });
+
     return;
   }
 });
@@ -109,7 +124,15 @@ export const removeMapLayer = new ValidatedMethod({
     )
       throw new Meteor.Error(400, "Permission denied");
 
-    return MapLayers.remove(mapLayerId);
+    const res = MapLayers.remove(mapLayerId);
+
+    Meteor.call("log", {
+      type: "map.layers.remove",
+      campaignId,
+      data: { mapLayerId }
+    });
+
+    return res;
   }
 });
 

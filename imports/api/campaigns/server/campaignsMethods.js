@@ -159,6 +159,11 @@ export const campaignsCreate = new ValidatedMethod({
     // CampaignsHelpers.addAccount({ campaignId, account });
     // CampaignsHelpers.addAudienceAccount({ campaignId, account });
 
+    Meteor.call("log", {
+      type: "campaigns.add",
+      campaignId
+    });
+
     return { result: campaignId };
   }
 });
@@ -339,7 +344,14 @@ export const campaignsRemove = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    return CampaignsHelpers.removeCampaign({ campaignId });
+    const res = CampaignsHelpers.removeCampaign({ campaignId });
+
+    Meteor.call("log", {
+      type: "campaigns.remove",
+      campaignId
+    });
+
+    return res;
   }
 });
 
@@ -463,6 +475,12 @@ export const addUser = new ValidatedMethod({
       },
       { $push: { users: { userId: user._id, role } } }
     );
+
+    Meteor.call("log", {
+      type: "campaigns.users.add",
+      campaignId,
+      data: { userId: user._id }
+    });
   }
 });
 
@@ -515,6 +533,12 @@ export const removeUser = new ValidatedMethod({
       },
       { $pull: { users: campaignUser } }
     );
+
+    Meteor.call("log", {
+      type: "campaigns.users.remove",
+      campaignId,
+      data: { userId }
+    });
   }
 });
 

@@ -48,7 +48,15 @@ export const createMapFeature = new ValidatedMethod({
     if (description) insertDoc.description = description;
     if (color) insertDoc.color = color;
 
-    return MapFeatures.insert(insertDoc);
+    const res = MapFeatures.insert(insertDoc);
+
+    Meteor.call("log", {
+      type: "map.features.add",
+      campaignId,
+      data: { mapFeatureId: res }
+    });
+
+    return res;
   }
 });
 
@@ -117,7 +125,15 @@ export const updateMapFeature = new ValidatedMethod({
     if (type) $set.type = type;
     if (geometry) $set.geometry = geometry;
 
-    return MapFeatures.update(id, { $set });
+    const res = MapFeatures.update(id, { $set });
+
+    Meteor.call("log", {
+      type: "map.features.edit",
+      campaignId: feature.campaignId,
+      data: { mapFeatureId: id }
+    });
+
+    return res;
   }
 });
 
@@ -143,6 +159,14 @@ export const removeMapFeature = new ValidatedMethod({
       throw new Meteor.Error(404, "Feature not found");
     }
 
-    return MapFeatures.remove(id);
+    const res = MapFeatures.remove(id);
+
+    Meteor.call("log", {
+      type: "map.features.remove",
+      campaignId: feature.campaignId,
+      data: { mapFeatureId: id }
+    });
+
+    return res;
   }
 });

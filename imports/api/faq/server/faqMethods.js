@@ -64,7 +64,15 @@ export const createFAQ = new ValidatedMethod({
       throw new Meteor.Error(401, "Not allowed");
     }
 
-    return FAQ.insert({ campaignId, question, answer });
+    const res = FAQ.insert({ campaignId, question, answer });
+
+    Meteor.call("log", {
+      type: "faq.add",
+      campaignId,
+      data: { faqId: res }
+    });
+
+    return res;
   }
 });
 
@@ -103,7 +111,15 @@ export const updateFAQ = new ValidatedMethod({
       throw new Meteor.Error(401, "Not allowed");
     }
 
-    return FAQ.update(_id, { $set: { question, answer } });
+    const res = FAQ.update(_id, { $set: { question, answer } });
+
+    Meteor.call("log", {
+      type: "faq.edit",
+      campaignId,
+      data: { faqId: _id }
+    });
+
+    return res;
   }
 });
 
@@ -136,6 +152,14 @@ export const removeFAQ = new ValidatedMethod({
       throw new Meteor.Error(401, "Not allowed");
     }
 
-    return FAQ.remove(_id);
+    const res = FAQ.remove(_id);
+
+    Meteor.call("log", {
+      type: "faq.remove",
+      campaignId,
+      data: { faqId: _id }
+    });
+
+    return res;
   }
 });
