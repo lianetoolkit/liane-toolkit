@@ -10,22 +10,34 @@ export const accessLog = new ValidatedMethod({
     path: {
       type: String,
       optional: true
+    },
+    campaignId: {
+      type: String
+    },
+    data: {
+      type: Object,
+      blackbox: true,
+      optional: true
     }
   }).validator(),
-  run({ type, path }) {
+  run({ type, path, campaignId, data }) {
     this.unblock();
     // if (Meteor.settings.public.deployMode !== "local") {
-      if (!this.userId) return;
-      let doc = {
-        connectionId: this.connection.id,
-        ip: this.connection.clientAddress,
-        userId: this.userId,
-        type
-      };
-      if (path) {
-        doc.path = path;
-      }
-      AccessLogs.insert(doc);
+    if (!this.userId) return;
+    let doc = {
+      connectionId: this.connection.id,
+      ip: this.connection.clientAddress,
+      userId: this.userId,
+      campaignId,
+      type
+    };
+    if (path) {
+      doc.path = path;
+    }
+    if(data) {
+      doc.data = data;
+    }
+    AccessLogs.insert(doc);
     // }
   }
 });

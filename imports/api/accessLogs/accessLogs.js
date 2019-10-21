@@ -16,6 +16,11 @@ AccessLogs.schema = new SimpleSchema({
     index: true,
     optional: true
   },
+  campaignId: {
+    type: String,
+    index: true,
+    optional: true
+  },
   userId: {
     type: String,
     index: true
@@ -28,6 +33,11 @@ AccessLogs.schema = new SimpleSchema({
     type: String,
     index: true,
     optional: true
+  },
+  data: {
+    type: Object,
+    optional: true,
+    blackbox: true
   },
   timestamp: {
     type: Number,

@@ -46,8 +46,6 @@ export const peopleDetail = new ValidatedMethod({
       _id: { $in: get(person, "campaignMeta.basic_info.tags") }
     }).fetch();
 
-    console.log(person.tags);
-
     return person;
   }
 });
@@ -705,6 +703,11 @@ export const peopleSendPrivateReply = new ValidatedMethod({
     //   );
     // }
     closeComment();
+    Meteor.call("log", {
+      type: "comments.privateReply",
+      campaignId,
+      data: { personId, commentId }
+    });
     return response;
   }
 });
@@ -748,7 +751,15 @@ export const updatePersonMeta = new ValidatedMethod({
 
     if (!person.formId) PeopleHelpers.updateFormId({ person });
 
-    return People.update({ _id: person._id }, { $set: doc });
+    let res = People.update({ _id: person._id }, { $set: doc });
+
+    Meteor.call("log", {
+      type: "people.categoryUpdate",
+      campaignId: person.campaignId,
+      data: { personId, key: metaKey, value: metaValue }
+    });
+
+    return res;
   }
 });
 
@@ -812,7 +823,14 @@ export const peopleFormId = new ValidatedMethod({
 
     let formId = person.formId;
 
-    if (!formId || regenerate) formId = PeopleHelpers.updateFormId({ person });
+    if (!formId || regenerate) {
+      formId = PeopleHelpers.updateFormId({ person });
+      Meteor.call("log", {
+        type: "people.updateForm",
+        campaignId,
+        data: { personId }
+      });
+    }
 
     return {
       formId,
@@ -843,11 +861,19 @@ export const peopleCreate = new ValidatedMethod({
       throw new Meteor.Error(400, "You must provide a name");
     }
 
-    return People.insert({
+    let res = People.insert({
       campaignId,
       name,
       source: "manual"
     });
+
+    Meteor.call("log", {
+      type: "people.add",
+      campaignId,
+      data: { personId: res }
+    });
+
+    return res;
   }
 });
 
@@ -944,6 +970,12 @@ export const peopleMetaUpdate = new ValidatedMethod({
       update
     );
 
+    Meteor.call("log", {
+      type: "people.edit",
+      campaignId,
+      data: { personId }
+    });
+
     return People.findOne(personId);
   }
 });
@@ -975,6 +1007,12 @@ export const removePeople = new ValidatedMethod({
     }
 
     People.remove(personId);
+
+    Meteor.call("log", {
+      type: "people.remove",
+      campaignId: person.campaignId,
+      data: { personId }
+    });
   }
 });
 
@@ -1020,8 +1058,14 @@ export const exportPeople = new ValidatedMethod({
       jobType: "people.export",
       jobData: {
         campaignId,
-        query: searchQuery
+        query: JSON.stringify(searchQuery)
       }
+    });
+
+    Meteor.call("log", {
+      type: "people.export",
+      campaignId,
+      data: { query: JSON.stringify(searchQuery) }
     });
   }
 });

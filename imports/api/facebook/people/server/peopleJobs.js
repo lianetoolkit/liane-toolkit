@@ -104,13 +104,13 @@ const PeopleJobs = {
     run({ job }) {
       logger.debug("people.export job: called");
       check(job && job.data && job.data.campaignId, String);
-      check(job && job.data && job.data.query, Object);
+      check(job && job.data && job.data.query, String);
 
       let errored = false;
       try {
         PeopleHelpers.export({
           campaignId: job.data.campaignId,
-          query: job.data.query
+          query: JSON.parse(job.data.query)
         });
       } catch (error) {
         errored = true;
