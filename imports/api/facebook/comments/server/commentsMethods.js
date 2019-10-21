@@ -108,11 +108,19 @@ export const resolveComment = new ValidatedMethod({
       throw new Meteor.Error(401, "Permission denied");
     }
 
-    return Comments.update(commentId, {
+    const res = Comments.update(commentId, {
       $set: {
         resolved: typeof resolve != "undefined" ? resolve : true
       }
     });
+
+    Meteor.call("log", {
+      type: resolve ? "comments.resolve" : "comments.unresolve",
+      campaignId,
+      data: { commentId }
+    });
+
+    return res;
   }
 });
 
@@ -157,6 +165,12 @@ export const categorizeComment = new ValidatedMethod({
         categories
       }
     });
+
+    Meteor.call("log", {
+      type: "comments.tag",
+      campaignId,
+      data: { commentId, categories }
+    });
   }
 });
 
@@ -198,6 +212,12 @@ export const sendComment = new ValidatedMethod({
       console.log(err);
       throw new Meteor.Error(500, "Error trying to publish comment");
     }
+
+    Meteor.call("log", {
+      type: "comments.reply",
+      campaignId,
+      data: { commentId: objectId }
+    });
 
     return;
   }

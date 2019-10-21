@@ -751,7 +751,7 @@ export const updatePersonMeta = new ValidatedMethod({
 
     if (!person.formId) PeopleHelpers.updateFormId({ person });
 
-    let res = People.update({ _id: person._id }, { $set: doc });
+    const res = People.update({ _id: person._id }, { $set: doc });
 
     Meteor.call("log", {
       type: "people.categoryUpdate",
@@ -861,7 +861,7 @@ export const peopleCreate = new ValidatedMethod({
       throw new Meteor.Error(400, "You must provide a name");
     }
 
-    let res = People.insert({
+    const res = People.insert({
       campaignId,
       name,
       source: "manual"
@@ -1129,13 +1129,21 @@ export const importPeople = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    return PeopleHelpers.import({
+    const res = PeopleHelpers.import({
       campaignId,
       config,
       filename,
       data,
       defaultValues
     });
+
+    Meteor.call("log", {
+      type: "people.import.add",
+      campaignId,
+      data: { defaultValues }
+    });
+
+    return res;
   }
 });
 
@@ -1168,7 +1176,15 @@ export const findDuplicates = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    return PeopleHelpers.findDuplicates({ personId });
+    const res = PeopleHelpers.findDuplicates({ personId });
+
+    Meteor.call("log", {
+      type: "people.findDuplicates",
+      campaignId: person.campaignId,
+      data: { personId }
+    });
+
+    return res;
   }
 });
 
@@ -1276,6 +1292,12 @@ export const mergePeople = new ValidatedMethod({
         _id: { $in: from }
       });
     }
+
+    Meteor.call("log", {
+      type: "people.merge",
+      campaignId: person.campaignId,
+      data: { personId }
+    });
 
     return;
   }
@@ -1529,6 +1551,8 @@ export const peopleFormSubmit = new ValidatedMethod({
       update.$unset = $unset;
     }
 
+    let personId;
+
     if (formId || facebookId) {
       let selector = formId ? { formId } : { facebookId };
       const person = People.findOne(selector);
@@ -1540,6 +1564,7 @@ export const peopleFormSubmit = new ValidatedMethod({
         personId: person._id,
         generate: true
       });
+      personId = person._id;
     } else {
       const id = Random.id();
       People.upsert(
@@ -1558,7 +1583,14 @@ export const peopleFormSubmit = new ValidatedMethod({
         personId: id,
         generate: true
       });
+      personId = id;
     }
+
+    Meteor.call("log", {
+      type: "people.formEntry",
+      campaignId,
+      data: { personId }
+    });
     return newFormId;
   }
 });
@@ -1596,7 +1628,13 @@ export const peopleCreateTag = new ValidatedMethod({
     if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
-    return PeopleTags.insert({ campaignId, name });
+    const res = PeopleTags.insert({ campaignId, name });
+    Meteor.call("log", {
+      type: "people.tags.add",
+      campaignId,
+      data: { tagId: res }
+    });
+    return res;
   }
 });
 
@@ -1641,6 +1679,12 @@ export const peopleListsRemove = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     People.remove({ listId });
-    return PeopleLists.remove(listId);
+    const res = PeopleLists.remove(listId);
+    Meteor.call("log", {
+      type: "people.imports.remove",
+      campaignId,
+      data: { listId }
+    });
+    return res;
   }
 });
