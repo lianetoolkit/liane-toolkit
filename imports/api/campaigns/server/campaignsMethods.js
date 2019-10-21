@@ -161,7 +161,8 @@ export const campaignsCreate = new ValidatedMethod({
 
     Meteor.call("log", {
       type: "campaigns.add",
-      campaignId
+      campaignId,
+      data: { name }
     });
 
     return { result: campaignId };
@@ -348,7 +349,8 @@ export const campaignsRemove = new ValidatedMethod({
 
     Meteor.call("log", {
       type: "campaigns.remove",
-      campaignId
+      campaignId,
+      data: { name: campaign.name }
     });
 
     return res;
