@@ -257,7 +257,7 @@ class CommentList extends Component {
       ? intl.formatMessage(messages.commentResolved)
       : intl.formatMessage(messages.commentUnresolved);
     if (
-      confirm(intl.formatMessage(messages.confirmResolution, { tag: label }))
+      confirm(intl.formatMessage(messages.confirmResolution, { resolution: label }))
     ) {
       Meteor.call(
         "comments.resolve",
