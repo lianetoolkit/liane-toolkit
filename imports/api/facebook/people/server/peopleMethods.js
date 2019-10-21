@@ -1102,6 +1102,18 @@ export const importPeople = new ValidatedMethod({
       type: Object,
       optional: true,
       blackbox: true
+    },
+    "defaultValues.country": {
+      type: String,
+      optional: true
+    },
+    "defaultValues.region": {
+      type: String,
+      optional: true
+    },
+    "defaultValues.city": {
+      type: String,
+      optional: true
     }
   }).validator(),
   run({ campaignId, config, filename, data, defaultValues }) {

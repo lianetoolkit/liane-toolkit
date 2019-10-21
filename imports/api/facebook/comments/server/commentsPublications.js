@@ -20,7 +20,7 @@ Meteor.publishComposite("comments.byAccount", function({
       options = {
         ...options,
         sort: { created_time: -1 },
-        limit: Math.min(options.limit || 10, 20)
+        limit: options.limit
       };
       return {
         find: function() {

@@ -16,6 +16,9 @@ import { alertStore } from "../containers/Alerts.jsx";
 import Form from "./Form.jsx";
 import TagSelect from "./TagSelect.jsx";
 import PersonMetaButtons from "./PersonMetaButtons.jsx";
+import Button from "./Button.jsx";
+import CountrySelect from "./CountrySelect.jsx";
+import RegionSelect from "./RegionSelect.jsx";
 
 const fields = {
   name: {
@@ -149,6 +152,31 @@ const messages = defineMessages({
   startImport: {
     id: "app.people.import.start_label",
     defaultMessage: "Start import"
+  },
+  defaultFieldsAdd: {
+    id: "app.people.import.default_location.add_label",
+    defaultMessage: "Add extra location information for this import"
+  },
+  defaultFieldsCancel: {
+    id: "app.people.import.default_location.cancel_label",
+    defaultMessage: "Cancel location information"
+  },
+  defaultFieldsTip: {
+    id: "app.people.import.default_location.tip",
+    defaultMessage:
+      "Adding extra location data will help the import geocoding accuracy. The provided data will be applied for every entry."
+  },
+  defaultFieldsCountryLabel: {
+    id: "app.people.import.default_location.country_label",
+    defaultMessage: "Country"
+  },
+  defaultFieldsRegionLabel: {
+    id: "app.people.import.default_location.region_label",
+    defaultMessage: "Region (optional)"
+  },
+  defaultFieldsCityLabel: {
+    id: "app.people.import.default_location.city_label",
+    defaultMessage: "City (optional)"
   }
 });
 
@@ -382,6 +410,125 @@ class ItemConfig extends React.Component {
   }
 }
 
+const DefaultFields = styled.div`
+  font-size: 0.9em;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  padding: 1rem;
+  margin: 0 0 1rem;
+  background: #f7f7f7;
+  .tip {
+    font-size: 0.9em;
+    color: #666;
+    font-style: italic;
+    margin: 0;
+    text-align: center;
+  }
+  .button {
+    display: block;
+    margin: 0 0 1rem;
+  }
+`;
+
+class ImportDefaultFields extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      formData: {
+        country: "",
+        region: "",
+        city: ""
+      },
+      enabled: false
+    };
+  }
+  componentDidUpdate(prevProps, prevState) {
+    const { onChange } = this.props;
+    const { enabled, formData } = this.state;
+    if (
+      enabled &&
+      (!prevState.enabled ||
+        JSON.stringify(formData) != JSON.stringify(prevState.formData))
+    ) {
+      onChange && onChange(formData);
+    }
+    if (!enabled && prevState.enabled) {
+      onChange && onChange({});
+    }
+  }
+  _handleClick = ev => {
+    ev.preventDefault();
+    const { enabled } = this.state;
+    this.setState({ enabled: !enabled });
+  };
+  _handleChange = ({ target }) => {
+    this.setState({
+      formData: {
+        ...this.state.formData,
+        [target.name]: target.value
+      }
+    });
+  };
+  render() {
+    const { intl } = this.props;
+    const { enabled, formData } = this.state;
+    return (
+      <DefaultFields>
+        <Button onClick={this._handleClick}>
+          {enabled
+            ? intl.formatMessage(messages.defaultFieldsCancel)
+            : intl.formatMessage(messages.defaultFieldsAdd)}
+        </Button>
+        {enabled ? (
+          <div>
+            <Form.Field
+              label={intl.formatMessage(messages.defaultFieldsCountryLabel)}
+            >
+              <CountrySelect
+                name="country"
+                onChange={this._handleChange}
+                value={formData.country}
+              />
+            </Form.Field>
+            {formData.country ? (
+              <Form.Field
+                label={intl.formatMessage(messages.defaultFieldsRegionLabel)}
+              >
+                <RegionSelect
+                  name="region"
+                  onChange={this._handleChange}
+                  country={formData.country}
+                  value={formData.region}
+                />
+              </Form.Field>
+            ) : null}
+            {formData.region ? (
+              <Form.Field
+                label={intl.formatMessage(messages.defaultFieldsCityLabel)}
+              >
+                <input
+                  name="city"
+                  type="text"
+                  onChange={this._handleChange}
+                  value={formData.city}
+                />
+              </Form.Field>
+            ) : null}
+          </div>
+        ) : (
+          <p className="tip">{intl.formatMessage(messages.defaultFieldsTip)}</p>
+        )}
+      </DefaultFields>
+    );
+  }
+}
+
+ImportDefaultFields.propTypes = {
+  intl: intlShape.isRequired
+};
+
+const ImportDefaultFieldsIntl = injectIntl(ImportDefaultFields);
+
 const Container = styled.div`
   .person-meta-buttons {
     margin: 0.5rem 0;
@@ -437,10 +584,13 @@ class PeopleImport extends React.Component {
       }
     });
   };
+  _handleDefaultFieldsChange = data => {
+    this.setState({ defaultValues: data });
+  };
   _handleSubmit(ev) {
     ev.preventDefault();
     const { data, campaignId, filename, onSubmit } = this.props;
-    const { tags, labels, ...config } = this.state;
+    const { tags, labels, defaultValues, ...config } = this.state;
     this.setState({
       loading: true
     });
@@ -453,7 +603,8 @@ class PeopleImport extends React.Component {
         data,
         defaultValues: {
           tags,
-          labels
+          labels,
+          ...defaultValues
         }
       },
       (err, res) => {
@@ -503,6 +654,7 @@ class PeopleImport extends React.Component {
           {headers.map((header, i) => (
             <ItemConfig key={i} header={header} onChange={this._handleChange} />
           ))}
+          <ImportDefaultFieldsIntl onChange={this._handleDefaultFieldsChange} />
           <Form.Field label={intl.formatMessage(messages.selectTags)}>
             <TagSelect
               onChange={this._handleTagChange}
