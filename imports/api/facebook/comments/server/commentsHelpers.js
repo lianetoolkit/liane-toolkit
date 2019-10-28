@@ -36,7 +36,7 @@ const commentsFields = [
   "can_comment",
   "can_hide",
   "can_remove",
-  // "can_reply_privately",
+  "can_reply_privately",
   "is_hidden",
   "is_private",
   "comment_count",
