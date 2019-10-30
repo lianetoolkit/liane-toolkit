@@ -204,6 +204,33 @@ const UserContainer = styled.div`
   }
 `;
 
+const ClosedContainer = styled.div`
+  max-width: 400px;
+  box-sizing: border-box;
+  margin: 0 auto 4rem;
+  background: #eee;
+  border-radius: 7px;
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.15);
+  border: 1px solid #bbb;
+  padding: 2rem;
+  z-index: 2;
+  position: relative;
+  h3 {
+    font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 0 0 2rem;
+  }
+  .button.primary {
+    margin: 0 0 2rem;
+    display: block;
+  }
+  p {
+    font-size: 0.9em;
+  }
+  .button-group {
+    margin-top: 2rem;
+  }
+`;
+
 const Intro = styled.section`
   max-width: 960px;
   margin: 6rem auto 6rem;
@@ -333,8 +360,25 @@ function FeatureItem(props) {
 export default class Home extends Component {
   constructor(props) {
     super(props);
-    this.state = { loading: false };
+    this.state = {
+      loading: false,
+      subscribeFormData: { name: "", email: "" },
+      subscribed: false
+    };
   }
+  componentDidMount() {
+    this._verifyClosed();
+  }
+  _verifyClosed = () => {
+    this.setState({ loading: true });
+    Meteor.call("users.isAppPrivate", {}, (err, res) => {
+      this.setState({ loading: false });
+      this.setState({
+        isClosed: res.isPrivate,
+        hasMail: res.hasMail
+      });
+    });
+  };
   _facebookAuth = () => ev => {
     ev.preventDefault();
     this.setState({ loading: true });
@@ -360,9 +404,31 @@ export default class Home extends Component {
       }
     );
   };
+  _handleSubscribeChange = ({ target }) => {
+    this.setState({
+      subscribeFormData: {
+        ...this.state.subscribeFormData,
+        [target.name]: target.value
+      }
+    });
+  };
+  _handleSubscribeSubmit = ev => {
+    ev.preventDefault();
+    Meteor.call(
+      "users.mailSubscribe",
+      this.state.subscribeFormData,
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          this.setState({ subscribed: true });
+        }
+      }
+    );
+  };
   render() {
     const { isLoggedIn } = this.props;
-    const { loading } = this.state;
+    const { loading, isClosed, hasMail, subscribed } = this.state;
     const user = Meteor.user();
     return (
       <Page>
@@ -457,6 +523,33 @@ export default class Home extends Component {
               )}
             </UserContainer>
           )}
+          {isClosed && hasMail ? (
+            <ClosedContainer>
+              <h3>The creation of new campaigns is currently disabled.</h3>
+              {!subscribed ? (
+                <>
+                  <p>If you'd like to receive updates, subscribe below:</p>
+                  <form onSubmit={this._handleSubscribeSubmit}>
+                    <input
+                      type="text"
+                      placeholder="Name"
+                      name="name"
+                      onChange={this._handleSubscribeChange}
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      name="email"
+                      onChange={this._handleSubscribeChange}
+                    />
+                    <input type="submit" value="Submit" />
+                  </form>
+                </>
+              ) : (
+                <p className="success">Thank you for subscribing!</p>
+              )}
+            </ClosedContainer>
+          ) : null}
           <Intro>
             <div className="first">
               <div className="intro-text">

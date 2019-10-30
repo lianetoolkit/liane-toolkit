@@ -3,7 +3,68 @@ import { UsersHelpers } from "./usersHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { difference } from "lodash";
 import axios from "axios";
+import nodemailer from "nodemailer";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
+
+let mailTransporter, mailConfig;
+if (Meteor.settings.email && Meteor.settings.email.mail) {
+  mailConfig = Meteor.settings.email.mail;
+  mailTransporter = nodemailer.createTransport({
+    host: mailConfig.host,
+    port: mailConfig.port,
+    secure: mailConfig.secure,
+    auth: {
+      user: mailConfig.username,
+      pass: mailConfig.password
+    }
+  });
+}
+
+const PRIVATE = Meteor.settings.private;
+
+export const isAppPrivate = new ValidatedMethod({
+  name: "users.isAppPrivate",
+  validate() {},
+  run() {
+    return {
+      isPrivate: !!PRIVATE,
+      hasMail: Meteor.settings.email && Meteor.settings.email.mail
+    };
+  }
+});
+
+export const mailSubscribe = new ValidatedMethod({
+  name: "users.mailSubscribe",
+  validate: new SimpleSchema({
+    name: {
+      type: String
+    },
+    email: {
+      type: String
+    }
+  }).validator(),
+  run({ name, email }) {
+    logger.debug("users.mailSubscribe called", { name, email });
+    if (!name || !email) {
+      throw new Meteor.Error(400, "You must provide name and email");
+    }
+    if (mailTransporter) {
+      mailTransporter
+        .sendMail({
+          from: `"Liane" <${mailConfig.username}>`,
+          to: `${Meteor.settings.email.admins.join(", ")}`,
+          subject: `[New Subscription] ${name}`,
+          html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p>`
+        })
+        .catch(err => {
+          logger.debug("error sending email", err);
+        });
+    } else {
+      throw new Meteor.Error(500, "Mailing not configured");
+    }
+    return;
+  }
+});
 
 export const setLanguage = new ValidatedMethod({
   name: "users.setLanguage",
