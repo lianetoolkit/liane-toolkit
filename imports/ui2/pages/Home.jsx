@@ -8,6 +8,8 @@ import { alertStore } from "../containers/Alerts.jsx";
 import Button from "../components/Button.jsx";
 import Loading from "../components/Loading.jsx";
 import OrLine from "../components/OrLine.jsx";
+import Form from "../components/Form.jsx";
+import CountrySelect from "../components/CountrySelect.jsx";
 
 const Container = styled.div`
   flex: 1 1 100%;
@@ -525,28 +527,53 @@ export default class Home extends Component {
           )}
           {isClosed && hasMail ? (
             <ClosedContainer>
-              <h3>The creation of new campaigns is currently disabled.</h3>
+              <h3>
+                <FormattedMessage
+                  id="app.mail_subscription.disabled_message"
+                  defaultMessage="The creation of new campaigns is currently disabled."
+                />
+              </h3>
               {!subscribed ? (
                 <>
-                  <p>If you'd like to receive updates, subscribe below:</p>
-                  <form onSubmit={this._handleSubscribeSubmit}>
-                    <input
-                      type="text"
-                      placeholder="Name"
-                      name="name"
-                      onChange={this._handleSubscribeChange}
+                  <p>
+                    <FormattedMessage
+                      id="app.mail_subscription.form_text"
+                      defaultMessage="If you'd like to receive updates, subscribe below:"
                     />
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      name="email"
-                      onChange={this._handleSubscribeChange}
-                    />
+                  </p>
+                  <Form onSubmit={this._handleSubscribeSubmit}>
+                    <Form.Field>
+                      <input
+                        type="text"
+                        placeholder="Name"
+                        name="name"
+                        onChange={this._handleSubscribeChange}
+                      />
+                    </Form.Field>
+                    <Form.Field>
+                      <input
+                        type="email"
+                        placeholder="Email"
+                        name="email"
+                        onChange={this._handleSubscribeChange}
+                      />
+                    </Form.Field>
+                    <Form.Field>
+                      <CountrySelect
+                        name="country"
+                        onChange={this._handleSubscribeChange}
+                      />
+                    </Form.Field>
                     <input type="submit" value="Submit" />
-                  </form>
+                  </Form>
                 </>
               ) : (
-                <p className="success">Thank you for subscribing!</p>
+                <p className="success">
+                  <FormattedMessage
+                    id="app.mail_subscription.thanks"
+                    defaultMessage="Thank you for subscribing!"
+                  />
+                </p>
               )}
             </ClosedContainer>
           ) : null}

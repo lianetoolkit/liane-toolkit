@@ -41,9 +41,12 @@ export const mailSubscribe = new ValidatedMethod({
     },
     email: {
       type: String
+    },
+    country: {
+      type: String
     }
   }).validator(),
-  run({ name, email }) {
+  run({ name, email, country }) {
     logger.debug("users.mailSubscribe called", { name, email });
     if (!name || !email) {
       throw new Meteor.Error(400, "You must provide name and email");
@@ -54,7 +57,7 @@ export const mailSubscribe = new ValidatedMethod({
           from: `"Liane" <${mailConfig.username}>`,
           to: `${Meteor.settings.email.admins.join(", ")}`,
           subject: `[New Subscription] ${name}`,
-          html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p>`
+          html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Country:</strong> ${country}</p>`
         })
         .catch(err => {
           logger.debug("error sending email", err);
