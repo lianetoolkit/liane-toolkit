@@ -231,6 +231,10 @@ const ClosedContainer = styled.div`
   .button-group {
     margin-top: 2rem;
   }
+  p.privacy-text {
+    font-size: 0.8em;
+    color: #777;
+  }
 `;
 
 const Intro = styled.section`
@@ -538,7 +542,7 @@ export default class Home extends Component {
                   <p>
                     <FormattedMessage
                       id="app.mail_subscription.form_text"
-                      defaultMessage="If you'd like to receive updates, subscribe below:"
+                      defaultMessage="Subscribe below so we can let you know when its available again as well as feature updates and other news."
                     />
                   </p>
                   <Form onSubmit={this._handleSubscribeSubmit}>
@@ -564,6 +568,16 @@ export default class Home extends Component {
                         onChange={this._handleSubscribeChange}
                       />
                     </Form.Field>
+                    <p className="privacy-text">
+                      <FormattedHTMLMessage
+                        id="app.mail_subscription.privacy_text"
+                        defaultMessage="By submitting this form you agree with our <a href='{url}' target='_blank'>privacy policy</a>."
+                        values={{
+                          url:
+                            "https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf"
+                        }}
+                      />
+                    </p>
                     <input type="submit" value="Submit" />
                   </Form>
                 </>
@@ -597,7 +611,6 @@ export default class Home extends Component {
           </Intro>
           <Features>
             <div>
-              {/* <h2>Funcionalidades</h2> */}
               <ul>
                 <FeatureItem>
                   <FormattedMessage
