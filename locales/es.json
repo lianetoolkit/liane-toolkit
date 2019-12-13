@@ -98,7 +98,7 @@
   "app.intro_text_2": "Ofrece acceso a herramientas que empoderamientos campañas que buscan innovar políticamente, y desarrollen prácticas para acercar a la ciudadanía a la política, luchas contra desigualdades y fortalecer la democracia.",
   "app.logout": "Salir",
   "app.mail_subscription.disabled_message": "La creación de nuevas campañas está actualmente deshabilitada.",
-  "app.mail_subscription.form_text": "Suscríbase para que podamos informarle cuándo estará disponible nuevamente, así como actualizaciones de funciones y otras noticias.",
+  "app.mail_subscription.form_text": "Si desea recibir actualizaciones, suscríbase:",
   "app.mail_subscription.privacy_text": "Al enviar este formulario, usted acepta nuestra <a href='{url}' target='_blank'>política de privacidad</a>.",
   "app.mail_subscription.thanks": "¡Gracias por suscribirse!",
   "app.map.export": "Exportar adiciones de campaña",

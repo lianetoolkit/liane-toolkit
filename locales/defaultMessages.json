@@ -118,42 +118,6 @@
         "id": "app.dashboard.people.not_found"
       },
       {
-        "defaultMessage": "Person not found",
-        "id": "app.person_not_found"
-      },
-      {
-        "defaultMessage": "resolved",
-        "id": "app.comment.resolved"
-      },
-      {
-        "defaultMessage": "unresolved",
-        "id": "app.comment.unresolved"
-      },
-      {
-        "defaultMessage": "Are you sure you'd like to mark this comment as {resolution}",
-        "id": "app.comment.confirm_resolution"
-      },
-      {
-        "defaultMessage": "Mark as question",
-        "id": "app.comment.tag_as.question"
-      },
-      {
-        "defaultMessage": "Mark as vote declaration",
-        "id": "app.comment.tag_as.vote"
-      },
-      {
-        "defaultMessage": "Mark this person as troll",
-        "id": "app.comment.tag_as.troll"
-      },
-      {
-        "defaultMessage": "Mark as",
-        "id": "app.comment.tag_as"
-      },
-      {
-        "defaultMessage": "Actions",
-        "id": "app.comment.actions_title"
-      },
-      {
         "defaultMessage": "No comments",
         "id": "app.comments.counts.no_comments"
       },
@@ -192,6 +156,42 @@
       {
         "defaultMessage": "Reply",
         "id": "app.comment.reply_button"
+      },
+      {
+        "defaultMessage": "Person not found",
+        "id": "app.person_not_found"
+      },
+      {
+        "defaultMessage": "resolved",
+        "id": "app.comment.resolved"
+      },
+      {
+        "defaultMessage": "unresolved",
+        "id": "app.comment.unresolved"
+      },
+      {
+        "defaultMessage": "Are you sure you'd like to mark this comment as {resolution}",
+        "id": "app.comment.confirm_resolution"
+      },
+      {
+        "defaultMessage": "Mark as question",
+        "id": "app.comment.tag_as.question"
+      },
+      {
+        "defaultMessage": "Mark as vote declaration",
+        "id": "app.comment.tag_as.vote"
+      },
+      {
+        "defaultMessage": "Mark this person as troll",
+        "id": "app.comment.tag_as.troll"
+      },
+      {
+        "defaultMessage": "Mark as",
+        "id": "app.comment.tag_as"
+      },
+      {
+        "defaultMessage": "Actions",
+        "id": "app.comment.actions_title"
       },
       {
         "defaultMessage": "Select a country...",
@@ -306,52 +306,16 @@
         "id": "app.notifications.not_found"
       },
       {
-        "defaultMessage": "Showing people that interacted for the first time between {date}.",
-        "id": "app.people.history_chart.filter_title"
+        "defaultMessage": "No results",
+        "id": "app.paging.no_results"
       },
       {
-        "defaultMessage": "Clear selection",
-        "id": "app.people.history_chart.clear"
+        "defaultMessage": "Showing {page_start}-{page_end} out of {total}",
+        "id": "app.paging.results"
       },
       {
-        "defaultMessage": "Page newcomers",
-        "id": "app.people.history_chart.title"
-      },
-      {
-        "defaultMessage": "Click and drag the chart below to filter:",
-        "id": "app.people.history_chart.filter"
-      },
-      {
-        "defaultMessage": "{amount} new people",
-        "id": "app.people.history_chart.new_label"
-      },
-      {
-        "defaultMessage": "Date",
-        "id": "app.people.exports.table_header.date"
-      },
-      {
-        "defaultMessage": "Expiration",
-        "id": "app.people.exports.table_header.expiration"
-      },
-      {
-        "defaultMessage": "People",
-        "id": "app.people.exports.table_header.people"
-      },
-      {
-        "defaultMessage": "{count} people",
-        "id": "app.people.exports.table_body.people_count"
-      },
-      {
-        "defaultMessage": "This export file has expired",
-        "id": "app.people.exports.table_body.expired"
-      },
-      {
-        "defaultMessage": "Download",
-        "id": "app.people.exports.table_body.download"
-      },
-      {
-        "defaultMessage": "No export file found",
-        "id": "app.people.exports.table_body.not_found"
+        "defaultMessage": "Calculating...",
+        "id": "app.paging.loading"
       },
       {
         "defaultMessage": "Download file",
@@ -398,32 +362,24 @@
         "id": "app.people.lists.table_body.not_found"
       },
       {
-        "defaultMessage": "No results",
-        "id": "app.paging.no_results"
+        "defaultMessage": "Showing people that interacted for the first time between {date}.",
+        "id": "app.people.history_chart.filter_title"
       },
       {
-        "defaultMessage": "Showing {page_start}-{page_end} out of {total}",
-        "id": "app.paging.results"
+        "defaultMessage": "Clear selection",
+        "id": "app.people.history_chart.clear"
       },
       {
-        "defaultMessage": "Calculating...",
-        "id": "app.paging.loading"
+        "defaultMessage": "Page newcomers",
+        "id": "app.people.history_chart.title"
       },
       {
-        "defaultMessage": "Not available",
-        "id": "app.people.contact_icons.not_available"
+        "defaultMessage": "Click and drag the chart below to filter:",
+        "id": "app.people.history_chart.filter"
       },
       {
-        "defaultMessage": "{data} (copy)",
-        "id": "app.people.contact_icons.data_copy"
-      },
-      {
-        "defaultMessage": "Filled the form (copy link)",
-        "id": "app.people.contact_icons.filled_form"
-      },
-      {
-        "defaultMessage": "Did not filled the form (copy link)",
-        "id": "app.people.contact_icons.not_filled_form"
+        "defaultMessage": "{amount} new people",
+        "id": "app.people.history_chart.new_label"
       },
       {
         "defaultMessage": "Editing {name}",
@@ -474,36 +430,48 @@
         "id": "app.people.table_body.private_reply_button"
       },
       {
-        "defaultMessage": "Supporter",
-        "id": "app.people.category.supporter"
+        "defaultMessage": "Date",
+        "id": "app.people.exports.table_header.date"
       },
       {
-        "defaultMessage": "Volunteer",
-        "id": "app.people.category.volunteer"
+        "defaultMessage": "Expiration",
+        "id": "app.people.exports.table_header.expiration"
       },
       {
-        "defaultMessage": "Mobilizer",
-        "id": "app.people.category.mobilizer"
+        "defaultMessage": "People",
+        "id": "app.people.exports.table_header.people"
       },
       {
-        "defaultMessage": "Donor",
-        "id": "app.people.category.donor"
+        "defaultMessage": "{count} people",
+        "id": "app.people.exports.table_body.people_count"
       },
       {
-        "defaultMessage": "Influencer",
-        "id": "app.people.category.influencer"
+        "defaultMessage": "This export file has expired",
+        "id": "app.people.exports.table_body.expired"
       },
       {
-        "defaultMessage": "Declared vote",
-        "id": "app.people.category.voter"
+        "defaultMessage": "Download",
+        "id": "app.people.exports.table_body.download"
       },
       {
-        "defaultMessage": "Can't vote",
-        "id": "app.people.category.non_voter"
+        "defaultMessage": "No export file found",
+        "id": "app.people.exports.table_body.not_found"
       },
       {
-        "defaultMessage": "Troll",
-        "id": "app.people.category.troll"
+        "defaultMessage": "Not available",
+        "id": "app.people.contact_icons.not_available"
+      },
+      {
+        "defaultMessage": "{data} (copy)",
+        "id": "app.people.contact_icons.data_copy"
+      },
+      {
+        "defaultMessage": "Filled the form (copy link)",
+        "id": "app.people.contact_icons.filled_form"
+      },
+      {
+        "defaultMessage": "Did not filled the form (copy link)",
+        "id": "app.people.contact_icons.not_filled_form"
       },
       {
         "defaultMessage": "Importing {filename}...",
@@ -580,6 +548,38 @@
       {
         "defaultMessage": "Field",
         "id": "app.people.import.field_label"
+      },
+      {
+        "defaultMessage": "Supporter",
+        "id": "app.people.category.supporter"
+      },
+      {
+        "defaultMessage": "Volunteer",
+        "id": "app.people.category.volunteer"
+      },
+      {
+        "defaultMessage": "Mobilizer",
+        "id": "app.people.category.mobilizer"
+      },
+      {
+        "defaultMessage": "Donor",
+        "id": "app.people.category.donor"
+      },
+      {
+        "defaultMessage": "Influencer",
+        "id": "app.people.category.influencer"
+      },
+      {
+        "defaultMessage": "Declared vote",
+        "id": "app.people.category.voter"
+      },
+      {
+        "defaultMessage": "Can't vote",
+        "id": "app.people.category.non_voter"
+      },
+      {
+        "defaultMessage": "Troll",
+        "id": "app.people.category.troll"
       },
       {
         "defaultMessage": "Skills...",
@@ -710,6 +710,22 @@
         "id": "app.slogan"
       },
       {
+        "defaultMessage": "The creation of new campaigns is currently disabled.",
+        "id": "app.mail_subscription.disabled_message"
+      },
+      {
+        "defaultMessage": "If you'd like to receive updates, subscribe below:",
+        "id": "app.mail_subscription.form_text"
+      },
+      {
+        "defaultMessage": "By submitting this form you agree with our <a href='{url}' target='_blank'>privacy policy</a>.",
+        "id": "app.mail_subscription.privacy_text"
+      },
+      {
+        "defaultMessage": "Thank you for subscribing!",
+        "id": "app.mail_subscription.thanks"
+      },
+      {
         "defaultMessage": "Connect with Facebook",
         "id": "app.facebook_login"
       },
@@ -732,22 +748,6 @@
       {
         "defaultMessage": "Connect with an existing campaign by forwarding your email to the person responsible",
         "id": "app.connect_campaign"
-      },
-      {
-        "defaultMessage": "The creation of new campaigns is currently disabled.",
-        "id": "app.mail_subscription.disabled_message"
-      },
-      {
-        "defaultMessage": "Subscribe below so we can let you know when its available again as well as feature updates and other news.",
-        "id": "app.mail_subscription.form_text"
-      },
-      {
-        "defaultMessage": "By submitting this form you agree with our <a href='{url}' target='_blank'>privacy policy</a>.",
-        "id": "app.mail_subscription.privacy_text"
-      },
-      {
-        "defaultMessage": "Thank you for subscribing!",
-        "id": "app.mail_subscription.thanks"
       },
       {
         "defaultMessage": "Liane is a set of open and free technologies and solutions, developed by Instituto Update to boost innovative and low-cost political campaigns in Latin America.",

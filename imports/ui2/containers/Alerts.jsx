@@ -16,6 +16,7 @@ class AlertStore {
     }
     if (content.error) {
       type = "error";
+      console.log(content);
       content =
         content.message || content.reason || "Ocorreu um erro inesperado.";
     }
