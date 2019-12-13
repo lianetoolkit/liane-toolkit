@@ -450,66 +450,69 @@ export default class Home extends Component {
             </h2>
           </HighlightContainer>
           {isClosed && hasMail ? (
-            <ClosedContainer>
-              <h3>
-                <FormattedMessage
-                  id="app.mail_subscription.disabled_message"
-                  defaultMessage="The creation of new campaigns is currently disabled."
-                />
-              </h3>
-              {!subscribed ? (
-                <>
-                  <p>
-                    <FormattedMessage
-                      id="app.mail_subscription.form_text"
-                      defaultMessage="If you'd like to receive updates, subscribe below:"
-                    />
-                  </p>
-                  <Form onSubmit={this._handleSubscribeSubmit}>
-                    <Form.Field>
-                      <input
-                        type="text"
-                        placeholder="Name"
-                        name="name"
-                        onChange={this._handleSubscribeChange}
-                      />
-                    </Form.Field>
-                    <Form.Field>
-                      <input
-                        type="email"
-                        placeholder="Email"
-                        name="email"
-                        onChange={this._handleSubscribeChange}
-                      />
-                    </Form.Field>
-                    <Form.Field>
-                      <CountrySelect
-                        name="country"
-                        onChange={this._handleSubscribeChange}
-                      />
-                    </Form.Field>
-                    <p className="privacy-text">
-                      <FormattedHTMLMessage
-                        id="app.mail_subscription.privacy_text"
-                        defaultMessage="By submitting this form you agree with our <a href='{url}' target='_blank'>privacy policy</a>."
-                        values={{
-                          url:
-                            "https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf"
-                        }}
+            <>
+              <ClosedContainer>
+                <h3>
+                  <FormattedMessage
+                    id="app.mail_subscription.disabled_message"
+                    defaultMessage="The creation of new campaigns is currently disabled."
+                  />
+                </h3>
+                {!subscribed ? (
+                  <>
+                    <p>
+                      <FormattedMessage
+                        id="app.mail_subscription.form_text"
+                        defaultMessage="If you'd like to receive updates, subscribe below:"
                       />
                     </p>
-                    <input type="submit" value="Submit" />
-                  </Form>
-                </>
-              ) : (
-                <p className="success">
-                  <FormattedMessage
-                    id="app.mail_subscription.thanks"
-                    defaultMessage="Thank you for subscribing!"
-                  />
-                </p>
-              )}
-            </ClosedContainer>
+                    <Form onSubmit={this._handleSubscribeSubmit}>
+                      <Form.Field>
+                        <input
+                          type="text"
+                          placeholder="Name"
+                          name="name"
+                          onChange={this._handleSubscribeChange}
+                        />
+                      </Form.Field>
+                      <Form.Field>
+                        <input
+                          type="email"
+                          placeholder="Email"
+                          name="email"
+                          onChange={this._handleSubscribeChange}
+                        />
+                      </Form.Field>
+                      <Form.Field>
+                        <CountrySelect
+                          name="country"
+                          onChange={this._handleSubscribeChange}
+                        />
+                      </Form.Field>
+                      <p className="privacy-text">
+                        <FormattedHTMLMessage
+                          id="app.mail_subscription.privacy_text"
+                          defaultMessage="By submitting this form you agree with our <a href='{url}' target='_blank'>privacy policy</a>."
+                          values={{
+                            url:
+                              "https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf"
+                          }}
+                        />
+                      </p>
+                      <input type="submit" value="Submit" />
+                    </Form>
+                  </>
+                ) : (
+                  <p className="success">
+                    <FormattedMessage
+                      id="app.mail_subscription.thanks"
+                      defaultMessage="Thank you for subscribing!"
+                    />
+                  </p>
+                )}
+              </ClosedContainer>
+              <hr />
+            </>
           ) : null}
           {!isLoggedIn ? (
             <LoginFormContainer>
