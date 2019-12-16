@@ -739,16 +739,22 @@ class PeoplePage extends Component {
         <PeopleContent loading={loading}>
           {imported ? (
             <Message>
-              An import has ended,{" "}
+              <FormattedMessage
+                id="app.people.import.finished_alert"
+                defaultMessage="An import has ended."
+              />{" "}
               <a
                 href="javascript:void(0);"
                 onClick={() => {
                   window.location.reload();
                 }}
               >
-                click here
-              </a>{" "}
-              to refresh the page.
+                <FormattedMessage
+                  id="app.refresh_message"
+                  defaultMessage="Click here to refresh the page"
+                />
+              </a>
+              .
             </Message>
           ) : null}
           <PagePaging
