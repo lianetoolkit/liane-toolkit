@@ -90,6 +90,10 @@
         "id": "app.extra_fields.new_field.label"
       },
       {
+        "defaultMessage": "Search for answers...",
+        "id": "app.faq.search.placeholder"
+      },
+      {
         "defaultMessage": "Feedback",
         "id": "app.feedback.modal_title"
       },
@@ -136,10 +140,6 @@
       {
         "defaultMessage": "Feedback/Report a problem",
         "id": "app.feedback.button_label"
-      },
-      {
-        "defaultMessage": "Search for answers...",
-        "id": "app.faq.search.placeholder"
       },
       {
         "defaultMessage": "A project by Instituto Update",
@@ -294,16 +294,16 @@
         "id": "app.skills.panflation_label"
       },
       {
-        "defaultMessage": "Download file",
-        "id": "app.people.exports.download"
+        "defaultMessage": "No results",
+        "id": "app.paging.no_results"
       },
       {
-        "defaultMessage": "Processing export...",
-        "id": "app.people.exports.processing"
+        "defaultMessage": "Showing {page_start}-{page_end} out of {total}",
+        "id": "app.paging.results"
       },
       {
-        "defaultMessage": "Export people",
-        "id": "app.people.exports.button_label"
+        "defaultMessage": "Calculating...",
+        "id": "app.paging.loading"
       },
       {
         "defaultMessage": "Date",
@@ -334,16 +334,16 @@
         "id": "app.people.exports.table_body.not_found"
       },
       {
-        "defaultMessage": "No results",
-        "id": "app.paging.no_results"
+        "defaultMessage": "Download file",
+        "id": "app.people.exports.download"
       },
       {
-        "defaultMessage": "Showing {page_start}-{page_end} out of {total}",
-        "id": "app.paging.results"
+        "defaultMessage": "Processing export...",
+        "id": "app.people.exports.processing"
       },
       {
-        "defaultMessage": "Calculating...",
-        "id": "app.paging.loading"
+        "defaultMessage": "Export people",
+        "id": "app.people.exports.button_label"
       },
       {
         "defaultMessage": "Define a name for your campaign",
@@ -598,6 +598,46 @@
         "id": "app.people.category.troll"
       },
       {
+        "defaultMessage": "Text search...",
+        "id": "app.comments.text_search_placeholder"
+      },
+      {
+        "defaultMessage": "Unresolved",
+        "id": "app.comments.unresolved_label"
+      },
+      {
+        "defaultMessage": "Resolved",
+        "id": "app.comments.resolved_label"
+      },
+      {
+        "defaultMessage": "All comments",
+        "id": "app.comments.filters.all_comments_label"
+      },
+      {
+        "defaultMessage": "Marked as question",
+        "id": "app.comments.filters.question_comments"
+      },
+      {
+        "defaultMessage": "Vote declarations",
+        "id": "app.comments.filters.vote_comments"
+      },
+      {
+        "defaultMessage": "Hide comment replies",
+        "id": "app.comments.filters.hide_replies"
+      },
+      {
+        "defaultMessage": "Comments without page response",
+        "id": "app.comments.filters.without_response"
+      },
+      {
+        "defaultMessage": "Comments that can receive a private reply",
+        "id": "app.comments.filters.private_reply"
+      },
+      {
+        "defaultMessage": "Comments with mentions",
+        "id": "app.comments.filters.with_mentions"
+      },
+      {
         "defaultMessage": "Editing {name}",
         "id": "app.people.edit.title"
       },
@@ -814,6 +854,94 @@
         "id": "app.home.liane_text"
       },
       {
+        "defaultMessage": "Name is required",
+        "id": "app.people_form.name_required"
+      },
+      {
+        "defaultMessage": "Email is required",
+        "id": "app.people_form.email_required"
+      },
+      {
+        "defaultMessage": "Email or phone is required",
+        "id": "app.people_form.email_phone_required"
+      },
+      {
+        "defaultMessage": "Thank you!",
+        "id": "app.people_form.thank_you"
+      },
+      {
+        "defaultMessage": "Name",
+        "id": "app.people_form.name_label"
+      },
+      {
+        "defaultMessage": "Email",
+        "id": "app.people_form.email_label"
+      },
+      {
+        "defaultMessage": "Phone",
+        "id": "app.people_form.phone_label"
+      },
+      {
+        "defaultMessage": "Birthday",
+        "id": "app.people_form.birthday_label"
+      },
+      {
+        "defaultMessage": "What can you do?",
+        "id": "app.people_form.skills_label"
+      },
+      {
+        "defaultMessage": "Send",
+        "id": "app.people_form.submit_label"
+      },
+      {
+        "defaultMessage": "Your participation means a lot to us.",
+        "id": "app.people_form.thank_you_text"
+      },
+      {
+        "defaultMessage": "Hi {name}!",
+        "id": "app.people_form.welcome_logged_in"
+      },
+      {
+        "defaultMessage": "Hi!",
+        "id": "app.people_form.welcome_anonymous"
+      },
+      {
+        "defaultMessage": "Not you?",
+        "id": "app.people_form.not_you"
+      },
+      {
+        "defaultMessage": "Click here",
+        "id": "app.people_form.click_here"
+      },
+      {
+        "defaultMessage": "We, from the campaign {campaign_name}, would like to ask for your help!",
+        "id": "app.people_form.default_header"
+      },
+      {
+        "defaultMessage": "Fill the information below so you can know more about you.",
+        "id": "app.people_form.default_text"
+      },
+      {
+        "defaultMessage": "I'd like to participate",
+        "id": "app.people_form.participate_label"
+      },
+      {
+        "defaultMessage": "If we send you content, will you share in your social networks?",
+        "id": "app.people_form.supporter_label"
+      },
+      {
+        "defaultMessage": "Would you produce en event in your neighborhood or workplace?",
+        "id": "app.people_form.mobilizer_label"
+      },
+      {
+        "defaultMessage": "Would you donate money to the campaign?",
+        "id": "app.people_form.donor_label"
+      },
+      {
+        "defaultMessage": "By submitting this form you agree with our <a href=\"https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf\" target=\"_blank\" rel=\"external\">Privacy Policy</a>.",
+        "id": "app.people_form.privacy_policy"
+      },
+      {
         "defaultMessage": "Manual",
         "id": "app.people.source.manual.label"
       },
@@ -904,94 +1032,6 @@
       {
         "defaultMessage": "Click here to refresh the page",
         "id": "app.refresh_message"
-      },
-      {
-        "defaultMessage": "Name is required",
-        "id": "app.people_form.name_required"
-      },
-      {
-        "defaultMessage": "Email is required",
-        "id": "app.people_form.email_required"
-      },
-      {
-        "defaultMessage": "Email or phone is required",
-        "id": "app.people_form.email_phone_required"
-      },
-      {
-        "defaultMessage": "Thank you!",
-        "id": "app.people_form.thank_you"
-      },
-      {
-        "defaultMessage": "Name",
-        "id": "app.people_form.name_label"
-      },
-      {
-        "defaultMessage": "Email",
-        "id": "app.people_form.email_label"
-      },
-      {
-        "defaultMessage": "Phone",
-        "id": "app.people_form.phone_label"
-      },
-      {
-        "defaultMessage": "Birthday",
-        "id": "app.people_form.birthday_label"
-      },
-      {
-        "defaultMessage": "What can you do?",
-        "id": "app.people_form.skills_label"
-      },
-      {
-        "defaultMessage": "Send",
-        "id": "app.people_form.submit_label"
-      },
-      {
-        "defaultMessage": "Your participation means a lot to us.",
-        "id": "app.people_form.thank_you_text"
-      },
-      {
-        "defaultMessage": "Hi {name}!",
-        "id": "app.people_form.welcome_logged_in"
-      },
-      {
-        "defaultMessage": "Hi!",
-        "id": "app.people_form.welcome_anonymous"
-      },
-      {
-        "defaultMessage": "Not you?",
-        "id": "app.people_form.not_you"
-      },
-      {
-        "defaultMessage": "Click here",
-        "id": "app.people_form.click_here"
-      },
-      {
-        "defaultMessage": "We, from the campaign {campaign_name}, would like to ask for your help!",
-        "id": "app.people_form.default_header"
-      },
-      {
-        "defaultMessage": "Fill the information below so you can know more about you.",
-        "id": "app.people_form.default_text"
-      },
-      {
-        "defaultMessage": "I'd like to participate",
-        "id": "app.people_form.participate_label"
-      },
-      {
-        "defaultMessage": "If we send you content, will you share in your social networks?",
-        "id": "app.people_form.supporter_label"
-      },
-      {
-        "defaultMessage": "Would you produce en event in your neighborhood or workplace?",
-        "id": "app.people_form.mobilizer_label"
-      },
-      {
-        "defaultMessage": "Would you donate money to the campaign?",
-        "id": "app.people_form.donor_label"
-      },
-      {
-        "defaultMessage": "By submitting this form you agree with our <a href=\"https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf\" target=\"_blank\" rel=\"external\">Privacy Policy</a>.",
-        "id": "app.people_form.privacy_policy"
       },
       {
         "defaultMessage": "Title",

@@ -1,4 +1,11 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+  FormattedHTMLMessage
+} from "react-intl";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import { debounce } from "lodash";
@@ -12,6 +19,13 @@ import PagePaging from "../components/PagePaging.jsx";
 import Button from "../components/Button.jsx";
 import EntrySelect from "../components/EntrySelect.jsx";
 import CommentList from "../components/CommentList.jsx";
+
+const messages = defineMessages({
+  textSearch: {
+    id: "app.comments.text_search_placeholder",
+    defaultMessage: "Text search..."
+  }
+});
 
 const Container = styled.div`
   width: 100%;
@@ -59,7 +73,7 @@ const CommentsContent = styled.div`
   }
 `;
 
-export default class CommentsPage extends Component {
+class CommentsPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -159,7 +173,7 @@ export default class CommentsPage extends Component {
     }
   };
   render() {
-    const { campaignId, comments, limit, page } = this.props;
+    const { intl, campaignId, comments, limit, page } = this.props;
     const { loadingCount, count } = this.state;
     const queryingCategory = this.queryingCategory();
     return (
@@ -173,19 +187,25 @@ export default class CommentsPage extends Component {
                     onClick={this._handleQueryResolveClick(false)}
                     active={!this.isQueryingResolved()}
                   >
-                    Unresolved
+                    <FormattedMessage
+                      id="app.comments.unresolved_label"
+                      defaultMessage="Unresolved"
+                    />
                   </Button>
                   <Button
                     onClick={this._handleQueryResolveClick(true)}
                     active={this.isQueryingResolved()}
                   >
-                    Resolved
+                    <FormattedMessage
+                      id="app.comments.resolved_label"
+                      defaultMessage="Resolved"
+                    />
                   </Button>
                 </Button.Group>
                 <input
                   className="main-input"
                   type="text"
-                  placeholder="Text search"
+                  placeholder={intl.formatMessage(messages.textSearch)}
                   name="q"
                   onChange={this._handleChange}
                   // value={query.q}
@@ -208,7 +228,10 @@ export default class CommentsPage extends Component {
                     <span className="icon">
                       <FontAwesomeIcon icon="dot-circle" />
                     </span>
-                    All comments
+                    <FormattedMessage
+                      id="app.comments.filters.all_comments_label"
+                      defaultMessage="All comments"
+                    />
                   </label>
                   <label
                     className={queryingCategory == "question" ? "active" : ""}
@@ -222,7 +245,10 @@ export default class CommentsPage extends Component {
                     <span className="icon">
                       <FontAwesomeIcon icon="question" />
                     </span>
-                    Marked as question
+                    <FormattedMessage
+                      id="app.comments.filters.question_comments"
+                      defaultMessage="Marked as question"
+                    />
                   </label>
                   <label className={queryingCategory == "vote" ? "active" : ""}>
                     <input
@@ -234,7 +260,10 @@ export default class CommentsPage extends Component {
                     <span className="icon">
                       <FontAwesomeIcon icon="thumbs-up" />
                     </span>
-                    Vote declarations
+                    <FormattedMessage
+                      id="app.comments.filters.vote_comments"
+                      defaultMessage="Vote declarations"
+                    />
                   </label>
                 </PageFilters.Category>
                 <label className="boxed">
@@ -245,7 +274,10 @@ export default class CommentsPage extends Component {
                     checked={this.isQueryingHideReplies()}
                     disabled={this.isQueryingUnreplied()}
                   />
-                  Hide comment replies
+                  <FormattedMessage
+                    id="app.comments.filters.hide_replies"
+                    defaultMessage="Hide comment replies"
+                  />
                 </label>
                 <label className="boxed">
                   <input
@@ -254,7 +286,10 @@ export default class CommentsPage extends Component {
                     name="unreplied"
                     checked={this.isQueryingUnreplied()}
                   />
-                  Comments without page response
+                  <FormattedMessage
+                    id="app.comments.filters.without_response"
+                    defaultMessage="Comments without page response"
+                  />
                 </label>
                 <label className="boxed">
                   <input
@@ -263,7 +298,10 @@ export default class CommentsPage extends Component {
                     name="privateReply"
                     checked={this.isQueryingPrivateReply()}
                   />
-                  Comments that can receive a private reply
+                  <FormattedMessage
+                    id="app.comments.filters.private_reply"
+                    defaultMessage="Comments that can receive a private reply"
+                  />
                 </label>
                 <label className="boxed">
                   <input
@@ -272,7 +310,10 @@ export default class CommentsPage extends Component {
                     name="mention"
                     checked={this.isQueryingMention()}
                   />
-                  Comments with mentions
+                  <FormattedMessage
+                    id="app.comments.filters.with_mentions"
+                    defaultMessage="Comments with mentions"
+                  />
                 </label>
               </form>
             </div>
@@ -293,3 +334,9 @@ export default class CommentsPage extends Component {
     );
   }
 }
+
+CommentsPage.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(CommentsPage);
