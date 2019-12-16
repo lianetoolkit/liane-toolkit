@@ -1,9 +1,17 @@
 import React, { Component } from "react";
+import { injectIntl, intlShape, defineMessages } from "react-intl";
 import styled from "styled-components";
 
 import CreatableSelect from "react-select/lib/Creatable";
 
-export default class MapLayerSelect extends Component {
+const messages = defineMessages({
+  placeholder: {
+    id: "app.map_layer_select.placeholder",
+    defaultMessage: "Select or type to create..."
+  }
+});
+
+class MapLayerSelect extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -71,13 +79,13 @@ export default class MapLayerSelect extends Component {
     return null;
   };
   render() {
-    const { name } = this.props;
+    const { intl, name } = this.props;
     const { options } = this.state;
     return (
       <CreatableSelect
         classNamePrefix="select-search"
         cacheOptions
-        placeholder="Map layers..."
+        placeholder={intl.formatMessage(messages.placeholder)}
         options={options}
         onCreateOption={this._handleCreateOption}
         onChange={this._handleChange}
@@ -87,3 +95,9 @@ export default class MapLayerSelect extends Component {
     );
   }
 }
+
+MapLayerSelect.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(MapLayerSelect);

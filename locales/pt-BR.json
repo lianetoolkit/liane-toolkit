@@ -109,6 +109,7 @@
   "app.map.layer_select_label": "Selecione ou crie uma camada de mapa",
   "app.map.nav.map": "Mapa",
   "app.map.nav.territory": "Audience de território",
+  "app.map_layer_select.placeholder": "Camadas de mapa",
   "app.my_account": "Minha conta",
   "app.nav.campaign_new": "Nova campanha",
   "app.nav.campaign_settings": "Configurações de campanha",

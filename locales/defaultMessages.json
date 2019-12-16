@@ -38,62 +38,6 @@
         "id": "app.address.complement.label"
       },
       {
-        "defaultMessage": "Intelligence and Strategy",
-        "id": "app.nav.intelligence_strategy"
-      },
-      {
-        "defaultMessage": "People and Communication",
-        "id": "app.nav.people_communication"
-      },
-      {
-        "defaultMessage": "Electoral Canvas",
-        "id": "app.nav.electoral_canvas"
-      },
-      {
-        "defaultMessage": "Campaign settings",
-        "id": "app.nav.campaign_settings"
-      },
-      {
-        "defaultMessage": "New campaign",
-        "id": "app.nav.campaign_new"
-      },
-      {
-        "defaultMessage": "My account",
-        "id": "app.my_account"
-      },
-      {
-        "defaultMessage": "Administration",
-        "id": "app.admin_label"
-      },
-      {
-        "defaultMessage": "Logout",
-        "id": "app.logout"
-      },
-      {
-        "defaultMessage": "My audience",
-        "id": "app.nav.my_audience"
-      },
-      {
-        "defaultMessage": "soon",
-        "id": "app.soon"
-      },
-      {
-        "defaultMessage": "Territories",
-        "id": "app.nav.territories"
-      },
-      {
-        "defaultMessage": "People directory",
-        "id": "app.nav.people_directory"
-      },
-      {
-        "defaultMessage": "Manage comments",
-        "id": "app.nav.manage_comments"
-      },
-      {
-        "defaultMessage": "Frequently asked questions",
-        "id": "app.nav.faq"
-      },
-      {
         "defaultMessage": "Select below your account type",
         "id": "app.account_select.select_label"
       },
@@ -116,82 +60,6 @@
       {
         "defaultMessage": "This category is still empty",
         "id": "app.dashboard.people.not_found"
-      },
-      {
-        "defaultMessage": "No comments",
-        "id": "app.comments.counts.no_comments"
-      },
-      {
-        "defaultMessage": "1 comment",
-        "id": "app.comments.counts.one_comment"
-      },
-      {
-        "defaultMessage": "{count} comments",
-        "id": "app.comments.counts.any_comments"
-      },
-      {
-        "defaultMessage": "unknown person",
-        "id": "app.reply.unknown_person"
-      },
-      {
-        "defaultMessage": "Replying {name}",
-        "id": "app.reply.title"
-      },
-      {
-        "defaultMessage": "Unknown person",
-        "id": "app.comment.header.unknown_name"
-      },
-      {
-        "defaultMessage": "<a href='{url}' target='_blank'>replied</a> a <a href='{parent_url}' target='_blank'>comment</a>",
-        "id": "app.comment.header.reply_header"
-      },
-      {
-        "defaultMessage": "<a href='{url}' target='_blank'>commented</a> on a <a href='{post_url}' target='_blank'>post</a>",
-        "id": "app.comment.header.comment_header"
-      },
-      {
-        "defaultMessage": "You replied",
-        "id": "app.coment.you_replied"
-      },
-      {
-        "defaultMessage": "Reply",
-        "id": "app.comment.reply_button"
-      },
-      {
-        "defaultMessage": "Person not found",
-        "id": "app.person_not_found"
-      },
-      {
-        "defaultMessage": "resolved",
-        "id": "app.comment.resolved"
-      },
-      {
-        "defaultMessage": "unresolved",
-        "id": "app.comment.unresolved"
-      },
-      {
-        "defaultMessage": "Are you sure you'd like to mark this comment as {resolution}",
-        "id": "app.comment.confirm_resolution"
-      },
-      {
-        "defaultMessage": "Mark as question",
-        "id": "app.comment.tag_as.question"
-      },
-      {
-        "defaultMessage": "Mark as vote declaration",
-        "id": "app.comment.tag_as.vote"
-      },
-      {
-        "defaultMessage": "Mark this person as troll",
-        "id": "app.comment.tag_as.troll"
-      },
-      {
-        "defaultMessage": "Mark as",
-        "id": "app.comment.tag_as"
-      },
-      {
-        "defaultMessage": "Actions",
-        "id": "app.comment.actions_title"
       },
       {
         "defaultMessage": "Select a country...",
@@ -298,6 +166,10 @@
         "id": "app.privacy_policy"
       },
       {
+        "defaultMessage": "Select or type to create...",
+        "id": "app.map_layer_select.placeholder"
+      },
+      {
         "defaultMessage": "Mark all as read",
         "id": "app.notifications.mark_all_as_read"
       },
@@ -306,28 +178,24 @@
         "id": "app.notifications.not_found"
       },
       {
-        "defaultMessage": "No results",
-        "id": "app.paging.no_results"
+        "defaultMessage": "Showing people that interacted for the first time between {date}.",
+        "id": "app.people.history_chart.filter_title"
       },
       {
-        "defaultMessage": "Showing {page_start}-{page_end} out of {total}",
-        "id": "app.paging.results"
+        "defaultMessage": "Clear selection",
+        "id": "app.people.history_chart.clear"
       },
       {
-        "defaultMessage": "Calculating...",
-        "id": "app.paging.loading"
+        "defaultMessage": "Page newcomers",
+        "id": "app.people.history_chart.title"
       },
       {
-        "defaultMessage": "Download file",
-        "id": "app.people.exports.download"
+        "defaultMessage": "Click and drag the chart below to filter:",
+        "id": "app.people.history_chart.filter"
       },
       {
-        "defaultMessage": "Processing export...",
-        "id": "app.people.exports.processing"
-      },
-      {
-        "defaultMessage": "Export people",
-        "id": "app.people.exports.button_label"
+        "defaultMessage": "{amount} new people",
+        "id": "app.people.history_chart.new_label"
       },
       {
         "defaultMessage": "Are you sure you'd like to remove all people from this import?",
@@ -362,72 +230,20 @@
         "id": "app.people.lists.table_body.not_found"
       },
       {
-        "defaultMessage": "Showing people that interacted for the first time between {date}.",
-        "id": "app.people.history_chart.filter_title"
+        "defaultMessage": "Not available",
+        "id": "app.people.contact_icons.not_available"
       },
       {
-        "defaultMessage": "Clear selection",
-        "id": "app.people.history_chart.clear"
+        "defaultMessage": "{data} (copy)",
+        "id": "app.people.contact_icons.data_copy"
       },
       {
-        "defaultMessage": "Page newcomers",
-        "id": "app.people.history_chart.title"
+        "defaultMessage": "Filled the form (copy link)",
+        "id": "app.people.contact_icons.filled_form"
       },
       {
-        "defaultMessage": "Click and drag the chart below to filter:",
-        "id": "app.people.history_chart.filter"
-      },
-      {
-        "defaultMessage": "{amount} new people",
-        "id": "app.people.history_chart.new_label"
-      },
-      {
-        "defaultMessage": "Editing {name}",
-        "id": "app.people.edit.title"
-      },
-      {
-        "defaultMessage": "Sending private reply to {name}",
-        "id": "app.people.sending_pr.title"
-      },
-      {
-        "defaultMessage": "Edit categories",
-        "id": "app.people.table_body.edit_categories"
-      },
-      {
-        "defaultMessage": "Name",
-        "id": "app.people.table_header.name"
-      },
-      {
-        "defaultMessage": "Reactions",
-        "id": "app.people.table_header.reactions"
-      },
-      {
-        "defaultMessage": "Comments",
-        "id": "app.people.table_header.comments"
-      },
-      {
-        "defaultMessage": "Contact",
-        "id": "app.people.table_header.contact"
-      },
-      {
-        "defaultMessage": "Last interaction",
-        "id": "app.people.table_header.last_interaction"
-      },
-      {
-        "defaultMessage": "Access profile",
-        "id": "app.people.table_body.access_profile"
-      },
-      {
-        "defaultMessage": "Edit",
-        "id": "app.people.table_body.edit"
-      },
-      {
-        "defaultMessage": "{amount} comments",
-        "id": "app.people.table_body.comment_count"
-      },
-      {
-        "defaultMessage": "Send private reply",
-        "id": "app.people.table_body.private_reply_button"
+        "defaultMessage": "Did not filled the form (copy link)",
+        "id": "app.people.contact_icons.not_filled_form"
       },
       {
         "defaultMessage": "Date",
@@ -456,130 +272,6 @@
       {
         "defaultMessage": "No export file found",
         "id": "app.people.exports.table_body.not_found"
-      },
-      {
-        "defaultMessage": "Not available",
-        "id": "app.people.contact_icons.not_available"
-      },
-      {
-        "defaultMessage": "{data} (copy)",
-        "id": "app.people.contact_icons.data_copy"
-      },
-      {
-        "defaultMessage": "Filled the form (copy link)",
-        "id": "app.people.contact_icons.filled_form"
-      },
-      {
-        "defaultMessage": "Did not filled the form (copy link)",
-        "id": "app.people.contact_icons.not_filled_form"
-      },
-      {
-        "defaultMessage": "Importing {filename}...",
-        "id": "app.people.import.importing_label"
-      },
-      {
-        "defaultMessage": "Import started",
-        "id": "app.people.import.started_label"
-      },
-      {
-        "defaultMessage": "An unexpected error occurred.",
-        "id": "app.unexpected_error"
-      },
-      {
-        "defaultMessage": "Are you sure?",
-        "id": "app.confirm"
-      },
-      {
-        "defaultMessage": "Select default tags for all entries from this import",
-        "id": "app.people.import.select_tags"
-      },
-      {
-        "defaultMessage": "Default tags for this import",
-        "id": "app.people.import.select_tags_label"
-      },
-      {
-        "defaultMessage": "Select default categories for all entries from this import",
-        "id": "app.people.import.select_categories"
-      },
-      {
-        "defaultMessage": "Start import",
-        "id": "app.people.import.start_label"
-      },
-      {
-        "defaultMessage": "Add extra location information for this import",
-        "id": "app.people.import.default_location.add_label"
-      },
-      {
-        "defaultMessage": "Cancel location information",
-        "id": "app.people.import.default_location.cancel_label"
-      },
-      {
-        "defaultMessage": "Adding extra location data will help the import geocoding accuracy. The provided data will be applied for every entry.",
-        "id": "app.people.import.default_location.tip"
-      },
-      {
-        "defaultMessage": "Country",
-        "id": "app.people.import.default_location.country_label"
-      },
-      {
-        "defaultMessage": "Region (optional)",
-        "id": "app.people.import.default_location.region_label"
-      },
-      {
-        "defaultMessage": "City (optional)",
-        "id": "app.people.import.default_location.city_label"
-      },
-      {
-        "defaultMessage": "Importing... ({count})",
-        "id": "app.people.import.importing_count"
-      },
-      {
-        "defaultMessage": "Import spreadsheet",
-        "id": "app.people.import.button_label"
-      },
-      {
-        "defaultMessage": "Assign your spreadsheet columns to the appropriate field from the database",
-        "id": "app.people.import.assign_columns"
-      },
-      {
-        "defaultMessage": "Spreadsheet header",
-        "id": "app.people.import.spreadsheet_header"
-      },
-      {
-        "defaultMessage": "Field",
-        "id": "app.people.import.field_label"
-      },
-      {
-        "defaultMessage": "Supporter",
-        "id": "app.people.category.supporter"
-      },
-      {
-        "defaultMessage": "Volunteer",
-        "id": "app.people.category.volunteer"
-      },
-      {
-        "defaultMessage": "Mobilizer",
-        "id": "app.people.category.mobilizer"
-      },
-      {
-        "defaultMessage": "Donor",
-        "id": "app.people.category.donor"
-      },
-      {
-        "defaultMessage": "Influencer",
-        "id": "app.people.category.influencer"
-      },
-      {
-        "defaultMessage": "Declared vote",
-        "id": "app.people.category.voter"
-      },
-      {
-        "defaultMessage": "Can't vote",
-        "id": "app.people.category.non_voter"
-      },
-      {
-        "defaultMessage": "Troll",
-        "id": "app.people.category.troll"
       },
       {
         "defaultMessage": "Skills...",
@@ -616,6 +308,30 @@
       {
         "defaultMessage": "Panflation",
         "id": "app.skills.panflation_label"
+      },
+      {
+        "defaultMessage": "No results",
+        "id": "app.paging.no_results"
+      },
+      {
+        "defaultMessage": "Showing {page_start}-{page_end} out of {total}",
+        "id": "app.paging.results"
+      },
+      {
+        "defaultMessage": "Calculating...",
+        "id": "app.paging.loading"
+      },
+      {
+        "defaultMessage": "Download file",
+        "id": "app.people.exports.download"
+      },
+      {
+        "defaultMessage": "Processing export...",
+        "id": "app.people.exports.processing"
+      },
+      {
+        "defaultMessage": "Export people",
+        "id": "app.people.exports.button_label"
       },
       {
         "defaultMessage": "Define a name for your campaign",
@@ -704,6 +420,378 @@
       {
         "defaultMessage": "Write Answers",
         "id": "app.dashboard.faq.button"
+      },
+      {
+        "defaultMessage": "Intelligence and Strategy",
+        "id": "app.nav.intelligence_strategy"
+      },
+      {
+        "defaultMessage": "People and Communication",
+        "id": "app.nav.people_communication"
+      },
+      {
+        "defaultMessage": "Electoral Canvas",
+        "id": "app.nav.electoral_canvas"
+      },
+      {
+        "defaultMessage": "Campaign settings",
+        "id": "app.nav.campaign_settings"
+      },
+      {
+        "defaultMessage": "New campaign",
+        "id": "app.nav.campaign_new"
+      },
+      {
+        "defaultMessage": "My account",
+        "id": "app.my_account"
+      },
+      {
+        "defaultMessage": "Administration",
+        "id": "app.admin_label"
+      },
+      {
+        "defaultMessage": "Logout",
+        "id": "app.logout"
+      },
+      {
+        "defaultMessage": "My audience",
+        "id": "app.nav.my_audience"
+      },
+      {
+        "defaultMessage": "soon",
+        "id": "app.soon"
+      },
+      {
+        "defaultMessage": "Territories",
+        "id": "app.nav.territories"
+      },
+      {
+        "defaultMessage": "People directory",
+        "id": "app.nav.people_directory"
+      },
+      {
+        "defaultMessage": "Manage comments",
+        "id": "app.nav.manage_comments"
+      },
+      {
+        "defaultMessage": "Frequently asked questions",
+        "id": "app.nav.faq"
+      },
+      {
+        "defaultMessage": "No comments",
+        "id": "app.comments.counts.no_comments"
+      },
+      {
+        "defaultMessage": "1 comment",
+        "id": "app.comments.counts.one_comment"
+      },
+      {
+        "defaultMessage": "{count} comments",
+        "id": "app.comments.counts.any_comments"
+      },
+      {
+        "defaultMessage": "unknown person",
+        "id": "app.reply.unknown_person"
+      },
+      {
+        "defaultMessage": "Replying {name}",
+        "id": "app.reply.title"
+      },
+      {
+        "defaultMessage": "Unknown person",
+        "id": "app.comment.header.unknown_name"
+      },
+      {
+        "defaultMessage": "<a href='{url}' target='_blank'>replied</a> a <a href='{parent_url}' target='_blank'>comment</a>",
+        "id": "app.comment.header.reply_header"
+      },
+      {
+        "defaultMessage": "<a href='{url}' target='_blank'>commented</a> on a <a href='{post_url}' target='_blank'>post</a>",
+        "id": "app.comment.header.comment_header"
+      },
+      {
+        "defaultMessage": "You replied",
+        "id": "app.coment.you_replied"
+      },
+      {
+        "defaultMessage": "Reply",
+        "id": "app.comment.reply_button"
+      },
+      {
+        "defaultMessage": "Person not found",
+        "id": "app.person_not_found"
+      },
+      {
+        "defaultMessage": "resolved",
+        "id": "app.comment.resolved"
+      },
+      {
+        "defaultMessage": "unresolved",
+        "id": "app.comment.unresolved"
+      },
+      {
+        "defaultMessage": "Are you sure you'd like to mark this comment as {resolution}",
+        "id": "app.comment.confirm_resolution"
+      },
+      {
+        "defaultMessage": "Mark as question",
+        "id": "app.comment.tag_as.question"
+      },
+      {
+        "defaultMessage": "Mark as vote declaration",
+        "id": "app.comment.tag_as.vote"
+      },
+      {
+        "defaultMessage": "Mark this person as troll",
+        "id": "app.comment.tag_as.troll"
+      },
+      {
+        "defaultMessage": "Mark as",
+        "id": "app.comment.tag_as"
+      },
+      {
+        "defaultMessage": "Actions",
+        "id": "app.comment.actions_title"
+      },
+      {
+        "defaultMessage": "Supporter",
+        "id": "app.people.category.supporter"
+      },
+      {
+        "defaultMessage": "Volunteer",
+        "id": "app.people.category.volunteer"
+      },
+      {
+        "defaultMessage": "Mobilizer",
+        "id": "app.people.category.mobilizer"
+      },
+      {
+        "defaultMessage": "Donor",
+        "id": "app.people.category.donor"
+      },
+      {
+        "defaultMessage": "Influencer",
+        "id": "app.people.category.influencer"
+      },
+      {
+        "defaultMessage": "Declared vote",
+        "id": "app.people.category.voter"
+      },
+      {
+        "defaultMessage": "Can't vote",
+        "id": "app.people.category.non_voter"
+      },
+      {
+        "defaultMessage": "Troll",
+        "id": "app.people.category.troll"
+      },
+      {
+        "defaultMessage": "Editing {name}",
+        "id": "app.people.edit.title"
+      },
+      {
+        "defaultMessage": "Sending private reply to {name}",
+        "id": "app.people.sending_pr.title"
+      },
+      {
+        "defaultMessage": "Edit categories",
+        "id": "app.people.table_body.edit_categories"
+      },
+      {
+        "defaultMessage": "Name",
+        "id": "app.people.table_header.name"
+      },
+      {
+        "defaultMessage": "Reactions",
+        "id": "app.people.table_header.reactions"
+      },
+      {
+        "defaultMessage": "Comments",
+        "id": "app.people.table_header.comments"
+      },
+      {
+        "defaultMessage": "Contact",
+        "id": "app.people.table_header.contact"
+      },
+      {
+        "defaultMessage": "Last interaction",
+        "id": "app.people.table_header.last_interaction"
+      },
+      {
+        "defaultMessage": "Access profile",
+        "id": "app.people.table_body.access_profile"
+      },
+      {
+        "defaultMessage": "Edit",
+        "id": "app.people.table_body.edit"
+      },
+      {
+        "defaultMessage": "{amount} comments",
+        "id": "app.people.table_body.comment_count"
+      },
+      {
+        "defaultMessage": "Send private reply",
+        "id": "app.people.table_body.private_reply_button"
+      },
+      {
+        "defaultMessage": "Importing {filename}...",
+        "id": "app.people.import.importing_label"
+      },
+      {
+        "defaultMessage": "Import started",
+        "id": "app.people.import.started_label"
+      },
+      {
+        "defaultMessage": "An unexpected error occurred.",
+        "id": "app.unexpected_error"
+      },
+      {
+        "defaultMessage": "Are you sure?",
+        "id": "app.confirm"
+      },
+      {
+        "defaultMessage": "Select default tags for all entries from this import",
+        "id": "app.people.import.select_tags"
+      },
+      {
+        "defaultMessage": "Default tags for this import",
+        "id": "app.people.import.select_tags_label"
+      },
+      {
+        "defaultMessage": "Select default categories for all entries from this import",
+        "id": "app.people.import.select_categories"
+      },
+      {
+        "defaultMessage": "Start import",
+        "id": "app.people.import.start_label"
+      },
+      {
+        "defaultMessage": "Add extra location information for this import",
+        "id": "app.people.import.default_location.add_label"
+      },
+      {
+        "defaultMessage": "Cancel location information",
+        "id": "app.people.import.default_location.cancel_label"
+      },
+      {
+        "defaultMessage": "Adding extra location data will help the import geocoding accuracy. The provided data will be applied for every entry.",
+        "id": "app.people.import.default_location.tip"
+      },
+      {
+        "defaultMessage": "Country",
+        "id": "app.people.import.default_location.country_label"
+      },
+      {
+        "defaultMessage": "Region (optional)",
+        "id": "app.people.import.default_location.region_label"
+      },
+      {
+        "defaultMessage": "City (optional)",
+        "id": "app.people.import.default_location.city_label"
+      },
+      {
+        "defaultMessage": "Importing... ({count})",
+        "id": "app.people.import.importing_count"
+      },
+      {
+        "defaultMessage": "Import spreadsheet",
+        "id": "app.people.import.button_label"
+      },
+      {
+        "defaultMessage": "Assign your spreadsheet columns to the appropriate field from the database",
+        "id": "app.people.import.assign_columns"
+      },
+      {
+        "defaultMessage": "Spreadsheet header",
+        "id": "app.people.import.spreadsheet_header"
+      },
+      {
+        "defaultMessage": "Field",
+        "id": "app.people.import.field_label"
+      },
+      {
+        "defaultMessage": "Manual",
+        "id": "app.people.source.manual.label"
+      },
+      {
+        "defaultMessage": "Form",
+        "id": "app.people.source.form.label"
+      },
+      {
+        "defaultMessage": "Import",
+        "id": "app.people.source.import.label"
+      },
+      {
+        "defaultMessage": "Any import",
+        "id": "app.people.source.any_import.label"
+      },
+      {
+        "defaultMessage": "Manage imports",
+        "id": "app.people.imports.manage.title"
+      },
+      {
+        "defaultMessage": "Manage exports",
+        "id": "app.people.exports.manage.title"
+      },
+      {
+        "defaultMessage": "Creating new profile",
+        "id": "app.people.new.title"
+      },
+      {
+        "defaultMessage": "Search by name",
+        "id": "app.people.filters.text.placeholder"
+      },
+      {
+        "defaultMessage": "Filter by category",
+        "id": "app.people.filters.category.placeholder"
+      },
+      {
+        "defaultMessage": "Filter by source",
+        "id": "app.people.filters.source.placeholder"
+      },
+      {
+        "defaultMessage": "Filter by tag",
+        "id": "app.people.filters.tag.placeholder"
+      },
+      {
+        "defaultMessage": "Amount",
+        "id": "app.people.filters.reactions.amount"
+      },
+      {
+        "defaultMessage": "Form",
+        "id": "app.people.filters.form.title"
+      },
+      {
+        "defaultMessage": "Show only people that have filled out the campaign form.",
+        "id": "app.people.filters.form.description"
+      },
+      {
+        "defaultMessage": "Comments",
+        "id": "app.people.filters.comments.title"
+      },
+      {
+        "defaultMessage": "Show only people that have commented at least once.",
+        "id": "app.people.filters.comments.description"
+      },
+      {
+        "defaultMessage": "Private replies",
+        "id": "app.people.filters.private_reply.title"
+      },
+      {
+        "defaultMessage": "Show only people that can receive a private reply.",
+        "id": "app.people.filters.private_reply.description"
+      },
+      {
+        "defaultMessage": "Filter by reaction amount",
+        "id": "app.people.filters.reactions.title"
+      },
+      {
+        "defaultMessage": "at least",
+        "id": "app.people.filters.reactions.at_least"
+      },
+      {
+        "defaultMessage": "Export results",
+        "id": "app.people.export_results.label"
       },
       {
         "defaultMessage": "Technology for Political Innovation",
@@ -798,138 +886,6 @@
         "id": "app.home.liane_text"
       },
       {
-        "defaultMessage": "Title",
-        "id": "app.forms.title"
-      },
-      {
-        "defaultMessage": "Description",
-        "id": "app.forms.description"
-      },
-      {
-        "defaultMessage": "Select or create a map layer",
-        "id": "app.map.layer_select_label"
-      },
-      {
-        "defaultMessage": "Save",
-        "id": "app.forms.save"
-      },
-      {
-        "defaultMessage": "Territory Audience",
-        "id": "app.map.nav.territory"
-      },
-      {
-        "defaultMessage": "Map",
-        "id": "app.map.nav.map"
-      },
-      {
-        "defaultMessage": "People",
-        "id": "app.map.filters.people.title"
-      },
-      {
-        "defaultMessage": "People from the directory that have registered address",
-        "id": "app.map.filters.people.description"
-      },
-      {
-        "defaultMessage": "Campaign additions",
-        "id": "app.map.filters.custom.title"
-      },
-      {
-        "defaultMessage": "Custom map features added by the campaign",
-        "id": "app.map.filters.custom.description"
-      },
-      {
-        "defaultMessage": "Export campaign additions",
-        "id": "app.map.export"
-      },
-      {
-        "defaultMessage": "Remove",
-        "id": "app.forms.remove"
-      },
-      {
-        "defaultMessage": "Manual",
-        "id": "app.people.source.manual.label"
-      },
-      {
-        "defaultMessage": "Form",
-        "id": "app.people.source.form.label"
-      },
-      {
-        "defaultMessage": "Import",
-        "id": "app.people.source.import.label"
-      },
-      {
-        "defaultMessage": "Any import",
-        "id": "app.people.source.any_import.label"
-      },
-      {
-        "defaultMessage": "Manage imports",
-        "id": "app.people.imports.manage.title"
-      },
-      {
-        "defaultMessage": "Manage exports",
-        "id": "app.people.exports.manage.title"
-      },
-      {
-        "defaultMessage": "Creating new profile",
-        "id": "app.people.new.title"
-      },
-      {
-        "defaultMessage": "Search by name",
-        "id": "app.people.filters.text.placeholder"
-      },
-      {
-        "defaultMessage": "Filter by category",
-        "id": "app.people.filters.category.placeholder"
-      },
-      {
-        "defaultMessage": "Filter by source",
-        "id": "app.people.filters.source.placeholder"
-      },
-      {
-        "defaultMessage": "Filter by tag",
-        "id": "app.people.filters.tag.placeholder"
-      },
-      {
-        "defaultMessage": "Amount",
-        "id": "app.people.filters.reactions.amount"
-      },
-      {
-        "defaultMessage": "Form",
-        "id": "app.people.filters.form.title"
-      },
-      {
-        "defaultMessage": "Show only people that have filled out the campaign form.",
-        "id": "app.people.filters.form.description"
-      },
-      {
-        "defaultMessage": "Comments",
-        "id": "app.people.filters.comments.title"
-      },
-      {
-        "defaultMessage": "Show only people that have commented at least once.",
-        "id": "app.people.filters.comments.description"
-      },
-      {
-        "defaultMessage": "Private replies",
-        "id": "app.people.filters.private_reply.title"
-      },
-      {
-        "defaultMessage": "Show only people that can receive a private reply.",
-        "id": "app.people.filters.private_reply.description"
-      },
-      {
-        "defaultMessage": "Filter by reaction amount",
-        "id": "app.people.filters.reactions.title"
-      },
-      {
-        "defaultMessage": "at least",
-        "id": "app.people.filters.reactions.at_least"
-      },
-      {
-        "defaultMessage": "Export results",
-        "id": "app.people.export_results.label"
-      },
-      {
         "defaultMessage": "Name is required",
         "id": "app.people_form.name_required"
       },
@@ -1016,6 +972,54 @@
       {
         "defaultMessage": "By submitting this form you agree with our <a href=\"https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf\" target=\"_blank\" rel=\"external\">Privacy Policy</a>.",
         "id": "app.people_form.privacy_policy"
+      },
+      {
+        "defaultMessage": "Title",
+        "id": "app.forms.title"
+      },
+      {
+        "defaultMessage": "Description",
+        "id": "app.forms.description"
+      },
+      {
+        "defaultMessage": "Select or create a map layer",
+        "id": "app.map.layer_select_label"
+      },
+      {
+        "defaultMessage": "Save",
+        "id": "app.forms.save"
+      },
+      {
+        "defaultMessage": "Territory Audience",
+        "id": "app.map.nav.territory"
+      },
+      {
+        "defaultMessage": "Map",
+        "id": "app.map.nav.map"
+      },
+      {
+        "defaultMessage": "People",
+        "id": "app.map.filters.people.title"
+      },
+      {
+        "defaultMessage": "People from the directory that have registered address",
+        "id": "app.map.filters.people.description"
+      },
+      {
+        "defaultMessage": "Campaign additions",
+        "id": "app.map.filters.custom.title"
+      },
+      {
+        "defaultMessage": "Custom map features added by the campaign",
+        "id": "app.map.filters.custom.description"
+      },
+      {
+        "defaultMessage": "Export campaign additions",
+        "id": "app.map.export"
+      },
+      {
+        "defaultMessage": "Remove",
+        "id": "app.forms.remove"
       }
     ],
     "path": "messages.json"

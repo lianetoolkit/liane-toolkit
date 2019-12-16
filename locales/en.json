@@ -109,6 +109,7 @@
   "app.map.layer_select_label": "Select or create a map layer",
   "app.map.nav.map": "Map",
   "app.map.nav.territory": "Territory Audience",
+  "app.map_layer_select.placeholder": "Select or type to create...",
   "app.my_account": "My account",
   "app.nav.campaign_new": "New campaign",
   "app.nav.campaign_settings": "Campaign settings",

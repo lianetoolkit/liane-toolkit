@@ -109,6 +109,7 @@
   "app.map.layer_select_label": "Selecciona o crea una capa del mapa",
   "app.map.nav.map": "Mapa",
   "app.map.nav.territory": "Audiencia Territorial",
+  "app.map_layer_select.placeholder": "Capas de mapa",
   "app.my_account": "Mi cuenta",
   "app.nav.campaign_new": "Nueva campaña",
   "app.nav.campaign_settings": "Configuraciones de campaña",
