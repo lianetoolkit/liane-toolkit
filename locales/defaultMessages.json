@@ -70,6 +70,10 @@
         "id": "app.entry_select.placeholder"
       },
       {
+        "defaultMessage": "Search for answers...",
+        "id": "app.faq.search.placeholder"
+      },
+      {
         "defaultMessage": "Name",
         "id": "app.extra_fields.name.placeholder"
       },
@@ -92,10 +96,6 @@
       {
         "defaultMessage": "New extra field",
         "id": "app.extra_fields.new_field.label"
-      },
-      {
-        "defaultMessage": "Search for answers...",
-        "id": "app.faq.search.placeholder"
       },
       {
         "defaultMessage": "Feedback",
@@ -162,10 +162,6 @@
         "id": "app.geolocation_select.city.label"
       },
       {
-        "defaultMessage": "Select or type to create...",
-        "id": "app.map_layer_select.placeholder"
-      },
-      {
         "defaultMessage": "Terms of Use",
         "id": "app.terms_of_use"
       },
@@ -174,16 +170,16 @@
         "id": "app.privacy_policy"
       },
       {
-        "defaultMessage": "Download file",
-        "id": "app.people.exports.download"
+        "defaultMessage": "Select or type to create...",
+        "id": "app.map_layer_select.placeholder"
       },
       {
-        "defaultMessage": "Processing export...",
-        "id": "app.people.exports.processing"
+        "defaultMessage": "Mark all as read",
+        "id": "app.notifications.mark_all_as_read"
       },
       {
-        "defaultMessage": "Export people",
-        "id": "app.people.exports.button_label"
+        "defaultMessage": "No notifications for now!",
+        "id": "app.notifications.not_found"
       },
       {
         "defaultMessage": "Showing people that interacted for the first time between {date}.",
@@ -204,6 +200,34 @@
       {
         "defaultMessage": "{amount} new people",
         "id": "app.people.history_chart.new_label"
+      },
+      {
+        "defaultMessage": "Date",
+        "id": "app.people.exports.table_header.date"
+      },
+      {
+        "defaultMessage": "Expiration",
+        "id": "app.people.exports.table_header.expiration"
+      },
+      {
+        "defaultMessage": "People",
+        "id": "app.people.exports.table_header.people"
+      },
+      {
+        "defaultMessage": "{count} people",
+        "id": "app.people.exports.table_body.people_count"
+      },
+      {
+        "defaultMessage": "This export file has expired",
+        "id": "app.people.exports.table_body.expired"
+      },
+      {
+        "defaultMessage": "Download",
+        "id": "app.people.exports.table_body.download"
+      },
+      {
+        "defaultMessage": "No export file found",
+        "id": "app.people.exports.table_body.not_found"
       },
       {
         "defaultMessage": "Are you sure you'd like to remove all people from this import?",
@@ -236,54 +260,6 @@
       {
         "defaultMessage": "No import found",
         "id": "app.people.lists.table_body.not_found"
-      },
-      {
-        "defaultMessage": "Date",
-        "id": "app.people.exports.table_header.date"
-      },
-      {
-        "defaultMessage": "Expiration",
-        "id": "app.people.exports.table_header.expiration"
-      },
-      {
-        "defaultMessage": "People",
-        "id": "app.people.exports.table_header.people"
-      },
-      {
-        "defaultMessage": "{count} people",
-        "id": "app.people.exports.table_body.people_count"
-      },
-      {
-        "defaultMessage": "This export file has expired",
-        "id": "app.people.exports.table_body.expired"
-      },
-      {
-        "defaultMessage": "Download",
-        "id": "app.people.exports.table_body.download"
-      },
-      {
-        "defaultMessage": "No export file found",
-        "id": "app.people.exports.table_body.not_found"
-      },
-      {
-        "defaultMessage": "Mark all as read",
-        "id": "app.notifications.mark_all_as_read"
-      },
-      {
-        "defaultMessage": "No notifications for now!",
-        "id": "app.notifications.not_found"
-      },
-      {
-        "defaultMessage": "No results",
-        "id": "app.paging.no_results"
-      },
-      {
-        "defaultMessage": "Showing {page_start}-{page_end} out of {total}",
-        "id": "app.paging.results"
-      },
-      {
-        "defaultMessage": "Calculating...",
-        "id": "app.paging.loading"
       },
       {
         "defaultMessage": "Not available",
@@ -376,6 +352,30 @@
       {
         "defaultMessage": "Select the Facebook account to be used by your campaign",
         "id": "app.campaign.form.select_account"
+      },
+      {
+        "defaultMessage": "Download file",
+        "id": "app.people.exports.download"
+      },
+      {
+        "defaultMessage": "Processing export...",
+        "id": "app.people.exports.processing"
+      },
+      {
+        "defaultMessage": "Export people",
+        "id": "app.people.exports.button_label"
+      },
+      {
+        "defaultMessage": "No results",
+        "id": "app.paging.no_results"
+      },
+      {
+        "defaultMessage": "Showing {page_start}-{page_end} out of {total}",
+        "id": "app.paging.results"
+      },
+      {
+        "defaultMessage": "Calculating...",
+        "id": "app.paging.loading"
       },
       {
         "defaultMessage": "Donors",
@@ -600,6 +600,66 @@
       {
         "defaultMessage": "Troll",
         "id": "app.people.category.troll"
+      },
+      {
+        "defaultMessage": "Comment cannot receive a private reply",
+        "id": "app.reply.cannot_receive"
+      },
+      {
+        "defaultMessage": "Unable to find a comment to reply privately to",
+        "id": "app.reply.unavailable_comment"
+      },
+      {
+        "defaultMessage": "You must send a message",
+        "id": "app.reply.message_required"
+      },
+      {
+        "defaultMessage": "Write a message to send",
+        "id": "app.reply.message_placeholder"
+      },
+      {
+        "defaultMessage": "Select and edit message",
+        "id": "app.reply.select_and_edit"
+      },
+      {
+        "defaultMessage": "Back to selection",
+        "id": "app.reply.back_to_selection"
+      },
+      {
+        "defaultMessage": "Send private reply",
+        "id": "app.reply.send_private"
+      },
+      {
+        "defaultMessage": "Send comment reply",
+        "id": "app.reply.send_comment"
+      },
+      {
+        "defaultMessage": "(unavailable)",
+        "id": "app.reply.unavailable"
+      },
+      {
+        "defaultMessage": "You are replying:",
+        "id": "app.reply.replying"
+      },
+      {
+        "defaultMessage": "Send predefined message",
+        "id": "app.reply.predefined_message"
+      },
+      {
+        "defaultMessage": "Write new message",
+        "id": "app.reply.new_message"
+      },
+      {
+        "defaultMessage": "You can use predefined messages by creating answers to frequently asked questions",
+        "id": "app.reply.faq_tip"
+      },
+      {
+        "defaultMessage": "Send as a comment reply",
+        "id": "app.reply.reply_type_comment_label"
+      },
+      {
+        "defaultMessage": "Send as a private reply",
+        "id": "app.reply.reply_type_private_label"
       },
       {
         "defaultMessage": "Text search...",
