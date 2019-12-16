@@ -1,9 +1,25 @@
 import React, { Component } from "react";
+import { injectIntl, intlShape, defineMessages } from "react-intl";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+const messages = defineMessages({
+  noReaction: {
+    id: "app.facebook.no_reaction",
+    defaultMessage: "No reaction"
+  },
+  oneReaction: {
+    id: "app.facebook.one_reaction",
+    defaultMessage: "1 reaction"
+  },
+  anyReactions: {
+    id: "app.facebook.any_reactions",
+    defaultMessage: "{count} reactions"
+  }
+});
 
 const sizes = {
   tiny: 16,
@@ -176,13 +192,13 @@ const CountContainer = styled.div`
 
 class Count extends Component {
   label = () => {
-    const { total } = this.props;
+    const { intl, total } = this.props;
     if (!total || total == 0) {
-      return "No reaction";
+      return intl.formatMessage(messages.noReaction);
     } else if (total == 1) {
-      return "1 reaction";
+      return intl.formatMessage(messages.oneReaction);
     } else {
-      return `${total} reactions`;
+      return intl.formatMessage(messages.anyReactions, { count: total });
     }
   };
   render() {
@@ -231,13 +247,19 @@ class Count extends Component {
   }
 }
 
+Count.propTypes = {
+  intl: intlShape.isRequired
+};
+
+const CountIntl = injectIntl(Count);
+
 export default class Reaction extends Component {
   static propTypes = {
     reaction: PropTypes.string.isRequired,
     size: PropTypes.string
   };
   static Filter = Filter;
-  static Count = Count;
+  static Count = CountIntl;
   render() {
     const { reaction, size, ...props } = this.props;
     if (imagePaths[reaction.toLowerCase()]) {
