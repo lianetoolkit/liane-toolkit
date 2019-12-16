@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,6 +17,64 @@ import Loading from "../components/Loading.jsx";
 import Form from "../components/Form.jsx";
 import Button from "../components/Button.jsx";
 import CopyToClipboard from "../components/CopyToClipboard.jsx";
+
+const messages = defineMessages({
+  newTitle: {
+    id: "app.faq.new_title",
+    defaultMessage: "New answer"
+  },
+  editingTitle: {
+    id: "app.faq.editing_title",
+    defaultMessage: "Editing answer"
+  },
+  confirmRemove: {
+    id: "app.faq.confirm_remove",
+    defaultMessage: "Are you sure you'd like to remove this answer?"
+  },
+  removed: {
+    id: "app.faq.removed_label",
+    defaultMessage: "Removed"
+  },
+  copy: {
+    id: "app.faq.copy",
+    defaultMessage: "Copy to clipboard"
+  },
+  edit: {
+    id: "app.faq.edit",
+    defaultMessage: "Edit"
+  },
+  view: {
+    id: "app.faq.view",
+    defaultMessage: "View"
+  },
+  remove: {
+    id: "app.faq.remove",
+    defaultMessage: "Remove"
+  },
+  save: {
+    id: "app.faq.save",
+    defaultMessage: "Save"
+  }
+});
+
+const formMessages = defineMessages({
+  questionLabel: {
+    id: "app.faq.form.question_label",
+    defaultMessage: "Question"
+  },
+  questionPlaceholder: {
+    id: "app.faq.form.question_placeholder",
+    defaultMessage: "Describe the question"
+  },
+  answerLabel: {
+    id: "app.faq.form.answer_label",
+    defaultMessage: "Answer"
+  },
+  answerPlaceholder: {
+    id: "app.faq.form.answer_placeholder",
+    defaultMessage: "Type the default answer for this question"
+  }
+});
 
 const ViewContainer = styled.article`
   h2 {
@@ -44,19 +108,19 @@ const ViewContainer = styled.article`
 
 class FAQView extends Component {
   _handleEditClick = ev => {
-    const { item } = this.props;
+    const { intl, item } = this.props;
     ev.preventDefault();
-    modalStore.setTitle("Editing answer");
-    modalStore.set(<FAQEdit item={item} />);
+    modalStore.setTitle(intl.formatMessage(messages.editingTitle));
+    modalStore.set(<FAQEditIntl item={item} />);
   };
   _handleRemoveClick = ev => {
-    const { item } = this.props;
-    if (confirm("Are you sure you'd like to remove this answer?")) {
+    const { intl, item } = this.props;
+    if (confirm(intl.formatMessage(messages.confirmRemove))) {
       Meteor.call("faq.remove", { _id: item._id }, (err, res) => {
         if (err) {
           alertStore.add(err);
         } else {
-          alertStore.add("Removed", "success");
+          alertStore.add(intl.formatMessage(messages.removed), "success");
           modalStore.reset();
         }
       });
@@ -71,19 +135,28 @@ class FAQView extends Component {
         <p>{item.answer}</p>
         <aside>
           <CopyToClipboard text={item.answer}>
-            <FontAwesomeIcon icon="copy" /> Copy to clipboard
+            <FontAwesomeIcon icon="copy" />{" "}
+            <FormattedMessage id="app.faq.copy" />
           </CopyToClipboard>
           <a href="javascript:void(0);" onClick={this._handleEditClick}>
-            <FontAwesomeIcon icon="edit" /> Edit
+            <FontAwesomeIcon icon="edit" />{" "}
+            <FormattedMessage id="app.faq.edit" />
           </a>
           <a href="javascript:void(0);" onClick={this._handleRemoveClick}>
-            <FontAwesomeIcon icon="times" /> Remove
+            <FontAwesomeIcon icon="times" />{" "}
+            <FormattedMessage id="app.faq.remove" />
           </a>
         </aside>
       </ViewContainer>
     );
   }
 }
+
+FAQView.propTypes = {
+  intl: intlShape.isRequired
+};
+
+const FAQViewIntl = injectIntl(FAQView);
 
 const EditContainer = styled.div``;
 
@@ -159,33 +232,44 @@ class FAQEdit extends Component {
     });
   };
   render() {
+    const { intl } = this.props;
     const { formData, loading } = this.state;
     return (
       <EditContainer>
         <Form onSubmit={this._handleSubmit}>
-          <Form.Field label="Question">
+          <Form.Field label={intl.formatMessage(formMessages.questionLabel)}>
             <input
               type="text"
-              placeholder="Describe the question"
+              placeholder={intl.formatMessage(formMessages.questionPlaceholder)}
               onChange={this._handleChange}
               name="question"
               value={formData.question}
             />
           </Form.Field>
-          <Form.Field label="Answer">
+          <Form.Field label={intl.formatMessage(formMessages.answerLabel)}>
             <textarea
-              placeholder="Type the default answer to this question"
+              placeholder={intl.formatMessage(formMessages.answerPlaceholder)}
               onChange={this._handleChange}
               name="answer"
               value={formData.answer}
             />
           </Form.Field>
-          <input disabled={loading} type="submit" value="Save" />
+          <input
+            disabled={loading}
+            type="submit"
+            value={intl.formatMessage(messages.save)}
+          />
         </Form>
       </EditContainer>
     );
   }
 }
+
+FAQEdit.propTypes = {
+  intl: intlShape.isRequired
+};
+
+const FAQEditIntl = injectIntl(FAQEdit);
 
 const Container = styled.div`
   max-width: 960px;
@@ -317,13 +401,16 @@ const Container = styled.div`
   }
 `;
 
-export default class FAQPage extends Component {
+class FAQPage extends Component {
   _handleNewClick = ev => {
-    const { campaignId } = this.props;
+    const { intl, campaignId } = this.props;
     ev.preventDefault();
-    modalStore.setTitle(`New answer`);
+    modalStore.setTitle(intl.formatMessage(messages.newTitle));
     modalStore.set(
-      <FAQEdit campaignId={campaignId} onSuccess={this._handleCreateSuccess} />
+      <FAQEditIntl
+        campaignId={campaignId}
+        onSuccess={this._handleCreateSuccess}
+      />
     );
   };
   _handleCreateSuccess = () => {
@@ -331,30 +418,41 @@ export default class FAQPage extends Component {
   };
   _handleViewClick = item => ev => {
     ev.preventDefault();
-    modalStore.set(<FAQView item={item} />);
+    modalStore.set(<FAQViewIntl item={item} />);
   };
   _handleEditClick = item => ev => {
+    const { intl } = this.props;
     ev.preventDefault();
-    modalStore.setTitle("Editing answer");
-    modalStore.set(<FAQEdit item={item} />);
+    modalStore.setTitle(intl.formatMessage(messages.editingTitle));
+    modalStore.set(<FAQEditIntl item={item} />);
   };
   render() {
-    const { loading, faq } = this.props;
+    const { intl, loading, faq } = this.props;
     if (loading) {
       return <Loading full />;
     }
     return (
       <Page.Content full>
         <Container>
-          <Page.Title>Frequently Asked Questions</Page.Title>
+          <Page.Title>
+            <FormattedMessage
+              id="app.faq.title"
+              defaultMessage="Frequently Asked Questions"
+            />
+          </Page.Title>
           {!faq.length ? (
             <div className="intro">
               <p>
-                Create answers to frequently asked questions to optimize your
-                campaign communication.
+                <FormattedMessage
+                  id="app.faq.description"
+                  defaultMessage="Create answers to frequently asked questions to optimize your campaign communication."
+                />
               </p>
               <Button primary onClick={this._handleNewClick}>
-                Create your first answer
+                <FormattedMessage
+                  id="app.faq.create_first"
+                  defaultMessage="Create your first answer"
+                />
               </Button>
             </div>
           ) : (
@@ -364,7 +462,10 @@ export default class FAQPage extends Component {
                   className="button new-faq"
                   onClick={this._handleNewClick}
                 >
-                  + Create new answer
+                  <FormattedMessage
+                    id="app.faq.create_new"
+                    defaultMessage="+ Create new answer"
+                  />
                 </Button>
               </div>
               <section className="faq-list">
@@ -385,7 +486,7 @@ export default class FAQPage extends Component {
                       <aside className="item-actions">
                         <CopyToClipboard
                           text={item.answer}
-                          data-tip="Copy"
+                          data-tip={intl.formatMessage(messages.copy)}
                           data-for={`faq-${item._id}`}
                         >
                           <FontAwesomeIcon icon="copy" />
@@ -393,7 +494,7 @@ export default class FAQPage extends Component {
                         <a
                           href="javascript:void(0);"
                           onClick={this._handleViewClick(item)}
-                          data-tip="View"
+                          data-tip={intl.formatMessage(messages.view)}
                           data-for={`faq-${item._id}`}
                         >
                           <FontAwesomeIcon icon="eye" />
@@ -401,7 +502,7 @@ export default class FAQPage extends Component {
                         <a
                           href="javascript:void(0);"
                           onClick={this._handleEditClick(item)}
-                          data-tip="Edit"
+                          data-tip={intl.formatMessage(messages.edit)}
                           data-for={`faq-${item._id}`}
                         >
                           <FontAwesomeIcon icon="edit" />
@@ -419,3 +520,9 @@ export default class FAQPage extends Component {
     );
   }
 }
+
+FAQPage.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(FAQPage);
