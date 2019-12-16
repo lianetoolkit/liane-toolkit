@@ -23,6 +23,10 @@ const messages = defineMessages({
   textSearch: {
     id: "app.comments.text_search_placeholder",
     defaultMessage: "Text search..."
+  },
+  postFilter: {
+    id: "app.comments.entry_select_placeholder",
+    defaultMessage: "Filter by post..."
   }
 });
 
@@ -214,6 +218,7 @@ class CommentsPage extends Component {
                     name="entry"
                     onChange={this._handleChange}
                     value={FlowRouter.getQueryParam("entry")}
+                    placeholder={intl.formatMessage(messages.postFilter)}
                   />
                 </Form.Field>
                 <PageFilters.Category hiddenInput>

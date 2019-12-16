@@ -1,8 +1,16 @@
 import React, { Component } from "react";
+import { injectIntl, intlShape, defineMessages } from "react-intl";
 import styled from "styled-components";
 import Select from "react-select";
 import moment from "moment";
 import { debounce } from "lodash";
+
+const messages = defineMessages({
+  placeholder: {
+    id: "app.entry_select.placeholder",
+    defaultMessage: "Select a post..."
+  }
+});
 
 const Container = styled.div`
   .entry-item {
@@ -103,7 +111,7 @@ class EntrySelect extends Component {
   };
   render() {
     const { loading, options } = this.state;
-    const { name, value, placeholder } = this.props;
+    const { intl, name, value, placeholder } = this.props;
     return (
       <Container>
         <Select
@@ -111,7 +119,7 @@ class EntrySelect extends Component {
           classNamePrefix="select-search"
           cacheOptions
           isClearable={true}
-          placeholder={placeholder || "Filter by published posts..."}
+          placeholder={placeholder || intl.formatMessage(messages.placeholder)}
           options={options}
           onChange={this._handleChange}
           onInputChange={this._handleInputChange}
@@ -124,4 +132,8 @@ class EntrySelect extends Component {
   }
 }
 
-export default EntrySelect;
+EntrySelect.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(EntrySelect);
