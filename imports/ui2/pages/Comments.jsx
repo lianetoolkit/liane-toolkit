@@ -3,8 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage,
-  FormattedHTMLMessage
+  FormattedMessage
 } from "react-intl";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
