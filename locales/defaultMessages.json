@@ -62,16 +62,8 @@
         "id": "app.dashboard.people.not_found"
       },
       {
-        "defaultMessage": "Select a country...",
-        "id": "app.country_select.placeholder"
-      },
-      {
         "defaultMessage": "Select a post...",
         "id": "app.entry_select.placeholder"
-      },
-      {
-        "defaultMessage": "Search for answers...",
-        "id": "app.faq.search.placeholder"
       },
       {
         "defaultMessage": "Name",
@@ -96,6 +88,14 @@
       {
         "defaultMessage": "New extra field",
         "id": "app.extra_fields.new_field.label"
+      },
+      {
+        "defaultMessage": "Select a country...",
+        "id": "app.country_select.placeholder"
+      },
+      {
+        "defaultMessage": "Search for answers...",
+        "id": "app.faq.search.placeholder"
       },
       {
         "defaultMessage": "Feedback",
@@ -182,26 +182,6 @@
         "id": "app.notifications.not_found"
       },
       {
-        "defaultMessage": "Showing people that interacted for the first time between {date}.",
-        "id": "app.people.history_chart.filter_title"
-      },
-      {
-        "defaultMessage": "Clear selection",
-        "id": "app.people.history_chart.clear"
-      },
-      {
-        "defaultMessage": "Page newcomers",
-        "id": "app.people.history_chart.title"
-      },
-      {
-        "defaultMessage": "Click and drag the chart below to filter:",
-        "id": "app.people.history_chart.filter"
-      },
-      {
-        "defaultMessage": "{amount} new people",
-        "id": "app.people.history_chart.new_label"
-      },
-      {
         "defaultMessage": "Date",
         "id": "app.people.exports.table_header.date"
       },
@@ -228,6 +208,30 @@
       {
         "defaultMessage": "No export file found",
         "id": "app.people.exports.table_body.not_found"
+      },
+      {
+        "defaultMessage": "or",
+        "id": "app.or_label"
+      },
+      {
+        "defaultMessage": "Showing people that interacted for the first time between {date}.",
+        "id": "app.people.history_chart.filter_title"
+      },
+      {
+        "defaultMessage": "Clear selection",
+        "id": "app.people.history_chart.clear"
+      },
+      {
+        "defaultMessage": "Page newcomers",
+        "id": "app.people.history_chart.title"
+      },
+      {
+        "defaultMessage": "Click and drag the chart below to filter:",
+        "id": "app.people.history_chart.filter"
+      },
+      {
+        "defaultMessage": "{amount} new people",
+        "id": "app.people.history_chart.new_label"
       },
       {
         "defaultMessage": "Are you sure you'd like to remove all people from this import?",
@@ -288,6 +292,18 @@
       {
         "defaultMessage": "{count} reactions",
         "id": "app.facebook.any_reactions"
+      },
+      {
+        "defaultMessage": "Download file",
+        "id": "app.people.exports.download"
+      },
+      {
+        "defaultMessage": "Processing export...",
+        "id": "app.people.exports.processing"
+      },
+      {
+        "defaultMessage": "Export people",
+        "id": "app.people.exports.button_label"
       },
       {
         "defaultMessage": "Skills...",
@@ -352,18 +368,6 @@
       {
         "defaultMessage": "Select the Facebook account to be used by your campaign",
         "id": "app.campaign.form.select_account"
-      },
-      {
-        "defaultMessage": "Download file",
-        "id": "app.people.exports.download"
-      },
-      {
-        "defaultMessage": "Processing export...",
-        "id": "app.people.exports.processing"
-      },
-      {
-        "defaultMessage": "Export people",
-        "id": "app.people.exports.button_label"
       },
       {
         "defaultMessage": "No results",
@@ -436,6 +440,50 @@
       {
         "defaultMessage": "Write Answers",
         "id": "app.dashboard.faq.button"
+      },
+      {
+        "defaultMessage": "Delete permanently",
+        "id": "app.my_account.delete_label"
+      },
+      {
+        "defaultMessage": "Type your email to confirm deletion:",
+        "id": "app.my_account.delete_email_label"
+      },
+      {
+        "defaultMessage": "Campaigner",
+        "id": "app.my_account.campaigner_label"
+      },
+      {
+        "defaultMessage": "Collaborator",
+        "id": "app.my_account.collaborator_label"
+      },
+      {
+        "defaultMessage": "Unknown",
+        "id": "app.my_account.unknown_label"
+      },
+      {
+        "defaultMessage": "Delete account, campaign and all data associated to this platform, as well as revoke previously granted Facebook permissions",
+        "id": "app.my_account.delete_message"
+      },
+      {
+        "defaultMessage": "Connected as <strong>{name}</strong>",
+        "id": "app.my_account.connected_as"
+      },
+      {
+        "defaultMessage": "Account type: <strong>{type}</strong>",
+        "id": "app.my_account.account_type"
+      },
+      {
+        "defaultMessage": "Create a campaign",
+        "id": "app.my_account.create_campaign"
+      },
+      {
+        "defaultMessage": "Connect with an existing campaign by forwarding your email to the person responsible:",
+        "id": "app.my_account.connect"
+      },
+      {
+        "defaultMessage": "Click here to delete your account, campaign and all data associated to this platform, as well as revoke previously granted Facebook permissions.",
+        "id": "app.my_account.delete_button_label"
       },
       {
         "defaultMessage": "Intelligence and Strategy",

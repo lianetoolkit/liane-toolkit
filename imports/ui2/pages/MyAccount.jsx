@@ -1,4 +1,11 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+  FormattedHTMLMessage
+} from "react-intl";
 import styled from "styled-components";
 
 import OrLine from "../components/OrLine.jsx";
@@ -6,6 +13,29 @@ import Form from "../components/Form.jsx";
 import Button from "../components/Button.jsx";
 import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
+
+const messages = defineMessages({
+  deleteLabel: {
+    id: "app.my_account.delete_label",
+    defaultMessage: "Delete permanently"
+  },
+  emailLabel: {
+    id: "app.my_account.delete_email_label",
+    defaultMessage: "Type your email to confirm deletion:"
+  },
+  campaigner: {
+    id: "app.my_account.campaigner_label",
+    defaultMessage: "Campaigner"
+  },
+  collaborator: {
+    id: "app.my_account.collaborator_label",
+    defaultMessage: "Collaborator"
+  },
+  unknown: {
+    id: "app.my_account.unknown_label",
+    defaultMessage: "Unknown"
+  }
+});
 
 const Container = styled.div`
   max-width: 500px;
@@ -60,14 +90,17 @@ class ConfirmRemove extends Component {
     }
   };
   render() {
+    const { intl } = this.props;
     const { valid } = this.state;
     return (
       <div>
         <p>
-          Delete account, campaign and all data associated to this platform, as
-          well as revoke previously granted Facebook permissions
+          <FormattedMessage
+            id="app.my_account.delete_message"
+            defaultMessage="Delete account, campaign and all data associated to this platform, as well as revoke previously granted Facebook permissions"
+          />
         </p>
-        <Form.Field label="Type your email to confirm the deletion:">
+        <Form.Field label={intl.formatMessage(messages.emailLabel)}>
           <input
             type="text"
             onChange={({ target }) => {
@@ -79,7 +112,7 @@ class ConfirmRemove extends Component {
           disabled={!valid}
           className="button delete"
           type="submit"
-          value="Delete permanently"
+          value={intl.formatMessage(messages.deleteLabel)}
           onClick={this._handleSubmit}
         />
       </div>
@@ -87,10 +120,16 @@ class ConfirmRemove extends Component {
   }
 }
 
-export default class MyAccount extends Component {
+ConfirmRemove.propTypes = {
+  intl: intlShape.isRequired
+};
+
+const ConfirmRemoveIntl = injectIntl(ConfirmRemove);
+
+class MyAccount extends Component {
   _handleRemoveClick = () => {
     modalStore.setType("small");
-    modalStore.set(<ConfirmRemove onConfirm={this._handleRemove} />);
+    modalStore.set(<ConfirmRemoveIntl onConfirm={this._handleRemove} />);
   };
   _handleRemove = () => {
     Meteor.call("users.removeSelf", {}, (err, res) => {
@@ -102,14 +141,15 @@ export default class MyAccount extends Component {
     });
   };
   _getAccountTypeLabel = () => {
+    const { intl } = this.props;
     const user = Meteor.user();
     switch (user.type) {
       case "campaigner":
-        return "Campaigner";
+        return intl.formatMessage(messages.campaigner);
       case "user":
-        return "Collaborator";
+        return intl.formatMessage(messages.collaborator);
       default:
-        return "Unknown";
+        return intl.formatMessage(messages.unknown);
     }
   };
   render() {
@@ -118,18 +158,31 @@ export default class MyAccount extends Component {
       <Container>
         <div className="info">
           <h2>
-            Connected as <strong>{user.name}</strong>
+            <FormattedHTMLMessage
+              id="app.my_account.connected_as"
+              defaultMessage="Connected as <strong>{name}</strong>"
+              values={{ name: user.name }}
+            />
           </h2>
           <p className="account-type">
-            Account type: <strong>{this._getAccountTypeLabel()}</strong>
+            <FormattedHTMLMessage
+              id="app.my_account.account_type"
+              defaultMessage="Account type: <strong>{type}</strong>"
+              values={{ type: this._getAccountTypeLabel() }}
+            />
           </p>
           <Button primary href={FlowRouter.path("App.campaign.new")}>
-            Create a campaign
+            <FormattedMessage
+              id="app.my_account.create_campaign"
+              defaultMessage="Create a campaign"
+            />
           </Button>
           <OrLine />
           <p>
-            Connect with an existing campaign by forwarding your email to the
-            person responsible:
+            <FormattedMessage
+              id="app.my_account.connect"
+              defaultMessage="Connect with an existing campaign by forwarding your email to the person responsible:"
+            />
           </p>
           <input type="text" disabled value={user.emails[0].address} />
         </div>
@@ -138,11 +191,18 @@ export default class MyAccount extends Component {
           className="button delete"
           onClick={this._handleRemoveClick}
         >
-          Click here to delete your account, campaign and all data associated to
-          this platform, as well as revoke previously granted Facebook
-          permissions.
+          <FormattedMessage
+            id="app.my_account.delete_button_label"
+            defaultMessage="Click here to delete your account, campaign and all data associated to this platform, as well as revoke previously granted Facebook permissions."
+          />
         </a>
       </Container>
     );
   }
 }
+
+MyAccount.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(MyAccount);

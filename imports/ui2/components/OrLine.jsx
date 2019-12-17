@@ -1,5 +1,19 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+  FormattedHTMLMessage
+} from "react-intl";
 import styled from "styled-components";
+
+const messages = defineMessages({
+  orLabel: {
+    id: "app.or_label",
+    defaultMessage: "or"
+  }
+});
 
 const Container = styled.div`
   width: 100%;
@@ -19,9 +33,10 @@ const Container = styled.div`
   }
 `;
 
-export default class OrLine extends Component {
+class OrLine extends Component {
   render() {
-    const text = this.props.children || "or";
+    const { intl } = this.props;
+    const text = this.props.children || intl.formatMessage(messages.orLabel);
     return (
       <Container className="or-line">
         <span className="or-text">{text}</span>
@@ -29,3 +44,9 @@ export default class OrLine extends Component {
     );
   }
 }
+
+OrLine.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(OrLine);
