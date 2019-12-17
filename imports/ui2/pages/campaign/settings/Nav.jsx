@@ -1,4 +1,5 @@
 import { ClientStorage } from "meteor/ostrio:cstorage";
+import { FormattedMessage } from "react-intl";
 import React, { Component } from "react";
 
 import Page from "../../../components/Page.jsx";
@@ -10,12 +11,20 @@ export default class SettingsNav extends Component {
     const currentRoute = FlowRouter.current().route.name;
     return (
       <Page.Nav>
-        <h3>Campaign settings</h3>
+        <h3>
+          <FormattedMessage
+            id="app.campaign_settings.title"
+            defaultMessage="Campaign settings"
+          />
+        </h3>
         <a
           href={FlowRouter.path("App.campaign.settings")}
           className={currentRoute == "App.campaign.settings" ? "active" : ""}
         >
-          General
+          <FormattedMessage
+            id="app.campaign_settings.nav.general"
+            defaultMessage="General"
+          />
         </a>
         {/* <a
           href={FlowRouter.path("App.campaign.facebook")}
@@ -27,14 +36,20 @@ export default class SettingsNav extends Component {
           href={FlowRouter.path("App.campaign.team")}
           className={currentRoute == "App.campaign.team" ? "active" : ""}
         >
-          Team
+          <FormattedMessage
+            id="app.campaign_settings.nav.team"
+            defaultMessage="Team"
+          />
         </a>
         {campaign.creatorId == userId ? (
           <a
             href={FlowRouter.path("App.campaign.actions")}
             className={currentRoute == "App.campaign.actions" ? "active" : ""}
           >
-            Actions
+            <FormattedMessage
+              id="app.campaign_settings.nav.actions"
+              defaultMessage="Actions"
+            />
           </a>
         ) : null}
       </Page.Nav>

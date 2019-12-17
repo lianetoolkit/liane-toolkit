@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReactTooltip from "react-tooltip";
@@ -6,6 +12,29 @@ import { getFormUrl } from "/imports/ui2/utils/people";
 import CopyToClipboard from "./CopyToClipboard.jsx";
 
 import { alertStore } from "../containers/Alerts.jsx";
+
+const messages = defineMessages({
+  filledFormLabel: {
+    id: "app.form_info.filled_form_label",
+    defaultMessage: "Filled form"
+  },
+  hasntFilledFormLabel: {
+    id: "app.form_info.has_filled_form_label",
+    defaultMessage: "Hasn't filled form"
+  },
+  copy: {
+    id: "app.form_info.copy_link_label",
+    defaultMessage: "Copy link"
+  },
+  view: {
+    id: "app.form_info.view_label",
+    defaultMessage: "View form"
+  },
+  generate: {
+    id: "app.form_info.generate_label",
+    defaultMessage: "Generate new URL"
+  }
+});
 
 const Container = styled.div`
   width: 100%;
@@ -83,7 +112,7 @@ const Container = styled.div`
     `}
 `;
 
-export default class PersonFormInfo extends Component {
+class PersonFormInfo extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -110,7 +139,7 @@ export default class PersonFormInfo extends Component {
     );
   };
   render() {
-    const { person, simple } = this.props;
+    const { intl, person, simple } = this.props;
     const { loading } = this.state;
     const url = getFormUrl(person ? person.formId : false);
     let filled = true;
@@ -129,26 +158,34 @@ export default class PersonFormInfo extends Component {
         <label>
           <FontAwesomeIcon icon="align-left" />
           {person && !simple ? (
-            <span>{filled ? "Filled form" : "Hasn't filled form"}</span>
+            <span>
+              {filled
+                ? intl.formatMessage(messages.filledFormLabel)
+                : intl.formatMessage(messages.hasntFilledFormLabel)}
+            </span>
           ) : null}
           <input type="text" disabled value={url} />
         </label>
         <span className="actions">
-          <CopyToClipboard data-tip="Copy link" data-for={tooltipId} text={url}>
+          <CopyToClipboard
+            data-tip={intl.formatMessage(messages.copy)}
+            data-for={tooltipId}
+            text={url}
+          >
             <FontAwesomeIcon icon="copy" />
           </CopyToClipboard>
           <a
             href={url}
             target="_blank"
             data-for={tooltipId}
-            data-tip="View form"
+            data-tip={intl.formatMessage(messages.view)}
           >
             <FontAwesomeIcon icon="link" />
           </a>
           {person ? (
             <a
               href="javascript:void(0);"
-              data-tip="Generate new URL"
+              data-tip={intl.formatMessage(messages.generate)}
               data-for={tooltipId}
               onClick={this._handleRegenerateClick}
             >
@@ -161,3 +198,9 @@ export default class PersonFormInfo extends Component {
     );
   }
 }
+
+PersonFormInfo.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(PersonFormInfo);

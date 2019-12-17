@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReactTooltip from "react-tooltip";
 import { get, set } from "lodash";
@@ -10,7 +16,26 @@ import Form from "../../../components/Form.jsx";
 import Table from "../../../components/Table.jsx";
 import PersonFormInfo from "../../../components/PersonFormInfo.jsx";
 
-export default class CampaignTeamPage extends Component {
+const messages = defineMessages({
+  creatorLabel: {
+    id: "app.campaign_settings.team_creator_label",
+    defaultMessage: "Campaign creator"
+  },
+  removeLabel: {
+    id: "app.campaign_settings.team_remove_label",
+    defaultMessage: "Remove user"
+  },
+  emailLabel: {
+    id: "app.campaign_settings.team_email_label",
+    defaultMessage: "Email"
+  },
+  addButtonLabel: {
+    id: "app.campaign_settings.team_add_button_label",
+    defaultMessage: "Add member"
+  }
+});
+
+class CampaignTeamPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -63,14 +88,19 @@ export default class CampaignTeamPage extends Component {
     }
   };
   render() {
-    const { campaign, user } = this.props;
+    const { intl, campaign, user } = this.props;
     const { formData } = this.state;
     return (
       <>
         <Nav campaign={campaign} />
         <Form onSubmit={this._handleSubmit}>
           <Form.Content>
-            <h2>Team</h2>
+            <h2>
+              <FormattedMessage
+                id="app.campaign_settings.team_title"
+                defaultMessage="Team"
+              />
+            </h2>
             <Table>
               <tbody>
                 {campaign.users.map(campaignUser => (
@@ -81,7 +111,7 @@ export default class CampaignTeamPage extends Component {
                       {campaignUser._id == campaign.creatorId ? (
                         <FontAwesomeIcon
                           icon="star"
-                          data-tip="Campaign creator"
+                          data-tip={intl.formatMessage(messages.creatorLabel)}
                         />
                       ) : null}
                       {campaignUser._id != campaign.creatorId &&
@@ -89,7 +119,7 @@ export default class CampaignTeamPage extends Component {
                         <a
                           className="remove"
                           href="javascript:void(0);"
-                          data-tip="Remover user"
+                          data-tip={intl.formatMessage(messages.removeLabel)}
                           onClick={this._handleRemoveClick(campaignUser)}
                         >
                           <FontAwesomeIcon icon="ban" />
@@ -100,12 +130,19 @@ export default class CampaignTeamPage extends Component {
                 ))}
               </tbody>
             </Table>
-            <h3>Add new members</h3>
+            <h3>
+              <FormattedMessage
+                id="app.campaign_settings.team_add_title"
+                defaultMessage="Add new members"
+              />
+            </h3>
             <p>
-              To add new members the user must be registered in the platform.
-              Use the same email used on Facebook.
+              <FormattedMessage
+                id="app.campaign_settings.team_description"
+                defaultMessage="To add new members the user must be registered in the platform. Use the same email used on Facebook."
+              />
             </p>
-            <Form.Field label="Email">
+            <Form.Field label={intl.formatMessage(messages.emailLabel)}>
               <input
                 type="email"
                 value={formData.email}
@@ -113,7 +150,10 @@ export default class CampaignTeamPage extends Component {
                 onChange={this._handleChange}
               />
             </Form.Field>
-            <input type="submit" value="Add member" />
+            <input
+              type="submit"
+              value={intl.formatMessage(messages.addButtonLabel)}
+            />
           </Form.Content>
         </Form>
         <ReactTooltip place="top" effect="solid" />
@@ -121,3 +161,9 @@ export default class CampaignTeamPage extends Component {
     );
   }
 }
+
+CampaignTeamPage.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(CampaignTeamPage);
