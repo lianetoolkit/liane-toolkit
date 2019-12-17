@@ -177,7 +177,7 @@ class CampaignSettingsPage extends Component {
             >
               <input
                 type="text"
-                placeholder="MyCampaign"
+                placeholder={intl.formatMessage(messages.urlPathPlaceholder)}
                 name="forms.slug"
                 value={this.getValue("forms.slug")}
                 onChange={this._handleChange}
