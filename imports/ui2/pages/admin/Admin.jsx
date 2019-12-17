@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 
 import Page from "/imports/ui2/components/Page.jsx";
 
@@ -10,17 +11,35 @@ class AdminContainer extends Component {
     return (
       <>
         <Page.Nav full>
-          <h3>Administration</h3>
+          <h3>
+            <FormattedMessage
+              id="app.admin.nav.title"
+              defaultMessage="Administration"
+            />
+          </h3>
           <a href={FlowRouter.path("App.admin", { section: "campaigns" })}>
-            Campaigns
+            <FormattedMessage
+              id="app.admin.nav.campaigns"
+              defaultMessage="Campaigns"
+            />
           </a>
           <a href={FlowRouter.path("App.admin", { section: "tickets" })}>
-            Tickets
+            <FormattedMessage
+              id="app.admin.nav.tickets"
+              defaultMessage="Tickets"
+            />
           </a>
-          <a href={FlowRouter.path("App.admin", { section: "users" })}>Users</a>
-          <a href={FlowRouter.path("App.admin", { section: "jobs" })}>Jobs</a>
+          <a href={FlowRouter.path("App.admin", { section: "users" })}>
+            <FormattedMessage id="app.admin.nav.users" defaultMessage="Users" />
+          </a>
+          <a href={FlowRouter.path("App.admin", { section: "jobs" })}>
+            <FormattedMessage id="app.admin.nav.jobs" defaultMessage="Jobs" />
+          </a>
           <a href={FlowRouter.path("App.admin", { section: "geolocations" })}>
-            Geolocations
+            <FormattedMessage
+              id="app.admin.nav.geolocations"
+              defaultMessage="Geolocations"
+            />
           </a>
         </Page.Nav>
         {children}
@@ -47,7 +66,7 @@ export default {
           children = <TicketsContainer {...props} />;
           break;
         default:
-          children = <h2>404 - Not Found</h2>;
+          children = <h2>404</h2>;
           break;
       }
       return <AdminContainer>{children}</AdminContainer>;

@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import styled from "styled-components";
 import moment from "moment";
 
@@ -8,6 +14,69 @@ import Table from "/imports/ui2/components/Table.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
 import Page from "/imports/ui2/components/Page.jsx";
 import PagePaging from "/imports/ui2/components/PagePaging.jsx";
+
+const messages = {
+  general: defineMessages({
+    markResolved: {
+      id: "app.admin.tickets.mark_resolved",
+      defaultMessage: "Mark as resolved"
+    },
+    markProgress: {
+      id: "app.admin.tickets.mark_progress",
+      defaultMessage: 'Move to "in progress"'
+    }
+  }),
+  statuses: defineMessages({
+    new: {
+      id: "app.admin.tickets.status.new",
+      defaultMessage: "New"
+    },
+    progress: {
+      id: "app.admin.tickets.status.in_progress",
+      defaultMessage: "In progress"
+    },
+    resolved: {
+      id: "app.admin.tickets.status.resolved",
+      defaultMessage: "Resolved"
+    }
+  }),
+  categories: defineMessages({
+    suggestion: {
+      id: "app.admin.tickets.categories.suggestion",
+      defaultMessage: "Suggestion"
+    },
+    bug: {
+      id: "app.admin.tickets.categories.bug",
+      defaultMessage: "Bug"
+    },
+    question: {
+      id: "app.admin.tickets.categories.question",
+      defaultMessage: "Question"
+    },
+    other: {
+      id: "app.admin.tickets.categories.other",
+      defaultMessage: "Other"
+    }
+  }),
+  meta: defineMessages({
+    url: {
+      id: "app.admin.tickets.meta.url",
+      defaultMessage: "URL"
+    },
+    browser: {
+      id: "app.admin.tickets.meta.browser",
+      defaultMessage: "Browser"
+    },
+    os: {
+      id: "app.admin.tickets.meta.os",
+      defaultMessage: "OS"
+    },
+    version: {
+      id: "app.admin.tickets.meta.version",
+      defaultMessage: "Version"
+    }
+  })
+};
 
 const TicketLabel = styled.span`
   background: #777;
@@ -68,11 +137,11 @@ const TicketContainer = styled.div`
 
 class SingleTicket extends Component {
   _buttonLabel = () => {
-    const { ticket } = this.props;
+    const { intl, ticket } = this.props;
     if (ticket.status == "progress") {
-      return "Mark as resolved";
+      return intl.formatMessage(messages.general.markResolved);
     } else {
-      return "Move to progress";
+      return intl.formatMessage(messages.general.markProgress);
     }
   };
   _handleClick = () => {
@@ -84,7 +153,7 @@ class SingleTicket extends Component {
     });
   };
   render() {
-    const { ticket } = this.props;
+    const { intl, ticket } = this.props;
     let context = [];
     for (let key in ticket.context) {
       context.push({
@@ -94,7 +163,11 @@ class SingleTicket extends Component {
     }
     return (
       <TicketContainer>
-        <TicketLabel className={ticket.category}>{ticket.category}</TicketLabel>
+        <TicketLabel className={ticket.category}>
+          {messages.categories[ticket.category]
+            ? intl.formatMessage(messages.categories[ticket.category])
+            : ticket.category}
+        </TicketLabel>
         <h2>{ticket.subject}</h2>
         <p className="author">
           {ticket.name} &lt;{ticket.email}&gt;
@@ -104,7 +177,11 @@ class SingleTicket extends Component {
           <tbody>
             {context.map(item => (
               <tr key={item.key}>
-                <th>{item.key}</th>
+                <th>
+                  {messages.meta[item.key]
+                    ? intl.formatMessage(messages.meta[item.key])
+                    : item.key}
+                </th>
                 <td>{item.value}</td>
               </tr>
             ))}
@@ -114,14 +191,29 @@ class SingleTicket extends Component {
           {this._buttonLabel()}
         </Button>
         <p>
-          <strong>Current status</strong>: {ticket.status}
+          <strong>
+            <FormattedMessage
+              id="app.admin.tickets.current_status_label"
+              defaultMessage="Current status"
+            />
+          </strong>
+          :{" "}
+          {messages.statuses[ticket.status]
+            ? intl.formatMessage(messages.statuses[ticket.status])
+            : ticket.status}
         </p>
       </TicketContainer>
     );
   }
 }
 
-export default class TicketsPage extends Component {
+SingleTicket.propTypes = {
+  intl: intlShape.isRequired
+};
+
+const SingleTicketIntl = injectIntl(SingleTicket);
+
+class TicketsPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -133,7 +225,7 @@ export default class TicketsPage extends Component {
   componentDidUpdate(prevProps) {
     if (JSON.stringify(prevProps.ticket) != JSON.stringify(this.props.ticket)) {
       if (this.props.ticket) {
-        modalStore.set(<SingleTicket ticket={this.props.ticket} />, () => {
+        modalStore.set(<SingleTicketIntl ticket={this.props.ticket} />, () => {
           FlowRouter.setQueryParams({ id: null });
           return true;
         });
@@ -146,7 +238,7 @@ export default class TicketsPage extends Component {
       this.setState({ loadingCount: false, count: res });
     });
     if (this.props.ticket) {
-      modalStore.set(<SingleTicket ticket={this.props.ticket} />, () => {
+      modalStore.set(<SingleTicketIntl ticket={this.props.ticket} />, () => {
         FlowRouter.setQueryParams({ id: null });
         return true;
       });
@@ -169,7 +261,7 @@ export default class TicketsPage extends Component {
     FlowRouter.setQueryParams({ id: ticket._id });
   };
   render() {
-    const { tickets, page, limit } = this.props;
+    const { intl, tickets, page, limit } = this.props;
     const { loadingCount, count } = this.state;
     return (
       <Page.Content full compact>
@@ -184,20 +276,51 @@ export default class TicketsPage extends Component {
         <Table compact>
           <thead>
             <tr>
-              <th>Status</th>
-              <th>Category</th>
-              <th className="fill">Subject</th>
-              <th>Author</th>
-              <th>Created</th>
+              <th>
+                <FormattedMessage
+                  id="app.admin.tickets.status_label"
+                  defaultMessage="Status"
+                />
+              </th>
+              <th>
+                <FormattedMessage
+                  id="app.admin.tickets.category_label"
+                  defaultMessage="Category"
+                />
+              </th>
+              <th className="fill">
+                <FormattedMessage
+                  id="app.admin.tickets.subject_label"
+                  defaultMessage="Subject"
+                />
+              </th>
+              <th>
+                <FormattedMessage
+                  id="app.admin.tickets.author_label"
+                  defaultMessage="Author"
+                />
+              </th>
+              <th>
+                <FormattedMessage
+                  id="app.admin.tickets.created_label"
+                  defaultMessage="Created"
+                />
+              </th>
             </tr>
           </thead>
           {tickets.map(ticket => (
             <tbody key={ticket._id}>
               <tr className="interactive" onClick={this.openTicket(ticket)}>
-                <td className="small">{ticket.status}</td>
+                <td className="small">
+                  {messages.statuses[ticket.status]
+                    ? intl.formatMessage(messages.statuses[ticket.status])
+                    : ticket.status}
+                </td>
                 <td className="small">
                   <TicketLabel className={ticket.category}>
-                    {ticket.category}
+                    {messages.categories[ticket.category]
+                      ? intl.formatMessage(messages.categories[ticket.category])
+                      : ticket.category}
                   </TicketLabel>
                 </td>
                 <td className="fill">{ticket.subject}</td>
@@ -213,3 +336,9 @@ export default class TicketsPage extends Component {
     );
   }
 }
+
+TicketsPage.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(TicketsPage);
