@@ -55,7 +55,7 @@ Meteor.users.schema = new SimpleSchema({
   },
   "roles.$": {
     type: String,
-    allowedValues: ["admin", "staff"]
+    allowedValues: ["admin", "staff", "moderator"]
   }
 });
 

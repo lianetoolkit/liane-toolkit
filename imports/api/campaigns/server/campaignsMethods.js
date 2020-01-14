@@ -102,7 +102,7 @@ export const campaignsCreate = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    if (PRIVATE && !Roles.userIsInRole(userId, ["admin"])) {
+    if (PRIVATE && !Roles.userIsInRole(userId, ["admin", "moderator"])) {
       throw new Meteor.Error(401, "Campaign creation is currently disabled.");
     }
 
