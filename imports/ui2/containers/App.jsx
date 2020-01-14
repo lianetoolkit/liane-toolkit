@@ -147,8 +147,12 @@ export default withTracker(() => {
     // Campaign jobs
     const jobsHandle = AppSubs.subscribe("jobs.byCampaign", { campaignId });
     if (jobsHandle.ready()) {
-      entriesJob = Jobs.findOne({ type: "entries.updateAccountEntries" });
+      entriesJob = Jobs.findOne({
+        "data.campaignId": campaign._id,
+        type: "entries.updateAccountEntries"
+      });
       runningEntriesJobs = Jobs.find({
+        "data.campaignId": campaign._id,
         type: "entries.updateEntryInteractions",
         status: { $nin: ["failed", "completed"] }
       }).fetch();

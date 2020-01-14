@@ -4,6 +4,7 @@ import { FormattedMessage } from "react-intl";
 import Page from "/imports/ui2/components/Page.jsx";
 
 import TicketsContainer from "/imports/ui2/containers/admin/Tickets.jsx";
+import CampaignsContainer from "/imports/ui2/containers/admin/Campaigns.jsx";
 
 class AdminContainer extends Component {
   render() {
@@ -64,6 +65,9 @@ export default {
           break;
         case "tickets":
           children = <TicketsContainer {...props} />;
+          break;
+        case "campaigns":
+          children = <CampaignsContainer {...props} />;
           break;
         default:
           children = <h2>404</h2>;

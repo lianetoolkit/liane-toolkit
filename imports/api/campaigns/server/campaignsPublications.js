@@ -57,7 +57,7 @@ Meteor.publishComposite("campaigns.all", function() {
         {
           find: function(campaign) {
             return FacebookAccounts.find({
-              facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
+              facebookId: campaign.facebookAccount.facebookId
             });
           }
         }
