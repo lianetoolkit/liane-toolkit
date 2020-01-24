@@ -324,9 +324,9 @@ class AppNav extends Component {
                         />
                       </a>
                     </li>
-                    <li>
+                    {/* <li>
                       <a href={FlowRouter.path("App.chatbot")}>Chatbot</a>
-                    </li>
+                    </li> */}
                     <li>
                       <a href={FlowRouter.path("App.faq")}>
                         <FormattedMessage
