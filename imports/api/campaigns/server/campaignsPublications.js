@@ -1,4 +1,4 @@
-import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+import { Campaigns, Invites } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import {
   PeopleTags,
@@ -221,6 +221,15 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
         }
       ]
     };
+  } else {
+    return this.ready();
+  }
+});
+
+Meteor.publish("invites.all", function() {
+  const currentUser = this.userId;
+  if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
+    return Invites.find({});
   } else {
     return this.ready();
   }

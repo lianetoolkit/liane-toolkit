@@ -155,4 +155,34 @@ Campaigns.schema = new SimpleSchema({
 
 Campaigns.attachSchema(Campaigns.schema);
 
+const Invites = new Mongo.Collection("invites");
+
+Invites.schema = new SimpleSchema({
+  key: {
+    type: String,
+    index: true
+  },
+  designated: {
+    type: Boolean,
+    defaultValue: false
+  },
+  used: {
+    type: Boolean,
+    defaultValue: false
+  },
+  createdAt: {
+    type: Date,
+    autoValue() {
+      if (this.isInsert) {
+        return new Date();
+      } else if (this.isUpsert) {
+        return { $setOnInsert: new Date() };
+      } else {
+        return this.unset();
+      }
+    }
+  }
+});
+
 exports.Campaigns = Campaigns;
+exports.Invites = Invites;

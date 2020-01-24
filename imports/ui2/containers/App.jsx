@@ -21,7 +21,7 @@ const ready = new ReactiveVar(false);
 
 const AppSubs = new SubsManager();
 
-export default withTracker(() => {
+export default withTracker(props => {
   const campaignsHandle = AppSubs.subscribe("campaigns.byUser");
   const userHandle = AppSubs.subscribe("users.data");
   const notificationsHandle = AppSubs.subscribe("notifications.byUser");
@@ -45,6 +45,11 @@ export default withTracker(() => {
     notifications = notificationsHandle.ready()
       ? Notifications.find().fetch()
       : [];
+  }
+
+  // Handle invite param
+  if (props.invite) {
+    ClientStorage.set("invite", props.invite);
   }
 
   const incomingCampaignId = Session.get("campaignId");

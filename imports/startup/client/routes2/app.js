@@ -37,9 +37,11 @@ const appRoutes = FlowRouter.group({
 
 appRoutes.route("/", {
   name: "App.dashboard",
-  action: function() {
+  action: function(params, queryParams) {
     addTitle(`${APP_NAME} | Technology for Political Innovation`);
-    return mount(App);
+    return mount(App, {
+      invite: queryParams.invite && queryParams.invite
+    });
   }
 });
 
