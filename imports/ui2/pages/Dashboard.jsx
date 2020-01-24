@@ -185,7 +185,7 @@ class DashboardPage extends Component {
           </Dashboard.Box>
         </Dashboard.Row>
         <Dashboard.Row>
-          <Dashboard.Box minimal>
+          {/* <Dashboard.Box minimal>
             <header>
               <FontAwesomeIcon icon={["fab", "facebook-messenger"]} />
               <h3>Chatbot</h3>
@@ -206,7 +206,7 @@ class DashboardPage extends Component {
                 />
               </Button>
             </footer>
-          </Dashboard.Box>
+          </Dashboard.Box> */}
           <Dashboard.Box minimal>
             <header>
               <FontAwesomeIcon icon="map-marked" />
