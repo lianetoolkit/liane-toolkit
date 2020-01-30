@@ -179,6 +179,11 @@ Invites.schema = new SimpleSchema({
     type: Boolean,
     defaultValue: false
   },
+  usedBy: {
+    type: String,
+    optional: true,
+    index: true
+  },
   createdAt: {
     type: Date,
     autoValue() {

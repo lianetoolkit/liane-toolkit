@@ -87,14 +87,19 @@ export const campaignsCreate = new ValidatedMethod({
     },
     facebookAccountId: {
       type: String
+    },
+    invite: {
+      type: String,
+      optional: true
     }
   }).validator(),
-  run({ name, country, geolocation, facebookAccountId }) {
+  run({ name, country, geolocation, facebookAccountId, invite }) {
     logger.debug("campaigns.create called", {
       name,
       country,
       geolocation,
-      facebookAccountId
+      facebookAccountId,
+      invite
     });
 
     const userId = Meteor.userId();
@@ -102,8 +107,19 @@ export const campaignsCreate = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
+    let hasInvite = false;
+
     if (PRIVATE && !Roles.userIsInRole(userId, ["admin", "moderator"])) {
-      throw new Meteor.Error(401, "Campaign creation is currently disabled.");
+      let allow = false;
+      if (invite) {
+        const inviteData = Invites.findOne({ key: invite, used: false });
+        if (inviteData) {
+          allow = true;
+          hasInvite = true;
+        }
+      }
+      if (!allow)
+        throw new Meteor.Error(401, "Campaign creation is currently disabled.");
     }
 
     if (FacebookAccounts.findOne({ facebookId: facebookAccountId })) {
@@ -158,6 +174,10 @@ export const campaignsCreate = new ValidatedMethod({
     CampaignsHelpers.setMainAccount({ campaignId, account });
     // CampaignsHelpers.addAccount({ campaignId, account });
     // CampaignsHelpers.addAudienceAccount({ campaignId, account });
+
+    if (hasInvite) {
+      Invites.update({ $set: { key: invite, used: true, usedBy: userId } });
+    }
 
     Meteor.call("log", {
       type: "campaigns.add",

@@ -6,6 +6,7 @@ import {
   FormattedMessage,
   FormattedHTMLMessage
 } from "react-intl";
+import { ClientStorage } from "meteor/ostrio:cstorage";
 
 import { alertStore } from "../../containers/Alerts.jsx";
 
@@ -112,12 +113,13 @@ class NewCampaignPage extends Component {
     ev.preventDefault();
     const { intl } = this.props;
     const { loading } = this.state;
+    const invite = ClientStorage.get("invite");
     if (this._filledForm() && !loading) {
       const { formData } = this.state;
       this.setState({
         loading: true
       });
-      Meteor.call("campaigns.create", formData, (err, data) => {
+      Meteor.call("campaigns.create", { ...formData, invite }, (err, data) => {
         if (err) {
           alertStore.add(err);
           this.setState({
