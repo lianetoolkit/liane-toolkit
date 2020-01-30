@@ -85,6 +85,11 @@ const Container = styled.div`
   .fa-ban {
     color: red;
   }
+  a {
+    .fa-copy {
+      margin-right: 0.25rem;
+    }
+  }
 `;
 
 class CampaignsPage extends Component {
@@ -122,6 +127,9 @@ class CampaignsPage extends Component {
     ev.preventDefault();
     Meteor.call("invites.designate", { inviteId });
   };
+  _handleCopyClick = inviteKey => ev => {
+    ev.preventDefault();
+  };
   _handleRemoveClick = inviteId => ev => {
     ev.preventDefault();
     Meteor.call("invites.remove", { inviteId });
@@ -133,7 +141,6 @@ class CampaignsPage extends Component {
   render() {
     const { intl, invites, page, limit } = this.props;
     const { loadingCount, count } = this.state;
-    console.log(invites);
     return (
       <Container>
         <PagePaging
@@ -215,9 +222,18 @@ class CampaignsPage extends Component {
                       ) : null}
                     </span>
                     <span className="actions">
+                      {!invite.used ? (
+                        <Button
+                          className="small"
+                          onClick={this._handleCopyClick(invite._id)}
+                        >
+                          <FontAwesomeIcon icon="copy" />
+                          Copy link
+                        </Button>
+                      ) : null}
                       <Button
                         className="small remove"
-                        onClick={this._handleRemoveClick(invite._id)}
+                        onClick={this._handleRemoveClick(invite.key)}
                       >
                         Remove invite
                       </Button>
