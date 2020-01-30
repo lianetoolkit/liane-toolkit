@@ -1,5 +1,5 @@
 import SimpleSchema from "simpl-schema";
-
+import { Random } from "meteor/random";
 const Campaigns = new Mongo.Collection("campaigns");
 
 Campaigns.usersSchema = new SimpleSchema({
@@ -160,7 +160,16 @@ const Invites = new Mongo.Collection("invites");
 Invites.schema = new SimpleSchema({
   key: {
     type: String,
-    index: true
+    index: true,
+    autoValue() {
+      if (this.isInsert) {
+        return Random.id();
+      } else if (this.isUpsert) {
+        return { $setOnInsert: Random.id() };
+      } else {
+        return this.unset();
+      }
+    }
   },
   designated: {
     type: Boolean,
@@ -183,6 +192,8 @@ Invites.schema = new SimpleSchema({
     }
   }
 });
+
+Invites.attachSchema(Invites.schema);
 
 exports.Campaigns = Campaigns;
 exports.Invites = Invites;

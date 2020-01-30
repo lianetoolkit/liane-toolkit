@@ -4,6 +4,7 @@ import { FormattedMessage } from "react-intl";
 import Page from "/imports/ui2/components/Page.jsx";
 
 import TicketsContainer from "/imports/ui2/containers/admin/Tickets.jsx";
+import InvitesContainer from "/imports/ui2/containers/admin/Invites.jsx";
 import CampaignsContainer from "/imports/ui2/containers/admin/Campaigns.jsx";
 
 class AdminContainer extends Component {
@@ -22,6 +23,12 @@ class AdminContainer extends Component {
             <FormattedMessage
               id="app.admin.nav.campaigns"
               defaultMessage="Campaigns"
+            />
+          </a>
+          <a href={FlowRouter.path("App.admin", { section: "invites" })}>
+            <FormattedMessage
+              id="app.admin.nav.invites"
+              defaultMessage="Invites"
             />
           </a>
           <a href={FlowRouter.path("App.admin", { section: "tickets" })}>
@@ -68,6 +75,9 @@ export default {
           break;
         case "campaigns":
           children = <CampaignsContainer {...props} />;
+          break;
+        case "invites":
+          children = <InvitesContainer {...props} />;
           break;
         default:
           children = <h2>404</h2>;

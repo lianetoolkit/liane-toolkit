@@ -1,5 +1,5 @@
 import SimpleSchema from "simpl-schema";
-import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+import { Campaigns, Invites } from "/imports/api/campaigns/campaigns.js";
 import { CampaignsHelpers } from "./campaignsHelpers.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import { FacebookAudiencesHelpers } from "/imports/api/facebook/audiences/server/audiencesHelpers.js";
@@ -846,5 +846,77 @@ export const campaignCounts = new ValidatedMethod({
     }).count();
 
     return counts;
+  }
+});
+
+export const createInvite = new ValidatedMethod({
+  name: "invites.new",
+  validate() {},
+  run() {
+    this.unblock();
+    logger.debug("invites.new called");
+
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+
+    return Invites.insert({});
+  }
+});
+
+export const designateInvite = new ValidatedMethod({
+  name: "invites.designate",
+  validate: new SimpleSchema({
+    inviteId: {
+      type: String
+    }
+  }).validator(),
+  run({ inviteId }) {
+    this.unblock();
+    logger.debug("invites.designate called", { inviteId });
+
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+
+    const invite = Invites.findOne(inviteId);
+
+    if (!invite) {
+      throw new Meteor.Error(404, "Invite not found");
+    }
+
+    Invites.update(inviteId, { $set: { designated: true } });
+
+    return;
+  }
+});
+
+export const removeInvite = new ValidatedMethod({
+  name: "invites.remove",
+  validate: new SimpleSchema({
+    inviteId: {
+      type: String
+    }
+  }).validator(),
+  run({ inviteId }) {
+    this.unblock();
+    logger.debug("invites.remove called", { inviteId });
+
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+
+    const invite = Invites.findOne(inviteId);
+
+    if (!invite) {
+      throw new Meteor.Error(404, "Invite not found");
+    }
+
+    Invites.remove(inviteId);
+
+    return;
   }
 });
