@@ -176,7 +176,12 @@ export const campaignsCreate = new ValidatedMethod({
     // CampaignsHelpers.addAudienceAccount({ campaignId, account });
 
     if (hasInvite) {
-      Invites.update({ $set: { key: invite, used: true, usedBy: userId } });
+      Invites.update(
+        { key: invite },
+        {
+          $set: { used: true, usedBy: userId }
+        }
+      );
     }
 
     Meteor.call("log", {
