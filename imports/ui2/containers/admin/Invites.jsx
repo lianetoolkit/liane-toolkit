@@ -19,6 +19,9 @@ export default withTracker(props => {
     // limit,
     // skip,
     transform: invite => {
+      if (invite.usedBy) {
+        invite.user = Meteor.users.findOne(invite.usedBy);
+      }
       return invite;
     }
   };

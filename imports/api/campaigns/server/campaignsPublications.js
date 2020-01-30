@@ -226,9 +226,25 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
   }
 });
 
-Meteor.publish("invites.all", function() {
+Meteor.publishComposite("invites.all", function() {
   const currentUser = this.userId;
   if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
+    return {
+      find: function() {
+        return Invites.find({});
+      },
+      children(invite) {
+        let children = [];
+        if (invite.usedBy) {
+          children.push({
+            find: function() {
+              return Meteor.users.find({ _id: invite.usedBy });
+            }
+          });
+        }
+        return children;
+      }
+    };
     return Invites.find({});
   } else {
     return this.ready();

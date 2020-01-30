@@ -46,11 +46,17 @@ const Container = styled.div`
     color: #666;
     text-transform: uppercase;
   }
-  .icon-action {
+  .content-action {
     display: flex;
     text-align: left;
-    .icon {
+    .content {
       flex: 1 1 100%;
+      font-size: 0.8em;
+      display: flex;
+      align-items: center;
+    }
+    .text {
+      color: #999;
     }
     .actions {
       flex: 0 0 auto;
@@ -70,8 +76,7 @@ const Container = styled.div`
   .fa-check,
   .fa-ban {
     float: left;
-    margin-top: 5px;
-    margin-right: 5px;
+    margin-right: 1rem;
     font-size: 18px;
   }
   .fa-check {
@@ -173,14 +178,14 @@ class CampaignsPage extends Component {
               <tr>
                 <td className="small invite-id">{invite.key}</td>
                 <td>
-                  <span className="icon-action">
+                  <span className="content-action">
                     {invite.designated ? (
-                      <span className="icon">
+                      <span className="content">
                         <FontAwesomeIcon icon="check" />
                       </span>
                     ) : (
                       <>
-                        <span className="icon">
+                        <span className="content">
                           <FontAwesomeIcon icon="ban" />
                         </span>
                         <span className="actions">
@@ -196,13 +201,18 @@ class CampaignsPage extends Component {
                   </span>
                 </td>
                 <td className="fill">
-                  <span className="icon-action">
-                    <span className="icon">
-                      {invite.used ? (
-                        <FontAwesomeIcon icon="ban" />
-                      ) : (
-                        <FontAwesomeIcon icon="check" />
-                      )}
+                  <span className="content-action">
+                    <span className="content">
+                      <span className="icon">
+                        {invite.used ? (
+                          <FontAwesomeIcon icon="ban" />
+                        ) : (
+                          <FontAwesomeIcon icon="check" />
+                        )}
+                      </span>
+                      {invite.user ? (
+                        <span className="text">Used by {invite.user.name}</span>
+                      ) : null}
                     </span>
                     <span className="actions">
                       <Button
