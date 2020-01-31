@@ -51,6 +51,9 @@ const Container = styled.div`
     td {
       background: #f7f7f7;
     }
+    .invite-id {
+      text-decoration: line-through;
+    }
   }
   .content-action {
     display: flex;
