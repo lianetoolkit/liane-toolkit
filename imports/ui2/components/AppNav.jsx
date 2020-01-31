@@ -277,7 +277,7 @@ class AppNav extends Component {
                   name={intl.formatMessage(messages.intelligenceStrategy)}
                 >
                   <ul>
-                    <li>
+                    {/* <li>
                       <a href="javascript:void(0);" className="disabled">
                         <FormattedMessage
                           id="app.nav.my_audience"
@@ -292,7 +292,7 @@ class AppNav extends Component {
                           )
                         </span>
                       </a>
-                    </li>
+                    </li> */}
                     <li>
                       <a href={FlowRouter.path("App.map")}>
                         <FormattedMessage

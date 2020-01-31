@@ -713,7 +713,7 @@ class MapPage extends Component {
     return (
       <Container>
         {loading ? <Loading full /> : null}
-        <MapNav attached={!map}>
+        {/* <MapNav attached={!map}>
           <span className="nav-content">
             <a
               href="javascript:void(0);"
@@ -735,7 +735,7 @@ class MapPage extends Component {
               <FormattedMessage id="app.map.nav.map" defaultMessage="Map" />
             </a>
           </span>
-        </MapNav>
+        </MapNav> */}
         {map ? (
           <>
             <Map ref="map" center={[0, 0]} zoom={2} scrollWheelZoom={true}>
