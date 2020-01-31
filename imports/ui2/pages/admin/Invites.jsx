@@ -46,6 +46,12 @@ const Container = styled.div`
     font-family: monospace;
     color: #666;
   }
+  tr.used {
+    opacity: 0.8;
+    td {
+      background: #f7f7f7;
+    }
+  }
   .content-action {
     display: flex;
     text-align: left;
@@ -185,7 +191,7 @@ class CampaignsPage extends Component {
           </thead>
           {invites.map(invite => (
             <tbody key={invite._id}>
-              <tr>
+              <tr className={invite.used ? "used" : ""}>
                 <td className="small invite-id">{invite.key}</td>
                 <td>
                   <span className="content-action">
@@ -203,7 +209,10 @@ class CampaignsPage extends Component {
                             className="small"
                             onClick={this._handleDesignateClick(invite._id)}
                           >
-                            Mark as designated
+                            <FormattedMessage
+                              id="app.admin.invites.mark_designated"
+                              defaultMessage="Mark as designated"
+                            />
                           </Button>
                         </span>
                       </>
@@ -221,7 +230,13 @@ class CampaignsPage extends Component {
                         )}
                       </span>
                       {invite.user ? (
-                        <span className="text">Used by {invite.user.name}</span>
+                        <span className="text">
+                          <FormattedMessage
+                            id="app.admin.invites.used_by"
+                            defaultMessage="Used by {name}"
+                            values={{ name: invite.user.name }}
+                          />
+                        </span>
                       ) : null}
                     </span>
                     <span className="actions">
@@ -232,7 +247,10 @@ class CampaignsPage extends Component {
                             onClick={this._handleCopyClick(invite._id)}
                           >
                             <FontAwesomeIcon icon="copy" />
-                            Copy link
+                            <FormattedMessage
+                              id="app.admin.invites.copy"
+                              defaultMessage="Copy link"
+                            />
                           </Button>
                         </CopyToClipboard>
                       ) : null}
@@ -240,7 +258,10 @@ class CampaignsPage extends Component {
                         className="small remove"
                         onClick={this._handleRemoveClick(invite._id)}
                       >
-                        Remove invite
+                        <FormattedMessage
+                          id="app.admin.invites.remove"
+                          defaultMessage="Remove"
+                        />
                       </Button>
                     </span>
                   </span>
@@ -253,7 +274,13 @@ class CampaignsPage extends Component {
           ))}
         </Table>
         <div className="new-person">
-          <Button onClick={this._handleNewClick}>+ New invite</Button>
+          <Button onClick={this._handleNewClick}>
+            +{" "}
+            <FormattedMessage
+              id="app.admin.invites.new"
+              defaultMessage="New invite"
+            />
+          </Button>
         </div>
       </Container>
     );
