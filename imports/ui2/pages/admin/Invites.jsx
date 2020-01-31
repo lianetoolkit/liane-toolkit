@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { modalStore } from "/imports/ui2/containers/Modal.jsx";
 
+import CopyToClipboard from "/imports/ui2/components/CopyToClipboard.jsx";
 import Table from "/imports/ui2/components/Table.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
 import Page from "/imports/ui2/components/Page.jsx";
@@ -44,7 +45,6 @@ const Container = styled.div`
   .invite-id {
     font-family: monospace;
     color: #666;
-    text-transform: uppercase;
   }
   .content-action {
     display: flex;
@@ -122,6 +122,9 @@ class CampaignsPage extends Component {
     if (page > 1) {
       FlowRouter.setQueryParams({ page: page - 1 });
     }
+  };
+  _getLink = inviteKey => {
+    return Meteor.absoluteUrl() + "?invite=" + inviteKey;
   };
   _handleDesignateClick = inviteId => ev => {
     ev.preventDefault();
@@ -223,17 +226,19 @@ class CampaignsPage extends Component {
                     </span>
                     <span className="actions">
                       {!invite.used ? (
-                        <Button
-                          className="small"
-                          onClick={this._handleCopyClick(invite._id)}
-                        >
-                          <FontAwesomeIcon icon="copy" />
-                          Copy link
-                        </Button>
+                        <CopyToClipboard text={this._getLink(invite.key)}>
+                          <Button
+                            className="small"
+                            onClick={this._handleCopyClick(invite._id)}
+                          >
+                            <FontAwesomeIcon icon="copy" />
+                            Copy link
+                          </Button>
+                        </CopyToClipboard>
                       ) : null}
                       <Button
                         className="small remove"
-                        onClick={this._handleRemoveClick(invite.key)}
+                        onClick={this._handleRemoveClick(invite._id)}
                       >
                         Remove invite
                       </Button>
