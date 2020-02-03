@@ -112,7 +112,7 @@ class CampaignsPage extends Component {
   componentDidUpdate(prevProps) {}
   componentDidMount() {
     this.setState({ loadingCount: true });
-    Meteor.call("feedback.queryCount", { query: {} }, (err, res) => {
+    Meteor.call("invites.queryCount", { query: {} }, (err, res) => {
       this.setState({ loadingCount: false, count: res });
     });
   }

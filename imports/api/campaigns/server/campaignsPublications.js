@@ -226,12 +226,15 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
   }
 });
 
-Meteor.publishComposite("invites.all", function() {
+Meteor.publishComposite("invites.all", function({ query, options }) {
   const currentUser = this.userId;
   if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
     return {
       find: function() {
-        return Invites.find({});
+        return Invites.find(
+          query || {},
+          options || { sort: { createdAt: -1 } }
+        );
       },
       children(invite) {
         let children = [];

@@ -16,8 +16,8 @@ export default withTracker(props => {
 
   const options = {
     sort: { createdAt: -1 },
-    // limit,
-    // skip,
+    limit,
+    skip,
     transform: invite => {
       if (invite.usedBy) {
         invite.user = Meteor.users.findOne(invite.usedBy);
@@ -26,28 +26,20 @@ export default withTracker(props => {
     }
   };
 
-  const invitesHandle = InvitesSubs.subscribe("invites.all");
+  const invitesHandle = InvitesSubs.subscribe("invites.all", {
+    query,
+    options
+  });
 
   const loading = !invitesHandle.ready();
   const invites = invitesHandle.ready()
-    ? Invites.find({}, options).fetch()
+    ? Invites.find(query, options).fetch()
     : [];
-
-  // let ticket = null;
-  // if (queryParams.id) {
-  //   const singleTicketHandle = InvitesSubs.subscribe("feedback.detail", {
-  //     feedbackId: queryParams.id
-  //   });
-  //   ticket = singleTicketHandle.ready()
-  //     ? Feedback.findOne(queryParams.id)
-  //     : null;
-  // }
 
   return {
     loading,
-    // page,
-    // limit,
+    page,
+    limit,
     invites
-    // ticket
   };
 })(InvitesPage);

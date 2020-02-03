@@ -874,6 +874,20 @@ export const campaignCounts = new ValidatedMethod({
   }
 });
 
+export const inviteQueryCount = new ValidatedMethod({
+  name: "invites.queryCount",
+  validate: new SimpleSchema({
+    query: {
+      type: Object,
+      blackbox: true,
+      optional: true
+    }
+  }).validator(),
+  run({ query }) {
+    return Invites.find(query || {}).count();
+  }
+});
+
 export const createInvite = new ValidatedMethod({
   name: "invites.new",
   validate() {},
