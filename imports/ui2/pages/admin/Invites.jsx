@@ -19,11 +19,11 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   position: relative;
-  overflow: auto;
   .new-person {
     position: absolute;
     bottom: 1rem;
     right: 2rem;
+    z-index: 9999;
     .button {
       background: #003399;
       border: 0;
@@ -95,6 +95,16 @@ const Container = styled.div`
   }
 `;
 
+const TableContainer = styled.div`
+  flex: 1 1 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  transition: opacity 0.1s linear;
+  table {
+    margin-bottom: 4rem;
+  }
+`;
+
 class CampaignsPage extends Component {
   constructor(props) {
     super(props);
@@ -157,119 +167,121 @@ class CampaignsPage extends Component {
           onNext={this._handleNext}
           onPrev={this._handlePrev}
         />
-        <Table compact>
-          <thead>
-            <tr>
-              <th>
-                <FormattedMessage
-                  id="app.admin.invites.invite_id"
-                  defaultMessage="Invite ID"
-                />
-              </th>
-              <th>
-                <FormattedMessage
-                  id="app.admin.invites.designated"
-                  defaultMessage="Designated"
-                />
-              </th>
-              <th className="fill">
-                <FormattedMessage
-                  id="app.admin.invites.available"
-                  defaultMessage="Available"
-                />
-              </th>
-              <th className="fill">
-                <FormattedMessage
-                  id="app.admin.invites.created"
-                  defaultMessage="Created"
-                />
-              </th>
-            </tr>
-          </thead>
-          {invites.map(invite => (
-            <tbody key={invite._id}>
-              <tr className={invite.used ? "used" : ""}>
-                <td className="small invite-id">{invite.key}</td>
-                <td>
-                  <span className="content-action">
-                    {invite.designated ? (
-                      <span className="content">
-                        <FontAwesomeIcon icon="check" />
-                      </span>
-                    ) : (
-                      <>
-                        <span className="content">
-                          <FontAwesomeIcon icon="ban" />
-                        </span>
-                        <span className="actions">
-                          <Button
-                            className="small"
-                            onClick={this._handleDesignateClick(invite._id)}
-                          >
-                            <FormattedMessage
-                              id="app.admin.invites.mark_designated"
-                              defaultMessage="Mark as designated"
-                            />
-                          </Button>
-                        </span>
-                      </>
-                    )}
-                  </span>
-                </td>
-                <td className="fill">
-                  <span className="content-action">
-                    <span className="content">
-                      <span className="icon">
-                        {invite.used ? (
-                          <FontAwesomeIcon icon="ban" />
-                        ) : (
-                          <FontAwesomeIcon icon="check" />
-                        )}
-                      </span>
-                      {invite.user ? (
-                        <span className="text">
-                          <FormattedMessage
-                            id="app.admin.invites.used_by"
-                            defaultMessage="Used by {name}"
-                            values={{ name: invite.user.name }}
-                          />
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="actions">
-                      {!invite.used ? (
-                        <CopyToClipboard text={this._getLink(invite.key)}>
-                          <Button
-                            className="small"
-                            onClick={this._handleCopyClick(invite._id)}
-                          >
-                            <FontAwesomeIcon icon="copy" />
-                            <FormattedMessage
-                              id="app.admin.invites.copy"
-                              defaultMessage="Copy link"
-                            />
-                          </Button>
-                        </CopyToClipboard>
-                      ) : null}
-                      <Button
-                        className="small remove"
-                        onClick={this._handleRemoveClick(invite._id)}
-                      >
-                        <FormattedMessage
-                          id="app.admin.invites.remove"
-                          defaultMessage="Remove"
-                        />
-                      </Button>
-                    </span>
-                  </span>
-                </td>
-                <td className="small">
-                  {moment(invite.createdAt).format("LLL")}
-                </td>
+        <TableContainer>
+          <Table compact>
+            <thead>
+              <tr>
+                <th>
+                  <FormattedMessage
+                    id="app.admin.invites.invite_id"
+                    defaultMessage="Invite ID"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
+                    id="app.admin.invites.designated"
+                    defaultMessage="Designated"
+                  />
+                </th>
+                <th className="fill">
+                  <FormattedMessage
+                    id="app.admin.invites.available"
+                    defaultMessage="Available"
+                  />
+                </th>
+                <th className="fill">
+                  <FormattedMessage
+                    id="app.admin.invites.created"
+                    defaultMessage="Created"
+                  />
+                </th>
               </tr>
-            </tbody>
-          ))}
-        </Table>
+            </thead>
+            {invites.map(invite => (
+              <tbody key={invite._id}>
+                <tr className={invite.used ? "used" : ""}>
+                  <td className="small invite-id">{invite.key}</td>
+                  <td>
+                    <span className="content-action">
+                      {invite.designated ? (
+                        <span className="content">
+                          <FontAwesomeIcon icon="check" />
+                        </span>
+                      ) : (
+                        <>
+                          <span className="content">
+                            <FontAwesomeIcon icon="ban" />
+                          </span>
+                          <span className="actions">
+                            <Button
+                              className="small"
+                              onClick={this._handleDesignateClick(invite._id)}
+                            >
+                              <FormattedMessage
+                                id="app.admin.invites.mark_designated"
+                                defaultMessage="Mark as designated"
+                              />
+                            </Button>
+                          </span>
+                        </>
+                      )}
+                    </span>
+                  </td>
+                  <td className="fill">
+                    <span className="content-action">
+                      <span className="content">
+                        <span className="icon">
+                          {invite.used ? (
+                            <FontAwesomeIcon icon="ban" />
+                          ) : (
+                            <FontAwesomeIcon icon="check" />
+                          )}
+                        </span>
+                        {invite.user ? (
+                          <span className="text">
+                            <FormattedMessage
+                              id="app.admin.invites.used_by"
+                              defaultMessage="Used by {name}"
+                              values={{ name: invite.user.name }}
+                            />
+                          </span>
+                        ) : null}
+                      </span>
+                      <span className="actions">
+                        {!invite.used ? (
+                          <CopyToClipboard text={this._getLink(invite.key)}>
+                            <Button
+                              className="small"
+                              onClick={this._handleCopyClick(invite._id)}
+                            >
+                              <FontAwesomeIcon icon="copy" />
+                              <FormattedMessage
+                                id="app.admin.invites.copy"
+                                defaultMessage="Copy link"
+                              />
+                            </Button>
+                          </CopyToClipboard>
+                        ) : null}
+                        <Button
+                          className="small remove"
+                          onClick={this._handleRemoveClick(invite._id)}
+                        >
+                          <FormattedMessage
+                            id="app.admin.invites.remove"
+                            defaultMessage="Remove"
+                          />
+                        </Button>
+                      </span>
+                    </span>
+                  </td>
+                  <td className="small">
+                    {moment(invite.createdAt).format("LLL")}
+                  </td>
+                </tr>
+              </tbody>
+            ))}
+          </Table>
+        </TableContainer>
         <div className="new-person">
           <Button onClick={this._handleNewClick}>
             +{" "}

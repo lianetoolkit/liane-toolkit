@@ -23,7 +23,6 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   position: relative;
-  overflow: auto;
   table {
     ul {
       margin: -1rem;
@@ -72,6 +71,13 @@ const Container = styled.div`
     }
   }
 }
+`;
+
+const TableContainer = styled.div`
+  flex: 1 1 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  transition: opacity 0.1s linear;
 `;
 
 class CampaignsPage extends Component {
@@ -129,92 +135,99 @@ class CampaignsPage extends Component {
           onNext={this._handleNext}
           onPrev={this._handlePrev}
         />
-        <Table compact>
-          <thead>
-            <tr>
-              <th>
-                <FormattedMessage
-                  id="app.admin.campaigns.name"
-                  defaultMessage="Name"
-                />
-              </th>
-              <th className="fill">
-                <FormattedMessage
-                  id="app.admin.campaigns.facebook_page"
-                  defaultMessage="Facebook Page"
-                />
-              </th>
-              <th>
-                <FormattedMessage
-                  id="app.admin.campaigns.country"
-                  defaultMessage="Country"
-                />
-              </th>
-              <th>
-                <FormattedMessage
-                  id="app.admin.campaigns.users"
-                  defaultMessage="Users"
-                />
-              </th>
-              <th>
-                <FormattedMessage
-                  id="app.admin.campaigns.created_label"
-                  defaultMessage="Created"
-                />
-              </th>
-            </tr>
-          </thead>
-          {campaigns.map(campaign => (
-            <tbody key={campaign._id} className={`campaign-${campaign.status}`}>
+        <TableContainer>
+          <Table compact>
+            <thead>
               <tr>
-                <td>{campaign.name}</td>
-                <td className="fill">
-                  <span className="content-action">
-                    <span className="content">{campaign.accounts[0].name}</span>
-                    <span className="actions">
-                      <Button
-                        className="small"
-                        onClick={this._handleSuspendClick(campaign)}
-                      >
-                        {campaign.status != "suspended" ? (
-                          <FormattedMessage
-                            id="app.admin.campaigns.suspend"
-                            defaultMessage="Suspend"
-                          />
-                        ) : (
-                          <FormattedMessage
-                            id="app.admin.campaigns.activate"
-                            defaultMessage="Activate"
-                          />
-                        )}
-                      </Button>
-                      <Button
-                        className="small remove"
-                        onClick={this._handleRemoveClick(campaign._id)}
-                      >
-                        <FormattedMessage
-                          id="app.admin.campaigns.remove"
-                          defaultMessage="Remove"
-                        />
-                      </Button>
-                    </span>
-                  </span>
-                </td>
-                <td className="small">{campaign.country}</td>
-                <td className="small">
-                  <ul>
-                    {campaign.users.map(user => (
-                      <li key={user._id}>{user.name}</li>
-                    ))}
-                  </ul>
-                </td>
-                <td className="small">
-                  {moment(campaign.createdAt).format("LLL")}
-                </td>
+                <th>
+                  <FormattedMessage
+                    id="app.admin.campaigns.name"
+                    defaultMessage="Name"
+                  />
+                </th>
+                <th className="fill">
+                  <FormattedMessage
+                    id="app.admin.campaigns.facebook_page"
+                    defaultMessage="Facebook Page"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
+                    id="app.admin.campaigns.country"
+                    defaultMessage="Country"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
+                    id="app.admin.campaigns.users"
+                    defaultMessage="Users"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
+                    id="app.admin.campaigns.created_label"
+                    defaultMessage="Created"
+                  />
+                </th>
               </tr>
-            </tbody>
-          ))}
-        </Table>
+            </thead>
+            {campaigns.map(campaign => (
+              <tbody
+                key={campaign._id}
+                className={`campaign-${campaign.status}`}
+              >
+                <tr>
+                  <td>{campaign.name}</td>
+                  <td className="fill">
+                    <span className="content-action">
+                      <span className="content">
+                        {campaign.accounts[0].name}
+                      </span>
+                      <span className="actions">
+                        <Button
+                          className="small"
+                          onClick={this._handleSuspendClick(campaign)}
+                        >
+                          {campaign.status != "suspended" ? (
+                            <FormattedMessage
+                              id="app.admin.campaigns.suspend"
+                              defaultMessage="Suspend"
+                            />
+                          ) : (
+                            <FormattedMessage
+                              id="app.admin.campaigns.activate"
+                              defaultMessage="Activate"
+                            />
+                          )}
+                        </Button>
+                        <Button
+                          className="small remove"
+                          onClick={this._handleRemoveClick(campaign._id)}
+                        >
+                          <FormattedMessage
+                            id="app.admin.campaigns.remove"
+                            defaultMessage="Remove"
+                          />
+                        </Button>
+                      </span>
+                    </span>
+                  </td>
+                  <td className="small">{campaign.country}</td>
+                  <td className="small">
+                    <ul>
+                      {campaign.users.map(user => (
+                        <li key={user._id}>{user.name}</li>
+                      ))}
+                    </ul>
+                  </td>
+                  <td className="small">
+                    {moment(campaign.createdAt).format("LLL")}
+                  </td>
+                </tr>
+              </tbody>
+            ))}
+          </Table>
+        </TableContainer>
       </Container>
     );
   }

@@ -78,6 +78,14 @@ const messages = {
   })
 };
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+`;
+
 const TicketLabel = styled.span`
   background: #777;
   color: #fff;
@@ -133,6 +141,13 @@ const TicketContainer = styled.div`
   .button {
     float: right;
   }
+`;
+
+const TableContainer = styled.div`
+  flex: 1 1 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  transition: opacity 0.1s linear;
 `;
 
 class SingleTicket extends Component {
@@ -264,7 +279,7 @@ class TicketsPage extends Component {
     const { intl, tickets, page, limit } = this.props;
     const { loadingCount, count } = this.state;
     return (
-      <Page.Content full compact>
+      <Container>
         <PagePaging
           skip={page - 1}
           limit={limit}
@@ -273,66 +288,70 @@ class TicketsPage extends Component {
           onNext={this._handleNext}
           onPrev={this._handlePrev}
         />
-        <Table compact>
-          <thead>
-            <tr>
-              <th>
-                <FormattedMessage
-                  id="app.admin.tickets.status_label"
-                  defaultMessage="Status"
-                />
-              </th>
-              <th>
-                <FormattedMessage
-                  id="app.admin.tickets.category_label"
-                  defaultMessage="Category"
-                />
-              </th>
-              <th className="fill">
-                <FormattedMessage
-                  id="app.admin.tickets.subject_label"
-                  defaultMessage="Subject"
-                />
-              </th>
-              <th>
-                <FormattedMessage
-                  id="app.admin.tickets.author_label"
-                  defaultMessage="Author"
-                />
-              </th>
-              <th>
-                <FormattedMessage
-                  id="app.admin.tickets.created_label"
-                  defaultMessage="Created"
-                />
-              </th>
-            </tr>
-          </thead>
-          {tickets.map(ticket => (
-            <tbody key={ticket._id}>
-              <tr className="interactive" onClick={this.openTicket(ticket)}>
-                <td className="small">
-                  {messages.statuses[ticket.status]
-                    ? intl.formatMessage(messages.statuses[ticket.status])
-                    : ticket.status}
-                </td>
-                <td className="small">
-                  <TicketLabel className={ticket.category}>
-                    {messages.categories[ticket.category]
-                      ? intl.formatMessage(messages.categories[ticket.category])
-                      : ticket.category}
-                  </TicketLabel>
-                </td>
-                <td className="fill">{ticket.subject}</td>
-                <td>{ticket.name}</td>
-                <td className="small">
-                  {moment(ticket.createdAt).format("LLL")}
-                </td>
+        <TableContainer>
+          <Table compact>
+            <thead>
+              <tr>
+                <th>
+                  <FormattedMessage
+                    id="app.admin.tickets.status_label"
+                    defaultMessage="Status"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
+                    id="app.admin.tickets.category_label"
+                    defaultMessage="Category"
+                  />
+                </th>
+                <th className="fill">
+                  <FormattedMessage
+                    id="app.admin.tickets.subject_label"
+                    defaultMessage="Subject"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
+                    id="app.admin.tickets.author_label"
+                    defaultMessage="Author"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
+                    id="app.admin.tickets.created_label"
+                    defaultMessage="Created"
+                  />
+                </th>
               </tr>
-            </tbody>
-          ))}
-        </Table>
-      </Page.Content>
+            </thead>
+            {tickets.map(ticket => (
+              <tbody key={ticket._id}>
+                <tr className="interactive" onClick={this.openTicket(ticket)}>
+                  <td className="small">
+                    {messages.statuses[ticket.status]
+                      ? intl.formatMessage(messages.statuses[ticket.status])
+                      : ticket.status}
+                  </td>
+                  <td className="small">
+                    <TicketLabel className={ticket.category}>
+                      {messages.categories[ticket.category]
+                        ? intl.formatMessage(
+                            messages.categories[ticket.category]
+                          )
+                        : ticket.category}
+                    </TicketLabel>
+                  </td>
+                  <td className="fill">{ticket.subject}</td>
+                  <td>{ticket.name}</td>
+                  <td className="small">
+                    {moment(ticket.createdAt).format("LLL")}
+                  </td>
+                </tr>
+              </tbody>
+            ))}
+          </Table>
+        </TableContainer>
+      </Container>
     );
   }
 }
