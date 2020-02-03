@@ -364,7 +364,8 @@ export const campaignsRemove = new ValidatedMethod({
       throw new Meteor.Error(401, "This campaign does not exist");
     }
 
-    const allowed = campaign.creatorId == userId;
+    const allowed =
+      campaign.creatorId == userId || Roles.userIsInRole(userId, ["admin"]);
 
     if (!allowed) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -871,6 +872,20 @@ export const campaignCounts = new ValidatedMethod({
     }).count();
 
     return counts;
+  }
+});
+
+export const campaignQueryCount = new ValidatedMethod({
+  name: "campaigns.queryCount",
+  validate: new SimpleSchema({
+    query: {
+      type: Object,
+      blackbox: true,
+      optional: true
+    }
+  }).validator(),
+  run({ query }) {
+    return Campaigns.find(query || {}).count();
   }
 });
 

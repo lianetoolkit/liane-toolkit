@@ -18,8 +18,8 @@ export default withTracker(props => {
 
   const options = {
     sort: { createdAt: -1 },
-    // limit,
-    // skip,
+    limit,
+    skip,
     transform: campaign => {
       campaign.jobs = Jobs.find({
         "data.campaignId": campaign._id,
@@ -44,11 +44,14 @@ export default withTracker(props => {
     }
   };
 
-  const campaignsHandle = CampaignsSubs.subscribe("campaigns.all");
+  const campaignsHandle = CampaignsSubs.subscribe("campaigns.all", {
+    query,
+    options
+  });
 
   const loading = !campaignsHandle.ready();
   const campaigns = campaignsHandle.ready()
-    ? Campaigns.find({}, options).fetch()
+    ? Campaigns.find(query, options).fetch()
     : [];
 
   // let ticket = null;
@@ -63,9 +66,8 @@ export default withTracker(props => {
 
   return {
     loading,
-    // page,
-    // limit,
+    page,
+    limit,
     campaigns
-    // ticket
   };
 })(CampaignsPage);

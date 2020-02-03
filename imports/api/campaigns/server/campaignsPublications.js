@@ -10,15 +10,15 @@ import { Jobs } from "/imports/api/jobs/jobs.js";
 
 import _ from "underscore";
 
-Meteor.publishComposite("campaigns.all", function() {
+Meteor.publishComposite("campaigns.all", function({ query, options }) {
   this.unblock();
   const currentUser = this.userId;
   if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
     return {
       find: function() {
         return Campaigns.find(
-          {},
-          {
+          query || {},
+          options || {
             sort: { createdAt: -1 }
           }
         );

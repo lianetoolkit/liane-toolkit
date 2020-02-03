@@ -15,203 +15,63 @@ import Button from "/imports/ui2/components/Button.jsx";
 import Page from "/imports/ui2/components/Page.jsx";
 import PagePaging from "/imports/ui2/components/PagePaging.jsx";
 
-const messages = {
-  general: defineMessages({
-    markResolved: {
-      id: "app.admin.tickets.mark_resolved",
-      defaultMessage: "Mark as resolved"
-    },
-    markProgress: {
-      id: "app.admin.tickets.mark_progress",
-      defaultMessage: 'Move to "in progress"'
-    }
-  }),
-  statuses: defineMessages({
-    new: {
-      id: "app.admin.tickets.status.new",
-      defaultMessage: "New"
-    },
-    progress: {
-      id: "app.admin.tickets.status.in_progress",
-      defaultMessage: "In progress"
-    },
-    resolved: {
-      id: "app.admin.tickets.status.resolved",
-      defaultMessage: "Resolved"
-    }
-  }),
-  categories: defineMessages({
-    suggestion: {
-      id: "app.admin.tickets.categories.suggestion",
-      defaultMessage: "Suggestion"
-    },
-    bug: {
-      id: "app.admin.tickets.categories.bug",
-      defaultMessage: "Bug"
-    },
-    question: {
-      id: "app.admin.tickets.categories.question",
-      defaultMessage: "Question"
-    },
-    other: {
-      id: "app.admin.tickets.categories.other",
-      defaultMessage: "Other"
-    }
-  }),
-  meta: defineMessages({
-    url: {
-      id: "app.admin.tickets.meta.url",
-      defaultMessage: "URL"
-    },
-    browser: {
-      id: "app.admin.tickets.meta.browser",
-      defaultMessage: "Browser"
-    },
-    os: {
-      id: "app.admin.tickets.meta.os",
-      defaultMessage: "OS"
-    },
-    version: {
-      id: "app.admin.tickets.meta.version",
-      defaultMessage: "Version"
-    }
-  })
-};
+const messages = {};
 
-const TicketLabel = styled.span`
-  background: #777;
-  color: #fff;
-  font-size: 0.8em;
-  padding: 0.2rem 0.4rem;
-  border-radius: 7px;
-  &.bug {
-    background: #ff3e3e;
-  }
-  &.suggestion {
-    background: #46ff6f;
-  }
-  &.question {
-    background: #467aff;
-  }
-`;
-
-const TicketContainer = styled.div`
-  h2 {
-    margin: 0.5rem 0;
-  }
-  .author {
-    font-style: italic;
-    font-size: 0.8em;
-    border-bottom: 1px solid #eee;
-    color: #999;
-    padding-bottom: 0.5rem;
-  }
-  table.context {
-    border: 1px solid #eee;
-    border-radius: 7px;
-    font-size: 0.8em;
-    width: 100%;
-    border-spacing: 0;
-    margin: 0 0 1rem;
-    th,
-    td {
-      text-align: left;
-      border-right: 1px solid #eee;
-      border-bottom: 1px solid #eee;
-      padding: 0.5rem
-      &:last-child {
-        border-right: 0;
-      }
-    }
-    tr:last-child {
-      th,
-      td {
-        border-bottom: 0;
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  table {
+    ul {
+      margin: -1rem;
+      padding: 0;
+      list-style: none;
+      font-size: 0.9em;
+      li {
+        padding: 0.5rem 1rem;
+        margin: 0;
+        border-bottom: 1px solid #f7f7f7;
+        &:last-child {
+          border-bottom: 0;
+        }
       }
     }
   }
-  .button {
-    float: right;
-  }
-`;
-
-class SingleTicket extends Component {
-  _buttonLabel = () => {
-    const { intl, ticket } = this.props;
-    if (ticket.status == "progress") {
-      return intl.formatMessage(messages.general.markResolved);
-    } else {
-      return intl.formatMessage(messages.general.markProgress);
-    }
-  };
-  _handleClick = () => {
-    const { ticket } = this.props;
-    const status = ticket.status == "progress" ? "resolved" : "progress";
-    Meteor.call("feedback.updateStatus", {
-      id: ticket._id,
-      status
-    });
-  };
-  render() {
-    const { intl, ticket } = this.props;
-    let context = [];
-    for (let key in ticket.context) {
-      context.push({
-        key,
-        value: ticket.context[key]
-      });
-    }
-    return (
-      <TicketContainer>
-        <TicketLabel className={ticket.category}>
-          {messages.categories[ticket.category]
-            ? intl.formatMessage(messages.categories[ticket.category])
-            : ticket.category}
-        </TicketLabel>
-        <h2>{ticket.subject}</h2>
-        <p className="author">
-          {ticket.name} &lt;{ticket.email}&gt;
-        </p>
-        <p>{ticket.message}</p>
-        <table className="context">
-          <tbody>
-            {context.map(item => (
-              <tr key={item.key}>
-                <th>
-                  {messages.meta[item.key]
-                    ? intl.formatMessage(messages.meta[item.key])
-                    : item.key}
-                </th>
-                <td>{item.value}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <Button primary onClick={this._handleClick}>
-          {this._buttonLabel()}
-        </Button>
-        <p>
-          <strong>
-            <FormattedMessage
-              id="app.admin.tickets.current_status_label"
-              defaultMessage="Current status"
-            />
-          </strong>
-          :{" "}
-          {messages.statuses[ticket.status]
-            ? intl.formatMessage(messages.statuses[ticket.status])
-            : ticket.status}
-        </p>
-      </TicketContainer>
-    );
+  .campaign-suspended {
+    background: #f7f7f7;
+    opacity: 0.8;
   }
 }
-
-SingleTicket.propTypes = {
-  intl: intlShape.isRequired
-};
-
-const SingleTicketIntl = injectIntl(SingleTicket);
+.content-action {
+  display: flex;
+  text-align: left;
+  .content {
+    flex: 1 1 100%;
+    font-size: 0.8em;
+    display: flex;
+    align-items: center;
+  }
+  .text {
+    color: #999;
+  }
+  .actions {
+    flex: 0 0 auto;
+    font-size: 0.9em;
+    a {
+      color: #63c;
+      &.remove {
+        color: red;
+        border-color: red;
+      }
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+}
+`;
 
 class CampaignsPage extends Component {
   constructor(props) {
@@ -222,27 +82,12 @@ class CampaignsPage extends Component {
       count: 0
     };
   }
-  componentDidUpdate(prevProps) {
-    if (JSON.stringify(prevProps.ticket) != JSON.stringify(this.props.ticket)) {
-      if (this.props.ticket) {
-        modalStore.set(<SingleTicketIntl ticket={this.props.ticket} />, () => {
-          FlowRouter.setQueryParams({ id: null });
-          return true;
-        });
-      }
-    }
-  }
+  componentDidUpdate(prevProps) {}
   componentDidMount() {
     this.setState({ loadingCount: true });
-    Meteor.call("feedback.queryCount", { query: {} }, (err, res) => {
+    Meteor.call("campaigns.queryCount", { query: {} }, (err, res) => {
       this.setState({ loadingCount: false, count: res });
     });
-    if (this.props.ticket) {
-      modalStore.set(<SingleTicketIntl ticket={this.props.ticket} />, () => {
-        FlowRouter.setQueryParams({ id: null });
-        return true;
-      });
-    }
   }
   _handleNext = () => {
     const { page, limit } = this.props;
@@ -257,16 +102,24 @@ class CampaignsPage extends Component {
       FlowRouter.setQueryParams({ page: page - 1 });
     }
   };
-  openTicket = ticket => () => {
-    FlowRouter.setQueryParams({ id: ticket._id });
+  _handleSuspendClick = campaign => ev => {
+    ev.preventDefault();
+    let suspend = !(campaign.status == "suspended");
+    if (confirm("Are you sure?")) {
+      Meteor.call("campaigns.suspend", { campaignId: campaign._id, suspend });
+    }
+  };
+  _handleRemoveClick = campaignId => ev => {
+    ev.preventDefault();
+    if (confirm("Are you sure?")) {
+      Meteor.call("campaigns.remove", { campaignId });
+    }
   };
   render() {
     const { intl, campaigns, page, limit } = this.props;
     const { loadingCount, count } = this.state;
-    console.log(campaigns);
-    return null;
     return (
-      <Page.Content full compact>
+      <Container>
         <PagePaging
           skip={page - 1}
           limit={limit}
@@ -280,61 +133,88 @@ class CampaignsPage extends Component {
             <tr>
               <th>
                 <FormattedMessage
-                  id="app.admin.tickets.status_label"
-                  defaultMessage="Status"
-                />
-              </th>
-              <th>
-                <FormattedMessage
-                  id="app.admin.tickets.category_label"
-                  defaultMessage="Category"
+                  id="app.admin.campaigns.name"
+                  defaultMessage="Name"
                 />
               </th>
               <th className="fill">
                 <FormattedMessage
-                  id="app.admin.tickets.subject_label"
-                  defaultMessage="Subject"
+                  id="app.admin.campaigns.facebook_page"
+                  defaultMessage="Facebook Page"
                 />
               </th>
               <th>
                 <FormattedMessage
-                  id="app.admin.tickets.author_label"
-                  defaultMessage="Author"
+                  id="app.admin.campaigns.country"
+                  defaultMessage="Country"
                 />
               </th>
               <th>
                 <FormattedMessage
-                  id="app.admin.tickets.created_label"
+                  id="app.admin.campaigns.users"
+                  defaultMessage="Users"
+                />
+              </th>
+              <th>
+                <FormattedMessage
+                  id="app.admin.campaigns.created_label"
                   defaultMessage="Created"
                 />
               </th>
             </tr>
           </thead>
-          {tickets.map(ticket => (
-            <tbody key={ticket._id}>
-              <tr className="interactive" onClick={this.openTicket(ticket)}>
+          {campaigns.map(campaign => (
+            <tbody key={campaign._id} className={`campaign-${campaign.status}`}>
+              <tr>
+                <td>{campaign.name}</td>
+                <td className="fill">
+                  <span className="content-action">
+                    <span className="content">{campaign.accounts[0].name}</span>
+                    <span className="actions">
+                      <Button
+                        className="small"
+                        onClick={this._handleSuspendClick(campaign)}
+                      >
+                        {campaign.status != "suspended" ? (
+                          <FormattedMessage
+                            id="app.admin.campaigns.suspend"
+                            defaultMessage="Suspend"
+                          />
+                        ) : (
+                          <FormattedMessage
+                            id="app.admin.campaigns.activate"
+                            defaultMessage="Activate"
+                          />
+                        )}
+                      </Button>
+                      <Button
+                        className="small remove"
+                        onClick={this._handleRemoveClick(campaign._id)}
+                      >
+                        <FormattedMessage
+                          id="app.admin.campaigns.remove"
+                          defaultMessage="Remove"
+                        />
+                      </Button>
+                    </span>
+                  </span>
+                </td>
+                <td className="small">{campaign.country}</td>
                 <td className="small">
-                  {messages.statuses[ticket.status]
-                    ? intl.formatMessage(messages.statuses[ticket.status])
-                    : ticket.status}
+                  <ul>
+                    {campaign.users.map(user => (
+                      <li key={user._id}>{user.name}</li>
+                    ))}
+                  </ul>
                 </td>
                 <td className="small">
-                  <TicketLabel className={ticket.category}>
-                    {messages.categories[ticket.category]
-                      ? intl.formatMessage(messages.categories[ticket.category])
-                      : ticket.category}
-                  </TicketLabel>
-                </td>
-                <td className="fill">{ticket.subject}</td>
-                <td>{ticket.name}</td>
-                <td className="small">
-                  {moment(ticket.createdAt).format("LLL")}
+                  {moment(campaign.createdAt).format("LLL")}
                 </td>
               </tr>
             </tbody>
           ))}
         </Table>
-      </Page.Content>
+      </Container>
     );
   }
 }

@@ -332,9 +332,37 @@ const CampaignsHelpers = {
     //     });
     //   }
     // }
-    if (campaign.accounts && campaign.accounts.length) {
+
+    // health check job
+    const healthCheckJob = Jobs.findOne({
+      type: "campaigns.healthCheck",
+      "data.campaignId": campaignId
+    });
+    if (healthCheckJob) {
+      if (
+        healthCheckJob.status == "failed" ||
+        healthCheckJob.status == "cancelled"
+      ) {
+        Jobs.getJob(healthCheckJob._id).restart();
+      } else if (healthCheckJob.status == "waiting") {
+        Jobs.getJob(healthCheckJob._id).ready({ time: Jobs.foreverDate });
+      }
+    } else {
+      JobsHelpers.addJob({
+        jobType: "campaigns.healthCheck",
+        jobData: {
+          campaignId
+        }
+      });
+    }
+
+    let accountsIds = _.pluck(campaign.accounts, "facebookId");
+    if (campaign.facebookAccount) {
+      accountsIds.push(campaign.facebookAccount.facebookId);
+    }
+    if (accountsIds.length) {
       const accounts = FacebookAccounts.find({
-        facebookId: { $in: _.pluck(campaign.accounts, "facebookId") }
+        facebookId: { $in: accountsIds }
       }).fetch();
       for (const account of accounts) {
         this.refreshAccountJob({
@@ -342,11 +370,11 @@ const CampaignsHelpers = {
           facebookAccountId: account.facebookId,
           type: "entries"
         });
-        this.refreshAccountJob({
-          campaignId,
-          facebookAccountId: account.facebookId,
-          type: "audiences"
-        });
+        // this.refreshAccountJob({
+        //   campaignId,
+        //   facebookAccountId: account.facebookId,
+        //   type: "audiences"
+        // });
       }
     }
   },
@@ -362,9 +390,10 @@ const CampaignsHelpers = {
       throw new Meteor.Error(401, "This campaign is suspended");
     }
 
-    const account = _.findWhere(campaign.accounts, {
-      facebookId: facebookAccountId
-    });
+    const account =
+      _.findWhere(campaign.accounts, {
+        facebookId: facebookAccountId
+      }) || campaign.facebookAccount;
 
     let jobType, jobData;
     switch (type) {

@@ -1,10 +1,5 @@
 import React, { Component } from "react";
-import {
-  injectIntl,
-  intlShape,
-  defineMessages,
-  FormattedMessage
-} from "react-intl";
+import { injectIntl, intlShape, FormattedMessage } from "react-intl";
 import styled from "styled-components";
 import moment from "moment";
 
@@ -17,8 +12,6 @@ import Table from "/imports/ui2/components/Table.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
 import Page from "/imports/ui2/components/Page.jsx";
 import PagePaging from "/imports/ui2/components/PagePaging.jsx";
-
-const messages = defineMessages({});
 
 const Container = styled.div`
   display: flex;
