@@ -172,8 +172,8 @@ Invites.schema = new SimpleSchema({
     }
   },
   designated: {
-    type: Boolean,
-    defaultValue: false
+    type: String,
+    optional: true
   },
   used: {
     type: Boolean,

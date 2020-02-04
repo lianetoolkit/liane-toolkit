@@ -25,7 +25,7 @@ export default withTracker(props => {
         "data.campaignId": campaign._id,
         type: {
           $in: [
-            "audiences.updateAccountAudience",
+            "campaigns.healthCheck",
             "entries.updateAccountEntries",
             "entries.refetchAccountEntries",
             "people.updateFBUsers"
@@ -53,6 +53,8 @@ export default withTracker(props => {
   const campaigns = campaignsHandle.ready()
     ? Campaigns.find(query, options).fetch()
     : [];
+
+  Jobs.find();
 
   // let ticket = null;
   // if (queryParams.id) {

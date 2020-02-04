@@ -93,6 +93,23 @@ const Container = styled.div`
       margin-right: 0.25rem;
     }
   }
+  .designate-form {
+    margin -0.5rem 0;
+    input {
+      font-size: 0.8rem;
+      width: 240px;
+      padding: 0.5rem;
+      margin: 0;
+      &.filled {
+        border-color: #f7f7f7;
+      }
+      &:hover,
+      &:active,
+      &:focus {
+        border-color: #ddd;
+      }
+    }
+  }
 `;
 
 const TableContainer = styled.div`
@@ -110,7 +127,8 @@ class CampaignsPage extends Component {
     super(props);
     this.state = {
       loadingCount: false,
-      count: 0
+      count: 0,
+      designations: {}
     };
   }
   componentDidUpdate(prevProps) {}
@@ -139,6 +157,21 @@ class CampaignsPage extends Component {
   _getLink = inviteKey => {
     return Meteor.absoluteUrl() + "?invite=" + inviteKey;
   };
+  _handleDesignateForm = inviteId => ev => {
+    ev.preventDefault();
+    const designated = this.state.designations[inviteId];
+    if (typeof designated == "string") {
+      Meteor.call("invites.designate", { inviteId, designated });
+    }
+  };
+  _handleDesignateChange = inviteId => ({ target }) => {
+    this.setState({
+      designations: {
+        ...this.state.designations,
+        [inviteId]: target.value
+      }
+    });
+  };
   _handleDesignateClick = inviteId => ev => {
     ev.preventDefault();
     Meteor.call("invites.designate", { inviteId });
@@ -156,7 +189,7 @@ class CampaignsPage extends Component {
   };
   render() {
     const { intl, invites, page, limit } = this.props;
-    const { loadingCount, count } = this.state;
+    const { designations, loadingCount, count } = this.state;
     return (
       <Container>
         <PagePaging
@@ -203,7 +236,30 @@ class CampaignsPage extends Component {
                   <td className="small invite-id">{invite.key}</td>
                   <td>
                     <span className="content-action">
-                      {invite.designated ? (
+                      <span className="content">
+                        <FontAwesomeIcon
+                          icon={invite.designated ? "check" : "ban"}
+                        />
+                      </span>
+                      <span className="actions">
+                        <form
+                          className="designate-form"
+                          onSubmit={this._handleDesignateForm(invite._id)}
+                        >
+                          <input
+                            className={invite.designated ? "filled" : ""}
+                            type="text"
+                            onChange={this._handleDesignateChange(invite._id)}
+                            placeholder="Type a name or email and press enter"
+                            value={
+                              typeof designations[invite._id] == "string"
+                                ? designations[invite._id]
+                                : invite.designated
+                            }
+                          />
+                        </form>
+                      </span>
+                      {/* {invite.designated ? (
                         <span className="content">
                           <FontAwesomeIcon icon="check" />
                         </span>
@@ -224,7 +280,7 @@ class CampaignsPage extends Component {
                             </Button>
                           </span>
                         </>
-                      )}
+                      )} */}
                     </span>
                   </td>
                   <td className="fill">

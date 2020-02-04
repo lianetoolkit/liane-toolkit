@@ -30,7 +30,7 @@ Meteor.publishComposite("campaigns.all", function({ query, options }) {
               "data.campaignId": campaign._id,
               type: {
                 $in: [
-                  "audiences.updateAccountAudience",
+                  "campaigns.healthCheck",
                   "entries.updateAccountEntries",
                   "entries.refetchAccountEntries",
                   "people.updateFBUsers"

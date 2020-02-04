@@ -320,20 +320,7 @@ const CampaignsHelpers = {
       { $pull: { audienceAccounts: audienceAccount } }
     );
   },
-  refreshCampaignJobs({ campaignId }) {
-    check(campaignId, String);
-    const campaign = Campaigns.findOne(campaignId);
-    // if (campaign.audienceAccounts && campaign.audienceAccounts.length) {
-    //   for (const account of campaign.audienceAccounts) {
-    //     this.refreshAccountJob({
-    //       campaignId,
-    //       facebookAccountId: account.facebookId,
-    //       type: "audiences"
-    //     });
-    //   }
-    // }
-
-    // health check job
+  refreshHealthCheck({ campaignId }) {
     const healthCheckJob = Jobs.findOne({
       type: "campaigns.healthCheck",
       "data.campaignId": campaignId
@@ -355,6 +342,22 @@ const CampaignsHelpers = {
         }
       });
     }
+  },
+  refreshCampaignJobs({ campaignId }) {
+    check(campaignId, String);
+    const campaign = Campaigns.findOne(campaignId);
+    // if (campaign.audienceAccounts && campaign.audienceAccounts.length) {
+    //   for (const account of campaign.audienceAccounts) {
+    //     this.refreshAccountJob({
+    //       campaignId,
+    //       facebookAccountId: account.facebookId,
+    //       type: "audiences"
+    //     });
+    //   }
+    // }
+
+    // health check job
+    this.refreshHealthCheck({ campaignId });
 
     let accountsIds = _.pluck(campaign.accounts, "facebookId");
     if (campaign.facebookAccount) {

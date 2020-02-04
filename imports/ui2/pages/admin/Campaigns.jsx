@@ -8,6 +8,8 @@ import {
 import styled from "styled-components";
 import moment from "moment";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { modalStore } from "/imports/ui2/containers/Modal.jsx";
 
 import Table from "/imports/ui2/components/Table.jsx";
@@ -18,6 +20,11 @@ import PagePaging from "/imports/ui2/components/PagePaging.jsx";
 const messages = {};
 
 const Container = styled.div`
+  @keyframes rotate {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -43,34 +50,54 @@ const Container = styled.div`
     background: #f7f7f7;
     opacity: 0.8;
   }
-}
-.content-action {
-  display: flex;
-  text-align: left;
-  .content {
-    flex: 1 1 100%;
-    font-size: 0.8em;
+  .content-action {
     display: flex;
-    align-items: center;
-  }
-  .text {
-    color: #999;
-  }
-  .actions {
-    flex: 0 0 auto;
-    font-size: 0.9em;
-    a {
-      color: #63c;
-      &.remove {
+    text-align: left;
+    .content {
+      flex: 1 1 100%;
+      font-size: 0.8em;
+      display: flex;
+      align-items: center;
+    }
+    .text {
+      color: #999;
+    }
+    .actions {
+      flex: 0 0 auto;
+      font-size: 0.9em;
+      a {
+        color: #63c;
+        &.remove {
+          color: red;
+          border-color: red;
+        }
+        &:hover {
+          color: #fff;
+        }
+      }
+    }
+    .fb-token-button {
+      background: transparent;
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+      border-color: #999;
+      color: #999;
+      &.healthy {
+        color: green;
+        border-color: green;
+      }
+      &.unhealthy {
         color: red;
         border-color: red;
       }
-      &:hover {
-        color: #fff;
+      svg {
+        margin-right: 0.25rem;
+      }
+      .fa-spinner {
+        animation: rotate 2s linear infinite;
       }
     }
   }
-}
 `;
 
 const TableContainer = styled.div`
@@ -121,6 +148,49 @@ class CampaignsPage extends Component {
     if (confirm("Are you sure?")) {
       Meteor.call("campaigns.remove", { campaignId });
     }
+  };
+  _getHealthStatus = campaign => {
+    const job = campaign.jobs.find(job => job.type == "campaigns.healthCheck");
+    if (!job) return false;
+    switch (job.status) {
+      case "waiting":
+        return "healthy";
+      case "running":
+      case "ready":
+        return "pending";
+      default:
+        return "unhealthy";
+    }
+  };
+  _getHealthJobIcon = campaign => {
+    const status = this._getHealthStatus(campaign);
+    switch (status) {
+      case "healthy":
+        return "check";
+      case "pending":
+        return "spinner";
+      case "unhealthy":
+        return "ban";
+      default:
+        return "question";
+    }
+  };
+  _getHealthJobLabel = campaign => {
+    const status = this._getHealthStatus(campaign);
+    switch (status) {
+      case "healthy":
+        return "Facebook token is healthy";
+      case "pending":
+        return "Checking Facebook token";
+      case "unhealthy":
+        return "Facebook token is not valid";
+      default:
+        return "Not available";
+    }
+  };
+  _handleHealthCheckClick = campaignId => ev => {
+    ev.preventDefault();
+    Meteor.call("campaigns.refreshHealthCheck", { campaignId });
   };
   render() {
     const { intl, campaigns, page, limit } = this.props;
@@ -182,6 +252,21 @@ class CampaignsPage extends Component {
                     <span className="content-action">
                       <span className="content">
                         {campaign.accounts[0].name}
+                        <Button
+                          className={`small fb-token-button ${this._getHealthStatus(
+                            campaign
+                          )}`}
+                          onClick={this._handleHealthCheckClick(campaign._id)}
+                        >
+                          <FontAwesomeIcon
+                            icon={this._getHealthJobIcon(campaign)}
+                          />
+                          {this._getHealthJobLabel(campaign)}
+                          {/* <FormattedMessage
+                            id="app.admin.campaigns.remove"
+                            defaultMessage="Remove"
+                          /> */}
+                        </Button>
                       </span>
                       <span className="actions">
                         <Button
