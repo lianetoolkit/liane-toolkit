@@ -54,17 +54,8 @@ export default withTracker(props => {
     ? Campaigns.find(query, options).fetch()
     : [];
 
-  Jobs.find();
-
-  // let ticket = null;
-  // if (queryParams.id) {
-  //   const singleTicketHandle = CampaignsSubs.subscribe("feedback.detail", {
-  //     feedbackId: queryParams.id
-  //   });
-  //   ticket = singleTicketHandle.ready()
-  //     ? Feedback.findOne(queryParams.id)
-  //     : null;
-  // }
+  // Fetch jobs for reactive behavior
+  const jobs = Jobs.find().fetch();
 
   return {
     loading,

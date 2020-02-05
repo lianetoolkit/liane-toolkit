@@ -8,6 +8,7 @@ import {
 import styled from "styled-components";
 import moment from "moment";
 
+import ReactTooltip from "react-tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { modalStore } from "/imports/ui2/containers/Modal.jsx";
@@ -17,7 +18,28 @@ import Button from "/imports/ui2/components/Button.jsx";
 import Page from "/imports/ui2/components/Page.jsx";
 import PagePaging from "/imports/ui2/components/PagePaging.jsx";
 
-const messages = {};
+const messages = defineMessages({
+  refetchFBToken: {
+    id: "app.admin.campaigns.refetch_fb_token",
+    defaultMessage: "Refetch Facebook Token"
+  },
+  fbTokenHealthy: {
+    id: "app.admin.campaigns.fb_token_label.healthy",
+    defaultMessage: "Facebook token is healthy"
+  },
+  fbTokenPending: {
+    id: "app.admin.campaigns.fb_token_label.pending",
+    defaultMessage: "Checking facebook token"
+  },
+  fbTokenUnhealthy: {
+    id: "app.admin.campaigns.fb_token_label.unhealthy",
+    defaultMessage: "Facebook token is not valid"
+  },
+  fbTokenUndefined: {
+    id: "app.admin.campaigns.fb_token_label.undefined",
+    defaultMessage: "Not available"
+  }
+});
 
 const Container = styled.div`
   @keyframes rotate {
@@ -176,16 +198,17 @@ class CampaignsPage extends Component {
     }
   };
   _getHealthJobLabel = campaign => {
+    const { intl } = this.props;
     const status = this._getHealthStatus(campaign);
     switch (status) {
       case "healthy":
-        return "Facebook token is healthy";
+        return intl.formatMessage(messages.fbTokenHealthy);
       case "pending":
-        return "Checking Facebook token";
+        return intl.formatMessage(messages.fbTokenPending);
       case "unhealthy":
-        return "Facebook token is not valid";
+        return intl.formatMessage(messages.fbTokenUnhealthy);
       default:
-        return "Not available";
+        return intl.formatMessage(messages.fbTokenUndefined);
     }
   };
   _handleHealthCheckClick = campaignId => ev => {
@@ -252,21 +275,26 @@ class CampaignsPage extends Component {
                     <span className="content-action">
                       <span className="content">
                         {campaign.accounts[0].name}
-                        <Button
-                          className={`small fb-token-button ${this._getHealthStatus(
-                            campaign
-                          )}`}
-                          onClick={this._handleHealthCheckClick(campaign._id)}
+                        <span
+                          data-tip={intl.formatMessage(messages.refetchFBToken)}
+                          data-for={`fb-token-${campaign._id}`}
                         >
-                          <FontAwesomeIcon
-                            icon={this._getHealthJobIcon(campaign)}
-                          />
-                          {this._getHealthJobLabel(campaign)}
-                          {/* <FormattedMessage
-                            id="app.admin.campaigns.remove"
-                            defaultMessage="Remove"
-                          /> */}
-                        </Button>
+                          <Button
+                            className={`small fb-token-button ${this._getHealthStatus(
+                              campaign
+                            )}`}
+                            onClick={this._handleHealthCheckClick(campaign._id)}
+                          >
+                            <FontAwesomeIcon
+                              icon={this._getHealthJobIcon(campaign)}
+                            />
+                            {this._getHealthJobLabel(campaign)}
+                          </Button>
+                        </span>
+                        <ReactTooltip
+                          id={`fb-token-${campaign._id}`}
+                          effect="solid"
+                        />
                       </span>
                       <span className="actions">
                         <Button
