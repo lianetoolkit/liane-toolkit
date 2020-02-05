@@ -67,43 +67,17 @@ const Container = styled.div`
         }
       }
     }
-  }
-  .campaign-suspended {
-    background: #f7f7f7;
-    opacity: 0.8;
-  }
-  .content-action {
-    display: flex;
-    text-align: left;
-    .content {
-      flex: 1 1 100%;
+    td.compact {
       font-size: 0.8em;
-      display: flex;
-      align-items: center;
-    }
-    .text {
-      color: #999;
-    }
-    .actions {
-      flex: 0 0 auto;
-      font-size: 0.9em;
-      a {
-        color: #63c;
-        &.remove {
-          color: red;
-          border-color: red;
-        }
-        &:hover {
-          color: #fff;
-        }
-      }
     }
     .fb-token-button {
+      margin: 0;
       background: transparent;
       font-weight: 600;
       padding: 0.25rem 0.5rem;
       border-color: #999;
       color: #999;
+      font-size: 0.7em;
       &.healthy {
         color: green;
         border-color: green;
@@ -118,7 +92,30 @@ const Container = styled.div`
       .fa-spinner {
         animation: rotate 2s linear infinite;
       }
+      &:hover {
+        background-color: #333;
+      }
     }
+    a.small {
+      font-size: 0.7em;
+      color: #63c;
+      margin: 0 auto;
+      margin-right: 0.5rem;
+      &:last-child {
+        margin-right: 0;
+      }
+      &.remove {
+        color: red;
+        border-color: red;
+      }
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+  .campaign-suspended {
+    background: #f7f7f7;
+    opacity: 0.8;
   }
 `;
 
@@ -238,7 +235,7 @@ class CampaignsPage extends Component {
                     defaultMessage="Name"
                   />
                 </th>
-                <th className="fill">
+                <th className="fill" colspan="3">
                   <FormattedMessage
                     id="app.admin.campaigns.facebook_page"
                     defaultMessage="Facebook Page"
@@ -271,59 +268,55 @@ class CampaignsPage extends Component {
               >
                 <tr>
                   <td>{campaign.name}</td>
-                  <td className="fill">
-                    <span className="content-action">
-                      <span className="content">
-                        {campaign.accounts[0].name}
-                        <span
-                          data-tip={intl.formatMessage(messages.refetchFBToken)}
-                          data-for={`fb-token-${campaign._id}`}
-                        >
-                          <Button
-                            className={`small fb-token-button ${this._getHealthStatus(
-                              campaign
-                            )}`}
-                            onClick={this._handleHealthCheckClick(campaign._id)}
-                          >
-                            <FontAwesomeIcon
-                              icon={this._getHealthJobIcon(campaign)}
-                            />
-                            {this._getHealthJobLabel(campaign)}
-                          </Button>
-                        </span>
-                        <ReactTooltip
-                          id={`fb-token-${campaign._id}`}
-                          effect="solid"
+                  <td className="fill compact">{campaign.accounts[0].name}</td>
+                  <td className="compact">
+                    <span
+                      data-tip={intl.formatMessage(messages.refetchFBToken)}
+                      data-for={`fb-token-${campaign._id}`}
+                    >
+                      <Button
+                        className={`small fb-token-button ${this._getHealthStatus(
+                          campaign
+                        )}`}
+                        onClick={this._handleHealthCheckClick(campaign._id)}
+                      >
+                        <FontAwesomeIcon
+                          icon={this._getHealthJobIcon(campaign)}
                         />
-                      </span>
-                      <span className="actions">
-                        <Button
-                          className="small"
-                          onClick={this._handleSuspendClick(campaign)}
-                        >
-                          {campaign.status != "suspended" ? (
-                            <FormattedMessage
-                              id="app.admin.campaigns.suspend"
-                              defaultMessage="Suspend"
-                            />
-                          ) : (
-                            <FormattedMessage
-                              id="app.admin.campaigns.activate"
-                              defaultMessage="Activate"
-                            />
-                          )}
-                        </Button>
-                        <Button
-                          className="small remove"
-                          onClick={this._handleRemoveClick(campaign._id)}
-                        >
-                          <FormattedMessage
-                            id="app.admin.campaigns.remove"
-                            defaultMessage="Remove"
-                          />
-                        </Button>
-                      </span>
+                        {this._getHealthJobLabel(campaign)}
+                      </Button>
                     </span>
+                    <ReactTooltip
+                      id={`fb-token-${campaign._id}`}
+                      effect="solid"
+                    />
+                  </td>
+                  <td className="compact">
+                    <Button
+                      className="small"
+                      onClick={this._handleSuspendClick(campaign)}
+                    >
+                      {campaign.status != "suspended" ? (
+                        <FormattedMessage
+                          id="app.admin.campaigns.suspend"
+                          defaultMessage="Suspend"
+                        />
+                      ) : (
+                        <FormattedMessage
+                          id="app.admin.campaigns.activate"
+                          defaultMessage="Activate"
+                        />
+                      )}
+                    </Button>
+                    <Button
+                      className="small remove"
+                      onClick={this._handleRemoveClick(campaign._id)}
+                    >
+                      <FormattedMessage
+                        id="app.admin.campaigns.remove"
+                        defaultMessage="Remove"
+                      />
+                    </Button>
                   </td>
                   <td className="small">{campaign.country}</td>
                   <td className="small">
@@ -334,7 +327,7 @@ class CampaignsPage extends Component {
                     </ul>
                   </td>
                   <td className="small">
-                    {moment(campaign.createdAt).format("LLL")}
+                    {moment(campaign.createdAt).format("L")}
                   </td>
                 </tr>
               </tbody>
