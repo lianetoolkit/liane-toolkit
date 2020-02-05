@@ -25,15 +25,15 @@ const messages = defineMessages({
   },
   fbTokenHealthy: {
     id: "app.admin.campaigns.fb_token_label.healthy",
-    defaultMessage: "Facebook token is healthy"
+    defaultMessage: "Healthy"
   },
   fbTokenPending: {
     id: "app.admin.campaigns.fb_token_label.pending",
-    defaultMessage: "Checking facebook token"
+    defaultMessage: "Verifying"
   },
   fbTokenUnhealthy: {
     id: "app.admin.campaigns.fb_token_label.unhealthy",
-    defaultMessage: "Facebook token is not valid"
+    defaultMessage: "Not valid"
   },
   fbTokenUndefined: {
     id: "app.admin.campaigns.fb_token_label.undefined",
@@ -235,12 +235,19 @@ class CampaignsPage extends Component {
                     defaultMessage="Name"
                   />
                 </th>
-                <th className="fill" colspan="3">
+                <th className="fill">
                   <FormattedMessage
                     id="app.admin.campaigns.facebook_page"
                     defaultMessage="Facebook Page"
                   />
                 </th>
+                <th>
+                  <FormattedMessage
+                    id="app.admin.campaigns.facebook_connection"
+                    defaultMessage="Connection"
+                  />
+                </th>
+                <th />
                 <th>
                   <FormattedMessage
                     id="app.admin.campaigns.country"
