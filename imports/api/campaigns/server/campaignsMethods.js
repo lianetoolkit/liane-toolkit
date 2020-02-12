@@ -916,6 +916,10 @@ export const campaignQueryCount = new ValidatedMethod({
     }
   }).validator(),
   run({ query }) {
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
     return Campaigns.find(query || {}).count();
   }
 });
@@ -930,6 +934,10 @@ export const inviteQueryCount = new ValidatedMethod({
     }
   }).validator(),
   run({ query }) {
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
     return Invites.find(query || {}).count();
   }
 });

@@ -227,6 +227,7 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
 });
 
 Meteor.publishComposite("invites.all", function({ query, options }) {
+  this.unblock();
   const currentUser = this.userId;
   if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
     return {

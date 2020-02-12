@@ -6,6 +6,7 @@ import Page from "/imports/ui2/components/Page.jsx";
 import TicketsContainer from "/imports/ui2/containers/admin/Tickets.jsx";
 import InvitesContainer from "/imports/ui2/containers/admin/Invites.jsx";
 import CampaignsContainer from "/imports/ui2/containers/admin/Campaigns.jsx";
+import JobsContainer from "/imports/ui2/containers/admin/Jobs.jsx";
 
 class AdminContainer extends Component {
   render() {
@@ -78,6 +79,9 @@ export default {
           break;
         case "invites":
           children = <InvitesContainer {...props} />;
+          break;
+        case "jobs":
+          children = <JobsContainer {...props} />;
           break;
         default:
           children = <h2>404</h2>;

@@ -1,6 +1,13 @@
 const { Jobs } = require("/imports/api/jobs/jobs.js");
 
 Meteor.methods({
+  "jobs.queryCount"({ query }) {
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+    return Jobs.find(query || {}).count();
+  },
   "jobs.clearCompletedJobs"() {
     logger.debug("jobs.cleanCompletedJobs: called");
     const jobsToRemoveIds = _.pluck(
@@ -227,7 +234,7 @@ Meteor.methods({
     if (userId && Roles.userIsInRole(userId, ["admin"])) {
       const job = Jobs.getJob(jobId);
       if (job) {
-        if(job.status == 'running') {
+        if (job.status == "running") {
           job.cancel();
         }
         job.restart();

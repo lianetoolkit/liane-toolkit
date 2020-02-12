@@ -122,7 +122,7 @@ const TableContainer = styled.div`
   }
 `;
 
-class CampaignsPage extends Component {
+class InvitesPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -222,7 +222,7 @@ class CampaignsPage extends Component {
                     defaultMessage="Available"
                   />
                 </th>
-                <th className="fill">
+                <th>
                   <FormattedMessage
                     id="app.admin.invites.created"
                     defaultMessage="Created"
@@ -352,8 +352,8 @@ class CampaignsPage extends Component {
   }
 }
 
-CampaignsPage.propTypes = {
+InvitesPage.propTypes = {
   intl: intlShape.isRequired
 };
 
-export default injectIntl(CampaignsPage);
+export default injectIntl(InvitesPage);

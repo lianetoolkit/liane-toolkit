@@ -36,21 +36,11 @@ Meteor.publish("admin.jobs.counter", function({ search }) {
   }
 });
 
-Meteor.publish("admin.jobs", function({ search, limit, orderBy, fields }) {
+Meteor.publish("admin.jobs", function({ query, options }) {
   this.unblock();
-  search = search || {};
-  limit = limit || 10;
   const currentUser = this.userId;
   if (Roles.userIsInRole(currentUser, ["admin"])) {
-    const options = {
-      sort: {},
-      limit: Math.min(limit, 1000)
-    };
-    if (fields) {
-      options.fields = fields;
-    }
-    if (orderBy) options["sort"][orderBy.field] = orderBy.ordering;
-    return Jobs.find(search, options);
+    return Jobs.find(query || {}, options || { sort: { created: -1 } });
   } else {
     this.stop();
     return;
