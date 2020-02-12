@@ -1,3 +1,4 @@
+import { JobsHelpers } from "./jobsHelpers";
 const { Jobs } = require("/imports/api/jobs/jobs.js");
 
 Meteor.methods({
@@ -277,6 +278,7 @@ Meteor.methods({
 
     const userId = Meteor.userId();
     if (userId && Roles.userIsInRole(userId, ["admin"])) {
+      Jobs.cancelJobs(jobIds); // need to cancel before remove
       Jobs.removeJobs(jobIds);
     } else {
       throw new Meteor.Error(401, "You are not allowed to do this action");
