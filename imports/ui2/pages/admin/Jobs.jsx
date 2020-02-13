@@ -8,6 +8,7 @@ import {
 import styled from "styled-components";
 import moment from "moment";
 
+import ReactTooltip from "react-tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { modalStore } from "/imports/ui2/containers/Modal.jsx";
@@ -197,6 +198,7 @@ class JobsPage extends Component {
     switch (job.status) {
       case "running":
       case "ready":
+      case "failed":
         return false;
       default:
         return true;
@@ -205,6 +207,10 @@ class JobsPage extends Component {
   _handleRunClick = jobId => ev => {
     ev.preventDefault();
     Meteor.call("jobs.ready", { jobId });
+  };
+  _handleRestartClick = jobId => ev => {
+    ev.preventDefault();
+    Meteor.call("jobs.restartJobs", { jobIds: [jobId] });
   };
   _handleRemoveClick = jobId => ev => {
     ev.preventDefault();
@@ -287,8 +293,31 @@ class JobsPage extends Component {
                     {job.data.campaignId ? job.data.campaignId : "--"}
                   </td>
                   <td>{job.repeated}</td>
-                  <td>{job.status}</td>
                   <td>
+                    {job.status == "failed" ? (
+                      <span
+                        data-for={`job-status-${job._id}`}
+                        data-tip={job.failures[job.failures.length - 1].value}
+                      >
+                        {job.status}
+                      </span>
+                    ) : (
+                      job.status
+                    )}
+                    <ReactTooltip id={`job-status-${job._id}`} effect="solid" />
+                  </td>
+                  <td>
+                    {job.status == "failed" ? (
+                      <Button
+                        className="small"
+                        onClick={this._handleRestartClick(job._id)}
+                      >
+                        <FormattedMessage
+                          id="app.admin.jobs.try_again"
+                          defaultMessage="Try again"
+                        />
+                      </Button>
+                    ) : null}
                     {this._isJobRunnable(job) ? (
                       <Button
                         className="small"

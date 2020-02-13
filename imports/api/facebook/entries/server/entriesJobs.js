@@ -96,6 +96,57 @@ const EntriesJobs = {
       };
       return options;
     }
+  },
+  "entries.updateEntryInteractions": {
+    run({ job }) {
+      logger.debug("entries.updateEntryInteractions job: called");
+      check(job && job.data && job.data.facebookAccountId, String);
+      check(job && job.data && job.data.entryId, String);
+      check(job && job.data && job.data.accessToken, String);
+      check(job && job.data && job.data.likeDateEstimate, Boolean);
+
+      const interactionTypes = job.data.interactionTypes;
+      const facebookAccountId = job.data.facebookAccountId;
+      const accessToken = job.data.accessToken;
+      const entryId = job.data.entryId;
+      const campaignId = job.data.campaignId;
+      const likeDateEstimate = job.data.likeDateEstimate;
+
+      let errored = false;
+      try {
+        EntriesHelpers.updateEntryInteractions({
+          interactionTypes,
+          facebookAccountId,
+          accessToken,
+          entryId,
+          campaignId,
+          likeDateEstimate
+        });
+      } catch (error) {
+        errored = true;
+        job.fail(error.message);
+      } finally {
+        if (!errored) {
+          job.done();
+          return job.remove();
+        }
+      }
+    },
+
+    workerOptions: {
+      concurrency: 4,
+      pollInterval: 2500
+    },
+
+    jobOptions({ jobData }) {
+      const options = {
+        retry: {
+          retries: 3,
+          wait: 10 * 1000
+        }
+      };
+      return options;
+    }
   }
 };
 

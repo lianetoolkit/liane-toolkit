@@ -44,6 +44,7 @@
   "app.admin.jobs.repeated": "Execuções",
   "app.admin.jobs.restart_job": "Iniciar agora",
   "app.admin.jobs.status": "Estado",
+  "app.admin.jobs.try_again": "Tentar novamente",
   "app.admin.nav.campaigns": "Campanhas",
   "app.admin.nav.geolocations": "Geolocalizações",
   "app.admin.nav.invites": "Convites",
