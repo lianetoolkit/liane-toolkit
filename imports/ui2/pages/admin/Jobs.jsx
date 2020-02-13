@@ -10,6 +10,7 @@ import moment from "moment";
 
 import ReactTooltip from "react-tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Select from "react-select";
 
 import { modalStore } from "/imports/ui2/containers/Modal.jsx";
 
@@ -145,6 +146,19 @@ const Container = styled.div`
   }
 `;
 
+const Filters = styled.div`
+  position: relative;
+  z-index: 100;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+  > div {
+    flex: 1 1 100%;
+  }
+`;
+
 const TableContainer = styled.div`
   flex: 1 1 100%;
   overflow-x: hidden;
@@ -221,6 +235,36 @@ class JobsPage extends Component {
     const { loadingCount, count } = this.state;
     return (
       <Container>
+        <Filters>
+          <div>
+            <Select
+              classNamePrefix="select-search"
+              cacheOptions
+              isSearchable={true}
+              placeholder="Filter status..."
+              options={[
+                {
+                  value: "running",
+                  label: "running"
+                },
+                {
+                  value: "failed",
+                  label: "failed"
+                },
+                {
+                  value: "waiting",
+                  label: "waiting"
+                },
+                {
+                  value: "ready",
+                  label: "ready"
+                }
+              ]}
+              onChange={this._handleFilterChange}
+              name="status"
+            />
+          </div>
+        </Filters>
         <PagePaging
           skip={page - 1}
           limit={limit}
@@ -228,9 +272,7 @@ class JobsPage extends Component {
           loading={loadingCount}
           onNext={this._handleNext}
           onPrev={this._handlePrev}
-        >
-          {/* <input type="text" /> */}
-        </PagePaging>
+        />
         <TableContainer>
           <Table compact>
             <thead>
