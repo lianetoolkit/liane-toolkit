@@ -6,6 +6,7 @@ import Page from "/imports/ui2/components/Page.jsx";
 import TicketsContainer from "/imports/ui2/containers/admin/Tickets.jsx";
 import InvitesContainer from "/imports/ui2/containers/admin/Invites.jsx";
 import CampaignsContainer from "/imports/ui2/containers/admin/Campaigns.jsx";
+import UsersContainer from "/imports/ui2/containers/admin/Users.jsx";
 import JobsContainer from "/imports/ui2/containers/admin/Jobs.jsx";
 
 class AdminContainer extends Component {
@@ -79,6 +80,9 @@ export default {
           break;
         case "invites":
           children = <InvitesContainer {...props} />;
+          break;
+        case "users":
+          children = <UsersContainer {...props} />;
           break;
         case "jobs":
           children = <JobsContainer {...props} />;

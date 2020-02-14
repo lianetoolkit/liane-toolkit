@@ -22,13 +22,13 @@ Meteor.publish("users.data", function() {
   }
 });
 
-Meteor.publish("users.all", function() {
+Meteor.publish("users.all", function({ query, options }) {
   this.unblock();
   const currentUser = this.userId;
   if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
     return Meteor.users.find(
-      {},
-      {
+      query || {},
+      options || {
         fields: {
           name: 1,
           type: 1,
