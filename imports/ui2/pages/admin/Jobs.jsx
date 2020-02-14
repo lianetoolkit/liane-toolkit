@@ -87,6 +87,18 @@ const statusLabels = defineMessages({
   failed: {
     id: "app.jobs.status.failed",
     defaultMessage: "Failed"
+  },
+  paused: {
+    id: "app.jobs.status.paused",
+    defaultMessage: "Paused"
+  },
+  cancelled: {
+    id: "app.jobs.status.cancelled",
+    defaultMessage: "Cancelled"
+  },
+  completed: {
+    id: "app.jobs.status.completed",
+    defaultMessage: "Completed"
   }
 });
 
