@@ -194,6 +194,40 @@ export const campaignsCreate = new ValidatedMethod({
   }
 });
 
+export const campaignsSelectGet = new ValidatedMethod({
+  name: "campaigns.selectGet",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId }) {
+    this.unblock();
+    logger.debug("campaigns.selectGet called", { campaignId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    if (!Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    let selector = { _id: campaignId };
+    let options = {
+      fields: {
+        name: 1
+      }
+    };
+
+    const campaign = Campaigns.findOne(selector, options);
+
+    console.log(campaign);
+    return campaign;
+  }
+});
+
 export const campaignsSearch = new ValidatedMethod({
   name: "campaigns.search",
   validate: new SimpleSchema({

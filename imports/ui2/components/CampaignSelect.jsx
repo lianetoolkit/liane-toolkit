@@ -3,7 +3,7 @@ import { injectIntl, intlShape, defineMessages } from "react-intl";
 import styled from "styled-components";
 import Select from "react-select";
 import moment from "moment";
-import { debounce } from "lodash";
+import { debounce, uniqBy } from "lodash";
 
 const messages = defineMessages({
   placeholder: {
@@ -79,7 +79,7 @@ class CampaignSelect extends Component {
     });
   }, 300);
   _buildOptions = campaigns => {
-    return campaigns.map(campaign => {
+    return uniqBy(campaigns, "_id").map(campaign => {
       return {
         label: campaign.name,
         value: campaign._id
@@ -95,10 +95,21 @@ class CampaignSelect extends Component {
   _buildValue = () => {
     const { options } = this.state;
     const { value } = this.props;
+    let option = null;
     if (value && options.length) {
-      return options.find(option => option.value == value);
+      option = options.find(option => option.value == value);
     }
-    return null;
+    if (!option && value) {
+      Meteor.call("campaigns.selectGet", { campaignId: value }, (err, res) => {
+        if (res) {
+          this.setState({
+            campaigns: [res, ...this.state.campaigns],
+            options: this._buildOptions([res, ...this.state.campaigns])
+          });
+        }
+      });
+    }
+    return option;
   };
   render() {
     const { loading, options } = this.state;
