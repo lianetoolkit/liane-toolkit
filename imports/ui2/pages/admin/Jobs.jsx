@@ -14,11 +14,27 @@ import Select from "react-select";
 
 import { modalStore } from "/imports/ui2/containers/Modal.jsx";
 
+import CampaignSelect from "/imports/ui2/components/CampaignSelect.jsx";
 import CopyToClipboard from "/imports/ui2/components/CopyToClipboard.jsx";
 import Table from "/imports/ui2/components/Table.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
 import Page from "/imports/ui2/components/Page.jsx";
 import PagePaging from "/imports/ui2/components/PagePaging.jsx";
+
+const messages = defineMessages({
+  filterType: {
+    id: "app.admin.jobs.filter.type",
+    defaultMessage: "Job type..."
+  },
+  filterStatus: {
+    id: "app.admin.jobs.filter.status",
+    defaultMessage: "Job status..."
+  },
+  filterCampaign: {
+    id: "app.admin.jobs.filter.campaign",
+    defaultMessage: "Campaign..."
+  }
+});
 
 const jobsLabels = defineMessages({
   "entries.updateAccountEntries": {
@@ -48,6 +64,25 @@ const jobsLabels = defineMessages({
   "people.importPerson": {
     id: "app.jobs.labels.people.importPerson",
     defaultMessage: "Person import"
+  }
+});
+
+const statusLabels = defineMessages({
+  waiting: {
+    id: "app.jobs.status.waiting",
+    defaultMessage: "Waiting"
+  },
+  ready: {
+    id: "app.jobs.status.ready",
+    defaultMessage: "Ready"
+  },
+  running: {
+    id: "app.jobs.status.running",
+    defaultMessage: "Running"
+  },
+  failed: {
+    id: "app.jobs.status.failed",
+    defaultMessage: "Failed"
   }
 });
 
@@ -156,6 +191,10 @@ const Filters = styled.div`
   border-bottom: 1px solid #ccc;
   > div {
     flex: 1 1 100%;
+    border-right: 1px solid #ccc;
+    &:last-child {
+      border: 0;
+    }
   }
 `;
 
@@ -174,13 +213,15 @@ class JobsPage extends Component {
     super(props);
     this.state = {
       loadingCount: false,
-      count: 0
+      count: 0,
+      filters: {}
     };
   }
   componentDidUpdate(prevProps) {}
   componentDidMount() {
+    const { query } = this.props;
     this.setState({ loadingCount: true });
-    Meteor.call("jobs.queryCount", { query: {} }, (err, res) => {
+    Meteor.call("jobs.queryCount", { query }, (err, res) => {
       this.setState({ loadingCount: false, count: res });
     });
   }
@@ -230,6 +271,45 @@ class JobsPage extends Component {
     ev.preventDefault();
     Meteor.call("jobs.removeJobs", { jobIds: [jobId] });
   };
+  _getJobTypesOptions = () => {
+    const { intl } = this.props;
+    let options = [];
+    for (let key in jobsLabels) {
+      options.push({
+        value: key,
+        label: intl.formatMessage(jobsLabels[key])
+      });
+    }
+    return options;
+  };
+  _getJobStatusOptions = () => {
+    const { intl } = this.props;
+    let options = [];
+    for (let key in statusLabels) {
+      options.push({
+        value: key,
+        label: intl.formatMessage(statusLabels[key])
+      });
+    }
+    return options;
+  };
+  _handleFilterChange = ({ target }) => {
+    FlowRouter.setQueryParams({ [target.name]: target.value, page: 1 });
+  };
+  _handleFilterSelectChange = name => ev => {
+    const value = ev && ev.value ? ev.value : undefined;
+    FlowRouter.setQueryParams({ [name]: value, page: 1 });
+  };
+  _buildFilterTypeValue = () => {
+    const value = FlowRouter.getQueryParam("type");
+    if (!value) return undefined;
+    return this._getJobTypesOptions().find(option => option.value == value);
+  };
+  _buildFilterStatusValue = () => {
+    const value = FlowRouter.getQueryParam("status");
+    if (!value) return undefined;
+    return this._getJobStatusOptions().find(option => option.value == value);
+  };
   render() {
     const { intl, jobs, page, limit } = this.props;
     const { loadingCount, count } = this.state;
@@ -240,28 +320,32 @@ class JobsPage extends Component {
             <Select
               classNamePrefix="select-search"
               cacheOptions
+              isClearable={true}
               isSearchable={true}
-              placeholder="Filter status..."
-              options={[
-                {
-                  value: "running",
-                  label: "running"
-                },
-                {
-                  value: "failed",
-                  label: "failed"
-                },
-                {
-                  value: "waiting",
-                  label: "waiting"
-                },
-                {
-                  value: "ready",
-                  label: "ready"
-                }
-              ]}
+              placeholder={intl.formatMessage(messages.filterType)}
+              options={this._getJobTypesOptions()}
+              onChange={this._handleFilterSelectChange("type")}
+              value={this._buildFilterTypeValue()}
+            />
+          </div>
+          <div>
+            <Select
+              classNamePrefix="select-search"
+              cacheOptions
+              isClearable={true}
+              isSearchable={true}
+              placeholder={intl.formatMessage(messages.filterStatus)}
+              options={this._getJobStatusOptions()}
+              onChange={this._handleFilterSelectChange("status")}
+              value={this._buildFilterStatusValue()}
+            />
+          </div>
+          <div>
+            <CampaignSelect
               onChange={this._handleFilterChange}
-              name="status"
+              placeholder={intl.formatMessage(messages.filterCampaign)}
+              value={FlowRouter.getQueryParam("campaign")}
+              name="campaign"
             />
           </div>
         </Filters>
@@ -341,10 +425,10 @@ class JobsPage extends Component {
                         data-for={`job-status-${job._id}`}
                         data-tip={job.failures[job.failures.length - 1].value}
                       >
-                        {job.status}
+                        {intl.formatMessage(statusLabels[job.status])}
                       </span>
                     ) : (
-                      job.status
+                      intl.formatMessage(statusLabels[job.status])
                     )}
                     <ReactTooltip id={`job-status-${job._id}`} effect="solid" />
                   </td>

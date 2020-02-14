@@ -155,6 +155,14 @@ Campaigns.schema = new SimpleSchema({
 
 Campaigns.attachSchema(Campaigns.schema);
 
+Meteor.startup(() => {
+  if (Meteor.isServer) {
+    Campaigns.rawCollection().createIndex({
+      name: "text"
+    });
+  }
+});
+
 const Invites = new Mongo.Collection("invites");
 
 Invites.schema = new SimpleSchema({

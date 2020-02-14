@@ -9,7 +9,6 @@ Entries.schema = new SimpleSchema({
   },
   facebookAccountId: {
     type: String,
-    index: true,
     index: true
   },
   type: {

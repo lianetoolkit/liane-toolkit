@@ -12,7 +12,19 @@ export default withTracker(props => {
   const page = parseInt(queryParams.page || 1);
   const skip = (page - 1) * limit;
 
-  const query = {};
+  let query = {};
+
+  if (queryParams.status) {
+    query.status = queryParams.status;
+  }
+
+  if (queryParams.type) {
+    query.type = queryParams.type;
+  }
+
+  if (queryParams.campaign) {
+    query["data.campaignId"] = queryParams.campaign;
+  }
 
   const options = {
     sort: { created: -1 },
@@ -29,11 +41,10 @@ export default withTracker(props => {
   });
 
   const loading = !jobsHandle.ready();
-  const jobs = jobsHandle.ready()
-    ? Jobs.find(query, options).fetch()
-    : [];
+  const jobs = jobsHandle.ready() ? Jobs.find(query, options).fetch() : [];
 
   return {
+    query,
     loading,
     page,
     limit,
