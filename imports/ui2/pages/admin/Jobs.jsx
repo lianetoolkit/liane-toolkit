@@ -33,6 +33,10 @@ const messages = defineMessages({
   filterCampaign: {
     id: "app.admin.jobs.filter.campaign",
     defaultMessage: "Campaign..."
+  },
+  filterListCampaign: {
+    id: "app.admin.jobs.filter.campaign_from_list",
+    defaultMessage: "Filter jobs from this campaign"
   }
 });
 
@@ -310,6 +314,10 @@ class JobsPage extends Component {
     if (!value) return undefined;
     return this._getJobStatusOptions().find(option => option.value == value);
   };
+  _handleCampaignClick = campaignId => ev => {
+    ev.preventDefault();
+    FlowRouter.setQueryParams({ campaign: campaignId });
+  };
   render() {
     const { intl, jobs, page, limit } = this.props;
     const { loadingCount, count } = this.state;
@@ -416,7 +424,24 @@ class JobsPage extends Component {
                     {job.repeats ? <FontAwesomeIcon icon="check" /> : null}
                   </td>
                   <td className="small id">
-                    {job.data.campaignId ? job.data.campaignId : "--"}
+                    {job.data.campaignId ? (
+                      <a
+                        data-tip={intl.formatMessage(
+                          messages.filterListCampaign
+                        )}
+                        data-for={`job-campaign-${job._id}`}
+                        href="javacript:void(0);"
+                        onClick={this._handleCampaignClick(job.data.campaignId)}
+                      >
+                        {job.data.campaignId}
+                      </a>
+                    ) : (
+                      "--"
+                    )}
+                    <ReactTooltip
+                      id={`job-campaign-${job._id}`}
+                      effect="solid"
+                    />
                   </td>
                   <td>{job.repeated}</td>
                   <td>

@@ -38,6 +38,7 @@
   "app.admin.jobs.campaign": "Campaign",
   "app.admin.jobs.created": "Created",
   "app.admin.jobs.filter.campaign": "Campaign...",
+  "app.admin.jobs.filter.campaign_from_list": "Filter jobs from this campaign",
   "app.admin.jobs.filter.status": "Job status...",
   "app.admin.jobs.filter.type": "Job type...",
   "app.admin.jobs.job_type": "Job type",
