@@ -175,6 +175,12 @@ class UsersPage extends Component {
                     defaultMessage="Name"
                   />
                 </th>
+                <th className="fill">
+                  <FormattedMessage
+                    id="app.admin.users.email"
+                    defaultMessage="Email"
+                  />
+                </th>
                 <th>
                   <FormattedMessage
                     id="app.admin.users.type"
@@ -193,6 +199,7 @@ class UsersPage extends Component {
               <tbody key={user._id}>
                 <tr>
                   <td className="fill">{user.name}</td>
+                  <td className="fill">{user.emails[0].address}</td>
                   <td>{user.type}</td>
                   <td className="small">
                     {moment(user.createdAt).format("L")}
