@@ -144,9 +144,11 @@ export default withTracker(props => {
     });
     tags = tagsHandle.ready() ? PeopleTags.find({ campaignId }).fetch() : [];
 
-    // Lists
     if (campaign) {
+      // Lists
       lists = PeopleLists.find({ campaignId }).fetch();
+      // Set campaign country
+      ClientStorage.set("country", campaign.country);
     }
 
     // Campaign jobs
