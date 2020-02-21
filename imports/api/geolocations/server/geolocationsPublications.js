@@ -2,12 +2,13 @@ import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 
-Meteor.publish("geolocations.all", function() {
+Meteor.publish("geolocations.all", function({ query, options }) {
+  this.unblock();
   const currentUser = this.userId;
   if (currentUser) {
     return Geolocations.find(
-      {},
-      {
+      query || {},
+      options || {
         fields: {
           name: 1
         }

@@ -256,3 +256,21 @@ export const matchFromOSM = new ValidatedMethod({
     // return localData;
   }
 });
+
+export const geolocationsQueryCount = new ValidatedMethod({
+  name: "geolocations.queryCount",
+  validate: new SimpleSchema({
+    query: {
+      type: Object,
+      blackbox: true,
+      optional: true
+    }
+  }).validator(),
+  run({ query }) {
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+    return Geolocations.find(query || {}).count();
+  }
+});
