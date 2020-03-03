@@ -61,6 +61,12 @@ Campaigns.schema = new SimpleSchema({
   name: {
     type: String
   },
+  party: {
+    type: String
+  },
+  candidate: {
+    type: String
+  },
   creatorId: {
     type: String
   },

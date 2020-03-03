@@ -68,6 +68,12 @@ export const campaignsCreate = new ValidatedMethod({
     name: {
       type: String
     },
+    party: {
+      type: String
+    },
+    candidate: {
+      type: String
+    },
     country: {
       type: String
     },
@@ -93,9 +99,19 @@ export const campaignsCreate = new ValidatedMethod({
       optional: true
     }
   }).validator(),
-  run({ name, country, geolocation, facebookAccountId, invite }) {
+  run({
+    name,
+    country,
+    party,
+    candidate,
+    geolocation,
+    facebookAccountId,
+    invite
+  }) {
     logger.debug("campaigns.create called", {
       name,
+      country,
+      party,
       country,
       geolocation,
       facebookAccountId,
@@ -130,7 +146,14 @@ export const campaignsCreate = new ValidatedMethod({
     }
 
     const users = [{ userId, role: "owner" }];
-    let insertDoc = { users, name, country, creatorId: userId };
+    let insertDoc = {
+      users,
+      name,
+      candidate,
+      party,
+      country,
+      creatorId: userId
+    };
 
     const user = Meteor.users.findOne(userId);
     const token = user.services.facebook.accessToken;

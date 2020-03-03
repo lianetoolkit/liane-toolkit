@@ -21,11 +21,27 @@ import UserUpgrade from "../../components/UserUpgrade.jsx";
 const messages = defineMessages({
   nameLabel: {
     id: "app.campaign.form.name.label",
-    defaultMessage: "Define a name for your campaign"
+    defaultMessage: "Define a title for your campaign"
   },
   namePlaceholder: {
     id: "app.campaign.form.name.placeholder",
-    defaultMessage: "Campaign name"
+    defaultMessage: "Title of your campaign"
+  },
+  candidateLabel: {
+    id: "app.campaign.form.candidate.label",
+    defaultMessage: "What is your candidacy name?"
+  },
+  candidatePlaceholder: {
+    id: "app.campaign.form.candidate.placeholder",
+    defaultMessage: "Candidacy name"
+  },
+  partyLabel: {
+    id: "app.campaign.form.party.label",
+    defaultMessage: "Party, movement or coalition your candidacy is part of"
+  },
+  partyPlaceholder: {
+    id: "app.campaign.form.party.placeholder",
+    defaultMessage: "Party/movement/coalition"
   },
   countryLabel: {
     id: "app.campaign.form.country.label",
@@ -161,6 +177,24 @@ class NewCampaignPage extends Component {
               placeholder={intl.formatMessage(messages.namePlaceholder)}
               onChange={this._handleChange}
               value={formData.name}
+            />
+          </Form.Field>
+          <Form.Field label={intl.formatMessage(messages.candidateLabel)}>
+            <input
+              type="text"
+              name="candidate"
+              placeholder={intl.formatMessage(messages.candidatePlaceholder)}
+              onChange={this._handleChange}
+              value={formData.candidate}
+            />
+          </Form.Field>
+          <Form.Field label={intl.formatMessage(messages.partyLabel)}>
+            <input
+              type="text"
+              name="party"
+              placeholder={intl.formatMessage(messages.partyPlaceholder)}
+              onChange={this._handleChange}
+              value={formData.party}
             />
           </Form.Field>
           <Form.Field label={intl.formatMessage(messages.countryLabel)}>
