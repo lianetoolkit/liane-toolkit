@@ -199,6 +199,7 @@ export default withTracker(props => {
 
   const loadingCampaigns = !campaignsHandle.ready();
 
+  // Refetch users for reactive behaviour
   Meteor.users.find().fetch();
 
   return {
