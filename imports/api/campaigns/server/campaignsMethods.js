@@ -74,6 +74,9 @@ export const campaignsCreate = new ValidatedMethod({
     candidate: {
       type: String
     },
+    office: {
+      type: String
+    },
     country: {
       type: String
     },
@@ -104,6 +107,7 @@ export const campaignsCreate = new ValidatedMethod({
     country,
     party,
     candidate,
+    office,
     geolocation,
     facebookAccountId,
     invite
@@ -112,6 +116,7 @@ export const campaignsCreate = new ValidatedMethod({
       name,
       country,
       party,
+      office,
       country,
       geolocation,
       facebookAccountId,
@@ -151,6 +156,7 @@ export const campaignsCreate = new ValidatedMethod({
       name,
       candidate,
       party,
+      office,
       country,
       creatorId: userId
     };

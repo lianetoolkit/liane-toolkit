@@ -14,6 +14,7 @@ import Page from "../../components/Page.jsx";
 import Form from "../../components/Form.jsx";
 import Loading from "../../components/Loading.jsx";
 import SelectAccount from "../../components/facebook/SelectAccount.jsx";
+import OfficeField from "../../components/OfficeField.jsx";
 import CountrySelect from "../../components/CountrySelect.jsx";
 import GeolocationSelect from "../../components/GeolocationSelect.jsx";
 import UserUpgrade from "../../components/UserUpgrade.jsx";
@@ -46,6 +47,10 @@ const messages = defineMessages({
   countryLabel: {
     id: "app.campaign.form.country.label",
     defaultMessage: "Select the country for your campaign"
+  },
+  officeLabel: {
+    id: "app.campaign.form.office.label",
+    defaultMessage: "Select the office you are running for"
   },
   submitLabel: {
     id: "app.campaign.form.submit",
@@ -205,10 +210,19 @@ class NewCampaignPage extends Component {
             />
           </Form.Field>
           {formData.country ? (
-            <GeolocationSelect
-              country={formData.country}
-              onChange={this._handleGeolocationChange}
-            />
+            <>
+              <Form.Field label={intl.formatMessage(messages.officeLabel)}>
+                <OfficeField
+                  country={formData.country}
+                  name="office"
+                  onChange={this._handleChange}
+                />
+              </Form.Field>
+              <GeolocationSelect
+                country={formData.country}
+                onChange={this._handleGeolocationChange}
+              />
+            </>
           ) : null}
           <p>
             <FormattedMessage
