@@ -25,6 +25,12 @@ if (typeof Meteor == "undefined") {
 
   let messageMap = {};
 
+  // manual messages
+  const permissionsMessages = require("./permissionsTranslations");
+  for (let message of permissionsMessages) {
+    messageMap[message.id] = message;
+  }
+
   const extractFromFile = async filename => {
     try {
       if (filename.indexOf("/server/") == -1) {
@@ -54,6 +60,7 @@ if (typeof Meteor == "undefined") {
       files.map(fileName => extractFromFile(fileName))
     );
     extractTask.then(() => {
+      console.log(Object.keys(messageMap));
       mkdirp("./locales/messages");
       fs.writeFileSync(
         "./locales/messages/messages.json",

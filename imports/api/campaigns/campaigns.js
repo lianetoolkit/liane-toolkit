@@ -1,6 +1,19 @@
 import SimpleSchema from "simpl-schema";
 import { Random } from "meteor/random";
+import {
+  FEATURES,
+  PERMISSIONS,
+  FEATURE_PERMISSION_MAP
+} from "/imports/utils/campaignPermissions";
 const Campaigns = new Mongo.Collection("campaigns");
+
+let userFeaturePermissions = {};
+for (feature of FEATURES) {
+  userFeaturePermissions[`permissions.${feature}`] = {
+    type: Number,
+    defaultValue: 0
+  };
+}
 
 Campaigns.usersSchema = new SimpleSchema({
   userId: {
@@ -10,7 +23,11 @@ Campaigns.usersSchema = new SimpleSchema({
   role: {
     type: String,
     allowedValues: ["owner", "manager", "guest"]
-  }
+  },
+  permissions: {
+    type: Object
+  },
+  ...userFeaturePermissions
 });
 
 Campaigns.accountChatbotSchema = new SimpleSchema({

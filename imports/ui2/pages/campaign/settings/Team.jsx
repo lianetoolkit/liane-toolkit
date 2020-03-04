@@ -15,6 +15,7 @@ import Nav from "./Nav.jsx";
 import Form from "../../../components/Form.jsx";
 import Table from "../../../components/Table.jsx";
 import PersonFormInfo from "../../../components/PersonFormInfo.jsx";
+import PermissionsField from "../../../components/PermissionsField.jsx";
 
 const messages = defineMessages({
   creatorLabel: {
@@ -28,6 +29,10 @@ const messages = defineMessages({
   emailLabel: {
     id: "app.campaign_settings.team_email_label",
     defaultMessage: "Email"
+  },
+  permissionsLabel: {
+    id: "app.campaign_settings.team_permissions_label",
+    defaultMessage: "Permissions"
   },
   addButtonLabel: {
     id: "app.campaign_settings.team_add_button_label",
@@ -148,6 +153,13 @@ class CampaignTeamPage extends Component {
                 value={formData.email}
                 name="email"
                 onChange={this._handleChange}
+              />
+            </Form.Field>
+            <Form.Field label={intl.formatMessage(messages.permissionsLabel)}>
+              <PermissionsField
+                onChange={this._handleChange}
+                name="permissions"
+                value={formData.permissions}
               />
             </Form.Field>
             <input
