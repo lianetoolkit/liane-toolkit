@@ -66,10 +66,21 @@ class CampaignTeamPage extends Component {
     if (formData.email) {
       Meteor.call(
         "campaigns.addUser",
-        { campaignId: campaign._id, email: formData.email, role: "owner" },
+        {
+          campaignId: campaign._id,
+          email: formData.email,
+          permissions: formData.permissions
+        },
         (err, res) => {
           if (err) {
             alertStore.add(err);
+          } else {
+            this.setState({
+              formData: {
+                ...this.state.formData,
+                email: ""
+              }
+            });
           }
         }
       );

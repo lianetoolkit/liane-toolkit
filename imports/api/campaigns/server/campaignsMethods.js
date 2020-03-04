@@ -594,11 +594,16 @@ export const addUser = new ValidatedMethod({
     email: {
       type: String
     },
+    permissions: {
+      type: Object,
+      blackbox: true
+    },
     role: {
-      type: String
+      type: String,
+      optional: true
     }
   }).validator(),
-  run({ campaignId, email, role }) {
+  run({ campaignId, email, permissions, role }) {
     logger.debug("campaigns.addUser called", { campaignId, email, role });
 
     const userId = Meteor.userId();
@@ -635,13 +640,13 @@ export const addUser = new ValidatedMethod({
       {
         _id: campaignId
       },
-      { $push: { users: { userId: user._id, role } } }
+      { $push: { users: { userId: user._id, permissions, role } } }
     );
 
     Meteor.call("log", {
       type: "campaigns.users.add",
       campaignId,
-      data: { userId: user._id }
+      data: { userId: user._id, permissions, role }
     });
   }
 });

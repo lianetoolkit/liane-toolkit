@@ -22,7 +22,8 @@ Campaigns.usersSchema = new SimpleSchema({
   },
   role: {
     type: String,
-    allowedValues: ["owner", "manager", "guest"]
+    allowedValues: ["owner", "manager", "guest"],
+    defaultValue: "guest"
   },
   permissions: {
     type: Object

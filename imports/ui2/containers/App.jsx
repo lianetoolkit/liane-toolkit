@@ -199,6 +199,8 @@ export default withTracker(props => {
 
   const loadingCampaigns = !campaignsHandle.ready();
 
+  Meteor.users.find().fetch();
+
   return {
     user,
     connected,

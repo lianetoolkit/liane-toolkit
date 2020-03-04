@@ -66,12 +66,53 @@ const Container = styled.div`
 `;
 
 class PermissionsField extends Component {
+  constructor(props) {
+    super(props);
+    let defaultValue = {};
+    for (feature of FEATURES) {
+      defaultValue[feature] = 0;
+    }
+    this.state = {
+      value: defaultValue
+    };
+  }
+  componentDidMount() {
+    const { value } = this.props;
+    if (value) {
+      this.setState({ value });
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
+    const { name, onChange } = this.props;
+    const { value } = this.state;
+    if (JSON.stringify(prevState.value) != JSON.stringify(value)) {
+      onChange && onChange({ target: { name, value } });
+    }
+  }
+  _handleChange = (feature, permission) => ev => {
+    const { value } = this.state;
+    let newValue = { ...value };
+    if (ev.target.checked) {
+      newValue[feature] = newValue[feature] + PERMISSIONS[permission];
+    } else {
+      newValue[feature] = newValue[feature] - PERMISSIONS[permission];
+    }
+    this.setState({
+      value: newValue
+    });
+  };
   _permissionItem = (feature, permission) => {
     const { intl } = this.props;
+    const { value } = this.state;
     if (FEATURE_PERMISSION_MAP[feature] & PERMISSIONS[permission]) {
       return (
-        <label className="permission-item">
-          <input type="checkbox" />{" "}
+        <label key={`${feature}-${permission}`} className="permission-item">
+          <input
+            type="checkbox"
+            value={PERMISSIONS[permission]}
+            onChange={this._handleChange(feature, permission)}
+            checked={value[feature] & PERMISSIONS[permission]}
+          />
           {intl.formatMessage(permissionsLabels[`${feature}.${permission}`])}
         </label>
       );
