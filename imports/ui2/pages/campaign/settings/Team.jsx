@@ -30,6 +30,10 @@ const messages = defineMessages({
     id: "app.campaign_settings.team_email_label",
     defaultMessage: "Email"
   },
+  roleLabel: {
+    id: "app.campaign_settings.team_role_label",
+    defaultMessage: "Member role"
+  },
   permissionsLabel: {
     id: "app.campaign_settings.team_permissions_label",
     defaultMessage: "Permissions"
@@ -69,6 +73,7 @@ class CampaignTeamPage extends Component {
         {
           campaignId: campaign._id,
           email: formData.email,
+          role: formData.role,
           permissions: formData.permissions
         },
         (err, res) => {
@@ -78,7 +83,8 @@ class CampaignTeamPage extends Component {
             this.setState({
               formData: {
                 ...this.state.formData,
-                email: ""
+                email: "",
+                role: ""
               }
             });
           }
@@ -106,6 +112,7 @@ class CampaignTeamPage extends Component {
   render() {
     const { intl, campaign, user } = this.props;
     const { formData } = this.state;
+    console.log(campaign.users);
     return (
       <>
         <Nav campaign={campaign} />
@@ -122,6 +129,7 @@ class CampaignTeamPage extends Component {
                 {campaign.users.map(campaignUser => (
                   <tr key={campaignUser._id}>
                     <td>{campaignUser.name}</td>
+                    <td>{campaignUser.campaign.role}</td>
                     <td className="fill">{campaignUser.emails[0].address}</td>
                     <td>
                       {campaignUser._id == campaign.creatorId ? (
@@ -163,6 +171,14 @@ class CampaignTeamPage extends Component {
                 type="email"
                 value={formData.email}
                 name="email"
+                onChange={this._handleChange}
+              />
+            </Form.Field>
+            <Form.Field label={intl.formatMessage(messages.roleLabel)}>
+              <input
+                type="text"
+                value={formData.role}
+                name="role"
                 onChange={this._handleChange}
               />
             </Form.Field>

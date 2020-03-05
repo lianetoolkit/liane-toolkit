@@ -170,10 +170,6 @@
         "id": "app.extra_fields.new_field.label"
       },
       {
-        "defaultMessage": "Search for answers...",
-        "id": "app.faq.search.placeholder"
-      },
-      {
         "defaultMessage": "Feedback",
         "id": "app.feedback.modal_title"
       },
@@ -222,20 +218,12 @@
         "id": "app.feedback.button_label"
       },
       {
+        "defaultMessage": "Search for answers...",
+        "id": "app.faq.search.placeholder"
+      },
+      {
         "defaultMessage": "A project by Instituto Update",
         "id": "app.footer.project_by"
-      },
-      {
-        "defaultMessage": "Search for a location...",
-        "id": "app.geolocation_select.search.placeholder"
-      },
-      {
-        "defaultMessage": "State/Province",
-        "id": "app.geolocation_select.state.label"
-      },
-      {
-        "defaultMessage": "City",
-        "id": "app.geolocation_select.city.label"
       },
       {
         "defaultMessage": "Terms of Use",
@@ -250,12 +238,44 @@
         "id": "app.map_layer_select.placeholder"
       },
       {
-        "defaultMessage": "Mark all as read",
-        "id": "app.notifications.mark_all_as_read"
+        "defaultMessage": "Search for a location...",
+        "id": "app.geolocation_select.search.placeholder"
       },
       {
-        "defaultMessage": "No notifications for now!",
-        "id": "app.notifications.not_found"
+        "defaultMessage": "State/Province",
+        "id": "app.geolocation_select.state.label"
+      },
+      {
+        "defaultMessage": "City",
+        "id": "app.geolocation_select.city.label"
+      },
+      {
+        "defaultMessage": "Select your office",
+        "id": "app.office_field.placeholder"
+      },
+      {
+        "defaultMessage": "Presidency",
+        "id": "app.office_field.labels.presidency"
+      },
+      {
+        "defaultMessage": "City hall",
+        "id": "app.office_field.labels.city_hall"
+      },
+      {
+        "defaultMessage": "Senate",
+        "id": "app.office_field.labels.senate"
+      },
+      {
+        "defaultMessage": "Federal Congress",
+        "id": "app.office_field.labels.federal_congress"
+      },
+      {
+        "defaultMessage": "State Congress",
+        "id": "app.office_field.labels.state_congress"
+      },
+      {
+        "defaultMessage": "City Council",
+        "id": "app.office_field.labels.city_council"
       },
       {
         "defaultMessage": "No results",
@@ -268,6 +288,26 @@
       {
         "defaultMessage": "Calculating...",
         "id": "app.paging.loading"
+      },
+      {
+        "defaultMessage": "Mark all as read",
+        "id": "app.notifications.mark_all_as_read"
+      },
+      {
+        "defaultMessage": "No notifications for now!",
+        "id": "app.notifications.not_found"
+      },
+      {
+        "defaultMessage": "Download file",
+        "id": "app.people.exports.download"
+      },
+      {
+        "defaultMessage": "Processing export...",
+        "id": "app.people.exports.processing"
+      },
+      {
+        "defaultMessage": "Export people",
+        "id": "app.people.exports.button_label"
       },
       {
         "defaultMessage": "Date",
@@ -318,18 +358,6 @@
         "id": "app.people.history_chart.new_label"
       },
       {
-        "defaultMessage": "Download file",
-        "id": "app.people.exports.download"
-      },
-      {
-        "defaultMessage": "Processing export...",
-        "id": "app.people.exports.processing"
-      },
-      {
-        "defaultMessage": "Export people",
-        "id": "app.people.exports.button_label"
-      },
-      {
         "defaultMessage": "Are you sure you'd like to remove all people from this import?",
         "id": "app.people.lists.confirm_remove"
       },
@@ -360,34 +388,6 @@
       {
         "defaultMessage": "No import found",
         "id": "app.people.lists.table_body.not_found"
-      },
-      {
-        "defaultMessage": "Select your office",
-        "id": "app.office_field.placeholder"
-      },
-      {
-        "defaultMessage": "Presidency",
-        "id": "app.office_field.labels.presidency"
-      },
-      {
-        "defaultMessage": "City hall",
-        "id": "app.office_field.labels.city_hall"
-      },
-      {
-        "defaultMessage": "Senate",
-        "id": "app.office_field.labels.senate"
-      },
-      {
-        "defaultMessage": "Federal Congress",
-        "id": "app.office_field.labels.federal_congress"
-      },
-      {
-        "defaultMessage": "State Congress",
-        "id": "app.office_field.labels.state_congress"
-      },
-      {
-        "defaultMessage": "City Council",
-        "id": "app.office_field.labels.city_council"
       },
       {
         "defaultMessage": "Not available",
@@ -478,10 +478,6 @@
         "id": "app.skills.panflation_label"
       },
       {
-        "defaultMessage": "or",
-        "id": "app.or_label"
-      },
-      {
         "defaultMessage": "Administration",
         "id": "app.admin.nav.title"
       },
@@ -514,40 +510,8 @@
         "id": "app.admin.geolocations.name"
       },
       {
-        "defaultMessage": "Refetch Facebook Token",
-        "id": "app.admin.campaigns.refetch_fb_token"
-      },
-      {
-        "defaultMessage": "Healthy",
-        "id": "app.admin.campaigns.fb_token_label.healthy"
-      },
-      {
-        "defaultMessage": "Verifying",
-        "id": "app.admin.campaigns.fb_token_label.pending"
-      },
-      {
-        "defaultMessage": "Not valid",
-        "id": "app.admin.campaigns.fb_token_label.unhealthy"
-      },
-      {
-        "defaultMessage": "Not available",
-        "id": "app.admin.campaigns.fb_token_label.undefined"
-      },
-      {
-        "defaultMessage": "Name",
-        "id": "app.admin.users.name"
-      },
-      {
-        "defaultMessage": "Email",
-        "id": "app.admin.users.email"
-      },
-      {
-        "defaultMessage": "Account type",
-        "id": "app.admin.users.type"
-      },
-      {
-        "defaultMessage": "Created",
-        "id": "app.admin.users.created_label"
+        "defaultMessage": "or",
+        "id": "app.or_label"
       },
       {
         "defaultMessage": "Define a title for your campaign",
@@ -682,6 +646,10 @@
         "id": "app.campaign_settings.team_email_label"
       },
       {
+        "defaultMessage": "Member role",
+        "id": "app.campaign_settings.team_role_label"
+      },
+      {
         "defaultMessage": "Permissions",
         "id": "app.campaign_settings.team_permissions_label"
       },
@@ -700,6 +668,42 @@
       {
         "defaultMessage": "To add new members the user must be registered in the platform. Use the same email used on Facebook.",
         "id": "app.campaign_settings.team_description"
+      },
+      {
+        "defaultMessage": "Refetch Facebook Token",
+        "id": "app.admin.campaigns.refetch_fb_token"
+      },
+      {
+        "defaultMessage": "Healthy",
+        "id": "app.admin.campaigns.fb_token_label.healthy"
+      },
+      {
+        "defaultMessage": "Verifying",
+        "id": "app.admin.campaigns.fb_token_label.pending"
+      },
+      {
+        "defaultMessage": "Not valid",
+        "id": "app.admin.campaigns.fb_token_label.unhealthy"
+      },
+      {
+        "defaultMessage": "Not available",
+        "id": "app.admin.campaigns.fb_token_label.undefined"
+      },
+      {
+        "defaultMessage": "Name",
+        "id": "app.admin.users.name"
+      },
+      {
+        "defaultMessage": "Email",
+        "id": "app.admin.users.email"
+      },
+      {
+        "defaultMessage": "Account type",
+        "id": "app.admin.users.type"
+      },
+      {
+        "defaultMessage": "Created",
+        "id": "app.admin.users.created_label"
       },
       {
         "defaultMessage": "Donors",
@@ -1382,6 +1386,54 @@
         "id": "app.faq.create_new"
       },
       {
+        "defaultMessage": "Editing {name}",
+        "id": "app.people.edit.title"
+      },
+      {
+        "defaultMessage": "Sending private reply to {name}",
+        "id": "app.people.sending_pr.title"
+      },
+      {
+        "defaultMessage": "Edit categories",
+        "id": "app.people.table_body.edit_categories"
+      },
+      {
+        "defaultMessage": "Name",
+        "id": "app.people.table_header.name"
+      },
+      {
+        "defaultMessage": "Reactions",
+        "id": "app.people.table_header.reactions"
+      },
+      {
+        "defaultMessage": "Comments",
+        "id": "app.people.table_header.comments"
+      },
+      {
+        "defaultMessage": "Contact",
+        "id": "app.people.table_header.contact"
+      },
+      {
+        "defaultMessage": "Last interaction",
+        "id": "app.people.table_header.last_interaction"
+      },
+      {
+        "defaultMessage": "Access profile",
+        "id": "app.people.table_body.access_profile"
+      },
+      {
+        "defaultMessage": "Edit",
+        "id": "app.people.table_body.edit"
+      },
+      {
+        "defaultMessage": "{amount} comments",
+        "id": "app.people.table_body.comment_count"
+      },
+      {
+        "defaultMessage": "Send private reply",
+        "id": "app.people.table_body.private_reply_button"
+      },
+      {
         "defaultMessage": "Importing {filename}...",
         "id": "app.people.import.importing_label"
       },
@@ -1456,54 +1508,6 @@
       {
         "defaultMessage": "Field",
         "id": "app.people.import.field_label"
-      },
-      {
-        "defaultMessage": "Editing {name}",
-        "id": "app.people.edit.title"
-      },
-      {
-        "defaultMessage": "Sending private reply to {name}",
-        "id": "app.people.sending_pr.title"
-      },
-      {
-        "defaultMessage": "Edit categories",
-        "id": "app.people.table_body.edit_categories"
-      },
-      {
-        "defaultMessage": "Name",
-        "id": "app.people.table_header.name"
-      },
-      {
-        "defaultMessage": "Reactions",
-        "id": "app.people.table_header.reactions"
-      },
-      {
-        "defaultMessage": "Comments",
-        "id": "app.people.table_header.comments"
-      },
-      {
-        "defaultMessage": "Contact",
-        "id": "app.people.table_header.contact"
-      },
-      {
-        "defaultMessage": "Last interaction",
-        "id": "app.people.table_header.last_interaction"
-      },
-      {
-        "defaultMessage": "Access profile",
-        "id": "app.people.table_body.access_profile"
-      },
-      {
-        "defaultMessage": "Edit",
-        "id": "app.people.table_body.edit"
-      },
-      {
-        "defaultMessage": "{amount} comments",
-        "id": "app.people.table_body.comment_count"
-      },
-      {
-        "defaultMessage": "Send private reply",
-        "id": "app.people.table_body.private_reply_button"
       },
       {
         "defaultMessage": "Technology for Political Innovation",

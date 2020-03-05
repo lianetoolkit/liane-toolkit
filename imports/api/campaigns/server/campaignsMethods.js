@@ -150,7 +150,7 @@ export const campaignsCreate = new ValidatedMethod({
       );
     }
 
-    const users = [{ userId, role: "owner" }];
+    const users = [{ userId, admin: true }];
     let insertDoc = {
       users,
       name,
@@ -594,16 +594,16 @@ export const addUser = new ValidatedMethod({
     email: {
       type: String
     },
-    permissions: {
-      type: Object,
-      blackbox: true
-    },
     role: {
       type: String,
       optional: true
+    },
+    permissions: {
+      type: Object,
+      blackbox: true
     }
   }).validator(),
-  run({ campaignId, email, permissions, role }) {
+  run({ campaignId, email, role, permissions }) {
     logger.debug("campaigns.addUser called", { campaignId, email, role });
 
     const userId = Meteor.userId();

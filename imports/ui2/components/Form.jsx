@@ -14,7 +14,7 @@ const ContentContainer = styled.div`
 `;
 
 const FormContent = styled.div`
-  max-width: 640px;
+  max-width: 700px;
   margin: 3rem auto;
   padding: 0 3rem;
   h3 {
@@ -124,7 +124,7 @@ const ActionsContainer = styled.div`
 `;
 
 const ActionsContent = styled.div`
-  max-width: 640px;
+  max-width: 700px;
   margin: 0 auto;
   padding: 1rem 4rem;
   display: flex;

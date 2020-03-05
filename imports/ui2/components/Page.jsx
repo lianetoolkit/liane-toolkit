@@ -147,7 +147,7 @@ const ContentContainer = styled.div`
 `;
 
 const ContentBody = styled.div`
-  max-width: 640px;
+  max-width: 700px;
   margin: 3rem 0;
   padding: 0 3rem;
   @media (min-width: 1280px) {

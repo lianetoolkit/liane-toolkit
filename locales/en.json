@@ -135,6 +135,7 @@
   "app.campaign_settings.team_email_label": "Email",
   "app.campaign_settings.team_permissions_label": "Permissions",
   "app.campaign_settings.team_remove_label": "Remove user",
+  "app.campaign_settings.team_role_label": "Member role",
   "app.campaign_settings.team_title": "Team",
   "app.campaign_settings.title": "Campaign settings",
   "app.coment.you_replied": "You replied",
