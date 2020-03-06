@@ -12,7 +12,14 @@ Meteor.publishComposite("comments.byAccount", function({
 }) {
   this.unblock();
   const userId = this.userId;
-  if (Meteor.call("campaigns.canManage", { campaignId, userId })) {
+  if (
+    Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "comments",
+      permission: "view"
+    })
+  ) {
     const campaign = Campaigns.findOne(campaignId);
     if (!campaign.facebookAccount) return this.ready();
     facebookId = facebookId || campaign.facebookAccount.facebookId;
@@ -79,7 +86,14 @@ Meteor.publishComposite("comments.byPerson", function({ personId }) {
   const person = People.findOne(personId);
   const campaignId = person.campaignId;
   if (person && person.facebookId) {
-    if (Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "comments",
+        permission: "view"
+      })
+    ) {
       const campaign = Campaigns.findOne(person.campaignId);
       return {
         find: function() {

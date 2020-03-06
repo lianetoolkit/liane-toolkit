@@ -16,6 +16,12 @@ import { People } from "/imports/api/facebook/people/people.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 
+import {
+  FEATURES,
+  PERMISSIONS,
+  FEATURE_PERMISSION_MAP
+} from "/imports/utils/campaignPermissions";
+
 const PRIVATE = Meteor.settings.private;
 
 export const canManageCampaign = new ValidatedMethod({
@@ -29,6 +35,8 @@ export const canManageCampaign = new ValidatedMethod({
     }
   }).validator(),
   run({ campaignId, userId }) {
+    this.unblock();
+
     const user = Meteor.users.findOne(userId);
     if (!user) {
       throw new Meteor.Error(401, "User does not exist");
@@ -39,6 +47,73 @@ export const canManageCampaign = new ValidatedMethod({
     }
 
     return !!_.findWhere(campaign.users, { userId });
+  }
+});
+
+export const userCan = new ValidatedMethod({
+  name: "campaigns.userCan",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    userId: {
+      type: String
+    },
+    feature: {
+      type: String
+    },
+    permission: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, userId, feature, permission }) {
+    this.unblock();
+
+    if (!PERMISSIONS[permission])
+      throw new Meteor.Error(404, "Permission not found");
+
+    if (!_.find(FEATURES, f => f == feature))
+      throw new Meteor.Error(404, "Feature not found");
+
+    const user = Meteor.users.findOne(userId);
+    if (!user) {
+      throw new Meteor.Error(401, "User does not exist");
+    }
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(401, "This campaign does not exist");
+    }
+
+    const campaignUser = _.findWhere(campaign.users, { userId });
+
+    if (!campaignUser) {
+      throw new Meteor.Error(401, "User not part of the campaign");
+    }
+
+    // Admin
+    if (userId == campaign.creatorId) {
+      return true;
+    }
+
+    const userPermissions = campaignUser.permissions;
+
+    if (!userPermissions || !userPermissions[feature]) {
+      return false;
+    }
+
+    // Any permission above "view" allows view
+    if (
+      PERMISSIONS[permission] == PERMISSIONS["view"] &&
+      userPermissions[feature] >= PERMISSIONS["view"]
+    ) {
+      return true;
+    }
+
+    if (!(userPermissions[feature] & PERMISSIONS[permission])) {
+      throw true;
+    }
+
+    return false;
   }
 });
 
@@ -53,6 +128,8 @@ export const campaignHasAccount = new ValidatedMethod({
     }
   }).validator(),
   run({ campaignId, facebookId }) {
+    this.unblock();
+
     const campaign = Campaigns.findOne(campaignId);
     return (
       (campaign.facebookAccount &&
@@ -112,6 +189,8 @@ export const campaignsCreate = new ValidatedMethod({
     facebookAccountId,
     invite
   }) {
+    this.unblock();
+
     logger.debug("campaigns.create called", {
       name,
       country,

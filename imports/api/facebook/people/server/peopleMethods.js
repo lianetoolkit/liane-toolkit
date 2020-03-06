@@ -35,9 +35,11 @@ export const peopleDetail = new ValidatedMethod({
     if (!person) throw new Meteor.Error(404, "Person not found");
 
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: person.campaignId,
-        userId
+        userId,
+        feature: "people",
+        permission: "view"
       })
     )
       throw new Meteor.Error(400, "Not allowed");
@@ -252,7 +254,14 @@ export const peopleSearch = new ValidatedMethod({
     });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -294,7 +303,14 @@ export const peopleSearchCount = new ValidatedMethod({
     });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -324,7 +340,14 @@ export const peopleHistory = new ValidatedMethod({
     logger.debug("people.history called", { campaignId });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -405,7 +428,14 @@ export const peopleSummaryCounts = new ValidatedMethod({
     logger.debug("peole.summaryCounts called", { queries });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -447,9 +477,11 @@ export const peopleReplyComment = new ValidatedMethod({
       throw new Meteor.Error(401, "Person not found");
     }
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: person.campaignId,
-        userId
+        userId,
+        feature: "comments",
+        permission: "edit"
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -601,9 +633,11 @@ export const peopleSendPrivateReply = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.hasAccount", {
+      !Meteor.call("campaigns.userCan", {
         campaignId,
-        facebookId: comment.facebookAccountId
+        userId,
+        feature: "comments",
+        permission: "edit"
       })
     ) {
       throw new Meteor.Error(
@@ -738,9 +772,11 @@ export const updatePersonMeta = new ValidatedMethod({
       throw new Meteor.Error(401, "Person not found");
     }
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: person.campaignId,
-        userId
+        userId,
+        feature: "people",
+        permission: "edit"
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -777,7 +813,14 @@ export const getPersonIdFromFacebook = new ValidatedMethod({
     this.unblock();
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -813,7 +856,14 @@ export const peopleFormId = new ValidatedMethod({
     const campaignId = person.campaignId;
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId: person.campaignId,
+        userId,
+        feature: "people",
+        permission: "view"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -853,7 +903,14 @@ export const peopleCreate = new ValidatedMethod({
     logger.debug("people.create called", { campaignId, name });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "edit"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -911,7 +968,14 @@ export const peopleMetaUpdate = new ValidatedMethod({
     let $unset = {};
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "edit"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -998,9 +1062,11 @@ export const removePeople = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: person.campaignId,
-        userId
+        userId,
+        feature: "people",
+        permission: "edit"
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -1050,7 +1116,14 @@ export const exportPeople = new ValidatedMethod({
     }
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "export"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -1125,7 +1198,14 @@ export const importPeople = new ValidatedMethod({
     });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "import"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -1168,9 +1248,11 @@ export const findDuplicates = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: person.campaignId,
-        userId
+        userId,
+        feature: "people",
+        permission: "edit"
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -1220,9 +1302,11 @@ export const mergePeople = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: person.campaignId,
-        userId
+        userId,
+        feature: "people",
+        permission: "edit"
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -1605,7 +1689,14 @@ export const peopleGetTags = new ValidatedMethod({
   run({ campaignId }) {
     logger.debug("people.getTags called", { campaignId });
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     return PeopleTags.find({ campaignId }).fetch();
@@ -1625,7 +1716,14 @@ export const peopleCreateTag = new ValidatedMethod({
   run({ campaignId, name }) {
     logger.debug("peopleTags.create called", { campaignId });
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "edit"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     const res = PeopleTags.insert({ campaignId, name });
@@ -1653,7 +1751,14 @@ export const peopleListsCount = new ValidatedMethod({
       throw new Meteor.Error(404, "List not found");
     }
     const campaignId = list.campaignId;
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     return People.find({ listId }).count();
@@ -1675,7 +1780,14 @@ export const peopleListsRemove = new ValidatedMethod({
       throw new Meteor.Error(404, "List not found");
     }
     const campaignId = list.campaignId;
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "edit"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     People.remove({ listId });

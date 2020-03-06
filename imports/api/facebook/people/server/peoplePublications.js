@@ -11,7 +11,12 @@ Meteor.publish("people.map", function({ campaignId }) {
   check(campaignId, String);
   const userId = this.userId;
   const campaign = Campaigns.findOne(campaignId);
-  const allowed = _.findWhere(campaign.users, { userId });
+  const allowed = Meteor.call("campaigns.userCan", {
+    campaignId,
+    userId,
+    feature: "people",
+    permission: "view"
+  });
   if (allowed) {
     return People.find({
       campaignId,
@@ -32,7 +37,12 @@ Meteor.publish("people.search", function({ search, options }) {
   if (userId) {
     if (options.props.campaignId) {
       const campaign = Campaigns.findOne(options.props.campaignId);
-      const allowed = _.findWhere(campaign.users, { userId });
+      const allowed = Meteor.call("campaigns.userCan", {
+        campaignId: options.props.campaignId,
+        userId,
+        feature: "people",
+        permission: "view"
+      });
       if (allowed) {
         let query = {
           campaignId: options.props.campaignId
@@ -59,7 +69,14 @@ Meteor.publish("people.exports", function({ campaignId }) {
   this.unblock();
   logger.debug("people.exportJobs called", { campaignId });
   const userId = this.userId;
-  if (Meteor.call("campaigns.canManage", { userId, campaignId })) {
+  if (
+    Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "people",
+      permission: "view"
+    })
+  ) {
     return PeopleExports.find(
       { campaignId },
       {
@@ -81,7 +98,14 @@ Meteor.publish("people.exportJobCount", function({ campaignId }) {
   this.unblock();
   logger.debug("people.exportJobCount called", { campaignId });
   const userId = this.userId;
-  if (Meteor.call("campaigns.canManage", { userId, campaignId })) {
+  if (
+    Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "people",
+      permission: "view"
+    })
+  ) {
     Counts.publish(
       this,
       "people.exportJobCount",
@@ -100,7 +124,14 @@ Meteor.publish("people.importJobCount", function({ campaignId }) {
   this.unblock();
   logger.debug("people.importJobCount called", { campaignId });
   const userId = this.userId;
-  if (Meteor.call("campaigns.canManage", { userId, campaignId })) {
+  if (
+    Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "people",
+      permission: "view"
+    })
+  ) {
     Counts.publish(
       this,
       "people.importJobCount",
@@ -124,7 +155,12 @@ Meteor.publishComposite("people.detail", function({ personId }) {
     if (person) {
       const campaign = Campaigns.findOne(person.campaignId);
       const facebookId = campaign.facebookAccount.facebookId;
-      const allowed = _.findWhere(campaign.users, { userId });
+      const allowed = Meteor.call("campaigns.userCan", {
+        campaignId: person.campaignId,
+        userId,
+        feature: "people",
+        permission: "view"
+      });
       if (allowed) {
         return {
           find: function() {

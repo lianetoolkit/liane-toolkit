@@ -106,7 +106,7 @@ class PermissionsField extends Component {
     const { value } = this.state;
     if (FEATURE_PERMISSION_MAP[feature] & PERMISSIONS[permission]) {
       return (
-        <label key={`${feature}-${permission}`} className="permission-item">
+        <label className="permission-item">
           <input
             type="checkbox"
             value={PERMISSIONS[permission]}
@@ -124,11 +124,13 @@ class PermissionsField extends Component {
     return (
       <Container>
         {FEATURES.map(feature => (
-          <div>
+          <div key={feature}>
             <h3>{intl.formatMessage(featuresLabels[feature])}</h3>
-            {Object.keys(PERMISSIONS).map(permission =>
-              this._permissionItem(feature, permission)
-            )}
+            {Object.keys(PERMISSIONS).map(permission => (
+              <div key={`${feature}-${permission}`}>
+                {this._permissionItem(feature, permission)}
+              </div>
+            ))}
           </div>
         ))}
       </Container>
