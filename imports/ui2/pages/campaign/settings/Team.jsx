@@ -10,6 +10,7 @@ import ReactTooltip from "react-tooltip";
 import { get, set } from "lodash";
 
 import { alertStore } from "../../../containers/Alerts.jsx";
+import { modalStore } from "../../../containers/Modal.jsx";
 
 import Nav from "./Nav.jsx";
 import Form from "../../../components/Form.jsx";
@@ -24,7 +25,11 @@ const messages = defineMessages({
   },
   removeLabel: {
     id: "app.campaign_settings.team_remove_label",
-    defaultMessage: "Remove user"
+    defaultMessage: "Remove member"
+  },
+  editLabel: {
+    id: "app.campaign_settings.team_edit_label",
+    defaultMessage: "Edit member permissions"
   },
   emailLabel: {
     id: "app.campaign_settings.team_email_label",
@@ -41,8 +46,86 @@ const messages = defineMessages({
   addButtonLabel: {
     id: "app.campaign_settings.team_add_button_label",
     defaultMessage: "Add member"
+  },
+  updateButtonLabel: {
+    id: "app.campaign_settings.team_update_button_label",
+    defaultMessage: "Update member"
   }
 });
+
+class EditUser extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      formData: {
+        role: props.user.campaign.role,
+        permissions: props.user.campaign.permissions
+      }
+    };
+  }
+  _handleChange = ({ target }) => {
+    const newFormData = { ...this.state.formData };
+    set(newFormData, target.name, target.value);
+    this.setState({
+      formData: newFormData
+    });
+  };
+  _handleSubmit = ev => {
+    ev.preventDefault();
+    const { campaignId, user } = this.props;
+    const { formData } = this.state;
+    Meteor.call(
+      "campaigns.updateUser",
+      {
+        campaignId,
+        userId: user._id,
+        role: formData.role,
+        permissions: formData.permissions
+      },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          alertStore.add(null, "success");
+          modalStore.reset();
+        }
+      }
+    );
+  };
+  render() {
+    const { user, intl } = this.props;
+    const { formData } = this.state;
+    return (
+      <Form onSubmit={this._handleSubmit}>
+        <Form.Field label={intl.formatMessage(messages.roleLabel)}>
+          <input
+            type="text"
+            value={formData.role}
+            name="role"
+            onChange={this._handleChange}
+          />
+        </Form.Field>
+        <Form.Field label={intl.formatMessage(messages.permissionsLabel)}>
+          <PermissionsField
+            onChange={this._handleChange}
+            name="permissions"
+            value={formData.permissions}
+          />
+        </Form.Field>
+        <input
+          type="submit"
+          value={intl.formatMessage(messages.updateButtonLabel)}
+        />
+      </Form>
+    );
+  }
+}
+
+EditUser.propTypes = {
+  intl: intlShape.isRequired
+};
+
+const EditUserIntl = injectIntl(EditUser);
 
 class CampaignTeamPage extends Component {
   constructor(props) {
@@ -94,6 +177,11 @@ class CampaignTeamPage extends Component {
       alertStore.add("Preencha com um email válido", "error");
     }
   };
+  _handleEditClick = (campaignId, user) => ev => {
+    ev.preventDefault();
+    modalStore.setTitle(user.name);
+    modalStore.set(<EditUserIntl campaignId={campaignId} user={user} />);
+  };
   _handleRemoveClick = user => ev => {
     ev.preventDefault();
     const { campaign } = this.props;
@@ -112,7 +200,6 @@ class CampaignTeamPage extends Component {
   render() {
     const { intl, campaign, user } = this.props;
     const { formData } = this.state;
-    console.log(campaign.users);
     return (
       <>
         <Nav campaign={campaign} />
@@ -131,7 +218,26 @@ class CampaignTeamPage extends Component {
                     <td>{campaignUser.name}</td>
                     <td>{campaignUser.campaign.role}</td>
                     <td className="fill">{campaignUser.emails[0].address}</td>
-                    <td>
+                    {campaignUser._id != campaign.creatorId ? (
+                      <td>
+                        <a
+                          href="javascript:void(0);"
+                          data-tip={intl.formatMessage(messages.editLabel)}
+                          onClick={this._handleEditClick(
+                            campaign._id,
+                            campaignUser
+                          )}
+                        >
+                          <FontAwesomeIcon icon="edit" />
+                        </a>
+                      </td>
+                    ) : null}
+                    <td
+                      colSpan={
+                        campaignUser._id == campaign.creatorId ? "2" : "1"
+                      }
+                      style={{ textAlign: "center" }}
+                    >
                       {campaignUser._id == campaign.creatorId ? (
                         <FontAwesomeIcon
                           icon="star"

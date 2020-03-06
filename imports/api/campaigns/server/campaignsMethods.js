@@ -651,6 +651,71 @@ export const addUser = new ValidatedMethod({
   }
 });
 
+export const updateUser = new ValidatedMethod({
+  name: "campaigns.updateUser",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    userId: {
+      type: String
+    },
+    role: {
+      type: String,
+      optional: true
+    },
+    permissions: {
+      type: Object,
+      blackbox: true
+    }
+  }).validator(),
+  run({ campaignId, userId, role, permissions }) {
+    logger.debug("campaigns.updateUser called", {
+      campaignId,
+      userId,
+      role,
+      permissions
+    });
+
+    const currentUser = Meteor.userId();
+    if (!currentUser) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (
+      !Meteor.call("campaigns.canManage", { userId: currentUser, campaignId })
+    ) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    const campaignUser = _.findWhere(campaign.users, { userId });
+
+    if (!campaignUser) {
+      throw new Meteor.Error(401, "User is not part of this campaign.");
+    }
+
+    if (userId == campaign.creatorId) {
+      throw new Meteor.Error(401, "You can't change admin permissions");
+    }
+
+    Campaigns.update(
+      {
+        _id: campaignId,
+        "users.userId": userId
+      },
+      { $set: { "users.$.role": role, "users.$.permissions": permissions } }
+    );
+
+    Meteor.call("log", {
+      type: "campaigns.users.update",
+      campaignId,
+      data: { userId, role, permissions }
+    });
+  }
+});
+
 export const removeUser = new ValidatedMethod({
   name: "campaigns.removeUser",
   validate: new SimpleSchema({
