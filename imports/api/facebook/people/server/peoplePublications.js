@@ -166,52 +166,63 @@ Meteor.publishComposite("people.detail", function({ personId }) {
           find: function() {
             return People.find({ _id: personId });
           },
-          children: [
-            {
-              find(person) {
-                if (person.facebookId) {
-                  return Comments.find(
-                    { personId: person.facebookId },
-                    {
-                      sort: { created_time: -1 }
-                    }
-                  );
-                }
-              },
-              children(parentComment) {
-                let children = [
-                  {
-                    find: function(comment) {
-                      return Entries.find({ _id: comment.entryId });
-                    }
-                  },
-                  {
-                    find: function(comment) {
-                      return Comments.find(
-                        {
-                          personId: facebookId,
-                          parentId: comment._id
-                        },
-                        {
-                          sort: { created_time: -1 }
-                        }
-                      );
-                    }
+          children(person) {
+            let children = [];
+            if (
+              Meteor.call("campaigns.userCan", {
+                campaignId: person.campaignId,
+                userId,
+                feature: "comments",
+                permission: "view"
+              })
+            ) {
+              children.push({
+                find(person) {
+                  if (person.facebookId) {
+                    return Comments.find(
+                      { personId: person.facebookId },
+                      {
+                        sort: { created_time: -1 }
+                      }
+                    );
                   }
-                ];
-                if (parentComment.parentId) {
-                  children.push({
-                    find: function(comment) {
-                      if (comment.parentId) {
-                        return Comments.find({ _id: comment.parentId });
+                },
+                children(parentComment) {
+                  let children = [
+                    {
+                      find: function(comment) {
+                        return Entries.find({ _id: comment.entryId });
+                      }
+                    },
+                    {
+                      find: function(comment) {
+                        return Comments.find(
+                          {
+                            personId: facebookId,
+                            parentId: comment._id
+                          },
+                          {
+                            sort: { created_time: -1 }
+                          }
+                        );
                       }
                     }
-                  });
+                  ];
+                  if (parentComment.parentId) {
+                    children.push({
+                      find: function(comment) {
+                        if (comment.parentId) {
+                          return Comments.find({ _id: comment.parentId });
+                        }
+                      }
+                    });
+                  }
+                  return children;
                 }
-                return children;
-              }
+              });
             }
-          ]
+            return children;
+          }
         };
       }
     }
@@ -227,7 +238,12 @@ Meteor.publish("people.tags", function({ campaignId }) {
     if (!campaign) {
       return this.ready();
     }
-    const allowed = _.findWhere(campaign.users, { userId });
+    const allowed = Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "people",
+      permission: "view"
+    });
     if (allowed) {
       return PeopleTags.find({ campaignId });
     }
@@ -282,7 +298,13 @@ Meteor.publish("peopleLists.byCampaign", function({ campaignId }) {
   this.unblock();
   const userId = this.userId;
   const campaign = Campaigns.findOne(campaignId);
-  if (campaign && _.findWhere(campaign.users, { userId })) {
+  const allowed = Meteor.call("campaigns.userCan", {
+    campaignId,
+    userId,
+    feature: "people",
+    permission: "view"
+  });
+  if (campaign && allowed) {
     return PeopleLists.find({ campaignId });
   }
   return this.ready();
