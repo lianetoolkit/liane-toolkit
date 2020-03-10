@@ -96,6 +96,7 @@ export default withTracker(props => {
       fields: {
         name: 1,
         users: 1,
+        country: 1,
         facebookAccount: 1,
         candidate: 1,
         party: 1,
@@ -150,18 +151,22 @@ export default withTracker(props => {
       ? Campaigns.findOne(campaignId, currentCampaignOptions)
       : null;
 
-    // Tags
-    const tagsHandle = AppSubs.subscribe("people.tags", {
-      campaignId
-    });
-    tags = tagsHandle.ready() ? PeopleTags.find({ campaignId }).fetch() : [];
-
     if (campaign) {
       // Lists
       lists = PeopleLists.find({ campaignId }).fetch();
       // Set campaign country
       ClientStorage.set("country", campaign.country);
+      // Set user permissions
+      const campaignUser = campaign.users.find(u => u._id == Meteor.userId());
+      ClientStorage.set("admin", campaign.creatorId == Meteor.userId());
+      ClientStorage.set("permissions", campaignUser.campaign.permissions);
     }
+
+    // Tags
+    const tagsHandle = AppSubs.subscribe("people.tags", {
+      campaignId
+    });
+    tags = tagsHandle.ready() ? PeopleTags.find({ campaignId }).fetch() : [];
 
     // Campaign jobs
     const jobsHandle = AppSubs.subscribe("jobs.byCampaign", { campaignId });

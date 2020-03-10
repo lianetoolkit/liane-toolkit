@@ -9,6 +9,8 @@ import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { userCan } from "/imports/ui2/utils/permissions";
+
 import { modalStore } from "../containers/Modal.jsx";
 import { alertStore } from "../containers/Alerts.jsx";
 
@@ -138,14 +140,18 @@ class FAQView extends Component {
             <FontAwesomeIcon icon="copy" />{" "}
             <FormattedMessage id="app.faq.copy" />
           </CopyToClipboard>
-          <a href="javascript:void(0);" onClick={this._handleEditClick}>
-            <FontAwesomeIcon icon="edit" />{" "}
-            <FormattedMessage id="app.faq.edit" />
-          </a>
-          <a href="javascript:void(0);" onClick={this._handleRemoveClick}>
-            <FontAwesomeIcon icon="times" />{" "}
-            <FormattedMessage id="app.faq.remove" />
-          </a>
+          {userCan("edit", "faq") ? (
+            <>
+              <a href="javascript:void(0);" onClick={this._handleEditClick}>
+                <FontAwesomeIcon icon="edit" />{" "}
+                <FormattedMessage id="app.faq.edit" />
+              </a>
+              <a href="javascript:void(0);" onClick={this._handleRemoveClick}>
+                <FontAwesomeIcon icon="times" />{" "}
+                <FormattedMessage id="app.faq.remove" />
+              </a>
+            </>
+          ) : null}
         </aside>
       </ViewContainer>
     );
@@ -448,26 +454,30 @@ class FAQPage extends Component {
                   defaultMessage="Create answers to frequently asked questions to optimize your campaign communication."
                 />
               </p>
-              <Button primary onClick={this._handleNewClick}>
-                <FormattedMessage
-                  id="app.faq.create_first"
-                  defaultMessage="Create your first answer"
-                />
-              </Button>
+              {userCan("edit", "faq") ? (
+                <Button primary onClick={this._handleNewClick}>
+                  <FormattedMessage
+                    id="app.faq.create_first"
+                    defaultMessage="Create your first answer"
+                  />
+                </Button>
+              ) : null}
             </div>
           ) : (
             <>
-              <div className="page-actions">
-                <Button
-                  className="button new-faq"
-                  onClick={this._handleNewClick}
-                >
-                  <FormattedMessage
-                    id="app.faq.create_new"
-                    defaultMessage="+ Create new answer"
-                  />
-                </Button>
-              </div>
+              {userCan("edit", "faq") ? (
+                <div className="page-actions">
+                  <Button
+                    className="button new-faq"
+                    onClick={this._handleNewClick}
+                  >
+                    <FormattedMessage
+                      id="app.faq.create_new"
+                      defaultMessage="+ Create new answer"
+                    />
+                  </Button>
+                </div>
+              ) : null}
               <section className="faq-list">
                 {faq.map(item => (
                   <article key={item._id} className="faq-item">
@@ -499,14 +509,16 @@ class FAQPage extends Component {
                         >
                           <FontAwesomeIcon icon="eye" />
                         </a>
-                        <a
-                          href="javascript:void(0);"
-                          onClick={this._handleEditClick(item)}
-                          data-tip={intl.formatMessage(messages.edit)}
-                          data-for={`faq-${item._id}`}
-                        >
-                          <FontAwesomeIcon icon="edit" />
-                        </a>
+                        {userCan("edit", "faq") ? (
+                          <a
+                            href="javascript:void(0);"
+                            onClick={this._handleEditClick(item)}
+                            data-tip={intl.formatMessage(messages.edit)}
+                            data-for={`faq-${item._id}`}
+                          >
+                            <FontAwesomeIcon icon="edit" />
+                          </a>
+                        ) : null}
                       </aside>
                       <ReactTooltip id={`faq-${item._id}`} effect="solid" />
                     </section>

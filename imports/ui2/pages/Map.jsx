@@ -20,6 +20,8 @@ import {
 import L from "leaflet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { userCan } from "/imports/ui2/utils/permissions";
+
 import { alertStore } from "../containers/Alerts.jsx";
 
 import EditControl from "../components/EditControl.jsx";
@@ -56,6 +58,10 @@ const messages = defineMessages({
   formMapLayerLabel: {
     id: "app.map.layer_select_label",
     defaultMessage: "Select or create a map layer"
+  },
+  formMapLayerReadLabel: {
+    id: "app.map.layer_read_label",
+    defaultMessage: "Layer"
   },
   formSave: {
     id: "app.forms.save",
@@ -745,19 +751,21 @@ class MapPage extends Component {
                 opacity={0.75}
               />
               <FeatureGroup ref="featureGroup">
-                <EditControl
-                  position="bottomright"
-                  onMounted={this._handleMount}
-                  onEdited={this._handleFeatureEdit}
-                  onCreated={this._handleFeatureCreate}
-                  draw={{
-                    rectangle: false,
-                    circle: false,
-                    circlemarker: false
-                  }}
-                  edit={{ remove: false }}
-                  addOnCreate={false}
-                />
+                {userCan("edit", "map") ? (
+                  <EditControl
+                    position="bottomright"
+                    onMounted={this._handleMount}
+                    onEdited={this._handleFeatureEdit}
+                    onCreated={this._handleFeatureCreate}
+                    draw={{
+                      rectangle: false,
+                      circle: false,
+                      circlemarker: false
+                    }}
+                    edit={{ remove: false }}
+                    addOnCreate={false}
+                  />
+                ) : null}
               </FeatureGroup>
               {layers.people ? (
                 <PeopleMapLayer
@@ -883,7 +891,7 @@ class MapPage extends Component {
                   </li> */}
                 </LayerFilter>
               </Tool>
-              {mapFeatures.length ? (
+              {mapFeatures.length && userCan("export", "map") ? (
                 <Tool transparent>
                   <Button href="javascript:void(0);" onClick={this._export}>
                     <span className="icon">
@@ -915,42 +923,53 @@ class MapPage extends Component {
                     name="title"
                     value={this.getFeatureValue("title")}
                     onChange={this._handleFeatureChange}
+                    disabled={!userCan("edit", "map")}
                   />
                   <textarea
                     placeholder={intl.formatMessage(messages.formDescription)}
                     name="description"
                     value={this.getFeatureValue("description")}
                     onChange={this._handleFeatureChange}
+                    disabled={!userCan("edit", "map")}
                   />
-                  <ColorSelector
-                    name="color"
-                    value={this.getFeatureValue("color")}
-                    onChange={this._handleFeatureChange}
-                  />
+                  {userCan("edit", "map") ? (
+                    <ColorSelector
+                      name="color"
+                      value={this.getFeatureValue("color")}
+                      onChange={this._handleFeatureChange}
+                    />
+                  ) : null}
                   <Form.Field
-                    label={intl.formatMessage(messages.formMapLayerLabel)}
+                    label={intl.formatMessage(
+                      userCan("edit", "map")
+                        ? messages.formMapLayerLabel
+                        : messages.formMapLayerReadLabel
+                    )}
                   >
                     <MapLayerSelect
                       name="mapLayerId"
                       value={this.getFeatureValue("mapLayerId")}
                       onChange={this._handleFeatureChange}
+                      disabled={!userCan("edit", "map")}
                     />
                   </Form.Field>
-                  <div className="actions">
-                    <a
-                      className="button delete"
-                      onClick={this._handleRemoveClick}
-                    >
-                      <FormattedMessage
-                        id="app.forms.remove"
-                        defaultMessage="Remove"
+                  {userCan("edit", "map") ? (
+                    <div className="actions">
+                      <a
+                        className="button delete"
+                        onClick={this._handleRemoveClick}
+                      >
+                        <FormattedMessage
+                          id="app.forms.remove"
+                          defaultMessage="Remove"
+                        />
+                      </a>
+                      <input
+                        type="submit"
+                        value={intl.formatMessage(messages.formSave)}
                       />
-                    </a>
-                    <input
-                      type="submit"
-                      value={intl.formatMessage(messages.formSave)}
-                    />
-                  </div>
+                    </div>
+                  ) : null}
                 </Form>
               </div>
             ) : null}

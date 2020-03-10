@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
+import { userCan } from "/imports/ui2/utils/permissions";
+
 import { alertStore } from "../containers/Alerts.jsx";
 
 import PersonMetaButtons from "./PersonMetaButtons.jsx";
@@ -112,6 +114,7 @@ export default class PersonNamePopup extends Component {
                   <PersonMetaButtons
                     person={person}
                     onChange={this._handleChange}
+                    readOnly={!userCan("categorize", "people")}
                   />
                   <PersonFormInfo person={person} simple />
                   <PersonTags tags={person.tags} person={person} />

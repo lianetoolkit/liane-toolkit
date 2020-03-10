@@ -9,6 +9,8 @@ import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find } from "lodash";
 
+import { userCan } from "/imports/ui2/utils/permissions";
+
 import Dropdown from "./AppNavDropdown.jsx";
 import NotificationsNav from "./NotificationsPopup.jsx";
 
@@ -185,7 +187,7 @@ class SettingsNav extends Component {
         trigger={<FontAwesomeIcon icon="cog" />}
       >
         <Dropdown.Content>
-          {campaign ? (
+          {campaign && userCan("admin") ? (
             <>
               <Dropdown.NavItem href={FlowRouter.path("App.campaign.settings")}>
                 <FormattedMessage
@@ -272,79 +274,75 @@ class AppNav extends Component {
                 {campaigns.length > 1 ? (
                   <NavItem name={<CampaignNav campaigns={campaigns} />} clean />
                 ) : null}
-                <NavItem
-                  href={FlowRouter.path("App.map")}
-                  name={intl.formatMessage(messages.intelligenceStrategy)}
-                >
-                  <ul>
-                    {/* <li>
-                      <a href="javascript:void(0);" className="disabled">
-                        <FormattedMessage
-                          id="app.nav.my_audience"
-                          defaultMessage="My audience"
-                        />{" "}
-                        <span className="info">
-                          (
+                {userCan("view", "map") ? (
+                  <NavItem
+                    href={FlowRouter.path("App.map")}
+                    name={intl.formatMessage(messages.intelligenceStrategy)}
+                  >
+                    <ul>
+                      <li>
+                        <a href={FlowRouter.path("App.map")}>
                           <FormattedMessage
-                            id="app.soon"
-                            defaultMessage="soon"
+                            id="app.nav.territories"
+                            defaultMessage="Territories"
                           />
-                          )
-                        </span>
-                      </a>
-                    </li> */}
-                    <li>
-                      <a href={FlowRouter.path("App.map")}>
-                        <FormattedMessage
-                          id="app.nav.territories"
-                          defaultMessage="Territories"
-                        />
-                      </a>
-                    </li>
-                  </ul>
-                </NavItem>
-                <NavItem
-                  href={FlowRouter.path("App.people")}
-                  name={intl.formatMessage(messages.peopleCommunication)}
-                >
-                  <ul>
-                    <li>
-                      <a href={FlowRouter.path("App.people")}>
-                        <FormattedMessage
-                          id="app.nav.people_directory"
-                          defaultMessage="People directory"
-                        />
-                      </a>
-                    </li>
-                    <li>
-                      <a href={FlowRouter.path("App.comments")}>
-                        <FormattedMessage
-                          id="app.nav.manage_comments"
-                          defaultMessage="Manage comments"
-                        />
-                      </a>
-                    </li>
-                    {/* <li>
+                        </a>
+                      </li>
+                    </ul>
+                  </NavItem>
+                ) : null}
+                {userCan("view", "people", "comments", "faq", "form") ? (
+                  <NavItem
+                    href="javascript:void(0);"
+                    name={intl.formatMessage(messages.peopleCommunication)}
+                  >
+                    <ul>
+                      {userCan("view", "people") ? (
+                        <li>
+                          <a href={FlowRouter.path("App.people")}>
+                            <FormattedMessage
+                              id="app.nav.people_directory"
+                              defaultMessage="People directory"
+                            />
+                          </a>
+                        </li>
+                      ) : null}
+                      {userCan("view", "comments") ? (
+                        <li>
+                          <a href={FlowRouter.path("App.comments")}>
+                            <FormattedMessage
+                              id="app.nav.manage_comments"
+                              defaultMessage="Manage comments"
+                            />
+                          </a>
+                        </li>
+                      ) : null}
+                      {/* <li>
                       <a href={FlowRouter.path("App.chatbot")}>Chatbot</a>
                     </li> */}
-                    <li>
-                      <a href={FlowRouter.path("App.faq")}>
-                        <FormattedMessage
-                          id="app.nav.faq"
-                          defaultMessage="Frequently asked questions"
-                        />
-                      </a>
-                    </li>
-                    <li>
-                      <a href={FlowRouter.path("App.formSettings")}>
-                        <FormattedMessage
-                          id="app.nav.form"
-                          defaultMessage="Form settings"
-                        />
-                      </a>
-                    </li>
-                  </ul>
-                </NavItem>
+                      {userCan("view", "faq") ? (
+                        <li>
+                          <a href={FlowRouter.path("App.faq")}>
+                            <FormattedMessage
+                              id="app.nav.faq"
+                              defaultMessage="Frequently asked questions"
+                            />
+                          </a>
+                        </li>
+                      ) : null}
+                      {userCan("edit", "form") ? (
+                        <li>
+                          <a href={FlowRouter.path("App.formSettings")}>
+                            <FormattedMessage
+                              id="app.nav.form"
+                              defaultMessage="Form settings"
+                            />
+                          </a>
+                        </li>
+                      ) : null}
+                    </ul>
+                  </NavItem>
+                ) : null}
                 <NavItem
                   href="https://canvas.liane.cc"
                   target="_blank"

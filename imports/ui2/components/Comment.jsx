@@ -9,6 +9,8 @@ import {
 import styled from "styled-components";
 import moment from "moment";
 
+import { userCan } from "/imports/ui2/utils/permissions";
+
 import { modalStore } from "../containers/Modal.jsx";
 
 import Button from "./Button.jsx";
@@ -300,7 +302,7 @@ class Comment extends Component {
                   ))}
                 </>
               ) : null}
-              {actions ? (
+              {actions && userCan("edit", "comments") ? (
                 <div className="comment-fb-actions">
                   <Button
                     onClick={this._handleReplyClick}

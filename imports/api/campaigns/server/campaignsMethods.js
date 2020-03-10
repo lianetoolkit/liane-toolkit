@@ -109,8 +109,8 @@ export const userCan = new ValidatedMethod({
       return true;
     }
 
-    if (!(userPermissions[feature] & PERMISSIONS[permission])) {
-      throw true;
+    if (userPermissions[feature] & PERMISSIONS[permission]) {
+      return true;
     }
 
     return false;

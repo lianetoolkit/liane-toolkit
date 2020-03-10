@@ -12,6 +12,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import { get, debounce } from "lodash";
 
+import { userCan } from "/imports/ui2/utils/permissions";
+
 import { modalStore } from "../containers/Modal.jsx";
 
 import Table from "./Table.jsx";
@@ -480,38 +482,46 @@ class PeopleTable extends Component {
                   onClick={this.expand(person)}
                 >
                   <td style={{ width: "20px", textAlign: "center" }}>
-                    <Popup
-                      trigger={open => (
-                        <div data-tip data-for={`person-meta-${person._id}`}>
-                          {this.hasMeta(person) ? (
-                            <PersonMetaCircles person={person} />
-                          ) : (
-                            <FontAwesomeIcon
-                              icon="grip-horizontal"
-                              className="meta-trigger"
-                            />
-                          )}
-                        </div>
-                      )}
-                      direction="top left"
-                      rounded
-                    >
-                      <PersonMetaButtons
-                        person={person}
-                        onChange={this._handleMetaButtonsChange}
-                        interactive
-                      />
-                    </Popup>
-                    <ReactTooltip
-                      id={`person-meta-${person._id}`}
-                      aria-haspopup="true"
-                      place="left"
-                      effect="solid"
-                    >
-                      {this.hasMeta(person)
-                        ? this.personCategoriesText(person)
-                        : intl.formatMessage(messages.editCategories)}
-                    </ReactTooltip>
+                    {userCan("categorize", "people") ? (
+                      <Popup
+                        trigger={open => (
+                          <div data-tip data-for={`person-meta-${person._id}`}>
+                            {this.hasMeta(person) ? (
+                              <PersonMetaCircles person={person} />
+                            ) : (
+                              <FontAwesomeIcon
+                                icon="grip-horizontal"
+                                className="meta-trigger"
+                              />
+                            )}
+                          </div>
+                        )}
+                        direction="top left"
+                        rounded
+                      >
+                        <PersonMetaButtons
+                          person={person}
+                          onChange={this._handleMetaButtonsChange}
+                          interactive
+                        />
+                      </Popup>
+                    ) : (
+                      <div data-tip data-for={`person-meta-${person._id}`}>
+                        <PersonMetaCircles person={person} />
+                      </div>
+                    )}
+                    {this.hasMeta(person) || userCan("categorize", "people") ? (
+                      <ReactTooltip
+                        id={`person-meta-${person._id}`}
+                        aria-haspopup="true"
+                        place="left"
+                        effect="solid"
+                      >
+                        {this.hasMeta(person)
+                          ? this.personCategoriesText(person)
+                          : intl.formatMessage(messages.editCategories)}
+                      </ReactTooltip>
+                    ) : null}
                   </td>
                   {chatColumn ? (
                     <td>
@@ -530,15 +540,17 @@ class PeopleTable extends Component {
                           defaultMessage="Access profile"
                         />
                       </a>
-                      <a
-                        href="javascript:void(0);"
-                        onClick={this._handleEditClick(person)}
-                      >
-                        <FormattedMessage
-                          id="app.people.table_body.edit"
-                          defaultMessage="Edit"
-                        />
-                      </a>
+                      {userCan("edit", "people") ? (
+                        <a
+                          href="javascript:void(0);"
+                          onClick={this._handleEditClick(person)}
+                        >
+                          <FormattedMessage
+                            id="app.people.table_body.edit"
+                            defaultMessage="Edit"
+                          />
+                        </a>
+                      ) : null}
                     </p>
                     <span className="person-name">
                       {person.name}

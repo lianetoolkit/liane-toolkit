@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { userCan } from "/imports/ui2/utils/permissions";
+
 import { modalStore } from "../containers/Modal.jsx";
 
 import Page from "../components/Page.jsx";
@@ -272,19 +274,23 @@ export default class PeopleSingle extends Component {
             >
               Reactions
             </a>
-            <a
-              href={FlowRouter.path(
-                "App.people.detail",
-                { personId: person._id },
-                { section: "comments" }
-              )}
-              className={section == "comments" ? "active" : ""}
-            >
-              Comments
-            </a>
-            <a href="javascript:void(0);" onClick={this._handleEditClick}>
-              Edit profile
-            </a>
+            {userCan("view", "comments") ? (
+              <a
+                href={FlowRouter.path(
+                  "App.people.detail",
+                  { personId: person._id },
+                  { section: "comments" }
+                )}
+                className={section == "comments" ? "active" : ""}
+              >
+                Comments
+              </a>
+            ) : null}
+            {userCan("edit", "people") ? (
+              <a href="javascript:void(0);" onClick={this._handleEditClick}>
+                Edit profile
+              </a>
+            ) : null}
           </Page.Nav>
           <div className="person-container">
             <header className="person-header">
@@ -297,7 +303,9 @@ export default class PeopleSingle extends Component {
                   </li>
                 </ul>
               </div>
-              <PersonMetaButtons person={person} />
+              {userCan("categorize", "people") ? (
+                <PersonMetaButtons person={person} />
+              ) : null}
             </header>
             <div className="person-content">
               {!section ? <Information person={person} tags={tags} /> : null}

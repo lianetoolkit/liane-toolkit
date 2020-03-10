@@ -218,13 +218,13 @@ class PersonMetaButtons extends React.Component {
             if (onChange) {
               onChange(data);
             }
-            this.setState({
-              loading: {
-                [key]: false
-              }
-            });
             person.campaignMeta[key] = data.metaValue;
           }
+          this.setState({
+            loading: {
+              [key]: false
+            }
+          });
         });
       };
     } else {

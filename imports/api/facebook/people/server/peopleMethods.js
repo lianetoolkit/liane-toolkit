@@ -622,9 +622,6 @@ export const peopleSendPrivateReply = new ValidatedMethod({
     });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
-      throw new Meteor.Error(401, "You are not allowed to do this action");
-    }
 
     const comment = Comments.findOne(commentId);
 
@@ -776,7 +773,7 @@ export const updatePersonMeta = new ValidatedMethod({
         campaignId: person.campaignId,
         userId,
         feature: "people",
-        permission: "edit"
+        permission: "categorize"
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");

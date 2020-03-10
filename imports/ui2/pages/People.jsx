@@ -12,6 +12,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import { get, pick, debounce, defaultsDeep } from "lodash";
 
+import { userCan } from "/imports/ui2/utils/permissions";
+
 import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
 
@@ -693,44 +695,48 @@ class PeoplePage extends Component {
             </div>
             <div className="actions">
               <Button.Group vertical attached>
-                <Button.WithIcon>
-                  <PeopleExport
-                    query={query}
-                    options={this.buildOptions(options)}
-                    running={exportCount}
-                    peopleExports={peopleExports}
-                  >
-                    <FormattedMessage
-                      id="app.people.export_results.label"
-                      defaultMessage="Export results"
-                    />
-                  </PeopleExport>
-                  <a
-                    href="javascript:void(0);"
-                    className="icon"
-                    onClick={this._handleManageExportsClick}
-                  >
-                    <FontAwesomeIcon
-                      icon="cog"
-                      data-tip={intl.formatMessage(messages.manageExports)}
-                      data-for="people-actions"
-                    />
-                  </a>
-                </Button.WithIcon>
-                <Button.WithIcon>
-                  <PersonImportButton importCount={importCount} />
-                  <a
-                    href="javascript:void(0);"
-                    className="icon"
-                    onClick={this._handleManageImportsClick}
-                  >
-                    <FontAwesomeIcon
-                      icon="cog"
-                      data-tip={intl.formatMessage(messages.manageImports)}
-                      data-for="people-actions"
-                    />
-                  </a>
-                </Button.WithIcon>
+                {userCan("export", "people") ? (
+                  <Button.WithIcon>
+                    <PeopleExport
+                      query={query}
+                      options={this.buildOptions(options)}
+                      running={exportCount}
+                      peopleExports={peopleExports}
+                    >
+                      <FormattedMessage
+                        id="app.people.export_results.label"
+                        defaultMessage="Export results"
+                      />
+                    </PeopleExport>
+                    <a
+                      href="javascript:void(0);"
+                      className="icon"
+                      onClick={this._handleManageExportsClick}
+                    >
+                      <FontAwesomeIcon
+                        icon="cog"
+                        data-tip={intl.formatMessage(messages.manageExports)}
+                        data-for="people-actions"
+                      />
+                    </a>
+                  </Button.WithIcon>
+                ) : null}
+                {userCan("import", "people") ? (
+                  <Button.WithIcon>
+                    <PersonImportButton importCount={importCount} />
+                    <a
+                      href="javascript:void(0);"
+                      className="icon"
+                      onClick={this._handleManageImportsClick}
+                    >
+                      <FontAwesomeIcon
+                        icon="cog"
+                        data-tip={intl.formatMessage(messages.manageImports)}
+                        data-for="people-actions"
+                      />
+                    </a>
+                  </Button.WithIcon>
+                ) : null}
               </Button.Group>
             </div>
             <ReactTooltip id="people-actions" place="top" effect="solid" />
@@ -779,9 +785,11 @@ class PeoplePage extends Component {
               scrollable
             />
           )}
-          <div className="new-person">
-            <Button onClick={this._handleNewClick}>+ New person</Button>
-          </div>
+          {userCan("edit", "people") ? (
+            <div className="new-person">
+              <Button onClick={this._handleNewClick}>+ New person</Button>
+            </div>
+          ) : null}
         </PeopleContent>
       </>
     );
