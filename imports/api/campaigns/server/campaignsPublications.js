@@ -78,9 +78,9 @@ Meteor.publish("campaigns.byUser", function() {
       },
       {
         fields: {
+          _id: 1,
           name: 1,
-          users: 1,
-          accounts: 1
+          users: 1
         }
       }
     );
@@ -120,106 +120,100 @@ Meteor.publishComposite("campaigns.publicDetail", function({
 
 Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
   this.unblock();
-  const currentUser = this.userId;
+  const userId = this.userId;
   logger.debug("campaigns.detail pub", { campaignId });
+  let fields = {
+    "facebookAccount.facebookId": 1,
+    name: 1,
+    candidate: 1,
+    party: 1,
+    office: 1,
+    country: 1,
+    creatorId: 1,
+    geolocationId: 1,
+    status: 1,
+    forms: 1,
+    createdAt: 1
+  };
+  let children = [
+    {
+      find: function(campaign) {
+        let ids = _.pluck(campaign.accounts || [], "facebookId");
+        if (campaign.facebookAccount)
+          ids.push(campaign.facebookAccount.facebookId);
+        return FacebookAccounts.find({
+          facebookId: { $in: ids }
+        });
+      }
+    },
+    {
+      find: function(campaign) {
+        return Geolocations.find({ _id: campaign.geolocationId });
+      }
+    }
+  ];
+  const campaign = Campaigns.findOne(campaignId);
+
+  // Creator extra data
+  if (campaign.creatorId == userId) {
+    console.log("fetching users");
+    fields.users = 1;
+    children.push({
+      find: function(campaign) {
+        return Meteor.users.find(
+          {
+            _id: { $in: _.pluck(campaign.users, "userId") }
+          },
+          {
+            fields: {
+              name: 1,
+              "emails.address": 1
+            }
+          }
+        );
+      }
+    });
+  } else {
+    fields["users.userId"] = 1;
+  }
+
+  // People view permission extra data
   if (
-    currentUser &&
-    Meteor.call("campaigns.canManage", { campaignId, userId: currentUser })
+    Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "people",
+      permission: "view"
+    })
   ) {
+    children.push({
+      find: function(campaign) {
+        return PeopleTags.find({
+          campaignId: campaign._id
+        });
+      }
+    });
+    children.push({
+      find: function(campaign) {
+        return PeopleLists.find({
+          campaignId: campaign._id
+        });
+      }
+    });
+  }
+
+  if (userId) {
     return {
       find: function() {
         return Campaigns.find(
           {
             _id: campaignId,
-            users: { $elemMatch: { userId: currentUser } }
+            users: { $elemMatch: { userId } }
           },
-          {
-            fields: {
-              country: 1,
-              creatorId: 1,
-              users: 1,
-              accounts: 1,
-              facebookAccount: 1,
-              name: 1,
-              description: 1,
-              geolocationId: 1,
-              contextId: 1,
-              status: 1,
-              forms: 1,
-              createdAt: 1
-            }
-          }
+          { fields }
         );
       },
-      children: [
-        {
-          find: function(campaign) {
-            let ids = _.pluck(campaign.accounts, "facebookId");
-            if (campaign.facebookAccount)
-              ids.push(campaign.facebookAccount.facebookId);
-            return FacebookAccounts.find({
-              facebookId: { $in: ids }
-            });
-          }
-        },
-        {
-          find: function(campaign) {
-            return PeopleTags.find({
-              campaignId: campaign._id
-            });
-          }
-        },
-        {
-          find: function(campaign) {
-            return PeopleLists.find({
-              campaignId: campaign._id
-            });
-          }
-        },
-        {
-          find: function(campaign) {
-            return Meteor.users.find(
-              {
-                _id: { $in: _.pluck(campaign.users, "userId") }
-              },
-              {
-                fields: {
-                  name: 1,
-                  "emails.address": 1
-                }
-              }
-            );
-          }
-        },
-        {
-          find: function(campaign) {
-            return Geolocations.find({ _id: campaign.geolocationId });
-          }
-        },
-        {
-          find: function(campaign) {
-            return Contexts.find({
-              _id: campaign.contextId
-            });
-          },
-          children: [
-            {
-              find: function(context) {
-                return Geolocations.find(
-                  {
-                    _id: { $in: context.geolocations }
-                  },
-                  {
-                    fields: {
-                      name: 1
-                    }
-                  }
-                );
-              }
-            }
-          ]
-        }
-      ]
+      children
     };
   } else {
     return this.ready();

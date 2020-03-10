@@ -93,6 +93,18 @@ export default withTracker(props => {
   let exportCount = 0;
   if (campaignId) {
     const currentCampaignOptions = {
+      fields: {
+        name: 1,
+        users: 1,
+        facebookAccount: 1,
+        candidate: 1,
+        party: 1,
+        office: 1,
+        creatorId: 1,
+        geolocationId: 1,
+        forms: 1,
+        createdAt: 1
+      },
       transform: function(campaign) {
         let accountsMap = {};
         if (campaign.accounts) {
