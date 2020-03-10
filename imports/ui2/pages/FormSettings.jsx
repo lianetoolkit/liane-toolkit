@@ -11,6 +11,7 @@ import { alertStore } from "../containers/Alerts.jsx";
 
 import Select from "react-select";
 
+import Page from "../components/Page.jsx";
 import Form from "../components/Form.jsx";
 import PersonFormInfo from "../components/PersonFormInfo.jsx";
 
@@ -141,87 +142,85 @@ class FormSettingsPage extends Component {
     const { intl, campaign } = this.props;
     const { formData } = this.state;
     return (
-      <>
-        <Form onSubmit={this._handleSubmit}>
-          <Form.Content>
-            <h3>
-              <FormattedMessage
-                id="app.form_settings.form_settings_title"
-                defaultMessage="Form settings"
-              />
-            </h3>
-            <p>
-              <FormattedMessage
-                id="app.form_settings.form_settings_description"
-                defaultMessage="Use the form to invite your audience to your campaign! Besides the link below, there's also an exclusive link for each person in your directory, improving data integration."
-              />
-            </p>
-            <PersonFormInfo />
-            <Form.Field
-              label={intl.formatMessage(messages.urlPathLabel)}
-              prefix={FlowRouter.url("")}
-            >
-              <input
-                type="text"
-                placeholder={intl.formatMessage(messages.urlPathPlaceholder)}
-                name="slug"
-                value={this.getValue("slug")}
-                onChange={this._handleChange}
-              />
-            </Form.Field>
-            <Form.Field label={intl.formatMessage(messages.formLanguageLabel)}>
-              <Select
-                classNamePrefix="select-search"
-                cacheOptions
-                isSearchable={true}
-                placeholder={intl.formatMessage(messages.defaultLanguageLabel)}
-                options={this._getFormLanguageOptions()}
-                onChange={selected => {
-                  this._handleChange({
-                    target: {
-                      name: "crm.language",
-                      value: selected.value
-                    }
-                  });
-                }}
-                name="crm.language"
-                value={this._getFormLanguageValue()}
-              />
-            </Form.Field>
-            <Form.Field label={intl.formatMessage(messages.formTitleLabel)}>
-              <input
-                type="text"
-                name="crm.header"
-                value={this.getValue("crm.header")}
-                onChange={this._handleChange}
-              />
-            </Form.Field>
-            <Form.Field
-              label={intl.formatMessage(messages.formPresentationLabel)}
-            >
-              <textarea
-                name="crm.text"
-                value={this.getValue("crm.text")}
-                onChange={this._handleChange}
-              />
-            </Form.Field>
-            <Form.Field label={intl.formatMessage(messages.formThanksLabel)}>
-              <textarea
-                name="crm.thanks"
-                value={this.getValue("crm.thanks")}
-                onChange={this._handleChange}
-              />
-            </Form.Field>
-          </Form.Content>
-          <Form.Actions>
-            <input
-              type="submit"
-              disabled={!this._filledForm()}
-              value={intl.formatMessage(messages.saveLabel)}
+      <Form onSubmit={this._handleSubmit}>
+        <Form.Content>
+          <Page.Title>
+            <FormattedMessage
+              id="app.form_settings.form_settings_title"
+              defaultMessage="Form settings"
             />
-          </Form.Actions>
-        </Form>
-      </>
+          </Page.Title>
+          <p>
+            <FormattedMessage
+              id="app.form_settings.form_settings_description"
+              defaultMessage="Use the form to invite your audience to your campaign! Besides the link below, there's also an exclusive link for each person in your directory, improving data integration."
+            />
+          </p>
+          <PersonFormInfo />
+          <Form.Field
+            label={intl.formatMessage(messages.urlPathLabel)}
+            prefix={FlowRouter.url("")}
+          >
+            <input
+              type="text"
+              placeholder={intl.formatMessage(messages.urlPathPlaceholder)}
+              name="slug"
+              value={this.getValue("slug")}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+          <Form.Field label={intl.formatMessage(messages.formLanguageLabel)}>
+            <Select
+              classNamePrefix="select-search"
+              cacheOptions
+              isSearchable={true}
+              placeholder={intl.formatMessage(messages.defaultLanguageLabel)}
+              options={this._getFormLanguageOptions()}
+              onChange={selected => {
+                this._handleChange({
+                  target: {
+                    name: "crm.language",
+                    value: selected.value
+                  }
+                });
+              }}
+              name="crm.language"
+              value={this._getFormLanguageValue()}
+            />
+          </Form.Field>
+          <Form.Field label={intl.formatMessage(messages.formTitleLabel)}>
+            <input
+              type="text"
+              name="crm.header"
+              value={this.getValue("crm.header")}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+          <Form.Field
+            label={intl.formatMessage(messages.formPresentationLabel)}
+          >
+            <textarea
+              name="crm.text"
+              value={this.getValue("crm.text")}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+          <Form.Field label={intl.formatMessage(messages.formThanksLabel)}>
+            <textarea
+              name="crm.thanks"
+              value={this.getValue("crm.thanks")}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+        </Form.Content>
+        <Form.Actions>
+          <input
+            type="submit"
+            disabled={!this._filledForm()}
+            value={intl.formatMessage(messages.saveLabel)}
+          />
+        </Form.Actions>
+      </Form>
     );
   }
 }

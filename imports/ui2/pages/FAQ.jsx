@@ -278,8 +278,6 @@ FAQEdit.propTypes = {
 const FAQEditIntl = injectIntl(FAQEdit);
 
 const Container = styled.div`
-  max-width: 960px;
-  margin: 0 auto;
   .intro {
     display: flex;
     max-width: 600px;
@@ -312,7 +310,7 @@ const Container = styled.div`
     margin-right: -0.5rem;
     article {
       font-size: 0.8em;
-      flex: 1 1 20%;
+      flex: 1 1 30%;
       margin: 0 0.5rem 1rem;
       border: 1px solid #ddd;
       border-radius: 7px;
@@ -438,7 +436,7 @@ class FAQPage extends Component {
       return <Loading full />;
     }
     return (
-      <Page.Content full>
+      <Page.Content>
         <Container>
           <Page.Title>
             <FormattedMessage
