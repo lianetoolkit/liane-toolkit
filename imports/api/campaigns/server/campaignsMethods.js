@@ -376,6 +376,110 @@ export const campaignsSearch = new ValidatedMethod({
   }
 });
 
+export const campaignsFormUpdate = new ValidatedMethod({
+  name: "campaigns.formUpdate",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    slug: {
+      type: String,
+      optional: true,
+      unique: true
+    },
+    crm: {
+      type: Object,
+      optional: true
+    },
+    "crm.language": {
+      type: String,
+      optional: true
+    },
+    "crm.header": {
+      type: String
+    },
+    "crm.text": {
+      type: String
+    },
+    "crm.thanks": {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, ...data }) {
+    logger.debug("campaigns.formUpdate called", {
+      campaignId,
+      data
+    });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "form",
+        permission: "edit"
+      })
+    ) {
+      throw new Meteor.Error(401, "Not allowed");
+    }
+
+    let $set = {};
+
+    if (data.slug) {
+      const minimumLength = 5;
+      const reservedSlugs = [
+        "admin",
+        "campaign",
+        "f",
+        "people",
+        "map",
+        "canvas",
+        "user",
+        "settings",
+        "help",
+        "support"
+      ];
+      if (
+        data.slug.length < minimumLength ||
+        reservedSlugs.indexOf(data.slug) !== -1
+      ) {
+        throw new Meteor.Error(400, "Form slug is not valid.");
+      }
+      if (
+        Campaigns.find({
+          "forms.slug": data.slug,
+          _id: { $nin: [campaign._id] }
+        }).fetch().length
+      ) {
+        throw new Meteor.Error(400, "Slug already in use");
+      }
+      $set["forms.slug"] = data.slug;
+    } else {
+      $set["forms.slug"] = "";
+    }
+    if (data.crm) {
+      $set["forms.crm"] = data.crm;
+    }
+
+    Campaigns.update(
+      {
+        _id: campaignId
+      },
+      { $set }
+    );
+  }
+});
+
 export const campaignsUpdate = new ValidatedMethod({
   name: "campaigns.update",
   validate: new SimpleSchema({
@@ -385,40 +489,6 @@ export const campaignsUpdate = new ValidatedMethod({
     name: {
       type: String,
       optional: true
-    },
-    adAccountId: {
-      type: String,
-      optional: true
-    },
-    autoReplyMessage: {
-      type: String,
-      optional: true
-    },
-    forms: {
-      type: Object,
-      optional: true
-    },
-    "forms.slug": {
-      type: String,
-      optional: true,
-      unique: true
-    },
-    "forms.crm": {
-      type: Object,
-      optional: true
-    },
-    "forms.crm.language": {
-      type: String,
-      optional: true
-    },
-    "forms.crm.header": {
-      type: String
-    },
-    "forms.crm.text": {
-      type: String
-    },
-    "forms.crm.thanks": {
-      type: String
     }
   }).validator(),
   run({ campaignId, ...data }) {
@@ -438,7 +508,7 @@ export const campaignsUpdate = new ValidatedMethod({
       throw new Meteor.Error(404, "Campaign not found");
     }
 
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    if (campaign.creatorId != userId) {
       throw new Meteor.Error(401, "Not allowed");
     }
 
@@ -448,57 +518,6 @@ export const campaignsUpdate = new ValidatedMethod({
 
     if (data.name) {
       $set.name = data.name;
-    }
-
-    if (data.autoReplyMessage) {
-      $set.autoReplyMessage = data.autoReplyMessage;
-    }
-
-    if (data.adAccountId && campaign.adAccountId !== data.adAccountId) {
-      const user = Meteor.users.findOne(userId);
-      const token = user.services.facebook.accessToken;
-      AdAccountsHelpers.update({ adAccountId: data.adAccountId, token });
-      $set.adAccountId = data.adAccountId;
-      $set.status = "ok";
-      runJobs["audiences"] = true;
-    }
-
-    if (data.forms) {
-      if (data.forms.slug) {
-        const minimumLength = 5;
-        const reservedSlugs = [
-          "admin",
-          "campaign",
-          "f",
-          "people",
-          "map",
-          "canvas",
-          "user",
-          "settings",
-          "help",
-          "support"
-        ];
-        if (
-          data.forms.slug.length < minimumLength ||
-          reservedSlugs.indexOf(data.forms.slug) !== -1
-        ) {
-          throw new Meteor.Error(400, "Form slug is not valid.");
-        }
-        if (
-          Campaigns.find({
-            "forms.slug": data.forms.slug,
-            _id: { $nin: [campaign._id] }
-          }).fetch().length
-        ) {
-          throw new Meteor.Error(400, "Slug already in use");
-        }
-        $set["forms.slug"] = data.forms.slug;
-      } else {
-        $set["forms.slug"] = "";
-      }
-      if (data.forms.crm) {
-        $set["forms.crm"] = data.forms.crm;
-      }
     }
 
     Campaigns.update(

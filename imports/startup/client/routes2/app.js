@@ -10,6 +10,7 @@ import Transparency from "/imports/ui2/pages/Transparency.jsx";
 import PeopleFormPage from "/imports/ui2/containers/PeopleFormPage.jsx";
 
 import PeoplePage from "/imports/ui2/pages/People.jsx";
+import FormSettingsPage from "/imports/ui2/pages/FormSettings.jsx";
 import MapPage from "/imports/ui2/containers/MapPage.jsx";
 import FAQPage from "/imports/ui2/containers/FAQPage.jsx";
 import CommentsPage from "/imports/ui2/containers/CommentsPage.jsx";
@@ -155,6 +156,14 @@ appRoutes.route("/faq", {
   action: function() {
     addTitle(`${APP_NAME} | Frequently Asked Questions`);
     return mount(App, { content: { component: FAQPage } });
+  }
+});
+
+appRoutes.route("/form_settings", {
+  name: "App.formSettings",
+  action: function() {
+    addTitle(`${APP_NAME} | Form Settings`);
+    return mount(App, { content: { component: FormSettingsPage } });
   }
 });
 

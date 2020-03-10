@@ -335,6 +335,14 @@ class AppNav extends Component {
                         />
                       </a>
                     </li>
+                    <li>
+                      <a href={FlowRouter.path("App.formSettings")}>
+                        <FormattedMessage
+                          id="app.nav.form"
+                          defaultMessage="Form settings"
+                        />
+                      </a>
+                    </li>
                   </ul>
                 </NavItem>
                 <NavItem
