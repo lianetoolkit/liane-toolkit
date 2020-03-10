@@ -158,13 +158,16 @@ Campaigns.schema = new SimpleSchema({
     optional: true
   },
   "forms.crm.header": {
-    type: String
+    type: String,
+    optional: true
   },
   "forms.crm.text": {
-    type: String
+    type: String,
+    optional: true
   },
   "forms.crm.thanks": {
-    type: String
+    type: String,
+    optional: true
   },
   createdAt: {
     type: Date,
