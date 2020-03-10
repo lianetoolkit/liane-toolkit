@@ -30,6 +30,10 @@
         "id": "app.campaign.team.permission.label.map.edit"
       },
       {
+        "defaultMessage": "export",
+        "id": "app.campaign.team.permission.label.map.export"
+      },
+      {
         "defaultMessage": "view",
         "id": "app.campaign.team.permission.label.people.view"
       },
@@ -130,12 +134,12 @@
         "id": "app.account_select.submit"
       },
       {
-        "defaultMessage": "This category is still empty",
-        "id": "app.dashboard.people.not_found"
-      },
-      {
         "defaultMessage": "Select a campaign...",
         "id": "app.campaign_select.placeholder"
+      },
+      {
+        "defaultMessage": "This category is still empty",
+        "id": "app.dashboard.people.not_found"
       },
       {
         "defaultMessage": "Select a country...",
@@ -246,10 +250,6 @@
         "id": "app.privacy_policy"
       },
       {
-        "defaultMessage": "Select or type to create...",
-        "id": "app.map_layer_select.placeholder"
-      },
-      {
         "defaultMessage": "Mark all as read",
         "id": "app.notifications.mark_all_as_read"
       },
@@ -282,26 +282,6 @@
         "id": "app.people.exports.button_label"
       },
       {
-        "defaultMessage": "Showing people that interacted for the first time between {date}.",
-        "id": "app.people.history_chart.filter_title"
-      },
-      {
-        "defaultMessage": "Clear selection",
-        "id": "app.people.history_chart.clear"
-      },
-      {
-        "defaultMessage": "Page newcomers",
-        "id": "app.people.history_chart.title"
-      },
-      {
-        "defaultMessage": "Click and drag the chart below to filter:",
-        "id": "app.people.history_chart.filter"
-      },
-      {
-        "defaultMessage": "{amount} new people",
-        "id": "app.people.history_chart.new_label"
-      },
-      {
         "defaultMessage": "Date",
         "id": "app.people.exports.table_header.date"
       },
@@ -328,6 +308,30 @@
       {
         "defaultMessage": "No export file found",
         "id": "app.people.exports.table_body.not_found"
+      },
+      {
+        "defaultMessage": "Showing people that interacted for the first time between {date}.",
+        "id": "app.people.history_chart.filter_title"
+      },
+      {
+        "defaultMessage": "Clear selection",
+        "id": "app.people.history_chart.clear"
+      },
+      {
+        "defaultMessage": "Page newcomers",
+        "id": "app.people.history_chart.title"
+      },
+      {
+        "defaultMessage": "Click and drag the chart below to filter:",
+        "id": "app.people.history_chart.filter"
+      },
+      {
+        "defaultMessage": "{amount} new people",
+        "id": "app.people.history_chart.new_label"
+      },
+      {
+        "defaultMessage": "Select or type to create...",
+        "id": "app.map_layer_select.placeholder"
       },
       {
         "defaultMessage": "Are you sure you'd like to remove all people from this import?",
@@ -400,34 +404,6 @@
       {
         "defaultMessage": "Generate new URL",
         "id": "app.form_info.generate_label"
-      },
-      {
-        "defaultMessage": "Select your office",
-        "id": "app.office_field.placeholder"
-      },
-      {
-        "defaultMessage": "Presidency",
-        "id": "app.office_field.labels.presidency"
-      },
-      {
-        "defaultMessage": "City hall",
-        "id": "app.office_field.labels.city_hall"
-      },
-      {
-        "defaultMessage": "Senate",
-        "id": "app.office_field.labels.senate"
-      },
-      {
-        "defaultMessage": "Federal Congress",
-        "id": "app.office_field.labels.federal_congress"
-      },
-      {
-        "defaultMessage": "State Congress",
-        "id": "app.office_field.labels.state_congress"
-      },
-      {
-        "defaultMessage": "City Council",
-        "id": "app.office_field.labels.city_council"
       },
       {
         "defaultMessage": "No reaction",
@@ -598,16 +574,12 @@
         "id": "app.campaign.form.select_account"
       },
       {
-        "defaultMessage": "Are you sure you'd like to permanently remove your campaign?",
-        "id": "app.campaign_settings.confirm_remove_label"
+        "defaultMessage": "Campaign name",
+        "id": "app.campaign_settings.name_label"
       },
       {
-        "defaultMessage": "Remove campaign and all its data",
-        "id": "app.campaign_settings.remove_campaign_label"
-      },
-      {
-        "defaultMessage": "<strong>Attention</strong>: This action is irreversible!",
-        "id": "app.campaign_settings.remove_campaign_warning"
+        "defaultMessage": "Save",
+        "id": "app.campaign_settings.save"
       },
       {
         "defaultMessage": "Campaign settings",
@@ -624,6 +596,18 @@
       {
         "defaultMessage": "Actions",
         "id": "app.campaign_settings.nav.actions"
+      },
+      {
+        "defaultMessage": "Are you sure you'd like to permanently remove your campaign?",
+        "id": "app.campaign_settings.confirm_remove_label"
+      },
+      {
+        "defaultMessage": "Remove campaign and all its data",
+        "id": "app.campaign_settings.remove_campaign_label"
+      },
+      {
+        "defaultMessage": "<strong>Attention</strong>: This action is irreversible!",
+        "id": "app.campaign_settings.remove_campaign_warning"
       },
       {
         "defaultMessage": "Donors",
@@ -814,50 +798,6 @@
         "id": "app.nav.form"
       },
       {
-        "defaultMessage": "Campaign name",
-        "id": "app.campaign_settings.name_label"
-      },
-      {
-        "defaultMessage": "Save",
-        "id": "app.campaign_settings.save"
-      },
-      {
-        "defaultMessage": "Person not found",
-        "id": "app.person_not_found"
-      },
-      {
-        "defaultMessage": "resolved",
-        "id": "app.comment.resolved"
-      },
-      {
-        "defaultMessage": "unresolved",
-        "id": "app.comment.unresolved"
-      },
-      {
-        "defaultMessage": "Are you sure you'd like to mark this comment as {resolution}",
-        "id": "app.comment.confirm_resolution"
-      },
-      {
-        "defaultMessage": "Mark as question",
-        "id": "app.comment.tag_as.question"
-      },
-      {
-        "defaultMessage": "Mark as vote declaration",
-        "id": "app.comment.tag_as.vote"
-      },
-      {
-        "defaultMessage": "Mark this person as troll",
-        "id": "app.comment.tag_as.troll"
-      },
-      {
-        "defaultMessage": "Mark as",
-        "id": "app.comment.tag_as"
-      },
-      {
-        "defaultMessage": "Actions",
-        "id": "app.comment.actions_title"
-      },
-      {
         "defaultMessage": "No comments",
         "id": "app.comments.counts.no_comments"
       },
@@ -896,6 +836,42 @@
       {
         "defaultMessage": "Reply",
         "id": "app.comment.reply_button"
+      },
+      {
+        "defaultMessage": "Person not found",
+        "id": "app.person_not_found"
+      },
+      {
+        "defaultMessage": "resolved",
+        "id": "app.comment.resolved"
+      },
+      {
+        "defaultMessage": "unresolved",
+        "id": "app.comment.unresolved"
+      },
+      {
+        "defaultMessage": "Are you sure you'd like to mark this comment as {resolution}",
+        "id": "app.comment.confirm_resolution"
+      },
+      {
+        "defaultMessage": "Mark as question",
+        "id": "app.comment.tag_as.question"
+      },
+      {
+        "defaultMessage": "Mark as vote declaration",
+        "id": "app.comment.tag_as.vote"
+      },
+      {
+        "defaultMessage": "Mark this person as troll",
+        "id": "app.comment.tag_as.troll"
+      },
+      {
+        "defaultMessage": "Mark as",
+        "id": "app.comment.tag_as"
+      },
+      {
+        "defaultMessage": "Actions",
+        "id": "app.comment.actions_title"
       },
       {
         "defaultMessage": "Supporter",
@@ -1058,82 +1034,6 @@
         "id": "app.admin.invites.new"
       },
       {
-        "defaultMessage": "Mark as resolved",
-        "id": "app.admin.tickets.mark_resolved"
-      },
-      {
-        "defaultMessage": "Move to \"in progress\"",
-        "id": "app.admin.tickets.mark_progress"
-      },
-      {
-        "defaultMessage": "New",
-        "id": "app.admin.tickets.status.new"
-      },
-      {
-        "defaultMessage": "In progress",
-        "id": "app.admin.tickets.status.in_progress"
-      },
-      {
-        "defaultMessage": "Resolved",
-        "id": "app.admin.tickets.status.resolved"
-      },
-      {
-        "defaultMessage": "Suggestion",
-        "id": "app.admin.tickets.categories.suggestion"
-      },
-      {
-        "defaultMessage": "Bug",
-        "id": "app.admin.tickets.categories.bug"
-      },
-      {
-        "defaultMessage": "Question",
-        "id": "app.admin.tickets.categories.question"
-      },
-      {
-        "defaultMessage": "Other",
-        "id": "app.admin.tickets.categories.other"
-      },
-      {
-        "defaultMessage": "URL",
-        "id": "app.admin.tickets.meta.url"
-      },
-      {
-        "defaultMessage": "Browser",
-        "id": "app.admin.tickets.meta.browser"
-      },
-      {
-        "defaultMessage": "OS",
-        "id": "app.admin.tickets.meta.os"
-      },
-      {
-        "defaultMessage": "Version",
-        "id": "app.admin.tickets.meta.version"
-      },
-      {
-        "defaultMessage": "Current status",
-        "id": "app.admin.tickets.current_status_label"
-      },
-      {
-        "defaultMessage": "Status",
-        "id": "app.admin.tickets.status_label"
-      },
-      {
-        "defaultMessage": "Category",
-        "id": "app.admin.tickets.category_label"
-      },
-      {
-        "defaultMessage": "Subject",
-        "id": "app.admin.tickets.subject_label"
-      },
-      {
-        "defaultMessage": "Author",
-        "id": "app.admin.tickets.author_label"
-      },
-      {
-        "defaultMessage": "Created",
-        "id": "app.admin.tickets.created_label"
-      },
-      {
         "defaultMessage": "Job type...",
         "id": "app.admin.jobs.filter.type"
       },
@@ -1244,6 +1144,82 @@
       {
         "defaultMessage": "Remove",
         "id": "app.admin.jobs.remove_job"
+      },
+      {
+        "defaultMessage": "Mark as resolved",
+        "id": "app.admin.tickets.mark_resolved"
+      },
+      {
+        "defaultMessage": "Move to \"in progress\"",
+        "id": "app.admin.tickets.mark_progress"
+      },
+      {
+        "defaultMessage": "New",
+        "id": "app.admin.tickets.status.new"
+      },
+      {
+        "defaultMessage": "In progress",
+        "id": "app.admin.tickets.status.in_progress"
+      },
+      {
+        "defaultMessage": "Resolved",
+        "id": "app.admin.tickets.status.resolved"
+      },
+      {
+        "defaultMessage": "Suggestion",
+        "id": "app.admin.tickets.categories.suggestion"
+      },
+      {
+        "defaultMessage": "Bug",
+        "id": "app.admin.tickets.categories.bug"
+      },
+      {
+        "defaultMessage": "Question",
+        "id": "app.admin.tickets.categories.question"
+      },
+      {
+        "defaultMessage": "Other",
+        "id": "app.admin.tickets.categories.other"
+      },
+      {
+        "defaultMessage": "URL",
+        "id": "app.admin.tickets.meta.url"
+      },
+      {
+        "defaultMessage": "Browser",
+        "id": "app.admin.tickets.meta.browser"
+      },
+      {
+        "defaultMessage": "OS",
+        "id": "app.admin.tickets.meta.os"
+      },
+      {
+        "defaultMessage": "Version",
+        "id": "app.admin.tickets.meta.version"
+      },
+      {
+        "defaultMessage": "Current status",
+        "id": "app.admin.tickets.current_status_label"
+      },
+      {
+        "defaultMessage": "Status",
+        "id": "app.admin.tickets.status_label"
+      },
+      {
+        "defaultMessage": "Category",
+        "id": "app.admin.tickets.category_label"
+      },
+      {
+        "defaultMessage": "Subject",
+        "id": "app.admin.tickets.subject_label"
+      },
+      {
+        "defaultMessage": "Author",
+        "id": "app.admin.tickets.author_label"
+      },
+      {
+        "defaultMessage": "Created",
+        "id": "app.admin.tickets.created_label"
       },
       {
         "defaultMessage": "Campaign creator",
@@ -1402,6 +1378,34 @@
         "id": "app.faq.create_new"
       },
       {
+        "defaultMessage": "Select your office",
+        "id": "app.office_field.placeholder"
+      },
+      {
+        "defaultMessage": "Presidency",
+        "id": "app.office_field.labels.presidency"
+      },
+      {
+        "defaultMessage": "City hall",
+        "id": "app.office_field.labels.city_hall"
+      },
+      {
+        "defaultMessage": "Senate",
+        "id": "app.office_field.labels.senate"
+      },
+      {
+        "defaultMessage": "Federal Congress",
+        "id": "app.office_field.labels.federal_congress"
+      },
+      {
+        "defaultMessage": "State Congress",
+        "id": "app.office_field.labels.state_congress"
+      },
+      {
+        "defaultMessage": "City Council",
+        "id": "app.office_field.labels.city_council"
+      },
+      {
         "defaultMessage": "Editing {name}",
         "id": "app.people.edit.title"
       },
@@ -1524,6 +1528,94 @@
       {
         "defaultMessage": "Field",
         "id": "app.people.import.field_label"
+      },
+      {
+        "defaultMessage": "Name is required",
+        "id": "app.people_form.name_required"
+      },
+      {
+        "defaultMessage": "Email is required",
+        "id": "app.people_form.email_required"
+      },
+      {
+        "defaultMessage": "Email or phone is required",
+        "id": "app.people_form.email_phone_required"
+      },
+      {
+        "defaultMessage": "Thank you!",
+        "id": "app.people_form.thank_you"
+      },
+      {
+        "defaultMessage": "Name",
+        "id": "app.people_form.name_label"
+      },
+      {
+        "defaultMessage": "Email",
+        "id": "app.people_form.email_label"
+      },
+      {
+        "defaultMessage": "Phone",
+        "id": "app.people_form.phone_label"
+      },
+      {
+        "defaultMessage": "Birthday",
+        "id": "app.people_form.birthday_label"
+      },
+      {
+        "defaultMessage": "What can you do?",
+        "id": "app.people_form.skills_label"
+      },
+      {
+        "defaultMessage": "Send",
+        "id": "app.people_form.submit_label"
+      },
+      {
+        "defaultMessage": "Your participation means a lot to us.",
+        "id": "app.people_form.thank_you_text"
+      },
+      {
+        "defaultMessage": "Hi {name}!",
+        "id": "app.people_form.welcome_logged_in"
+      },
+      {
+        "defaultMessage": "Hi!",
+        "id": "app.people_form.welcome_anonymous"
+      },
+      {
+        "defaultMessage": "Not you?",
+        "id": "app.people_form.not_you"
+      },
+      {
+        "defaultMessage": "Click here",
+        "id": "app.people_form.click_here"
+      },
+      {
+        "defaultMessage": "We, from the campaign {campaign_name}, would like to ask for your help!",
+        "id": "app.people_form.default_header"
+      },
+      {
+        "defaultMessage": "Fill the information below so you can know more about you.",
+        "id": "app.people_form.default_text"
+      },
+      {
+        "defaultMessage": "I'd like to participate",
+        "id": "app.people_form.participate_label"
+      },
+      {
+        "defaultMessage": "If we send you content, will you share in your social networks?",
+        "id": "app.people_form.supporter_label"
+      },
+      {
+        "defaultMessage": "Would you produce en event in your neighborhood or workplace?",
+        "id": "app.people_form.mobilizer_label"
+      },
+      {
+        "defaultMessage": "Would you donate money to the campaign?",
+        "id": "app.people_form.donor_label"
+      },
+      {
+        "defaultMessage": "By submitting this form you agree with our <a href=\"https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf\" target=\"_blank\" rel=\"external\">Privacy Policy</a>.",
+        "id": "app.people_form.privacy_policy"
       },
       {
         "defaultMessage": "Technology for Political Innovation",
@@ -1712,94 +1804,6 @@
       {
         "defaultMessage": "Click here to refresh the page",
         "id": "app.refresh_message"
-      },
-      {
-        "defaultMessage": "Name is required",
-        "id": "app.people_form.name_required"
-      },
-      {
-        "defaultMessage": "Email is required",
-        "id": "app.people_form.email_required"
-      },
-      {
-        "defaultMessage": "Email or phone is required",
-        "id": "app.people_form.email_phone_required"
-      },
-      {
-        "defaultMessage": "Thank you!",
-        "id": "app.people_form.thank_you"
-      },
-      {
-        "defaultMessage": "Name",
-        "id": "app.people_form.name_label"
-      },
-      {
-        "defaultMessage": "Email",
-        "id": "app.people_form.email_label"
-      },
-      {
-        "defaultMessage": "Phone",
-        "id": "app.people_form.phone_label"
-      },
-      {
-        "defaultMessage": "Birthday",
-        "id": "app.people_form.birthday_label"
-      },
-      {
-        "defaultMessage": "What can you do?",
-        "id": "app.people_form.skills_label"
-      },
-      {
-        "defaultMessage": "Send",
-        "id": "app.people_form.submit_label"
-      },
-      {
-        "defaultMessage": "Your participation means a lot to us.",
-        "id": "app.people_form.thank_you_text"
-      },
-      {
-        "defaultMessage": "Hi {name}!",
-        "id": "app.people_form.welcome_logged_in"
-      },
-      {
-        "defaultMessage": "Hi!",
-        "id": "app.people_form.welcome_anonymous"
-      },
-      {
-        "defaultMessage": "Not you?",
-        "id": "app.people_form.not_you"
-      },
-      {
-        "defaultMessage": "Click here",
-        "id": "app.people_form.click_here"
-      },
-      {
-        "defaultMessage": "We, from the campaign {campaign_name}, would like to ask for your help!",
-        "id": "app.people_form.default_header"
-      },
-      {
-        "defaultMessage": "Fill the information below so you can know more about you.",
-        "id": "app.people_form.default_text"
-      },
-      {
-        "defaultMessage": "I'd like to participate",
-        "id": "app.people_form.participate_label"
-      },
-      {
-        "defaultMessage": "If we send you content, will you share in your social networks?",
-        "id": "app.people_form.supporter_label"
-      },
-      {
-        "defaultMessage": "Would you produce en event in your neighborhood or workplace?",
-        "id": "app.people_form.mobilizer_label"
-      },
-      {
-        "defaultMessage": "Would you donate money to the campaign?",
-        "id": "app.people_form.donor_label"
-      },
-      {
-        "defaultMessage": "By submitting this form you agree with our <a href=\"https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf\" target=\"_blank\" rel=\"external\">Privacy Policy</a>.",
-        "id": "app.people_form.privacy_policy"
       },
       {
         "defaultMessage": "Title",

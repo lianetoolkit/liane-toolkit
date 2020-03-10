@@ -103,6 +103,7 @@
   "app.campaign.team.permission.label.form.edit": "Editar",
   "app.campaign.team.permission.label.map": "Mapa",
   "app.campaign.team.permission.label.map.edit": "Crear/Editar",
+  "app.campaign.team.permission.label.map.export": "Exportar",
   "app.campaign.team.permission.label.map.view": "Ver",
   "app.campaign.team.permission.label.people": "Personas",
   "app.campaign.team.permission.label.people.categorize": "Categorizar",

@@ -10,7 +10,7 @@ const PERMISSIONS = {
 };
 
 const FEATURE_PERMISSION_MAP = {
-  map: PERMISSIONS.view + PERMISSIONS.edit,
+  map: PERMISSIONS.view + PERMISSIONS.edit + PERMISSIONS.export,
   people:
     PERMISSIONS.view +
     PERMISSIONS.categorize +
