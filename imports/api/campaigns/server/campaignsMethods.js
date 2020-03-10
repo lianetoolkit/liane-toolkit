@@ -396,13 +396,16 @@ export const campaignsFormUpdate = new ValidatedMethod({
       optional: true
     },
     "crm.header": {
-      type: String
+      type: String,
+      optional: true
     },
     "crm.text": {
-      type: String
+      type: String,
+      optional: true
     },
     "crm.thanks": {
-      type: String
+      type: String,
+      optional: true
     }
   }).validator(),
   run({ campaignId, ...data }) {
