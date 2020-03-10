@@ -43,7 +43,14 @@ export const createMapLayer = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId }))
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "map",
+        permission: "edit"
+      })
+    )
       throw new Meteor.Error(400, "Permission denied");
 
     let insertDoc = {
@@ -75,7 +82,14 @@ export const updateMapLayer = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId }))
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "map",
+        permission: "edit"
+      })
+    )
       throw new Meteor.Error(400, "Permission denied");
 
     let updateDoc = {
@@ -117,9 +131,11 @@ export const removeMapLayer = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: mapLayer.campaignId,
-        userId
+        userId,
+        feature: "map",
+        permission: "edit"
       })
     )
       throw new Meteor.Error(400, "Permission denied");
@@ -151,7 +167,14 @@ export const getCampaignMapLayers = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId }))
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "map",
+        permission: "view"
+      })
+    )
       throw new Meteor.Error(400, "Permission denied");
 
     return MapLayers.find({ campaignId }).fetch();
@@ -180,9 +203,11 @@ export const getMapLayer = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: mapLayer.campaignId,
-        userId
+        userId,
+        feature: "map",
+        permission: "view"
       })
     )
       throw new Meteor.Error(400, "Permission denied");

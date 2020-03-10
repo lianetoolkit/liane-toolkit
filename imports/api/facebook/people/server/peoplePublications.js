@@ -14,7 +14,7 @@ Meteor.publish("people.map", function({ campaignId }) {
   const allowed = Meteor.call("campaigns.userCan", {
     campaignId,
     userId,
-    feature: "people",
+    feature: "map",
     permission: "view"
   });
   if (allowed) {
