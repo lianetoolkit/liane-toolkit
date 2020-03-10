@@ -24,7 +24,14 @@ export const queryFAQ = new ValidatedMethod({
       throw new Meteor.Error(404, "Campaign not found");
     }
 
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "faq",
+        permission: "view"
+      })
+    ) {
       throw new Meteor.Error(401, "Not allowed");
     }
 
@@ -60,7 +67,14 @@ export const createFAQ = new ValidatedMethod({
       throw new Meteor.Error(404, "Campaign not found");
     }
 
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "faq",
+        permission: "edit"
+      })
+    ) {
       throw new Meteor.Error(401, "Not allowed");
     }
 
@@ -107,7 +121,14 @@ export const updateFAQ = new ValidatedMethod({
       throw new Meteor.Error(404, "Campaign not found");
     }
 
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "faq",
+        permission: "edit"
+      })
+    ) {
       throw new Meteor.Error(401, "Not allowed");
     }
 
@@ -148,7 +169,14 @@ export const removeFAQ = new ValidatedMethod({
       throw new Meteor.Error(404, "Campaign not found");
     }
 
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "faq",
+        permission: "edit"
+      })
+    ) {
       throw new Meteor.Error(401, "Not allowed");
     }
 
