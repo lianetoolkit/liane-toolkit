@@ -75,8 +75,8 @@ class FormSettingsPage extends Component {
       return {
         formData: {
           campaignId: campaign._id,
-          slug: campaign.forms.slug,
-          crm: campaign.forms.crm
+          slug: campaign.forms ? campaign.forms.slug : "",
+          crm: campaign.forms ? campaign.forms.crm : {}
         }
       };
     }
