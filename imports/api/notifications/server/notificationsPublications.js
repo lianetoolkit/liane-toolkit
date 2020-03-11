@@ -14,7 +14,7 @@ Meteor.publish("notifications.byUser", function() {
     selector.$or.push({ campaignId: { $in: campaignsIds } });
   }
   if (currentUser) {
-    return Notifications.find(selector);
+    return Notifications.find(selector, { sort: { createdAt: -1 } });
   } else {
     return this.ready();
   }

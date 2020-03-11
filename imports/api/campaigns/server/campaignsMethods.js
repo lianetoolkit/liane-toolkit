@@ -10,6 +10,7 @@ import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { AdAccountsHelpers } from "/imports/api/facebook/adAccounts/server/adAccountsHelpers.js";
 import { GeolocationsHelpers } from "/imports/api/geolocations/server/geolocationsHelpers.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
+import { NotificationsHelpers } from "/imports/api/notifications/server/notificationsHelpers";
 import _ from "underscore";
 
 import { People } from "/imports/api/facebook/people/people.js";
@@ -229,7 +230,7 @@ export const campaignsCreate = new ValidatedMethod({
       );
     }
 
-    const users = [{ userId, admin: true }];
+    const users = [{ userId, status: "active" }];
     let insertDoc = {
       users,
       name,
@@ -686,6 +687,117 @@ export const campaignRefreshHealthCheck = new ValidatedMethod({
   }
 });
 
+export const campaignInviteData = new ValidatedMethod({
+  name: "campaigns.perInvite",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId }) {
+    logger.debug("campaign.perInvite", { campaignId });
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    return Campaigns.findOne(
+      {
+        _id: campaignId,
+        users: { $elemMatch: { userId, status: "pending" } }
+      },
+      {
+        fields: {
+          name: 1,
+          office: 1,
+          party: 1,
+          candidate: 1
+        }
+      }
+    );
+  }
+});
+
+export const acceptInvite = new ValidatedMethod({
+  name: "campaigns.acceptInvite",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId }) {
+    logger.debug("campaigns.acceptInvite", { campaignId });
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne({
+      _id: campaignId,
+      users: { $elemMatch: { userId, status: "pending" } }
+    });
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Not Found");
+    }
+
+    Campaigns.update(
+      { _id: campaignId, "users.userId": userId },
+      { $set: { "users.$.status": "active" } }
+    );
+
+    NotificationsHelpers.clear({
+      userId,
+      dataRef: campaignId,
+      category: "campaignInvite"
+    });
+  }
+});
+
+export const declineInvite = new ValidatedMethod({
+  name: "campaigns.declineInvite",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId }) {
+    logger.debug("campaigns.declineInvite", { campaignId });
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    const campaign = Campaigns.findOne({
+      _id: campaignId,
+      users: { $elemMatch: { userId, status: "pending" } }
+    });
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Not Found");
+    }
+
+    const campaignUser = _.findWhere(campaign.users, { userId });
+
+    if (!campaignUser) {
+      return;
+    }
+
+    Campaigns.update(
+      {
+        _id: campaignId
+      },
+      { $pull: { users: campaignUser } }
+    );
+
+    NotificationsHelpers.clear({
+      userId,
+      dataRef: campaignId,
+      category: "campaignInvite"
+    });
+  }
+});
+
 export const addUser = new ValidatedMethod({
   name: "campaigns.addUser",
   validate: new SimpleSchema({
@@ -730,6 +842,7 @@ export const addUser = new ValidatedMethod({
     });
 
     if (!user) {
+      // This should send email invite
       throw new Meteor.Error(404, "User not found");
     }
 
@@ -743,6 +856,14 @@ export const addUser = new ValidatedMethod({
       },
       { $push: { users: { userId: user._id, permissions, role } } }
     );
+
+    NotificationsHelpers.add({
+      userId: user._id,
+      text: "You've received an invite to be part of a campaign",
+      path: `/campaign/invite?id=${campaignId}`,
+      category: "campaignInvite",
+      dataRef: campaignId
+    });
 
     Meteor.call("log", {
       type: "campaigns.users.add",

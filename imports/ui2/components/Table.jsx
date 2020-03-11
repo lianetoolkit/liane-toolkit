@@ -155,6 +155,18 @@ const Container = styled.table`
       }
     }
   }
+  tbody {
+    tr:first-child {
+      th:first-child {
+        border-radius: 7px 0 0;
+      }
+    }
+    tr:last-child {
+      th:first-child {
+        border-radius: 0 0 0 7px;
+      }
+    }
+  }
   ${props =>
     props.compact &&
     css`

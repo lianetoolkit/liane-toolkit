@@ -20,6 +20,7 @@ import AdsetPage from "/imports/ui2/pages/Adset.jsx";
 
 import ChatbotPage from "/imports/ui2/pages/chatbot/index.jsx";
 
+import CampaignInvitePage from "/imports/ui2/pages/campaign/Invite.jsx";
 import CampaignSettingsPage from "/imports/ui2/pages/campaign/settings/General.jsx";
 import CampaignFacebookPage from "/imports/ui2/pages/campaign/settings/Facebook.jsx";
 import CampaignTeamPage from "/imports/ui2/pages/campaign/settings/Team.jsx";
@@ -178,6 +179,16 @@ appRoutes.route("/chatbot", {
   }
 });
 
+appRoutes.route("/campaign/invite", {
+  name: "App.campaign.invite",
+  action: function(params, queryParams) {
+    addTitle(`${APP_NAME} | Campaign Invite`);
+    return mount(App, {
+      content: { component: CampaignInvitePage },
+      campaignInviteId: queryParams.id
+    });
+  }
+});
 appRoutes.route("/campaign/new", {
   name: "App.campaign.new",
   action: function() {

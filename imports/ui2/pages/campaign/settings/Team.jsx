@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import styled from "styled-components";
 import {
   injectIntl,
   intlShape,
@@ -127,6 +128,15 @@ EditUser.propTypes = {
 
 const EditUserIntl = injectIntl(EditUser);
 
+const Container = styled.div`
+  width: 100%;
+  display: flex;
+  table tr.pending td {
+    color: #999;
+    font-style: italic;
+  }
+`;
+
 class CampaignTeamPage extends Component {
   constructor(props) {
     super(props);
@@ -201,7 +211,7 @@ class CampaignTeamPage extends Component {
     const { intl, campaign, user } = this.props;
     const { formData } = this.state;
     return (
-      <>
+      <Container>
         <Nav campaign={campaign} />
         <Form onSubmit={this._handleSubmit}>
           <Form.Content>
@@ -214,10 +224,14 @@ class CampaignTeamPage extends Component {
             <Table>
               <tbody>
                 {campaign.users.map(campaignUser => (
-                  <tr key={campaignUser._id}>
+                  <tr
+                    key={campaignUser._id}
+                    className={campaignUser.campaign.status}
+                  >
                     <td>{campaignUser.name}</td>
-                    <td>{campaignUser.campaign.role}</td>
-                    <td className="fill">{campaignUser.emails[0].address}</td>
+                    <td className="small">{campaignUser.campaign.status}</td>
+                    <td className="small">{campaignUser.campaign.role}</td>
+                    <td className="fill small">{campaignUser.emails[0].address}</td>
                     {campaignUser._id != campaign.creatorId ? (
                       <td>
                         <a
@@ -302,7 +316,7 @@ class CampaignTeamPage extends Component {
           </Form.Content>
         </Form>
         <ReactTooltip place="top" effect="solid" />
-      </>
+      </Container>
     );
   }
 }

@@ -20,6 +20,27 @@ Campaigns.usersSchema = new SimpleSchema({
     type: String,
     index: 1
   },
+  inviteId: {
+    type: String,
+    index: 1,
+    autoValue() {
+      if (this.isInsert) {
+        return Random.id();
+      } else if (this.isUpsert) {
+        return { $setOnInsert: Random.id() };
+      } else {
+        return this.unset();
+      }
+    },
+    optional: true
+  },
+  status: {
+    type: String,
+    index: 1,
+    allowedValues: ["pending", "suspended", "active"],
+    defaultValue: "pending",
+    optional: true
+  },
   role: {
     type: String,
     optional: true

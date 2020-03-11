@@ -43,7 +43,7 @@ export default withTracker(props => {
       : [];
 
     notifications = notificationsHandle.ready()
-      ? Notifications.find().fetch()
+      ? Notifications.find({}, { sort: { createdAt: -1 } }).fetch()
       : [];
   }
 

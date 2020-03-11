@@ -74,7 +74,7 @@ Meteor.publish("campaigns.byUser", function() {
   if (currentUser) {
     return Campaigns.find(
       {
-        users: { $elemMatch: { userId: currentUser } }
+        users: { $elemMatch: { userId: currentUser, status: "active" } }
       },
       {
         fields: {
@@ -109,6 +109,9 @@ Meteor.publishComposite("campaigns.publicDetail", function({
       return Campaigns.find(selector, {
         fields: {
           name: 1,
+          party: 1,
+          candidate: 1,
+          office: 1,
           country: 1,
           "forms.slug": 1,
           "forms.crm": 1
@@ -156,7 +159,6 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
 
   // Creator extra data
   if (campaign.creatorId == userId) {
-    console.log("fetching users");
     fields.users = 1;
     children.push({
       find: function(campaign) {

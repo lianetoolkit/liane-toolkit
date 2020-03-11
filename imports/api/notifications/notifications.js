@@ -16,8 +16,16 @@ Notifications.schema = new SimpleSchema({
   text: {
     type: String
   },
-  category: {
+  path: {
     type: String
+  },
+  category: {
+    type: String,
+    index: 1
+  },
+  dataRef: {
+    type: String,
+    index: 1
   },
   read: {
     type: Boolean,

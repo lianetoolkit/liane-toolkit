@@ -79,6 +79,7 @@ import "/imports/api/mapFeatures/server/mapFeaturesMethods.js";
 import "/imports/api/mapFeatures/server/mapFeaturesPublications.js";
 
 // notifications
+import "/imports/api/notifications/server/notificationsMethods.js";
 import "/imports/api/notifications/server/notificationsPublications.js";
 
 // jobs

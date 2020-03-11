@@ -9,7 +9,7 @@ import AppNavDropdown from "./AppNavDropdown.jsx";
 
 const ItemContainer = styled.article`
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #cecece;
+  border-bottom: 1px solid #eee;
   color: #666;
   cursor: pointer;
   position: relative;
@@ -34,6 +34,14 @@ const ItemContainer = styled.article`
 `;
 
 class NotificationItem extends Component {
+  _handleClick = ev => {
+    ev.preventDefault();
+    const { id, path, unread } = this.props;
+    if (unread) Meteor.call("notifications.read", { notificationId: id });
+    if (path) {
+      FlowRouter.go(path);
+    }
+  };
   render() {
     const { children, unread, date } = this.props;
     let className = "";
@@ -41,7 +49,7 @@ class NotificationItem extends Component {
       className += " unread";
     }
     return (
-      <ItemContainer className={className}>
+      <ItemContainer className={className} onClick={this._handleClick}>
         {children}
         {date ? <span className="date"> {moment(date).fromNow()}</span> : null}
       </ItemContainer>
@@ -50,6 +58,10 @@ class NotificationItem extends Component {
 }
 
 class NotificationsPopup extends Component {
+  _getUnreadCount = () => {
+    const { notifications } = this.props;
+    return notifications.filter(n => n.read == false).length || null;
+  };
   render() {
     const { notifications, children, ...props } = this.props;
     const hasUnread = notifications.filter(n => !n.read).length;
@@ -58,7 +70,7 @@ class NotificationsPopup extends Component {
         title="Notifications"
         {...props}
         trigger={children}
-        triggerCount={notifications.length ? notifications.length : null}
+        triggerCount={this._getUnreadCount()}
         tools={
           <div>
             {hasUnread ? (
@@ -80,7 +92,9 @@ class NotificationsPopup extends Component {
           {notifications.map(notification => (
             <NotificationItem
               key={notification._id}
+              id={notification._id}
               unread={!notification.read}
+              path={notification.path}
               date={notification.createdAt}
             >
               {notification.text}
