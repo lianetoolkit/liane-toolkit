@@ -20,7 +20,9 @@ import Table from "./Table.jsx";
 import Button from "./Button.jsx";
 import CopyToClipboard from "./CopyToClipboard.jsx";
 import Popup from "./Popup.jsx";
-import PersonMetaButtons from "./PersonMetaButtons.jsx";
+import PersonMetaButtons, {
+  labels as personMetaLabels
+} from "./PersonMetaButtons.jsx";
 import PersonSummary from "./PersonSummary.jsx";
 import PersonReactions from "./PersonReactions.jsx";
 import PersonEdit from "./PersonEdit.jsx";
@@ -351,10 +353,11 @@ class PeopleTable extends Component {
     return has;
   };
   personCategoriesText = person => {
+    const { intl } = this.props;
     let text = [];
     PersonMetaButtons.keys.map(key => {
       if (get(person, `campaignMeta.${key}`)) {
-        text.push(PersonMetaButtons.labels[key]);
+        text.push(intl.formatMessage(personMetaLabels[key]));
       }
     });
     return text.join(", ");
