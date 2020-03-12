@@ -14,10 +14,17 @@ Notifications.schema = new SimpleSchema({
     index: true
   },
   text: {
-    type: String
+    type: String,
+    optional: true
+  },
+  metadata: {
+    type: Object,
+    blackbox: true,
+    optional: true
   },
   path: {
-    type: String
+    type: String,
+    optional: true
   },
   category: {
     type: String,
@@ -25,11 +32,17 @@ Notifications.schema = new SimpleSchema({
   },
   dataRef: {
     type: String,
+    optional: true,
     index: 1
   },
   read: {
     type: Boolean,
     defaultValue: false,
+    index: true
+  },
+  removable: {
+    type: Boolean,
+    defaultValue: true,
     index: true
   },
   createdAt: {

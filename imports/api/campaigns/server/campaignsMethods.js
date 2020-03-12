@@ -732,6 +732,8 @@ export const acceptInvite = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
+    const currentUser = Meteor.users.findOne(userId);
+
     const campaign = Campaigns.findOne({
       _id: campaignId,
       users: { $elemMatch: { userId, status: "pending" } }
@@ -745,6 +747,16 @@ export const acceptInvite = new ValidatedMethod({
       { _id: campaignId, "users.userId": userId },
       { $set: { "users.$.status": "active" } }
     );
+
+    NotificationsHelpers.add({
+      userId: campaign.creatorId,
+      metadata: {
+        name: currentUser.name,
+        campaignName: campaign.name
+      },
+      category: "campaignInviteAccepted",
+      dataRef: campaignId
+    });
 
     NotificationsHelpers.clear({
       userId,
@@ -768,6 +780,8 @@ export const declineInvite = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
+    const currentUser = Meteor.users.findOne(userId);
+
     const campaign = Campaigns.findOne({
       _id: campaignId,
       users: { $elemMatch: { userId, status: "pending" } }
@@ -789,6 +803,16 @@ export const declineInvite = new ValidatedMethod({
       },
       { $pull: { users: campaignUser } }
     );
+
+    NotificationsHelpers.add({
+      userId: campaign.creatorId,
+      metadata: {
+        name: currentUser.name,
+        campaignName: campaign.name
+      },
+      category: "campaignInviteDeclined",
+      dataRef: campaignId
+    });
 
     NotificationsHelpers.clear({
       userId,
@@ -823,6 +847,8 @@ export const addUser = new ValidatedMethod({
     if (!userId) {
       throw new Meteor.Error(401, "You need to login");
     }
+
+    const currentUser = Meteor.users.findOne(userId);
 
     const campaign = Campaigns.findOne(campaignId);
     if (!campaign) {
@@ -859,10 +885,13 @@ export const addUser = new ValidatedMethod({
 
     NotificationsHelpers.add({
       userId: user._id,
-      text: "You've received an invite to be part of a campaign",
+      metadata: {
+        name: currentUser.name
+      },
       path: `/campaign/invite?id=${campaignId}`,
       category: "campaignInvite",
-      dataRef: campaignId
+      dataRef: campaignId,
+      removable: false
     });
 
     Meteor.call("log", {

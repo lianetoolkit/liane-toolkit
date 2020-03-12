@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, injectIntl, intlShape } from "react-intl";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 
 import AppNavDropdown from "./AppNavDropdown.jsx";
+import { messages } from "/locales/features/notifications";
 
 const ItemContainer = styled.article`
   padding: 0.75rem 1rem;
@@ -13,7 +14,7 @@ const ItemContainer = styled.article`
   color: #666;
   cursor: pointer;
   position: relative;
-  line-height: 1.2;
+  line-height: 1.4;
   &:last-child {
     border-bottom: 0;
   }
@@ -31,6 +32,11 @@ const ItemContainer = styled.article`
     color: #999;
     font-size: 0.9em;
   }
+  .remove {
+    font-size: 0.7em;
+    color: #333;
+    margin-left: 0.3rem;
+  }
 `;
 
 class NotificationItem extends Component {
@@ -41,21 +47,46 @@ class NotificationItem extends Component {
     if (path) {
       FlowRouter.go(path);
     }
+    console.log("triggered");
+  };
+  _handleRemoveClick = ev => {
+    ev.preventDefault();
+  };
+  _getText = () => {
+    const { category, text, intl, metadata } = this.props;
+    if (messages[category])
+      return intl.formatMessage(messages[category], metadata || {});
+
+    return text;
   };
   render() {
-    const { children, unread, date } = this.props;
+    const { unread, date, removable } = this.props;
     let className = "";
     if (unread) {
       className += " unread";
     }
     return (
       <ItemContainer className={className} onClick={this._handleClick}>
-        {children}
+        {this._getText()}
         {date ? <span className="date"> {moment(date).fromNow()}</span> : null}
+        {/* {removable ? (
+          <FontAwesomeIcon
+            href="javascript:void(0);"
+            className="remove"
+            onClick={this._handleRemoveClick}
+            icon="times"
+          />
+        ) : null} */}
       </ItemContainer>
     );
   }
 }
+
+NotificationItem.propTypes = {
+  intl: intlShape.isRequired
+};
+
+const NotificationItemIntl = injectIntl(NotificationItem);
 
 class NotificationsPopup extends Component {
   _getUnreadCount = () => {
@@ -73,14 +104,14 @@ class NotificationsPopup extends Component {
         triggerCount={this._getUnreadCount()}
         tools={
           <div>
-            {hasUnread ? (
+            {/* {hasUnread ? (
               <a href="javascript:void(0);">
                 <FormattedMessage
                   id="app.notifications.mark_all_as_read"
                   defaultMessage="Mark all as read"
                 />
               </a>
-            ) : null}
+            ) : null} */}
             <a href="javascript:void(0);">
               <FontAwesomeIcon icon="times" className="close" />
             </a>
@@ -90,15 +121,17 @@ class NotificationsPopup extends Component {
         {/* <AppNavDropdown.Tools /> */}
         <AppNavDropdown.Content>
           {notifications.map(notification => (
-            <NotificationItem
+            <NotificationItemIntl
               key={notification._id}
               id={notification._id}
               unread={!notification.read}
               path={notification.path}
               date={notification.createdAt}
-            >
-              {notification.text}
-            </NotificationItem>
+              category={notification.category}
+              text={notification.text}
+              metadata={notification.metadata}
+              removable={notification.removable}
+            />
           ))}
           {!notifications.length ? (
             <p
@@ -122,7 +155,8 @@ class NotificationsPopup extends Component {
 }
 
 NotificationsPopup.propTypes = {
+  intl: intlShape.isRequired,
   children: PropTypes.element.isRequired
 };
 
-export default NotificationsPopup;
+export default injectIntl(NotificationsPopup);
