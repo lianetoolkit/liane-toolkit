@@ -1,12 +1,12 @@
-const permissions = require("../imports/utils/campaignPermissions");
+const permissions = require("../../imports/utils/campaignPermissions");
 
-let messages = [];
+let messages = {};
 
 for (feature of permissions.FEATURES) {
-  messages.push({
+  messages[feature] = {
     id: `app.campaign.team.permission.label.${feature}`,
     defaultMessage: feature
-  });
+  };
 }
 
 for (feature of permissions.FEATURES) {
@@ -15,12 +15,15 @@ for (feature of permissions.FEATURES) {
       permissions.FEATURE_PERMISSION_MAP[feature] &
       permissions.PERMISSIONS[permission]
     ) {
-      messages.push({
+      messages[`${feature}.${permission}`] = {
         id: `app.campaign.team.permission.label.${feature}.${permission}`,
         defaultMessage: permission
-      });
+      };
     }
   }
 }
 
-module.exports = messages;
+module.exports = {
+  messages: messages,
+  list: Object.values(messages)
+};

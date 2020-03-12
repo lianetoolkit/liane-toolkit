@@ -31,7 +31,7 @@ if (typeof Meteor == "undefined") {
   for (let message of notificationsMessages) {
     messageMap[message.id] = message;
   }
-  const permissionsMessages = require("./permissionsTranslations");
+  const permissionsMessages = require("../locales/features/permissions").list;
   for (let message of permissionsMessages) {
     messageMap[message.id] = message;
   }

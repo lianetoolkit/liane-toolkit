@@ -12,27 +12,7 @@ import {
   FEATURE_PERMISSION_MAP
 } from "/imports/utils/campaignPermissions";
 
-let featuresLabels = {};
-for (feature of FEATURES) {
-  featuresLabels[feature] = {
-    id: `app.campaign.team.permission.label.${feature}`,
-    defaultMessage: feature
-  };
-}
-featuresLabels = defineMessages(featuresLabels);
-
-let permissionsLabels = {};
-for (feature of FEATURES) {
-  for (permission in PERMISSIONS) {
-    if (FEATURE_PERMISSION_MAP[feature] & PERMISSIONS[permission]) {
-      permissionsLabels[`${feature}.${permission}`] = {
-        id: `app.campaign.team.permission.label.${feature}.${permission}`,
-        defaultMessage: permission
-      };
-    }
-  }
-}
-permissionsLabels = defineMessages(permissionsLabels);
+import { messages } from "/locales/features/permissions";
 
 const Container = styled.div`
   display: flex;
@@ -113,7 +93,7 @@ class PermissionsField extends Component {
             onChange={this._handleChange(feature, permission)}
             checked={value[feature] & PERMISSIONS[permission]}
           />
-          {intl.formatMessage(permissionsLabels[`${feature}.${permission}`])}
+          {intl.formatMessage(messages[`${feature}.${permission}`])}
         </label>
       );
     }
@@ -125,7 +105,7 @@ class PermissionsField extends Component {
       <Container>
         {FEATURES.map(feature => (
           <div key={feature}>
-            <h3>{intl.formatMessage(featuresLabels[feature])}</h3>
+            <h3>{intl.formatMessage(messages[feature])}</h3>
             {Object.keys(PERMISSIONS).map(permission => (
               <div key={`${feature}-${permission}`}>
                 {this._permissionItem(feature, permission)}
