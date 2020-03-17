@@ -1,20 +1,6 @@
 import SimpleSchema from "simpl-schema";
-import nodemailer from "nodemailer";
 import { Feedback } from "../feedback";
-
-let mailTransporter, mailConfig;
-if (Meteor.settings.email && Meteor.settings.email.mail) {
-  mailConfig = Meteor.settings.email.mail;
-  mailTransporter = nodemailer.createTransport({
-    host: mailConfig.host,
-    port: mailConfig.port,
-    secure: mailConfig.secure,
-    auth: {
-      user: mailConfig.username,
-      pass: mailConfig.password
-    }
-  });
-}
+import mailer, { sendMail } from "/imports/utils/server/mailer";
 
 export const updateStatus = new ValidatedMethod({
   name: "feedback.updateStatus",
@@ -96,26 +82,21 @@ export const sendFeedback = new ValidatedMethod({
 
     const id = Feedback.insert(doc);
 
-    if (mailTransporter) {
+    if (mailer) {
       const url = Meteor.absoluteUrl("/admin/tickets?id=" + id);
-      mailTransporter
-        .sendMail({
-          from: `"Liane" <${mailConfig.username}>`,
-          to: `${Meteor.settings.email.admins.join(", ")}`,
-          subject: `[TICKET] ${category.toUpperCase()} from ${name}`,
-          html: `
-        <p><strong>Category:</strong> ${category}</p>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
-        <p><strong>Message:</strong><br/>${message}</p>
-        <hr/>
-        <p>Manage this ticket: <a href="${url}">${url}</a></p>
+      sendMail({
+        to: `${Meteor.settings.email.admins.join(", ")}`,
+        subject: `[TICKET] ${category.toUpperCase()} from ${name}`,
+        body: `
+          <p><strong>Category:</strong> ${category}</p>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Subject:</strong> ${subject}</p>
+          <p><strong>Message:</strong><br/>${message}</p>
+          <hr/>
+          <p>Manage this ticket: <a href="${url}">${url}</a></p>
         `
-        })
-        .catch(err => {
-          logger.debug("error sending email", err);
-        });
+      });
     }
   }
 });
