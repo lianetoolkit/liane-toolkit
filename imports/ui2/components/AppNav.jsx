@@ -108,6 +108,7 @@ const NavItemContainer = styled.li`
             color: #ddd;
             padding: 0.5rem 1rem;
             border: 0;
+            line-height: 1.3;
             span.info {
               font-size: 0.6em;
               font-style: italic;

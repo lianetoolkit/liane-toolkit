@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Accounts } from "meteor/accounts-base";
 import {
   injectIntl,
   intlShape,
@@ -38,7 +39,7 @@ const messages = defineMessages({
 });
 
 const Container = styled.div`
-  max-width: 500px;
+  max-width: 600px;
   margin: 4rem auto;
   padding: 2rem;
   border-radius: 7px;
@@ -49,7 +50,7 @@ const Container = styled.div`
   overflow: auto;
   .info {
     flex: 1 1 100%;
-    margin: 0 0 3rem;
+    margin: 0 0 1rem;
   }
   h2 {
     font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -66,7 +67,72 @@ const Container = styled.div`
   .button.delete {
     border-radius: 7px;
   }
+  .button-group {
+    margin-bottom: 1rem;
+  }
 `;
+
+class ChangePassword extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      formData: {}
+    };
+  }
+  _handleSubmit = ev => {
+    ev.preventDefault();
+    const { formData } = this.state;
+    if (!formData.newPassword) {
+      alertStore.add("You must set a password", "error");
+      return;
+    }
+    if (formData.newPassword != formData.newPasswordRpt) {
+      alertStore.add("Passwords do not match", "error");
+      return;
+    }
+    Accounts.changePassword(formData.oldPassword, formData.newPassword, err => {
+      if (err) {
+        console.log(err);
+        alertStore.add(err);
+      } else {
+        alertStore.add(null, "success");
+      }
+    });
+  };
+  _handleChange = ({ target }) => {
+    this.setState({
+      formData: {
+        ...this.state.formData,
+        [target.name]: target.value
+      }
+    });
+  };
+  render() {
+    return (
+      <Form onSubmit={this._handleSubmit}>
+        <input
+          type="password"
+          name="oldPassword"
+          placeholder="Old password"
+          onChange={this._handleChange}
+        />
+        <input
+          type="password"
+          name="newPassword"
+          placeholder="New password"
+          onChange={this._handleChange}
+        />
+        <input
+          type="password"
+          name="newPasswordRpt"
+          placeholder="Repeat new password"
+          onChange={this._handleChange}
+        />
+        <input type="submit" value="Update password" />
+      </Form>
+    );
+  }
+}
 
 class ConfirmRemove extends Component {
   constructor(props) {
@@ -152,6 +218,10 @@ class MyAccount extends Component {
         return intl.formatMessage(messages.unknown);
     }
   };
+  _handleChangePasswordClick = ev => {
+    ev.preventDefault();
+    modalStore.set(<ChangePassword />);
+  };
   render() {
     const user = Meteor.user();
     return (
@@ -186,6 +256,13 @@ class MyAccount extends Component {
           </p>
           <input type="text" disabled value={user.emails[0].address} />
         </div>
+        <Button.Group>
+          <Button>Update profile</Button>
+          <Button>Change email</Button>
+          <Button onClick={this._handleChangePasswordClick}>
+            Change password
+          </Button>
+        </Button.Group>
         <a
           href="javascript:void(0);"
           className="button delete"

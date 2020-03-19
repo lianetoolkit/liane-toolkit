@@ -86,8 +86,10 @@ const HeaderButtons = styled.nav`
 `;
 
 const LoginFormContainer = styled.form`
-  margin: -3rem 2rem 4rem;
+  margin: 0 0 4rem;
+  padding-bottom: 2rem;
   text-align: center;
+  background: #fff;
   ${"" /* background: #fff;
   padding: 4rem;
   border-radius: 1rem;
@@ -95,11 +97,11 @@ const LoginFormContainer = styled.form`
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15);
   border: 1px solid #999; */} position: relative;
   z-index: 2;
+  border-bottom: 1px solid #ddd;
   p,
   h3 {
     margin: 0 0 2rem;
   }
-  input,
   .button {
     margin: 0 auto;
     max-width: 400px;
@@ -120,7 +122,6 @@ const LoginFormContainer = styled.form`
       background: #fff;
     }
   }
-  input[type="submit"],
   .facebook-button {
     display: block;
     max-width: 400px;
@@ -133,13 +134,17 @@ const LoginFormContainer = styled.form`
     line-height: 1.5;
     cursor: pointer;
     padding: 1rem;
-    margin: 1.5rem auto 0;
+    margin: -4rem auto 0;
     font-size: 1.2em;
     background: #ffcc00;
     font-family: "Unica One", monospace;
     outline: none;
     border: 0;
     text-align: center;
+    display: inline-block;
+    background: #3b5998;
+    color: #fff;
+    box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
     .fa-facebook-square {
       margin-right: 1rem;
     }
@@ -150,10 +155,6 @@ const LoginFormContainer = styled.form`
     }
   }
   .facebook-button {
-    margin-top: 1rem;
-    background: #3b5998;
-    color: #fff;
-    box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
   }
   nav {
     display: flex;
@@ -177,6 +178,31 @@ const LoginFormContainer = styled.form`
     font-size: 0.8em;
     color: #999;
     text-align: center;
+  }
+  .password-login {
+    form {
+      max-width: 300px;
+      margin: 2rem auto 0;
+      input {
+        display: block;
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+      }
+      input:first-child {
+        border-radius: 7px 7px 0 0;
+        border-bottom: 0;
+      }
+      input:last-child {
+        border-top: 0;
+        border-radius: 0 0 7px 7px;
+      }
+    }
+    a {
+      font-size: 0.8em;
+      display: block;
+      margin-top: 0.5rem;
+    }
   }
 `;
 
@@ -370,7 +396,8 @@ export default class Home extends Component {
     this.state = {
       loading: false,
       subscribeFormData: { name: "", email: "" },
-      subscribed: false
+      subscribed: false,
+      loginFormData: {}
     };
   }
   componentDidMount() {
@@ -432,6 +459,27 @@ export default class Home extends Component {
         }
       }
     );
+  };
+  _handlePasswordLoginSubmit = ev => {
+    ev.preventDefault();
+    const { loginFormData } = this.state;
+    Meteor.loginWithPassword(
+      loginFormData.email,
+      loginFormData.password,
+      err => {
+        if (err) {
+          alertStore.add(err);
+        }
+      }
+    );
+  };
+  _handlePasswordLoginChange = ({ target }) => {
+    this.setState({
+      loginFormData: {
+        ...this.state.loginFormData,
+        [target.name]: target.value
+      }
+    });
   };
   render() {
     const { isLoggedIn } = this.props;
@@ -514,7 +562,7 @@ export default class Home extends Component {
               <hr />
             </>
           ) : null}
-          {!isLoggedIn ? (
+          {!isLoggedIn || !user ? (
             <LoginFormContainer>
               <a
                 className="facebook-button button"
@@ -532,6 +580,29 @@ export default class Home extends Component {
                   defaultMessage="By registering in LIANE you agree with our <a href='https://files.liane.cc/legal/terms_of_use_v1_pt-br.pdf' target='_blank' rel='external'>terms of use</a> and <a href='https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf' target='_blank' rel='external' >privacy policy</a>."
                 />
               </p>
+              <div className="password-login">
+                <OrLine>Or with your email</OrLine>
+                <Form onSubmit={this._handlePasswordLoginSubmit}>
+                  <div className="inputs">
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Email"
+                      onChange={this._handlePasswordLoginChange}
+                    />
+                    <input
+                      type="password"
+                      name="password"
+                      placeholder="Password"
+                      onChange={this._handlePasswordLoginChange}
+                    />
+                    <input type="submit" value="Login" />
+                  </div>
+                  <a href={FlowRouter.path("App.register")}>
+                    Register new account
+                  </a>
+                </Form>
+              </div>
             </LoginFormContainer>
           ) : (
             <UserContainer>

@@ -52,38 +52,43 @@ class Confirm extends Component {
   _handleSubmit = ev => {
     ev.preventDefault();
     const { type } = this.state;
-    let permissions = ["public_profile", "email"];
-    switch (type) {
-      case "campaigner":
-        permissions = permissions.concat([
-          "manage_pages",
-          "publish_pages",
-          "pages_show_list",
-          // "ads_management",
-          // "ads_read",
-          // "business_management",
-          "pages_messaging",
-          "pages_messaging_phone_number",
-          "pages_messaging_subscriptions"
-        ]);
-        break;
-      default:
+    if (type == "campaigner") {
+      Facebook.requestCredential(
+        {
+          requestPermissions: [
+            "public_profile",
+            "email",
+            "manage_pages",
+            "publish_pages",
+            "pages_show_list",
+            // "ads_management",
+            // "ads_read",
+            // "business_management",
+            "pages_messaging",
+            "pages_messaging_phone_number",
+            "pages_messaging_subscriptions"
+          ]
+        },
+        token => {
+          const secret = OAuth._retrieveCredentialSecret(token) || null;
+          Meteor.call("users.setType", { type, token, secret }, (err, res) => {
+            if (err) {
+              alertStore.add(err);
+            } else {
+              modalStore.reset(true);
+            }
+          });
+        }
+      );
+    } else {
+      Meteor.call("users.setType", { type }, (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          modalStore.reset(true);
+        }
+      });
     }
-    Facebook.requestCredential(
-      {
-        requestPermissions: permissions
-      },
-      token => {
-        const secret = OAuth._retrieveCredentialSecret(token) || null;
-        Meteor.call("users.setType", { type, token, secret }, (err, res) => {
-          if (err) {
-            alertStore.add(err);
-          } else {
-            modalStore.reset(true);
-          }
-        });
-      }
-    );
   };
   render() {
     const { type } = this.state;

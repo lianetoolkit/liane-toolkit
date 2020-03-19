@@ -3,9 +3,7 @@ import { Random } from "meteor/random";
 import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
 
 Accounts.emailTemplates.siteName = Meteor.settings.public.appName;
-Accounts.emailTemplates.from = `${Meteor.settings.public.appName} <${
-  Meteor.settings.public.appEmail
-}>`;
+Accounts.emailTemplates.from = `${Meteor.settings.public.appName} <${Meteor.settings.public.appEmail}>`;
 
 // http://docs.meteor.com/api/accounts-multi.html#AccountsCommon-config
 Accounts.config({
@@ -43,6 +41,7 @@ Accounts.onLogin(function(data) {
 });
 
 Accounts.onCreateUser(function(options, user) {
+  console.log(options);
   const userProperties = { profile: {} };
 
   const hasUser = !!Meteor.users.findOne();
@@ -50,6 +49,16 @@ Accounts.onCreateUser(function(options, user) {
     user.roles = ["admin"];
   }
   user = _.extend(user, userProperties);
+
+  if (options.name) {
+    user.name = options.name;
+  }
+  if (options.country) {
+    user.country = options.country;
+  }
+  if (options.region) {
+    user.region = options.region;
+  }
 
   return user;
 });

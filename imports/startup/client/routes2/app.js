@@ -26,6 +26,7 @@ import CampaignFacebookPage from "/imports/ui2/pages/campaign/settings/Facebook.
 import CampaignTeamPage from "/imports/ui2/pages/campaign/settings/Team.jsx";
 import CampaignActionsPage from "/imports/ui2/pages/campaign/settings/Actions.jsx";
 import NewCampaignPage from "/imports/ui2/containers/campaign/New.jsx";
+import RegisterPage from "/imports/ui2/pages/Register.jsx";
 
 import AdminPage from "/imports/ui2/pages/admin/Admin.jsx";
 
@@ -43,6 +44,16 @@ appRoutes.route("/", {
     addTitle(`${APP_NAME} | Technology for Political Innovation`);
     return mount(App, {
       invite: queryParams.invite && queryParams.invite
+    });
+  }
+});
+
+appRoutes.route("/register", {
+  name: "App.register",
+  action: function(params, queryParams) {
+    addTitle(`${APP_NAME} | Technology for Political Innovation`);
+    return mount(App, {
+      content: { component: RegisterPage }
     });
   }
 });

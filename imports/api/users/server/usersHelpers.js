@@ -111,15 +111,17 @@ const UsersHelpers = {
     }
 
     // Revoke Facebook permissions
-    try {
-      Promise.await(
-        FB.api(user.services.facebook.id + "/permissions", "DELETE", {
-          access_token: user.services.facebook.accessToken
-        })
-      );
-    } catch (err) {
-      console.log(err);
-      console.log("error revoking facebook permissions");
+    if (user.services.facebook) {
+      try {
+        Promise.await(
+          FB.api(user.services.facebook.id + "/permissions", "DELETE", {
+            access_token: user.services.facebook.accessToken
+          })
+        );
+      } catch (err) {
+        console.log(err);
+        console.log("error revoking facebook permissions");
+      }
     }
 
     return Meteor.users.remove(userId);

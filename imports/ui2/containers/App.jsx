@@ -36,6 +36,7 @@ export default withTracker(props => {
   let notifications = [];
 
   if (connected && isLoggedIn && user) {
+    console.log(isLoggedIn, user);
     campaigns = campaignsHandle.ready()
       ? Campaigns.find({
           users: { $elemMatch: { userId: user._id } }
@@ -199,6 +200,7 @@ export default withTracker(props => {
       : 0;
 
     // Exports
+    console.log("attempting exports why", campaignId);
     const exportsHandle = AppSubs.subscribe("people.exports", { campaignId });
     peopleExports = exportsHandle.ready()
       ? PeopleExports.find({ campaignId }).fetch()

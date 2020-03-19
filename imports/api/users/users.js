@@ -17,6 +17,14 @@ Meteor.users.schema = new SimpleSchema({
     type: String,
     optional: true
   },
+  country: {
+    type: String,
+    optional: true
+  },
+  region: {
+    type: String,
+    optional: true
+  },
   type: {
     type: String,
     allowedValues: ["campaigner", "user"],

@@ -222,10 +222,12 @@ export const setUserType = new ValidatedMethod({
       allowedValues: ["campaigner", "user"]
     },
     token: {
-      type: String
+      type: String,
+      optional: true
     },
     secret: {
-      type: String
+      type: String,
+      optional: true
     }
   }).validator(),
   run({ type, token, secret }) {
@@ -236,16 +238,23 @@ export const setUserType = new ValidatedMethod({
       throw new Meteor.Error(400, "You must be logged in");
     }
 
-    const credential = Facebook.retrieveCredential(token, secret);
-
-    if (credential && credential.serviceData.accessToken) {
-      const token = UsersHelpers.exchangeFBToken({
-        token: credential.serviceData.accessToken
-      });
+    if (type == "campaigner") {
+      const credential = Facebook.retrieveCredential(token, secret);
+      if (credential && credential.serviceData.accessToken) {
+        const token = UsersHelpers.exchangeFBToken({
+          token: credential.serviceData.accessToken
+        });
+        Meteor.users.update(userId, {
+          $set: {
+            type,
+            "services.facebook.accessToken": token.result
+          }
+        });
+      }
+    } else {
       Meteor.users.update(userId, {
         $set: {
-          type,
-          "services.facebook.accessToken": token.result
+          type
         }
       });
     }
