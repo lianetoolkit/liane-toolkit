@@ -70,14 +70,16 @@ class Confirm extends Component {
           ]
         },
         token => {
-          const secret = OAuth._retrieveCredentialSecret(token) || null;
-          Meteor.call("users.setType", { type, token, secret }, (err, res) => {
-            if (err) {
-              alertStore.add(err);
-            } else {
-              modalStore.reset(true);
-            }
-          });
+          if(token) {
+            const secret = OAuth._retrieveCredentialSecret(token) || null;
+            Meteor.call("users.setType", { type, token, secret }, (err, res) => {
+              if (err) {
+                alertStore.add(err);
+              } else {
+                modalStore.reset(true);
+              }
+            });
+          }
         }
       );
     } else {

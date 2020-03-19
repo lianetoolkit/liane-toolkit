@@ -52,10 +52,11 @@ class RegisterPage extends Component {
       },
       err => {
         if (err) {
-          console.log(err);
           alertStore.add(err);
+        } else {
+          alertStore.add(null, "success");
+          FlowRouter.go("App.dashboard");
         }
-        alertStore.add(null, "success");
       }
     );
   };
