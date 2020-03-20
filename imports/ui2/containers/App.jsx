@@ -131,7 +131,7 @@ export default withTracker(props => {
         campaign.tags = PeopleTags.find({
           campaignId: campaign._id
         }).fetch();
-        campaign.users = Meteor.users
+        const users = Meteor.users
           .find({
             _id: { $in: map(campaign.users, "userId") }
           })
@@ -140,6 +140,10 @@ export default withTracker(props => {
             user.campaign = campaign.users.find(u => u.userId == user._id);
             return user;
           });
+        const invitedUsers = campaign.users.filter(
+          u => !u.userId && u.inviteId
+        );
+        campaign.users = [...users, ...invitedUsers];
         campaign.geolocation = Geolocations.findOne(campaign.geolocationId);
         return campaign;
       }

@@ -20,17 +20,37 @@ class RegisterPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       formData: {}
     };
   }
+  componentDidMount = () => {
+    const { invite } = this.props;
+    if (invite) {
+      this.setState({ loading: true });
+      Meteor.call("campaigns.getInviteInfo", { invite }, (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          this.setState({
+            email: res.email
+          });
+        }
+        this.setState({
+          loading: false
+        });
+      });
+    }
+  };
   _handleSubmit = ev => {
     ev.preventDefault();
-    const { formData } = this.state;
+    const { invite } = this.props;
+    const { email, formData } = this.state;
     if (!formData.name) {
       alertStore.add("You must set a name", "error");
       return;
     }
-    if (!formData.email) {
+    if (!email && !formData.email) {
       alertStore.add("You must set an email", "error");
       return;
     }
@@ -42,23 +62,27 @@ class RegisterPage extends Component {
       alertStore.add("Passwords do not match", "error");
       return;
     }
-    Accounts.createUser(
-      {
-        name: formData.name,
-        email: formData.email,
-        country: formData.country,
-        region: formData.region,
-        password: formData.password
-      },
-      err => {
-        if (err) {
-          alertStore.add(err);
-        } else {
-          alertStore.add(null, "success");
-          FlowRouter.go("App.dashboard");
-        }
+    let data = {
+      name: formData.name,
+      email: email || formData.email,
+      country: formData.country,
+      region: formData.region,
+      password: formData.password
+    };
+    if (!email) {
+      data.email = formData.email;
+    }
+    if (invite) {
+      data.invite = invite;
+    }
+    Accounts.createUser(data, err => {
+      if (err) {
+        alertStore.add(err);
+      } else {
+        alertStore.add(null, "success");
+        FlowRouter.go("App.dashboard");
       }
-    );
+    });
   };
   _handleChange = ({ target }) => {
     this.setState({
@@ -69,16 +93,20 @@ class RegisterPage extends Component {
     });
   };
   render() {
-    const { formData } = this.state;
+    const { loading, email, formData } = this.state;
+    if(loading) return null;
     return (
       <Page.Content>
+        <Page.Title>Register new account</Page.Title>
         <Form onSubmit={this._handleSubmit}>
           <Form.Field label="Name">
             <input type="text" name="name" onChange={this._handleChange} />
           </Form.Field>
-          <Form.Field label="Email">
-            <input type="email" name="email" onChange={this._handleChange} />
-          </Form.Field>
+          {!email ? (
+            <Form.Field label="Email">
+              <input type="email" name="email" onChange={this._handleChange} />
+            </Form.Field>
+          ) : null}
           <Form.Field label="Country">
             <CountrySelect name="country" onChange={this._handleChange} />
           </Form.Field>

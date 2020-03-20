@@ -1,6 +1,8 @@
 import { Accounts } from "meteor/accounts-base";
 import { Random } from "meteor/random";
 import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
+import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
+import { NotificationsHelpers } from "/imports/api/notifications/server/notificationsHelpers.js";
 
 Accounts.emailTemplates.siteName = Meteor.settings.public.appName;
 Accounts.emailTemplates.from = `${Meteor.settings.public.appName} <${Meteor.settings.public.appEmail}>`;
@@ -41,7 +43,6 @@ Accounts.onLogin(function(data) {
 });
 
 Accounts.onCreateUser(function(options, user) {
-  console.log(options);
   const userProperties = { profile: {} };
 
   const hasUser = !!Meteor.users.findOne();
@@ -58,6 +59,37 @@ Accounts.onCreateUser(function(options, user) {
   }
   if (options.region) {
     user.region = options.region;
+  }
+
+  // Validate invitation
+  if (options.invite) {
+    const parsedInvite = options.invite.split("|");
+    const campaignId = parsedInvite[1];
+    const inviteId = parsedInvite[0];
+    const campaign = CampaignsHelpers.getInviteCampaign({
+      campaignId,
+      inviteId
+    });
+    const invite = campaign.users.find(u => u.inviteId == inviteId);
+    CampaignsHelpers.applyInvitation({
+      inviteId,
+      campaignId,
+      userId: user._id
+    });
+    user.email = invite.email;
+    user.type = "user";
+
+    // Notify campaign owner
+    NotificationsHelpers.add({
+      userId: campaign.creatorId,
+      metadata: {
+        name: user.name,
+        campaignName: campaign.name
+      },
+      category: "campaignInviteAccepted",
+      dataRef: campaignId
+    });
+
   }
 
   return user;

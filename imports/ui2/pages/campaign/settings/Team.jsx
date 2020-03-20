@@ -57,10 +57,13 @@ const messages = defineMessages({
 class EditUser extends Component {
   constructor(props) {
     super(props);
+    const { user } = props;
     this.state = {
       formData: {
-        role: props.user.campaign.role,
-        permissions: props.user.campaign.permissions
+        role: user.campaign ? user.campaign.role : user.role,
+        permissions: user.campaign
+          ? user.campaign.permissions
+          : user.permissions
       }
     };
   }
@@ -75,23 +78,27 @@ class EditUser extends Component {
     ev.preventDefault();
     const { campaignId, user } = this.props;
     const { formData } = this.state;
-    Meteor.call(
-      "campaigns.updateUser",
-      {
-        campaignId,
-        userId: user._id,
-        role: formData.role,
-        permissions: formData.permissions
-      },
-      (err, res) => {
-        if (err) {
-          alertStore.add(err);
-        } else {
-          alertStore.add(null, "success");
-          modalStore.reset();
-        }
+    let data = {
+      campaignId,
+      role: formData.role,
+      permissions: formData.permissions
+    };
+    if (user._id) {
+      data.userId = user._id;
+    } else if (user.inviteId) {
+      data.inviteId = user.inviteId;
+    } else {
+      alertStore.add("Unable to remove", "error");
+      return;
+    }
+    Meteor.call("campaigns.updateUser", data, (err, res) => {
+      if (err) {
+        alertStore.add(err);
+      } else {
+        alertStore.add(null, "success");
+        modalStore.reset();
       }
-    );
+    });
   };
   render() {
     const { user, intl } = this.props;
@@ -196,15 +203,20 @@ class CampaignTeamPage extends Component {
     ev.preventDefault();
     const { campaign } = this.props;
     if (confirm("Tem certeza?")) {
-      Meteor.call(
-        "campaigns.removeUser",
-        { campaignId: campaign._id, userId: user._id },
-        (err, res) => {
-          if (err) {
-            alertStore.add(err);
-          }
+      let data = { campaignId: campaign._id };
+      if (user._id) {
+        data.userId = user._id;
+      } else if (user.inviteId) {
+        data.inviteId = user.inviteId;
+      } else {
+        alertStore.add("Unable to remove", "error");
+        return;
+      }
+      Meteor.call("campaigns.removeUser", data, (err, res) => {
+        if (err) {
+          alertStore.add(err);
         }
-      );
+      });
     }
   };
   render() {
@@ -225,13 +237,27 @@ class CampaignTeamPage extends Component {
               <tbody>
                 {campaign.users.map(campaignUser => (
                   <tr
-                    key={campaignUser._id}
-                    className={campaignUser.campaign.status}
+                    key={campaignUser._id || campaignUser.inviteId}
+                    className={
+                      campaignUser.campaign
+                        ? campaignUser.campaign.status
+                        : "pending"
+                    }
                   >
-                    <td>{campaignUser.name}</td>
-                    <td className="small">{campaignUser.campaign.status}</td>
-                    <td className="small">{campaignUser.campaign.role}</td>
-                    <td className="fill small">{campaignUser.emails[0].address}</td>
+                    <td>{campaignUser.name || campaignUser.email}</td>
+                    <td className="small">
+                      {campaignUser.campaign
+                        ? campaignUser.campaign.status
+                        : "Waiting registration"}
+                    </td>
+                    <td className="small">
+                      {campaignUser.campaign
+                        ? campaignUser.campaign.role
+                        : campaignUser.role}
+                    </td>
+                    <td className="fill small">
+                      {campaignUser._id ? campaignUser.emails[0].address : ""}
+                    </td>
                     {campaignUser._id != campaign.creatorId ? (
                       <td>
                         <a

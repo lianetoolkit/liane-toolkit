@@ -457,6 +457,34 @@ const CampaignsHelpers = {
       });
     }
   },
+  getInviteCampaign({ campaignId, inviteId }) {
+    return Campaigns.findOne({
+      _id: campaignId,
+      users: {
+        $elemMatch: {
+          inviteId
+        }
+      }
+    });
+  },
+  applyInvitation({ campaignId, inviteId, userId }) {
+    const campaign = this.getInviteCampaign({ campaignId, inviteId });
+    if (!campaign) {
+      throw new Meteor.Error("Campaign invitation not found");
+    }
+    return Campaigns.update(
+      {
+        _id: campaignId,
+        "users.inviteId": inviteId
+      },
+      {
+        $set: {
+          "users.$.userId": userId,
+          "users.$.status": "active"
+        }
+      }
+    );
+  },
   removeCampaign({ campaignId }) {
     const campaign = Campaigns.findOne(campaignId);
 

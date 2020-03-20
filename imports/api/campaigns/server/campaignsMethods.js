@@ -1,4 +1,6 @@
 import SimpleSchema from "simpl-schema";
+import { Random } from "meteor/random";
+import mailer, { sendMail } from "/imports/utils/server/mailer";
 import { Campaigns, Invites } from "/imports/api/campaigns/campaigns.js";
 import { CampaignsHelpers } from "./campaignsHelpers.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
@@ -686,6 +688,23 @@ export const campaignRefreshHealthCheck = new ValidatedMethod({
   }
 });
 
+export const campaignInviteInfo = new ValidatedMethod({
+  name: "campaigns.getInviteInfo",
+  validate: new SimpleSchema({
+    invite: {
+      type: String
+    }
+  }).validator(),
+  run({ invite }) {
+    const parsedInvite = invite.split("|");
+    const campaign = CampaignsHelpers.getInviteCampaign({
+      campaignId: parsedInvite[1],
+      inviteId: parsedInvite[0]
+    });
+    return campaign.users.find(u => u.inviteId == parsedInvite[0]);
+  }
+});
+
 export const campaignInviteData = new ValidatedMethod({
   name: "campaigns.perInvite",
   validate: new SimpleSchema({
@@ -866,37 +885,71 @@ export const addUser = new ValidatedMethod({
       emails: { $elemMatch: { address: email } }
     });
 
+    let inviteId;
     if (!user) {
+      if (_.findWhere(campaign.users, { email })) {
+        throw new Meteor.Error(401, "User already invited.");
+      }
+      if (!mailer) {
+        throw new Meteor.Error("Mailer not found, unable to invite user");
+      }
+      inviteId = Random.id();
+      const url = Meteor.absoluteUrl(
+        `/register?campaignInvite=${inviteId}|${campaign._id}`
+      );
       // This should send email invite
-      throw new Meteor.Error(404, "User not found");
+      Campaigns.update(
+        {
+          _id: campaignId
+        },
+        { $push: { users: { inviteId, email, permissions, role } } }
+      );
+      sendMail({
+        to: email,
+        subject: "You've received a campaign invitation!",
+        body: `
+          <h3>You've been invited to be a part of ${campaign.name}</h3>
+          <p>Access the link below to complete your registration:</p>
+          <p>${url}</p>
+        `
+      });
+    } else {
+      if (_.findWhere(campaign.users, { userId: user._id })) {
+        throw new Meteor.Error(401, "User already part of this campaign.");
+      }
+
+      Campaigns.update(
+        {
+          _id: campaignId
+        },
+        { $push: { users: { userId: user._id, permissions, role } } }
+      );
+
+      NotificationsHelpers.add({
+        userId: user._id,
+        metadata: {
+          name: currentUser.name
+        },
+        path: `/campaign/invite?id=${campaignId}`,
+        category: "campaignInvite",
+        dataRef: campaignId,
+        removable: false
+      });
     }
 
-    if (_.findWhere(campaign.users, { userId: user._id })) {
-      throw new Meteor.Error(401, "User already part of this campaign.");
+    let logData = {
+      permissions,
+      role
+    };
+    if (user) {
+      logData.userId = user._id;
+    } else if (inviteId) {
+      logData.inviteId = inviteId;
     }
-
-    Campaigns.update(
-      {
-        _id: campaignId
-      },
-      { $push: { users: { userId: user._id, permissions, role } } }
-    );
-
-    NotificationsHelpers.add({
-      userId: user._id,
-      metadata: {
-        name: currentUser.name
-      },
-      path: `/campaign/invite?id=${campaignId}`,
-      category: "campaignInvite",
-      dataRef: campaignId,
-      removable: false
-    });
-
     Meteor.call("log", {
       type: "campaigns.users.add",
       campaignId,
-      data: { userId: user._id, permissions, role }
+      data: logData
     });
   }
 });
@@ -908,7 +961,12 @@ export const updateUser = new ValidatedMethod({
       type: String
     },
     userId: {
-      type: String
+      type: String,
+      optional: true
+    },
+    inviteId: {
+      type: String,
+      optional: true
     },
     role: {
       type: String,
@@ -919,13 +977,18 @@ export const updateUser = new ValidatedMethod({
       blackbox: true
     }
   }).validator(),
-  run({ campaignId, userId, role, permissions }) {
+  run({ campaignId, userId, inviteId, role, permissions }) {
     logger.debug("campaigns.updateUser called", {
       campaignId,
       userId,
+      inviteId,
       role,
       permissions
     });
+
+    if (!userId && !inviteId) {
+      throw new Meteor.Error(400, "User ID or Invite ID required");
+    }
 
     const currentUser = Meteor.userId();
     if (!currentUser) {
@@ -940,29 +1003,44 @@ export const updateUser = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    const campaignUser = _.findWhere(campaign.users, { userId });
-
-    if (!campaignUser) {
-      throw new Meteor.Error(401, "User is not part of this campaign.");
+    if (userId) {
+      const campaignUser = _.findWhere(campaign.users, { userId });
+      if (!campaignUser) {
+        throw new Meteor.Error(401, "User is not part of this campaign.");
+      }
+      if (userId == campaign.creatorId) {
+        throw new Meteor.Error(401, "You can't change admin permissions");
+      }
+      Campaigns.update(
+        {
+          _id: campaignId,
+          "users.userId": userId
+        },
+        { $set: { "users.$.role": role, "users.$.permissions": permissions } }
+      );
+      Meteor.call("log", {
+        type: "campaigns.users.update",
+        campaignId,
+        data: { userId, role, permissions }
+      });
+    } else if (inviteId) {
+      const campaignUser = _.findWhere(campaign.users, { inviteId });
+      if (!campaignUser) {
+        throw new Meteor.Error(401, "User is not part of this campaign.");
+      }
+      Campaigns.update(
+        {
+          _id: campaignId,
+          "users.inviteId": inviteId
+        },
+        { $set: { "users.$.role": role, "users.$.permissions": permissions } }
+      );
+      Meteor.call("log", {
+        type: "campaigns.users.update",
+        campaignId,
+        data: { inviteId, role, permissions }
+      });
     }
-
-    if (userId == campaign.creatorId) {
-      throw new Meteor.Error(401, "You can't change admin permissions");
-    }
-
-    Campaigns.update(
-      {
-        _id: campaignId,
-        "users.userId": userId
-      },
-      { $set: { "users.$.role": role, "users.$.permissions": permissions } }
-    );
-
-    Meteor.call("log", {
-      type: "campaigns.users.update",
-      campaignId,
-      data: { userId, role, permissions }
-    });
   }
 });
 
@@ -973,11 +1051,24 @@ export const removeUser = new ValidatedMethod({
       type: String
     },
     userId: {
-      type: String
+      type: String,
+      optional: true
+    },
+    inviteId: {
+      type: String,
+      optional: true
     }
   }).validator(),
-  run({ campaignId, userId }) {
-    logger.debug("campaigns.removeUser called", { campaignId, userId });
+  run({ campaignId, userId, inviteId }) {
+    logger.debug("campaigns.removeUser called", {
+      campaignId,
+      userId,
+      inviteId
+    });
+
+    if (!userId && !inviteId) {
+      throw new Meteor.Error(400, "User ID or Invite ID required");
+    }
 
     const currentUser = Meteor.userId();
     if (!currentUser) {
@@ -1003,24 +1094,39 @@ export const removeUser = new ValidatedMethod({
       );
     }
 
-    const campaignUser = _.findWhere(campaign.users, { userId });
-
-    if (!campaignUser) {
-      throw new Meteor.Error(401, "User is not part of this campaign.");
+    if (userId) {
+      const campaignUser = _.findWhere(campaign.users, { userId });
+      if (!campaignUser) {
+        throw new Meteor.Error(401, "User is not part of this campaign.");
+      }
+      Campaigns.update(
+        {
+          _id: campaignId
+        },
+        { $pull: { users: campaignUser } }
+      );
+      Meteor.call("log", {
+        type: "campaigns.users.remove",
+        campaignId,
+        data: { userId }
+      });
+    } else if (inviteId) {
+      const campaignUser = _.findWhere(campaign.users, { inviteId });
+      if (!campaignUser) {
+        throw new Meteor.Error(401, "User is not part of this campaign.");
+      }
+      Campaigns.update(
+        {
+          _id: campaignId
+        },
+        { $pull: { users: campaignUser } }
+      );
+      Meteor.call("log", {
+        type: "campaigns.users.remove",
+        campaignId,
+        data: { inviteId }
+      });
     }
-
-    Campaigns.update(
-      {
-        _id: campaignId
-      },
-      { $pull: { users: campaignUser } }
-    );
-
-    Meteor.call("log", {
-      type: "campaigns.users.remove",
-      campaignId,
-      data: { userId }
-    });
   }
 });
 

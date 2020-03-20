@@ -207,6 +207,7 @@ export const validateCampaigner = new ValidatedMethod({
     if (!userId || !user) {
       throw new Meteor.Error(400, "Invalid user");
     }
+    if (!user.services.facebook) return false;
     const tokenData = UsersHelpers.debugFBToken({
       token: user.services.facebook.accessToken
     });

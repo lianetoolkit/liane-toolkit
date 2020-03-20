@@ -18,20 +18,17 @@ for (feature of FEATURES) {
 Campaigns.usersSchema = new SimpleSchema({
   userId: {
     type: String,
-    index: 1
+    index: 1,
+    optional: true
   },
   inviteId: {
     type: String,
     index: 1,
-    autoValue() {
-      if (this.isInsert) {
-        return Random.id();
-      } else if (this.isUpsert) {
-        return { $setOnInsert: Random.id() };
-      } else {
-        return this.unset();
-      }
-    },
+    optional: true
+  },
+  email: {
+    type: String,
+    index: 1,
     optional: true
   },
   status: {

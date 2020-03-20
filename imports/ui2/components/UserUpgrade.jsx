@@ -75,8 +75,8 @@ export default class UserUpgrade extends Component {
         <h2>Upgrade your user!</h2>
         <p>
           You are currently not able to create a campaign. We must ask you to
-          provide more Facebook permissions, required to enable all our
-          features.
+          connect with Facebook and provide more user permissions, required to
+          enable all our features.
         </p>
         <Button primary onClick={this._handleClick}>
           Click here to become a campaigner!

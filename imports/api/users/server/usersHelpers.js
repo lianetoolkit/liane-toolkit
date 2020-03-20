@@ -110,6 +110,18 @@ const UsersHelpers = {
       CampaignsHelpers.removeCampaign({ campaignId: campaign._id });
     }
 
+    // Remove self from campaigns
+    const memberCampaigns = Campaigns.find({
+      "users.userId": user._id
+    }).fetch();
+    for (const campaign of memberCampaigns) {
+      const campaignUser = campaign.users.find(u => u.userId == user._id);
+      Campaigns.update(
+        { _id: campaign._id },
+        { $pull: { users: campaignUser } }
+      );
+    }
+
     // Revoke Facebook permissions
     if (user.services.facebook) {
       try {
