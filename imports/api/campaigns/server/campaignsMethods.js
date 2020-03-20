@@ -332,7 +332,6 @@ export const campaignsSelectGet = new ValidatedMethod({
 
     const campaign = Campaigns.findOne(selector, options);
 
-    console.log(campaign);
     return campaign;
   }
 });
