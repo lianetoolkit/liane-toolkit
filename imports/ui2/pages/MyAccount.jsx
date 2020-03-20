@@ -12,6 +12,8 @@ import styled from "styled-components";
 import OrLine from "../components/OrLine.jsx";
 import Form from "../components/Form.jsx";
 import Button from "../components/Button.jsx";
+import CountrySelect from "../components/CountrySelect.jsx";
+import RegionSelect from "../components/RegionSelect.jsx";
 import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
 
@@ -96,6 +98,7 @@ class ChangePassword extends Component {
         alertStore.add(err);
       } else {
         alertStore.add(null, "success");
+        modalStore.reset(true);
       }
     });
   };
@@ -110,25 +113,108 @@ class ChangePassword extends Component {
   render() {
     return (
       <Form onSubmit={this._handleSubmit}>
-        <input
-          type="password"
-          name="oldPassword"
-          placeholder="Old password"
-          onChange={this._handleChange}
-        />
-        <input
-          type="password"
-          name="newPassword"
-          placeholder="New password"
-          onChange={this._handleChange}
-        />
-        <input
-          type="password"
-          name="newPasswordRpt"
-          placeholder="Repeat new password"
-          onChange={this._handleChange}
-        />
+        <Form.Field label="Old password">
+          <input
+            type="password"
+            name="oldPassword"
+            onChange={this._handleChange}
+          />
+        </Form.Field>
+        <Form.Field label="New password">
+          <input
+            type="password"
+            name="newPassword"
+            onChange={this._handleChange}
+          />
+        </Form.Field>
+        <Form.Field label="Repeat new password">
+          <input
+            type="password"
+            name="newPasswordRpt"
+            onChange={this._handleChange}
+          />
+        </Form.Field>
         <input type="submit" value="Update password" />
+      </Form>
+    );
+  }
+}
+
+class UpdateProfile extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      formData: {}
+    };
+  }
+  componentDidMount() {
+    const user = Meteor.user();
+    this.setState({
+      formData: {
+        name: user.name,
+        country: user.country,
+        region: user.region
+      }
+    });
+  }
+  _handleSubmit = ev => {
+    ev.preventDefault();
+    const { formData } = this.state;
+    Meteor.call(
+      "users.updateProfile",
+      {
+        name: formData.name,
+        country: formData.country,
+        region: formData.region
+      },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          alertStore.add(null, "success");
+          modalStore.reset(true);
+        }
+      }
+    );
+  };
+  _handleChange = ({ target }) => {
+    this.setState({
+      formData: {
+        ...this.state.formData,
+        [target.name]: target.value
+      }
+    });
+  };
+  render() {
+    const { formData } = this.state;
+    return (
+      <Form onSubmit={this._handleSubmit}>
+        <Form.Field label="Name">
+          <input
+            type="text"
+            name="name"
+            onChange={this._handleChange}
+            value={formData.name}
+          />
+        </Form.Field>
+        <Form.Field label="Country">
+          <CountrySelect
+            name="country"
+            onChange={this._handleChange}
+            value={formData.country}
+          />
+        </Form.Field>
+        {formData.country ? (
+          <Form.Field label="Region">
+            <RegionSelect
+              country={formData.country}
+              name="region"
+              onChange={this._handleChange}
+              value={formData.region}
+            />
+          </Form.Field>
+        ) : null}
+        <input type="submit" value="Update profile" />
       </Form>
     );
   }
@@ -222,6 +308,10 @@ class MyAccount extends Component {
     ev.preventDefault();
     modalStore.set(<ChangePassword />);
   };
+  _handleUpdateProfileClick = ev => {
+    ev.preventDefault();
+    modalStore.set(<UpdateProfile />);
+  };
   render() {
     const user = Meteor.user();
     return (
@@ -257,7 +347,9 @@ class MyAccount extends Component {
           <input type="text" disabled value={user.emails[0].address} />
         </div>
         <Button.Group>
-          <Button>Update profile</Button>
+          <Button onClick={this._handleUpdateProfileClick}>
+            Update profile
+          </Button>
           <Button>Change email</Button>
           <Button onClick={this._handleChangePasswordClick}>
             Change password

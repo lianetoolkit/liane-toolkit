@@ -88,6 +88,38 @@ export const setLanguage = new ValidatedMethod({
   }
 });
 
+export const updateProfile = new ValidatedMethod({
+  name: "users.updateProfile",
+  validate: new SimpleSchema({
+    name: {
+      type: String
+    },
+    country: {
+      type: String,
+      optional: true
+    },
+    region: {
+      type: String,
+      optional: true
+    }
+  }).validator(),
+  run({ name, country, region }) {
+    const userId = Meteor.userId();
+    logger.debug("users.updateProfile called", {
+      userId,
+      name,
+      country,
+      region
+    });
+
+    if (!userId) {
+      throw new Meteor.Error(401, "You are not logged in");
+    }
+
+    return Meteor.users.update(userId, { $set: { name, country, region } });
+  }
+});
+
 export const getCountry = new ValidatedMethod({
   name: "users.getCountry",
   validate() {},
