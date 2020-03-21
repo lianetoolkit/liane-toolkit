@@ -70,15 +70,19 @@ class Confirm extends Component {
           ]
         },
         token => {
-          if(token) {
+          if (token) {
             const secret = OAuth._retrieveCredentialSecret(token) || null;
-            Meteor.call("users.setType", { type, token, secret }, (err, res) => {
-              if (err) {
-                alertStore.add(err);
-              } else {
-                modalStore.reset(true);
+            Meteor.call(
+              "users.setType",
+              { type, token, secret },
+              (err, res) => {
+                if (err) {
+                  alertStore.add(err);
+                } else {
+                  modalStore.reset(true);
+                }
               }
-            });
+            );
           }
         }
       );
@@ -141,6 +145,45 @@ class Confirm extends Component {
   }
 }
 
+const EmailConfirmContainer = styled.div`
+  .small {
+    font-size: 0.8em;
+    color: #999;
+  }
+  .button {
+    margin: 0;
+    display: block;
+    width: 100%;
+  }
+`;
+
+class EmailConfirm extends Component {
+  _handleResendClick = ev => {
+    ev.preventDefault();
+    Meteor.call("users.sendVerificationEmail", (err, res) => {
+      if (err) {
+        alertStore.add(err);
+      } else {
+        alertStore.add(null, "success");
+      }
+    });
+  };
+  render() {
+    return (
+      <EmailConfirmContainer>
+        <h2>Email not verified</h2>
+        <p className="small">
+          To continue using Liane, you must verify your email.
+        </p>
+        <p>Check your mail and click the link we sent you!</p>
+        <Button primary onClick={this._handleResendClick}>
+          Resend verification email
+        </Button>
+      </EmailConfirmContainer>
+    );
+  }
+}
+
 export default class AuthConfirm extends Component {
   componentDidMount() {
     const { user } = this.props;
@@ -148,6 +191,11 @@ export default class AuthConfirm extends Component {
       modalStore.setType("small");
       modalStore.set(<Confirm user={user} />, () => {
         // Keep from closing
+        return false;
+      });
+    } else if (user && !user.emails.find(e => e.verified == true)) {
+      modalStore.setType("small");
+      modalStore.set(<EmailConfirm />, () => {
         return false;
       });
     }

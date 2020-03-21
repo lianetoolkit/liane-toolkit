@@ -4,7 +4,7 @@ import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { difference } from "lodash";
 import axios from "axios";
 import nodemailer from "nodemailer";
-// DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
+DDPRateLimiter = require("meteor/ddp-rate-limiter").DDPRateLimiter;
 
 let mailTransporter, mailConfig;
 if (Meteor.settings.email && Meteor.settings.email.mail) {
@@ -30,6 +30,30 @@ export const isAppPrivate = new ValidatedMethod({
       isPrivate: !!PRIVATE,
       hasMail: Meteor.settings.email && Meteor.settings.email.mail
     };
+  }
+});
+
+const verificationEmailRule = {
+  userId(userId) {
+    const user = Meteor.users.findOne(userId);
+    return user && !(user.roles && user.roles.indexOf("admin") == -1);
+  },
+  type: "method",
+  name: "users.sendVerificationEmail"
+};
+
+DDPRateLimiter.addRule(verificationEmailRule, 1, 20 * 1000);
+
+export const sendVerificationEmail = new ValidatedMethod({
+  name: "users.sendVerificationEmail",
+  validate() {},
+  run() {
+    const userId = Meteor.userId();
+    logger.debug("users.sendVerificationEmail called", { userId });
+    if (!userId) {
+      throw new Meteor.Error(401, "You are not logged in");
+    }
+    Accounts.sendVerificationEmail(userId);
   }
 });
 

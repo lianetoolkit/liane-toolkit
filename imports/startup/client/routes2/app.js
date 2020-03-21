@@ -48,6 +48,17 @@ appRoutes.route("/", {
   }
 });
 
+appRoutes.route("/verify-email/:token", {
+  name: "App.verifyEmail",
+  action: function(params) {
+    if (params.token) {
+      Accounts.verifyEmail(params.token, err => {
+        FlowRouter.go("/");
+      });
+    }
+  }
+});
+
 appRoutes.route("/register", {
   name: "App.register",
   action: function(params, queryParams) {

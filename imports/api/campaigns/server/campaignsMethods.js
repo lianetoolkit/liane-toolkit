@@ -93,6 +93,11 @@ export const userCan = new ValidatedMethod({
       throw new Meteor.Error(401, "User not part of the campaign");
     }
 
+    // Has a verified email
+    if (!user.emails.find(e => e.verified == true)) {
+      return false;
+    }
+
     // Admin
     if (userId == campaign.creatorId) {
       return true;
