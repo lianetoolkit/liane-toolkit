@@ -10,5 +10,3 @@ if (settings && settings.mail) {
     settings.mail.host
   }:${port}`;
 }
-
-console.log(process.env.MAIL_URL);

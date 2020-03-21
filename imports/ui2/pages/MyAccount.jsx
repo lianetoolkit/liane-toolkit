@@ -220,6 +220,52 @@ class UpdateProfile extends Component {
   }
 }
 
+class UpdateEmail extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      formData: {}
+    };
+  }
+  _handleChange = ({ target }) => {
+    this.setState({
+      formData: {
+        ...this.state.formData,
+        [target.name]: target.value
+      }
+    });
+  };
+  _handleSubmit = ev => {
+    ev.preventDefault();
+    const { formData } = this.state;
+    if (formData.email) {
+      Meteor.call(
+        "users.updateEmail",
+        { email: formData.email },
+        (err, res) => {
+          if (err) {
+            alertStore.add(err);
+          } else {
+            alertStore.add(null, "success");
+            modalStore.reset(true);
+          }
+        }
+      );
+    }
+  };
+  render() {
+    return (
+      <Form onSubmit={this._handleSubmit}>
+        <p>You will need to verify your new email address.</p>
+        <Form.Field label="New email address">
+          <input type="email" name="email" onChange={this._handleChange} />
+        </Form.Field>
+        <input type="submit" value="Update email" />
+      </Form>
+    );
+  }
+}
+
 class ConfirmRemove extends Component {
   constructor(props) {
     super(props);
@@ -306,11 +352,21 @@ class MyAccount extends Component {
   };
   _handleChangePasswordClick = ev => {
     ev.preventDefault();
+    modalStore.setType("small");
+    modalStore.setTitle("Change password");
     modalStore.set(<ChangePassword />);
   };
   _handleUpdateProfileClick = ev => {
     ev.preventDefault();
+    modalStore.setType("small");
+    modalStore.setTitle("Update profile");
     modalStore.set(<UpdateProfile />);
+  };
+  _handleUpdateEmailClick = ev => {
+    ev.preventDefault();
+    modalStore.setType("small");
+    modalStore.setTitle("Update email");
+    modalStore.set(<UpdateEmail />);
   };
   render() {
     const user = Meteor.user();
@@ -350,7 +406,7 @@ class MyAccount extends Component {
           <Button onClick={this._handleUpdateProfileClick}>
             Update profile
           </Button>
-          <Button>Change email</Button>
+          <Button onClick={this._handleUpdateEmailClick}>Change email</Button>
           <Button onClick={this._handleChangePasswordClick}>
             Change password
           </Button>

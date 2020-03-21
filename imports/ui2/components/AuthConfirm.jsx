@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { modalStore } from "../containers/Modal.jsx";
 import { alertStore } from "../containers/Alerts.jsx";
 import Button, { ButtonGroup } from "../components/Button.jsx";
+import Form from "../components/Form.jsx";
 
 const AuthOptions = styled.div`
   .button-group {
@@ -146,6 +147,23 @@ class Confirm extends Component {
 }
 
 const EmailConfirmContainer = styled.div`
+  form {
+    box-sizing: border-box;
+    font-size: 0.8em;
+    border-radius: 7px;
+    padding: 1rem;
+    background: #f7f7f7;
+    margin-top: 2rem;
+    color: #666;
+  }
+  code {
+    display: block;
+    background: #f7f7f7;
+    font-size: .9em;
+    text-align: center;
+    padding: 1rem;
+    color: #666;
+  }
   .small {
     font-size: 0.8em;
     color: #999;
@@ -158,6 +176,32 @@ const EmailConfirmContainer = styled.div`
 `;
 
 class EmailConfirm extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      formData: {}
+    };
+  }
+  _handleChange = ({ target }) => {
+    const { formData } = this.state;
+    this.setState({
+      formData: {
+        ...this.state.formData,
+        [target.name]: target.value
+      }
+    });
+  };
+  _handleSubmit = ev => {
+    ev.preventDefault();
+    const { formData } = this.state;
+    Meteor.call("users.updateEmail", { email: formData.email }, (err, res) => {
+      if (err) {
+        alertStore.add(err);
+      } else {
+        alertStore.add(null, "success");
+      }
+    });
+  };
   _handleResendClick = ev => {
     ev.preventDefault();
     Meteor.call("users.sendVerificationEmail", (err, res) => {
@@ -169,16 +213,21 @@ class EmailConfirm extends Component {
     });
   };
   render() {
+    const user = Meteor.user();
     return (
       <EmailConfirmContainer>
-        <h2>Email not verified</h2>
-        <p className="small">
-          To continue using Liane, you must verify your email.
-        </p>
+        <p>To continue using Liane, you must verify your email:</p>
+        <p><code>{user.emails[0].address}</code></p>
         <p>Check your mail and click the link we sent you!</p>
         <Button primary onClick={this._handleResendClick}>
-          Resend verification email
+          Resend verification link
         </Button>
+        <Form onSubmit={this._handleSubmit}>
+          <Form.Field label="Not working? Use a different email address:">
+            <input type="email" name="email" onChange={this._handleChange} />
+          </Form.Field>
+          <Button>Send new verification link</Button>
+        </Form>
       </EmailConfirmContainer>
     );
   }
@@ -195,6 +244,7 @@ export default class AuthConfirm extends Component {
       });
     } else if (user && !user.emails.find(e => e.verified == true)) {
       modalStore.setType("small");
+      modalStore.setTitle("Email not verified");
       modalStore.set(<EmailConfirm />, () => {
         return false;
       });

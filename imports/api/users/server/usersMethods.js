@@ -57,6 +57,41 @@ export const sendVerificationEmail = new ValidatedMethod({
   }
 });
 
+const updateEmailRule = {
+  userId(userId) {
+    const user = Meteor.users.findOne(userId);
+    return user && !(user.roles && user.roles.indexOf("admin") == -1);
+  },
+  type: "method",
+  name: "users.updateEmail"
+};
+
+DDPRateLimiter.addRule(updateEmailRule, 1, 20 * 1000);
+
+export const updateEmail = new ValidatedMethod({
+  name: "users.updateEmail",
+  validate: new SimpleSchema({
+    email: {
+      type: String
+    }
+  }).validator(),
+  run({ email }) {
+    const userId = Meteor.userId();
+    logger.debug("users.updateEmail called", { userId });
+    if (!userId) {
+      throw new Meteor.Error(401, "You are not logged in");
+    }
+    const user = Meteor.users.findOne(userId);
+    let oldEmail;
+    if (user.emails.length) {
+      oldEmail = user.emails[0].address;
+    }
+    Accounts.addEmail(userId, email);
+    Accounts.sendVerificationEmail(userId);
+    Accounts.removeEmail(userId, oldEmail);
+  }
+});
+
 export const mailSubscribe = new ValidatedMethod({
   name: "users.mailSubscribe",
   validate: new SimpleSchema({
