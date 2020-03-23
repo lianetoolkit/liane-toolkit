@@ -3,13 +3,17 @@ import { FormattedMessage, FormattedHTMLMessage } from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Page from "../components/Page.jsx";
 import { alertStore } from "../containers/Alerts.jsx";
+import { modalStore } from "../containers/Modal.jsx";
+
+import Page from "../components/Page.jsx";
 import Button from "../components/Button.jsx";
 import Loading from "../components/Loading.jsx";
 import OrLine from "../components/OrLine.jsx";
 import Form from "../components/Form.jsx";
 import CountrySelect from "../components/CountrySelect.jsx";
+
+import ForgotPassword from "../components/ForgotPassword.jsx";
 
 const Container = styled.div`
   flex: 1 1 100%;
@@ -154,18 +158,17 @@ const LoginFormContainer = styled.form`
       color: #fff;
     }
   }
-  .facebook-button {
-  }
   nav {
     display: flex;
     width: 100%;
-    margin-top: 1.5rem;
+    border-top: 1px solid #eee;
+    margin-top: 1rem;
     a {
       flex: 1 1 auto;
       text-align: center;
       color: #666;
-      text-transform: uppercase;
       font-size: 0.8em;
+      text-decoration: none;
       &:hover,
       &:active,
       &:focus {
@@ -481,6 +484,12 @@ export default class Home extends Component {
       }
     });
   };
+  _handleForgotPwdClick = ev => {
+    ev.preventDefault();
+    modalStore.setType("small");
+    modalStore.setTitle("Forgot my password");
+    modalStore.set(<ForgotPassword />);
+  };
   render() {
     const { isLoggedIn } = this.props;
     const { loading, isClosed, hasMail, subscribed } = this.state;
@@ -598,9 +607,17 @@ export default class Home extends Component {
                     />
                     <input type="submit" value="Login" />
                   </div>
-                  <a href={FlowRouter.path("App.register")}>
-                    Register new account
-                  </a>
+                  <nav>
+                    <a href={FlowRouter.path("App.register")}>
+                      Register new account
+                    </a>
+                    <a
+                      href="javascript:void(0);"
+                      onClick={this._handleForgotPwdClick}
+                    >
+                      Forgot my password
+                    </a>
+                  </nav>
                 </Form>
               </div>
             </LoginFormContainer>

@@ -26,6 +26,9 @@ class RegisterPage extends Component {
   }
   componentDidMount = () => {
     const { invite } = this.props;
+    if (Meteor.userId()) {
+      FlowRouter.go("/");
+    }
     if (invite) {
       this.setState({ loading: true });
       Meteor.call("campaigns.getInviteInfo", { invite }, (err, res) => {
@@ -94,7 +97,7 @@ class RegisterPage extends Component {
   };
   render() {
     const { loading, email, formData } = this.state;
-    if(loading) return null;
+    if (loading) return null;
     return (
       <Page.Content>
         <Page.Title>Register new account</Page.Title>

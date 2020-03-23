@@ -43,7 +43,12 @@ const findLocale = language => {
   return locale;
 };
 
-const publicRoutes = ["App.dashboard", "App.transparency", "App.register"];
+const publicRoutes = [
+  "App.dashboard",
+  "App.transparency",
+  "App.register",
+  "App.resetPassword"
+];
 
 export default class AppLayout extends Component {
   componentWillReceiveProps({ isLoggedIn, connected, routeName }) {

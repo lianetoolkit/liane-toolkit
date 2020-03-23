@@ -94,7 +94,6 @@ class ChangePassword extends Component {
     }
     Accounts.changePassword(formData.oldPassword, formData.newPassword, err => {
       if (err) {
-        console.log(err);
         alertStore.add(err);
       } else {
         alertStore.add(null, "success");
@@ -110,9 +109,28 @@ class ChangePassword extends Component {
       }
     });
   };
+  _handlePwdResetClick = ev => {
+    ev.preventDefault();
+    const user = Meteor.user();
+    Accounts.forgotPassword({ email: user.emails[0].address }, err => {
+      if (err) {
+        alertStore.add(err);
+      } else {
+        alertStore.add(null, "success");
+        modalStore.reset(true);
+      }
+    });
+  };
   render() {
     return (
       <Form onSubmit={this._handleSubmit}>
+        <p>
+          If you haven't set a password yet,{" "}
+          <a href="#" onClick={this._handlePwdResetClick}>
+            click here to receive an email with a password reset link
+          </a>
+          .
+        </p>
         <Form.Field label="Old password">
           <input
             type="password"
