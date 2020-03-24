@@ -187,7 +187,7 @@ const PageBody = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 3em;
+  font-size: 2em;
   margin: 3rem 0;
 `;
 
