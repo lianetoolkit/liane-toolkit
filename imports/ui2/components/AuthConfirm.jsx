@@ -159,7 +159,7 @@ const EmailConfirmContainer = styled.div`
   code {
     display: block;
     background: #f7f7f7;
-    font-size: .9em;
+    font-size: 0.9em;
     text-align: center;
     padding: 1rem;
     color: #666;
@@ -217,7 +217,9 @@ class EmailConfirm extends Component {
     return (
       <EmailConfirmContainer>
         <p>To continue using Liane, you must verify your email:</p>
-        <p><code>{user.emails[0].address}</code></p>
+        <p>
+          <code>{user.emails[0].address}</code>
+        </p>
         <p>Check your mail and click the link we sent you!</p>
         <Button primary onClick={this._handleResendClick}>
           Resend verification link
@@ -234,6 +236,25 @@ class EmailConfirm extends Component {
 }
 
 export default class AuthConfirm extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      prevType: false,
+      prevEmailVerif: false
+    };
+  }
+  static getDerivedStateFromProps(props, state) {
+    return {
+      prevType: props.user && props.user.type,
+      prevEmailVerif: props.user && props.user.emails[0].verified
+    };
+  }
+  componentDidUpdate(prevProps, prevState) {
+    const { user } = this.props;
+    if (user && user.type && user.emails[0].verified) {
+      modalStore.reset(true);
+    }
+  }
   componentDidMount() {
     const { user } = this.props;
     if (user && !user.type) {

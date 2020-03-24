@@ -12,6 +12,7 @@ import Loading from "../components/Loading.jsx";
 import OrLine from "../components/OrLine.jsx";
 import Form from "../components/Form.jsx";
 import CountrySelect from "../components/CountrySelect.jsx";
+import FacebookButton from "../components/FacebookButton.jsx";
 
 import ForgotPassword from "../components/ForgotPassword.jsx";
 
@@ -106,57 +107,10 @@ const LoginFormContainer = styled.form`
   h3 {
     margin: 0 0 2rem;
   }
-  .button {
-    margin: 0 auto;
-    max-width: 400px;
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 1.25rem;
-    line-height: 1;
-    margin: 0 0 1rem;
-    border: 0;
-    border: 1px solid #ccc;
-    border-radius: 0;
-    background: #f7f7f7;
-    font-size: 1em;
-    border-radius: 2.5rem;
-    font-family: "Open Sans", "Helvetica", "Arial", sans-serif;
-    &:focus {
-      background: #fff;
-    }
-  }
   .facebook-button {
-    display: block;
-    max-width: 400px;
-    background: transparent;
-    color: #333;
-    font-size: 0.8em;
-    text-transform: uppercase;
-    letter-spacing: 0.12rem;
-    font-weight: normal;
-    line-height: 1.5;
-    cursor: pointer;
-    padding: 1rem;
-    margin: -4rem auto 0;
-    font-size: 1.2em;
-    background: #ffcc00;
-    font-family: "Unica One", monospace;
-    outline: none;
-    border: 0;
-    text-align: center;
     display: inline-block;
-    background: #3b5998;
-    color: #fff;
-    box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
-    .fa-facebook-square {
-      margin-right: 1rem;
-    }
-    &:focus,
-    &:hover {
-      background: #333;
-      color: #fff;
-    }
+    margin: -4rem auto 0;
+    max-width: 400px;
   }
   nav {
     display: flex;
@@ -416,31 +370,6 @@ export default class Home extends Component {
       });
     });
   };
-  _facebookAuth = () => ev => {
-    ev.preventDefault();
-    this.setState({ loading: true });
-    Meteor.loginWithFacebook(
-      {
-        requestPermissions: ["public_profile", "email"]
-      },
-      err => {
-        if (err) {
-          this.setState({ loading: false });
-          alertStore.add(
-            "Erro durante autenticação, tente novamente.",
-            "error"
-          );
-        } else {
-          Meteor.call("users.exchangeFBToken", (err, data) => {
-            this.setState({ loading: false });
-            if (err) {
-              alertStore.add(err);
-            }
-          });
-        }
-      }
-    );
-  };
   _handleSubscribeChange = ({ target }) => {
     this.setState({
       subscribeFormData: {
@@ -573,16 +502,7 @@ export default class Home extends Component {
           ) : null}
           {!isLoggedIn || !user ? (
             <LoginFormContainer>
-              <a
-                className="facebook-button button"
-                onClick={this._facebookAuth()}
-              >
-                <FontAwesomeIcon icon={["fab", "facebook-square"]} />
-                <FormattedMessage
-                  id="app.facebook_login"
-                  defaultMessage="Connect with Facebook"
-                />
-              </a>
+              <FacebookButton />
               <p className="terms">
                 <FormattedHTMLMessage
                   id="app.terms_and_policy"

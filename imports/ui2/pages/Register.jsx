@@ -15,6 +15,7 @@ import Form from "../components/Form.jsx";
 import CountrySelect from "../components/CountrySelect.jsx";
 import RegionSelect from "../components/RegionSelect.jsx";
 import OrLine from "../components/OrLine.jsx";
+import FacebookButton from "../components/FacebookButton.jsx";
 
 class RegisterPage extends Component {
   constructor(props) {
@@ -26,9 +27,6 @@ class RegisterPage extends Component {
   }
   componentDidMount = () => {
     const { invite } = this.props;
-    if (Meteor.userId()) {
-      FlowRouter.go("/");
-    }
     if (invite) {
       this.setState({ loading: true });
       Meteor.call("campaigns.getInviteInfo", { invite }, (err, res) => {
@@ -38,11 +36,24 @@ class RegisterPage extends Component {
           this.setState({
             email: res.email
           });
+          if (Meteor.userId()) {
+            Meteor.call(
+              "campaigns.applyInvitation",
+              { invite },
+              (err, { campaignId }) => {
+                Session.set("campaignId", campaignId);
+                FlowRouter.go("App.dashboard");
+                window.location.reload();
+              }
+            );
+          }
         }
         this.setState({
           loading: false
         });
       });
+    } else if (Meteor.userId()) {
+      FlowRouter.go("/");
     }
   };
   _handleSubmit = ev => {
@@ -96,11 +107,14 @@ class RegisterPage extends Component {
     });
   };
   render() {
+    const { invite } = this.props;
     const { loading, email, formData } = this.state;
     if (loading) return null;
     return (
       <Page.Content>
-        <Page.Title>Register new account</Page.Title>
+        <Page.Title>New account</Page.Title>
+        <FacebookButton invite={invite} />
+        <OrLine bgColor="#f7f7f7">Or fill the form below</OrLine>
         <Form onSubmit={this._handleSubmit}>
           <Form.Field label="Name">
             <input type="text" name="name" onChange={this._handleChange} />

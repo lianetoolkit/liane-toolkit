@@ -49,6 +49,7 @@ Accounts.onLogin(function(data) {
 });
 
 Accounts.onCreateUser(function(options, user) {
+  console.log({ options, user });
   const userProperties = { profile: {} };
 
   const hasUser = !!Meteor.users.findOne();
@@ -84,6 +85,7 @@ Accounts.onCreateUser(function(options, user) {
     });
     user.email = invite.email;
     user.type = "user";
+    user.emails[0].verified = true;
 
     // Notify campaign owner
     NotificationsHelpers.add({

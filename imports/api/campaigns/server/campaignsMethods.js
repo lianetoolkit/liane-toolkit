@@ -1135,6 +1135,70 @@ export const removeUser = new ValidatedMethod({
   }
 });
 
+export const applyInvitation = new ValidatedMethod({
+  name: "campaigns.applyInvitation",
+  validate: new SimpleSchema({
+    invite: {
+      type: String
+    }
+  }).validator(),
+  run({ invite }) {
+    const userId = Meteor.userId();
+    logger.debug("campaigns.applyInvitation called", { invite, userId });
+
+    if (!userId) {
+      throw new Meteor.Error(400, "You must be logged in");
+    }
+
+    const user = Meteor.users.findOne(userId);
+
+    const parsedInvite = invite.split("|");
+
+    if (!parsedInvite[1]) throw new Meteor.Error(400, "Invalid invite");
+
+    const campaignId = parsedInvite[1];
+    const inviteId = parsedInvite[0];
+    const campaign = CampaignsHelpers.getInviteCampaign({
+      campaignId,
+      inviteId
+    });
+
+    if (!campaign) {
+      throw new Meteor.Error(404, "Not found");
+    }
+    const inviteData = campaign.users.find(u => u.inviteId == inviteId);
+    let userSet = {};
+    if (user.emails[0].address == inviteData.email) {
+      userSet["emails.$.verified"] = true;
+    }
+    if (!user.type) {
+      userSet["type"] = "user";
+    }
+
+    CampaignsHelpers.applyInvitation({ campaignId, inviteId, userId });
+
+    if (Object.keys(userSet).length) {
+      Meteor.users.update(
+        { _id: userId, "emails.address": user.emails[0].address },
+        { $set: userSet }
+      );
+    }
+
+    // Notify campaign owner
+    NotificationsHelpers.add({
+      userId: campaign.creatorId,
+      metadata: {
+        name: user.name,
+        campaignName: campaign.name
+      },
+      category: "campaignInviteAccepted",
+      dataRef: campaignId
+    });
+
+    return { campaignId };
+  }
+});
+
 export const addSelfAccount = new ValidatedMethod({
   name: "campaigns.addSelfAccount",
   validate: new SimpleSchema({
