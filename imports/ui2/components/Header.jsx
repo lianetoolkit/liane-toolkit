@@ -9,7 +9,7 @@ import { alertStore } from "../containers/Alerts.jsx";
 import AppNav from "../components/AppNav.jsx";
 
 const Container = styled.header`
-  background: #333;
+  background: #330066;
   padding: 0;
   flex: 0;
   border-bottom: 1px solid #212121;
@@ -19,7 +19,7 @@ const Container = styled.header`
     margin: 0 auto;
     line-height: 1;
     .brand {
-      margin: 1rem 0.8rem 0.8rem 0;
+      margin: 0.5rem 0.8rem 0.5rem 0;
       float: left;
       font-family: "Unica One", monospace;
       position: relative;
@@ -32,7 +32,7 @@ const Container = styled.header`
     .brand h1 img {
       display: block;
       width: auto;
-      height: 28px;
+      height: 44px;
     }
   }
 `;
@@ -49,7 +49,7 @@ const TopNav = styled.nav`
   z-index: 11;
   a,
   .dropdown-item {
-    color: #888;
+    color: rgba(255, 255, 255, 0.5);
     text-decoration: none;
     display: block;
     white-space: nowrap;
@@ -73,7 +73,7 @@ const TopNav = styled.nav`
       padding: 0.7rem 0 0;
       font-size: 0.9em;
       li {
-        background: #444;
+        background: #333;
         margin: 0;
         padding: 0.25rem 0.5rem;
         &:first-child {
@@ -85,7 +85,7 @@ const TopNav = styled.nav`
           border-radius: 0 0 7px 7px;
         }
         a {
-          color: #888;
+          color: rgba(255, 255, 255, 0.5);
           margin: 0;
           &:hover,
           &:focus,
@@ -104,7 +104,7 @@ const TopNav = styled.nav`
       font-weight: 600;
       margin-bottom: 0;
       a {
-        color: #ddd;
+        color: rgba(255, 255, 255, 0.6);
       }
     `}
 `;
@@ -137,7 +137,7 @@ export default class Header extends Component {
               <a href={FlowRouter.path("App.dashboard")}>
                 <img
                   src={
-                    campaign ? "/images/logo_icon.svg" : "/images/logo_dark.svg"
+                    campaign ? "/images/logo_icon_44.png" : "/images/logo_w_44.png"
                   }
                   alt="Liane"
                 />

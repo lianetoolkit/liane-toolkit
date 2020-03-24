@@ -45,7 +45,7 @@ const styles = css`
     }
   }
   &.primary {
-    background: #63c;
+    background: #f5911e;
     color: #fff;
     font-size: 1em;
     &:hover,

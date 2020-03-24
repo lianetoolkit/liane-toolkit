@@ -9,14 +9,11 @@ const Container = styled.a`
   display: block;
   width: 100%;
   font-size: 0.8em;
-  text-transform: uppercase;
-  letter-spacing: 0.12rem;
-  font-weight: normal;
+  font-weight: 600;
   line-height: 1.5;
   cursor: pointer;
   padding: 1rem;
   font-size: 1.2em;
-  font-family: "Unica One", monospace;
   outline: none;
   border: 0;
   text-align: center;

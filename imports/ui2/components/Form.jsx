@@ -134,13 +134,11 @@ const ActionsContent = styled.div`
   input[type="submit"] {
     display: block;
     border: 0;
-    background: #63c;
+    background: #f5911e;
     padding: 1rem 1.5rem;
     border-radius: 1.625rem;
     color: #fff;
     cursor: pointer;
-    font-family: "Unica One", monospace;
-    letter-spacing: 0.1rem;
     margin: 0;
     &:hover,
     &:active,

@@ -26,7 +26,7 @@ const NavContainer = styled.div`
     `}
   h3 {
     color: #999;
-    font-size: 1.75em;
+    font-size: 1.2em;
     font-weight: normal;
     margin: 1rem 0 1rem 0;
     padding-top: 1rem;

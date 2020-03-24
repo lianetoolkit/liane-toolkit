@@ -130,7 +130,7 @@ const PeopleContent = styled.div`
     bottom: 1rem;
     right: 2rem;
     .button {
-      background: #003399;
+      background: #f5911e;
       border: 0;
       color: #fff;
       margin: 0;

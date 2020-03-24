@@ -35,11 +35,12 @@ const HighlightContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  &:after {
+  background-image: url("/images/highlight_pattern.jpg");
+  background-position: bottom left;
+  background-size: cover;
+  color: #fff;
+  /* &:after {
     content: "";
-    background-image: url("/images/elenao_bg.jpeg");
-    background-position: center;
-    background-size: cover;
     position: absolute;
     top: 0;
     left: 0;
@@ -47,18 +48,15 @@ const HighlightContainer = styled.div`
     right: 0;
     opacity: 0.15;
     z-index: -1;
-  }
+  } */
   h2 {
     max-width: 960px;
-    font-family: "Unica One", monospace;
     margin: 0 auto 4rem;
     padding: 0;
     text-transform: uppercase;
     flex-direction: column;
     line-height: 1.3;
-    letter-spacing: 0.15rem;
-    color: #333;
-    font-size: 2.5em;
+    color: #fff;
   }
 `;
 
@@ -110,7 +108,8 @@ const LoginFormContainer = styled.form`
   .facebook-button {
     display: inline-block;
     margin: -4rem auto 0;
-    max-width: 400px;
+    max-width: 300px;
+    font-size: 0.9em;
   }
   nav {
     display: flex;
@@ -332,7 +331,7 @@ const FeatureItemContainer = styled.li`
   .icon {
     margin-right: 2rem;
     font-size: 0.7em;
-    color: #ff6600;
+    color: #f5911e;
   }
 `;
 
