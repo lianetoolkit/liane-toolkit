@@ -92,32 +92,32 @@ const CommentContainer = styled.article`
       margin: 0 0.25rem;
       justify-content: center;
       align-items: center;
-      color: #63c;
-      background-color: rgba(102, 51, 204, 0);
-      border: 1px solid rgba(102, 51, 204, 0.25);
+      color: #306;
+      background-color: rgba(51, 0, 102, 0);
+      border: 1px solid rgba(51, 0, 102, 0.25);
       border-radius: 100%;
       transition: all 0.1s linear;
       &:hover {
-        background-color: rgba(102, 51, 204, 0.5);
+        background-color: rgba(51, 0, 102, 0.5);
         color: #fff;
       }
       &.active {
-        background-color: #63c;
+        background-color: #306;
         color: #fff;
         &:hover {
-          background-color: rgba(102, 51, 204, 0.75);
+          background-color: rgba(51, 0, 102, 0.75);
         }
       }
       &.troll {
         color: #c00;
-        background-color: rgba(204, 0, 0, 0);
-        border: 1px solid rgba(204, 0, 0, 0.25);
+        background-color: rgba(204, 51, 51, 0);
+        border: 1px solid rgba(204, 51, 51, 0.25);
         &:hover {
-          background-color: rgba(204, 0, 0, 0.5);
+          background-color: rgba(204, 51, 51, 0.5);
           color: #fff;
         }
         &.active {
-          background-color: #c00;
+          background-color: #ca3333;
           color: #fff;
           &:hover {
             background-color: rgba(204, 0, 0, 0.75);
@@ -130,7 +130,7 @@ const CommentContainer = styled.article`
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 102, 51, 0.1);
+    background: rgba(245, 145, 30, 0.1);
     border-left: 1px solid #eee;
     a {
       width: 40px;
@@ -140,10 +140,10 @@ const CommentContainer = styled.article`
       justify-content: center;
       align-items: center;
       border-radius: 100%;
-      color: #006633;
+      color: #f5911e;
       &:hover,
       &:focus {
-        background: #006633;
+        background: #f5911e;
         color: #fff;
       }
     }

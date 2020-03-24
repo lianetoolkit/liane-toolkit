@@ -31,8 +31,8 @@ const BoxContainer = styled.div`
     props.primary &&
     css`
       border-radius: 1rem;
-      background: #63c;
-      border-color: #63c;
+      background: #f5911e;
+      border-color: #f5911e;
       color: #fff;
       display: flex;
       flex-direction: column;

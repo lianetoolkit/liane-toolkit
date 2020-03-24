@@ -21,8 +21,7 @@ const Container = styled.a`
   background: #3b5998;
   color: #fff;
   box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
-  margin: 0 0 2rem;
-  border-radius: 2.5rem;
+  margin: 0 0 3rem;
   .fa-facebook-square {
     margin-right: 1rem;
   }

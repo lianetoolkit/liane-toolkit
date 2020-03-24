@@ -29,29 +29,19 @@ const Container = styled.div`
 `;
 
 const HighlightContainer = styled.div`
-  padding: 6rem 0 4rem;
+  padding: 6rem 0 8rem;
   position: relative;
   border-bottom: 1px solid #666;
   display: flex;
   flex-direction: column;
   align-items: center;
   background-image: url("/images/highlight_pattern.jpg");
-  background-position: bottom left;
+  background-position: top right;
   background-size: cover;
   color: #fff;
-  /* &:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    opacity: 0.15;
-    z-index: -1;
-  } */
   h2 {
     max-width: 960px;
-    margin: 0 auto 4rem;
+    margin: 0 auto;
     padding: 0;
     text-transform: uppercase;
     flex-direction: column;
@@ -60,73 +50,25 @@ const HighlightContainer = styled.div`
   }
 `;
 
-const HeaderButtons = styled.nav`
-  width: 100%;
-  max-width 400px;
-  display: flex;
-  align-items: center;
-  margin: 0 -0.5rem 2rem;
-  a {
-    width: 100%;
-    text-align: center;
-    background: transparent;
-    color: #6633cc;
-    text-decoration: none;
-    padding: 0.5rem 2rem;
-    margin: 0 0.5rem;
-    border-radius: 3rem;
-    border: 1px solid #6633cc;
-    background: rgba(255, 255, 255, 0.6);
-    &:hover,
-    &:active,
-    &:focus {
-      background: #fff;
-      border-color: #000;
-      color: #000;
-    }
-  }
-`;
-
 const LoginFormContainer = styled.form`
-  margin: 0 0 4rem;
-  padding-bottom: 2rem;
+  margin: -1.7rem auto 0;
   text-align: center;
-  background: #fff;
-  ${"" /* background: #fff;
-  padding: 4rem;
-  border-radius: 1rem;
-  box-sizing: border-box;
-  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15);
-  border: 1px solid #999; */} position: relative;
+  position: relative;
   z-index: 2;
-  border-bottom: 1px solid #ddd;
+  ${'' /* border-radius: 7px;
+  max-width: calc(960px - 4rem);
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1); */}
   p,
   h3 {
     margin: 0 0 2rem;
   }
   .facebook-button {
     display: inline-block;
-    margin: -4rem auto 0;
+    margin: 0 auto 0;
     max-width: 300px;
     font-size: 0.9em;
-  }
-  nav {
-    display: flex;
-    width: 100%;
-    border-top: 1px solid #eee;
-    margin-top: 1rem;
-    a {
-      flex: 1 1 auto;
-      text-align: center;
-      color: #666;
-      font-size: 0.8em;
-      text-decoration: none;
-      &:hover,
-      &:active,
-      &:focus {
-        color: #000;
-      }
-    }
   }
   .terms {
     margin-top: 1rem;
@@ -138,6 +80,8 @@ const LoginFormContainer = styled.form`
     form {
       max-width: 300px;
       margin: 2rem auto 0;
+      box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+      border-radius: 7px;
       input {
         display: block;
         width: 100%;
@@ -153,10 +97,22 @@ const LoginFormContainer = styled.form`
         border-radius: 0 0 7px 7px;
       }
     }
-    a {
-      font-size: 0.8em;
-      display: block;
-      margin-top: 0.5rem;
+    nav {
+      max-width: 300px;
+      margin: 1rem auto 0;
+      display: flex;
+      a {
+        flex: 1 1 auto;
+        text-align: center;
+        color: #777;
+        font-size: 0.8em;
+        text-decoration: none;
+        &:hover,
+        &:active,
+        &:focus {
+          color: #000;
+        }
+      }
     }
   }
 `;
@@ -194,7 +150,6 @@ const ClosedContainer = styled.div`
   background: #fff;
   border-radius: 7px;
   box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
-  ${"" /* border: 1px solid #bbb; */}
   padding: 2rem;
   z-index: 4;
   position: relative;
@@ -232,10 +187,11 @@ const Intro = styled.section`
       color: #333;
       line-height: 1.5;
       p:first-child {
-        font-size: 1.3em;
+        font-size: 1.4em;
         border-bottom: 2px solid #ddd;
         padding-bottom: 1rem;
         margin-bottom: 1rem;
+        font-weight: 600;
       }
     }
     .features {
@@ -313,10 +269,11 @@ const Organization = styled.section`
     margin: 0 auto;
     padding: 0 2rem;
     > div {
-      margin: 0 -1rem;
+      margin: 0 -2rem;
       display: flex;
       > div {
-        margin: 0 1rem;
+        margin: 0 2rem;
+        flex: 1 1 100%;
       }
     }
   }
@@ -506,7 +463,7 @@ export default class Home extends Component {
                 />
               </p>
               <div className="password-login">
-                <OrLine>Or with your email</OrLine>
+                <OrLine bgColor="#f7f7f7">Or with your email</OrLine>
                 <Form onSubmit={this._handlePasswordLoginSubmit}>
                   <div className="inputs">
                     <input
@@ -523,18 +480,18 @@ export default class Home extends Component {
                     />
                     <input type="submit" value="Login" />
                   </div>
-                  <nav>
-                    <a href={FlowRouter.path("App.register")}>
-                      Register new account
-                    </a>
-                    <a
-                      href="javascript:void(0);"
-                      onClick={this._handleForgotPwdClick}
-                    >
-                      Forgot my password
-                    </a>
-                  </nav>
                 </Form>
+                <nav>
+                  <a href={FlowRouter.path("App.register")}>
+                    Register new account
+                  </a>
+                  <a
+                    href="javascript:void(0);"
+                    onClick={this._handleForgotPwdClick}
+                  >
+                    Forgot my password
+                  </a>
+                </nav>
               </div>
             </LoginFormContainer>
           ) : (

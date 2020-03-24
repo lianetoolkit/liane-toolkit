@@ -128,12 +128,12 @@ class DashboardPage extends Component {
         <Dashboard.Row>
           <Dashboard.Box grow="2" attached>
             <PeopleBlock
-              title={intl.formatMessage(messages.donors)}
-              color="#46dd46"
+              title={intl.formatMessage(messages.volunteers)}
+              color="#ffa500"
               query={{
                 campaignId,
                 query: {
-                  "campaignMeta.donor": true
+                  "campaignMeta.volunteer": true
                 },
                 options: {}
               }}
@@ -141,12 +141,12 @@ class DashboardPage extends Component {
           </Dashboard.Box>
           <Dashboard.Box grow="2" attached>
             <PeopleBlock
-              title={intl.formatMessage(messages.volunteers)}
-              color="#ffa500"
+              title={intl.formatMessage(messages.donors)}
+              color="#46dd46"
               query={{
                 campaignId,
                 query: {
-                  "campaignMeta.volunteer": true
+                  "campaignMeta.donor": true
                 },
                 options: {}
               }}
@@ -257,6 +257,33 @@ class DashboardPage extends Component {
                 <FormattedMessage
                   id="app.dashboard.faq.button"
                   defaultMessage="Write Answers"
+                />
+              </Button>
+            </footer>
+          </Dashboard.Box>
+          <Dashboard.Box minimal>
+            <header>
+              <FontAwesomeIcon icon="align-left" />
+              <h3>
+                <FormattedMessage
+                  id="app.dashboard.form.title"
+                  defaultMessage="People form"
+                />
+              </h3>
+            </header>
+            <section>
+              <p>
+                <FormattedMessage
+                  id="app.dashboard.form.intro"
+                  defaultMessage="Invite people to be part of your campaign with a customizable form!"
+                />
+              </p>
+            </section>
+            <footer>
+              <Button href={FlowRouter.path("App.formSettings")}>
+                <FormattedMessage
+                  id="app.dashboard.form.button"
+                  defaultMessage="Setup your form"
                 />
               </Button>
             </footer>

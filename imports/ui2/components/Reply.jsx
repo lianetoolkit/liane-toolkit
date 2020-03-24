@@ -63,11 +63,10 @@ const Container = styled.div`
     flex: 1 1 100%;
   }
   .comment {
-    margin: -2rem -2rem 0 -2rem;
+    margin: -2rem -3rem 0 -3rem;
     padding: 2rem;
     font-size: 0.8em;
     background: #f7f7f7;
-    border-radius: 0 0 0 7px;
     .comment-message {
       background-color: #e0e0e0;
       &:before {
@@ -84,14 +83,14 @@ const Container = styled.div`
   .faq-select {
     font-size: 0.9em;
     background: #f7f7f7;
-    margin: 0 -2rem;
+    margin: 0 -3rem;
     padding: 1rem;
     border-bottom: 1px solid #ddd;
   }
   .radio-select {
     display: flex;
     font-size: 0.8em;
-    margin: 0 -2rem;
+    margin: 0 -3rem;
     padding: 1rem 2rem;
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;

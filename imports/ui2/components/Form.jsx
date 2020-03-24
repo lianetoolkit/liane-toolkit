@@ -136,7 +136,6 @@ const ActionsContent = styled.div`
     border: 0;
     background: #f5911e;
     padding: 1rem 1.5rem;
-    border-radius: 1.625rem;
     color: #fff;
     cursor: pointer;
     margin: 0;

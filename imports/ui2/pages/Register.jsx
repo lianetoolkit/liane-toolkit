@@ -106,16 +106,26 @@ class RegisterPage extends Component {
       }
     });
   };
+  _filledForm = () => {
+    const { formData } = this.state;
+    return (
+      formData.name &&
+      formData.country &&
+      formData.region &&
+      formData.password &&
+      formData.passwordRpt
+    );
+  };
   render() {
     const { invite } = this.props;
     const { loading, email, formData } = this.state;
     if (loading) return null;
     return (
-      <Page.Content>
-        <Page.Title>New account</Page.Title>
-        <FacebookButton invite={invite} />
-        <OrLine bgColor="#f7f7f7">Or fill the form below</OrLine>
-        <Form onSubmit={this._handleSubmit}>
+      <Form onSubmit={this._handleSubmit}>
+        <Form.Content>
+          <Page.Title>New account</Page.Title>
+          <FacebookButton invite={invite} />
+          <OrLine bgColor="#f7f7f7">Or fill the form below</OrLine>
           <Form.Field label="Name">
             <input type="text" name="name" onChange={this._handleChange} />
           </Form.Field>
@@ -150,9 +160,15 @@ class RegisterPage extends Component {
               onChange={this._handleChange}
             />
           </Form.Field>
-          <input type="submit" name="Register" />
-        </Form>
-      </Page.Content>
+        </Form.Content>
+        <Form.Actions>
+          <input
+            type="submit"
+            disabled={!this._filledForm() || loading}
+            value="Create account"
+          />
+        </Form.Actions>
+      </Form>
     );
   }
 }

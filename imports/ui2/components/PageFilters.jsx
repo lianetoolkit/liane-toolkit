@@ -151,7 +151,7 @@ const CategoryContainer = styled.div`
       background: #fff;
     }
     &.active {
-      background: #63c;
+      background: #306;
       color: #fff;
       font-weight: 600;
       .icon {
