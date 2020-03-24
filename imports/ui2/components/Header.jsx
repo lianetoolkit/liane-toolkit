@@ -21,7 +21,6 @@ const Container = styled.header`
     .brand {
       margin: 0.5rem 0.8rem 0.5rem 0;
       float: left;
-      font-family: "Unica One", monospace;
       position: relative;
       z-index: 15;
     }

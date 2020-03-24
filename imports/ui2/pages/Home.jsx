@@ -66,7 +66,6 @@ const HeaderButtons = styled.nav`
   display: flex;
   align-items: center;
   margin: 0 -0.5rem 2rem;
-  font-family: "Unica One", monospace;
   a {
     width: 100%;
     text-align: center;
@@ -273,11 +272,9 @@ const Features = styled.section`
     border-radius: 7px;
     display: flex;
     flex-wrap: wrap;
-    font-family: "Unica One", monospace;
     font-weight: normal;
     align-items: center;
-    font-size: 1.3em;
-    letter-spacing: 0.1rem;
+    font-size: 1.2em;
     li {
       flex: 1 1 40%;
       margin: 0;
