@@ -8,7 +8,7 @@ import {
 } from "react-intl";
 import Select from "react-select";
 
-const messages = defineMessages({
+export const messages = defineMessages({
   placeholder: {
     id: "app.office_field.placeholder",
     defaultMessage: "Select your office"
@@ -17,7 +17,7 @@ const messages = defineMessages({
     id: "app.office_field.labels.presidency",
     defaultMessage: "Presidency"
   },
-  cityHall: {
+  city_hall: {
     id: "app.office_field.labels.city_hall",
     defaultMessage: "City hall"
   },
@@ -25,15 +25,15 @@ const messages = defineMessages({
     id: "app.office_field.labels.senate",
     defaultMessage: "Senate"
   },
-  federalCongress: {
+  federal_congress: {
     id: "app.office_field.labels.federal_congress",
     defaultMessage: "Federal Congress"
   },
-  stateCongress: {
+  state_congress: {
     id: "app.office_field.labels.state_congress",
     defaultMessage: "State Congress"
   },
-  cityCouncil: {
+  city_council: {
     id: "app.office_field.labels.city_council",
     defaultMessage: "City Council"
   }
@@ -79,7 +79,7 @@ class OfficeField extends Component {
           },
           {
             value: "city_hall",
-            label: intl.formatMessage(messages.cityHall)
+            label: intl.formatMessage(messages.city_hall)
           },
           {
             value: "senate",
@@ -87,15 +87,15 @@ class OfficeField extends Component {
           },
           {
             value: "federal_congress",
-            label: intl.formatMessage(messages.federalCongress)
+            label: intl.formatMessage(messages.federal_congress)
           },
           {
             value: "state_congress",
-            label: intl.formatMessage(messages.stateCongress)
+            label: intl.formatMessage(messages.state_congress)
           },
           {
             value: "city_council",
-            label: intl.formatMessage(messages.cityCouncil)
+            label: intl.formatMessage(messages.city_council)
           }
         ];
     }

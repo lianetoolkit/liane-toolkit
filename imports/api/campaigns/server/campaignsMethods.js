@@ -499,6 +499,12 @@ export const campaignsUpdate = new ValidatedMethod({
     name: {
       type: String,
       optional: true
+    },
+    candidate: {
+      type: String
+    },
+    party: {
+      type: String
     }
   }).validator(),
   run({ campaignId, ...data }) {
@@ -522,35 +528,12 @@ export const campaignsUpdate = new ValidatedMethod({
       throw new Meteor.Error(401, "Not allowed");
     }
 
-    let $set = {};
-
-    let runJobs = {};
-
-    if (data.name) {
-      $set.name = data.name;
-    }
-
     Campaigns.update(
       {
         _id: campaignId
       },
-      { $set }
+      { $set: data }
     );
-
-    if (Object.keys(runJobs).length) {
-      const facebookAccounts = campaign.accounts.map(acc => acc.facebookId);
-      for (const job in runJobs) {
-        if (runJobs[job]) {
-          for (const facebookAccountId of facebookAccounts) {
-            CampaignsHelpers.refreshAccountJob({
-              campaignId,
-              facebookAccountId,
-              type: job
-            });
-          }
-        }
-      }
-    }
   }
 });
 

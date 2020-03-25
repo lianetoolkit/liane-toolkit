@@ -12,8 +12,10 @@ import { alertStore } from "../../../containers/Alerts.jsx";
 import Select from "react-select";
 
 import Nav from "./Nav.jsx";
+import Table from "../../../components/Table.jsx";
 import Form from "../../../components/Form.jsx";
 import PersonFormInfo from "../../../components/PersonFormInfo.jsx";
+import { messages as officeMessages } from "../../../components/OfficeField.jsx";
 
 import { languages } from "/locales";
 
@@ -21,6 +23,30 @@ const messages = defineMessages({
   nameLabel: {
     id: "app.campaign_settings.name_label",
     defaultMessage: "Campaign name"
+  },
+  candidateLabel: {
+    id: "app.campaign_settings.candidate_label",
+    defaultMessage: "Candidate"
+  },
+  partyLabel: {
+    id: "app.campaign_settings.party_label",
+    defaultMessage: "Party/movement/coalition"
+  },
+  officeLabel: {
+    id: "app.campaign_settings.office_label",
+    defaultMessage: "Office"
+  },
+  countryLabel: {
+    id: "app.campaign_settings.country_label",
+    defaultMessage: "Country"
+  },
+  regionLabel: {
+    id: "app.campaign_settings.region_label",
+    defaultMessage: "Region"
+  },
+  locationLabel: {
+    id: "app.campaign_settings.location_label",
+    defaultMessage: "Location"
   },
   saveLabel: {
     id: "app.campaign_settings.save",
@@ -43,14 +69,18 @@ class CampaignSettingsPage extends Component {
       return {
         formData: {
           campaignId: "",
-          name: ""
+          name: "",
+          candidate: "",
+          party: ""
         }
       };
     } else if (campaign._id !== formData.campaignId) {
       return {
         formData: {
           campaignId: campaign._id,
-          name: campaign.name
+          name: campaign.name,
+          candidate: campaign.candidate,
+          party: campaign.party
         }
       };
     }
@@ -84,20 +114,58 @@ class CampaignSettingsPage extends Component {
     const { formData } = this.state;
     return get(formData, key);
   };
+  _officeLabel = office => {
+    const { intl } = this.props;
+    if (officeMessages[office])
+      return intl.formatMessage(officeMessages[office]);
+    return office;
+  };
   render() {
     const { intl, campaign } = this.props;
     const { active, formData } = this.state;
+    console.log(campaign);
     return (
       <>
         <Nav campaign={campaign} />
         <Form onSubmit={this._handleSubmit}>
           <Form.Content>
+            <Table>
+              <tbody>
+                <tr>
+                  <th>{intl.formatMessage(messages.locationLabel)}</th>
+                  <td className="fill">
+                    {campaign.geolocation.name} - {campaign.country}
+                  </td>
+                </tr>
+                <tr>
+                  <th>{intl.formatMessage(messages.officeLabel)}</th>
+                  <td className="fill">{this._officeLabel(campaign.office)}</td>
+                </tr>
+              </tbody>
+            </Table>
+            <hr />
             <Form.Field label={intl.formatMessage(messages.nameLabel)} big>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 placeholder={intl.formatMessage(messages.nameLabel)}
+                onChange={this._handleChange}
+              />
+            </Form.Field>
+            <Form.Field label={intl.formatMessage(messages.candidateLabel)}>
+              <input
+                type="text"
+                name="candidate"
+                value={formData.candidate}
+                onChange={this._handleChange}
+              />
+            </Form.Field>
+            <Form.Field label={intl.formatMessage(messages.partyLabel)}>
+              <input
+                type="text"
+                name="party"
+                value={formData.party}
                 onChange={this._handleChange}
               />
             </Form.Field>
