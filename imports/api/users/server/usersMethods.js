@@ -86,9 +86,9 @@ export const updateEmail = new ValidatedMethod({
     if (user.emails.length) {
       oldEmail = user.emails[0].address;
     }
-    Accounts.addEmail(userId, email);
+    if (oldEmail != email) Accounts.addEmail(userId, email);
     Accounts.sendVerificationEmail(userId);
-    Accounts.removeEmail(userId, oldEmail);
+    if (oldEmail && oldEmail != email) Accounts.removeEmail(userId, oldEmail);
   }
 });
 

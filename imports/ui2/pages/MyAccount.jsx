@@ -11,6 +11,7 @@ import styled from "styled-components";
 
 import OrLine from "../components/OrLine.jsx";
 import Form from "../components/Form.jsx";
+import Loading from "../components/Loading.jsx";
 import Button from "../components/Button.jsx";
 import CountrySelect from "../components/CountrySelect.jsx";
 import RegionSelect from "../components/RegionSelect.jsx";
@@ -78,6 +79,7 @@ class ChangePassword extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       formData: {}
     };
   }
@@ -92,6 +94,7 @@ class ChangePassword extends Component {
       alertStore.add("Passwords do not match", "error");
       return;
     }
+    this.setState({ loading: true });
     Accounts.changePassword(formData.oldPassword, formData.newPassword, err => {
       if (err) {
         alertStore.add(err);
@@ -99,6 +102,7 @@ class ChangePassword extends Component {
         alertStore.add(null, "success");
         modalStore.reset(true);
       }
+      this.setState({ loading: false });
     });
   };
   _handleChange = ({ target }) => {
@@ -112,6 +116,7 @@ class ChangePassword extends Component {
   _handlePwdResetClick = ev => {
     ev.preventDefault();
     const user = Meteor.user();
+    this.setState({ loading: true });
     Accounts.forgotPassword({ email: user.emails[0].address }, err => {
       if (err) {
         alertStore.add(err);
@@ -119,9 +124,12 @@ class ChangePassword extends Component {
         alertStore.add(null, "success");
         modalStore.reset(true);
       }
+      this.setState({ loading: false });
     });
   };
   render() {
+    const { loading } = this.state;
+    if (loading) return <Loading />;
     return (
       <Form onSubmit={this._handleSubmit}>
         <p>
@@ -162,6 +170,7 @@ class UpdateProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       formData: {}
     };
   }
@@ -178,6 +187,7 @@ class UpdateProfile extends Component {
   _handleSubmit = ev => {
     ev.preventDefault();
     const { formData } = this.state;
+    this.setState({ loading: true });
     Meteor.call(
       "users.updateProfile",
       {
@@ -192,6 +202,7 @@ class UpdateProfile extends Component {
           alertStore.add(null, "success");
           modalStore.reset(true);
         }
+        this.setState({ loading: false });
       }
     );
   };
@@ -204,7 +215,8 @@ class UpdateProfile extends Component {
     });
   };
   render() {
-    const { formData } = this.state;
+    const { loading, formData } = this.state;
+    if (loading) return <Loading />;
     return (
       <Form onSubmit={this._handleSubmit}>
         <Form.Field label="Name">
@@ -242,6 +254,7 @@ class UpdateEmail extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       formData: {}
     };
   }
@@ -257,6 +270,7 @@ class UpdateEmail extends Component {
     ev.preventDefault();
     const { formData } = this.state;
     if (formData.email) {
+      this.setState({ loading: true });
       Meteor.call(
         "users.updateEmail",
         { email: formData.email },
@@ -267,11 +281,14 @@ class UpdateEmail extends Component {
             alertStore.add(null, "success");
             modalStore.reset(true);
           }
+          this.setState({ loading: false });
         }
       );
     }
   };
   render() {
+    const { loading } = this.state;
+    if (loading) return <Loading />;
     return (
       <Form onSubmit={this._handleSubmit}>
         <p>You will need to verify your new email address.</p>

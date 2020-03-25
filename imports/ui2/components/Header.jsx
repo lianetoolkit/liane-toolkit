@@ -72,7 +72,7 @@ const TopNav = styled.nav`
       padding: 0.7rem 0 0;
       font-size: 0.9em;
       li {
-        background: #333;
+        background: #111;
         margin: 0;
         padding: 0.25rem 0.5rem;
         &:first-child {

@@ -201,7 +201,7 @@ const Intro = styled.section`
 `;
 
 const Features = styled.section`
-  background: #333;
+  background: #111;
   color: #fff;
   margin: 0 0 2rem;
   padding: 4rem 0;

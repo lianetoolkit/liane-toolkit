@@ -8,6 +8,7 @@ import { modalStore } from "../containers/Modal.jsx";
 import { alertStore } from "../containers/Alerts.jsx";
 import Button, { ButtonGroup } from "../components/Button.jsx";
 import Form from "../components/Form.jsx";
+import Loading from "../components/Loading.jsx";
 
 const AuthOptions = styled.div`
   .button-group {
@@ -15,16 +16,16 @@ const AuthOptions = styled.div`
     .button {
       padding-top: 1rem;
       padding-bottom: 1rem;
-      border-color: rgba(0, 102, 51, 0.25);
-      color: #999;
+      border-color: rgba(51, 0, 102, 0.25);
+      color: rgba(0, 0, 0, 0.5);
       &:hover,
       &:active,
       &:focus {
-        background-color: rgba(0, 102, 51, 0.25);
+        background-color: rgba(51, 0, 102, 0.25);
         color: #fff;
       }
       &.active {
-        background-color: #006633;
+        background-color: #306;
       }
       svg {
         margin-right: 0.5rem;
@@ -179,6 +180,7 @@ class EmailConfirm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       formData: {}
     };
   }
@@ -194,41 +196,55 @@ class EmailConfirm extends Component {
   _handleSubmit = ev => {
     ev.preventDefault();
     const { formData } = this.state;
+    this.setState({ loading: true });
     Meteor.call("users.updateEmail", { email: formData.email }, (err, res) => {
       if (err) {
         alertStore.add(err);
       } else {
         alertStore.add(null, "success");
       }
+      this.setState({ loading: false });
     });
   };
   _handleResendClick = ev => {
     ev.preventDefault();
+    this.setState({ loading: true });
     Meteor.call("users.sendVerificationEmail", (err, res) => {
       if (err) {
         alertStore.add(err);
       } else {
         alertStore.add(null, "success");
       }
+      this.setState({ loading: false });
     });
   };
   render() {
+    const { loading } = this.state;
     const user = Meteor.user();
+    if (loading) return <Loading />;
     return (
       <EmailConfirmContainer>
         <p>To continue using Liane, you must verify your email:</p>
-        <p>
-          <code>{user.emails[0].address}</code>
-        </p>
-        <p>Check your mail and click the link we sent you!</p>
-        <Button primary onClick={this._handleResendClick}>
-          Resend verification link
-        </Button>
+        {user.emails.length ? (
+          <>
+            <p>
+              <code>{user.emails[0].address}</code>
+            </p>
+            <p>Check your mail and click the link we sent you!</p>
+            <Button primary onClick={this._handleResendClick}>
+              Resend verification link
+            </Button>
+          </>
+        ) : null}
         <Form onSubmit={this._handleSubmit}>
           <Form.Field label="Not working? Use a different email address:">
             <input type="email" name="email" onChange={this._handleChange} />
           </Form.Field>
-          <Button>Send new verification link</Button>
+          <input
+            className="secondary"
+            type="submit"
+            value="Send new verification link"
+          />
         </Form>
       </EmailConfirmContainer>
     );
@@ -236,22 +252,9 @@ class EmailConfirm extends Component {
 }
 
 export default class AuthConfirm extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      prevType: false,
-      prevEmailVerif: false
-    };
-  }
-  static getDerivedStateFromProps(props, state) {
-    return {
-      prevType: props.user && props.user.type,
-      prevEmailVerif: props.user && props.user.emails[0].verified
-    };
-  }
   componentDidUpdate(prevProps, prevState) {
     const { user } = this.props;
-    if (user && user.type && user.emails[0].verified) {
+    if (user && user.type && user.emails.length && user.emails[0].verified) {
       modalStore.reset(true);
     }
   }

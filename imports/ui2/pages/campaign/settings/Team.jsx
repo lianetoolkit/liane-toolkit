@@ -16,7 +16,11 @@ import { modalStore } from "../../../containers/Modal.jsx";
 import Nav from "./Nav.jsx";
 import Form from "../../../components/Form.jsx";
 import Table from "../../../components/Table.jsx";
+import Loading from "../../../components/Loading.jsx";
 import PersonFormInfo from "../../../components/PersonFormInfo.jsx";
+import TeamRolesField, {
+  rolesLabels
+} from "../../../components/TeamRolesField.jsx";
 import PermissionsField from "../../../components/PermissionsField.jsx";
 
 const messages = defineMessages({
@@ -59,6 +63,7 @@ class EditUser extends Component {
     super(props);
     const { user } = props;
     this.state = {
+      loading: false,
       formData: {
         role: user.campaign ? user.campaign.role : user.role,
         permissions: user.campaign
@@ -91,6 +96,7 @@ class EditUser extends Component {
       alertStore.add("Unable to remove", "error");
       return;
     }
+    this.setState({ loading: true });
     Meteor.call("campaigns.updateUser", data, (err, res) => {
       if (err) {
         alertStore.add(err);
@@ -98,16 +104,17 @@ class EditUser extends Component {
         alertStore.add(null, "success");
         modalStore.reset();
       }
+      this.setState({ loading: false });
     });
   };
   render() {
     const { user, intl } = this.props;
-    const { formData } = this.state;
+    const { loading, formData } = this.state;
+    if (loading) return <Loading />;
     return (
       <Form onSubmit={this._handleSubmit}>
         <Form.Field label={intl.formatMessage(messages.roleLabel)}>
-          <input
-            type="text"
+          <TeamRolesField
             value={formData.role}
             name="role"
             onChange={this._handleChange}
@@ -148,6 +155,7 @@ class CampaignTeamPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       formData: {
         email: ""
       }
@@ -168,6 +176,7 @@ class CampaignTeamPage extends Component {
     const { campaign } = this.props;
     const { formData } = this.state;
     if (formData.email) {
+      this.setState({ loading: true });
       Meteor.call(
         "campaigns.addUser",
         {
@@ -188,6 +197,7 @@ class CampaignTeamPage extends Component {
               }
             });
           }
+          this.setState({ loading: false });
         }
       );
     } else {
@@ -212,16 +222,27 @@ class CampaignTeamPage extends Component {
         alertStore.add("Unable to remove", "error");
         return;
       }
+      this.setState({ loading: true });
       Meteor.call("campaigns.removeUser", data, (err, res) => {
         if (err) {
           alertStore.add(err);
         }
+        this.setState({ loading: false });
       });
     }
   };
+  _getRoleLabel = user => {
+    const { intl } = this.props;
+    const data = user.campaign ? user.campaign : user;
+    if (rolesLabels[data.role]) {
+      return intl.formatMessage(rolesLabels[data.role]);
+    }
+    return data.role;
+  };
   render() {
     const { intl, campaign, user } = this.props;
-    const { formData } = this.state;
+    const { loading, formData } = this.state;
+    if (loading) return <Loading />;
     return (
       <Container>
         <Nav campaign={campaign} />
@@ -251,9 +272,7 @@ class CampaignTeamPage extends Component {
                         : "Waiting registration"}
                     </td>
                     <td className="small">
-                      {campaignUser.campaign
-                        ? campaignUser.campaign.role
-                        : campaignUser.role}
+                      {this._getRoleLabel(campaignUser)}
                     </td>
                     <td className="fill small">
                       {campaignUser._id ? campaignUser.emails[0].address : ""}
@@ -321,8 +340,7 @@ class CampaignTeamPage extends Component {
               />
             </Form.Field>
             <Form.Field label={intl.formatMessage(messages.roleLabel)}>
-              <input
-                type="text"
+              <TeamRolesField
                 value={formData.role}
                 name="role"
                 onChange={this._handleChange}
