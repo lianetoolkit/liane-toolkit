@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { FormattedMessage, FormattedHTMLMessage } from "react-intl";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+  FormattedHTMLMessage
+} from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -55,7 +61,7 @@ const LoginFormContainer = styled.form`
   text-align: center;
   position: relative;
   z-index: 2;
-  ${'' /* border-radius: 7px;
+  ${"" /* border-radius: 7px;
   max-width: calc(960px - 4rem);
   padding: 2rem;
   background: rgba(255, 255, 255, 0.2);
@@ -300,7 +306,26 @@ function FeatureItem(props) {
   );
 }
 
-export default class Home extends Component {
+const messages = defineMessages({
+  emailPlaceholder: {
+    id: "app.auth.email_placeholder",
+    defaultMessage: "Email"
+  },
+  passwordPlaceholder: {
+    id: "app.auth.password_placeholder",
+    defaultMessage: "Password"
+  },
+  loginLabel: {
+    id: "app.auth.login_label",
+    defaultMessage: "Login"
+  },
+  forgotPasswordTitle: {
+    id: "app.auth.forgot_password_title",
+    defaultMessage: "Forgot my password"
+  }
+});
+
+class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -348,15 +373,17 @@ export default class Home extends Component {
   _handlePasswordLoginSubmit = ev => {
     ev.preventDefault();
     const { loginFormData } = this.state;
-    Meteor.loginWithPassword(
-      loginFormData.email,
-      loginFormData.password,
-      err => {
-        if (err) {
-          alertStore.add(err);
+    if (loginFormData.email && loginFormData.password) {
+      Meteor.loginWithPassword(
+        loginFormData.email,
+        loginFormData.password,
+        err => {
+          if (err) {
+            alertStore.add(err);
+          }
         }
-      }
-    );
+      );
+    }
   };
   _handlePasswordLoginChange = ({ target }) => {
     this.setState({
@@ -368,12 +395,13 @@ export default class Home extends Component {
   };
   _handleForgotPwdClick = ev => {
     ev.preventDefault();
+    const { intl } = this.props;
     modalStore.setType("small");
-    modalStore.setTitle("Forgot my password");
+    modalStore.setTitle(intl.formatMessage(messages.forgotPasswordTitle));
     modalStore.set(<ForgotPassword />);
   };
   render() {
-    const { isLoggedIn } = this.props;
+    const { intl, isLoggedIn } = this.props;
     const { loading, isClosed, hasMail, subscribed } = this.state;
     const user = Meteor.user();
     return (
@@ -463,33 +491,51 @@ export default class Home extends Component {
                 />
               </p>
               <div className="password-login">
-                <OrLine bgColor="#f7f7f7">Or with your email</OrLine>
+                <OrLine bgColor="#f7f7f7">
+                  <FormattedMessage
+                    id="app.auth.or_email"
+                    defaultMessage="Or with your email"
+                  />
+                </OrLine>
                 <Form onSubmit={this._handlePasswordLoginSubmit}>
                   <div className="inputs">
                     <input
                       type="email"
                       name="email"
-                      placeholder="Email"
+                      placeholder={intl.formatMessage(
+                        messages.emailPlaceholder
+                      )}
                       onChange={this._handlePasswordLoginChange}
                     />
                     <input
                       type="password"
                       name="password"
-                      placeholder="Password"
+                      placeholder={intl.formatMessage(
+                        messages.passwordPlaceholder
+                      )}
                       onChange={this._handlePasswordLoginChange}
                     />
-                    <input type="submit" value="Login" />
+                    <input
+                      type="submit"
+                      value={intl.formatMessage(messages.loginLabel)}
+                    />
                   </div>
                 </Form>
                 <nav>
                   <a href={FlowRouter.path("App.register")}>
-                    Register new account
+                    <FormattedMessage
+                      id="app.auth.register_link_label"
+                      defaultMessage="Register new account"
+                    />
                   </a>
                   <a
                     href="javascript:void(0);"
                     onClick={this._handleForgotPwdClick}
                   >
-                    Forgot my password
+                    <FormattedMessage
+                      id="app.auth.forgot_pwd_label"
+                      defaultMessage="Forgot my password"
+                    />
                   </a>
                 </nav>
               </div>
@@ -661,3 +707,9 @@ export default class Home extends Component {
     );
   }
 }
+
+Home.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(Home);

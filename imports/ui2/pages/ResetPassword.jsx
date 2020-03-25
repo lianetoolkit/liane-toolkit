@@ -11,26 +11,55 @@ import { alertStore } from "../containers/Alerts.jsx";
 
 import Page from "../components/Page.jsx";
 import Form from "../components/Form.jsx";
+import Loading from "../components/Loading.jsx";
+
+const messages = defineMessages({
+  passwordLabel: {
+    id: "app.reset_password.password_label",
+    defaultMessage: "New password"
+  },
+  passwordRptLabel: {
+    id: "app.reset_password.password_rpt_label",
+    defaultMessage: "Repeat new password"
+  },
+  submitLabel: {
+    id: "app.reset_password.submit_label",
+    defaultMessage: "Reset password"
+  }
+});
+
+const alertsMessages = defineMessages({
+  pwdDoNotMatch: {
+    id: "app.reset_password.alerts.pwd_do_not_match",
+    defaultMessage: "Passwords do not match"
+  },
+  notDefined: {
+    id: "app.reset_password.alerts.not_defined",
+    defaultMessage: "You must set a password"
+  }
+});
 
 class ResetPasswordPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       formData: {}
     };
   }
   _handleSubmit = ev => {
     ev.preventDefault();
-    const { token } = this.props;
+    const { intl, token } = this.props;
     const { formData } = this.state;
     if (!formData.password) {
-      alertStore.add("You must set password", "error");
+      alertStore.add(intl.formatMessage(alertsMessages.notDefined), "error");
       return;
     }
     if (formData.password != formData.passwordRpt) {
-      alertStore.add("Passwords do not match", "error");
+      alertStore.add(intl.formatMessage(alertsMessages.pwdDoNotMatch), "error");
       return;
     }
+    this.setState({ loading: true });
     Accounts.resetPassword(token, formData.password, err => {
       if (err) {
         alertStore.add(err);
@@ -38,6 +67,7 @@ class ResetPasswordPage extends Component {
         alertStore.add(null, "success");
         FlowRouter.go("App.dashboard");
       }
+      this.setState({ loading: false });
     });
   };
   _handleChange = ({ target }) => {
@@ -49,29 +79,44 @@ class ResetPasswordPage extends Component {
     });
   };
   render() {
+    const { intl } = this.props;
+    const { loading } = this.state;
+    if (loading) return <Loading />;
     return (
       <Page.Content>
-        <Page.Title>Reset password</Page.Title>
+        <Page.Title>
+          <FormattedMessage
+            id="app.reset_password.title"
+            defaultMessage="Reset password"
+          />
+        </Page.Title>
         <Form onSubmit={this._handleSubmit}>
-          <Form.Field label="New password">
+          <Form.Field label={intl.formatMessage(messages.passwordLabel)}>
             <input
               type="password"
               name="password"
               onChange={this._handleChange}
             />
           </Form.Field>
-          <Form.Field label="Repeat new password">
+          <Form.Field label={intl.formatMessage(messages.passwordRptLabel)}>
             <input
               type="password"
               name="passwordRpt"
               onChange={this._handleChange}
             />
           </Form.Field>
-          <input type="submit" name="Reset password" />
+          <input
+            type="submit"
+            value={intl.formatMessage(messages.submitLabel)}
+          />
         </Form>
       </Page.Content>
     );
   }
 }
 
-export default ResetPasswordPage;
+ResetPasswordPage.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(ResetPasswordPage);

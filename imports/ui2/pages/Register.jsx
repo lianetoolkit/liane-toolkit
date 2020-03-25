@@ -17,6 +17,56 @@ import RegionSelect from "../components/RegionSelect.jsx";
 import OrLine from "../components/OrLine.jsx";
 import FacebookButton from "../components/FacebookButton.jsx";
 
+const messages = defineMessages({
+  nameLabel: {
+    id: "app.registration.name_label",
+    defaultMessage: "Name"
+  },
+  emailLabel: {
+    id: "app.registration.email_label",
+    defaultMessage: "Email"
+  },
+  countryLabel: {
+    id: "app.registration.country_label",
+    defaultMessage: "Country"
+  },
+  regionLabel: {
+    id: "app.registration.region_label",
+    defaultMessage: "Region"
+  },
+  passwordLabel: {
+    id: "app.registration.password_label",
+    defaultMessage: "Password"
+  },
+  passwordRptLabel: {
+    id: "app.registration.password_repeat_label",
+    defaultMessage: "Repeat password"
+  },
+  createAccountLabel: {
+    id: "app.registration.create_account_label",
+    defaultMessage: "Create account"
+  }
+});
+
+const alertsMessages = defineMessages({
+  name: {
+    id: "app.registration.alerts.name",
+    defaultMessage: "You must set a name"
+  },
+  email: {
+    id: "app.registration.alerts.email",
+    defaultMessage: "You must set an email"
+  },
+  password: {
+    id: "app.registration.alerts.password",
+    defaultMessage: "You must set a password"
+  },
+  passwordMatch: {
+    id: "app.registration.alerts.password_match",
+    defaultMessage: "Passwords do not match"
+  }
+});
+
 class RegisterPage extends Component {
   constructor(props) {
     super(props);
@@ -58,22 +108,22 @@ class RegisterPage extends Component {
   };
   _handleSubmit = ev => {
     ev.preventDefault();
-    const { invite } = this.props;
+    const { intl, invite } = this.props;
     const { email, formData } = this.state;
     if (!formData.name) {
-      alertStore.add("You must set a name", "error");
+      alertStore.add(intl.formatMessage(alertsMessages.name), "error");
       return;
     }
     if (!email && !formData.email) {
-      alertStore.add("You must set an email", "error");
+      alertStore.add(intl.formatMessage(alertsMessages.email), "error");
       return;
     }
     if (!formData.password) {
-      alertStore.add("You must set password", "error");
+      alertStore.add(intl.formatMessage(alertsMessages.password), "error");
       return;
     }
     if (formData.password != formData.passwordRpt) {
-      alertStore.add("Passwords do not match", "error");
+      alertStore.add(intl.formatMessage(alertsMessages.passwordMatch), "error");
       return;
     }
     let data = {
@@ -117,28 +167,38 @@ class RegisterPage extends Component {
     );
   };
   render() {
-    const { invite } = this.props;
+    const { intl, invite } = this.props;
     const { loading, email, formData } = this.state;
     if (loading) return null;
     return (
       <Form onSubmit={this._handleSubmit}>
         <Form.Content>
-          <Page.Title>New account</Page.Title>
+          <Page.Title>
+            <FormattedMessage
+              id="app.registration.title"
+              defaultMessage="New account"
+            />
+          </Page.Title>
           <FacebookButton invite={invite} />
-          <OrLine bgColor="#f7f7f7">Or fill the form below</OrLine>
-          <Form.Field label="Name">
+          <OrLine bgColor="#f7f7f7">
+            <FormattedMessage
+              id="app.registration.or_fill_form"
+              defaultMessage="Or fill the form below"
+            />
+          </OrLine>
+          <Form.Field label={intl.formatMessage(messages.nameLabel)}>
             <input type="text" name="name" onChange={this._handleChange} />
           </Form.Field>
           {!email ? (
-            <Form.Field label="Email">
+            <Form.Field label={intl.formatMessage(messages.emailLabel)}>
               <input type="email" name="email" onChange={this._handleChange} />
             </Form.Field>
           ) : null}
-          <Form.Field label="Country">
+          <Form.Field label={intl.formatMessage(messages.countryLabel)}>
             <CountrySelect name="country" onChange={this._handleChange} />
           </Form.Field>
           {formData.country ? (
-            <Form.Field label="Region">
+            <Form.Field label={intl.formatMessage(messages.regionLabel)}>
               <RegionSelect
                 country={formData.country}
                 name="region"
@@ -146,14 +206,14 @@ class RegisterPage extends Component {
               />
             </Form.Field>
           ) : null}
-          <Form.Field label="Password">
+          <Form.Field label={intl.formatMessage(messages.passwordLabel)}>
             <input
               type="password"
               name="password"
               onChange={this._handleChange}
             />
           </Form.Field>
-          <Form.Field label="Repeat password">
+          <Form.Field label={intl.formatMessage(messages.passwordRptLabel)}>
             <input
               type="password"
               name="passwordRpt"
@@ -165,7 +225,7 @@ class RegisterPage extends Component {
           <input
             type="submit"
             disabled={!this._filledForm() || loading}
-            value="Create account"
+            value={intl.formatMessage(messages.createAccountLabel)}
           />
         </Form.Actions>
       </Form>
@@ -173,4 +233,8 @@ class RegisterPage extends Component {
   }
 }
 
-export default RegisterPage;
+RegisterPage.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(RegisterPage);

@@ -186,6 +186,32 @@ const PageBody = styled.div`
   outline: none;
 `;
 
+const Boxed = styled.div`
+  width: 100%;
+  max-width: 700px;
+  margin: 3rem auto 2rem;
+  padding: 2rem;
+  border-radius: 7px;
+  border: 1px solid #ddd;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  box-sizing: border-box;
+  .info {
+    flex: 1 1 100%;
+    margin: 0 0 1rem;
+  }
+  h2 {
+    font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 0 0 2rem;
+  }
+  .button {
+    display: block;
+    margin: 0;
+  }
+`;
+
 const Title = styled.h1`
   font-size: 2em;
   margin: 3rem 0;
@@ -195,6 +221,7 @@ export default class Page extends Component {
   static Nav = Nav;
   static Content = Content;
   static Title = Title;
+  static Boxed = Boxed;
   componentDidMount() {
     document.getElementById("main").focus();
   }
