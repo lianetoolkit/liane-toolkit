@@ -16,7 +16,7 @@ import ExtraFields from "./ExtraFields.jsx";
 
 const Container = styled.div`
   .tab-nav {
-    margin: -2rem -2rem 2rem -2rem;
+    margin: -2rem -3rem 2rem -3rem;
     padding: 1rem 0 0;
   }
   input[type="submit"] {
@@ -196,7 +196,7 @@ export default class PersonEdit extends Component {
     return (
       <Container>
         <Form onSubmit={this._handleSubmit}>
-          <TabNav dark>
+          <TabNav>
             <a
               href="javascript:void(0);"
               className={tab == "basic_info" ? "active" : ""}

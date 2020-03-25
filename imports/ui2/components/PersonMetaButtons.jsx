@@ -152,11 +152,8 @@ const Container = styled.div`
 
 class PersonMetaButtons extends React.Component {
   static keys = [
-    "supporter",
     "volunteer",
-    "mobilizer",
     "donor",
-    "influencer",
     "voter",
     "non-voter",
     "troll"
@@ -348,11 +345,8 @@ class PersonMetaButtons extends React.Component {
     }
     return (
       <Container className="person-meta-buttons" {...props} vertical={vertical}>
-        {this._metaButton(person ? person.campaignMeta : false, "supporter")}
         {this._metaButton(person ? person.campaignMeta : false, "volunteer")}
-        {this._metaButton(person ? person.campaignMeta : false, "mobilizer")}
         {this._metaButton(person ? person.campaignMeta : false, "donor")}
-        {this._metaButton(person ? person.campaignMeta : false, "influencer")}
         {this._metaButton(person ? person.campaignMeta : false, "voter")}
         {this._metaButton(person ? person.campaignMeta : false, "non-voter")}
         {this._metaButton(person ? person.campaignMeta : false, "troll")}
