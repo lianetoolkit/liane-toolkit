@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-
-import { FormattedMessage } from "react-intl";
+import { injectIntl, intlShape, FormattedMessage } from "react-intl";
 
 import { alertStore } from "../../containers/Alerts.jsx";
 
 import Page from "../../components/Page.jsx";
 import Table from "../../components/Table.jsx";
 import Button from "../../components/Button.jsx";
+
+import { messages as officeMessages } from "../../components/OfficeField.jsx";
 
 class CampaignInvitePage extends Component {
   constructor(props) {
@@ -63,6 +64,12 @@ class CampaignInvitePage extends Component {
       }
     );
   };
+  _officeLabel = office => {
+    const { intl } = this.props;
+    if (officeMessages[office])
+      return intl.formatMessage(officeMessages[office]);
+    return office;
+  };
   render() {
     const { campaignInviteId } = this.props;
     const { campaign } = this.state;
@@ -112,7 +119,7 @@ class CampaignInvitePage extends Component {
                       defaultMessage="Office"
                     />
                   </th>
-                  <td className="fill">{campaign.office}</td>
+                  <td className="fill">{this._officeLabel(campaign.office)}</td>
                 </tr>
               </tbody>
             </Table>
@@ -138,4 +145,8 @@ class CampaignInvitePage extends Component {
   }
 }
 
-export default CampaignInvitePage;
+CampaignInvitePage.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(CampaignInvitePage);
