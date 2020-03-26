@@ -304,15 +304,17 @@ export const validateCampaigner = new ValidatedMethod({
     if (!userId || !user) {
       throw new Meteor.Error(400, "Invalid user");
     }
-    if (!user.services.facebook) return false;
-    const tokenData = UsersHelpers.debugFBToken({
-      token: user.services.facebook.accessToken
-    });
     let res = {
+      validUser: false,
       enabled: true
     };
-    res.validUser =
-      user.type == "campaigner" && validatePermissions(tokenData.scopes);
+    if (user.services.facebook) {
+      const tokenData = UsersHelpers.debugFBToken({
+        token: user.services.facebook.accessToken
+      });
+      res.validUser =
+        user.type == "campaigner" && validatePermissions(tokenData.scopes);
+    }
     if (PRIVATE && !Roles.userIsInRole(userId, ["admin", "moderator"])) {
       res.enabled = CampaignsHelpers.validateInvite({ invite });
     }
@@ -345,24 +347,26 @@ export const setUserType = new ValidatedMethod({
     }
 
     if (type == "campaigner") {
-      const credential = Facebook.retrieveCredential(token, secret);
-      if (credential && credential.serviceData.accessToken) {
-        const token = UsersHelpers.exchangeFBToken({
-          token: credential.serviceData.accessToken
-        });
-        Meteor.users.update(userId, {
-          $set: {
-            type,
-            "services.facebook.accessToken": token.result
-          }
-        });
+      if (token && secret) {
+        const credential = Facebook.retrieveCredential(token, secret);
+        if (credential && credential.serviceData.accessToken) {
+          const token = UsersHelpers.exchangeFBToken({
+            token: credential.serviceData.accessToken
+          });
+          Meteor.users.update(userId, {
+            $set: {
+              type,
+              "services.facebook.accessToken": token.result
+            }
+          });
+        } else {
+          throw new Meteor.Error(500, "Error retrieving Facebook credentials.");
+        }
+      } else {
+        Meteor.users.update(userId, { $set: { type: "campaigner" } });
       }
     } else {
-      Meteor.users.update(userId, {
-        $set: {
-          type
-        }
-      });
+      Meteor.users.update(userId, { $set: { type } });
     }
   }
 });

@@ -696,11 +696,15 @@ export const campaignInviteInfo = new ValidatedMethod({
   }).validator(),
   run({ invite }) {
     const parsedInvite = invite.split("|");
-    const campaign = CampaignsHelpers.getInviteCampaign({
-      campaignId: parsedInvite[1],
-      inviteId: parsedInvite[0]
-    });
-    return campaign.users.find(u => u.inviteId == parsedInvite[0]);
+    if (parsedInvite[1]) {
+      const campaign = CampaignsHelpers.getInviteCampaign({
+        campaignId: parsedInvite[1],
+        inviteId: parsedInvite[0]
+      });
+      if (campaign)
+        return campaign.users.find(u => u.inviteId == parsedInvite[0]);
+    }
+    return false;
   }
 });
 

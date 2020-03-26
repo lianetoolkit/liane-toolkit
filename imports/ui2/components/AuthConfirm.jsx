@@ -1,5 +1,10 @@
 import React, { Component } from "react";
-import { FormattedMessage } from "react-intl";
+import {
+  FormattedMessage,
+  defineMessages,
+  intlShape,
+  injectIntl
+} from "react-intl";
 import styled from "styled-components";
 import { OAuth } from "meteor/oauth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,6 +14,21 @@ import { alertStore } from "../containers/Alerts.jsx";
 import Button, { ButtonGroup } from "../components/Button.jsx";
 import Form from "../components/Form.jsx";
 import Loading from "../components/Loading.jsx";
+
+const messages = defineMessages({
+  confirmEmailTitle: {
+    id: "app.email_confirm.title",
+    defaultMessage: "Email not verified"
+  },
+  differentEmail: {
+    id: "app.email_confirm.different_email",
+    defaultMessage: "Not working? Use a different email address:"
+  },
+  sendDifferent: {
+    id: "app.email_confirm.different_email_button_label",
+    defaultMessage: "Send new verification link"
+  }
+});
 
 const AuthOptions = styled.div`
   .button-group {
@@ -45,7 +65,7 @@ const AuthOptions = styled.div`
 class Confirm extends Component {
   constructor(props) {
     super(props);
-    this.state = { type: "user" };
+    this.state = { type: "user", loading: false };
   }
   _handleTypeClick = type => ev => {
     ev.preventDefault();
@@ -54,6 +74,7 @@ class Confirm extends Component {
   _handleSubmit = ev => {
     ev.preventDefault();
     const { type } = this.state;
+    this.setState({ loading: true });
     if (type == "campaigner") {
       Facebook.requestCredential(
         {
@@ -63,9 +84,6 @@ class Confirm extends Component {
             "manage_pages",
             "publish_pages",
             "pages_show_list",
-            // "ads_management",
-            // "ads_read",
-            // "business_management",
             "pages_messaging",
             "pages_messaging_phone_number",
             "pages_messaging_subscriptions"
@@ -80,8 +98,9 @@ class Confirm extends Component {
               (err, res) => {
                 if (err) {
                   alertStore.add(err);
+                  this.setState({ loading: false });
                 } else {
-                  modalStore.reset(true);
+                  window.location.reload();
                 }
               }
             );
@@ -92,14 +111,16 @@ class Confirm extends Component {
       Meteor.call("users.setType", { type }, (err, res) => {
         if (err) {
           alertStore.add(err);
+          this.setState({ loading: false });
         } else {
-          modalStore.reset(true);
+          window.location.reload();
         }
       });
     }
   };
   render() {
-    const { type } = this.state;
+    const { loading, type } = this.state;
+    if (loading) return <Loading />;
     return (
       <AuthOptions>
         <p>
@@ -219,31 +240,45 @@ class EmailConfirm extends Component {
     });
   };
   render() {
+    const { intl } = this.props;
     const { loading } = this.state;
     const user = Meteor.user();
     if (loading) return <Loading />;
     return (
       <EmailConfirmContainer>
-        <p>To continue using Liane, you must verify your email:</p>
+        <p>
+          <FormattedMessage
+            id="app.email_confirm.intro"
+            defaultMessage="To continue using Liane, you must verify your email:"
+          />
+        </p>
         {user.emails.length ? (
           <>
             <p>
               <code>{user.emails[0].address}</code>
             </p>
-            <p>Check your mail and click the link we sent you!</p>
+            <p>
+              <FormattedMessage
+                id="app.email_confirm.check_email_text"
+                defaultMessage="Check your mail and click the link we sent you!"
+              />
+            </p>
             <Button primary onClick={this._handleResendClick}>
-              Resend verification link
+              <FormattedMessage
+                id="app.email_confirm.resend_button_label"
+                defaultMessage="Resend verification link"
+              />
             </Button>
           </>
         ) : null}
         <Form onSubmit={this._handleSubmit}>
-          <Form.Field label="Not working? Use a different email address:">
+          <Form.Field label={intl.formatMessage(messages.differentEmail)}>
             <input type="email" name="email" onChange={this._handleChange} />
           </Form.Field>
           <input
             className="secondary"
             type="submit"
-            value="Send new verification link"
+            value={intl.formatMessage(messages.sendDifferent)}
           />
         </Form>
       </EmailConfirmContainer>
@@ -251,7 +286,13 @@ class EmailConfirm extends Component {
   }
 }
 
-export default class AuthConfirm extends Component {
+EmailConfirm.propTypes = {
+  intl: intlShape.isRequired
+};
+
+const EmailConfirmIntl = injectIntl(EmailConfirm);
+
+class AuthConfirm extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { user } = this.props;
     if (user && user.type && user.emails.length && user.emails[0].verified) {
@@ -259,7 +300,7 @@ export default class AuthConfirm extends Component {
     }
   }
   componentDidMount() {
-    const { user } = this.props;
+    const { intl, user } = this.props;
     if (user && !user.type) {
       modalStore.setType("small");
       modalStore.set(<Confirm user={user} />, () => {
@@ -268,8 +309,8 @@ export default class AuthConfirm extends Component {
       });
     } else if (user && !user.emails.find(e => e.verified == true)) {
       modalStore.setType("small");
-      modalStore.setTitle("Email not verified");
-      modalStore.set(<EmailConfirm />, () => {
+      modalStore.setTitle(intl.formatMessage(messages.confirmEmailTitle));
+      modalStore.set(<EmailConfirmIntl />, () => {
         return false;
       });
     }
@@ -278,3 +319,9 @@ export default class AuthConfirm extends Component {
     return null;
   }
 }
+
+AuthConfirm.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(AuthConfirm);

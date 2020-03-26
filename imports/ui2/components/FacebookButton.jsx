@@ -41,11 +41,21 @@ class FacebookButton extends Component {
   }
   _facebookAuth = () => ev => {
     ev.preventDefault();
-    const { invite } = this.props;
-    this.setState({ loading: true });
+    const { invite, type } = this.props;
     let data = {
       requestPermissions: ["public_profile", "email"]
     };
+    if (type == "campaigner") {
+      data.requestPermissions = data.requestPermissions.concat([
+        "manage_pages",
+        "publish_pages",
+        "pages_show_list",
+        "pages_messaging",
+        "pages_messaging_phone_number",
+        "pages_messaging_subscriptions"
+      ]);
+    }
+    this.setState({ loading: true });
     Meteor.loginWithFacebook(data, err => {
       if (err) {
         this.setState({ loading: false });
@@ -64,6 +74,15 @@ class FacebookButton extends Component {
                 } else {
                   alertStore.add(null, "success");
                   FlowRouter.go("App.dashboard");
+                  window.location.reload();
+                }
+              });
+            } else if (type == "campaigner") {
+              Meteor.call("users.setType", { type }, (err, res) => {
+                if (err) {
+                  alertStore.add(err);
+                  this.setState({ loading: false });
+                } else {
                   window.location.reload();
                 }
               });

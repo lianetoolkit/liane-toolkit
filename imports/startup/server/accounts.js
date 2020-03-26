@@ -68,8 +68,12 @@ Accounts.onCreateUser(function(options, user) {
     user.region = options.region;
   }
 
+  if (options.type) {
+    user.type = options.type;
+  }
+
   // Validate invitation
-  if (options.invite) {
+  if (options.invite && options.invite.split("|").length == 2) {
     const parsedInvite = options.invite.split("|");
     const campaignId = parsedInvite[1];
     const inviteId = parsedInvite[0];
@@ -77,26 +81,28 @@ Accounts.onCreateUser(function(options, user) {
       campaignId,
       inviteId
     });
-    const invite = campaign.users.find(u => u.inviteId == inviteId);
-    CampaignsHelpers.applyInvitation({
-      inviteId,
-      campaignId,
-      userId: user._id
-    });
-    user.email = invite.email;
-    user.type = "user";
-    user.emails[0].verified = true;
+    if (campaign) {
+      const invite = campaign.users.find(u => u.inviteId == inviteId);
+      CampaignsHelpers.applyInvitation({
+        inviteId,
+        campaignId,
+        userId: user._id
+      });
+      user.email = invite.email;
+      user.type = "user";
+      user.emails[0].verified = true;
 
-    // Notify campaign owner
-    NotificationsHelpers.add({
-      userId: campaign.creatorId,
-      metadata: {
-        name: user.name,
-        campaignName: campaign.name
-      },
-      category: "campaignInviteAccepted",
-      dataRef: campaignId
-    });
+      // Notify campaign owner
+      NotificationsHelpers.add({
+        userId: campaign.creatorId,
+        metadata: {
+          name: user.name,
+          campaignName: campaign.name
+        },
+        category: "campaignInviteAccepted",
+        dataRef: campaignId
+      });
+    }
   }
 
   return user;

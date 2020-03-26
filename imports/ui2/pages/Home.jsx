@@ -486,7 +486,7 @@ class Home extends Component {
           ) : null}
           {!isLoggedIn || !user ? (
             <LoginFormContainer>
-              <FacebookButton />
+              <FacebookButton type={invite ? "campaigner" : false} />
               <p className="terms">
                 <FormattedHTMLMessage
                   id="app.terms_and_policy"

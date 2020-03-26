@@ -16,6 +16,7 @@ import CountrySelect from "../components/CountrySelect.jsx";
 import RegionSelect from "../components/RegionSelect.jsx";
 import OrLine from "../components/OrLine.jsx";
 import FacebookButton from "../components/FacebookButton.jsx";
+import Loading from "../components/Loading.jsx";
 
 const messages = defineMessages({
   nameLabel: {
@@ -76,39 +77,45 @@ class RegisterPage extends Component {
     };
   }
   componentDidMount = () => {
-    const { invite } = this.props;
-    if (invite) {
+    const { campaignInvite } = this.props;
+    if (campaignInvite) {
       this.setState({ loading: true });
-      Meteor.call("campaigns.getInviteInfo", { invite }, (err, res) => {
-        if (err) {
-          alertStore.add(err);
-        } else {
-          this.setState({
-            email: res.email
-          });
-          if (Meteor.userId()) {
-            Meteor.call(
-              "campaigns.applyInvitation",
-              { invite },
-              (err, { campaignId }) => {
-                Session.set("campaignId", campaignId);
-                FlowRouter.go("App.dashboard");
-                window.location.reload();
+      Meteor.call(
+        "campaigns.getInviteInfo",
+        { invite: campaignInvite },
+        (err, res) => {
+          if (err) {
+            alertStore.add(err);
+            this.setState({
+              loading: false
+            });
+          } else {
+            if (res) {
+              this.setState({
+                email: res.email
+              });
+              if (Meteor.userId()) {
+                Meteor.call(
+                  "campaigns.applyInvitation",
+                  { invite: campaignInvite },
+                  (err, { campaignId }) => {
+                    Session.set("campaignId", campaignId);
+                    FlowRouter.go("App.dashboard");
+                    window.location.reload();
+                  }
+                );
               }
-            );
+            }
           }
         }
-        this.setState({
-          loading: false
-        });
-      });
+      );
     } else if (Meteor.userId()) {
       FlowRouter.go("/");
     }
   };
   _handleSubmit = ev => {
     ev.preventDefault();
-    const { intl, invite } = this.props;
+    const { intl, campaignInvite, invite } = this.props;
     const { email, formData } = this.state;
     if (!formData.name) {
       alertStore.add(intl.formatMessage(alertsMessages.name), "error");
@@ -136,12 +143,17 @@ class RegisterPage extends Component {
     if (!email) {
       data.email = formData.email;
     }
-    if (invite) {
-      data.invite = invite;
+    if (campaignInvite) {
+      data.invite = campaignInvite;
     }
+    if (invite) {
+      data.type = "campaigner";
+    }
+    this.setState({ loading: true });
     Accounts.createUser(data, err => {
       if (err) {
         alertStore.add(err);
+        this.setState({ loading: false });
       } else {
         alertStore.add(null, "success");
         FlowRouter.go("App.dashboard");
@@ -167,9 +179,9 @@ class RegisterPage extends Component {
     );
   };
   render() {
-    const { intl, invite } = this.props;
+    const { intl, campaignInvite, invite } = this.props;
     const { loading, email, formData } = this.state;
-    if (loading) return null;
+    if (loading) return <Loading full />;
     return (
       <Form onSubmit={this._handleSubmit}>
         <Form.Content>
@@ -179,7 +191,10 @@ class RegisterPage extends Component {
               defaultMessage="New account"
             />
           </Page.Title>
-          <FacebookButton invite={invite} />
+          <FacebookButton
+            invite={campaignInvite}
+            type={invite ? "campaigner" : false}
+          />
           <OrLine bgColor="#f7f7f7">
             <FormattedMessage
               id="app.registration.or_fill_form"

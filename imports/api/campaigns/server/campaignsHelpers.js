@@ -467,14 +467,17 @@ const CampaignsHelpers = {
     return false;
   },
   getInviteCampaign({ campaignId, inviteId }) {
-    return Campaigns.findOne({
-      _id: campaignId,
-      users: {
-        $elemMatch: {
-          inviteId
+    if (campaignId && inviteId) {
+      return Campaigns.findOne({
+        _id: campaignId,
+        users: {
+          $elemMatch: {
+            inviteId
+          }
         }
-      }
-    });
+      });
+    }
+    return false;
   },
   applyInvitation({ campaignId, inviteId, userId }) {
     const campaign = this.getInviteCampaign({ campaignId, inviteId });
