@@ -32,6 +32,9 @@ const Container = styled.div`
     font-size: 0.8em;
     border-bottom: 1px solid #eee;
   }
+  hr {
+    margin-bottom: 0;
+  }
 `;
 
 const HighlightContainer = styled.div`
@@ -152,7 +155,7 @@ const UserContainer = styled.div`
 const ClosedContainer = styled.div`
   max-width: 400px;
   box-sizing: border-box;
-  margin: -3rem auto 8rem;
+  margin: -3rem auto 6rem;
   background: #fff;
   border-radius: 7px;
   box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
