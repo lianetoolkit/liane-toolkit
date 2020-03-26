@@ -42,8 +42,6 @@ class InviteNotification extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
-      hasInvite: false,
       closed: false
     };
   }
@@ -52,26 +50,11 @@ class InviteNotification extends Component {
       closed: true
     });
   };
-  componentDidMount() {
-    const invite = ClientStorage.get("invite");
-    if (invite) {
-      this.setState({ loading: true });
-      Meteor.call("campaigns.validateInvite", { invite }, (err, hasInvite) => {
-        if (!err && hasInvite) {
-          this.setState({
-            hasInvite: true
-          });
-        } else {
-          ClientStorage.set("invite", false);
-        }
-        this.setState({ loading: false });
-      });
-    }
-  }
   render() {
-    const { loading, hasInvite, closed } = this.state;
+    const { invite } = this.props;
+    const { closed } = this.state;
     const user = Meteor.user();
-    if (!loading && hasInvite && !closed) {
+    if (invite && !closed) {
       return (
         <Container>
           <FontAwesomeIcon icon="star" />

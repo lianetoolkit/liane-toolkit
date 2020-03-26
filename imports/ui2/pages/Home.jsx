@@ -404,7 +404,7 @@ class Home extends Component {
     modalStore.set(<ForgotPassword />);
   };
   render() {
-    const { intl, isLoggedIn } = this.props;
+    const { intl, isLoggedIn, invite } = this.props;
     const { loading, isClosed, hasMail, subscribed } = this.state;
     const user = Meteor.user();
     return (
@@ -419,7 +419,7 @@ class Home extends Component {
               />
             </h2>
           </HighlightContainer>
-          {isClosed && hasMail && !user ? (
+          {isClosed && hasMail && !user && !invite ? (
             <>
               <ClosedContainer>
                 <h3>

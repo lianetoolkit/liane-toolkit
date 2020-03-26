@@ -80,7 +80,7 @@ export default class AppLayout extends Component {
         <IntlProvider locale={language} messages={messages}>
           <div id="app">
             <Page {...this.props}>
-              <InviteNotification />
+              <InviteNotification invite={this.props.invite} />
               <content.component {...this.props} />
             </Page>
             <Modal />

@@ -458,15 +458,13 @@ const CampaignsHelpers = {
     }
   },
   validateInvite({ invite }) {
-    let allow = false;
     if (invite) {
       const inviteData = Invites.findOne({ key: invite, used: false });
       if (inviteData) {
-        allow = true;
-        hasInvite = true;
+        return inviteData.key;
       }
     }
-    return allow;
+    return false;
   },
   getInviteCampaign({ campaignId, inviteId }) {
     return Campaigns.findOne({

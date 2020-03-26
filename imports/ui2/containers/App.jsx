@@ -18,6 +18,7 @@ import AppLayout from "../layouts/AppLayout.jsx";
 
 const reactiveCampaignId = new ReactiveVar(false);
 const ready = new ReactiveVar(false);
+const invite = new ReactiveVar(false);
 
 const AppSubs = new SubsManager();
 
@@ -48,8 +49,16 @@ export default withTracker(props => {
   }
 
   // Handle invite param
-  if (props.invite) {
-    ClientStorage.set("invite", props.invite);
+  invite.set(ClientStorage.get("invite") || false);
+  if (props.invite || invite.get()) {
+    Meteor.call(
+      "campaigns.validateInvite",
+      { invite: props.invite || invite.get() },
+      (err, inviteKey) => {
+        invite.set(!err && inviteKey ? inviteKey : false);
+        ClientStorage.set("invite", inviteKey);
+      }
+    );
   }
 
   const incomingCampaignId = Session.get("campaignId");
@@ -227,6 +236,7 @@ export default withTracker(props => {
     user,
     connected,
     ready: ready.get(),
+    invite: invite.get(),
     isLoggedIn,
     notifications,
     loadingCampaigns,
