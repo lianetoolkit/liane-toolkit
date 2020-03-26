@@ -67,7 +67,7 @@ class NewCampaignPage extends Component {
     super(props);
     this.state = {
       ready: false,
-      isValidCampaigner: false,
+      validation: false,
       loading: false,
       formData: {
         name: "",
@@ -79,14 +79,17 @@ class NewCampaignPage extends Component {
     this._validate();
   }
   _validate = () => {
+    const invite = ClientStorage.get("invite");
     this.setState({ ready: false });
-    Meteor.call("users.validateCampaigner", (err, res) => {
+    let data = {};
+    if (invite) data.invite = invite;
+    Meteor.call("users.validateCampaigner", data, (err, res) => {
       if (err) {
         alertStore.add(err);
       } else {
         this.setState({
           ready: true,
-          isValidCampaigner: res
+          validation: res
         });
       }
     });
@@ -148,6 +151,7 @@ class NewCampaignPage extends Component {
           });
         } else {
           Session.set("campaignId", data.result);
+          ClientStorage.set("invite", false);
           FlowRouter.go("App.dashboard");
           window.location.reload();
         }
@@ -158,11 +162,29 @@ class NewCampaignPage extends Component {
   };
   render() {
     const { intl } = this.props;
-    const { ready, isValidCampaigner, loading, formData } = this.state;
+    const { ready, validation, loading, formData } = this.state;
     if (!ready) {
       return <Loading full />;
     }
-    if (!isValidCampaigner) {
+    if (!validation.enabled) {
+      return (
+        <Page.Boxed>
+          <h2>
+            <FormattedMessage
+              id="app.campaigns.disabled_title"
+              defaultMessage="Campaign creation not available"
+            />
+          </h2>
+          <p>
+            <FormattedMessage
+              id="app.campaigns.disabled_text"
+              defaultMessage="Your account is not currently allowed to create a new campaign."
+            />
+          </p>
+        </Page.Boxed>
+      );
+    }
+    if (validation.enabled && !validation.validUser) {
       return <UserUpgrade onSuccess={this._validate} />;
     }
     return (

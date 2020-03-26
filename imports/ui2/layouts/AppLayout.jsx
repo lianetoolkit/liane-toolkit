@@ -17,6 +17,7 @@ import Modal from "../containers/Modal.jsx";
 import Alerts from "../containers/Alerts.jsx";
 import Page from "../components/Page.jsx";
 import AuthConfirm from "../components/AuthConfirm.jsx";
+import InviteNotification from "../components/InviteNotification.jsx";
 
 import { FeedbackButton } from "../components/Feedback.jsx";
 
@@ -79,6 +80,7 @@ export default class AppLayout extends Component {
         <IntlProvider locale={language} messages={messages}>
           <div id="app">
             <Page {...this.props}>
+              <InviteNotification />
               <content.component {...this.props} />
             </Page>
             <Modal />

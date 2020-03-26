@@ -419,7 +419,7 @@ class Home extends Component {
               />
             </h2>
           </HighlightContainer>
-          {isClosed && hasMail ? (
+          {isClosed && hasMail && !user ? (
             <>
               <ClosedContainer>
                 <h3>

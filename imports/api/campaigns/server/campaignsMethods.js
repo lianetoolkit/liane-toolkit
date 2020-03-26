@@ -218,16 +218,11 @@ export const campaignsCreate = new ValidatedMethod({
     let hasInvite = false;
 
     if (PRIVATE && !Roles.userIsInRole(userId, ["admin", "moderator"])) {
-      let allow = false;
-      if (invite) {
-        const inviteData = Invites.findOne({ key: invite, used: false });
-        if (inviteData) {
-          allow = true;
-          hasInvite = true;
-        }
-      }
-      if (!allow)
+      if (!CampaignsHelpers.validateInvite({ invite })) {
         throw new Meteor.Error(401, "Campaign creation is currently disabled.");
+      } else {
+        hasInvite = true;
+      }
     }
 
     if (FacebookAccounts.findOne({ facebookId: facebookAccountId })) {
@@ -307,6 +302,22 @@ export const campaignsCreate = new ValidatedMethod({
     });
 
     return { result: campaignId };
+  }
+});
+
+export const campaignValidateInvite = new ValidatedMethod({
+  name: "campaigns.validateInvite",
+  validate: new SimpleSchema({
+    invite: {
+      type: String
+    }
+  }).validator(),
+  run({ invite }) {
+    this.unblock();
+    const userId = Meteor.userId();
+    if (userId && Roles.userIsInRole(userId, ["admin", "moderator"]))
+      return false;
+    return CampaignsHelpers.validateInvite({ invite });
   }
 });
 

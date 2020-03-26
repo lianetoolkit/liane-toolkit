@@ -1,5 +1,5 @@
 import { Promise } from "meteor/promise";
-import { Campaigns } from "/imports/api/campaigns/campaigns.js";
+import { Campaigns, Invites } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import {
   People,
@@ -456,6 +456,17 @@ const CampaignsHelpers = {
         jobData
       });
     }
+  },
+  validateInvite({ invite }) {
+    let allow = false;
+    if (invite) {
+      const inviteData = Invites.findOne({ key: invite, used: false });
+      if (inviteData) {
+        allow = true;
+        hasInvite = true;
+      }
+    }
+    return allow;
   },
   getInviteCampaign({ campaignId, inviteId }) {
     return Campaigns.findOne({

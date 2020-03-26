@@ -1,5 +1,6 @@
 import SimpleSchema from "simpl-schema";
 import { UsersHelpers } from "./usersHelpers.js";
+import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { difference } from "lodash";
 import axios from "axios";
@@ -290,8 +291,13 @@ export const validateFBToken = new ValidatedMethod({
 
 export const validateCampaigner = new ValidatedMethod({
   name: "users.validateCampaigner",
-  validate() {},
-  run() {
+  validate: new SimpleSchema({
+    invite: {
+      type: String,
+      optional: true
+    }
+  }).validator(),
+  run({ invite }) {
     this.unblock();
     const userId = Meteor.userId();
     const user = Meteor.users.findOne(userId);
@@ -302,7 +308,15 @@ export const validateCampaigner = new ValidatedMethod({
     const tokenData = UsersHelpers.debugFBToken({
       token: user.services.facebook.accessToken
     });
-    return user.type == "campaigner" && validatePermissions(tokenData.scopes);
+    let res = {
+      enabled: true
+    };
+    res.validUser =
+      user.type == "campaigner" && validatePermissions(tokenData.scopes);
+    if (PRIVATE && !Roles.userIsInRole(userId, ["admin", "moderator"])) {
+      res.enabled = CampaignsHelpers.validateInvite({ invite });
+    }
+    return res;
   }
 });
 
