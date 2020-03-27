@@ -89,22 +89,24 @@ class RegisterPage extends Component {
             this.setState({
               loading: false
             });
-          } else {
-            if (res) {
+          } else if (res) {
+            this.setState({
+              email: res.email
+            });
+            if (Meteor.userId()) {
+              Meteor.call(
+                "campaigns.applyInvitation",
+                { invite: campaignInvite },
+                (err, { campaignId }) => {
+                  Session.set("campaignId", campaignId);
+                  FlowRouter.go("App.dashboard");
+                  window.location.reload();
+                }
+              );
+            } else {
               this.setState({
-                email: res.email
+                loading: false
               });
-              if (Meteor.userId()) {
-                Meteor.call(
-                  "campaigns.applyInvitation",
-                  { invite: campaignInvite },
-                  (err, { campaignId }) => {
-                    Session.set("campaignId", campaignId);
-                    FlowRouter.go("App.dashboard");
-                    window.location.reload();
-                  }
-                );
-              }
             }
           }
         }
