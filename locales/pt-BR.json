@@ -150,7 +150,7 @@
   "app.campaign_settings.team_add_button_label": "Adicionar integrante",
   "app.campaign_settings.team_add_title": "Adicionar pessoas à equipe",
   "app.campaign_settings.team_creator_label": "Criadora da campanha",
-  "app.campaign_settings.team_description": "Para adicionar integrantes à equipe a pessoa deve estar registrada na plataforma. Utilize o mesmo email de cadastro do Facebook.",
+  "app.campaign_settings.team_description": "Adicione pessoas à sua equipe preenchendo com email, cargo e permissões de acesso. Novas pessoas receberão um email de convite para cadastro.",
   "app.campaign_settings.team_edit_label": "Editar permissões",
   "app.campaign_settings.team_email_label": "Email",
   "app.campaign_settings.team_permissions_label": "Permissões",
