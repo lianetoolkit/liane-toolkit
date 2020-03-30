@@ -328,7 +328,7 @@ class CampaignTeamPage extends Component {
             <p>
               <FormattedMessage
                 id="app.campaign_settings.team_description"
-                defaultMessage="To add new members the user must be registered in the platform. Use the same email used on Facebook."
+                defaultMessage="Add new members by adding their email, role and allowed permissons. New users will receive an email invitation."
               />
             </p>
             <Form.Field label={intl.formatMessage(messages.emailLabel)}>
