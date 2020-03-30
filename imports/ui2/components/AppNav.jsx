@@ -96,9 +96,9 @@ const NavItemContainer = styled.li`
         display: none;
         min-width: 200px;
         background: #330066;
-        border-right: 1px solid #222;
-        border-left: 1px solid #222;
-        border-bottom: 1px solid #222;
+        border-right: 1px solid #111;
+        border-left: 1px solid #111;
+        border-bottom: 1px solid #111;
         box-shadow: 0 0.25rem 0.3rem rgba(0, 0, 0, 0.15);
         padding: 0 0 0.5rem;
         border-radius: 0 0 7px 7px;
@@ -120,7 +120,7 @@ const NavItemContainer = styled.li`
           &:hover {
             a {
               color: #fff;
-              background: #222;
+              background: #111;
               &.disabled {
                 color: #666;
                 background: transparent;

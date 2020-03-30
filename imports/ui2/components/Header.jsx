@@ -12,7 +12,7 @@ const Container = styled.header`
   background: #330066;
   padding: 0;
   flex: 0;
-  border-bottom: 1px solid #212121;
+  border-bottom: 1px solid #111;
   .header-content {
     max-width: 960px;
     padding: 0 2rem;
@@ -72,7 +72,7 @@ const TopNav = styled.nav`
       padding: 0.7rem 0 0;
       font-size: 0.9em;
       li {
-        background: #111;
+        background: #000;
         margin: 0;
         padding: 0.25rem 0.5rem;
         &:first-child {
