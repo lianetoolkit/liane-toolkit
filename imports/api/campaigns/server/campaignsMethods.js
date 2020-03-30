@@ -12,6 +12,7 @@ import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { AdAccountsHelpers } from "/imports/api/facebook/adAccounts/server/adAccountsHelpers.js";
 import { GeolocationsHelpers } from "/imports/api/geolocations/server/geolocationsHelpers.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
+import { Notifications } from "/imports/api/notifications/notifications";
 import { NotificationsHelpers } from "/imports/api/notifications/server/notificationsHelpers";
 import _ from "underscore";
 
@@ -1108,6 +1109,7 @@ export const removeUser = new ValidatedMethod({
         },
         { $pull: { users: campaignUser } }
       );
+      Notifications.remove({ userId, dataRef: campaignId });
       Meteor.call("log", {
         type: "campaigns.users.remove",
         campaignId,
