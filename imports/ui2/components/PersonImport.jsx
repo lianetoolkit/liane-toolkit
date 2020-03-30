@@ -251,6 +251,7 @@ class ImportButton extends React.Component {
       this.importInput.dispatchEvent(new Event("input", { bubbles: true }));
       return true;
     }
+    return false;
   };
   render() {
     const { importCount } = this.props;
@@ -672,21 +673,10 @@ class PeopleImport extends React.Component {
               active={labels}
             />
           </Form.Field>
-          {/* <Form.Field
-          control={PeopleMetaButtons}
-          size="big"
-          onChange={this._handleMetaButtons}
-          active={labels}
-          label="Default labels for this import"
-        /> */}
           <input
             type="submit"
             value={intl.formatMessage(messages.startImport)}
           />
-          {/* <Button primary fluid disabled={loading} icon>
-          <Icon name={loading ? "spinner" : "download"} loading={loading} />{" "}
-          Start import
-        </Button> */}
         </Form>
       </Container>
     );

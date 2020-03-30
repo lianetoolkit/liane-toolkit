@@ -295,7 +295,16 @@ const EmailConfirmIntl = injectIntl(EmailConfirm);
 class AuthConfirm extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { user } = this.props;
-    if (user && user.type && user.emails.length && user.emails[0].verified) {
+    if (
+      user &&
+      user.type &&
+      user.emails.length &&
+      user.emails[0].verified &&
+      (!prevProps.user ||
+        !prevProps.user.type ||
+        !prevProps.user.emails.length ||
+        !prevProps.user.emails[0].verified)
+    ) {
       modalStore.reset(true);
     }
   }

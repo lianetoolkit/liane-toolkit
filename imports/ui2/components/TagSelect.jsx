@@ -36,13 +36,7 @@ export default class TagSelect extends Component {
         campaignId: Session.get("campaignId")
       },
       (err, res) => {
-        if (!err) {
-          onChange({
-            target: {
-              name,
-              value: [...(value || []), res]
-            }
-          });
+        if (!err && res) {
           this.setState({
             options: [
               {
@@ -52,6 +46,14 @@ export default class TagSelect extends Component {
               ...this.state.options
             ]
           });
+          if (onChange) {
+            onChange({
+              target: {
+                name,
+                value: [...(value || []), res]
+              }
+            });
+          }
         }
       }
     );
@@ -76,7 +78,6 @@ export default class TagSelect extends Component {
     return (
       <CreatableSelect
         classNamePrefix="select-search"
-        cacheOptions
         isMulti
         placeholder="Tags..."
         options={options}
