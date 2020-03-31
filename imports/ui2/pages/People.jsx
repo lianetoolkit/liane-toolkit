@@ -787,7 +787,13 @@ class PeoplePage extends Component {
           )}
           {userCan("edit", "people") ? (
             <div className="new-person">
-              <Button onClick={this._handleNewClick}>+ New person</Button>
+              <Button onClick={this._handleNewClick}>
+                +{" "}
+                <FormattedMessage
+                  id="app.people.new_person_label"
+                  defaultMessage="New person"
+                />
+              </Button>
             </div>
           ) : null}
         </PeopleContent>

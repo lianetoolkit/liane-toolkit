@@ -447,6 +447,7 @@
   "app.people.lists.table_header.name": "Name",
   "app.people.lists.table_header.people": "People",
   "app.people.new.title": "Creating new profile",
+  "app.people.new_person_label": "New person",
   "app.people.sending_pr.title": "Sending private reply to {name}",
   "app.people.source.any_import.label": "Any import",
   "app.people.source.form.label": "Form",
