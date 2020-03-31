@@ -167,11 +167,17 @@ class Reply extends Component {
           );
           modalStore.reset();
         }
-      } else {
+      } else if (res.comment) {
         this.setState({
           comment: res.comment
         });
         this.fetchFAQ(res.comment.person.campaignId);
+      } else {
+        alertStore.add(
+          intl.formatMessage(messages.unavailableComment),
+          "error"
+        );
+        modalStore.reset();
       }
     });
   };

@@ -1,29 +1,38 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import styled from "styled-components";
 import moment from "moment";
 import { get } from "lodash";
 
 import Table from "../components/Table.jsx";
 
+import { skillsLabels } from "./SkillsField.jsx";
+import { profileLabels, genderLabels } from "./PersonEdit.jsx";
+
 const dataMap = [
   {
-    label: "Birthday",
+    label: "birthday",
     data: "campaignMeta.basic_info.birthday"
   },
   {
-    label: "Gender",
+    label: "gender",
     data: "campaignMeta.basic_info.gender"
   },
   {
-    label: "Address",
+    label: "address",
     data: "location.formattedAddress"
   },
   {
-    label: "Skills",
+    label: "skills",
     data: "campaignMeta.basic_info.skills"
   },
   {
-    label: "Job/Occupation",
+    label: "job",
     data: "campaignMeta.basic_info.occupation"
   }
 ];
@@ -53,18 +62,43 @@ const Container = styled.div`
   }
 `;
 
-export default class PersonInfoTable extends Component {
+class PersonInfoTable extends Component {
   getValue = key => {
-    const { person } = this.props;
+    const { intl, person } = this.props;
     const data = get(person, key);
     if (!data) {
-      return <span className="not-found">Information not registered</span>;
-    }
-    if (data instanceof Date) {
       return (
-        moment(data).format("DD/MM/YYYY") +
-        ` (${moment().diff(data, "years")} years old)`
+        <span className="not-found">
+          <FormattedMessage
+            id="app.people.profile.no_data_label"
+            defaultMessage="Information not registered"
+          />
+        </span>
       );
+    }
+    if (key == "campaignMeta.basic_info.birthday" && data instanceof Date) {
+      return (
+        <FormattedMessage
+          id="app.people.profile.birthday_data_text"
+          defaultMessage="{date} ({age} years old)"
+          values={{
+            date: moment(data).format("L"),
+            age: moment().diff(data, "years")
+          }}
+        />
+      );
+    }
+    if (key == "campaignMeta.basic_info.gender") {
+      return genderLabels[data] ? intl.formatMessage(genderLabels[data]) : data;
+    }
+    if (key == "campaignMeta.basic_info.skills") {
+      let skills = [];
+      for (const skill of data) {
+        skills.push(
+          skillsLabels[skill] ? intl.formatMessage(skillsLabels[skill]) : skill
+        );
+      }
+      return skills.join(", ");
     }
     if (Array.isArray(data)) {
       return data.join(", ");
@@ -76,6 +110,7 @@ export default class PersonInfoTable extends Component {
     return get(person, "campaignMeta.extra");
   };
   render() {
+    const { intl } = this.props;
     const extra = this.getExtra();
     return (
       <Container>
@@ -83,7 +118,11 @@ export default class PersonInfoTable extends Component {
           <tbody>
             {dataMap.map((d, i) => (
               <tr key={i}>
-                <th>{d.label}</th>
+                <th>
+                  {profileLabels[`${d.label}Label`]
+                    ? intl.formatMessage(profileLabels[`${d.label}Label`])
+                    : d.label}
+                </th>
                 <td className="fill">{this.getValue(d.data)}</td>
               </tr>
             ))}
@@ -91,7 +130,12 @@ export default class PersonInfoTable extends Component {
         </Table>
         {extra && extra.length ? (
           <>
-            <h3>Extra info</h3>
+            <h3>
+              <FormattedMessage
+                id="app.people.profile.extra_info_label"
+                defaultMessage="Extra info"
+              />
+            </h3>
             <Table>
               <tbody>
                 {extra.map((item, i) => (
@@ -108,3 +152,9 @@ export default class PersonInfoTable extends Component {
     );
   }
 }
+
+PersonInfoTable.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(PersonInfoTable);

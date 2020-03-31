@@ -14,36 +14,39 @@ const messages = defineMessages({
   placeholder: {
     id: "app.skills.placeholder",
     defaultMessage: "Skills..."
-  },
-  designLabel: {
+  }
+});
+
+export const skillsLabels = defineMessages({
+  design: {
     id: "app.skills.design_label",
     defaultMessage: "Design"
   },
-  videoLabel: {
+  video: {
     id: "app.skills.video_label",
     defaultMessage: "Video"
   },
-  eventProductionLabel: {
+  event_production: {
     id: "app.skills.event_production_label",
     defaultMessage: "Event production"
   },
-  editorLabel: {
+  editor: {
     id: "app.skills.editor_label",
     defaultMessage: "Writing/editing"
   },
-  photographerLabel: {
+  photographer: {
     id: "app.skills.photographer_label",
     defaultMessage: "Photography"
   },
-  socialMediaLabel: {
+  social_media: {
     id: "app.skills.social_media_label",
     defaultMessage: "Social media"
   },
-  webLabel: {
+  web: {
     id: "app.skills.web_label",
     defaultMessage: "Web development"
   },
-  panflationLabel: {
+  panflation: {
     id: "app.skills.panflation_label",
     defaultMessage: "Panflation"
   }
@@ -51,38 +54,14 @@ const messages = defineMessages({
 
 class SkillsField extends Component {
   static defaultOptions = [
-    {
-      value: "design",
-      label: "Design"
-    },
-    {
-      value: "video",
-      label: "Video"
-    },
-    {
-      value: "event_production",
-      label: "Event production"
-    },
-    {
-      value: "editor",
-      label: "Writing/editing"
-    },
-    {
-      value: "photographer",
-      label: "Photography"
-    },
-    {
-      value: "social_media",
-      label: "Social media"
-    },
-    {
-      value: "web",
-      label: "Web Development"
-    },
-    {
-      value: "panflation",
-      label: "Panflation"
-    }
+    "design",
+    "video",
+    "event_production",
+    "editor",
+    "photographer",
+    "social_media",
+    "web",
+    "panflation"
   ];
   constructor(props) {
     super(props);
@@ -93,40 +72,16 @@ class SkillsField extends Component {
   }
   getOptions = () => {
     const { intl } = this.props;
-    return [
-      {
-        value: "design",
-        label: intl.formatMessage(messages.designLabel)
-      },
-      {
-        value: "video",
-        label: intl.formatMessage(messages.videoLabel)
-      },
-      {
-        value: "event_production",
-        label: intl.formatMessage(messages.eventProductionLabel)
-      },
-      {
-        value: "editor",
-        label: intl.formatMessage(messages.editorLabel)
-      },
-      {
-        value: "photographer",
-        label: intl.formatMessage(messages.photographerLabel)
-      },
-      {
-        value: "social_media",
-        label: intl.formatMessage(messages.socialMediaLabel)
-      },
-      {
-        value: "web",
-        label: intl.formatMessage(messages.webLabel)
-      },
-      {
-        value: "panflation",
-        label: intl.formatMessage(messages.panflationLabel)
-      }
-    ];
+    let options = [];
+    for (const option of SkillsField.defaultOptions) {
+      options.push({
+        label: skillsLabels[option]
+          ? intl.formatMessage(skillsLabels[option])
+          : option,
+        value: option
+      });
+    }
+    return options;
   };
   componentDidMount() {
     const { value } = this.props;

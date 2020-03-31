@@ -1,10 +1,31 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { get } from "lodash";
 
 import CopyToClipboard from "./CopyToClipboard.jsx";
+
+const messages = defineMessages({
+  noData: {
+    id: "app.people.profile.summary.no_data_label",
+    defaultMessage: "Not registered"
+  },
+  noTags: {
+    id: "app.people.profile.summary.no_tags_label",
+    defaultMessage: "No tags assigned"
+  },
+  copy: {
+    id: "app.people.profile.summary.copy_label",
+    defaultMessage: "Copy"
+  }
+});
 
 const Container = styled.ul`
   width: 100%;
@@ -41,7 +62,7 @@ const Container = styled.ul`
   }
 `;
 
-export default class PersonSummary extends Component {
+class PersonSummary extends Component {
   componentDidUpdate() {
     ReactTooltip.rebuild();
   }
@@ -75,22 +96,28 @@ export default class PersonSummary extends Component {
     }
   }
   text(key, defaultText) {
+    const { intl } = this.props;
     const value = this.value(key);
     if (value) {
       return <span>{value}</span>;
     } else {
-      return <span className="empty">{defaultText || "Not registered"}</span>;
+      return (
+        <span className="empty">
+          {defaultText || intl.formatMessage(messages.noData)}
+        </span>
+      );
     }
   }
   tags() {
+    const { intl } = this.props;
     const tags = this.getTags();
     if (tags.length) {
       return tags.join(", ");
     }
-    return <span className="empty">No tags assigned</span>;
+    return <span className="empty">{intl.formatMessage(messages.noTags)}</span>;
   }
   render() {
-    const { person } = this.props;
+    const { intl, person } = this.props;
     const email = this.value("contact.email");
     const phone = this.value("contact.cellphone");
     const instagram = this.value("social_networks.instagram");
@@ -105,7 +132,7 @@ export default class PersonSummary extends Component {
                 <CopyToClipboard text={email} className="copy">
                   <FontAwesomeIcon
                     icon="copy"
-                    data-tip="Copy"
+                    data-tip={intl.formatMessage(messages.copy)}
                     data-for={`person-summary-${person._id}`}
                   />
                 </CopyToClipboard>
@@ -119,7 +146,7 @@ export default class PersonSummary extends Component {
                 <CopyToClipboard text={phone} className="copy">
                   <FontAwesomeIcon
                     icon="copy"
-                    data-tip="Copy"
+                    data-tip={intl.formatMessage(messages.copy)}
                     data-for={`person-summary-${person._id}`}
                   />
                 </CopyToClipboard>
@@ -134,7 +161,7 @@ export default class PersonSummary extends Component {
                 <CopyToClipboard text={instagram} className="copy">
                   <FontAwesomeIcon
                     icon="copy"
-                    data-tip="Copy"
+                    data-tip={intl.formatMessage(messages.copy)}
                     data-for={`person-summary-${person._id}`}
                   />
                 </CopyToClipboard>
@@ -149,7 +176,7 @@ export default class PersonSummary extends Component {
                 <CopyToClipboard text={twitter} className="copy">
                   <FontAwesomeIcon
                     icon="copy"
-                    data-tip="Copy"
+                    data-tip={intl.formatMessage(messages.copy)}
                     data-for={`person-summary-${person._id}`}
                   />
                 </CopyToClipboard>
@@ -171,3 +198,9 @@ export default class PersonSummary extends Component {
     );
   }
 }
+
+PersonSummary.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(PersonSummary);

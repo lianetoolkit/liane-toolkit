@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage
+} from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -16,11 +22,33 @@ import PersonReactions from "../components/PersonReactions.jsx";
 import PersonSummary from "../components/PersonSummary.jsx";
 import PersonInfoTable from "../components/PersonInfoTable.jsx";
 
-import PersonEdit from "../components/PersonEdit.jsx";
+import PersonEdit, {
+  profileLabels,
+  genderLabels
+} from "../components/PersonEdit.jsx";
 import Reply from "../components/Reply.jsx";
 
 import CommentList from "../components/CommentList.jsx";
 import PersonReactionList from "../components/PersonReactionList.jsx";
+
+const messages = defineMessages({
+  formSource: {
+    id: "app.people.profile.form_source_label",
+    defaultMessage: "Form"
+  },
+  unknownImportSource: {
+    id: "app.people.profile.unknown_import_source_label",
+    defaultMessage: "Unknown import"
+  },
+  unknownSource: {
+    id: "app.people.profile.unknown_source_label",
+    defaultMessage: "Unknown"
+  },
+  replyTitle: {
+    id: "app.people.profile.reply_title",
+    defaultMessage: "Sending private reply to {name}"
+  }
+});
 
 const Container = styled.div`
   width: 100%;
@@ -158,9 +186,11 @@ class Information extends Component {
     return 0;
   }
   _handlePrivateReplyClick = ev => {
-    const { person } = this.props;
+    const { intl, person } = this.props;
     ev.preventDefault();
-    modalStore.setTitle(`Sending private reply to ${person.name}`);
+    modalStore.setTitle(
+      intl.formatMessage(messages.replyTitle, { name: person.name })
+    );
     modalStore.set(<Reply personId={person._id} messageOnly={true} />);
   };
   render() {
@@ -178,12 +208,20 @@ class Information extends Component {
           <PersonReactions person={person} />
           <p className="person-comment-count">
             <span>
-              <FontAwesomeIcon icon="comment" /> {this._getComments()} comments
+              <FontAwesomeIcon icon="comment" />{" "}
+              <FormattedMessage
+                id="app.people.profile.comment_count_text"
+                defaultMessage="{count} comment(s)"
+                values={{ count: this._getComments() }}
+              />
             </span>
             {person.canReceivePrivateReply &&
             person.canReceivePrivateReply.length ? (
               <Button light onClick={this._handlePrivateReplyClick}>
-                Send private reply
+                <FormattedMessage
+                  id="app.people.profile.send_reply_text"
+                  defaultMessage="Send private reply"
+                />
               </Button>
             ) : null}
           </p>
@@ -194,6 +232,12 @@ class Information extends Component {
     );
   }
 }
+
+Information.propTypes = {
+  intl: intlShape.isRequired
+};
+
+const InformationIntl = injectIntl(Information);
 
 const CommentsContainer = styled.section``;
 
@@ -208,7 +252,7 @@ class Comments extends Component {
   }
 }
 
-export default class PeopleSingle extends Component {
+class PeopleSingle extends Component {
   _handleEditClick = ev => {
     const { person } = this.props;
     ev.preventDefault();
@@ -218,20 +262,20 @@ export default class PeopleSingle extends Component {
     );
   };
   _getSource = () => {
-    const { person, lists } = this.props;
+    const { intl, person, lists } = this.props;
     switch (person.source) {
       case "facebook":
         return "Facebook";
       case "form":
-        return "Form";
+        return intl.formatMessage(messages.formSource);
       case "import":
         const list = lists.find(l => l._id == person.listId);
         if (list) {
           return list.name;
         }
-        return "Unknown import";
+        return intl.formatMessage(messages.unknownImportSource);
       default:
-        return "Unknown";
+        return intl.formatMessage(messages.unknownSource);
     }
   };
   _handleEditSuccess = () => {};
@@ -242,7 +286,11 @@ export default class PeopleSingle extends Component {
         <Container>
           <Page.Nav padded full>
             <a href={FlowRouter.path("App.people")}>
-              <FontAwesomeIcon icon="chevron-left" /> Back to the directory
+              <FontAwesomeIcon icon="chevron-left" />{" "}
+              <FormattedMessage
+                id="app.people.profile.nav.back_label"
+                defaultMessage="Back to the directory"
+              />
             </a>
             <a
               href={FlowRouter.path(
@@ -252,18 +300,11 @@ export default class PeopleSingle extends Component {
               )}
               className={!section ? "active" : ""}
             >
-              Profile
+              <FormattedMessage
+                id="app.people.profile.nav.profile_label"
+                defaultMessage="Profile"
+              />
             </a>
-            {/* <a
-              href={FlowRouter.path(
-                "App.people.detail",
-                { personId: person._id },
-                { section: "reactions" }
-              )}
-              className={section == "reactions" ? "active" : ""}
-            >
-              Reações
-            </a> */}
             <a
               href={FlowRouter.path(
                 "App.people.detail",
@@ -272,7 +313,10 @@ export default class PeopleSingle extends Component {
               )}
               className={section == "reactions" ? "active" : ""}
             >
-              Reactions
+              <FormattedMessage
+                id="app.people.profile.nav.reactions_label"
+                defaultMessage="Reactions"
+              />
             </a>
             {userCan("view", "comments") ? (
               <a
@@ -283,12 +327,18 @@ export default class PeopleSingle extends Component {
                 )}
                 className={section == "comments" ? "active" : ""}
               >
-                Comments
+                <FormattedMessage
+                  id="app.people.profile.nav.comments_label"
+                  defaultMessage="Comments"
+                />
               </a>
             ) : null}
             {userCan("edit", "people") ? (
               <a href="javascript:void(0);" onClick={this._handleEditClick}>
-                Edit profile
+                <FormattedMessage
+                  id="app.people.profile.nav.edit_label"
+                  defaultMessage="Edit profile"
+                />
               </a>
             ) : null}
           </Page.Nav>
@@ -297,7 +347,13 @@ export default class PeopleSingle extends Component {
               <div className="main-info">
                 <h1>{person.name}</h1>
                 <ul>
-                  <li className="contained">Source: {this._getSource()}</li>
+                  <li className="contained">
+                    <FormattedMessage
+                      id="app.people.profile.source_text"
+                      defaultMessage="Source: {source}"
+                      values={{ source: this._getSource() }}
+                    />
+                  </li>
                   <li className="highlight">
                     <PersonMetaButtons person={person} readOnly simple text />
                   </li>
@@ -308,7 +364,9 @@ export default class PeopleSingle extends Component {
               ) : null}
             </header>
             <div className="person-content">
-              {!section ? <Information person={person} tags={tags} /> : null}
+              {!section ? (
+                <InformationIntl person={person} tags={tags} />
+              ) : null}
               {section == "reactions" ? (
                 <PersonReactionList personId={person._id} />
               ) : null}
@@ -323,3 +381,9 @@ export default class PeopleSingle extends Component {
     return null;
   }
 }
+
+PeopleSingle.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(PeopleSingle);
