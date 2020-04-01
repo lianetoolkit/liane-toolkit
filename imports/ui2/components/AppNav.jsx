@@ -58,6 +58,22 @@ const Container = styled.nav`
       color: rgba(255, 255, 255, 0.5);
     }
   }
+  .meta.link-group {
+    margin-top: 0.4rem;
+    border-radius: 7px 7px 0 0;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0 0.2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+    .icon-link {
+      padding-top: 0.5rem;
+    }
+    .dropdown {
+      top: 32px;
+    }
+  }
 `;
 
 const NavItemContainer = styled.li`
