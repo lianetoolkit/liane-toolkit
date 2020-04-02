@@ -208,6 +208,7 @@
   "app.dashboard.territory.intro": "Usa un mapa para mejorar la estrategia de tu despliegue territorial",
   "app.dashboard.territory.title": "Territorio",
   "app.dashboard.volunteers.title": "Voluntariado",
+  "app.email.notification.title": "You have a new notification",
   "app.email_confirm.check_email_text": "Check your mail and click the link we sent you!",
   "app.email_confirm.different_email": "Not working? Use a different email address:",
   "app.email_confirm.different_email_button_label": "Send new verification link",

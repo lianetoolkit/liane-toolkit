@@ -208,6 +208,7 @@
   "app.dashboard.territory.intro": "Use um mapa para criar e organizar estratégias de território",
   "app.dashboard.territory.title": "Território",
   "app.dashboard.volunteers.title": "Voluntários",
+  "app.email.notification.title": "Você tem uma nova notificação",
   "app.email_confirm.check_email_text": "Verifique sua caixa de entrada e clique no link que te enviamos!",
   "app.email_confirm.different_email": "Não chegou? Utilize um email diferente:",
   "app.email_confirm.different_email_button_label": "Enviar novo link de confirmação",

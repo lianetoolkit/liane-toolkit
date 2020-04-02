@@ -1,3 +1,5 @@
+import createEmail from "/imports/emails/server/createEmail";
+
 const settings = Meteor.settings.email;
 
 if (settings && settings.mail) {
@@ -10,3 +12,11 @@ if (settings && settings.mail) {
     settings.mail.host
   }:${port}`;
 }
+
+createEmail("notification", "pt")
+  .then(content => {
+    console.log(content);
+  })
+  .catch(err => {
+    console.log(err);
+  });
