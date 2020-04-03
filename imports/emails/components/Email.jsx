@@ -11,6 +11,7 @@ import localeData from "/locales";
 
 import Grid from "./Grid.jsx";
 import Header from "./Header.jsx";
+import Footer from "./Footer.jsx";
 import Body from "./Body.jsx";
 import Title from "./Title.jsx";
 
@@ -60,6 +61,7 @@ class Email extends Component {
             <Body>
               {children}
             </Body>
+            <Footer />
           </Grid>
         </center>
       </IntlProvider>

@@ -212,6 +212,8 @@
   "app.email.campaign_invitation.intro": "{name} wants you to work with {role} at {campaignName}.",
   "app.email.campaign_invitation.text": "To accept this invitation, register in Liane clicking on the link below.",
   "app.email.campaign_invitation.title": "{name} invited you to be a part a campaign!",
+  "app.email.footer.contact_us": "Do not hesitate to contact us at {email}!",
+  "app.email.footer.do_not_reply": "Do not reply this email",
   "app.email.intro": "Hola, {name}!",
   "app.email.notification.title": "You have a new notification",
   "app.email.notification_button_label": "View more",
