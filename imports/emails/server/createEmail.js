@@ -6,6 +6,7 @@ import ReactDOMServer from "react-dom/server";
 
 import Email from "../components/Email.jsx";
 import Notification from "../templates/Notification.jsx";
+import ResetPassword from "../templates/ResetPassword.jsx";
 import Default from "../templates/Default.jsx";
 
 const STYLE_TAG = "%STYLE%";
@@ -32,6 +33,9 @@ function getTemplate(type, language = "en", data = {}, title = "") {
     case "notification":
       content.component = Notification;
       break;
+    case "resetPassword":
+      content.component = ResetPassword;
+      break;
     default:
       content.component = Default;
   }
@@ -44,26 +48,35 @@ function getTemplate(type, language = "en", data = {}, title = "") {
   };
 }
 
-function createEmail(type, language = "en", data, title = "") {
-  return Promise.all([
-    getFile("./inlined.css"),
-    getFile("./email.html")
-  ]).then(([style, template]) => {
-    const element = React.createElement(
-      getTemplate(type, language, data, title)
-    );
-    const content = ReactDOMServer.renderToStaticMarkup(element);
-    // Replace the template tags with the content
-    let emailHTML = template;
-    emailHTML = emailHTML.replace(CONTENT_TAG, content);
-    emailHTML = emailHTML.replace(STYLE_TAG, style);
+function extractTitle(html) {
+  let titleParse = html.split('class="title-heading">');
+  if (titleParse && titleParse.length) {
+    const titleContent = titleParse[1].split("</h2>")[0];
+    const regex = /(<([^>]+)>)/gi;
+    return titleContent.replace(regex, "");
+  }
+  return "";
+}
 
-    fs.writeFile(
-      Path.join(Meteor.absolutePath, "generated-files/test.html"),
-      emailHTML
-    );
-    return emailHTML;
-  });
+function createEmail(type, language = "en", data = {}, title = "") {
+  return Promise.all([getFile("./inlined.css"), getFile("./email.html")]).then(
+    ([style, template]) => {
+      const element = React.createElement(
+        getTemplate(type, language, data, title)
+      );
+      const content = ReactDOMServer.renderToStaticMarkup(element);
+      const subject = extractTitle(content);
+      // Replace the template tags with the content
+      let emailHTML = template;
+      emailHTML = emailHTML.replace(CONTENT_TAG, content);
+      emailHTML = emailHTML.replace(STYLE_TAG, style);
+
+      return {
+        subject,
+        body: emailHTML
+      };
+    }
+  );
 }
 
 module.exports = createEmail;

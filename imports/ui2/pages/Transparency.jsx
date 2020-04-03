@@ -98,7 +98,7 @@ export default class TransparencyPage extends Component {
           )}
           <p className="support-text">
             Need help or would like to report a problem? Write to{" "}
-            <a href="mailto:contato@liane.cc">contato@liane.cc</a> and talk to
+            <a href="mailto:info@liane.voto">info@liane.voto</a> and talk to
             our team.
           </p>
         </Container>

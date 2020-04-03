@@ -673,7 +673,7 @@ class Home extends Component {
           <p className="support-text">
             <FormattedHTMLMessage
               id="app.support_message"
-              defaultMessage="Need help or would like to report a problem? Write to <a href='mailto:contato@liane.cc'>contato@liane.cc</a> and talk to our team."
+              defaultMessage="Need help or would like to report a problem? Write to <a href='mailto:info@liane.voto'>info@liane.voto</a> and talk to our team."
             />
           </p>
           <Organization>

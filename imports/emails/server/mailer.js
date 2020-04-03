@@ -1,4 +1,7 @@
+import fs from "fs";
+import path from "path";
 import nodemailer from "nodemailer";
+import createEmail from "./createEmail";
 
 let mailTransporter, mailConfig;
 if (Meteor.settings.email && Meteor.settings.email.mail) {
@@ -14,24 +17,39 @@ if (Meteor.settings.email && Meteor.settings.email.mail) {
   });
 }
 
-export const sendMail = async ({ to, subject, body }) => {
-  if (!to) throw new Meteor.Error(400, "Missing recipient");
+export const sendMail = async ({
+  type,
+  data,
+  recipient,
+  language,
+  subject,
+  body
+}) => {
+  if (!recipient && !data.user) {
+    console.log("Email not sent. Missing recipient");
+    return;
+  }
 
-  if (!body) throw new Meteor.Error(400, "Missing content");
+  if (!mailTransporter) {
+    console.log("Email not sent. Mail transporter not available");
+    return;
+  }
 
-  if (!mailTransporter)
-    throw new Meteor.Error(500, "Mail transporter not available");
+  language = language || (data.user ? data.user.language : "en");
+
+  const emailData = await createEmail(type, language, data);
+
+  fs.writeFile(
+    path.join(Meteor.absolutePath, "generated-files/test.html"),
+    emailData.body
+  );
+  return;
 
   return await mailTransporter.sendMail({
-    to,
-    subject,
     from: `"Liane" <${Meteor.settings.public.appEmail}>`,
-    html: `
-      <div style="width:100%;background-color:#f0f0f0;padding-top:40px;padding-bottom:40px;">
-        <div style="max-width:480px;margin:0 auto;background-color:#fff;padding:20px;">
-          ${body}
-        </div>
-      </div>`
+    to: recipient || data.user.emails[0].address,
+    subject: subject || emailData.subject,
+    html: body || emailData.body
   });
 };
 

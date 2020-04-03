@@ -52,6 +52,34 @@ const publicRoutes = [
 ];
 
 export default class AppLayout extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      locale: "en"
+    };
+  }
+  componentDidMount() {
+    this.setLanguage();
+  }
+  componentDidUpdate(prevProps) {
+    if (this.props.user && !prevProps.user) {
+      this.setLanguage();
+    }
+  }
+  setLanguage = () => {
+    const { user } = this.props;
+    const sessionLanguage = ClientStorage.get("language");
+    if (user && user.language) language = user.language;
+    if (sessionLanguage) language = sessionLanguage;
+    const locale = localeData[findLocale(language)] ? language : "en";
+    if (user && !user.language) {
+      Meteor.call("users.setLanguage", { language: locale });
+    }
+    ClientStorage.set("language", locale);
+    this.setState({
+      locale
+    });
+  };
   componentWillReceiveProps({ isLoggedIn, connected, routeName }) {
     FlowRouter.withReplaceState(function() {
       if (connected && !isLoggedIn && publicRoutes.indexOf(routeName) == -1) {
@@ -61,10 +89,8 @@ export default class AppLayout extends Component {
   }
   render() {
     const { ready, connected, isLoggedIn, campaign, user } = this.props;
-    const sessionLanguage = ClientStorage.get("language");
-    if (user && user.language) language = user.language;
-    if (sessionLanguage) language = sessionLanguage;
-    const messages = localeData[findLocale(language)] || localeData.en;
+    const { locale } = this.state;
+    const messages = localeData[locale];
     let content;
     if (!this.props.content) {
       if (campaign) {
@@ -77,7 +103,7 @@ export default class AppLayout extends Component {
     }
     if (connected && ready) {
       return (
-        <IntlProvider locale={language} messages={messages}>
+        <IntlProvider locale={locale} messages={messages}>
           <div id="app">
             <Page {...this.props}>
               <InviteNotification invite={this.props.invite} />

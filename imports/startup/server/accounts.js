@@ -4,15 +4,6 @@ import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
 import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
 import { NotificationsHelpers } from "/imports/api/notifications/server/notificationsHelpers.js";
 
-Accounts.emailTemplates.siteName = Meteor.settings.public.appName;
-Accounts.emailTemplates.from = `${Meteor.settings.public.appName} <${Meteor.settings.public.appEmail}>`;
-Accounts.urls.verifyEmail = function(token) {
-  return Meteor.absoluteUrl("verify-email/" + token);
-};
-Accounts.urls.resetPassword = function(token) {
-  return Meteor.absoluteUrl("reset-password/" + token);
-};
-
 // http://docs.meteor.com/api/accounts-multi.html#AccountsCommon-config
 Accounts.config({
   sendVerificationEmail: true

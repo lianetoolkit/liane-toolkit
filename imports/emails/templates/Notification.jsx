@@ -1,13 +1,17 @@
 import React, { Component } from "react";
 import { FormattedMessage, injectIntl, intlShape } from "react-intl";
+
 import { messages } from "/locales/features/notifications";
 
-import Email from "../components/Email.jsx";
+import Grid from "../components/Grid.jsx";
 import Title from "../components/Title.jsx";
+import Intro from "../components/Intro.jsx";
+import Button from "../components/Button.jsx";
 
 class Notification extends Component {
   _getText = () => {
-    const { category, text, intl, metadata } = this.props;
+    const { intl } = this.props;
+    const { category, text, metadata } = this.props.data;
     if (messages[category])
       return intl.formatMessage(messages[category], metadata || {});
 
@@ -16,15 +20,32 @@ class Notification extends Component {
   render() {
     const { data } = this.props;
     return (
-      <>
+      <Grid>
+        {data.user ? (
+          <Intro>
+            <FormattedMessage
+              id="app.email.intro"
+              defaultMessage="Hello, {name}!"
+              values={{ name: data.user.name }}
+            />
+          </Intro>
+        ) : null}
         <Title>
           <FormattedMessage
             id="app.email.notification.title"
             defaultMessage="You have a new notification"
           />
         </Title>
-        <p>Notification content here</p>
-      </>
+        <p>{this._getText()}</p>
+        {data.path ? (
+          <Button href={Meteor.absoluteUrl(data.path)}>
+            <FormattedMessage
+              id="app.email.notification_button_label"
+              defaultMessage="View more"
+            />
+          </Button>
+        ) : null}
+      </Grid>
     );
   }
 }

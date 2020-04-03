@@ -123,7 +123,6 @@ class CampaignSettingsPage extends Component {
   render() {
     const { intl, campaign } = this.props;
     const { active, formData } = this.state;
-    console.log(campaign);
     return (
       <>
         <Nav campaign={campaign} />

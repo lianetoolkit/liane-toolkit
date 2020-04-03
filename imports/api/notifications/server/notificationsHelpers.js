@@ -1,5 +1,5 @@
 import { Notifications } from "../notifications.js";
-import mailer, { sendMail } from "/imports/utils/server/mailer";
+import { sendMail } from "/imports/emails/server/mailer";
 
 const NotificationsHelpers = {
   add({ userId, text, metadata, path, category, dataRef, removable }) {
@@ -29,15 +29,16 @@ const NotificationsHelpers = {
       insert.removable = removable;
     }
     Notifications.insert(insert);
-    if (mailer) {
-      sendMail({
-        to: user.emails[0].address,
-        subject: "[Liane] - New notification",
-        body: `
-          <h3>You have a new notification!</h3>
-        `
-      });
-    }
+    sendMail({
+      type: "notification",
+      data: {
+        user,
+        category,
+        metadata,
+        text,
+        path
+      }
+    });
   },
   clear({ userId, category, dataRef }) {
     Notifications.remove({ userId, category, dataRef });

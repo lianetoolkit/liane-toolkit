@@ -8,13 +8,15 @@ class Header extends Component {
     return (
       <Grid>
         <h1>
-          <Img
-            alt="Liane"
-            src={Meteor.absoluteUrl("images/logo_b.png")}
-            style={{
-              margin: "0 30px"
-            }}
-          />
+          <a href={Meteor.absoluteUrl()} rel="external" target="_blank">
+            <Img
+              alt="Liane"
+              src={Meteor.absoluteUrl("images/logo_b.png")}
+              style={{
+                margin: "0 30px"
+              }}
+            />
+          </a>
         </h1>
       </Grid>
     );
