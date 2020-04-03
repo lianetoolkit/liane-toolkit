@@ -39,12 +39,6 @@ export const sendMail = async ({
 
   const emailData = await createEmail(type, language, data);
 
-  fs.writeFile(
-    path.join(Meteor.absolutePath, "generated-files/test.html"),
-    emailData.body
-  );
-  return;
-
   return await mailTransporter.sendMail({
     from: `"Liane" <${Meteor.settings.public.appEmail}>`,
     to: recipient || data.user.emails[0].address,
