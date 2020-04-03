@@ -39,17 +39,17 @@ export const sendMail = async ({
 
   const emailData = await createEmail(type, language, data);
 
-  fs.writeFile(
-    path.join(Meteor.absolutePath, "/generated-files/test.html"),
-    emailData.body
-  );
+  // fs.writeFile(
+  //   path.join(Meteor.absolutePath, "/generated-files/test.html"),
+  //   emailData.body
+  // );
 
-  // return await mailTransporter.sendMail({
-  //   from: `"Liane" <${Meteor.settings.public.appEmail}>`,
-  //   to: recipient || data.user.emails[0].address,
-  //   subject: subject || emailData.subject,
-  //   html: body || emailData.body
-  // });
+  return await mailTransporter.sendMail({
+    from: `"Liane" <${Meteor.settings.public.appEmail}>`,
+    to: recipient || data.user.emails[0].address,
+    subject: subject || emailData.subject,
+    html: body || emailData.body
+  });
 };
 
 export default mailTransporter;
