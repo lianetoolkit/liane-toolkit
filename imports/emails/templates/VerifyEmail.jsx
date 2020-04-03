@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { FormattedMessage, injectIntl, intlShape } from "react-intl";
+import { FormattedMessage } from "react-intl";
 
 import Grid from "../components/Grid.jsx";
 import Intro from "../components/Intro.jsx";

@@ -8,6 +8,7 @@ import Email from "../components/Email.jsx";
 import Notification from "../templates/Notification.jsx";
 import ResetPassword from "../templates/ResetPassword.jsx";
 import VerifyEmail from "../templates/VerifyEmail.jsx";
+import CampaignInvitation from "../templates/CampaignInvitation.jsx";
 import Default from "../templates/Default.jsx";
 
 const STYLE_TAG = "%STYLE%";
@@ -39,6 +40,9 @@ function getTemplate(type, language = "en", data = {}, title = "") {
       break;
     case "verifyEmail":
       content.component = VerifyEmail;
+      break;
+    case "campaignInvitation":
+      content.component = CampaignInvitation;
       break;
     default:
       content.component = Default;

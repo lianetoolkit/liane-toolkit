@@ -1,6 +1,6 @@
 import SimpleSchema from "simpl-schema";
 import { Random } from "meteor/random";
-import mailer, { sendMail } from "/imports/utils/server/mailer";
+import mailer, { sendMail } from "/imports/emails/server/mailer";
 import { Campaigns, Invites } from "/imports/api/campaigns/campaigns.js";
 import { CampaignsHelpers } from "./campaignsHelpers.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
@@ -909,13 +909,15 @@ export const addUser = new ValidatedMethod({
         { $push: { users: { inviteId, email, permissions, role } } }
       );
       sendMail({
-        to: email,
-        subject: "You've received a campaign invitation!",
-        body: `
-          <h3>You've been invited to be a part of ${campaign.name}</h3>
-          <p>Access the link below to complete your registration:</p>
-          <p>${url}</p>
-        `
+        type: "campaignInvitation",
+        language: currentUser.language || "en",
+        recipient: email,
+        data: {
+          name: currentUser.name,
+          campaignName: campaign.name,
+          url,
+          role
+        }
       });
     } else {
       if (_.findWhere(campaign.users, { userId: user._id })) {
