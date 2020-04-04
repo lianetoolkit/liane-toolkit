@@ -35,13 +35,7 @@ Accounts.urls.resetPassword = function(token) {
  */
 let resetPassword = {};
 for (const locale in languages) {
-  createEmail("resetPassword", locale)
-    .then(emailData => {
-      resetPassword[locale] = emailData;
-    })
-    .catch(err => {
-      console.log(err);
-    });
+  resetPassword[locale] = createEmail("resetPassword", locale);
 }
 
 Accounts.emailTemplates.resetPassword = {
@@ -63,13 +57,7 @@ Accounts.emailTemplates.resetPassword = {
  */
 let verifyEmail = {};
 for (const locale in languages) {
-  createEmail("verifyEmail", locale)
-    .then(emailData => {
-      verifyEmail[locale] = emailData;
-    })
-    .catch(err => {
-      console.log(err);
-    });
+  verifyEmail[locale] = createEmail("verifyEmail", locale);
 }
 
 Accounts.emailTemplates.verifyEmail = {

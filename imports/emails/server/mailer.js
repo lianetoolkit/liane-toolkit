@@ -37,7 +37,7 @@ export const sendMail = async ({
 
   language = language || (data.user ? data.user.language : "en");
 
-  const emailData = await createEmail(type, language, data);
+  const emailData = createEmail(type, language, data);
 
   // fs.writeFile(
   //   path.join(Meteor.absolutePath, "/generated-files/test.html"),
