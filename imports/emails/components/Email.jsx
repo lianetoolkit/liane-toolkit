@@ -36,7 +36,7 @@ const findLocale = language => {
 const style = {
   container: {
     backgroundColor: "#efefef",
-    padding: "40px 0",
+    padding: "40px 20px",
     fontFamily: "sans-serif"
   },
 

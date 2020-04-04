@@ -4,6 +4,9 @@ import { FormattedMessage, injectIntl, intlShape } from "react-intl";
 import Grid from "./Grid.jsx";
 
 const footerStyle = {
+  grid: {
+    marginTop: "20px"
+  },
   paragraph1: {
     fontSize: "12px",
     color: "#777",
@@ -20,7 +23,7 @@ const footerStyle = {
 class Footer extends Component {
   render() {
     return (
-      <Grid>
+      <Grid style={footerStyle.grid}>
         <Grid.Row>
           <p style={footerStyle.paragraph1}>
             <FormattedMessage

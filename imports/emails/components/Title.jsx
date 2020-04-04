@@ -9,10 +9,10 @@ const style = {
   },
 
   title: {
-    fontSize: "24px",
+    fontSize: "20px",
     fontWeight: "bold",
-    marginTop: "5px",
-    marginBottom: "10px"
+    marginTop: "0",
+    marginBottom: "20px"
   }
 };
 

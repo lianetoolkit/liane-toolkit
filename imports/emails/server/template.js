@@ -18,12 +18,16 @@ export const template = `
 
 export const style = `
 @media only screen and (max-width: 650px) {
-
   .title-heading {
     font-size: 18px !important;
-    text-align: center !important;
   }
-
+}
+h2,
+p {
+  line-height: 1.5;
+}
+p {
+  margin: 0 0 15px;
 }
 `;
 
