@@ -217,7 +217,7 @@ export const updateFBSubscription = new ValidatedMethod({
     const facebookAccountId = campaign.facebookAccount.facebookId;
     const token = campaign.facebookAccount.accessToken;
 
-    CampaignsHelpers.refreshCampaignAccountsTokens({
+    CampaignsHelpers.refreshCampaignAccountToken({
       campaignId
     });
 

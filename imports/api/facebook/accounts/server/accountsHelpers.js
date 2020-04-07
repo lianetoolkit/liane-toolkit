@@ -41,27 +41,6 @@ const FacebookAccountsHelpers = {
       throw new Meteor.Error(500, "Error trying to subscribe");
     }
   },
-  removeAccount({ facebookAccountId, token }) {
-    const account = FacebookAccounts.findOne({ facebookId: facebookAccountId });
-    if (!account) {
-      throw new Meteor.Error(404, "Facebook Account not found");
-    }
-
-    try {
-      Promise.await(
-        FB.api(`${facebookAccountId}/subscribed_apps`, "delete", {
-          access_token: token
-        })
-      );
-    } catch (err) {
-      console.log(err);
-    }
-
-    Likes.remove({ facebookAccountId });
-    Comments.remove({ facebookAccountId });
-    Entries.remove({ facebookAccountId });
-    FacebookAccounts.remove(account._id);
-  },
   getUserAccounts({ userId }) {
     check(userId, String);
 
@@ -105,6 +84,27 @@ const FacebookAccountsHelpers = {
     data = data.filter(account => account.tasks.indexOf("MANAGE") != -1);
 
     return { result: data };
+  },
+  removeAccount({ facebookAccountId, token }) {
+    const account = FacebookAccounts.findOne({ facebookId: facebookAccountId });
+    if (!account) {
+      throw new Meteor.Error(404, "Facebook Account not found");
+    }
+
+    try {
+      Promise.await(
+        FB.api(`${facebookAccountId}/subscribed_apps`, "delete", {
+          access_token: token
+        })
+      );
+    } catch (err) {
+      console.log(err);
+    }
+
+    Likes.remove({ facebookAccountId });
+    Comments.remove({ facebookAccountId });
+    Entries.remove({ facebookAccountId });
+    FacebookAccounts.remove(account._id);
   },
   getUserAccount({ userId, facebookAccountId }) {
     check(userId, String);

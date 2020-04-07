@@ -66,6 +66,9 @@ Campaigns.accountChatbotSchema = new SimpleSchema({
 });
 
 Campaigns.accountsSchema = new SimpleSchema({
+  userFacebookId: {
+    type: String
+  },
   facebookId: {
     type: String
   },
@@ -133,30 +136,12 @@ Campaigns.schema = new SimpleSchema({
     type: String,
     optional: true
   },
-  adAccountId: {
-    type: String,
-    optional: true
-  },
   status: {
     type: String,
     optional: true
   },
   facebookAccount: {
     type: Campaigns.accountsSchema
-  },
-  accounts: {
-    type: Array,
-    optional: true
-  },
-  "accounts.$": {
-    type: Campaigns.accountsSchema
-  },
-  audienceAccounts: {
-    type: Array,
-    optional: true
-  },
-  "audienceAccounts.$": {
-    type: Campaigns.audienceAccountsSchema
   },
   forms: {
     type: Object,

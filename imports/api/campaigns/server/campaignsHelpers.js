@@ -22,57 +22,54 @@ import _ from "underscore";
 const YEEKO = Meteor.settings.yeeko;
 
 const CampaignsHelpers = {
-  refreshCampaignAccountsTokens({ campaignId }) {
+  refreshCampaignAccountToken({ campaignId }) {
     const campaign = Campaigns.findOne(campaignId);
-    let accounts = [campaign.facebookAccount];
-    if (campaign.accounts) {
-      accounts = accounts.concat(campaign.accounts);
+    const account = campaign.facebookAccount;
+    if (!account.userFacebookId)
+      throw new Meteor.Error(404, "Account owner not found");
+    const campaignUser = Meteor.users.findOne({
+      "services.facebook.id": account.userFacebookId
+    });
+    if (!campaignUser) {
+      throw new Meteor.Error(404, "Account owner not found");
     }
-    const users = campaign.users;
-    let tokens = {};
-    for (let campaignUser of users) {
-      let userAccounts = {};
-      try {
-        userAccounts = FacebookAccountsHelpers.getUserAccounts({
-          userId: campaignUser.userId
-        });
-      } catch (e) {
-        console.log(e);
-      }
-      if (userAccounts && userAccounts.result && userAccounts.result.length) {
-        userAccounts.result.forEach(acc => {
-          if (accounts.find(account => acc.id == account.facebookId)) {
-            const tokenDebug = UsersHelpers.debugFBToken({
-              token: acc.access_token
-            });
-            if (tokenDebug && tokenDebug.is_valid) {
-              tokens[acc.id] = acc.access_token;
-            }
+    let token = false;
+    try {
+      userAccounts = FacebookAccountsHelpers.getUserAccounts({
+        userId: campaignUser._id
+      });
+    } catch (e) {
+      console.log(e);
+      throw new Meteor.Error(500, "Error fetching user accounts");
+    }
+    if (userAccounts && userAccounts.result && userAccounts.result.length) {
+      userAccounts.result.forEach(acc => {
+        if (acc.id == account.facebookId) {
+          const tokenDebug = UsersHelpers.debugFBToken({
+            token: acc.access_token
+          });
+          if (tokenDebug && tokenDebug.is_valid) {
+            token = acc.access_token;
           }
-        });
-      }
+        }
+      });
     }
-    let update = [];
-    for (let account of accounts) {
-      if (tokens[account.facebookId]) {
-        const longToken = FacebookAccountsHelpers.exchangeFBToken({
-          token: tokens[account.facebookId]
-        });
-        Campaigns.update(
-          {
-            _id: campaignId,
-            "accounts.facebookId": account.facebookId
-          },
-          {
-            $set: {
-              "accounts.$.accessToken": longToken.result
-            }
-          }
-        );
-      }
+    if (!token) {
+      throw new Meteor.Error(500, "Unable to retrieve token");
     }
+    const longToken = FacebookAccountsHelpers.exchangeFBToken({ token });
+    Campaigns.update(
+      {
+        _id: campaignId
+      },
+      {
+        $set: {
+          "facebookAccount.accessToken": longToken.result
+        }
+      }
+    );
   },
-  setMainAccount({ campaignId, account }) {
+  setMainAccount({ user, campaignId, account }) {
     check(campaignId, String);
     check(account, Object);
 
@@ -91,6 +88,7 @@ const CampaignsHelpers = {
     });
 
     const updateObj = {
+      userFacebookId: user.services.facebook.id,
       facebookId: account.id,
       accessToken: token.result,
       chatbot: {
@@ -124,13 +122,7 @@ const CampaignsHelpers = {
         campaignId
       }
     });
-    // JobsHelpers.addJob({
-    //   jobType: "audiences.updateAccountAudience",
-    //   jobData: {
-    //     campaignId,
-    //     facebookAccountId: account.id
-    //   }
-    // });
+
     JobsHelpers.addJob({
       jobType: "people.updateFBUsers",
       jobData: {

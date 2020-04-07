@@ -273,6 +273,7 @@ export const campaignsCreate = new ValidatedMethod({
     });
 
     insertDoc.facebookAccount = {
+      userFacebookId: user.services.facebook.id,
       facebookId: account.id,
       accessToken: accountToken.result,
       chatbot: {
@@ -283,9 +284,7 @@ export const campaignsCreate = new ValidatedMethod({
 
     campaignId = Campaigns.insert(insertDoc);
 
-    CampaignsHelpers.setMainAccount({ campaignId, account });
-    // CampaignsHelpers.addAccount({ campaignId, account });
-    // CampaignsHelpers.addAudienceAccount({ campaignId, account });
+    CampaignsHelpers.setMainAccount({ user, campaignId, account });
 
     if (hasInvite) {
       Invites.update(
@@ -1239,183 +1238,6 @@ export const addSelfAccount = new ValidatedMethod({
     CampaignsHelpers.addAccount({ campaignId, account });
 
     return;
-  }
-});
-
-export const removeSelfAccount = new ValidatedMethod({
-  name: "campaigns.removeSelfAccount",
-  validate: new SimpleSchema({
-    campaignId: {
-      type: String
-    },
-    facebookId: {
-      type: String
-    }
-  }).validator(),
-  run({ campaignId, facebookId }) {
-    logger.debug("campaigns.removeSelfAudienceAccount called", {
-      campaignId,
-      facebookId
-    });
-
-    const userId = Meteor.userId();
-    if (!userId) {
-      throw new Meteor.Error(401, "You need to login");
-    }
-
-    const campaign = Campaigns.findOne(campaignId);
-    if (!campaign) {
-      throw new Meteor.Error(404, "This campaign does not exist");
-    }
-
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
-      throw new Meteor.Error(401, "You are not allowed to do this action");
-    }
-    CampaignsHelpers.removeAccount({ campaignId, facebookId });
-    return;
-  }
-});
-
-// DEPRECATED
-export const findAndAddSelfAudienceAccount = new ValidatedMethod({
-  name: "campaigns.findAndAddSelfAudienceAccount",
-  validate: new SimpleSchema({
-    campaignId: {
-      type: String
-    },
-    address: {
-      type: String
-    }
-  }).validator(),
-  run({ campaignId, address }) {
-    this.unblock();
-    logger.debug("campaigns.findAndAddSelfAudienceAccount called", {
-      campaignId,
-      address
-    });
-
-    throw new Meteor.Error(500, "This method is unavailable");
-
-    const userId = Meteor.userId();
-    if (!userId) {
-      throw new Meteor.Error(401, "You need to login");
-    }
-
-    const campaign = Campaigns.findOne(campaignId);
-    if (!campaign) {
-      throw new Meteor.Error(404, "This campaign does not exist");
-    }
-
-    if (campaign.status == "suspended") {
-      throw new Meteor.Error(401, "This campaign is suspended");
-    }
-
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
-      throw new Meteor.Error(401, "You are not allowed to do this action");
-    }
-
-    let account;
-
-    try {
-      account = FacebookAccountsHelpers.fetchFBAccount({ userId, address });
-      CampaignsHelpers.addAudienceAccount({ campaignId, account });
-    } catch (error) {
-      if (error instanceof Meteor.Error) {
-        throw error;
-      } else if (error.response) {
-        const errorCode = error.response.error.code;
-        if (errorCode == 803) {
-          throw new Meteor.Error(404, "Facebook account not found");
-        } else {
-          throw new Meteor.Error(500, "Unexpected error occurred");
-        }
-      } else {
-        throw new Meteor.Error(500, "Unexpected error occurred");
-      }
-    }
-
-    return;
-  }
-});
-
-// DEPRECATED
-export const addSelfAudienceAccount = new ValidatedMethod({
-  name: "campaigns.addSelfAudienceAccount",
-  validate: new SimpleSchema({
-    campaignId: {
-      type: String
-    },
-    account: {
-      type: Object,
-      blackbox: true
-    }
-  }).validator(),
-  run({ campaignId, account }) {
-    this.unblock();
-    logger.debug("campaigns.addSelfAudienceAccount called", {
-      campaignId,
-      account
-    });
-
-    throw new Meteor.Error(500, "This method is unavailable");
-
-    const userId = Meteor.userId();
-    if (!userId) {
-      throw new Meteor.Error(401, "You need to login");
-    }
-
-    const campaign = Campaigns.findOne(campaignId);
-    if (!campaign) {
-      throw new Meteor.Error(404, "This campaign does not exist");
-    }
-
-    if (campaign.status == "suspended") {
-      throw new Meteor.Error(401, "This campaign is suspended");
-    }
-
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
-      throw new Meteor.Error(401, "You are not allowed to do this action");
-    }
-    CampaignsHelpers.addAudienceAccount({ campaignId, account });
-
-    return;
-  }
-});
-
-export const removeSelfAudienceAccount = new ValidatedMethod({
-  name: "campaigns.removeSelfAudienceAccount",
-  validate: new SimpleSchema({
-    campaignId: {
-      type: String
-    },
-    facebookId: {
-      type: String
-    }
-  }).validator(),
-  run({ campaignId, facebookId }) {
-    this.unblock();
-    logger.debug("campaigns.removeSelfAudienceAccount called", {
-      campaignId,
-      facebookId
-    });
-    const userId = Meteor.userId();
-    if (!userId) {
-      throw new Meteor.Error(401, "You need to login");
-    }
-
-    const campaign = Campaigns.findOne(campaignId);
-    if (!campaign) {
-      throw new Meteor.Error(404, "This campaign does not exist");
-    }
-
-    if (campaign.status == "suspended") {
-      throw new Meteor.Error(401, "This campaign is suspended");
-    }
-
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
-      throw new Meteor.Error(401, "You are not allowed to do this action");
-    }
-    CampaignsHelpers.removeAudienceAccount({ campaignId, facebookId });
   }
 });
 

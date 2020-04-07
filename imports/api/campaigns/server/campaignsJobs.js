@@ -11,7 +11,7 @@ const CampaignsJobs = {
 
       let errored = false;
       try {
-        CampaignsHelpers.refreshCampaignAccountsTokens({
+        CampaignsHelpers.refreshCampaignAccountToken({
           campaignId
         });
       } catch (error) {
