@@ -181,6 +181,11 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
   }
   delete query.q;
 
+  if(query.starred) {
+    query["campaignMeta.starred"] = true;
+  }
+  delete query.starred;
+
   if (query.category) {
     query[`campaignMeta.${query.category}`] = true;
   }

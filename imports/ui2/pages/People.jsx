@@ -118,7 +118,7 @@ const PeopleContent = styled.div`
     text-align: center;
     margin: 4rem;
   }
-  ${props =>
+  ${(props) =>
     props.loading &&
     css`
       .people-table {
@@ -174,6 +174,7 @@ class PeoplePage extends Component {
     this.setState({
       query: defaultsDeep(this.props.query, {
         q: "",
+        starred: false,
         form: false,
         commented: false,
         private_reply: false
@@ -181,7 +182,7 @@ class PeoplePage extends Component {
       options: defaultsDeep(this.props.options, {
         limit: 20,
         skip: 0
-      })
+      }),
     });
     this.fetchHistory();
   }
@@ -214,7 +215,7 @@ class PeoplePage extends Component {
     }
     return sanitized;
   };
-  buildOptions = options => {
+  buildOptions = (options) => {
     let queryOptions = {};
     if (options.limit) {
       queryOptions.limit = options.limit;
@@ -252,12 +253,12 @@ class PeoplePage extends Component {
       const methodParams = {
         campaignId,
         query,
-        options: this.buildOptions(options)
+        options: this.buildOptions(options),
       };
       Meteor.call("people.search", methodParams, (err, data) => {
         if (err) {
           this.setState({
-            loading: false
+            loading: false,
           });
         } else {
           this.setState({ people: data, loading: false });
@@ -266,7 +267,7 @@ class PeoplePage extends Component {
       Meteor.call("people.search.count", methodParams, (err, data) => {
         if (err) {
           this.setState({
-            loadingCount: false
+            loadingCount: false,
           });
         } else {
           this.setState({ count: data, loadingCount: false });
@@ -281,7 +282,7 @@ class PeoplePage extends Component {
         alertStore.add(err);
       } else {
         this.setState({
-          peopleHistory: res
+          peopleHistory: res,
         });
       }
     });
@@ -292,8 +293,8 @@ class PeoplePage extends Component {
       this.setState({
         options: {
           ...options,
-          skip: options.skip - 1
-        }
+          skip: options.skip - 1,
+        },
       });
     }
   };
@@ -303,12 +304,12 @@ class PeoplePage extends Component {
       this.setState({
         options: {
           ...options,
-          skip: options.skip + 1
-        }
+          skip: options.skip + 1,
+        },
       });
     }
   };
-  _handlePeopleChange = people => {
+  _handlePeopleChange = (people) => {
     this.setState({ people });
   };
   _handleTableSort = (sort, order) => {
@@ -322,20 +323,20 @@ class PeoplePage extends Component {
       options: {
         ...this.state.options,
         ...options,
-        skip: 0
-      }
+        skip: 0,
+      },
     });
   };
   _handleFormChange = ({ target }) => {
     this.setState({
       query: {
         ...this.state.query,
-        [target.name]: target.value
+        [target.name]: target.value,
       },
       options: {
         ...this.state.options,
-        skip: 0
-      }
+        skip: 0,
+      },
     });
   };
   _handleSelectChange = (selected, { name }) => {
@@ -346,24 +347,24 @@ class PeoplePage extends Component {
     this.setState({
       query: {
         ...this.state.query,
-        [name]: value
+        [name]: value,
       },
       options: {
         ...this.state.options,
-        skip: 0
-      }
+        skip: 0,
+      },
     });
   };
   _handleCheckboxChange = ({ target }) => {
     this.setState({
       query: {
         ...this.state.query,
-        [target.name]: target.checked
+        [target.name]: target.checked,
       },
       options: {
         ...this.state.options,
-        skip: 0
-      }
+        skip: 0,
+      },
     });
   };
   _handleDateChange = ({ max, min }) => {
@@ -372,23 +373,23 @@ class PeoplePage extends Component {
         ...this.state.query,
         creation_from: min ? moment(min).format("YYYY-MM-DD") : null,
         creation_to: max ? moment(max).format("YYYY-MM-DD") : null,
-        source: min || max ? "facebook" : null
+        source: min || max ? "facebook" : null,
       },
       options: {
         ...this.state.options,
-        skip: 0
-      }
+        skip: 0,
+      },
     });
   };
-  _handleReactionFilterChange = value => {
+  _handleReactionFilterChange = (value) => {
     this.setState({
       query: {
         ...this.state.query,
-        reaction_type: value
-      }
+        reaction_type: value,
+      },
     });
   };
-  _getDateValue = key => {
+  _getDateValue = (key) => {
     const { campaign } = this.props;
     const { query } = this.state;
     return query[key] ? moment(query[key]).toDate() : null;
@@ -399,7 +400,7 @@ class PeoplePage extends Component {
     for (let key of PersonMetaButtons.keys) {
       options.push({
         value: key,
-        label: intl.formatMessage(categoriesLabels[key])
+        label: intl.formatMessage(categoriesLabels[key]),
       });
     }
     return options;
@@ -418,16 +419,16 @@ class PeoplePage extends Component {
     let options = [
       {
         value: "facebook",
-        label: "Facebook"
+        label: "Facebook",
       },
       {
         value: "manual",
-        label: intl.formatMessage(messages.manualLabel)
+        label: intl.formatMessage(messages.manualLabel),
       },
       {
         value: "form",
-        label: intl.formatMessage(messages.formLabel)
-      }
+        label: intl.formatMessage(messages.formLabel),
+      },
     ];
     if (lists.length) {
       options.push({
@@ -435,15 +436,15 @@ class PeoplePage extends Component {
         options: [
           {
             value: "import",
-            label: intl.formatMessage(messages.anyImportLabel)
+            label: intl.formatMessage(messages.anyImportLabel),
           },
-          ...lists.map(list => {
+          ...lists.map((list) => {
             return {
               value: `list:${list._id}`,
-              label: list.name
+              label: list.name,
             };
-          })
-        ]
+          }),
+        ],
       });
     }
     return options;
@@ -454,7 +455,7 @@ class PeoplePage extends Component {
     if (query.source) {
       let value = {
         value: query.source,
-        label: ""
+        label: "",
       };
       switch (true) {
         case /facebook/.test(query.source):
@@ -471,7 +472,7 @@ class PeoplePage extends Component {
           break;
         case /list:/.test(query.source):
           value.label = lists.find(
-            l => l._id == query.source.split("list:")[1]
+            (l) => l._id == query.source.split("list:")[1]
           ).name;
           break;
         default:
@@ -480,19 +481,19 @@ class PeoplePage extends Component {
     }
     return null;
   };
-  _handleManageImportsClick = ev => {
+  _handleManageImportsClick = (ev) => {
     const { intl, lists } = this.props;
     ev.preventDefault();
     modalStore.setTitle(intl.formatMessage(messages.manageImports));
     modalStore.set(<PeopleLists lists={lists} />);
   };
-  _handleManageExportsClick = ev => {
+  _handleManageExportsClick = (ev) => {
     const { intl, peopleExports } = this.props;
     ev.preventDefault();
     modalStore.setTitle(intl.formatMessage(messages.manageExports));
     modalStore.set(<PeopleExports peopleExports={peopleExports} />);
   };
-  _handleNewClick = ev => {
+  _handleNewClick = (ev) => {
     const { intl } = this.props;
     ev.preventDefault();
     modalStore.setTitle(intl.formatMessage(messages.newPersonTitle));
@@ -503,7 +504,7 @@ class PeoplePage extends Component {
           if (type == "created") {
             modalStore.setTitle(
               intl.formatMessage(messages.editingPersonTitle, {
-                name: data.name
+                name: data.name,
               })
             );
           }
@@ -522,7 +523,7 @@ class PeoplePage extends Component {
       campaign,
       importCount,
       exportCount,
-      peopleExports
+      peopleExports,
     } = this.props;
     const {
       loading,
@@ -534,14 +535,14 @@ class PeoplePage extends Component {
       count,
       loadingCount,
       peopleHistory,
-      imported
+      imported,
     } = this.state;
     return (
       <>
         <Page.Nav full plain>
           <PageFilters>
             <div className="filters">
-              <form onSubmit={ev => ev.preventDefault()}>
+              <form onSubmit={(ev) => ev.preventDefault()}>
                 <input
                   type="text"
                   placeholder={intl.formatMessage(messages.searchPlaceholder)}
@@ -550,6 +551,26 @@ class PeoplePage extends Component {
                   value={query.q}
                   className="main-input"
                 />
+                <label className="boxed">
+                  <input
+                    type="checkbox"
+                    checked={query.starred}
+                    onChange={this._handleCheckboxChange}
+                    name="starred"
+                  />
+                  <span>
+                    <FormattedMessage
+                      id="app.people.filters.starred.title"
+                      defaultMessage="Important"
+                    />
+                    <span className="tip">
+                      <FormattedMessage
+                        id="app.people.filters.starred.description"
+                        defaultMessage="Show only people marked as important."
+                      />
+                    </span>
+                  </span>
+                </label>
                 <Form.Field>
                   <Select
                     classNamePrefix="select"
@@ -803,7 +824,7 @@ class PeoplePage extends Component {
 }
 
 PeoplePage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(PeoplePage);

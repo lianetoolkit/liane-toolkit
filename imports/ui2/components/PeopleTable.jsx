@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import ReactDOM from "react-dom";
 import ReactTooltip from "react-tooltip";
@@ -20,8 +20,9 @@ import Table from "./Table.jsx";
 import Button from "./Button.jsx";
 import CopyToClipboard from "./CopyToClipboard.jsx";
 import Popup from "./Popup.jsx";
+import PersonStarredButton from "./PersonStarredButton.jsx";
 import PersonMetaButtons, {
-  labels as personMetaLabels
+  labels as personMetaLabels,
 } from "./PersonMetaButtons.jsx";
 import PersonSummary from "./PersonSummary.jsx";
 import PersonReactions from "./PersonReactions.jsx";
@@ -34,16 +35,16 @@ import Reply from "./Reply.jsx";
 const messages = defineMessages({
   editingPersonTitle: {
     id: "app.people.edit.title",
-    defaultMessage: "Editing {name}"
+    defaultMessage: "Editing {name}",
   },
   sendingPrivateReplyTitle: {
     id: "app.people.sending_pr.title",
-    defaultMessage: "Sending private reply to {name}"
+    defaultMessage: "Sending private reply to {name}",
   },
   editCategories: {
     id: "app.people.table_body.edit_categories",
-    defaultMessage: "Edit categories"
-  }
+    defaultMessage: "Edit categories",
+  },
 });
 
 const Container = styled.div`
@@ -161,7 +162,7 @@ class PersonMetaCircles extends Component {
     const { person, ...props } = this.props;
     return (
       <MetaCircles {...props}>
-        {PersonMetaButtons.keys.map(key =>
+        {PersonMetaButtons.keys.map((key) =>
           get(person, `campaignMeta.${key}`) ? (
             <span key={key} className="meta-circle-container">
               <span
@@ -180,7 +181,7 @@ class PeopleTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: false
+      expanded: false,
     };
   }
   componentDidMount() {
@@ -207,12 +208,12 @@ class PeopleTable extends Component {
   componentWillUnmount() {
     window.removeEventListener("keydown", this._handleKeydown);
   }
-  _handleKeydown = ev => {
+  _handleKeydown = (ev) => {
     const { people } = this.props;
     const { expanded } = this.state;
     let curIndex = -1;
     if (expanded) {
-      curIndex = people.findIndex(p => {
+      curIndex = people.findIndex((p) => {
         return p._id == expanded._id;
       });
     }
@@ -222,7 +223,7 @@ class PeopleTable extends Component {
         case 27: // esc
           if (curIndex > -1) {
             this.setState({
-              expanded: false
+              expanded: false,
             });
           }
           break;
@@ -248,7 +249,7 @@ class PeopleTable extends Component {
         case 13: // (Enter) access profile
           if (curIndex > -1) {
             FlowRouter.go("App.people.detail", {
-              personId: people[curIndex]._id
+              personId: people[curIndex]._id,
             });
           }
         default:
@@ -256,12 +257,12 @@ class PeopleTable extends Component {
     }
     if (target) {
       this.setState({
-        expanded: target
+        expanded: target,
       });
       this.adjustScroll(target._id);
     }
   };
-  adjustScroll = debounce(personId => {
+  adjustScroll = debounce((personId) => {
     const containerOffset = this.container.getBoundingClientRect();
     const node = document.getElementById(`table-person-${personId}`);
     const nodeOffset = node.getBoundingClientRect();
@@ -287,10 +288,10 @@ class PeopleTable extends Component {
     }
     return 0;
   }
-  _handleMetaButtonsChange = data => {
+  _handleMetaButtonsChange = (data) => {
     if (this.props.onChange) {
       const { people } = this.props;
-      const newPeople = people.map(p => {
+      const newPeople = people.map((p) => {
         if (p._id == data.personId) {
           if (!p.campaignMeta) {
             p.campaignMeta = {};
@@ -302,10 +303,10 @@ class PeopleTable extends Component {
       this.props.onChange(newPeople);
     }
   };
-  _handleEditSuccess = person => {
+  _handleEditSuccess = (person) => {
     if (this.props.onChange) {
       const { people } = this.props;
-      const newPeople = people.map(p => {
+      const newPeople = people.map((p) => {
         if (p._id == person._id) {
           return person;
         }
@@ -314,7 +315,7 @@ class PeopleTable extends Component {
       this.props.onChange(newPeople);
     }
   };
-  _handleEditClick = person => ev => {
+  _handleEditClick = (person) => (ev) => {
     const { intl } = this.props;
     ev.preventDefault();
     modalStore.setTitle(
@@ -324,26 +325,26 @@ class PeopleTable extends Component {
       <PersonEdit person={person} onSuccess={this._handleEditSuccess} />
     );
   };
-  expand = person => ev => {
+  expand = (person) => (ev) => {
     if (ev.target.nodeName == "A" || ev.target.closest("a")) {
       return false;
     }
     const { expanded } = this.state;
     if (expanded && expanded._id == person._id) {
       this.setState({
-        expanded: false
+        expanded: false,
       });
     } else {
       this.setState({
-        expanded: person
+        expanded: person,
       });
     }
   };
-  isExpanded = person => {
+  isExpanded = (person) => {
     const { expanded } = this.state;
     return expanded && expanded._id == person._id;
   };
-  hasMeta = person => {
+  hasMeta = (person) => {
     let has = false;
     for (let key of PersonMetaButtons.keys) {
       if (get(person, `campaignMeta.${key}`)) {
@@ -352,10 +353,10 @@ class PeopleTable extends Component {
     }
     return has;
   };
-  personCategoriesText = person => {
+  personCategoriesText = (person) => {
     const { intl } = this.props;
     let text = [];
-    PersonMetaButtons.keys.map(key => {
+    PersonMetaButtons.keys.map((key) => {
       if (get(person, `campaignMeta.${key}`)) {
         text.push(intl.formatMessage(personMetaLabels[key]));
       }
@@ -379,14 +380,14 @@ class PeopleTable extends Component {
       onSort(key, order);
     }
   };
-  getSort = key => {
+  getSort = (key) => {
     const { options } = this.props;
     if (options["sort"] == key) {
       return options["order"];
     }
     return false;
   };
-  _handlePrivateReplyClick = person => ev => {
+  _handlePrivateReplyClick = (person) => (ev) => {
     const { intl } = this.props;
     ev.preventDefault();
     modalStore.setTitle(intl.formatMessage(messages.sendingPrivateReplyTitle));
@@ -397,8 +398,8 @@ class PeopleTable extends Component {
     const personTags = get(person, "campaignMeta.basic_info.tags");
     if (personTags && personTags.length && tags && tags.length) {
       return tags
-        .filter(tag => personTags.indexOf(tag._id) !== -1)
-        .map(tag => tag.name);
+        .filter((tag) => personTags.indexOf(tag._id) !== -1)
+        .map((tag) => tag.name);
     }
     return [];
   }
@@ -419,7 +420,7 @@ class PeopleTable extends Component {
           <Table {...props}>
             <thead>
               <tr>
-                <th />
+                <th colSpan="2" />
                 {chatColumn ? (
                   <th>
                     <FontAwesomeIcon
@@ -474,7 +475,7 @@ class PeopleTable extends Component {
                 </Table.SortableHead>
               </tr>
             </thead>
-            {people.map(person => (
+            {people.map((person) => (
               <tbody
                 key={person._id}
                 className={this.isExpanded(person) ? "active" : ""}
@@ -484,10 +485,17 @@ class PeopleTable extends Component {
                   className="interactive"
                   onClick={this.expand(person)}
                 >
+                  <td style={{ borderRight: 0, paddingRight: 0 }}>
+                    <PersonStarredButton
+                      readOnly={!userCan("categorize", "people")}
+                      person={person}
+                      onChange={this._handleMetaButtonsChange}
+                    />
+                  </td>
                   <td style={{ width: "20px", textAlign: "center" }}>
                     {userCan("categorize", "people") ? (
                       <Popup
-                        trigger={open => (
+                        trigger={(open) => (
                           <div data-tip data-for={`person-meta-${person._id}`}>
                             {this.hasMeta(person) ? (
                               <PersonMetaCircles person={person} />
@@ -517,7 +525,7 @@ class PeopleTable extends Component {
                       <ReactTooltip
                         id={`person-meta-${person._id}`}
                         aria-haspopup="true"
-                        place="left"
+                        place="bottom"
                         effect="solid"
                       >
                         {this.hasMeta(person)
@@ -535,7 +543,7 @@ class PeopleTable extends Component {
                     <p className="extra-actions show-on-hover">
                       <a
                         href={FlowRouter.path("App.people.detail", {
-                          personId: person._id
+                          personId: person._id,
                         })}
                       >
                         <FormattedMessage
@@ -581,7 +589,7 @@ class PeopleTable extends Component {
                 </tr>
                 {this.isExpanded(person) ? (
                   <tr className="person-extra">
-                    <td className="extra">
+                    <td className="extra" colSpan="2">
                       <PersonMetaButtons
                         person={person}
                         vertical
@@ -639,7 +647,7 @@ class PeopleTable extends Component {
 }
 
 PeopleTable.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(PeopleTable);
