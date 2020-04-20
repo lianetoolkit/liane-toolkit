@@ -14,6 +14,7 @@ import { GeolocationsHelpers } from "/imports/api/geolocations/server/geolocatio
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 import { Notifications } from "/imports/api/notifications/notifications";
 import { NotificationsHelpers } from "/imports/api/notifications/server/notificationsHelpers";
+import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
 import _ from "underscore";
 
 import { People } from "/imports/api/facebook/people/people.js";
@@ -684,6 +685,56 @@ export const campaignRefreshHealthCheck = new ValidatedMethod({
     }
 
     return CampaignsHelpers.refreshHealthCheck({ campaignId });
+  }
+});
+
+export const campaignUpdateFacebook = new ValidatedMethod({
+  name: "campaigns.updateFacebook",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String
+    },
+    token: {
+      type: String
+    },
+    secret: {
+      type: String
+    }
+  }).validator(),
+  run({ campaignId, token, secret }) {
+    logger.debug("campaigns.updateFacebook called", { campaignId });
+
+    const userId = Meteor.userId();
+
+    if (!campaignId) {
+      throw new Meteor.Error(401, "Campaign ID not found");
+    }
+    const campaign = Campaigns.findOne(campaignId);
+    const allowed = campaign.creatorId == userId;
+
+    if (!allowed) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    UsersHelpers.updateFBToken({ userId, token, secret });
+
+    const account = FacebookAccountsHelpers.getUserAccount({
+      userId,
+      facebookAccountId: campaign.facebookAccount.facebookId
+    });
+
+    const accountToken = FacebookAccountsHelpers.exchangeFBToken({
+      token: account.access_token
+    });
+
+    const user = Meteor.users.findOne(userId);
+
+    Campaigns.update(campaignId, {
+      $set: {
+        "facebookAccount.accessToken": accountToken.result,
+        "facebookAccount.userFacebookId": user.services.facebook.id
+      }
+    });
   }
 });
 

@@ -33,6 +33,23 @@ const UsersHelpers = {
       })
     );
   },
+  updateFBToken({ userId, token, secret }) {
+    const credential = Facebook.retrieveCredential(token, secret);
+    let longToken;
+    if (credential && credential.serviceData.accessToken) {
+      longToken = UsersHelpers.exchangeFBToken({
+        token: credential.serviceData.accessToken
+      });
+      Meteor.users.update(userId, {
+        $set: {
+          "services.facebook.accessToken": longToken.result
+        }
+      });
+    } else {
+      throw new Meteor.Error(500, "Error retrieving Facebook credentials.");
+    }
+    return longToken;
+  },
   debugFBToken({ token }) {
     check(token, String);
     const appToken = Promise.await(

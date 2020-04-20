@@ -348,23 +348,9 @@ export const setUserType = new ValidatedMethod({
 
     if (type == "campaigner") {
       if (token && secret) {
-        const credential = Facebook.retrieveCredential(token, secret);
-        if (credential && credential.serviceData.accessToken) {
-          const token = UsersHelpers.exchangeFBToken({
-            token: credential.serviceData.accessToken
-          });
-          Meteor.users.update(userId, {
-            $set: {
-              type,
-              "services.facebook.accessToken": token.result
-            }
-          });
-        } else {
-          throw new Meteor.Error(500, "Error retrieving Facebook credentials.");
-        }
-      } else {
-        Meteor.users.update(userId, { $set: { type: "campaigner" } });
+        UsersHelpers.updateFBToken({ userId, token, secret });
       }
+      Meteor.users.update(userId, { $set: { type: "campaigner" } });
     } else {
       Meteor.users.update(userId, { $set: { type } });
     }

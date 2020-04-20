@@ -97,6 +97,7 @@ export default withTracker(props => {
 
   let entriesJob;
   let runningEntriesJobs = [];
+  let facebookHealthJob;
 
   let importCount = 0;
   let exportCount = 0;
@@ -136,7 +137,12 @@ export default withTracker(props => {
               ...account
             };
           });
-        campaign.accounts = Object.values(accountsMap);
+        const accounts = Object.values(accountsMap);
+        campaign.facebookAccount = {
+          ...campaign.facebookAccount,
+          ...accounts[0]
+        };
+        campaign.accounts = accounts;
         campaign.tags = PeopleTags.find({
           campaignId: campaign._id
         }).fetch();
@@ -193,6 +199,10 @@ export default withTracker(props => {
         type: "entries.updateEntryInteractions",
         status: { $nin: ["failed", "completed"] }
       }).fetch();
+      facebookHealthJob = Jobs.findOne({
+        "data.campaignId": campaign._id,
+        type: "campaigns.healthCheck"
+      });
     }
 
     // Import job count
@@ -247,6 +257,7 @@ export default withTracker(props => {
     lists,
     entriesJob,
     runningEntriesJobs,
+    facebookHealthJob,
     importCount,
     exportCount,
     peopleExports,

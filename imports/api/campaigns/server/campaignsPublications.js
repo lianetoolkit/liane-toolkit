@@ -127,6 +127,7 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
   logger.debug("campaigns.detail pub", { campaignId });
   let fields = {
     "facebookAccount.facebookId": 1,
+    "facebookAccount.userFacebookId": 1,
     name: 1,
     candidate: 1,
     party: 1,
@@ -160,19 +161,34 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
   // Creator extra data
   if (campaign.creatorId == userId) {
     fields.users = 1;
-    children.push({
-      find: function(campaign) {
-        return Meteor.users.find(
+    let userSelector;
+    if (campaign.facebookAccount.userFacebookId) {
+      userSelector = {
+        $or: [
           {
             _id: { $in: _.pluck(campaign.users, "userId") }
           },
           {
-            fields: {
-              name: 1,
-              "emails.address": 1
-            }
+            "services.facebook.id": campaign.facebookAccount.userFacebookId
           }
-        );
+        ]
+      };
+    } else {
+      userSelector = {
+        _id: {
+          $in: _.pluck(campaign.users, "userId")
+        }
+      };
+    }
+    children.push({
+      find: function(campaign) {
+        return Meteor.users.find(userSelector, {
+          fields: {
+            name: 1,
+            "services.facebook.id": 1,
+            "emails.address": 1
+          }
+        });
       }
     });
   } else {

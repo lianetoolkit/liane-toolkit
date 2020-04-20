@@ -33,6 +33,15 @@ export default class SettingsNav extends Component {
           Contas de Facebook
         </a> */}
         <a
+          href={FlowRouter.path("App.campaign.connections")}
+          className={currentRoute == "App.campaign.connections" ? "active" : ""}
+        >
+          <FormattedMessage
+            id="app.campaign_settings.nav.connections"
+            defaultMessage="Connections"
+          />
+        </a>
+        <a
           href={FlowRouter.path("App.campaign.team")}
           className={currentRoute == "App.campaign.team" ? "active" : ""}
         >

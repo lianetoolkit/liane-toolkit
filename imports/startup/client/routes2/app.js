@@ -24,6 +24,7 @@ import CampaignInvitePage from "/imports/ui2/pages/campaign/Invite.jsx";
 import CampaignSettingsPage from "/imports/ui2/pages/campaign/settings/General.jsx";
 import CampaignFacebookPage from "/imports/ui2/pages/campaign/settings/Facebook.jsx";
 import CampaignTeamPage from "/imports/ui2/pages/campaign/settings/Team.jsx";
+import CampaignConnectionsPage from "/imports/ui2/pages/campaign/settings/Connections.jsx";
 import CampaignActionsPage from "/imports/ui2/pages/campaign/settings/Actions.jsx";
 import NewCampaignPage from "/imports/ui2/containers/campaign/New.jsx";
 import RegisterPage from "/imports/ui2/pages/Register.jsx";
@@ -245,6 +246,13 @@ appRoutes.route("/campaign/settings/facebook", {
   action: function() {
     addTitle(`${APP_NAME} | Campaign Facebook Settings`);
     return mount(App, { content: { component: CampaignFacebookPage } });
+  }
+});
+appRoutes.route("/campaign/settings/connections", {
+  name: "App.campaign.connections",
+  action: function() {
+    addTitle(`${APP_NAME} | Campaign Connections`);
+    return mount(App, { content: { component: CampaignConnectionsPage } });
   }
 });
 appRoutes.route("/campaign/settings/team", {
