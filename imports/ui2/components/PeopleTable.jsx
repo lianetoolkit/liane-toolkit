@@ -424,7 +424,6 @@ class PeopleTable extends Component {
       onSort,
       ...props
     } = this.props;
-    console.log(people);
     const { expanded } = this.state;
     return (
       <Container className="people-table">
