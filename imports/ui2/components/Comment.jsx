@@ -236,13 +236,13 @@ class Comment extends Component {
     const id = comment.facebookAccountId;
     const story_fbid = comment.parentId.split("_")[0];
     const comment_id = comment.parentId.split("_")[1];
-    return this.getFBUrl({ id, story_fbid, comment_id });
+    return getFBUrl({ id, story_fbid, comment_id });
   };
   getPostUrl = () => {
     const { comment } = this.props;
     const id = comment.facebookAccountId;
     const story_fbid = comment._id.split("_")[0];
-    return this.getFBUrl({ id, story_fbid });
+    return getFBUrl({ id, story_fbid });
   };
   _handleReplyClick = (ev) => {
     const { intl, comment } = this.props;
