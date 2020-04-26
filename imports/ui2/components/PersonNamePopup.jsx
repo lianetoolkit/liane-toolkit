@@ -8,7 +8,9 @@ import { alertStore } from "../containers/Alerts.jsx";
 import PersonMetaButtons from "./PersonMetaButtons.jsx";
 import PersonTags from "./PersonTags.jsx";
 import PersonFormInfo from "./PersonFormInfo.jsx";
+import TagSelect from "./TagSelect.jsx";
 import Loading from "./Loading.jsx";
+import Form from "./Form.jsx";
 
 const Container = styled.span`
   position: relative;
@@ -44,6 +46,13 @@ const PopupContainer = styled.div`
   .person-meta-buttons {
     margin-bottom: 1rem;
   }
+  .person-tags {
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .tags-field {
+    font-size: 0.9em;
+  }
 `;
 
 export default class PersonNamePopup extends Component {
@@ -61,7 +70,7 @@ export default class PersonNamePopup extends Component {
       } else {
         this.setState({
           person: res,
-          loaded: true
+          loaded: true,
         });
       }
     });
@@ -75,21 +84,35 @@ export default class PersonNamePopup extends Component {
   _handleMouseLeave = () => {
     this.leaveTimeout = setTimeout(() => {
       this.setState({
-        open: false
+        open: false,
       });
     }, 1000);
   };
-  _handleChange = data => {
+  _handleChange = (data) => {
     const { person } = this.state;
     this.setState({
       person: {
         ...person,
         campaignMeta: {
           ...person.campaignMeta,
-          [data.metaKey]: data.metaValue
+          [data.metaKey]: data.metaValue,
+        },
+      },
+    });
+  };
+  _handleTagChange = ({ target }) => {
+    const { personId } = this.props;
+    Meteor.call(
+      "people.updateTags",
+      { personId, tags: target.value },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          this._fetch();
         }
       }
-    });
+    );
   };
   render() {
     const { personId, name } = this.props;
@@ -116,8 +139,19 @@ export default class PersonNamePopup extends Component {
                     onChange={this._handleChange}
                     readOnly={!userCan("categorize", "people")}
                   />
+                  {person && userCan("categorize", "people") ? (
+                    <Form.Field className="tags-field" label="Tags">
+                      <TagSelect
+                        name="tags"
+                        onChange={this._handleTagChange}
+                        value={person.tags.map((t) => t._id)}
+                      />
+                    </Form.Field>
+                  ) : null}
+                  {!userCan("categorize", "people") ? (
+                    <PersonTags tags={person.tags} person={person} />
+                  ) : null}
                   <PersonFormInfo person={person} simple />
-                  <PersonTags tags={person.tags} person={person} />
                 </>
               )}
             </div>
