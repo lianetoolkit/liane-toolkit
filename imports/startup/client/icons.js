@@ -49,14 +49,15 @@ import {
   faSync,
   faMarker,
   faLink,
-  faGlobeAmericas
+  faGlobeAmericas,
+  faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faFacebookSquare,
   faInstagram,
   faTwitter,
   faFacebookMessenger,
-  faWhatsapp
+  faWhatsapp,
 } from "@fortawesome/free-brands-svg-icons";
 
 library.add(faCog);
@@ -108,6 +109,7 @@ library.add(faSync);
 library.add(faMarker);
 library.add(faLink);
 library.add(faGlobeAmericas);
+library.add(faThLarge);
 library.add(faFacebookSquare);
 library.add(faInstagram);
 library.add(faTwitter);
