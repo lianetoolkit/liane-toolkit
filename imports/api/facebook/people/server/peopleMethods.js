@@ -161,7 +161,7 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
   if (reaction_count) {
     if (!reaction_type || reaction_type == "any" || reaction_type == "all") {
       query[`counts.likes`] = {
-        $gte: parseInt(reaction_count),
+        $gte: parseInt(reabuildSearchQueryction_count),
       };
     } else {
       query[`counts.reactions.${reaction_type}`] = {
@@ -274,7 +274,16 @@ export const peopleSearch = new ValidatedMethod({
       options,
     });
 
-    const cursor = People.find(searchQuery.query, searchQuery.options);
+    const cursor = People.find(searchQuery.query, {
+      ...searchQuery.options,
+      transform: (person) => {
+        person.latestComment = Comments.findOne(
+          { personId: person.facebookId },
+          { sort: { created_time: -1 } }
+        );
+        return person;
+      },
+    });
 
     const result = cursor.fetch();
 

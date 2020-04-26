@@ -527,6 +527,7 @@
   "app.people.table_body.comment_count": "{amount} comments",
   "app.people.table_body.edit": "Edit",
   "app.people.table_body.edit_categories": "Edit categories",
+  "app.people.table_body.latest_comment_label": "Go to latest comment",
   "app.people.table_body.private_reply_button": "Send private reply",
   "app.people.table_header.comments": "Comments",
   "app.people.table_header.contact": "Contact",

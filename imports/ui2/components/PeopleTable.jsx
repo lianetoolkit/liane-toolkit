@@ -31,6 +31,7 @@ import PersonContactIcons from "./PersonContactIcons.jsx";
 import PersonTags from "./PersonTags.jsx";
 import PersonChatIcon from "./PersonChatIcon.jsx";
 import Reply from "./Reply.jsx";
+import { getCommentUrl } from "./Comment.jsx";
 
 const messages = defineMessages({
   editingPersonTitle: {
@@ -119,13 +120,23 @@ const Container = styled.div`
       justify-content: center;
       margin-bottom: 1rem;
       border-top: 1px solid #666;
-      padding-top: 1rem;
-      span {
+      padding: 0;
+      margin: 0;
+      .count-label {
         font-size: 1.2em;
-        margin-right: 1rem;
+        margin: 1rem 1rem 1rem 0;
         svg {
-          margin-right: 1rem;
+          margin-right: 0.5rem;
         }
+      }
+      .button {
+        text-align: center;
+        margin: 1rem 0;
+        padding: 0.5rem;
+      }
+      .latest-comment {
+        font-size: 0.9em;
+        margin: 1rem 0 1rem 1rem;
       }
     }
   }
@@ -413,6 +424,7 @@ class PeopleTable extends Component {
       onSort,
       ...props
     } = this.props;
+    console.log(people);
     const { expanded } = this.state;
     return (
       <Container className="people-table">
@@ -606,7 +618,7 @@ class PeopleTable extends Component {
                         <PersonReactions person={person} />
                       </div>
                       <p className="person-comment-count">
-                        <span>
+                        <span className="count-label">
                           <FontAwesomeIcon icon="comment" />{" "}
                           <FormattedMessage
                             id="app.people.table_body.comment_count"
@@ -614,7 +626,8 @@ class PeopleTable extends Component {
                             values={{ amount: this._getComments(person) }}
                           />
                         </span>
-                        {person.canReceivePrivateReply &&
+                        {userCan("edit", "comments") &&
+                        person.canReceivePrivateReply &&
                         person.canReceivePrivateReply.length ? (
                           <Button
                             light
@@ -626,8 +639,23 @@ class PeopleTable extends Component {
                             />
                           </Button>
                         ) : null}
+                        {person.latestComment ? (
+                          <a
+                            href={getCommentUrl(person.latestComment)}
+                            target="_blank"
+                            rel="external"
+                            className="latest-comment"
+                          >
+                            <FontAwesomeIcon
+                              icon={["fab", "facebook-square"]}
+                            />{" "}
+                            <FormattedMessage
+                              id="app.people.table_body.latest_comment_label"
+                              defaultMessage="Go to latest comment"
+                            />
+                          </a>
+                        ) : null}
                       </p>
-                      <p className="person-buttons" />
                     </td>
                   </tr>
                 ) : null}
