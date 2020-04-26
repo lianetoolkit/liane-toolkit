@@ -12,7 +12,7 @@ Meteor.publish("faq.byCampaign", function({ campaignId }) {
       permission: "view"
     })
   ) {
-    return FAQ.find({ campaignId }, { sort: { createdAt: -1 } });
+    return FAQ.find({ campaignId }, { sort: { lastUsedAt: -1 } });
   }
   return this.ready();
 });
