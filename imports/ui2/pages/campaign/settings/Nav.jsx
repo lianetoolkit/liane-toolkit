@@ -50,17 +50,15 @@ export default class SettingsNav extends Component {
             defaultMessage="Team"
           />
         </a>
-        {campaign.creatorId == userId ? (
-          <a
-            href={FlowRouter.path("App.campaign.actions")}
-            className={currentRoute == "App.campaign.actions" ? "active" : ""}
-          >
-            <FormattedMessage
-              id="app.campaign_settings.nav.actions"
-              defaultMessage="Actions"
-            />
-          </a>
-        ) : null}
+        <a
+          href={FlowRouter.path("App.campaign.actions")}
+          className={currentRoute == "App.campaign.actions" ? "active" : ""}
+        >
+          <FormattedMessage
+            id="app.campaign_settings.nav.actions"
+            defaultMessage="Actions"
+          />
+        </a>
       </Page.Nav>
     );
   }

@@ -17,6 +17,10 @@ const messages = defineMessages({
 });
 
 export const rolesLabels = defineMessages({
+  admin: {
+    id: "app.team_roles.admin",
+    defaultMessage: "Admin"
+  },
   director: {
     id: "app.team_roles.director",
     defaultMessage: "Digital Campaign Director"
@@ -41,6 +45,7 @@ export const rolesLabels = defineMessages({
 
 class TeamRolesField extends Component {
   static defaultOptions = [
+    "admin",
     "director",
     "coordinator",
     "activismCoordinator",

@@ -10,16 +10,16 @@ export const likesByPerson = new ValidatedMethod({
   name: "likes.byPerson",
   validate: new SimpleSchema({
     personId: {
-      type: String
+      type: String,
     },
     limit: {
       type: Number,
-      optional: true
+      optional: true,
     },
     skip: {
       type: Number,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ personId, limit, skip }) {
     logger.debug("likes.byPerson called", { personId });
@@ -28,9 +28,11 @@ export const likesByPerson = new ValidatedMethod({
     const person = People.findOne(personId);
 
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         userId,
-        campaignId: person.campaignId
+        campaignId: person.campaignId,
+        feature: "comments",
+        permission: "view",
       })
     )
       throw new Meteor.Error(400, "Not allowed");
@@ -39,26 +41,26 @@ export const likesByPerson = new ValidatedMethod({
 
     const options = {
       limit: Math.min(limit || 10, 20),
-      skip: skip || 0
+      skip: skip || 0,
     };
 
     let likes = Likes.find({ personId: person.facebookId }, options).fetch();
 
-    likes = likes.map(like => {
+    likes = likes.map((like) => {
       like.entry = Entries.findOne(like.entryId);
       return like;
     });
 
     return likes;
-  }
+  },
 });
 
 export const likesByPersonCount = new ValidatedMethod({
   name: "likes.byPerson.count",
   validate: new SimpleSchema({
     personId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ personId }) {
     logger.debug("likes.byPerson called", { personId });
@@ -67,9 +69,11 @@ export const likesByPersonCount = new ValidatedMethod({
     const person = People.findOne(personId);
 
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         userId,
-        campaignId: person.campaignId
+        campaignId: person.campaignId,
+        feature: "comments",
+        permission: "view",
       })
     )
       throw new Meteor.Error(400, "Not allowed");
@@ -77,5 +81,5 @@ export const likesByPersonCount = new ValidatedMethod({
     if (!person.facebookId) return 0;
 
     return Likes.find({ personId: person.facebookId }).count();
-  }
+  },
 });

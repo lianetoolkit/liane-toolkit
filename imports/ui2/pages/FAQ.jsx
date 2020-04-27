@@ -288,7 +288,6 @@ const FAQEditIntl = injectIntl(FAQEdit);
 const Container = styled.div`
   .intro {
     display: flex;
-    max-width: 600px;
     margin: 4rem auto;
     align-items: center;
     border: 1px solid #ddd;
@@ -297,7 +296,7 @@ const Container = styled.div`
     box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
     padding: 2rem;
     p {
-      margin: 0 2rem 0 0;
+      margin: 0 1rem 0 0;
     }
     .button {
       white-space: nowrap;
@@ -496,7 +495,7 @@ class FAQPage extends Component {
                 />
               </p>
               {userCan("edit", "faq") ? (
-                <Button className="primary" onClick={this._handleNewClick}>
+                <Button className="primary button" onClick={this._handleNewClick}>
                   <FormattedMessage
                     id="app.faq.create_first"
                     defaultMessage="Create your first answer"

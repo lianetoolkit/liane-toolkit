@@ -24,7 +24,7 @@ import { Comments } from "/imports/api/facebook/comments/comments.js";
 import {
   FEATURES,
   PERMISSIONS,
-  FEATURE_PERMISSION_MAP
+  FEATURE_PERMISSION_MAP,
 } from "/imports/utils/campaignPermissions";
 
 const PRIVATE = Meteor.settings.private;
@@ -33,11 +33,11 @@ export const canManageCampaign = new ValidatedMethod({
   name: "campaigns.canManage",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     userId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId, userId }) {
     this.unblock();
@@ -52,33 +52,28 @@ export const canManageCampaign = new ValidatedMethod({
     }
 
     return !!_.findWhere(campaign.users, { userId });
-  }
+  },
 });
 
 export const userCan = new ValidatedMethod({
   name: "campaigns.userCan",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     userId: {
-      type: String
+      type: String,
     },
     feature: {
-      type: String
+      type: String,
     },
     permission: {
-      type: String
-    }
+      type: String,
+      optional: true,
+    },
   }).validator(),
   run({ campaignId, userId, feature, permission }) {
     this.unblock();
-
-    if (!PERMISSIONS[permission])
-      throw new Meteor.Error(404, "Permission not found");
-
-    if (!_.find(FEATURES, f => f == feature))
-      throw new Meteor.Error(404, "Feature not found");
 
     const user = Meteor.users.findOne(userId);
     if (!user) {
@@ -96,14 +91,27 @@ export const userCan = new ValidatedMethod({
     }
 
     // Has a verified email
-    if (!user.emails.find(e => e.verified == true)) {
+    if (!user.emails.find((e) => e.verified == true)) {
       return false;
     }
 
     // Admin
-    if (userId == campaign.creatorId) {
+    if (campaignUser.role) {
+      if (campaignUser.role == "admin") {
+        return true;
+      }
+    } else if (userId == campaign.creatorId) {
       return true;
     }
+
+    if (feature == "admin") return false;
+
+    // Only "admin" feature doesnt require "permission" param
+    if (!permission || !PERMISSIONS[permission])
+      throw new Meteor.Error(404, "Permission not found");
+
+    if (!_.find(FEATURES, (f) => f == feature))
+      throw new Meteor.Error(404, "Feature not found");
 
     const userPermissions = campaignUser.permissions;
 
@@ -124,18 +132,18 @@ export const userCan = new ValidatedMethod({
     }
 
     return false;
-  }
+  },
 });
 
 export const campaignHasAccount = new ValidatedMethod({
   name: "campaigns.hasAccount",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     facebookId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId, facebookId }) {
     this.unblock();
@@ -146,48 +154,48 @@ export const campaignHasAccount = new ValidatedMethod({
         campaign.facebookAccount.facebookId == facebookId) ||
       !!_.findWhere(campaign.accounts, { facebookId })
     );
-  }
+  },
 });
 
 export const campaignsCreate = new ValidatedMethod({
   name: "campaigns.create",
   validate: new SimpleSchema({
     name: {
-      type: String
+      type: String,
     },
     party: {
-      type: String
+      type: String,
     },
     candidate: {
-      type: String
+      type: String,
     },
     office: {
-      type: String
+      type: String,
     },
     country: {
-      type: String
+      type: String,
     },
     geolocation: {
       type: Object,
-      optional: true
+      optional: true,
     },
     "geolocation.osm_id": {
-      type: Number
+      type: Number,
     },
     "geolocation.osm_type": {
-      type: String
+      type: String,
     },
     "geolocation.type": {
       type: String,
-      allowedValues: ["state", "city"]
+      allowedValues: ["state", "city"],
     },
     facebookAccountId: {
-      type: String
+      type: String,
     },
     invite: {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({
     name,
@@ -197,7 +205,7 @@ export const campaignsCreate = new ValidatedMethod({
     office,
     geolocation,
     facebookAccountId,
-    invite
+    invite,
   }) {
     this.unblock();
 
@@ -209,7 +217,7 @@ export const campaignsCreate = new ValidatedMethod({
       country,
       geolocation,
       facebookAccountId,
-      invite
+      invite,
     });
 
     const userId = Meteor.userId();
@@ -234,7 +242,7 @@ export const campaignsCreate = new ValidatedMethod({
       );
     }
 
-    const users = [{ userId, status: "active" }];
+    const users = [{ userId, status: "active", role: "admin" }];
     let insertDoc = {
       users,
       name,
@@ -242,7 +250,7 @@ export const campaignsCreate = new ValidatedMethod({
       party,
       office,
       country,
-      creatorId: userId
+      creatorId: userId,
     };
 
     const user = Meteor.users.findOne(userId);
@@ -253,7 +261,7 @@ export const campaignsCreate = new ValidatedMethod({
       try {
         geolocationId = GeolocationsHelpers.discoverAndStore({
           ...geolocation,
-          accessToken: token
+          accessToken: token,
         });
       } catch (e) {
         throw new Meteor.Error(500, "Unexpected error, please try again");
@@ -266,11 +274,11 @@ export const campaignsCreate = new ValidatedMethod({
 
     const account = FacebookAccountsHelpers.getUserAccount({
       userId,
-      facebookAccountId
+      facebookAccountId,
     });
 
     const accountToken = FacebookAccountsHelpers.exchangeFBToken({
-      token: account.access_token
+      token: account.access_token,
     });
 
     insertDoc.facebookAccount = {
@@ -279,8 +287,8 @@ export const campaignsCreate = new ValidatedMethod({
       accessToken: accountToken.result,
       chatbot: {
         active: false,
-        init_text_response: false
-      }
+        init_text_response: false,
+      },
     };
 
     campaignId = Campaigns.insert(insertDoc);
@@ -291,7 +299,7 @@ export const campaignsCreate = new ValidatedMethod({
       Invites.update(
         { key: invite },
         {
-          $set: { used: true, usedBy: userId }
+          $set: { used: true, usedBy: userId },
         }
       );
     }
@@ -299,19 +307,19 @@ export const campaignsCreate = new ValidatedMethod({
     Meteor.call("log", {
       type: "campaigns.add",
       campaignId,
-      data: { name }
+      data: { name },
     });
 
     return { result: campaignId };
-  }
+  },
 });
 
 export const campaignValidateInvite = new ValidatedMethod({
   name: "campaigns.validateInvite",
   validate: new SimpleSchema({
     invite: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ invite }) {
     this.unblock();
@@ -319,15 +327,15 @@ export const campaignValidateInvite = new ValidatedMethod({
     if (userId && Roles.userIsInRole(userId, ["admin", "moderator"]))
       return false;
     return CampaignsHelpers.validateInvite({ invite });
-  }
+  },
 });
 
 export const campaignsSelectGet = new ValidatedMethod({
   name: "campaigns.selectGet",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId }) {
     this.unblock();
@@ -345,14 +353,14 @@ export const campaignsSelectGet = new ValidatedMethod({
     let selector = { _id: campaignId };
     let options = {
       fields: {
-        name: 1
-      }
+        name: 1,
+      },
     };
 
     const campaign = Campaigns.findOne(selector, options);
 
     return campaign;
-  }
+  },
 });
 
 export const campaignsSearch = new ValidatedMethod({
@@ -360,8 +368,8 @@ export const campaignsSearch = new ValidatedMethod({
   validate: new SimpleSchema({
     search: {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ search }) {
     this.unblock();
@@ -381,8 +389,8 @@ export const campaignsSearch = new ValidatedMethod({
       limit: 30,
       sort: { createdAt: -1 },
       fields: {
-        name: 1
-      }
+        name: 1,
+      },
     };
 
     if (search) {
@@ -392,45 +400,45 @@ export const campaignsSearch = new ValidatedMethod({
     }
 
     return Campaigns.find(selector, options).fetch();
-  }
+  },
 });
 
 export const campaignsFormUpdate = new ValidatedMethod({
   name: "campaigns.formUpdate",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     slug: {
       type: String,
       optional: true,
-      unique: true
+      unique: true,
     },
     crm: {
       type: Object,
-      optional: true
+      optional: true,
     },
     "crm.language": {
       type: String,
-      optional: true
+      optional: true,
     },
     "crm.header": {
       type: String,
-      optional: true
+      optional: true,
     },
     "crm.text": {
       type: String,
-      optional: true
+      optional: true,
     },
     "crm.thanks": {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ campaignId, ...data }) {
     logger.debug("campaigns.formUpdate called", {
       campaignId,
-      data
+      data,
     });
 
     const userId = Meteor.userId();
@@ -449,7 +457,7 @@ export const campaignsFormUpdate = new ValidatedMethod({
         userId,
         campaignId,
         feature: "form",
-        permission: "edit"
+        permission: "edit",
       })
     ) {
       throw new Meteor.Error(401, "Not allowed");
@@ -469,7 +477,7 @@ export const campaignsFormUpdate = new ValidatedMethod({
         "user",
         "settings",
         "help",
-        "support"
+        "support",
       ];
       if (
         data.slug.length < minimumLength ||
@@ -480,7 +488,7 @@ export const campaignsFormUpdate = new ValidatedMethod({
       if (
         Campaigns.find({
           "forms.slug": data.slug,
-          _id: { $nin: [campaign._id] }
+          _id: { $nin: [campaign._id] },
         }).fetch().length
       ) {
         throw new Meteor.Error(400, "Slug already in use");
@@ -495,34 +503,34 @@ export const campaignsFormUpdate = new ValidatedMethod({
 
     Campaigns.update(
       {
-        _id: campaignId
+        _id: campaignId,
       },
       { $set }
     );
-  }
+  },
 });
 
 export const campaignsUpdate = new ValidatedMethod({
   name: "campaigns.update",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     name: {
       type: String,
-      optional: true
+      optional: true,
     },
     candidate: {
-      type: String
+      type: String,
     },
     party: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId, ...data }) {
     logger.debug("campaigns.update called", {
       campaignId,
-      data
+      data,
     });
 
     const userId = Meteor.userId();
@@ -536,25 +544,31 @@ export const campaignsUpdate = new ValidatedMethod({
       throw new Meteor.Error(404, "Campaign not found");
     }
 
-    if (campaign.creatorId != userId) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "admin",
+      })
+    ) {
       throw new Meteor.Error(401, "Not allowed");
     }
 
     Campaigns.update(
       {
-        _id: campaignId
+        _id: campaignId,
       },
       { $set: data }
     );
-  }
+  },
 });
 
 export const campaignsRemove = new ValidatedMethod({
   name: "campaigns.remove",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId }) {
     this.unblock();
@@ -571,7 +585,11 @@ export const campaignsRemove = new ValidatedMethod({
     }
 
     const allowed =
-      campaign.creatorId == userId || Roles.userIsInRole(userId, ["admin"]);
+      Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId: campaign._id,
+        feature: "admin",
+      }) || Roles.userIsInRole(userId, ["admin"]);
 
     if (!allowed) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -582,22 +600,22 @@ export const campaignsRemove = new ValidatedMethod({
     Meteor.call("log", {
       type: "campaigns.remove",
       campaignId,
-      data: { name: campaign.name }
+      data: { name: campaign.name },
     });
 
     return res;
-  }
+  },
 });
 
 export const campaignsSuspend = new ValidatedMethod({
   name: "campaigns.suspend",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     suspend: {
-      type: Boolean
-    }
+      type: Boolean,
+    },
   }).validator(),
   run({ campaignId, suspend }) {
     this.unblock();
@@ -622,7 +640,7 @@ export const campaignsSuspend = new ValidatedMethod({
     } else {
       return CampaignsHelpers.activateCampaign({ campaignId });
     }
-  }
+  },
 });
 
 export const campaignsRefreshAllJobs = new ValidatedMethod({
@@ -630,8 +648,8 @@ export const campaignsRefreshAllJobs = new ValidatedMethod({
   validate: new SimpleSchema({
     type: {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run() {
     logger.debug("campaigns.refreshAllJobs called");
@@ -654,15 +672,15 @@ export const campaignsRefreshAllJobs = new ValidatedMethod({
     }
 
     return;
-  }
+  },
 });
 
 export const campaignRefreshHealthCheck = new ValidatedMethod({
   name: "campaigns.refreshHealthCheck",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId }) {
     logger.debug("campaigns.refreshHealthCheck", { campaignId });
@@ -677,29 +695,33 @@ export const campaignRefreshHealthCheck = new ValidatedMethod({
       throw new Meteor.Error(401, "This campaign does not exist");
     }
 
-    const allowed =
-      campaign.creatorId == userId || Roles.userIsInRole(userId, ["admin"]);
-
-    if (!allowed) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "admin",
+      }) ||
+      Roles.userIsInRole(userId, ["admin"])
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
     return CampaignsHelpers.refreshHealthCheck({ campaignId });
-  }
+  },
 });
 
 export const campaignUpdateFacebook = new ValidatedMethod({
   name: "campaigns.updateFacebook",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     token: {
-      type: String
+      type: String,
     },
     secret: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId, token, secret }) {
     logger.debug("campaigns.updateFacebook called", { campaignId });
@@ -710,9 +732,14 @@ export const campaignUpdateFacebook = new ValidatedMethod({
       throw new Meteor.Error(401, "Campaign ID not found");
     }
     const campaign = Campaigns.findOne(campaignId);
-    const allowed = campaign.creatorId == userId;
 
-    if (!allowed) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "admin",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -720,11 +747,11 @@ export const campaignUpdateFacebook = new ValidatedMethod({
 
     const account = FacebookAccountsHelpers.getUserAccount({
       userId,
-      facebookAccountId: campaign.facebookAccount.facebookId
+      facebookAccountId: campaign.facebookAccount.facebookId,
     });
 
     const accountToken = FacebookAccountsHelpers.exchangeFBToken({
-      token: account.access_token
+      token: account.access_token,
     });
 
     const user = Meteor.users.findOne(userId);
@@ -732,39 +759,48 @@ export const campaignUpdateFacebook = new ValidatedMethod({
     Campaigns.update(campaignId, {
       $set: {
         "facebookAccount.accessToken": accountToken.result,
-        "facebookAccount.userFacebookId": user.services.facebook.id
-      }
+        "facebookAccount.userFacebookId": user.services.facebook.id,
+      },
     });
-  }
+
+    const job = Jobs.findOne({
+      "data.campaignId": campaignId,
+      type: "campaigns.healthCheck",
+    });
+
+    if (job) {
+      Jobs.getJob(job._id).restart();
+    }
+  },
 });
 
 export const campaignInviteInfo = new ValidatedMethod({
   name: "campaigns.getInviteInfo",
   validate: new SimpleSchema({
     invite: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ invite }) {
     const parsedInvite = invite.split("|");
     if (parsedInvite[1]) {
       const campaign = CampaignsHelpers.getInviteCampaign({
         campaignId: parsedInvite[1],
-        inviteId: parsedInvite[0]
+        inviteId: parsedInvite[0],
       });
       if (campaign)
-        return campaign.users.find(u => u.inviteId == parsedInvite[0]);
+        return campaign.users.find((u) => u.inviteId == parsedInvite[0]);
     }
     return false;
-  }
+  },
 });
 
 export const campaignInviteData = new ValidatedMethod({
   name: "campaigns.perInvite",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId }) {
     logger.debug("campaign.perInvite", { campaignId });
@@ -776,26 +812,26 @@ export const campaignInviteData = new ValidatedMethod({
     return Campaigns.findOne(
       {
         _id: campaignId,
-        users: { $elemMatch: { userId, status: "pending" } }
+        users: { $elemMatch: { userId, status: "pending" } },
       },
       {
         fields: {
           name: 1,
           office: 1,
           party: 1,
-          candidate: 1
-        }
+          candidate: 1,
+        },
       }
     );
-  }
+  },
 });
 
 export const acceptInvite = new ValidatedMethod({
   name: "campaigns.acceptInvite",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId }) {
     logger.debug("campaigns.acceptInvite", { campaignId });
@@ -808,7 +844,7 @@ export const acceptInvite = new ValidatedMethod({
 
     const campaign = Campaigns.findOne({
       _id: campaignId,
-      users: { $elemMatch: { userId, status: "pending" } }
+      users: { $elemMatch: { userId, status: "pending" } },
     });
 
     if (!campaign) {
@@ -820,30 +856,32 @@ export const acceptInvite = new ValidatedMethod({
       { $set: { "users.$.status": "active" } }
     );
 
-    NotificationsHelpers.add({
-      userId: campaign.creatorId,
-      metadata: {
-        name: currentUser.name,
-        campaignName: campaign.name
-      },
-      category: "campaignInviteAccepted",
-      dataRef: campaignId
+    CampaignsHelpers.getAdmins({ campaignId }).map((admin) => {
+      NotificationsHelpers.add({
+        userId: admin.userId,
+        metadata: {
+          name: currentUser.name,
+          campaignName: campaign.name,
+        },
+        category: "campaignInviteAccepted",
+        dataRef: campaignId,
+      });
     });
 
     NotificationsHelpers.clear({
       userId,
       dataRef: campaignId,
-      category: "campaignInvite"
+      category: "campaignInvite",
     });
-  }
+  },
 });
 
 export const declineInvite = new ValidatedMethod({
   name: "campaigns.declineInvite",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId }) {
     logger.debug("campaigns.declineInvite", { campaignId });
@@ -856,7 +894,7 @@ export const declineInvite = new ValidatedMethod({
 
     const campaign = Campaigns.findOne({
       _id: campaignId,
-      users: { $elemMatch: { userId, status: "pending" } }
+      users: { $elemMatch: { userId, status: "pending" } },
     });
 
     if (!campaign) {
@@ -871,46 +909,49 @@ export const declineInvite = new ValidatedMethod({
 
     Campaigns.update(
       {
-        _id: campaignId
+        _id: campaignId,
       },
       { $pull: { users: campaignUser } }
     );
 
-    NotificationsHelpers.add({
-      userId: campaign.creatorId,
-      metadata: {
-        name: currentUser.name,
-        campaignName: campaign.name
-      },
-      category: "campaignInviteDeclined",
-      dataRef: campaignId
+    CampaignsHelpers.getAdmins({ campaignId }).map((admin) => {
+      NotificationsHelpers.add({
+        userId: admin.userId,
+        metadata: {
+          name: currentUser.name,
+          campaignName: campaign.name,
+        },
+        category: "campaignInviteDeclined",
+        dataRef: campaignId,
+      });
     });
 
     NotificationsHelpers.clear({
       userId,
       dataRef: campaignId,
-      category: "campaignInvite"
+      category: "campaignInvite",
     });
-  }
+  },
 });
 
 export const addUser = new ValidatedMethod({
   name: "campaigns.addUser",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     email: {
-      type: String
+      type: String,
     },
     role: {
       type: String,
-      optional: true
+      optional: true,
     },
     permissions: {
       type: Object,
-      blackbox: true
-    }
+      optional: true,
+      blackbox: true,
+    },
   }).validator(),
   run({ campaignId, email, role, permissions }) {
     logger.debug("campaigns.addUser called", { campaignId, email, role });
@@ -931,12 +972,22 @@ export const addUser = new ValidatedMethod({
       throw new Meteor.Error(401, "This campaign is suspended");
     }
 
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "admin",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
+    if (role != "admin" && (!permissions || !Object.keys(permissions).length)) {
+      throw new Meteor.Error(400, "Missing permissions");
+    }
+
     const user = Meteor.users.findOne({
-      emails: { $elemMatch: { address: email } }
+      emails: { $elemMatch: { address: email } },
     });
 
     let inviteId;
@@ -954,7 +1005,7 @@ export const addUser = new ValidatedMethod({
       // This should send email invite
       Campaigns.update(
         {
-          _id: campaignId
+          _id: campaignId,
         },
         { $push: { users: { inviteId, email, permissions, role } } }
       );
@@ -966,8 +1017,8 @@ export const addUser = new ValidatedMethod({
           name: currentUser.name,
           campaignName: campaign.name,
           url,
-          role
-        }
+          role,
+        },
       });
     } else {
       if (_.findWhere(campaign.users, { userId: user._id })) {
@@ -976,7 +1027,7 @@ export const addUser = new ValidatedMethod({
 
       Campaigns.update(
         {
-          _id: campaignId
+          _id: campaignId,
         },
         { $push: { users: { userId: user._id, permissions, role } } }
       );
@@ -984,18 +1035,18 @@ export const addUser = new ValidatedMethod({
       NotificationsHelpers.add({
         userId: user._id,
         metadata: {
-          name: currentUser.name
+          name: currentUser.name,
         },
         path: `/campaign/invite?id=${campaignId}`,
         category: "campaignInvite",
         dataRef: campaignId,
-        removable: false
+        removable: false,
       });
     }
 
     let logData = {
       permissions,
-      role
+      role,
     };
     if (user) {
       logData.userId = user._id;
@@ -1005,33 +1056,33 @@ export const addUser = new ValidatedMethod({
     Meteor.call("log", {
       type: "campaigns.users.add",
       campaignId,
-      data: logData
+      data: logData,
     });
-  }
+  },
 });
 
 export const updateUser = new ValidatedMethod({
   name: "campaigns.updateUser",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     userId: {
       type: String,
-      optional: true
+      optional: true,
     },
     inviteId: {
       type: String,
-      optional: true
+      optional: true,
     },
     role: {
       type: String,
-      optional: true
+      optional: true,
     },
     permissions: {
       type: Object,
-      blackbox: true
-    }
+      blackbox: true,
+    },
   }).validator(),
   run({ campaignId, userId, inviteId, role, permissions }) {
     logger.debug("campaigns.updateUser called", {
@@ -1039,7 +1090,7 @@ export const updateUser = new ValidatedMethod({
       userId,
       inviteId,
       role,
-      permissions
+      permissions,
     });
 
     if (!userId && !inviteId) {
@@ -1054,7 +1105,11 @@ export const updateUser = new ValidatedMethod({
     const campaign = Campaigns.findOne(campaignId);
 
     if (
-      !Meteor.call("campaigns.canManage", { userId: currentUser, campaignId })
+      !Meteor.call("campaigns.userCan", {
+        userId: currentUser,
+        campaignId,
+        feature: "admin",
+      })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
@@ -1064,20 +1119,30 @@ export const updateUser = new ValidatedMethod({
       if (!campaignUser) {
         throw new Meteor.Error(401, "User is not part of this campaign.");
       }
-      if (userId == campaign.creatorId) {
-        throw new Meteor.Error(401, "You can't change admin permissions");
+      if (
+        CampaignsHelpers.getAdminCount({ campaignId }) == 1 &&
+        Meteor.call("campaigns.userCan", {
+          userId,
+          campaignId,
+          feature: "admin",
+        })
+      ) {
+        throw new Meteor.Error(
+          401,
+          "Can't update permissions, you are the only admin!"
+        );
       }
       Campaigns.update(
         {
           _id: campaignId,
-          "users.userId": userId
+          "users.userId": userId,
         },
         { $set: { "users.$.role": role, "users.$.permissions": permissions } }
       );
       Meteor.call("log", {
         type: "campaigns.users.update",
         campaignId,
-        data: { userId, role, permissions }
+        data: { userId, role, permissions },
       });
     } else if (inviteId) {
       const campaignUser = _.findWhere(campaign.users, { inviteId });
@@ -1087,39 +1152,39 @@ export const updateUser = new ValidatedMethod({
       Campaigns.update(
         {
           _id: campaignId,
-          "users.inviteId": inviteId
+          "users.inviteId": inviteId,
         },
         { $set: { "users.$.role": role, "users.$.permissions": permissions } }
       );
       Meteor.call("log", {
         type: "campaigns.users.update",
         campaignId,
-        data: { inviteId, role, permissions }
+        data: { inviteId, role, permissions },
       });
     }
-  }
+  },
 });
 
 export const removeUser = new ValidatedMethod({
   name: "campaigns.removeUser",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     userId: {
       type: String,
-      optional: true
+      optional: true,
     },
     inviteId: {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ campaignId, userId, inviteId }) {
     logger.debug("campaigns.removeUser called", {
       campaignId,
       userId,
-      inviteId
+      inviteId,
     });
 
     if (!userId && !inviteId) {
@@ -1134,7 +1199,11 @@ export const removeUser = new ValidatedMethod({
     const campaign = Campaigns.findOne(campaignId);
 
     if (
-      !Meteor.call("campaigns.canManage", { userId: currentUser, campaignId })
+      !Meteor.call("campaigns.userCan", {
+        userId: currentUser,
+        campaignId,
+        feature: "admin",
+      })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
@@ -1143,11 +1212,15 @@ export const removeUser = new ValidatedMethod({
       throw new Meteor.Error(401, "You can't remove yourself");
     }
 
-    if (userId == campaign.creatorId) {
-      throw new Meteor.Error(
-        401,
-        "You can't remove the creator of the campaign"
-      );
+    if (
+      Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "admin",
+      }) &&
+      CampaignsHelpers.getAdminCount({ campaignId }) == 1
+    ) {
+      throw new Meteor.Error(401, "You can't remove the only admin");
     }
 
     if (userId) {
@@ -1157,7 +1230,7 @@ export const removeUser = new ValidatedMethod({
       }
       Campaigns.update(
         {
-          _id: campaignId
+          _id: campaignId,
         },
         { $pull: { users: campaignUser } }
       );
@@ -1165,7 +1238,7 @@ export const removeUser = new ValidatedMethod({
       Meteor.call("log", {
         type: "campaigns.users.remove",
         campaignId,
-        data: { userId }
+        data: { userId },
       });
     } else if (inviteId) {
       const campaignUser = _.findWhere(campaign.users, { inviteId });
@@ -1174,25 +1247,25 @@ export const removeUser = new ValidatedMethod({
       }
       Campaigns.update(
         {
-          _id: campaignId
+          _id: campaignId,
         },
         { $pull: { users: campaignUser } }
       );
       Meteor.call("log", {
         type: "campaigns.users.remove",
         campaignId,
-        data: { inviteId }
+        data: { inviteId },
       });
     }
-  }
+  },
 });
 
 export const applyInvitation = new ValidatedMethod({
   name: "campaigns.applyInvitation",
   validate: new SimpleSchema({
     invite: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ invite }) {
     const userId = Meteor.userId();
@@ -1212,13 +1285,13 @@ export const applyInvitation = new ValidatedMethod({
     const inviteId = parsedInvite[0];
     const campaign = CampaignsHelpers.getInviteCampaign({
       campaignId,
-      inviteId
+      inviteId,
     });
 
     if (!campaign) {
       throw new Meteor.Error(404, "Not found");
     }
-    const inviteData = campaign.users.find(u => u.inviteId == inviteId);
+    const inviteData = campaign.users.find((u) => u.inviteId == inviteId);
     let userSet = {};
     if (user.emails[0].address == inviteData.email) {
       userSet["emails.$.verified"] = true;
@@ -1236,81 +1309,42 @@ export const applyInvitation = new ValidatedMethod({
       );
     }
 
-    // Notify campaign owner
-    NotificationsHelpers.add({
-      userId: campaign.creatorId,
-      metadata: {
-        name: user.name,
-        campaignName: campaign.name
-      },
-      category: "campaignInviteAccepted",
-      dataRef: campaignId
+    // Notify campaign admins
+    CampaignsHelpers.getAdmins({ campaignId }).map((admin) => {
+      NotificationsHelpers.add({
+        userId: admin.userId,
+        metadata: {
+          name: user.name,
+          campaignName: campaign.name,
+        },
+        category: "campaignInviteAccepted",
+        dataRef: campaignId,
+      });
     });
 
     return { campaignId };
-  }
-});
-
-export const addSelfAccount = new ValidatedMethod({
-  name: "campaigns.addSelfAccount",
-  validate: new SimpleSchema({
-    campaignId: {
-      type: String
-    },
-    account: {
-      type: Object,
-      blackbox: true
-    }
-  }).validator(),
-  run({ campaignId, account }) {
-    this.unblock();
-    logger.debug("campaigns.addSelfAccount called", {
-      campaignId,
-      account
-    });
-
-    const userId = Meteor.userId();
-    if (!userId) {
-      throw new Meteor.Error(401, "You need to login");
-    }
-
-    const campaign = Campaigns.findOne(campaignId);
-    if (!campaign) {
-      throw new Meteor.Error(404, "This campaign does not exist");
-    }
-
-    if (campaign.status == "suspended") {
-      throw new Meteor.Error(401, "This campaign is suspended");
-    }
-
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
-      throw new Meteor.Error(401, "You are not allowed to do this action");
-    }
-    CampaignsHelpers.addAccount({ campaignId, account });
-
-    return;
-  }
+  },
 });
 
 export const refreshAccountJob = new ValidatedMethod({
   name: "campaigns.refreshAccountJob",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     facebookAccountId: {
-      type: String
+      type: String,
     },
     type: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId, facebookAccountId, type }) {
     this.unblock();
     logger.debug("campaigns.refreshAccountJob", {
       campaignId,
       facebookAccountId,
-      type
+      type,
     });
 
     const userId = Meteor.userId();
@@ -1324,15 +1358,15 @@ export const refreshAccountJob = new ValidatedMethod({
     }
 
     CampaignsHelpers.refreshAccountJob({ campaignId, facebookAccountId, type });
-  }
+  },
 });
 
 export const campaignCounts = new ValidatedMethod({
   name: "campaigns.counts",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId }) {
     this.unblock();
@@ -1348,7 +1382,13 @@ export const campaignCounts = new ValidatedMethod({
       throw new Meteor.Error(404, "This campaign does not exist");
     }
 
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "admin",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -1357,7 +1397,7 @@ export const campaignCounts = new ValidatedMethod({
     }
 
     const account = FacebookAccounts.findOne({
-      facebookId: campaign.facebookAccount.facebookId
+      facebookId: campaign.facebookAccount.facebookId,
     });
 
     if (!account) {
@@ -1368,15 +1408,15 @@ export const campaignCounts = new ValidatedMethod({
 
     counts["people"] = People.find({ campaignId }).count();
     counts["comments"] = Comments.find({
-      facebookAccountId: account.facebookId
+      facebookAccountId: account.facebookId,
     }).count();
     counts["likes"] = Likes.find({
       facebookAccountId: account.facebookId,
-      parentId: { $exists: false }
+      parentId: { $exists: false },
     }).count();
 
     return counts;
-  }
+  },
 });
 
 export const campaignQueryCount = new ValidatedMethod({
@@ -1385,8 +1425,8 @@ export const campaignQueryCount = new ValidatedMethod({
     query: {
       type: Object,
       blackbox: true,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ query }) {
     const userId = Meteor.userId();
@@ -1394,7 +1434,7 @@ export const campaignQueryCount = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to perform this action");
     }
     return Campaigns.find(query || {}).count();
-  }
+  },
 });
 
 export const inviteQueryCount = new ValidatedMethod({
@@ -1403,8 +1443,8 @@ export const inviteQueryCount = new ValidatedMethod({
     query: {
       type: Object,
       blackbox: true,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ query }) {
     const userId = Meteor.userId();
@@ -1412,7 +1452,7 @@ export const inviteQueryCount = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to perform this action");
     }
     return Invites.find(query || {}).count();
-  }
+  },
 });
 
 export const createInvite = new ValidatedMethod({
@@ -1428,18 +1468,18 @@ export const createInvite = new ValidatedMethod({
     }
 
     return Invites.insert({});
-  }
+  },
 });
 
 export const designateInvite = new ValidatedMethod({
   name: "invites.designate",
   validate: new SimpleSchema({
     inviteId: {
-      type: String
+      type: String,
     },
     designated: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ inviteId, designated }) {
     this.unblock();
@@ -1459,15 +1499,15 @@ export const designateInvite = new ValidatedMethod({
     Invites.update(inviteId, { $set: { designated } });
 
     return;
-  }
+  },
 });
 
 export const removeInvite = new ValidatedMethod({
   name: "invites.remove",
   validate: new SimpleSchema({
     inviteId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ inviteId }) {
     this.unblock();
@@ -1487,5 +1527,5 @@ export const removeInvite = new ValidatedMethod({
     Invites.remove(inviteId);
 
     return;
-  }
+  },
 });

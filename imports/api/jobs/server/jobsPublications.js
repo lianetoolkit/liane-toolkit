@@ -1,11 +1,15 @@
 const { Jobs } = require("/imports/api/jobs/jobs.js");
 
-Meteor.publish("jobs.byCampaign", function({ campaignId, type, status }) {
+Meteor.publish("jobs.byCampaign", function ({ campaignId, type, status }) {
   this.unblock();
   const currentUser = this.userId;
   if (
     currentUser &&
-    Meteor.call("campaigns.canManage", { campaignId, userId: currentUser })
+    Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId: currentUser,
+      feature: "admin",
+    })
   ) {
     let selector = { "data.campaignId": campaignId };
     if (type) {
@@ -19,15 +23,15 @@ Meteor.publish("jobs.byCampaign", function({ campaignId, type, status }) {
         repeated: 1,
         status: 1,
         "data.campaignId": 1,
-        type: 1
-      }
+        type: 1,
+      },
     });
   } else {
     return this.ready();
   }
 });
 
-Meteor.publish("admin.jobs.counter", function({ search }) {
+Meteor.publish("admin.jobs.counter", function ({ search }) {
   this.unblock();
   const currentUser = this.userId;
   if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
@@ -36,7 +40,7 @@ Meteor.publish("admin.jobs.counter", function({ search }) {
   }
 });
 
-Meteor.publish("admin.jobs", function({ query, options }) {
+Meteor.publish("admin.jobs", function ({ query, options }) {
   this.unblock();
   const currentUser = this.userId;
   if (Roles.userIsInRole(currentUser, ["admin"])) {
@@ -47,14 +51,14 @@ Meteor.publish("admin.jobs", function({ query, options }) {
   }
 });
 
-Meteor.publish("admin.jobs.supervisor", function({ userId }) {
+Meteor.publish("admin.jobs.supervisor", function ({ userId }) {
   check(userId, String);
   this.unblock();
   const currentUser = this.userId;
   if (Roles.userIsInRole(currentUser, ["admin"])) {
     const findOptions = {
       "data.userId": userId,
-      type: "users.supervisor"
+      type: "users.supervisor",
     };
     return Jobs.find(findOptions);
   } else {

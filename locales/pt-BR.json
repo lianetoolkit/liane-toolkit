@@ -609,6 +609,7 @@
   "app.support_message": "Precisa de ajuda ou gostaria de reportar um problema? Escreva para <a href='mailto:info@liane.voto'>info@liane.voto</a> e fale com nossa equipe.",
   "app.team_roles.activism_coordinator": "Coordenação de ativismo digital",
   "app.team_roles.activist": "Ativismo digital",
+  "app.team_roles.admin": "Admin",
   "app.team_roles.coordinator": "Coordenação de campanha digital",
   "app.team_roles.director": "Direção de campanha digital",
   "app.team_roles.volunteer": "Voluntariado",

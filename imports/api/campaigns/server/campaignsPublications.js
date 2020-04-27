@@ -2,7 +2,7 @@ import { Campaigns, Invites } from "/imports/api/campaigns/campaigns.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 import {
   PeopleTags,
-  PeopleLists
+  PeopleLists,
 } from "/imports/api/facebook/people/people.js";
 import { Contexts } from "/imports/api/contexts/contexts.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
@@ -10,22 +10,22 @@ import { Jobs } from "/imports/api/jobs/jobs.js";
 
 import _ from "underscore";
 
-Meteor.publishComposite("campaigns.all", function({ query, options }) {
+Meteor.publishComposite("campaigns.all", function ({ query, options }) {
   this.unblock();
   const currentUser = this.userId;
   if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
     return {
-      find: function() {
+      find: function () {
         return Campaigns.find(
           query || {},
           options || {
-            sort: { createdAt: -1 }
+            sort: { createdAt: -1 },
           }
         );
       },
       children: [
         {
-          find: function(campaign) {
+          find: function (campaign) {
             return Jobs.find({
               "data.campaignId": campaign._id,
               type: {
@@ -33,55 +33,55 @@ Meteor.publishComposite("campaigns.all", function({ query, options }) {
                   "campaigns.healthCheck",
                   "entries.updateAccountEntries",
                   "entries.refetchAccountEntries",
-                  "people.updateFBUsers"
-                ]
-              }
+                  "people.updateFBUsers",
+                ],
+              },
             });
-          }
+          },
         },
         {
-          find: function(campaign) {
+          find: function (campaign) {
             return Meteor.users.find(
               {
-                _id: { $in: _.pluck(campaign.users, "userId") }
+                _id: { $in: _.pluck(campaign.users, "userId") },
               },
               {
                 fields: {
                   name: 1,
-                  "emails.address": 1
-                }
+                  "emails.address": 1,
+                },
               }
             );
-          }
+          },
         },
         {
-          find: function(campaign) {
+          find: function (campaign) {
             return FacebookAccounts.find({
-              facebookId: campaign.facebookAccount.facebookId
+              facebookId: campaign.facebookAccount.facebookId,
             });
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
   } else {
     return this.ready();
   }
 });
 
-Meteor.publish("campaigns.byUser", function() {
+Meteor.publish("campaigns.byUser", function () {
   this.unblock();
   const currentUser = this.userId;
   if (currentUser) {
     return Campaigns.find(
       {
-        users: { $elemMatch: { userId: currentUser, status: "active" } }
+        users: { $elemMatch: { userId: currentUser, status: "active" } },
       },
       {
         fields: {
           _id: 1,
           name: 1,
-          users: 1
-        }
+          users: 1,
+        },
       }
     );
   } else {
@@ -89,9 +89,9 @@ Meteor.publish("campaigns.byUser", function() {
   }
 });
 
-Meteor.publishComposite("campaigns.publicDetail", function({
+Meteor.publishComposite("campaigns.publicDetail", function ({
   campaignId,
-  slug
+  slug,
 }) {
   this.unblock();
   if (!campaignId && !slug) {
@@ -105,7 +105,7 @@ Meteor.publishComposite("campaigns.publicDetail", function({
   }
   logger.debug("campaigns.publicDetail pub", { selector: campaignId || slug });
   return {
-    find: function() {
+    find: function () {
       return Campaigns.find(selector, {
         fields: {
           name: 1,
@@ -114,14 +114,14 @@ Meteor.publishComposite("campaigns.publicDetail", function({
           office: 1,
           country: 1,
           "forms.slug": 1,
-          "forms.crm": 1
-        }
+          "forms.crm": 1,
+        },
       });
-    }
+    },
   };
 });
 
-Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
+Meteor.publishComposite("campaigns.detail", function ({ campaignId }) {
   this.unblock();
   const userId = this.userId;
   logger.debug("campaigns.detail pub", { campaignId });
@@ -137,59 +137,63 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
     geolocationId: 1,
     status: 1,
     forms: 1,
-    createdAt: 1
+    createdAt: 1,
   };
   let children = [
     {
-      find: function(campaign) {
+      find: function (campaign) {
         let ids = _.pluck(campaign.accounts || [], "facebookId");
         if (campaign.facebookAccount)
           ids.push(campaign.facebookAccount.facebookId);
         return FacebookAccounts.find({
-          facebookId: { $in: ids }
+          facebookId: { $in: ids },
         });
-      }
+      },
     },
     {
-      find: function(campaign) {
+      find: function (campaign) {
         return Geolocations.find({ _id: campaign.geolocationId });
-      }
-    }
+      },
+    },
   ];
   const campaign = Campaigns.findOne(campaignId);
 
-  // Creator extra data
-  if (campaign.creatorId == userId) {
+  const campaignUser = campaign.users.find((u) => u.userId == userId);
+
+  // Admin extra data
+  if (
+    Meteor.call("campaigns.userCan", { campaignId, userId, feature: "admin" })
+  ) {
     fields.users = 1;
     let userSelector;
     if (campaign.facebookAccount.userFacebookId) {
       userSelector = {
         $or: [
           {
-            _id: { $in: _.pluck(campaign.users, "userId") }
+            _id: { $in: _.pluck(campaign.users, "userId") },
           },
           {
-            "services.facebook.id": campaign.facebookAccount.userFacebookId
-          }
-        ]
+            "services.facebook.id": campaign.facebookAccount.userFacebookId,
+          },
+        ],
       };
     } else {
       userSelector = {
         _id: {
-          $in: _.pluck(campaign.users, "userId")
-        }
+          $in: _.pluck(campaign.users, "userId"),
+        },
       };
     }
     children.push({
-      find: function(campaign) {
+      find: function (campaign) {
         return Meteor.users.find(userSelector, {
           fields: {
             name: 1,
             "services.facebook.id": 1,
-            "emails.address": 1
-          }
+            "emails.address": 1,
+          },
         });
-      }
+      },
     });
   } else {
     fields["users.userId"] = 1;
@@ -201,49 +205,49 @@ Meteor.publishComposite("campaigns.detail", function({ campaignId }) {
       campaignId,
       userId,
       feature: "people",
-      permission: "view"
+      permission: "view",
     })
   ) {
     children.push({
-      find: function(campaign) {
+      find: function (campaign) {
         return PeopleTags.find({
-          campaignId: campaign._id
+          campaignId: campaign._id,
         });
-      }
+      },
     });
     children.push({
-      find: function(campaign) {
+      find: function (campaign) {
         return PeopleLists.find({
-          campaignId: campaign._id
+          campaignId: campaign._id,
         });
-      }
+      },
     });
   }
 
   if (userId) {
     return {
-      find: function() {
+      find: function () {
         return Campaigns.find(
           {
             _id: campaignId,
-            users: { $elemMatch: { userId } }
+            users: { $elemMatch: { userId } },
           },
           { fields }
         );
       },
-      children
+      children,
     };
   } else {
     return this.ready();
   }
 });
 
-Meteor.publishComposite("invites.all", function({ query, options }) {
+Meteor.publishComposite("invites.all", function ({ query, options }) {
   this.unblock();
   const currentUser = this.userId;
   if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
     return {
-      find: function() {
+      find: function () {
         return Invites.find(
           query || {},
           options || { sort: { createdAt: -1 } }
@@ -253,13 +257,13 @@ Meteor.publishComposite("invites.all", function({ query, options }) {
         let children = [];
         if (invite.usedBy) {
           children.push({
-            find: function() {
+            find: function () {
               return Meteor.users.find({ _id: invite.usedBy });
-            }
+            },
           });
         }
         return children;
-      }
+      },
     };
     return Invites.find({});
   } else {

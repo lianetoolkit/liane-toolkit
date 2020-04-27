@@ -19,45 +19,6 @@ Meteor.publish("geolocations.all", function({ query, options }) {
   }
 });
 
-Meteor.publish("geolocations.byCampaign", function({ campaignId }) {
-  const userId = this.userId;
-  if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
-    return this.ready();
-  } else {
-    const campaign = Campaigns.findOne(campaignId);
-    const context = Contexts.findOne(campaign.contextId);
-    return Geolocations.find(
-      {
-        _id: { $in: [...context.geolocations, context.mainGeolocationId] }
-      },
-      {
-        fields: {
-          name: 1
-        }
-      }
-    );
-  }
-});
-
-Meteor.publish("geolocations.byContext", function({ contextId }) {
-  const currentUser = this.userId;
-  if (currentUser) {
-    const context = Contexts.get(contextId);
-    return Geolocations.find(
-      {
-        _id: { $in: context.geolocations }
-      },
-      {
-        fields: {
-          name: 1
-        }
-      }
-    );
-  } else {
-    return this.ready();
-  }
-});
-
 Meteor.publish("geolocations.detail", function({ geolocationId }) {
   const currentUser = this.userId;
   if (currentUser) {

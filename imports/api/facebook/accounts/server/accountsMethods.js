@@ -15,16 +15,16 @@ export const webhookUpdate = new ValidatedMethod({
   name: "webhookUpdate",
   validate: new SimpleSchema({
     token: {
-      type: String
+      type: String,
     },
     facebookAccountId: {
-      type: String
+      type: String,
     },
     data: {
       type: Object,
       blackbox: true,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ token, facebookAccountId, data }) {
     this.unblock();
@@ -36,7 +36,7 @@ export const webhookUpdate = new ValidatedMethod({
     }
     logger.debug("facebook.accounts.webhook.update called", {
       facebookAccountId,
-      data
+      data,
     });
     // Validate facebook account
     const account = FacebookAccounts.findOne({ facebookId: facebookAccountId });
@@ -45,20 +45,20 @@ export const webhookUpdate = new ValidatedMethod({
       logger.debug("webhookUpdate received unknown Facebook Account ID");
       return true;
     }
-    data.entry.forEach(entry => {
+    data.entry.forEach((entry) => {
       if (entry.changes) {
-        entry.changes.forEach(item => {
+        entry.changes.forEach((item) => {
           switch (item.value.item) {
             case "comment":
               CommentsHelpers.handleWebhook({
                 facebookAccountId,
-                data: item.value
+                data: item.value,
               });
               break;
             case "reaction":
               LikesHelpers.handleWebhook({
                 facebookAccountId,
-                data: item.value
+                data: item.value,
               });
               break;
             case "album":
@@ -86,7 +86,7 @@ export const webhookUpdate = new ValidatedMethod({
             case "video":
               EntriesHelpers.handleWebhook({
                 facebookAccountId,
-                data: item.value
+                data: item.value,
               });
               break;
             default:
@@ -95,7 +95,7 @@ export const webhookUpdate = new ValidatedMethod({
       }
     });
     return true;
-  }
+  },
 });
 
 export const getAccountsPublicData = new ValidatedMethod({
@@ -108,28 +108,28 @@ export const getAccountsPublicData = new ValidatedMethod({
       {
         fields: {
           name: 1,
-          facebookId: 1
-        }
+          facebookId: 1,
+        },
       },
       {
         sort: {
-          name: 1
-        }
+          name: 1,
+        },
       }
     ).fetch();
-    return accounts.map(acc => {
+    return accounts.map((acc) => {
       delete acc._id;
       return acc;
     });
-  }
+  },
 });
 
 export const hasSubsMessaging = new ValidatedMethod({
   name: "facebook.accounts.hasSubsMessaging",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId }) {
     this.unblock();
@@ -137,7 +137,13 @@ export const hasSubsMessaging = new ValidatedMethod({
 
     const userId = Meteor.userId();
 
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId }))
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "admin",
+      })
+    )
       throw new Meteor.Error(400, "Access denied");
 
     const campaign = Campaigns.findOne(campaignId);
@@ -148,7 +154,7 @@ export const hasSubsMessaging = new ValidatedMethod({
     try {
       res = Promise.await(
         FB.api("me/messaging_feature_review", {
-          access_token: token
+          access_token: token,
         })
       );
     } catch (err) {
@@ -160,7 +166,7 @@ export const hasSubsMessaging = new ValidatedMethod({
 
     if (res && res.data) {
       const subsFeature = res.data.find(
-        f => f.feature == "subscription_messaging"
+        (f) => f.feature == "subscription_messaging"
       );
       if (subsFeature) {
         status = subsFeature.status;
@@ -168,7 +174,7 @@ export const hasSubsMessaging = new ValidatedMethod({
     }
 
     return status;
-  }
+  },
 });
 
 export const getUserAccounts = new ValidatedMethod({
@@ -185,15 +191,15 @@ export const getUserAccounts = new ValidatedMethod({
     response = FacebookAccountsHelpers.getUserAccounts({ userId });
 
     return response;
-  }
+  },
 });
 
 export const updateFBSubscription = new ValidatedMethod({
   name: "accounts.updateFBSubscription",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId }) {
     this.unblock();
@@ -210,7 +216,13 @@ export const updateFBSubscription = new ValidatedMethod({
       throw new Meteor.Error(404, "Campaign not found");
     }
 
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "admin",
+      })
+    ) {
       throw new Meteor.Error(401, "Not allowed");
     }
 
@@ -218,19 +230,19 @@ export const updateFBSubscription = new ValidatedMethod({
     const token = campaign.facebookAccount.accessToken;
 
     CampaignsHelpers.refreshCampaignAccountToken({
-      campaignId
+      campaignId,
     });
 
     FacebookAccountsHelpers.updateFBSubscription({ facebookAccountId, token });
-  }
+  },
 });
 
 export const seachFBAccounts = new ValidatedMethod({
   name: "facebook.accounts.search",
   validate: new SimpleSchema({
     q: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ q }) {
     this.unblock();
@@ -244,5 +256,5 @@ export const seachFBAccounts = new ValidatedMethod({
     response = FacebookAccountsHelpers.searchFBAccounts({ userId, q });
 
     return response;
-  }
+  },
 });

@@ -10,12 +10,12 @@ export const entriesByCampaign = new ValidatedMethod({
   name: "entries.byCampaign",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     search: {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ campaignId, search }) {
     logger.debug("entries.byCampaign called", { campaignId, search });
@@ -26,7 +26,14 @@ export const entriesByCampaign = new ValidatedMethod({
       throw new Meteor.Error(401, "You must be logged in");
     }
 
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId }))
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "comments",
+        permission: "view",
+      })
+    )
       throw new Meteor.Error(400, "Not allowed");
 
     const campaign = Campaigns.findOne(campaignId);
@@ -41,10 +48,10 @@ export const entriesByCampaign = new ValidatedMethod({
         parentId: 1,
         createdTime: 1,
         updatedTime: 1,
-        counts: 1
+        counts: 1,
       },
       limit: 30,
-      sort: { createdTime: -1 }
+      sort: { createdTime: -1 },
     };
 
     if (search) {
@@ -54,33 +61,33 @@ export const entriesByCampaign = new ValidatedMethod({
     }
 
     return Entries.find(selector, options).fetch();
-  }
+  },
 });
 
 export const resolveInteraction = new ValidatedMethod({
   name: "entries.resolveInteraction",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     id: {
-      type: String
+      type: String,
     },
     type: {
-      type: String
+      type: String,
     },
     undo: {
       type: Boolean,
       optional: true,
-      defaultValue: false
-    }
+      defaultValue: false,
+    },
   }).validator(),
   run({ campaignId, id, type, undo }) {
     logger.debug("entries.resolveInteraction called", {
       campaignId,
       id,
       type,
-      undo
+      undo,
     });
 
     const userId = Meteor.userId();
@@ -88,7 +95,14 @@ export const resolveInteraction = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "comments",
+        permission: "edit",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not part of this campaign");
     }
 
@@ -108,7 +122,7 @@ export const resolveInteraction = new ValidatedMethod({
 
     if (
       !_.findWhere(campaign.accounts, {
-        facebookId: interaction.facebookAccountId
+        facebookId: interaction.facebookAccountId,
       })
     ) {
       throw new Meteor.Error(
@@ -119,10 +133,10 @@ export const resolveInteraction = new ValidatedMethod({
 
     InteractionModel.update(interaction._id, {
       $set: {
-        resolved: !undo
-      }
+        resolved: !undo,
+      },
     });
 
     return;
-  }
+  },
 });

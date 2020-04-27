@@ -4,7 +4,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReactTooltip from "react-tooltip";
@@ -19,43 +19,43 @@ import Table from "../../../components/Table.jsx";
 import Loading from "../../../components/Loading.jsx";
 import PersonFormInfo from "../../../components/PersonFormInfo.jsx";
 import TeamRolesField, {
-  rolesLabels
+  rolesLabels,
 } from "../../../components/TeamRolesField.jsx";
 import PermissionsField from "../../../components/PermissionsField.jsx";
 
 const messages = defineMessages({
   creatorLabel: {
     id: "app.campaign_settings.team_creator_label",
-    defaultMessage: "Campaign creator"
+    defaultMessage: "Campaign creator",
   },
   removeLabel: {
     id: "app.campaign_settings.team_remove_label",
-    defaultMessage: "Remove member"
+    defaultMessage: "Remove member",
   },
   editLabel: {
     id: "app.campaign_settings.team_edit_label",
-    defaultMessage: "Edit member permissions"
+    defaultMessage: "Edit member permissions",
   },
   emailLabel: {
     id: "app.campaign_settings.team_email_label",
-    defaultMessage: "Email"
+    defaultMessage: "Email",
   },
   roleLabel: {
     id: "app.campaign_settings.team_role_label",
-    defaultMessage: "Member role"
+    defaultMessage: "Member role",
   },
   permissionsLabel: {
     id: "app.campaign_settings.team_permissions_label",
-    defaultMessage: "Permissions"
+    defaultMessage: "Permissions",
   },
   addButtonLabel: {
     id: "app.campaign_settings.team_add_button_label",
-    defaultMessage: "Add member"
+    defaultMessage: "Add member",
   },
   updateButtonLabel: {
     id: "app.campaign_settings.team_update_button_label",
-    defaultMessage: "Update member"
-  }
+    defaultMessage: "Update member",
+  },
 });
 
 class EditUser extends Component {
@@ -68,25 +68,25 @@ class EditUser extends Component {
         role: user.campaign ? user.campaign.role : user.role,
         permissions: user.campaign
           ? user.campaign.permissions
-          : user.permissions
-      }
+          : user.permissions,
+      },
     };
   }
   _handleChange = ({ target }) => {
     const newFormData = { ...this.state.formData };
     set(newFormData, target.name, target.value);
     this.setState({
-      formData: newFormData
+      formData: newFormData,
     });
   };
-  _handleSubmit = ev => {
+  _handleSubmit = (ev) => {
     ev.preventDefault();
     const { campaignId, user } = this.props;
     const { formData } = this.state;
     let data = {
       campaignId,
       role: formData.role,
-      permissions: formData.permissions
+      permissions: formData.permissions,
     };
     if (user._id) {
       data.userId = user._id;
@@ -120,13 +120,16 @@ class EditUser extends Component {
             onChange={this._handleChange}
           />
         </Form.Field>
-        <Form.Field label={intl.formatMessage(messages.permissionsLabel)}>
-          <PermissionsField
-            onChange={this._handleChange}
-            name="permissions"
-            value={formData.permissions}
-          />
-        </Form.Field>
+
+        {formData.role != "admin" ? (
+          <Form.Field label={intl.formatMessage(messages.permissionsLabel)}>
+            <PermissionsField
+              onChange={this._handleChange}
+              name="permissions"
+              value={formData.permissions}
+            />
+          </Form.Field>
+        ) : null}
         <input
           type="submit"
           value={intl.formatMessage(messages.updateButtonLabel)}
@@ -137,7 +140,7 @@ class EditUser extends Component {
 }
 
 EditUser.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 const EditUserIntl = injectIntl(EditUser);
@@ -157,8 +160,8 @@ class CampaignTeamPage extends Component {
     this.state = {
       loading: false,
       formData: {
-        email: ""
-      }
+        email: "",
+      },
     };
   }
   componentDidUpdate() {
@@ -168,10 +171,10 @@ class CampaignTeamPage extends Component {
     const newFormData = { ...this.state.formData };
     set(newFormData, target.name, target.value);
     this.setState({
-      formData: newFormData
+      formData: newFormData,
     });
   };
-  _handleSubmit = ev => {
+  _handleSubmit = (ev) => {
     ev.preventDefault();
     const { campaign } = this.props;
     const { formData } = this.state;
@@ -183,7 +186,7 @@ class CampaignTeamPage extends Component {
           campaignId: campaign._id,
           email: formData.email,
           role: formData.role,
-          permissions: formData.permissions
+          permissions: formData.permissions,
         },
         (err, res) => {
           if (err) {
@@ -193,8 +196,8 @@ class CampaignTeamPage extends Component {
               formData: {
                 ...this.state.formData,
                 email: "",
-                role: ""
-              }
+                role: "",
+              },
             });
           }
           this.setState({ loading: false });
@@ -204,12 +207,12 @@ class CampaignTeamPage extends Component {
       alertStore.add("Preencha com um email válido", "error");
     }
   };
-  _handleEditClick = (campaignId, user) => ev => {
+  _handleEditClick = (campaignId, user) => (ev) => {
     ev.preventDefault();
     modalStore.setTitle(user.name);
     modalStore.set(<EditUserIntl campaignId={campaignId} user={user} />);
   };
-  _handleRemoveClick = user => ev => {
+  _handleRemoveClick = (user) => (ev) => {
     ev.preventDefault();
     const { campaign } = this.props;
     if (confirm("Tem certeza?")) {
@@ -231,12 +234,14 @@ class CampaignTeamPage extends Component {
       });
     }
   };
-  _getRoleLabel = user => {
-    const { intl } = this.props;
+  _getRoleLabel = (user) => {
+    const { intl, campaign } = this.props;
     const data = user.campaign ? user.campaign : user;
-    if (rolesLabels[data.role]) {
-      return intl.formatMessage(rolesLabels[data.role]);
-    }
+    if (data.role) {
+      if (rolesLabels[data.role]) {
+        return intl.formatMessage(rolesLabels[data.role]);
+      }
+    } else if (user._id == campaign.creatorId) return "Admin";
     return data.role;
   };
   render() {
@@ -256,7 +261,7 @@ class CampaignTeamPage extends Component {
             </h2>
             <Table>
               <tbody>
-                {campaign.users.map(campaignUser => (
+                {campaign.users.map((campaignUser) => (
                   <tr
                     key={campaignUser._id || campaignUser.inviteId}
                     className={
@@ -277,34 +282,20 @@ class CampaignTeamPage extends Component {
                     <td className="fill small">
                       {campaignUser._id ? campaignUser.emails[0].address : ""}
                     </td>
-                    {campaignUser._id != campaign.creatorId ? (
-                      <td>
-                        <a
-                          href="javascript:void(0);"
-                          data-tip={intl.formatMessage(messages.editLabel)}
-                          onClick={this._handleEditClick(
-                            campaign._id,
-                            campaignUser
-                          )}
-                        >
-                          <FontAwesomeIcon icon="edit" />
-                        </a>
-                      </td>
-                    ) : null}
-                    <td
-                      colSpan={
-                        campaignUser._id == campaign.creatorId ? "2" : "1"
-                      }
-                      style={{ textAlign: "center" }}
-                    >
-                      {campaignUser._id == campaign.creatorId ? (
-                        <FontAwesomeIcon
-                          icon="star"
-                          data-tip={intl.formatMessage(messages.creatorLabel)}
-                        />
-                      ) : null}
-                      {campaignUser._id != campaign.creatorId &&
-                      campaignUser._id != user._id ? (
+                    <td>
+                      <a
+                        href="javascript:void(0);"
+                        data-tip={intl.formatMessage(messages.editLabel)}
+                        onClick={this._handleEditClick(
+                          campaign._id,
+                          campaignUser
+                        )}
+                      >
+                        <FontAwesomeIcon icon="edit" />
+                      </a>
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      {campaignUser._id != user._id ? (
                         <a
                           className="remove"
                           href="javascript:void(0);"
@@ -346,13 +337,15 @@ class CampaignTeamPage extends Component {
                 onChange={this._handleChange}
               />
             </Form.Field>
-            <Form.Field label={intl.formatMessage(messages.permissionsLabel)}>
-              <PermissionsField
-                onChange={this._handleChange}
-                name="permissions"
-                value={formData.permissions}
-              />
-            </Form.Field>
+            {formData.role != "admin" ? (
+              <Form.Field label={intl.formatMessage(messages.permissionsLabel)}>
+                <PermissionsField
+                  onChange={this._handleChange}
+                  name="permissions"
+                  value={formData.permissions}
+                />
+              </Form.Field>
+            ) : null}
             <input
               type="submit"
               value={intl.formatMessage(messages.addButtonLabel)}
@@ -366,7 +359,7 @@ class CampaignTeamPage extends Component {
 }
 
 CampaignTeamPage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(CampaignTeamPage);

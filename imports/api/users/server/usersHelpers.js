@@ -26,7 +26,7 @@ const UsersHelpers = {
     check(userId, String);
     const permissions = this.getFacebookPermissions({ userId });
     return _.compact(
-      permissions.data.map(permission => {
+      permissions.data.map((permission) => {
         if (permission.status == "declined") {
           return permission.permission;
         }
@@ -38,12 +38,12 @@ const UsersHelpers = {
     let longToken;
     if (credential && credential.serviceData.accessToken) {
       longToken = UsersHelpers.exchangeFBToken({
-        token: credential.serviceData.accessToken
+        token: credential.serviceData.accessToken,
       });
       Meteor.users.update(userId, {
         $set: {
-          "services.facebook.accessToken": longToken.result
-        }
+          "services.facebook.accessToken": longToken.result,
+        },
       });
     } else {
       throw new Meteor.Error(500, "Error retrieving Facebook credentials.");
@@ -56,13 +56,13 @@ const UsersHelpers = {
       FB.api("oauth/access_token", {
         client_id: Meteor.settings.facebook.clientId,
         client_secret: Meteor.settings.facebook.clientSecret,
-        grant_type: "client_credentials"
+        grant_type: "client_credentials",
       })
     );
     const response = Promise.await(
       FB.api("debug_token", {
         input_token: token,
-        access_token: appToken.access_token
+        access_token: appToken.access_token,
       })
     );
     if (response.data) {
@@ -79,11 +79,11 @@ const UsersHelpers = {
         Object.assign(
           {
             grant_type: "fb_exchange_token",
-            fb_exchange_token: token
+            fb_exchange_token: token,
           },
           {
             client_id: Meteor.settings.facebook.clientId,
-            client_secret: Meteor.settings.facebook.clientSecret
+            client_secret: Meteor.settings.facebook.clientSecret,
           }
         )
       )
@@ -97,7 +97,7 @@ const UsersHelpers = {
       response = Promise.await(
         FB.api("me/adaccounts", {
           fields: ["account_id", "users"],
-          access_token: token
+          access_token: token,
         })
       );
       result = response.data;
@@ -109,7 +109,7 @@ const UsersHelpers = {
   getUserByToken({ token }) {
     check(token, String);
     return Meteor.users.findOne({
-      "services.facebook.accessToken": token
+      "services.facebook.accessToken": token,
     });
   },
   removeUser({ userId }) {
@@ -121,18 +121,32 @@ const UsersHelpers = {
 
     if (!user) throw new Meteor.Error(404, "User not found");
 
-    // Remove user campaigns
-    const userCampaigns = Campaigns.find({ creatorId: userId }).fetch();
+    // Remove user campaigns (only if its only admin)
+    const userCampaigns = Campaigns.find({
+      $or: [
+        { creatorId: userId },
+        { users: { $elemMatch: { userId, role: "admin" } } },
+      ],
+    }).fetch();
     for (const campaign of userCampaigns) {
-      CampaignsHelpers.removeCampaign({ campaignId: campaign._id });
+      if (CampaignsHelpers.getAdminCount({ campaignId: campaign._id }) == 1)
+        if (
+          Meteor.call("campaigns.userCan", {
+            campaignId: campaign._id,
+            userId,
+            feature: "admin",
+          })
+        ) {
+          CampaignsHelpers.removeCampaign({ campaignId: campaign._id });
+        }
     }
 
     // Remove self from campaigns
     const memberCampaigns = Campaigns.find({
-      "users.userId": user._id
+      "users.userId": user._id,
     }).fetch();
     for (const campaign of memberCampaigns) {
-      const campaignUser = campaign.users.find(u => u.userId == user._id);
+      const campaignUser = campaign.users.find((u) => u.userId == user._id);
       Campaigns.update(
         { _id: campaign._id },
         { $pull: { users: campaignUser } }
@@ -144,7 +158,7 @@ const UsersHelpers = {
       try {
         Promise.await(
           FB.api(user.services.facebook.id + "/permissions", "DELETE", {
-            access_token: user.services.facebook.accessToken
+            access_token: user.services.facebook.accessToken,
           })
         );
       } catch (err) {
@@ -154,7 +168,7 @@ const UsersHelpers = {
     }
 
     return Meteor.users.remove(userId);
-  }
+  },
 };
 
 exports.UsersHelpers = UsersHelpers;
