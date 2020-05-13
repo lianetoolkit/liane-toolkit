@@ -27,6 +27,8 @@ const CampaignsHelpers = {
   },
   getAdmins({ campaignId }) {
     const campaign = Campaigns.findOne(campaignId);
+    if (!campaign || !campaign.users)
+      throw new Meteor.Error(400, "Campaign not found");
     let admins = campaign.users.filter((u) => u.role == "admin");
     const creator = campaign.users.find((u) => u.userId == campaign.creatorId);
     if (creator && !creator.role) {
