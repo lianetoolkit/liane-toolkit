@@ -9,6 +9,7 @@ import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { CommentsHelpers } from "/imports/api/facebook/comments/server/commentsHelpers.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
+import { NotificationsHelpers } from "/imports/api/notifications/server/notificationsHelpers";
 import _ from "underscore";
 import moment from "moment";
 import { get, set, merge, pick, compact, uniq } from "lodash";
@@ -1682,6 +1683,7 @@ export const peopleFormSubmit = new ValidatedMethod({
     }
 
     let personId;
+    let newPerson = true;
 
     if (formId || facebookId) {
       let selector = formId ? { formId } : { facebookId };
@@ -1689,6 +1691,7 @@ export const peopleFormSubmit = new ValidatedMethod({
       if (!person) {
         throw new Meteor.Error(400, "Unauthorized request");
       }
+      newPerson = false;
       People.update(selector, update);
       newFormId = PeopleHelpers.getFormId({
         personId: person._id,
@@ -1715,6 +1718,17 @@ export const peopleFormSubmit = new ValidatedMethod({
       });
       personId = id;
     }
+
+    NotificationsHelpers.add({
+      campaignId,
+      category: newPerson ? "newFormUser" : "updateFormUser",
+      metadata: {
+        name: People.findOne(personId).name,
+        personId,
+      },
+      path: `/people/${personId}`,
+      dataRef: personId,
+    });
 
     Meteor.call("log", {
       type: "people.formEntry",

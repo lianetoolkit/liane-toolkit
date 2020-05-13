@@ -1,21 +1,29 @@
 const messages = {
   campaignInvite: {
     id: "app.notifications.campaign_invite",
-    defaultMessage: "{name} invited you to be a part of their campaign."
+    defaultMessage: "{name} invited you to be a part of their campaign.",
   },
   campaignInviteAccepted: {
     id: "app.notifications.campaign_invite_accepted",
     defaultMessage:
-      "{name} accepted your invitation to be a part of {campaignName}."
+      "{name} accepted your invitation to be a part of {campaignName}.",
   },
   campaignInviteDeclined: {
     id: "app.notifications.campaign_invite_declined",
     defaultMessage:
-      "{name} declined your invitation to be a part of {campaignName}"
-  }
+      "{name} declined your invitation to be a part of {campaignName}",
+  },
+  newFormUser: {
+    id: "app.notifications.new_form_user",
+    defaultMessage: "{name} just registered through your form!",
+  },
+  updateFormUser: {
+    id: "app.notifications.update_form_user",
+    defaultMessage: "{name} just updated their profile through your form!",
+  },
 };
 
 module.exports = {
   messages: messages,
-  list: Object.values(messages)
+  list: Object.values(messages),
 };
