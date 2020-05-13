@@ -3,19 +3,21 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { userCan } from "/imports/ui2/utils/permissions";
 
+import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
 
 import Page from "../components/Page.jsx";
 import Table from "../components/Table.jsx";
 import Button from "../components/Button.jsx";
 
+import PersonStarredButton from "../components/PersonStarredButton.jsx";
 import PersonMetaButtons from "../components/PersonMetaButtons.jsx";
 import PersonFormInfo from "../components/PersonFormInfo.jsx";
 import PersonReactions from "../components/PersonReactions.jsx";
@@ -24,7 +26,7 @@ import PersonInfoTable from "../components/PersonInfoTable.jsx";
 
 import PersonEdit, {
   profileLabels,
-  genderLabels
+  genderLabels,
 } from "../components/PersonEdit.jsx";
 import Reply from "../components/Reply.jsx";
 
@@ -34,20 +36,25 @@ import PersonReactionList from "../components/PersonReactionList.jsx";
 const messages = defineMessages({
   formSource: {
     id: "app.people.profile.form_source_label",
-    defaultMessage: "Form"
+    defaultMessage: "Form",
   },
   unknownImportSource: {
     id: "app.people.profile.unknown_import_source_label",
-    defaultMessage: "Unknown import"
+    defaultMessage: "Unknown import",
   },
   unknownSource: {
     id: "app.people.profile.unknown_source_label",
-    defaultMessage: "Unknown"
+    defaultMessage: "Unknown",
   },
   replyTitle: {
     id: "app.people.profile.reply_title",
-    defaultMessage: "Sending private reply to {name}"
-  }
+    defaultMessage: "Sending private reply to {name}",
+  },
+  removeConfirm: {
+    id: "app.people.profile.remove_confirm",
+    defaultMessage:
+      "Are you sure you'd like to remove {name} profile? This action is irreversible",
+  },
 });
 
 const Container = styled.div`
@@ -185,7 +192,7 @@ class Information extends Component {
     }
     return 0;
   }
-  _handlePrivateReplyClick = ev => {
+  _handlePrivateReplyClick = (ev) => {
     const { intl, person } = this.props;
     ev.preventDefault();
     modalStore.setTitle(
@@ -201,7 +208,7 @@ class Information extends Component {
           person={person}
           tags={tags}
           hideIfEmpty={{
-            tags: true
+            tags: true,
           }}
         />
         <div className="interactions">
@@ -234,7 +241,7 @@ class Information extends Component {
 }
 
 Information.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 const InformationIntl = injectIntl(Information);
@@ -253,13 +260,31 @@ class Comments extends Component {
 }
 
 class PeopleSingle extends Component {
-  _handleEditClick = ev => {
+  _handleEditClick = (ev) => {
     const { person } = this.props;
     ev.preventDefault();
     modalStore.setTitle(`Editing ${person.name}`);
     modalStore.set(
       <PersonEdit person={person} onSuccess={this._handleEditSuccess} />
     );
+  };
+  _handleRemoveClick = (ev) => {
+    ev.preventDefault();
+    const { intl, person } = this.props;
+    if (
+      confirm(
+        intl.formatMessage(messages.removeConfirm, { name: person.name })
+      )
+    ) {
+      Meteor.call("people.remove", { personId: person._id }, (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          FlowRouter.go("/people");
+          alertStore.add(null, "success");
+        }
+      });
+    }
   };
   _getSource = () => {
     const { intl, person, lists } = this.props;
@@ -269,7 +294,7 @@ class PeopleSingle extends Component {
       case "form":
         return intl.formatMessage(messages.formSource);
       case "import":
-        const list = lists.find(l => l._id == person.listId);
+        const list = lists.find((l) => l._id == person.listId);
         if (list) {
           return list.name;
         }
@@ -341,6 +366,14 @@ class PeopleSingle extends Component {
                 />
               </a>
             ) : null}
+            {userCan("edit", "people") ? (
+              <a href="javascript:void(0);" onClick={this._handleRemoveClick}>
+                <FormattedMessage
+                  id="app.people.profile.nav.remove_label"
+                  defaultMessage="Remove profile"
+                />
+              </a>
+            ) : null}
           </Page.Nav>
           <div className="person-container">
             <header className="person-header">
@@ -355,6 +388,12 @@ class PeopleSingle extends Component {
                     />
                   </li>
                   <li className="highlight">
+                    <PersonStarredButton
+                      readOnly={!userCan("categorize", "people")}
+                      person={person}
+                      simple
+                      text
+                    />
                     <PersonMetaButtons person={person} readOnly simple text />
                   </li>
                 </ul>
@@ -383,7 +422,7 @@ class PeopleSingle extends Component {
 }
 
 PeopleSingle.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(PeopleSingle);
