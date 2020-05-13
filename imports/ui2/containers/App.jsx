@@ -177,7 +177,6 @@ export default withTracker((props) => {
       ClientStorage.set("country", campaign.country);
       // Set user permissions
       const campaignUser = campaign.users.find((u) => u._id == Meteor.userId());
-      console.log(campaignUser);
       let isAdmin = false;
       if (campaignUser.campaign.role) {
         isAdmin = campaignUser.campaign.role == "admin";
