@@ -109,6 +109,7 @@ const Container = styled.div`
           &.highlight {
             color: #000;
             font-weight: 600;
+            display: flex;
           }
           .person-meta-buttons {
             a {
