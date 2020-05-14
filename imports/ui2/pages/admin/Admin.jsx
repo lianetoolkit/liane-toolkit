@@ -10,6 +10,8 @@ import UsersContainer from "/imports/ui2/containers/admin/Users.jsx";
 import GeolocationsContainer from "/imports/ui2/containers/admin/Geolocations.jsx";
 import JobsContainer from "/imports/ui2/containers/admin/Jobs.jsx";
 
+import NotificationsPage from "/imports/ui2/pages/admin/Notifications.jsx";
+
 class AdminContainer extends Component {
   render() {
     const { children } = this.props;
@@ -42,6 +44,9 @@ class AdminContainer extends Component {
           </a>
           <a href={FlowRouter.path("App.admin", { section: "users" })}>
             <FormattedMessage id="app.admin.nav.users" defaultMessage="Users" />
+          </a>
+          <a href={FlowRouter.path("App.admin", { section: "notifications" })}>
+            <FormattedMessage id="app.admin.nav.notifications" defaultMessage="Notifications" />
           </a>
           <a href={FlowRouter.path("App.admin", { section: "jobs" })}>
             <FormattedMessage id="app.admin.nav.jobs" defaultMessage="Jobs" />
@@ -87,6 +92,9 @@ export default {
           break;
         case "users":
           children = <UsersContainer {...props} />;
+          break;
+        case "notifications":
+          children = <NotificationsPage {...props} />;
           break;
         case "jobs":
           children = <JobsContainer {...props} />;
