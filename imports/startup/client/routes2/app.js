@@ -10,6 +10,7 @@ import Transparency from "/imports/ui2/pages/Transparency.jsx";
 import PeopleFormPage from "/imports/ui2/containers/PeopleFormPage.jsx";
 
 import PeoplePage from "/imports/ui2/pages/People.jsx";
+import UnresolvedPage from "/imports/ui2/pages/Unresolved.jsx";
 import FormSettingsPage from "/imports/ui2/pages/FormSettings.jsx";
 import MapPage from "/imports/ui2/containers/MapPage.jsx";
 import FAQPage from "/imports/ui2/containers/FAQPage.jsx";
@@ -133,6 +134,16 @@ appRoutes.route("/people", {
         "reaction_count",
         "reaction_type",
       ]),
+      options: pick(queryParams, ["sort", "order"]),
+    });
+  },
+});
+appRoutes.route("/people/unresolved", {
+  name: "App.peopleUnresolved",
+  action: function (params, queryParams) {
+    addTitle(`${APP_NAME} | People Unresolved `);
+    return mount(App, {
+      content: { component: UnresolvedPage },
       options: pick(queryParams, ["sort", "order"]),
     });
   },

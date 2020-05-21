@@ -20,6 +20,7 @@ import { modalStore } from "../containers/Modal.jsx";
 import PeopleExport from "../components/PeopleExport.jsx";
 import { PersonImportButton } from "../components/PersonImport.jsx";
 import Button from "../components/Button.jsx";
+import Badge from "../components/Badge.jsx";
 import More from "../components/More.jsx";
 import Form from "../components/Form.jsx";
 import Page from "../components/Page.jsx";
@@ -152,19 +153,6 @@ const Message = styled.p`
   font-size: 0.8em;
 `;
 
-const Badge = styled.span`
-    background-color: #330066;
-    color: #fff;  
-    display: inline-block;
-    padding: .25em .4em;
-    font-size: 75%;
-    font-weight: 700;
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: .25rem;s
-`;
 const FilterMenuGroup = styled.div`
   .people-tab-menu {
     padding-right: 1rem;
@@ -577,7 +565,12 @@ class PeoplePage extends Component {
                   <Button onClick={() => {}} active={true}>
                     People List
                   </Button>
-                  <Button onClick={() => {}} active={false}>
+                  <Button
+                    onClick={() => {
+                      FlowRouter.go("App.peopleUnresolved");
+                    }}
+                    active={false}
+                  >
                     Unresolved <Badge>3</Badge>
                   </Button>
                 </Button.Group>
