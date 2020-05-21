@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import ReactTooltip from "react-tooltip";
 import styled, { css } from "styled-components";
@@ -36,63 +36,63 @@ import PeopleExports from "../components/PeopleExports.jsx";
 
 import TagFilter from "../components/TagFilter.jsx";
 import PersonMetaButtons, {
-  labels as categoriesLabels
+  labels as categoriesLabels,
 } from "../components/PersonMetaButtons.jsx";
 import Reaction from "../components/Reaction.jsx";
 
 const messages = defineMessages({
   manualLabel: {
     id: "app.people.source.manual.label",
-    defaultMessage: "Manual"
+    defaultMessage: "Manual",
   },
   formLabel: {
     id: "app.people.source.form.label",
-    defaultMessage: "Form"
+    defaultMessage: "Form",
   },
   importLabel: {
     id: "app.people.source.import.label",
-    defaultMessage: "Import"
+    defaultMessage: "Import",
   },
   anyImportLabel: {
     id: "app.people.source.any_import.label",
-    defaultMessage: "Any import"
+    defaultMessage: "Any import",
   },
   manageImports: {
     id: "app.people.imports.manage.title",
-    defaultMessage: "Manage imports"
+    defaultMessage: "Manage imports",
   },
   manageExports: {
     id: "app.people.exports.manage.title",
-    defaultMessage: "Manage exports"
+    defaultMessage: "Manage exports",
   },
   newPersonTitle: {
     id: "app.people.new.title",
-    defaultMessage: "Creating new profile"
+    defaultMessage: "Creating new profile",
   },
   editingPersonTitle: {
     id: "app.people.edit.title",
-    defaultMessage: "Editing {name}"
+    defaultMessage: "Editing {name}",
   },
   searchPlaceholder: {
     id: "app.people.filters.text.placeholder",
-    defaultMessage: "Search by name"
+    defaultMessage: "Search by name",
   },
   categoryPlaceholder: {
     id: "app.people.filters.category.placeholder",
-    defaultMessage: "Filter by category"
+    defaultMessage: "Filter by category",
   },
   sourcePlaceholder: {
     id: "app.people.filters.source.placeholder",
-    defaultMessage: "Filter by source"
+    defaultMessage: "Filter by source",
   },
   tagPlaceholder: {
     id: "app.people.filters.tag.placeholder",
-    defaultMessage: "Filter by tag"
+    defaultMessage: "Filter by tag",
   },
   reactionAmount: {
     id: "app.people.filters.reactions.amount",
-    defaultMessage: "Amount"
-  }
+    defaultMessage: "Amount",
+  },
 });
 
 const PeopleContent = styled.div`
@@ -104,6 +104,7 @@ const PeopleContent = styled.div`
   .people-nav {
     flex: 0 0 auto;
   }
+
   .people-table {
     flex: 1 1 100%;
     overflow-x: hidden;
@@ -129,6 +130,7 @@ const PeopleContent = styled.div`
     position: absolute;
     bottom: 1rem;
     right: 2rem;
+
     .button {
       background: #f5911e;
       border: 0;
@@ -150,6 +152,34 @@ const Message = styled.p`
   font-size: 0.8em;
 `;
 
+const Badge = styled.span`
+    background-color: #330066;
+    color: #fff;  
+    display: inline-block;
+    padding: .25em .4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25rem;s
+`;
+const FilterMenuGroup = styled.div`
+  .people-tab-menu {
+    padding-right: 1rem;
+    margin-bottom: 1rem;
+    .button:hover,
+    .button:focus {
+      background-color: rgba(51, 0, 102, 0.5);
+      color: #fff;
+    }
+    .button.active {
+      background-color: #330066 !important;
+      color: #fff;
+    }
+  }
+`;
 class PeoplePage extends Component {
   constructor(props) {
     super(props);
@@ -161,12 +191,12 @@ class PeoplePage extends Component {
         q: "",
         form: false,
         commented: false,
-        private_reply: false
+        private_reply: false,
       },
       options: {
         skip: 0,
-        limit: 20
-      }
+        limit: 20,
+      },
     };
   }
   componentDidMount() {
@@ -177,11 +207,11 @@ class PeoplePage extends Component {
         starred: false,
         form: false,
         commented: false,
-        private_reply: false
+        private_reply: false,
       }),
       options: defaultsDeep(this.props.options, {
         limit: 20,
-        skip: 0
+        skip: 0,
       }),
     });
     this.fetchHistory();
@@ -233,13 +263,13 @@ class PeoplePage extends Component {
     () => {
       this.setState({
         loading: true,
-        loadingCount: true
+        loadingCount: true,
       });
     },
     200,
     {
       leading: true,
-      trailing: false
+      trailing: false,
     }
   );
   fetchPeople = debounce(() => {
@@ -542,6 +572,16 @@ class PeoplePage extends Component {
         <Page.Nav full plain>
           <PageFilters>
             <div className="filters">
+              <FilterMenuGroup>
+                <Button.Group toggler className="people-tab-menu">
+                  <Button onClick={() => {}} active={true}>
+                    People List
+                  </Button>
+                  <Button onClick={() => {}} active={false}>
+                    Unresolved <Badge>3</Badge>
+                  </Button>
+                </Button.Group>
+              </FilterMenuGroup>
               <form onSubmit={(ev) => ev.preventDefault()}>
                 <input
                   type="text"
