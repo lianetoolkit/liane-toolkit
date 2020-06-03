@@ -13,6 +13,8 @@ const NotificationsHelpers = {
     category,
     dataRef,
     removable,
+    sticky,
+    skipEmailNotify,
   }) {
     let users = [];
     if (!campaignId && !userId) {
@@ -51,19 +53,24 @@ const NotificationsHelpers = {
     if (typeof removable !== "undefined") {
       insert.removable = removable;
     }
+    if (typeof sticky !== "undefined") {
+      insert.sticky = sticky;
+    }
     for (const user of users) {
       insert.userId = user._id;
       Notifications.insert(insert);
-      // sendMail({
-      //   type: "notification",
-      //   data: {
-      //     user,
-      //     category,
-      //     metadata,
-      //     text,
-      //     path
-      //   }
-      // });
+      if (!skipEmailNotify) {
+        sendMail({
+          type: "notification",
+          data: {
+            user,
+            category,
+            metadata,
+            text,
+            path
+          }
+        });
+      }
     }
   },
   clear({ userId, category, dataRef }) {
