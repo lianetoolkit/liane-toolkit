@@ -3,7 +3,7 @@ import {
   FormattedMessage,
   defineMessages,
   intlShape,
-  injectIntl
+  injectIntl,
 } from "react-intl";
 import styled from "styled-components";
 import { OAuth } from "meteor/oauth";
@@ -18,16 +18,16 @@ import Loading from "../components/Loading.jsx";
 const messages = defineMessages({
   confirmEmailTitle: {
     id: "app.email_confirm.title",
-    defaultMessage: "Email not verified"
+    defaultMessage: "Email not verified",
   },
   differentEmail: {
     id: "app.email_confirm.different_email",
-    defaultMessage: "Not working? Use a different email address:"
+    defaultMessage: "Not working? Use a different email address:",
   },
   sendDifferent: {
     id: "app.email_confirm.different_email_button_label",
-    defaultMessage: "Send new verification link"
-  }
+    defaultMessage: "Send new verification link",
+  },
 });
 
 const AuthOptions = styled.div`
@@ -67,11 +67,11 @@ class Confirm extends Component {
     super(props);
     this.state = { type: "user", loading: false };
   }
-  _handleTypeClick = type => ev => {
+  _handleTypeClick = (type) => (ev) => {
     ev.preventDefault();
     this.setState({ type });
   };
-  _handleSubmit = ev => {
+  _handleSubmit = (ev) => {
     ev.preventDefault();
     const { type } = this.state;
     this.setState({ loading: true });
@@ -81,15 +81,15 @@ class Confirm extends Component {
           requestPermissions: [
             "public_profile",
             "email",
-            "manage_pages",
-            "publish_pages",
+            "pages_manage_posts",
+            "pages_manage_engagement",
             "pages_show_list",
             "pages_messaging",
             "pages_messaging_phone_number",
-            "pages_messaging_subscriptions"
-          ]
+            "pages_messaging_subscriptions",
+          ],
         },
-        token => {
+        (token) => {
           if (token) {
             const secret = OAuth._retrieveCredentialSecret(token) || null;
             Meteor.call(
@@ -202,7 +202,7 @@ class EmailConfirm extends Component {
     super(props);
     this.state = {
       loading: false,
-      formData: {}
+      formData: {},
     };
   }
   _handleChange = ({ target }) => {
@@ -210,11 +210,11 @@ class EmailConfirm extends Component {
     this.setState({
       formData: {
         ...this.state.formData,
-        [target.name]: target.value
-      }
+        [target.name]: target.value,
+      },
     });
   };
-  _handleSubmit = ev => {
+  _handleSubmit = (ev) => {
     ev.preventDefault();
     const { formData } = this.state;
     this.setState({ loading: true });
@@ -227,7 +227,7 @@ class EmailConfirm extends Component {
       this.setState({ loading: false });
     });
   };
-  _handleResendClick = ev => {
+  _handleResendClick = (ev) => {
     ev.preventDefault();
     this.setState({ loading: true });
     Meteor.call("users.sendVerificationEmail", (err, res) => {
@@ -287,7 +287,7 @@ class EmailConfirm extends Component {
 }
 
 EmailConfirm.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 const EmailConfirmIntl = injectIntl(EmailConfirm);
@@ -316,7 +316,7 @@ class AuthConfirm extends Component {
         // Keep from closing
         return false;
       });
-    } else if (user && !user.emails.find(e => e.verified == true)) {
+    } else if (user && !user.emails.find((e) => e.verified == true)) {
       modalStore.setType("small");
       modalStore.setTitle(intl.formatMessage(messages.confirmEmailTitle));
       modalStore.set(<EmailConfirmIntl />, () => {
@@ -330,7 +330,7 @@ class AuthConfirm extends Component {
 }
 
 AuthConfirm.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(AuthConfirm);
