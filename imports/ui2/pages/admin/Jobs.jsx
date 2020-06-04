@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import styled from "styled-components";
 import moment from "moment";
@@ -24,82 +24,86 @@ import PagePaging from "/imports/ui2/components/PagePaging.jsx";
 const messages = defineMessages({
   filterType: {
     id: "app.admin.jobs.filter.type",
-    defaultMessage: "Job type..."
+    defaultMessage: "Job type...",
   },
   filterStatus: {
     id: "app.admin.jobs.filter.status",
-    defaultMessage: "Job status..."
+    defaultMessage: "Job status...",
   },
   filterCampaign: {
     id: "app.admin.jobs.filter.campaign",
-    defaultMessage: "Campaign..."
+    defaultMessage: "Campaign...",
   },
   filterListCampaign: {
     id: "app.admin.jobs.filter.campaign_from_list",
-    defaultMessage: "Filter jobs from this campaign"
-  }
+    defaultMessage: "Filter jobs from this campaign",
+  },
 });
 
 const jobsLabels = defineMessages({
   "entries.updateAccountEntries": {
     id: "app.jobs.labels.entries.updateAccountEntries",
-    defaultMessage: "Facebook Account Entries Update"
+    defaultMessage: "Facebook Account Entries Update",
   },
   "entries.updateEntryInteractions": {
     id: "app.jobs.labels.entries.updateEntryInteractions",
-    defaultMessage: "Facebook Entry Interactions Update"
+    defaultMessage: "Facebook Entry Interactions Update",
   },
   "entries.refetchAccountEntries": {
     id: "app.jobs.labels.entries.refetchAccountEntries",
-    defaultMessage: "Facebook Account Entries Refetch"
+    defaultMessage: "Facebook Account Entries Refetch",
   },
   "campaigns.healthCheck": {
     id: "app.jobs.labels.campaigns.healthCheck",
-    defaultMessage: "Facebook Connection Health Check"
+    defaultMessage: "Facebook Connection Health Check",
   },
   "people.export": {
     id: "app.jobs.labels.people.export",
-    defaultMessage: "People Export"
+    defaultMessage: "People Export",
   },
   "people.expireExport": {
     id: "app.jobs.labels.people.expireExport",
-    defaultMessage: "Expire People Export"
+    defaultMessage: "Expire People Export",
+  },
+  "people.import": {
+    id: "app.jobs.labels.people.import",
+    defaultMessage: "Import",
   },
   "people.importPerson": {
     id: "app.jobs.labels.people.importPerson",
-    defaultMessage: "Person import"
-  }
+    defaultMessage: "Person import",
+  },
 });
 
 const statusLabels = defineMessages({
   waiting: {
     id: "app.jobs.status.waiting",
-    defaultMessage: "Waiting"
+    defaultMessage: "Waiting",
   },
   ready: {
     id: "app.jobs.status.ready",
-    defaultMessage: "Ready"
+    defaultMessage: "Ready",
   },
   running: {
     id: "app.jobs.status.running",
-    defaultMessage: "Running"
+    defaultMessage: "Running",
   },
   failed: {
     id: "app.jobs.status.failed",
-    defaultMessage: "Failed"
+    defaultMessage: "Failed",
   },
   paused: {
     id: "app.jobs.status.paused",
-    defaultMessage: "Paused"
+    defaultMessage: "Paused",
   },
   cancelled: {
     id: "app.jobs.status.cancelled",
-    defaultMessage: "Cancelled"
+    defaultMessage: "Cancelled",
   },
   completed: {
     id: "app.jobs.status.completed",
-    defaultMessage: "Completed"
-  }
+    defaultMessage: "Completed",
+  },
 });
 
 const Container = styled.div`
@@ -230,7 +234,7 @@ class JobsPage extends Component {
     this.state = {
       loadingCount: false,
       count: 0,
-      filters: {}
+      filters: {},
     };
   }
   componentDidUpdate(prevProps) {}
@@ -275,15 +279,15 @@ class JobsPage extends Component {
         return true;
     }
   }
-  _handleRunClick = jobId => ev => {
+  _handleRunClick = (jobId) => (ev) => {
     ev.preventDefault();
     Meteor.call("jobs.ready", { jobId });
   };
-  _handleRestartClick = jobId => ev => {
+  _handleRestartClick = (jobId) => (ev) => {
     ev.preventDefault();
     Meteor.call("jobs.restartJobs", { jobIds: [jobId] });
   };
-  _handleRemoveClick = jobId => ev => {
+  _handleRemoveClick = (jobId) => (ev) => {
     ev.preventDefault();
     Meteor.call("jobs.removeJobs", { jobIds: [jobId] });
   };
@@ -293,7 +297,7 @@ class JobsPage extends Component {
     for (let key in jobsLabels) {
       options.push({
         value: key,
-        label: intl.formatMessage(jobsLabels[key])
+        label: intl.formatMessage(jobsLabels[key]),
       });
     }
     return options;
@@ -304,7 +308,7 @@ class JobsPage extends Component {
     for (let key in statusLabels) {
       options.push({
         value: key,
-        label: intl.formatMessage(statusLabels[key])
+        label: intl.formatMessage(statusLabels[key]),
       });
     }
     return options;
@@ -312,21 +316,21 @@ class JobsPage extends Component {
   _handleFilterChange = ({ target }) => {
     FlowRouter.setQueryParams({ [target.name]: target.value, page: 1 });
   };
-  _handleFilterSelectChange = name => ev => {
+  _handleFilterSelectChange = (name) => (ev) => {
     const value = ev && ev.value ? ev.value : undefined;
     FlowRouter.setQueryParams({ [name]: value, page: 1 });
   };
   _buildFilterTypeValue = () => {
     const value = FlowRouter.getQueryParam("type");
     if (!value) return undefined;
-    return this._getJobTypesOptions().find(option => option.value == value);
+    return this._getJobTypesOptions().find((option) => option.value == value);
   };
   _buildFilterStatusValue = () => {
     const value = FlowRouter.getQueryParam("status");
     if (!value) return undefined;
-    return this._getJobStatusOptions().find(option => option.value == value);
+    return this._getJobStatusOptions().find((option) => option.value == value);
   };
-  _handleCampaignClick = campaignId => ev => {
+  _handleCampaignClick = (campaignId) => (ev) => {
     ev.preventDefault();
     FlowRouter.setQueryParams({ campaign: campaignId });
   };
@@ -426,7 +430,7 @@ class JobsPage extends Component {
                 </th>
               </tr>
             </thead>
-            {jobs.map(job => (
+            {jobs.map((job) => (
               <tbody key={job._id}>
                 <tr>
                   <td className="fill small job-type">
@@ -519,7 +523,7 @@ class JobsPage extends Component {
 }
 
 JobsPage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(JobsPage);
