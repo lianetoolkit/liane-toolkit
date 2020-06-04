@@ -26,6 +26,36 @@ Meteor.publish("people.map", function ({ campaignId }) {
   return this.ready();
 });
 
+Meteor.publishComposite("people.unresolved", function ({ campaignId }) {
+  logger.debug("people.unresolved called", { campaignId });
+  check(campaignId, String);
+  const userId = this.userId;
+  if (userId && campaignId) {
+    // Permission check
+    const allowed = Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "people",
+      permission: "edit",
+    });
+    if (allowed) {
+      return {
+        find: function () {
+          return People.find({ campaignId, unresolved: true });
+        },
+        children(person) {
+          let children = [];
+          if (person.related && person.related.length) {
+            children.push(People.find({ _id: { $in: person.related } }));
+          }
+          return children;
+        },
+      };
+    }
+  }
+  return this.ready();
+});
+
 Meteor.publish("people.search", function ({ search, options }) {
   logger.debug("people.search called", {
     search,
