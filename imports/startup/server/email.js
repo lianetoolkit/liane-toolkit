@@ -40,11 +40,11 @@ for (const locale in languages) {
 
 Accounts.emailTemplates.resetPassword = {
   subject(user) {
-    const locale = user.language || "en";
+    const locale = user.userLanguage || "en";
     return resetPassword[locale].subject;
   },
   html(user, url) {
-    const locale = user.language || "en";
+    const locale = user.userLanguage || "en";
     let body = resetPassword[locale].body;
     body = body.replace("%NAME%", user.name);
     body = body.replace("%URL%", url);
@@ -62,11 +62,11 @@ for (const locale in languages) {
 
 Accounts.emailTemplates.verifyEmail = {
   subject(user) {
-    const locale = user.language || "en";
+    const locale = user.userLanguage || "en";
     return verifyEmail[locale].subject;
   },
   html(user, url) {
-    const locale = user.language || "en";
+    const locale = user.userLanguage || "en";
     let body = verifyEmail[locale].body;
     body = body.replace("%NAME%", user.name);
     body = body.replace("%URL%", url);

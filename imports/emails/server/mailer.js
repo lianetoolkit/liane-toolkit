@@ -35,7 +35,7 @@ export const sendMail = async ({
     return;
   }
 
-  language = language || (data.user ? data.user.language : "en");
+  language = language || (data.user ? data.user.userLanguage : "en");
 
   const emailData = createEmail(type, language, data);
 

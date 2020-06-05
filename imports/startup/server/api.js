@@ -1,3 +1,5 @@
+import "/imports/api/users/users";
+
 // access logs
 import "/imports/api/accessLogs/server/accessLogsMethods.js";
 
@@ -10,31 +12,16 @@ import "/imports/api/users/server/usersMethods.js";
 import "/imports/api/users/server/usersPublications.js";
 
 // options
-import "/imports/api/options/server/optionsMethods.js";
-import "/imports/api/options/server/optionsPublications.js";
-
-// contexts
-import "/imports/api/contexts/server/contextsMethods.js";
-import "/imports/api/contexts/server/contextsPublications.js";
-
-// audience categories
-import "/imports/api/audienceCategories/server/audienceCategoriesMethods.js";
-import "/imports/api/audienceCategories/server/audienceCategoriesPublications.js";
+// import "/imports/api/options/server/optionsMethods.js";
+// import "/imports/api/options/server/optionsPublications.js";
 
 // campaigns
 import "/imports/api/campaigns/server/campaignsMethods.js";
 import "/imports/api/campaigns/server/campaignsPublications.js";
 
-// chatbot
-import "/imports/api/campaigns/server/chatbotMethods.js";
-
 // faq
 import "/imports/api/faq/server/faqMethods.js";
 import "/imports/api/faq/server/faqPublications.js";
-
-// canvas
-import "/imports/api/canvas/server/canvasMethods.js";
-import "/imports/api/canvas/server/canvasPublications.js";
 
 // entries
 import "/imports/api/facebook/entries/server/entriesPublications.js";
@@ -52,16 +39,6 @@ import "/imports/api/facebook/comments/server/commentsPublications.js";
 import "/imports/api/facebook/people/server/peopleMethods.js";
 import "/imports/api/facebook/people/server/peoplePublications.js";
 import "/imports/api/facebook/people/server/peopleRest.js";
-
-// audiences
-import "/imports/api/facebook/audiences/server/audiencesMethods.js";
-import "/imports/api/facebook/audiences/server/audiencesPublications.js";
-
-// ad accounts
-import "/imports/api/facebook/adAccounts/server/adAccountsPublications.js";
-
-// ads
-import "/imports/api/facebook/ads/server/adsMethods.js";
 
 // geolocations
 import "/imports/api/geolocations/server/geolocationsMethods.js";
@@ -92,7 +69,6 @@ if (Meteor.settings.public.deployMode == "local") {
   import "/imports/api/geolocations/server/geolocationsHelpers.js";
   import "/imports/api/facebook/accounts/server/accountsHelpers.js";
   import "/imports/api/facebook/people/server/peopleHelpers.js";
-  import "/imports/api/facebook/audiences/server/audiencesHelpers.js";
   import "/imports/api/facebook/entries/server/entriesHelpers.js";
   import "/imports/api/facebook/likes/server/likesHelpers.js";
   import "/imports/api/facebook/comments/server/commentsHelpers.js";

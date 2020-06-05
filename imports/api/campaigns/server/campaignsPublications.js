@@ -4,7 +4,6 @@ import {
   PeopleTags,
   PeopleLists,
 } from "/imports/api/facebook/people/people.js";
-import { Contexts } from "/imports/api/contexts/contexts.js";
 import { Geolocations } from "/imports/api/geolocations/geolocations.js";
 import { Jobs } from "/imports/api/jobs/jobs.js";
 
@@ -270,28 +269,3 @@ Meteor.publishComposite("invites.all", function ({ query, options }) {
     return this.ready();
   }
 });
-
-// Meteor.publishComposite("campaigns.jobsCount", function() {
-//   const currentUser = this.userId;
-//   logger.debug("campaigns.jobsCount pub");
-//   if (Roles.userIsInRole(currentUser, ["admin"])) {
-//     return {
-//       find: function() {
-//         return Campaigns.find(null, { fields: { name: 1 } });
-//       },
-//       children: [
-//         {
-//           find: function(campaign) {
-//             return Counts.publish(
-//               this,
-//               "jobCountFor",
-//               FacebookAudiences.find(search)
-//             );
-//           }
-//         }
-//       ]
-//     };
-//   } else {
-//     this.ready();
-//   }
-// });

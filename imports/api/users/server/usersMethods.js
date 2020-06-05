@@ -144,7 +144,7 @@ export const setLanguage = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not logged in");
     }
 
-    return Meteor.users.update(userId, { $set: { language } });
+    return Meteor.users.update(userId, { $set: { userLanguage: language } });
   },
 });
 
