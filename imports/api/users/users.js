@@ -9,62 +9,65 @@ Meteor.users.allow({
   },
   remove(userId, doc) {
     return false;
-  }
+  },
 });
 
 Meteor.users.schema = new SimpleSchema({
   name: {
     type: String,
-    optional: true
+    optional: true,
   },
   country: {
     type: String,
-    optional: true
+    optional: true,
+    index: true,
   },
   region: {
     type: String,
-    optional: true
+    optional: true,
+    index: true,
   },
   type: {
     type: String,
     allowedValues: ["campaigner", "user"],
-    optional: true
+    optional: true,
+    index: true,
   },
   emails: {
     type: Array,
-    optional: true
+    optional: true,
   },
   "emails.$": {
-    type: Object
+    type: Object,
   },
   "emails.$.address": {
     type: String,
-    regEx: SimpleSchema.RegEx.Email
+    regEx: SimpleSchema.RegEx.Email,
   },
   "emails.$.verified": {
-    type: Boolean
+    type: Boolean,
   },
   services: {
     type: Object,
     optional: true,
-    blackbox: true
+    blackbox: true,
   },
-  language: {
+  userLanguage: {
     type: String,
     optional: true,
-    index: true
+    index: 1,
   },
   createdAt: {
-    type: Date
+    type: Date,
   },
   roles: {
     type: Array,
-    optional: true
+    optional: true,
   },
   "roles.$": {
     type: String,
-    allowedValues: ["admin", "staff", "moderator"]
-  }
+    allowedValues: ["admin", "staff", "moderator"],
+  },
 });
 
 Meteor.users.helpers({
@@ -73,9 +76,30 @@ Meteor.users.helpers({
   },
   getAccessToken() {
     return this.services.facebook.accessToken;
-  }
+  },
 });
 
 Meteor.users.attachSchema(Meteor.users.schema);
 
-exports.Meteor.users = Meteor.users;
+// Create text index for users (search)
+Meteor.startup(() => {
+  if (Meteor.isServer) {
+    setTimeout(() => {
+      Meteor.users.rawCollection().createIndex(
+        {
+          name: "text",
+          "emails.address": "text",
+        },
+        {
+          background: true,
+          weights: {
+            name: 5,
+            "emails.address": 3,
+          },
+        }
+      );
+    }, 2000);
+  }
+});
+
+exports.Users = Meteor.users;

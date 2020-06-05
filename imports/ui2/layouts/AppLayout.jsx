@@ -69,10 +69,10 @@ export default class AppLayout extends Component {
   setLanguage = () => {
     const { user } = this.props;
     const sessionLanguage = ClientStorage.get("language");
-    if (user && user.language) language = user.language;
+    if (user && user.userLanguage) language = user.userLanguage;
     if (sessionLanguage) language = sessionLanguage;
     const locale = localeData[findLocale(language)] ? language : "en";
-    if (user && !user.language) {
+    if (user && !user.userLanguage) {
       Meteor.call("users.setLanguage", { language: locale });
     }
     ClientStorage.set("language", locale);

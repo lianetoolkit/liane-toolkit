@@ -82,19 +82,6 @@ Campaigns.accountsSchema = new SimpleSchema({
   }
 });
 
-Campaigns.audienceAccountsSchema = new SimpleSchema({
-  facebookId: {
-    type: String
-  },
-  name: {
-    type: String
-  },
-  fanCount: {
-    type: String,
-    optional: true
-  }
-});
-
 Campaigns.schema = new SimpleSchema({
   name: {
     type: String
