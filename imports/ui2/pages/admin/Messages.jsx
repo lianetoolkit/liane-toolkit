@@ -7,18 +7,18 @@ import {
 } from "react-intl";
 import Page from "/imports/ui2/components/Page.jsx";
 
-class NotificationsPage extends Component {
+class MessagesPage extends Component {
   render() {
     return (
       <Page.Content>
-        <h2>Notifications</h2>
+        <h2>Messages</h2>
       </Page.Content>
     );
   }
 }
 
-NotificationsPage.propTypes = {
+MessagesPage.propTypes = {
   intl: intlShape.isRequired,
 };
 
-export default injectIntl(NotificationsPage);
+export default injectIntl(MessagesPage);
