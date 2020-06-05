@@ -5,7 +5,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReactTooltip from "react-tooltip";
@@ -23,8 +23,8 @@ import Loading from "../../../components/Loading.jsx";
 const messages = defineMessages({
   reconnect: {
     id: "app.campaign_connections.reconnect_label",
-    defaultMessage: "Update connection"
-  }
+    defaultMessage: "Update connection",
+  },
 });
 
 const Container = styled.div`
@@ -88,7 +88,7 @@ const ConnectionItem = styled.li`
     background: #fff;
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.075);
   }
-  ${props =>
+  ${(props) =>
     props.facebook &&
     css`
       .connection-icon {
@@ -105,7 +105,7 @@ const HealthStatus = styled.span`
   height: 8px;
   border-radius: 100%;
   margin-right: 0.5rem;
-  ${props =>
+  ${(props) =>
     props.healthy &&
     css`
       background: green;
@@ -117,7 +117,7 @@ class CampaignConnectionsPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false
+      loading: false,
     };
   }
   componentDidUpdate() {
@@ -127,34 +127,34 @@ class CampaignConnectionsPage extends Component {
     const { campaign, facebookHealthJob } = this.props;
     return {
       user: campaign.users.find(
-        u =>
+        (u) =>
           u.services &&
           u.services.facebook &&
           u.services.facebook.id == campaign.facebookAccount.userFacebookId
       ),
       name: campaign.facebookAccount.name,
-      healthy: facebookHealthJob && facebookHealthJob.status != "failed"
+      healthy: facebookHealthJob && facebookHealthJob.status != "failed",
     };
   };
-  _handleFacebookClick = ev => {
+  _handleFacebookClick = (ev) => {
     ev.preventDefault();
     const { campaign } = this.props;
     const permissions = [
       "public_profile",
       "email",
-      "manage_pages",
-      "publish_pages",
+      "pages_manage_posts",
+      "pages_manage_engagement",
       "pages_show_list",
       "pages_messaging",
       "pages_messaging_phone_number",
-      "pages_messaging_subscriptions"
+      "pages_messaging_subscriptions",
     ];
     this.setState({ loading: true });
     Facebook.requestCredential(
       {
-        requestPermissions: permissions
+        requestPermissions: permissions,
       },
-      token => {
+      (token) => {
         const secret = OAuth._retrieveCredentialSecret(token) || null;
         console.log(token, secret);
         Meteor.call(
@@ -238,7 +238,7 @@ class CampaignConnectionsPage extends Component {
 }
 
 CampaignConnectionsPage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(CampaignConnectionsPage);

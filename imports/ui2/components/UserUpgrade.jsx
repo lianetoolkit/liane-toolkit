@@ -14,28 +14,28 @@ export default class UserUpgrade extends Component {
     super(props);
     this.state = { loading: false };
   }
-  _handleClick = ev => {
+  _handleClick = (ev) => {
     ev.preventDefault();
     const { onSuccess } = this.props;
     const permissions = [
       "public_profile",
       "email",
-      "manage_pages",
-      "publish_pages",
+      "pages_manage_posts",
+      "pages_manage_engagement",
       "pages_show_list",
       // "ads_management",
       // "ads_read",
       // "business_management",
       "pages_messaging",
       "pages_messaging_phone_number",
-      "pages_messaging_subscriptions"
+      "pages_messaging_subscriptions",
     ];
     this.setState({ loading: true });
     Facebook.requestCredential(
       {
-        requestPermissions: permissions
+        requestPermissions: permissions,
       },
-      token => {
+      (token) => {
         const secret = OAuth._retrieveCredentialSecret(token) || null;
         Meteor.call(
           "users.setType",

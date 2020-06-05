@@ -36,27 +36,27 @@ class FacebookButton extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false
+      loading: false,
     };
   }
-  _facebookAuth = () => ev => {
+  _facebookAuth = () => (ev) => {
     ev.preventDefault();
     const { invite, type } = this.props;
     let data = {
-      requestPermissions: ["public_profile", "email"]
+      requestPermissions: ["public_profile", "email"],
     };
     if (type == "campaigner") {
       data.requestPermissions = data.requestPermissions.concat([
-        "manage_pages",
-        "publish_pages",
+        "pages_manage_posts",
+        "pages_manage_engagement",
         "pages_show_list",
         "pages_messaging",
         "pages_messaging_phone_number",
-        "pages_messaging_subscriptions"
+        "pages_messaging_subscriptions",
       ]);
     }
     this.setState({ loading: true });
-    Meteor.loginWithFacebook(data, err => {
+    Meteor.loginWithFacebook(data, (err) => {
       if (err) {
         this.setState({ loading: false });
         alertStore.add("Erro durante autenticação, tente novamente.", "error");
@@ -67,7 +67,7 @@ class FacebookButton extends Component {
             alertStore.add(err);
           } else {
             if (invite) {
-              Meteor.call("campaigns.applyInvitation", { invite }, err => {
+              Meteor.call("campaigns.applyInvitation", { invite }, (err) => {
                 if (err) {
                   alertStore.add(err);
                   FlowRouter.go("App.dashboard");

@@ -13,6 +13,8 @@ const NotificationsHelpers = {
     category,
     dataRef,
     removable,
+    sticky,
+    skipEmailNotify,
   }) {
     let users = [];
     if (!campaignId && !userId) {
@@ -51,23 +53,49 @@ const NotificationsHelpers = {
     if (typeof removable !== "undefined") {
       insert.removable = removable;
     }
+    if (typeof sticky !== "undefined") {
+      insert.sticky = sticky;
+    }
     for (const user of users) {
       insert.userId = user._id;
       Notifications.insert(insert);
-      // sendMail({
-      //   type: "notification",
-      //   data: {
-      //     user,
-      //     category,
-      //     metadata,
-      //     text,
-      //     path
-      //   }
-      // });
+      if (!skipEmailNotify) {
+        sendMail({
+          type: "notification",
+          data: {
+            user,
+            category,
+            metadata,
+            text,
+            path,
+          },
+        });
+      }
     }
   },
-  clear({ userId, category, dataRef }) {
-    Notifications.remove({ userId, category, dataRef });
+  clear({ campaignId, userId, category, dataRef }) {
+    let users = [];
+    if (!campaignId && !userId) {
+      throw new Meteor.Error(400, "Campaign ID or User ID is required");
+    }
+    if (userId) {
+      const user = Meteor.users.findOne(userId);
+      if (!user) {
+        throw new Meteor.Error(404, "User not found");
+      }
+      users.push(user);
+    } else if (campaignId) {
+      const campaignUsers = CampaignsHelpers.getAdmins({ campaignId });
+      users = Meteor.users
+        .find({
+          _id: { $in: campaignUsers.map((u) => u.userId) },
+        })
+        .fetch();
+    }
+    for (const user of users) {
+      console.log("clearing notif", user);
+      Notifications.remove({ userId: user._id, category, dataRef });
+    }
   },
 };
 
