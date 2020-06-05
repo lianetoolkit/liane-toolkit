@@ -30,10 +30,18 @@ const FieldContainer = styled.label`
   font-weight: normal;
   margin: 0 0 1rem;
   .label {
-    color: #666;
+    color: #333;
     display: block;
     font-size: 0.8em;
     margin-bottom: 0.25rem;
+  }
+  .description {
+    color: #888;
+    display: block;
+    font-size: 0.8em;
+    margin-top: -0.25rem;
+    margin-bottom: 0.25rem;
+    font-style: italic;
   }
   .input-container {
     display: flex;
@@ -76,17 +84,17 @@ const FieldContainer = styled.label`
   .react-datepicker__input-container {
     display: block;
   }
-  ${props =>
+  ${(props) =>
     props.secondary &&
     css`
       font-size: 0.9em;
     `}
-  ${props =>
+  ${(props) =>
     props.big &&
     css`
       font-size: 1.2em;
     `}
-  ${props =>
+  ${(props) =>
     props.simple &&
     css`
       .input-container {
@@ -178,10 +186,13 @@ class Actions extends Component {
 
 class Field extends Component {
   render() {
-    const { label, children, prefix, ...props } = this.props;
+    const { label, description, children, prefix, ...props } = this.props;
     return (
       <FieldContainer {...props}>
         <span className="label">{label}</span>
+        {description ? (
+          <span className="description">{description}</span>
+        ) : null}
         <div className="input-container">
           {prefix ? <span className="prefix">{prefix}</span> : null}
           {children}

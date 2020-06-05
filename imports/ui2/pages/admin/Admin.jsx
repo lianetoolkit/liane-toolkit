@@ -46,7 +46,10 @@ class AdminContainer extends Component {
             <FormattedMessage id="app.admin.nav.users" defaultMessage="Users" />
           </a>
           <a href={FlowRouter.path("App.admin", { section: "messages" })}>
-            <FormattedMessage id="app.admin.nav.messages" defaultMessage="Messages" />
+            <FormattedMessage
+              id="app.admin.nav.messages"
+              defaultMessage="Messages"
+            />
           </a>
           <a href={FlowRouter.path("App.admin", { section: "jobs" })}>
             <FormattedMessage id="app.admin.nav.jobs" defaultMessage="Jobs" />
@@ -73,7 +76,7 @@ export class Index extends Component {
 export default {
   getSection(section = "") {
     let children = null;
-    return function(props) {
+    return function (props) {
       switch (section) {
         case "":
           children = <Index {...props} />;
@@ -105,5 +108,5 @@ export default {
       }
       return <AdminContainer>{children}</AdminContainer>;
     };
-  }
+  },
 };
