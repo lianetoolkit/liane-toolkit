@@ -271,12 +271,14 @@ appRoutes.route("/campaign/settings/actions", {
   },
 });
 
-appRoutes.route("/admin/:section?", {
+appRoutes.route("/admin/:section?/:subsection?", {
   name: "App.admin",
   action: function (params, queryParams) {
     addTitle(`${APP_NAME} | Administration`);
     return mount(App, {
-      content: { component: AdminPage.getSection(params.section) },
+      content: {
+        component: AdminPage.getSection(params.section, params.subsection),
+      },
       query: { ...queryParams },
     });
   },

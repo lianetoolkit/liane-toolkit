@@ -59,6 +59,9 @@ import "/imports/api/mapFeatures/server/mapFeaturesPublications.js";
 import "/imports/api/notifications/server/notificationsMethods.js";
 import "/imports/api/notifications/server/notificationsPublications.js";
 
+// messages
+import "/imports/api/messages/server/messagesPublications.js";
+
 // jobs
 import "/imports/api/jobs/server/jobs.js";
 import "/imports/api/jobs/server/jobsMethods.js";

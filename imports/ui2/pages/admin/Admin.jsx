@@ -9,8 +9,9 @@ import CampaignsContainer from "/imports/ui2/containers/admin/Campaigns.jsx";
 import UsersContainer from "/imports/ui2/containers/admin/Users.jsx";
 import GeolocationsContainer from "/imports/ui2/containers/admin/Geolocations.jsx";
 import JobsContainer from "/imports/ui2/containers/admin/Jobs.jsx";
+import MessagesPage from "/imports/ui2/containers/admin/Messages.jsx";
 
-import MessagesPage from "/imports/ui2/pages/admin/Messages.jsx";
+import NewMessagePage from "/imports/ui2/pages/admin/NewMessage.jsx";
 
 class AdminContainer extends Component {
   render() {
@@ -74,7 +75,7 @@ export class Index extends Component {
 }
 
 export default {
-  getSection(section = "") {
+  getSection(section = "", subsection = "") {
     let children = null;
     return function (props) {
       switch (section) {
@@ -97,8 +98,13 @@ export default {
           children = <UsersContainer {...props} />;
           break;
         case "messages":
-          children = <MessagesPage {...props} />;
+          if (subsection == "new") {
+            children = <NewMessagePage {...props} />;
+          } else {
+            children = <MessagesPage {...props} />;
+          }
           break;
+        case "messages/new":
         case "jobs":
           children = <JobsContainer {...props} />;
           break;

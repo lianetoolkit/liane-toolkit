@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Container = styled.form`
   width: 100%;
@@ -129,6 +130,9 @@ class Content extends Component {
 
 const ActionsContainer = styled.div`
   border-top: 1px solid #ddd;
+  position: relative;
+  z-index: 2;
+  background: #f7f7f7;
 `;
 
 const ActionsContent = styled.div`
@@ -136,8 +140,11 @@ const ActionsContent = styled.div`
   margin: 0 auto;
   padding: 1rem 4rem;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-end;
+  .info {
+    flex: 1 1 100%;
+  }
   button,
   input[type="submit"] {
     display: block;
@@ -160,6 +167,88 @@ const ActionsContent = styled.div`
   }
 `;
 
+class Actions extends Component {
+  render() {
+    const { children } = this.props;
+    return (
+      <ActionsContainer>
+        <ActionsContent>{children}</ActionsContent>
+      </ActionsContainer>
+    );
+  }
+}
+
+const FiltersContainer = styled.div`
+  border-top: 1px solid #ddd;
+  flex: 0 0 auto;
+  overflow: auto;
+  transition: all 0.1s linear;
+  ${(props) =>
+    props.open &&
+    css`
+      flex: 0 0 50%;
+      box-shadow: 0 0 5rem rgba(0, 0, 0, 0.1);
+    `}
+`;
+
+const FiltersContent = styled.div`
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem 4rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.8em;
+  flex-wrap: wrap;
+  .filters {
+    flex: 1 1 100%;
+    margin-top: 1rem;
+  }
+`;
+
+const FiltersHeader = styled.div`
+  cursor: pointer;
+  flex: 1 1 100%;
+  display: flex;
+  align-items: center;
+  .content {
+    flex: 1 1 100%;
+    h3,
+    p {
+      margin: 0;
+    }
+  }
+`;
+
+class Filters extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+    };
+  }
+  _handleHeaderClick = (ev) => {
+    ev.preventDefault();
+    this.setState({
+      open: !this.state.open,
+    });
+  };
+  render() {
+    const { header, children } = this.props;
+    const { open } = this.state;
+    return (
+      <FiltersContainer open={open}>
+        <FiltersContent>
+          <FiltersHeader onClick={this._handleHeaderClick}>
+            <div className="content">{header}</div>
+            <FontAwesomeIcon icon={open ? "chevron-up" : "chevron-down"} />
+          </FiltersHeader>
+          {open ? <div className="filters">{children}</div> : null}
+        </FiltersContent>
+      </FiltersContainer>
+    );
+  }
+}
+
 const ButtonGroup = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -172,17 +261,6 @@ const ButtonGroup = styled.div`
     text-decoration: none;
   }
 `;
-
-class Actions extends Component {
-  render() {
-    const { children } = this.props;
-    return (
-      <ActionsContainer>
-        <ActionsContent>{children}</ActionsContent>
-      </ActionsContainer>
-    );
-  }
-}
 
 class Field extends Component {
   render() {
@@ -205,6 +283,7 @@ class Field extends Component {
 export default class Form extends Component {
   static Content = Content;
   static Actions = Actions;
+  static Filters = Filters;
   static ButtonGroup = ButtonGroup;
   static Field = Field;
   render() {

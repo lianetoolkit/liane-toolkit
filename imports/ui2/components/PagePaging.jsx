@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,12 +11,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const messages = defineMessages({
   noResults: {
     id: "app.paging.no_results",
-    defaultMessage: "No results"
+    defaultMessage: "No results",
   },
   results: {
     id: "app.paging.results",
-    defaultMessage: "Showing {page_start}-{page_end} out of {total}"
-  }
+    defaultMessage: "Showing {page_start}-{page_end} out of {total}",
+  },
 });
 
 const Container = styled.nav`
@@ -33,17 +33,30 @@ const Container = styled.nav`
   .spacer {
     flex: 1 1 100%;
   }
-  a {
+  .navigator {
+    display: flex;
     flex: 0 0 auto;
-    padding: 0.75rem 1rem;
-    color: #333;
-    &:hover,
-    &:focus {
-      color: #000;
+    a {
+      flex: 0 0 auto;
+      padding: 0.75rem 1rem;
+      color: #333;
+      &:hover,
+      &:focus {
+        color: #000;
+      }
+      &.disabled {
+        cursor: default;
+        color: #bbb;
+      }
     }
-    &.disabled {
-      cursor: default;
-      color: #bbb;
+  }
+  .children {
+    font-size: 0.8em;
+    display: flex;
+    flex: 0 0 auto;
+    .button {
+      flex: 0 0 auto;
+      padding: 0.25rem 0.7rem;
     }
   }
 `;
@@ -87,33 +100,35 @@ class PagePaging extends Component {
               : intl.formatMessage(messages.results, {
                   page_start: skip * limit + 1,
                   page_end: Math.min(count, skip * limit + limit),
-                  total: count
+                  total: count,
                 })}
           </p>
         )}
-        {children}
         <div className="spacer" />
-        <a
-          href="javascript:void(0);"
-          onClick={this.handlePrev}
-          className={this.hasPrev() ? "" : "disabled"}
-        >
-          <FontAwesomeIcon icon="chevron-left" />
-        </a>
-        <a
-          href="javascript:void(0);"
-          onClick={this.handleNext}
-          className={this.hasNext() ? "" : "disabled"}
-        >
-          <FontAwesomeIcon icon="chevron-right" />
-        </a>
+        <div className="children">{children}</div>
+        <div className="navigator">
+          <a
+            href="javascript:void(0);"
+            onClick={this.handlePrev}
+            className={this.hasPrev() ? "" : "disabled"}
+          >
+            <FontAwesomeIcon icon="chevron-left" />
+          </a>
+          <a
+            href="javascript:void(0);"
+            onClick={this.handleNext}
+            className={this.hasNext() ? "" : "disabled"}
+          >
+            <FontAwesomeIcon icon="chevron-right" />
+          </a>
+        </div>
       </Container>
     );
   }
 }
 
 PagePaging.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(PagePaging);
