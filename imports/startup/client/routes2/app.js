@@ -10,7 +10,7 @@ import Transparency from "/imports/ui2/pages/Transparency.jsx";
 import PeopleFormPage from "/imports/ui2/containers/PeopleFormPage.jsx";
 
 import PeoplePage from "/imports/ui2/pages/People.jsx";
-import UnresolvedPage from "/imports/ui2/pages/Unresolved.jsx";
+import UnresolvedPage from "/imports/ui2/containers/UnresolvedPage.jsx";
 import FormSettingsPage from "/imports/ui2/pages/FormSettings.jsx";
 import MapPage from "/imports/ui2/containers/MapPage.jsx";
 import FAQPage from "/imports/ui2/containers/FAQPage.jsx";
