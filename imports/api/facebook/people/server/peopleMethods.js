@@ -162,7 +162,7 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
   if (reaction_count) {
     if (!reaction_type || reaction_type == "any" || reaction_type == "all") {
       query[`counts.likes`] = {
-        $gte: parseInt(reabuildSearchQueryction_count),
+        $gte: parseInt(reaction_count),
       };
     } else {
       query[`counts.reactions.${reaction_type}`] = {

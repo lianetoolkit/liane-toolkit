@@ -4,7 +4,7 @@ import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import {
   People,
   PeopleLists,
-  PeopleExports
+  PeopleExports,
 } from "/imports/api/facebook/people/people.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
@@ -46,12 +46,12 @@ const PeopleHelpers = {
   getInteractionCount({ facebookId, facebookAccountId }) {
     const commentsCount = Comments.find({
       personId: facebookId,
-      facebookAccountId
+      facebookAccountId,
     }).count();
     const likesCount = Likes.find({
       personId: facebookId,
       facebookAccountId: facebookAccountId,
-      parentId: { $exists: false }
+      parentId: { $exists: false },
     }).count();
     let reactionsCount = {};
     const reactionTypes = LikesHelpers.getReactionTypes();
@@ -60,13 +60,13 @@ const PeopleHelpers = {
         personId: facebookId,
         facebookAccountId: facebookAccountId,
         type: reactionType,
-        parentId: { $exists: false }
+        parentId: { $exists: false },
       }).count();
     }
     return {
       comments: commentsCount,
       likes: likesCount,
-      reactions: reactionsCount
+      reactions: reactionsCount,
     };
   },
   updateInteractionCountSum({ personId }) {
@@ -85,8 +85,8 @@ const PeopleHelpers = {
         haha: 0,
         sad: 0,
         angry: 0,
-        thankful: 0
-      }
+        thankful: 0,
+      },
     };
     if (person.counts) {
       for (let facebookId in person.counts) {
@@ -115,7 +115,7 @@ const PeopleHelpers = {
     try {
       location = Promise.await(
         this.geocode({
-          address: get(person, "campaignMeta.basic_info.address")
+          address: get(person, "campaignMeta.basic_info.address"),
         })
       );
     } catch (err) {}
@@ -150,24 +150,24 @@ const PeopleHelpers = {
           .get("https://maps.googleapis.com/maps/api/geocode/json", {
             params: {
               address: str,
-              key: googleMapsKey
-            }
+              key: googleMapsKey,
+            },
           })
-          .then(res => {
+          .then((res) => {
             if (res.data.results && res.data.results.length) {
               const data = res.data.results[0];
               resolve({
                 formattedAddress: data.formatted_address,
                 coordinates: [
                   data.geometry.location.lat,
-                  data.geometry.location.lng
-                ]
+                  data.geometry.location.lng,
+                ],
               });
             } else {
               reject();
             }
           })
-          .catch(err => {
+          .catch((err) => {
             reject(err);
           });
       } else {
@@ -182,16 +182,16 @@ const PeopleHelpers = {
         .aggregate([
           {
             $match: {
-              facebookAccountId: facebookAccountId
-            }
+              facebookAccountId: facebookAccountId,
+            },
           },
           {
             $group: {
               _id: "$facebookId",
               name: { $first: "$name" },
               counts: { $first: `$counts` },
-              lastInteractionDate: { $first: `$lastInteractionDate` }
-            }
+              lastInteractionDate: { $first: `$lastInteractionDate` },
+            },
           },
           {
             $project: {
@@ -199,9 +199,9 @@ const PeopleHelpers = {
               facebookId: "$_id",
               name: "$name",
               counts: "$counts",
-              lastInteractionDate: "$lastInteractionDate"
-            }
-          }
+              lastInteractionDate: "$lastInteractionDate",
+            },
+          },
         ])
         .toArray()
     );
@@ -213,24 +213,24 @@ const PeopleHelpers = {
         peopleBulk
           .find({
             campaignId,
-            facebookId: person.facebookId
+            facebookId: person.facebookId,
           })
           .upsert()
           .update({
             $setOnInsert: {
               _id,
               formId: this.generateFormId(_id),
-              createdAt: new Date()
+              createdAt: new Date(),
             },
             $set: {
               name: person.name,
               facebookAccountId,
               [`counts`]: person.counts,
-              lastInteractionDate: person.lastInteractionDate
+              lastInteractionDate: person.lastInteractionDate,
             },
             $addToSet: {
-              facebookAccounts: facebookAccountId
-            }
+              facebookAccounts: facebookAccountId,
+            },
           });
       }
       peopleBulk.execute();
@@ -257,9 +257,9 @@ const PeopleHelpers = {
               name: 1,
               facebookId: 1,
               campaignMeta: 1,
-              counts: 1
-            }
-          }
+              counts: 1,
+            },
+          },
         })
         .count()
     );
@@ -282,12 +282,12 @@ const PeopleHelpers = {
                   name: 1,
                   facebookId: 1,
                   campaignMeta: 1,
-                  counts: 1
-                }
-              }
+                  counts: 1,
+                },
+              },
             })
             .forEach(
-              person => {
+              (person) => {
                 if (person.campaignMeta) {
                   for (let key in person.campaignMeta) {
                     person[key] = person.campaignMeta[key];
@@ -299,7 +299,7 @@ const PeopleHelpers = {
                   header[key] = true;
                 }
               },
-              err => {
+              (err) => {
                 if (err) {
                   reject(err);
                 } else {
@@ -319,14 +319,19 @@ const PeopleHelpers = {
 
     Promise.await(
       new Promise((resolve, reject) => {
-        mkdirp(fileDir, err => {
+        mkdirp(fileDir, (err) => {
           if (err) {
             reject(err);
           } else {
-            fs.writeFile(filePath, header.join(",") + "\r\n", "utf-8", err => {
-              if (err) reject(err);
-              else resolve();
-            });
+            fs.writeFile(
+              filePath,
+              header.join(",") + "\r\n",
+              "utf-8",
+              (err) => {
+                if (err) reject(err);
+                else resolve();
+              }
+            );
           }
         });
       })
@@ -351,12 +356,12 @@ const PeopleHelpers = {
                   name: 1,
                   facebookId: 1,
                   campaignMeta: 1,
-                  counts: 1
-                }
-              }
+                  counts: 1,
+                },
+              },
             })
             .forEach(
-              person => {
+              (person) => {
                 if (person.campaignMeta) {
                   for (let key in person.campaignMeta) {
                     person[key] = person.campaignMeta[key];
@@ -365,7 +370,7 @@ const PeopleHelpers = {
                 }
                 flattened.push(flattenObject(person));
               },
-              err => {
+              (err) => {
                 if (err) {
                   reject(err);
                 } else {
@@ -373,10 +378,10 @@ const PeopleHelpers = {
                     Papa.unparse(
                       {
                         fields: header,
-                        data: flattened
+                        data: flattened,
                       },
                       {
-                        header: false
+                        header: false,
                       }
                     ) + "\r\n",
                     "utf-8"
@@ -409,7 +414,7 @@ const PeopleHelpers = {
       url,
       path: filePath,
       count: totalCount,
-      expiresAt: expirationDate
+      expiresAt: expirationDate,
     });
 
     // Create job to delete export file
@@ -418,8 +423,8 @@ const PeopleHelpers = {
       jobData: {
         campaignId,
         exportId,
-        expirationDate
-      }
+        expirationDate,
+      },
     });
 
     return exportId;
@@ -432,9 +437,9 @@ const PeopleHelpers = {
     // Build default person
     let defaultPerson = {
       $set: {
-        campaignId
+        campaignId,
       },
-      $addToSet: {}
+      $addToSet: {},
     };
 
     if (defaultValues) {
@@ -463,7 +468,7 @@ const PeopleHelpers = {
     }
 
     // Add data
-    data.forEach(function(item) {
+    data.forEach(function (item) {
       let obj = cloneDeep(defaultPerson);
       let customFields = [];
       for (let key in item) {
@@ -474,7 +479,7 @@ const PeopleHelpers = {
             if (modelKey == "custom") {
               customFields.push({
                 key: itemConfig.customField,
-                val: item[key]
+                val: item[key],
               });
             } else {
               obj.$set[modelKey] = item[key];
@@ -488,14 +493,19 @@ const PeopleHelpers = {
       importData.push(obj);
     });
     // add job per person
+    const job = JobsHelpers.addJob({
+      jobType: "people.import",
+      jobData: { campaignId, count: importData.length, listId },
+    });
     for (let person of importData) {
       JobsHelpers.addJob({
         jobType: "people.importPerson",
         jobData: {
           campaignId,
+          jobId: job,
           listId,
-          person: JSON.stringify(person)
-        }
+          person: JSON.stringify(person),
+        },
       });
     }
 
@@ -509,7 +519,7 @@ const PeopleHelpers = {
       let defaultQuery = {
         _id: { $ne: person._id },
         campaignId: person.campaignId,
-        $or: []
+        $or: [],
       };
       // avoid matching person with different facebookId
       if (person.facebookId) {
@@ -517,9 +527,9 @@ const PeopleHelpers = {
           {
             $or: [
               { facebookId: { $exists: false } },
-              { facebookId: person.facebookId }
-            ]
-          }
+              { facebookId: person.facebookId },
+            ],
+          },
         ];
       }
       // sorted by uniqueness importance
@@ -528,8 +538,8 @@ const PeopleHelpers = {
         [
           "campaignMeta.contact.email",
           "campaignMeta.social_networks.twitter",
-          "campaignMeta.social_networks.instagram"
-        ]
+          "campaignMeta.social_networks.instagram",
+        ],
       ];
       for (const fieldGroup of fieldGroups) {
         let query = { ...defaultQuery };
@@ -579,8 +589,8 @@ const PeopleHelpers = {
           "campaignMeta.contact.email",
           "campaignMeta.contact.cellphone",
           "campaignMeta.social_networks.twitter",
-          "campaignMeta.social_networks.instagram"
-        ]
+          "campaignMeta.social_networks.instagram",
+        ],
       ];
       for (const fieldGroup of fieldGroups) {
         let query = { ...defaultQuery };
@@ -613,18 +623,18 @@ const PeopleHelpers = {
                 People.update(
                   {
                     ...selector,
-                    [`${key}.key`]: value.key
+                    [`${key}.key`]: value.key,
                   },
                   {
                     $set: {
                       ...person.$set,
-                      [`${key}.$.val`]: value.val
+                      [`${key}.$.val`]: value.val,
                     },
                     $setOnInsert: {
                       source: "import",
                       formId: this.generateFormId(_id),
-                      listId
-                    }
+                      listId,
+                    },
                   },
                   { multi: false }
                 );
@@ -665,8 +675,8 @@ const PeopleHelpers = {
         $setOnInsert: {
           source: "import",
           formId: this.generateFormId(_id),
-          listId
-        }
+          listId,
+        },
       },
       { multi: false }
     );
@@ -675,8 +685,8 @@ const PeopleHelpers = {
       { ...selector, listId: { $exists: true } },
       {
         $set: {
-          listId
-        }
+          listId,
+        },
       },
       { multi: false }
     );
@@ -704,7 +714,7 @@ const PeopleHelpers = {
     );
     // Update doc
     return PeopleExports.update(exportId, { $set: { expired: true } });
-  }
+  },
 };
 
 exports.PeopleHelpers = PeopleHelpers;

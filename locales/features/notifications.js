@@ -21,6 +21,14 @@ const messages = {
     id: "app.notifications.update_form_user",
     defaultMessage: "{name} just updated their profile through your form!",
   },
+  peopleImportStart: {
+    id: "app.notifications.people_import_start",
+    defaultMessage: "An import is in progress",
+  },
+  peopleImportEnd: {
+    id: "app.notifications.people_import_end",
+    defaultMessage: "An import has finished",
+  },
 };
 
 module.exports = {

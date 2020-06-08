@@ -4,12 +4,10 @@ import mailer, { sendMail } from "/imports/emails/server/mailer";
 import { Campaigns, Invites } from "/imports/api/campaigns/campaigns.js";
 import { CampaignsHelpers } from "./campaignsHelpers.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
-import { FacebookAudiencesHelpers } from "/imports/api/facebook/audiences/server/audiencesHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { Jobs } from "/imports/api/jobs/jobs.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
-import { AdAccountsHelpers } from "/imports/api/facebook/adAccounts/server/adAccountsHelpers.js";
 import { GeolocationsHelpers } from "/imports/api/geolocations/server/geolocationsHelpers.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
 import { Notifications } from "/imports/api/notifications/notifications";
@@ -1011,7 +1009,7 @@ export const addUser = new ValidatedMethod({
       );
       sendMail({
         type: "campaignInvitation",
-        language: currentUser.language || "en",
+        language: currentUser.userLanguage || "en",
         recipient: email,
         data: {
           name: currentUser.name,

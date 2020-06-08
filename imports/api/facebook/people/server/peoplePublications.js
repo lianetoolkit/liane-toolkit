@@ -1,6 +1,5 @@
 import { People, PeopleLists, PeopleTags, PeopleExports } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
-import { Contexts } from "/imports/api/contexts/contexts.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
 const { Jobs } = require("/imports/api/jobs/jobs.js");

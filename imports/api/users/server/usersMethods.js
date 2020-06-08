@@ -16,8 +16,8 @@ if (Meteor.settings.email && Meteor.settings.email.mail) {
     secure: mailConfig.secure,
     auth: {
       user: mailConfig.username,
-      pass: mailConfig.password
-    }
+      pass: mailConfig.password,
+    },
   });
 }
 
@@ -29,9 +29,9 @@ export const isAppPrivate = new ValidatedMethod({
   run() {
     return {
       isPrivate: !!PRIVATE,
-      hasMail: Meteor.settings.email && Meteor.settings.email.mail
+      hasMail: Meteor.settings.email && Meteor.settings.email.mail,
     };
-  }
+  },
 });
 
 const verificationEmailRule = {
@@ -40,7 +40,7 @@ const verificationEmailRule = {
     return user && !(user.roles && user.roles.indexOf("admin") == -1);
   },
   type: "method",
-  name: "users.sendVerificationEmail"
+  name: "users.sendVerificationEmail",
 };
 
 DDPRateLimiter.addRule(verificationEmailRule, 1, 20 * 1000);
@@ -55,7 +55,7 @@ export const sendVerificationEmail = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not logged in");
     }
     Accounts.sendVerificationEmail(userId);
-  }
+  },
 });
 
 const updateEmailRule = {
@@ -64,7 +64,7 @@ const updateEmailRule = {
     return user && !(user.roles && user.roles.indexOf("admin") == -1);
   },
   type: "method",
-  name: "users.updateEmail"
+  name: "users.updateEmail",
 };
 
 DDPRateLimiter.addRule(updateEmailRule, 1, 20 * 1000);
@@ -73,8 +73,8 @@ export const updateEmail = new ValidatedMethod({
   name: "users.updateEmail",
   validate: new SimpleSchema({
     email: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ email }) {
     const userId = Meteor.userId();
@@ -90,21 +90,21 @@ export const updateEmail = new ValidatedMethod({
     if (oldEmail != email) Accounts.addEmail(userId, email);
     Accounts.sendVerificationEmail(userId);
     if (oldEmail && oldEmail != email) Accounts.removeEmail(userId, oldEmail);
-  }
+  },
 });
 
 export const mailSubscribe = new ValidatedMethod({
   name: "users.mailSubscribe",
   validate: new SimpleSchema({
     name: {
-      type: String
+      type: String,
     },
     email: {
-      type: String
+      type: String,
     },
     country: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ name, email, country }) {
     logger.debug("users.mailSubscribe called", { name, email });
@@ -117,24 +117,24 @@ export const mailSubscribe = new ValidatedMethod({
           from: `"Liane" <${mailConfig.username}>`,
           to: `${Meteor.settings.email.admins.join(", ")}`,
           subject: `[New Subscription] ${name}`,
-          html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Country:</strong> ${country}</p>`
+          html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Country:</strong> ${country}</p>`,
         })
-        .catch(err => {
+        .catch((err) => {
           logger.debug("error sending email", err);
         });
     } else {
       throw new Meteor.Error(500, "Mailing not configured");
     }
     return;
-  }
+  },
 });
 
 export const setLanguage = new ValidatedMethod({
   name: "users.setLanguage",
   validate: new SimpleSchema({
     language: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ language }) {
     const userId = Meteor.userId();
@@ -144,24 +144,24 @@ export const setLanguage = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not logged in");
     }
 
-    return Meteor.users.update(userId, { $set: { language } });
-  }
+    return Meteor.users.update(userId, { $set: { userLanguage: language } });
+  },
 });
 
 export const updateProfile = new ValidatedMethod({
   name: "users.updateProfile",
   validate: new SimpleSchema({
     name: {
-      type: String
+      type: String,
     },
     country: {
       type: String,
-      optional: true
+      optional: true,
     },
     region: {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ name, country, region }) {
     const userId = Meteor.userId();
@@ -169,7 +169,7 @@ export const updateProfile = new ValidatedMethod({
       userId,
       name,
       country,
-      region
+      region,
     });
 
     if (!userId) {
@@ -177,7 +177,7 @@ export const updateProfile = new ValidatedMethod({
     }
 
     return Meteor.users.update(userId, { $set: { name, country, region } });
-  }
+  },
 });
 
 export const getCountry = new ValidatedMethod({
@@ -185,38 +185,43 @@ export const getCountry = new ValidatedMethod({
   validate() {},
   run() {
     const ip = this.connection.clientAddress;
+    logger.debug("users.getCountry called", { ip });
     let res;
-    try {
-      res = Promise.await(
-        axios.get(`https://get.geojs.io/v1/country/${ip}.json`)
-      );
-    } catch (err) {
-      console.log(err);
-    }
-
-    if (res && res.data && res.data.country) {
-      return res.data.country;
+    const localIpRegexp = new RegExp(
+      /(^127\.)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^::1$)|(^[fF][cCdD])/
+    );
+    if (!localIpRegexp.test(ip)) {
+      try {
+        res = Promise.await(
+          axios.get(`https://get.geojs.io/v1/country/${ip}.json`)
+        );
+      } catch (err) {
+        console.log(err);
+      }
+      if (res && res.data && res.data.country) {
+        return res.data.country;
+      }
     }
 
     return false;
-  }
+  },
 });
 
 export const updateUser = new ValidatedMethod({
   name: "users.update",
   validate: new SimpleSchema({
     _id: {
-      type: String
+      type: String,
     },
     name: {
-      type: String
+      type: String,
     },
     roles: {
-      type: Array
+      type: Array,
     },
     "roles.$": {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ _id, name, roles }) {
     logger.debug("users.update called", { name });
@@ -235,25 +240,25 @@ export const updateUser = new ValidatedMethod({
       {
         $set: {
           name,
-          roles
-        }
+          roles,
+        },
       }
     );
     return;
-  }
+  },
 });
 
-const validatePermissions = scopes => {
+const validatePermissions = (scopes) => {
   const permissions = [
     "public_profile",
     "email",
-    "publish_pages",
-    "manage_pages",
+    "pages_manage_posts",
+    "pages_manage_engagement",
     "pages_show_list",
     // "ads_management",
     // "ads_read",
     // "business_management",
-    "pages_messaging"
+    "pages_messaging",
   ];
   return !difference(permissions, scopes || []).length;
 };
@@ -262,21 +267,21 @@ export const validateFBToken = new ValidatedMethod({
   name: "users.validateToken",
   validate: new SimpleSchema({
     token: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ token }) {
     const appToken = Promise.await(
       FB.api("oauth/access_token", {
         client_id: Meteor.settings.facebook.clientId,
         client_secret: Meteor.settings.facebook.clientSecret,
-        grant_type: "client_credentials"
+        grant_type: "client_credentials",
       })
     );
     const response = Promise.await(
       FB.api("debug_token", {
         input_token: token,
-        access_token: appToken.access_token
+        access_token: appToken.access_token,
       })
     );
     if (!response.data || (response.data && !response.data.is_valid)) {
@@ -286,7 +291,7 @@ export const validateFBToken = new ValidatedMethod({
       throw new Meteor.Error(401, "Missing scope permissions");
     }
     return;
-  }
+  },
 });
 
 export const validateCampaigner = new ValidatedMethod({
@@ -294,8 +299,8 @@ export const validateCampaigner = new ValidatedMethod({
   validate: new SimpleSchema({
     invite: {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ invite }) {
     this.unblock();
@@ -306,11 +311,11 @@ export const validateCampaigner = new ValidatedMethod({
     }
     let res = {
       validUser: false,
-      enabled: true
+      enabled: true,
     };
     if (user.services.facebook) {
       const tokenData = UsersHelpers.debugFBToken({
-        token: user.services.facebook.accessToken
+        token: user.services.facebook.accessToken,
       });
       res.validUser =
         user.type == "campaigner" && validatePermissions(tokenData.scopes);
@@ -319,7 +324,7 @@ export const validateCampaigner = new ValidatedMethod({
       res.enabled = CampaignsHelpers.validateInvite({ invite });
     }
     return res;
-  }
+  },
 });
 
 export const setUserType = new ValidatedMethod({
@@ -327,16 +332,16 @@ export const setUserType = new ValidatedMethod({
   validate: new SimpleSchema({
     type: {
       type: String,
-      allowedValues: ["campaigner", "user"]
+      allowedValues: ["campaigner", "user"],
     },
     token: {
       type: String,
-      optional: true
+      optional: true,
     },
     secret: {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ type, token, secret }) {
     const userId = Meteor.userId();
@@ -354,15 +359,15 @@ export const setUserType = new ValidatedMethod({
     } else {
       Meteor.users.update(userId, { $set: { type } });
     }
-  }
+  },
 });
 
 export const removeUser = new ValidatedMethod({
   name: "users.remove",
   validate: new SimpleSchema({
     userId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ userId }) {
     logger.debug("users.remove called", { userId });
@@ -377,7 +382,7 @@ export const removeUser = new ValidatedMethod({
     }
 
     return UsersHelpers.removeUser({ userId });
-  }
+  },
 });
 
 export const removeSelfUser = new ValidatedMethod({
@@ -392,7 +397,7 @@ export const removeSelfUser = new ValidatedMethod({
     }
 
     return UsersHelpers.removeUser({ userId: currentUser });
-  }
+  },
 });
 
 export const exchangeFBToken = new ValidatedMethod({
@@ -419,12 +424,12 @@ export const exchangeFBToken = new ValidatedMethod({
 
     Meteor.users.update(userId, {
       $set: {
-        "services.facebook.accessToken": token.result
-      }
+        "services.facebook.accessToken": token.result,
+      },
     });
 
     return token;
-  }
+  },
 });
 
 export const getAdAccounts = new ValidatedMethod({
@@ -444,7 +449,7 @@ export const getAdAccounts = new ValidatedMethod({
     const token = user.services.facebook.accessToken;
 
     return UsersHelpers.getUserAdAccounts({ token });
-  }
+  },
 });
 
 export const usersQueryCount = new ValidatedMethod({
@@ -453,8 +458,8 @@ export const usersQueryCount = new ValidatedMethod({
     query: {
       type: Object,
       blackbox: true,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ query }) {
     const userId = Meteor.userId();
@@ -462,5 +467,5 @@ export const usersQueryCount = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to perform this action");
     }
     return Meteor.users.find(query || {}).count();
-  }
+  },
 });

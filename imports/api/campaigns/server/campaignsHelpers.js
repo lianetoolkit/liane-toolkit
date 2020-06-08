@@ -10,11 +10,8 @@ import {
 import { PeopleHelpers } from "/imports/api/facebook/people/server/peopleHelpers.js";
 import { MapFeatures } from "/imports/api/mapFeatures/mapFeatures";
 import { FAQ } from "/imports/api/faq/faq.js";
-import { FacebookAudiences } from "/imports/api/facebook/audiences/audiences.js";
-import { Canvas } from "/imports/api/canvas/canvas.js";
 import { Jobs } from "/imports/api/jobs/jobs.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
-import { FacebookAudiencesHelpers } from "/imports/api/facebook/audiences/server/audiencesHelpers.js";
 import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import _ from "underscore";
@@ -206,13 +203,6 @@ const CampaignsHelpers = {
       },
     });
     JobsHelpers.addJob({
-      jobType: "audiences.updateAccountAudience",
-      jobData: {
-        campaignId,
-        facebookAccountId: account.id,
-      },
-    });
-    JobsHelpers.addJob({
       jobType: "people.updateFBUsers",
       jobData: {
         campaignId,
@@ -236,11 +226,6 @@ const CampaignsHelpers = {
       account = campaign.accounts.find((acc) => acc.facebookId == facebookId);
     }
 
-    FacebookAudiences.remove({
-      campaignId,
-      facebookAccountId: facebookId,
-    });
-
     // Remove entry jobs
     Jobs.remove({
       $or: [
@@ -254,77 +239,6 @@ const CampaignsHelpers = {
       Campaigns.update({ _id: campaignId }, { $pull: { accounts: account } });
     }
     return;
-  },
-  addAudienceAccount({ campaignId, account }) {
-    check(campaignId, String);
-    check(account, Object);
-
-    logger.debug("CampaignsHelpers.addAudienceAccountToCampaign: called", {
-      campaignId,
-      account,
-    });
-
-    throw new Meteor.Error(500, "This method is unavailable");
-
-    let updateObj = {
-      facebookId: account.id,
-      name: account.name,
-    };
-
-    if (account.fan_count) {
-      updateObj.fanCount = account.fan_count;
-    }
-
-    const campaign = Campaigns.findOne(campaignId);
-
-    const audienceAccount = _.findWhere(campaign.audienceAccounts, {
-      facebookId: account.id,
-    });
-
-    if (audienceAccount) {
-      throw new Meteor.Error(403, "Audience Account already connected");
-    }
-
-    Campaigns.update(
-      { _id: campaignId },
-      { $addToSet: { audienceAccounts: updateObj } }
-    );
-
-    JobsHelpers.addJob({
-      jobType: "audiences.updateAccountAudience",
-      jobData: {
-        campaignId,
-        facebookAccountId: account.id,
-      },
-    });
-    return;
-  },
-  removeAudienceAccount({ campaignId, facebookId }) {
-    check(campaignId, String);
-    check(facebookId, String);
-
-    const audienceAccount = _.findWhere(campaign.audienceAccounts, {
-      facebookId,
-    });
-
-    if (!audienceAccount) {
-      throw new Meteor.Error(404, "Audience Account not found");
-    }
-
-    Jobs.remove({
-      "data.campaignId": campaignId,
-      "data.facebookAccountId": facebookId,
-    });
-
-    FacebookAudiences.remove({
-      campaignId,
-      facebookAccountId: facebookId,
-    });
-
-    return Campaigns.update(
-      { _id: campaignId },
-      { $pull: { audienceAccounts: audienceAccount } }
-    );
   },
   refreshHealthCheck({ campaignId }) {
     const healthCheckJob = Jobs.findOne({
@@ -352,15 +266,6 @@ const CampaignsHelpers = {
   refreshCampaignJobs({ campaignId }) {
     check(campaignId, String);
     const campaign = Campaigns.findOne(campaignId);
-    // if (campaign.audienceAccounts && campaign.audienceAccounts.length) {
-    //   for (const account of campaign.audienceAccounts) {
-    //     this.refreshAccountJob({
-    //       campaignId,
-    //       facebookAccountId: account.facebookId,
-    //       type: "audiences"
-    //     });
-    //   }
-    // }
 
     // health check job
     this.refreshHealthCheck({ campaignId });
@@ -379,11 +284,6 @@ const CampaignsHelpers = {
           facebookAccountId: account.facebookId,
           type: "entries",
         });
-        // this.refreshAccountJob({
-        //   campaignId,
-        //   facebookAccountId: account.facebookId,
-        //   type: "audiences"
-        // });
       }
     }
   },
@@ -420,13 +320,6 @@ const CampaignsHelpers = {
           facebookId: facebookAccountId,
           accessToken: account.accessToken,
           campaignId: campaign._id,
-        };
-        break;
-      case "audiences":
-        jobType = "audiences.updateAccountAudience";
-        jobData = {
-          campaignId: campaign._id,
-          facebookAccountId: facebookAccountId,
         };
         break;
       case "fbUsers":
@@ -528,8 +421,6 @@ const CampaignsHelpers = {
     People.remove({ campaignId });
     PeopleLists.remove({ campaignId });
     PeopleTags.remove({ campaignId });
-    Canvas.remove({ campaignId });
-    FacebookAudiences.remove({ campaignId });
     MapFeatures.remove({ campaignId });
 
     // Facebook accounts to delete
