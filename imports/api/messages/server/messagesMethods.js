@@ -80,3 +80,21 @@ export const countAudience = new ValidatedMethod({
     return cursor.count();
   },
 });
+
+export const queryCount = new ValidatedMethod({
+  name: "messages.queryCount",
+  validate: new SimpleSchema({
+    query: {
+      type: Object,
+      blackbox: true,
+      optional: true,
+    },
+  }).validator(),
+  run({ query }) {
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+    return Messages.find(query || {}).count();
+  },
+});

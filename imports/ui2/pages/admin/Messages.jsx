@@ -46,9 +46,9 @@ class UsersPage extends Component {
   componentDidUpdate(prevProps) {}
   componentDidMount() {
     this.setState({ loadingCount: true });
-    // Meteor.call("messages.queryCount", { query: {} }, (err, res) => {
-    //   this.setState({ loadingCount: false, count: res });
-    // });
+    Meteor.call("messages.queryCount", { query: {} }, (err, res) => {
+      this.setState({ loadingCount: false, count: res });
+    });
   }
   _handleNext = () => {
     const { page, limit } = this.props;
