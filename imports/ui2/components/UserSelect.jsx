@@ -102,8 +102,8 @@ class UserSelect extends Component {
       Meteor.call("users.selectGet", { userId: value }, (err, res) => {
         if (res) {
           this.setState({
-            users: [res, ...this.state.campaigns],
-            options: this._buildOptions([res, ...this.state.campaigns]),
+            users: [res, ...this.state.users],
+            options: this._buildOptions([res, ...this.state.users]),
           });
         }
       });

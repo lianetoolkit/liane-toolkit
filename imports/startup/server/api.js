@@ -60,6 +60,7 @@ import "/imports/api/notifications/server/notificationsMethods.js";
 import "/imports/api/notifications/server/notificationsPublications.js";
 
 // messages
+import "/imports/api/messages/server/messagesMethods.js";
 import "/imports/api/messages/server/messagesPublications.js";
 
 // jobs

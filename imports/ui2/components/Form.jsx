@@ -12,6 +12,13 @@ const ContentContainer = styled.div`
   flex: 1 1 100%;
   overflow: auto;
   box-sizing: border-box;
+  ${(props) =>
+    props.disabled &&
+    css`
+      opacity: 0.5;
+      pointer-events: none;
+      overflow: hidden;
+    `}
 `;
 
 const FormContent = styled.div`
@@ -142,8 +149,14 @@ const ActionsContent = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  .info {
+  .info,
+  .loading {
     flex: 1 1 100%;
+  }
+  .loading {
+    margin: 0;
+    padding: 0;
+    justify-content: flex-start;
   }
   button,
   input[type="submit"] {
@@ -228,9 +241,9 @@ class Filters extends Component {
   }
   _handleHeaderClick = (ev) => {
     ev.preventDefault();
-    this.setState({
-      open: !this.state.open,
-    });
+    const open = !this.state.open;
+    this.setState({ open });
+    this.props.onToggle && this.props.onToggle(open);
   };
   render() {
     const { header, children } = this.props;

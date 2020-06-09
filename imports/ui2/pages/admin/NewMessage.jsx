@@ -6,6 +6,7 @@ import {
   defineMessages,
   FormattedMessage,
 } from "react-intl";
+import { debounce } from "lodash";
 import Page from "/imports/ui2/components/Page.jsx";
 import Form from "/imports/ui2/components/Form.jsx";
 import Select from "react-select";
@@ -15,6 +16,9 @@ import CountrySelect from "/imports/ui2/components/CountrySelect.jsx";
 import CampaignSelect from "/imports/ui2/components/CampaignSelect.jsx";
 import UserSelect from "/imports/ui2/components/UserSelect.jsx";
 import OfficeField from "/imports/ui2/components/OfficeField.jsx";
+import Loading from "/imports/ui2/components/Loading.jsx";
+
+import { alertStore } from "/imports/ui2/containers/Alerts.jsx";
 
 const messages = defineMessages({
   submitLabel: {
@@ -43,6 +47,7 @@ class NewMessagePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      disabledFormContent: false,
       formData: {
         title: "",
         content: "",
@@ -50,22 +55,74 @@ class NewMessagePage extends Component {
       filters: {
         target: "users",
       },
+      audienceCount: 0,
+      loading: false,
     };
   }
+  componentDidMount() {
+    this._countAudience(this.state.filters);
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      JSON.stringify(prevState.filters) != JSON.stringify(this.state.filters)
+    ) {
+      this._countAudience(this.state.filters);
+    }
+  }
+  _countAudience = debounce(
+    (filters) => {
+      this.setState({ loading: true });
+      Meteor.call("messages.countAudience", filters, (err, res) => {
+        this.setState({
+          audienceCount: res || 0,
+        });
+        this.setState({ loading: false });
+      });
+    },
+    200,
+    {
+      leading: true,
+      trailing: false,
+    }
+  );
   _filledForm = () => {
-    return false;
+    const { formData } = this.state;
+    return (
+      formData.title &&
+      formData.content &&
+      this.state.audienceCount &&
+      !this.state.loading
+    );
+  };
+  _handleContentChange = ({ target }) => {
+    const { formData } = this.state;
+    this.setState({
+      formData: {
+        ...formData,
+        [target.name]: target.value,
+      },
+    });
   };
   _handleChange = ({ target }) => {
     const { filters } = this.state;
     this.setState({
       filters: {
         ...filters,
-        [target.name]: target.value,
+        [target.name]:
+          target.type == "checkbox" ? target.checked : target.value,
       },
     });
   };
-  _handleSelectChange = () => {};
-  _getLanguageOptions = () => {
+  _handleSelectChange = (name) => (selectedOption) => {
+    const { filters } = this.state;
+    this.setState({
+      filters: {
+        ...filters,
+        [name]: selectedOption ? selectedOption.value : null,
+      },
+    });
+  };
+  _getLanguageOptions = (value = false) => {
     let options = [
       {
         value: "",
@@ -78,19 +135,72 @@ class NewMessagePage extends Component {
         label: languages[language],
       });
     }
+    if (value !== false) {
+      return options.find((option) => option.value == value);
+    }
     return options;
+  };
+  _getUserTypeOptions = (value = false) => {
+    const options = [
+      {
+        value: "user",
+        label: "User",
+      },
+      {
+        value: "campaigner",
+        label: "Campaigner",
+      },
+    ];
+    if (value !== false) {
+      return options.find((option) => option.value == value);
+    }
+    return options;
+  };
+  _handleFiltersToggle = (active) => {
+    this.setState({
+      disabledFormContent: active,
+    });
+  };
+  _handleSubmit = (ev) => {
+    ev.preventDefault();
+    const { formData, filters } = this.state;
+    Meteor.call(
+      "messages.new",
+      {
+        ...formData,
+        filters: filters,
+      },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          console.log(res);
+        }
+      }
+    );
   };
   render() {
     const { intl } = this.props;
-    const { formData, filters } = this.state;
+    const {
+      disabledFormContent,
+      formData,
+      filters,
+      audienceCount,
+      loading,
+    } = this.state;
     return (
-      <Form>
-        <Form.Content>
+      <Form onSubmit={this._handleSubmit}>
+        <Form.Content disabled={disabledFormContent}>
           <Container>
             <h2>New message</h2>
             <p>Create a message to send to all or selected users.</p>
             <Form.Field big label="Message title">
-              <input type="text" name="title" />
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={this._handleContentChange}
+              />
             </Form.Field>
             <Form.Field
               label="Message content"
@@ -108,11 +218,16 @@ class NewMessagePage extends Component {
                 </span>
               }
             >
-              <textarea name="content"></textarea>
+              <textarea
+                name="content"
+                value={formData.content}
+                onChange={this._handleContentChange}
+              ></textarea>
             </Form.Field>
           </Container>
         </Form.Content>
         <Form.Filters
+          onToggle={this._handleFiltersToggle}
           header={
             <>
               <h3>Message audience</h3>
@@ -148,38 +263,43 @@ class NewMessagePage extends Component {
                 label="Single user"
                 description="Send to a specific user"
               >
-                <UserSelect />
+                <UserSelect
+                  name="userId"
+                  onChange={this._handleChange}
+                  value={filters.userId}
+                />
               </Form.Field>
               <OrLine bgColor="#f7f7f7">or filter below</OrLine>
               <Form.Field label="Language">
                 <Select
                   classNamePrefix="select-search"
+                  isClearable={true}
                   isSearchable={true}
                   placeholder="Select a language..."
                   options={this._getLanguageOptions()}
-                  onChange={this._handleSelectChange}
-                  name="language"
-                  // value={}
+                  onChange={this._handleSelectChange("userLanguage")}
+                  name="userLanguage"
+                  value={
+                    filters.userLanguage
+                      ? this._getLanguageOptions(filters.userLanguage)
+                      : null
+                  }
                 />
               </Form.Field>
               <Form.Field label="User type">
                 <Select
                   classNamePrefix="select-search"
+                  isClearable={true}
                   isSearchable={true}
                   placeholder="Select a user type..."
-                  options={[
-                    {
-                      value: "user",
-                      label: "User",
-                    },
-                    {
-                      value: "campaigner",
-                      label: "Campaigner",
-                    },
-                  ]}
-                  onChange={this._handleSelectChange}
-                  name="type"
-                  // value={}
+                  options={this._getUserTypeOptions()}
+                  onChange={this._handleSelectChange("userType")}
+                  name="userType"
+                  value={
+                    filters.userType
+                      ? this._getUserTypeOptions(filters.userType)
+                      : null
+                  }
                 />
               </Form.Field>
             </div>
@@ -190,22 +310,37 @@ class NewMessagePage extends Component {
                 label="Single campaign"
                 description="Send to a specific campaign"
               >
-                <CampaignSelect />
+                <CampaignSelect
+                  name="campaignId"
+                  value={filters.campaignId}
+                  onChange={this._handleChange}
+                />
               </Form.Field>
               <OrLine bgColor="#f7f7f7">or filter below</OrLine>
               <Form.Field className="radio-list">
                 <label>
-                  <input type="checkbox" name="admins" />
+                  <input
+                    type="checkbox"
+                    name="campaignAdmins"
+                    onChange={this._handleChange}
+                    checked={filters.campaignAdmins}
+                  />
                   Send to campaign admins only
                 </label>
               </Form.Field>
               <Form.Field label="Country">
-                <CountrySelect />
+                <CountrySelect
+                  name="campaignCountry"
+                  clearable={true}
+                  value={filters.campaignCountry}
+                  onChange={this._handleChange}
+                />
               </Form.Field>
               <Form.Field label="Office">
                 <OfficeField
-                  country={formData.country}
-                  name="office"
+                  country={filters.campaignCountry}
+                  clearable={true}
+                  name="campaignOffice"
                   onChange={this._handleChange}
                 />
               </Form.Field>
@@ -213,12 +348,23 @@ class NewMessagePage extends Component {
           ) : null}
         </Form.Filters>
         <Form.Actions>
-          <div className="info">
-            <strong>2</strong> users will receive this message
-          </div>
+          {loading ? (
+            <Loading />
+          ) : (
+            <div className="info">
+              {audienceCount ? (
+                <span>
+                  <strong>{audienceCount}</strong> users will receive this
+                  message
+                </span>
+              ) : (
+                "No match found for selected filters"
+              )}
+            </div>
+          )}
           <input
             type="submit"
-            disabled={!this._filledForm() || loading}
+            disabled={!this._filledForm()}
             value={intl.formatMessage(messages.submitLabel)}
           />
         </Form.Actions>

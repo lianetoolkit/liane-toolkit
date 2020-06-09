@@ -15,10 +15,10 @@ import NewMessagePage from "/imports/ui2/pages/admin/NewMessage.jsx";
 
 class AdminContainer extends Component {
   render() {
-    const { children } = this.props;
+    const { children, full } = this.props;
     return (
       <>
-        <Page.Nav full>
+        <Page.Nav full={full}>
           <h3>
             <FormattedMessage
               id="app.admin.nav.title"
@@ -76,6 +76,7 @@ export class Index extends Component {
 
 export default {
   getSection(section = "", subsection = "") {
+    let full = true;
     let children = null;
     return function (props) {
       switch (section) {
@@ -99,12 +100,12 @@ export default {
           break;
         case "messages":
           if (subsection == "new") {
+            full = false;
             children = <NewMessagePage {...props} />;
           } else {
             children = <MessagesPage {...props} />;
           }
           break;
-        case "messages/new":
         case "jobs":
           children = <JobsContainer {...props} />;
           break;
@@ -112,7 +113,7 @@ export default {
           children = <h2>404</h2>;
           break;
       }
-      return <AdminContainer>{children}</AdminContainer>;
+      return <AdminContainer full={full}>{children}</AdminContainer>;
     };
   },
 };
