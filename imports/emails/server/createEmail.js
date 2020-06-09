@@ -11,6 +11,7 @@ import Notification from "../templates/Notification.jsx";
 import ResetPassword from "../templates/ResetPassword.jsx";
 import VerifyEmail from "../templates/VerifyEmail.jsx";
 import CampaignInvitation from "../templates/CampaignInvitation.jsx";
+import Message from "../templates/Message.jsx";
 import Default from "../templates/Default.jsx";
 
 const STYLE_TAG = "%STYLE%";
@@ -31,10 +32,13 @@ function getTemplate(type, language = "en", data = {}, title = "") {
     case "campaignInvitation":
       content.component = CampaignInvitation;
       break;
+    case "message":
+      content.component = Message;
+      break;
     default:
       content.component = Default;
   }
-  return function() {
+  return function () {
     return (
       <Email language={language}>
         <content.component data={data} title={title} />
@@ -64,7 +68,7 @@ function createEmail(type, language = "en", data = {}, title = "") {
 
   return {
     subject,
-    body: emailHTML
+    body: emailHTML,
   };
 }
 

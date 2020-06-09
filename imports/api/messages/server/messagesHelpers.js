@@ -3,6 +3,8 @@ import { Messages } from "/imports/api/messages/messages.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
 import { uniq } from "lodash";
+import createEmail from "/imports/emails/server/createEmail";
+import { languages } from "/locales";
 
 const filtersSchema = new SimpleSchema({
   target: {
@@ -114,6 +116,24 @@ const MessagesHelpers = {
     if (!query) return false;
 
     return Meteor.users.find(query);
+  },
+  createEmail({ messageId, title, content, filters }) {
+    let emails = {};
+    let locales = [];
+    if (filters.userLanguage) {
+      locales = [filters.userLanguage];
+    } else {
+      locales = Object.keys(languages);
+    }
+    for (const locale of locales) {
+      emails[locale] = createEmail(
+        "message",
+        locale,
+        { messageId, content },
+        title
+      );
+    }
+    return emails;
   },
 };
 

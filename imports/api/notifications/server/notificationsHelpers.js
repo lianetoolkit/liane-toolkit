@@ -36,7 +36,7 @@ const NotificationsHelpers = {
     }
     let insert = {};
     if (text) {
-      inser.text = text;
+      insert.text = text;
     }
     if (path) {
       insert.path = path;

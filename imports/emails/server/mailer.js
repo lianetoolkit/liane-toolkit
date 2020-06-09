@@ -12,8 +12,8 @@ if (Meteor.settings.email && Meteor.settings.email.mail) {
     secure: mailConfig.secure,
     auth: {
       user: mailConfig.username,
-      pass: mailConfig.password
-    }
+      pass: mailConfig.password,
+    },
   });
 }
 
@@ -23,7 +23,7 @@ export const sendMail = async ({
   recipient,
   language,
   subject,
-  body
+  body,
 }) => {
   if (!recipient && !data.user) {
     console.log("Email not sent. Missing recipient");
@@ -37,7 +37,10 @@ export const sendMail = async ({
 
   language = language || (data.user ? data.user.userLanguage : "en");
 
-  const emailData = createEmail(type, language, data);
+  let emailData;
+  if (!subject && !body) {
+    const emailData = createEmail(type, language, data);
+  }
 
   // fs.writeFile(
   //   path.join(Meteor.absolutePath, "/generated-files/test.html"),
@@ -48,7 +51,7 @@ export const sendMail = async ({
     from: `"Liane" <${Meteor.settings.public.appEmail}>`,
     to: recipient || data.user.emails[0].address,
     subject: subject || emailData.subject,
-    html: body || emailData.body
+    html: body || emailData.body,
   });
 };
 
