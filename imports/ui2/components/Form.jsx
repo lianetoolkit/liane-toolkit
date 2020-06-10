@@ -194,12 +194,10 @@ class Actions extends Component {
 const FiltersContainer = styled.div`
   border-top: 1px solid #ddd;
   flex: 0 0 auto;
-  overflow: auto;
-  transition: all 0.1s linear;
   ${(props) =>
     props.open &&
     css`
-      flex: 0 0 50%;
+      flex: 1 1 100%;
       box-shadow: 0 0 5rem rgba(0, 0, 0, 0.1);
     `}
 `;
@@ -213,6 +211,7 @@ const FiltersContent = styled.div`
   font-size: 0.8em;
   flex-wrap: wrap;
   .filters {
+    width: 100%;
     flex: 1 1 100%;
     margin-top: 1rem;
   }
@@ -223,6 +222,7 @@ const FiltersHeader = styled.div`
   flex: 1 1 100%;
   display: flex;
   align-items: center;
+    width: 100%;
   .content {
     flex: 1 1 100%;
     h3,

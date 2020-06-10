@@ -21,6 +21,14 @@ import Loading from "/imports/ui2/components/Loading.jsx";
 import { alertStore } from "/imports/ui2/containers/Alerts.jsx";
 
 const messages = defineMessages({
+  titleLabel: {
+    id: "app.admin.messages.new.title_label",
+    defaultMessage: "Message title",
+  },
+  contentLabel: {
+    id: "app.admin.messages.new.content_label",
+    defaultMessage: "Message content",
+  },
   submitLabel: {
     id: "app.admin.messages.new.submit_label",
     defaultMessage: "Send message",
@@ -29,7 +37,7 @@ const messages = defineMessages({
 
 const Container = styled.div`
   textarea {
-    height: 400px;
+    height: 200px;
   }
   .message-filters {
     font-size: 0.9em;
@@ -174,7 +182,8 @@ class NewMessagePage extends Component {
         if (err) {
           alertStore.add(err);
         } else {
-          console.log(res);
+          alertStore.add(null, "success");
+          FlowRouter.go("/admin/messages");
         }
       }
     );
@@ -192,9 +201,19 @@ class NewMessagePage extends Component {
       <Form onSubmit={this._handleSubmit}>
         <Form.Content disabled={disabledFormContent}>
           <Container>
-            <h2>New message</h2>
-            <p>Create a message to send to all or selected users.</p>
-            <Form.Field big label="Message title">
+            <h2>
+              <FormattedMessage
+                id="app.admin.messages.new.title"
+                defaultMessage="New message"
+              />
+            </h2>
+            <p>
+              <FormattedMessage
+                id="app.admin.messages.new.description"
+                defaultMessage="Create a message to send to all or selected users."
+              />
+            </p>
+            <Form.Field big label={intl.formatMessage(messages.titleLabel)}>
               <input
                 type="text"
                 name="title"
@@ -203,19 +222,23 @@ class NewMessagePage extends Component {
               />
             </Form.Field>
             <Form.Field
-              label="Message content"
+              label={intl.formatMessage(messages.contentLabel)}
               description={
-                <span>
-                  You can use{" "}
-                  <a
-                    href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet"
-                    rel="external"
-                    target="_blank"
-                  >
-                    markdown
-                  </a>{" "}
-                  to format your message
-                </span>
+                <FormattedMessage
+                  id="app.admin.messages.new.content_description"
+                  defaultMessage="You can use {markdown} to format your message"
+                  values={{
+                    markdown: (
+                      <a
+                        href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet"
+                        rel="external"
+                        target="_blank"
+                      >
+                        markdown
+                      </a>
+                    ),
+                  }}
+                />
               }
             >
               <textarea
@@ -230,8 +253,18 @@ class NewMessagePage extends Component {
           onToggle={this._handleFiltersToggle}
           header={
             <>
-              <h3>Message audience</h3>
-              <p>Determine which users will receive this message</p>
+              <h3>
+                <FormattedMessage
+                  id="app.admin.messages.new.filter_title"
+                  defaultMessage="Message audience"
+                />
+              </h3>
+              <p>
+                <FormattedMessage
+                  id="app.admin.messages.new.filter_description"
+                  defaultMessage="Filter which users will receive this message"
+                />
+              </p>
             </>
           }
         >
@@ -353,12 +386,16 @@ class NewMessagePage extends Component {
           ) : (
             <div className="info">
               {audienceCount ? (
-                <span>
-                  <strong>{audienceCount}</strong> users will receive this
-                  message
-                </span>
+                <FormattedMessage
+                  id="app.admin.messages.new.audience_count"
+                  defaultMessage="{count} users will receive this message"
+                  values={{ count: <strong>{audienceCount}</strong> }}
+                />
               ) : (
-                "No match found for selected filters"
+                <FormattedMessage
+                  id="app.admin.messages.new.no_match"
+                  defaultMessage="No match found for selected filters"
+                />
               )}
             </div>
           )}

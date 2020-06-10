@@ -48,8 +48,6 @@ export const createMessage = new ValidatedMethod({
       filters,
     });
 
-    console.log(emails);
-
     cursor.forEach((user) => {
       const email = emails[user.userLanguage || "en"];
       email.body = email.body.replace("%NAME%", user.name);
