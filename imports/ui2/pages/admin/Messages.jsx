@@ -77,7 +77,10 @@ class UsersPage extends Component {
           onPrev={this._handlePrev}
         >
           <Button primary href={FlowRouter.path("/admin/messages/new")}>
-            New message
+            <FormattedMessage
+              id="app.admin.messages.new_message"
+              defaultMessage="New message"
+            />
           </Button>
         </PagePaging>
         <TableContainer>

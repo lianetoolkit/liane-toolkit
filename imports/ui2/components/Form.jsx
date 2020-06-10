@@ -194,6 +194,7 @@ class Actions extends Component {
 const FiltersContainer = styled.div`
   border-top: 1px solid #ddd;
   flex: 0 0 auto;
+  overflow: auto;
   ${(props) =>
     props.open &&
     css`

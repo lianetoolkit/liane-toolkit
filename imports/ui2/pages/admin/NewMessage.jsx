@@ -372,6 +372,7 @@ class NewMessagePage extends Component {
               <Form.Field label="Office">
                 <OfficeField
                   country={filters.campaignCountry}
+                  placeholder="Select an office position"
                   clearable={true}
                   name="campaignOffice"
                   onChange={this._handleChange}
