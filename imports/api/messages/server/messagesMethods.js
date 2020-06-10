@@ -28,6 +28,12 @@ export const createMessage = new ValidatedMethod({
   }).validator(),
   run({ title, content, filters }) {
     logger.debug("messages.new called", { title });
+
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+
     const cursor = MessagesHelpers.getFilterQueryCursor({ filters });
     if (!cursor)
       throw new Meteor.Error(400, "No users match the selected filters");
@@ -73,6 +79,10 @@ export const countAudience = new ValidatedMethod({
   name: "messages.countAudience",
   validate: MessagesHelpers.filtersSchema.validator(),
   run(data) {
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
     const cursor = MessagesHelpers.getFilterQueryCursor({ filters: data });
     if (!cursor) return 0;
     return cursor.count();
