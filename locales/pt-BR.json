@@ -62,7 +62,7 @@
   "app.admin.messages.new.title": "Nova mensagem",
   "app.admin.messages.new.title_label": "Título da mensagem",
   "app.admin.messages.new_message": "Nova mensagem",
-  "app.admin.messages.recipientCount": "Recipientes",
+  "app.admin.messages.recipientCount": "Destinatários",
   "app.admin.messages.target": "Alvo da mensagem",
   "app.admin.messages.title": "Título",
   "app.admin.messages.view_message": "Ver mensagem",
