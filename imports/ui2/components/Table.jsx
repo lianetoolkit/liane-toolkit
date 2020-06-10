@@ -12,7 +12,7 @@ const Container = styled.table`
   .show-on-hover {
     display: none;
   }
-  a {
+  a:not(.button) {
     color: #333;
     text-decoration: none;
     &:hover,
@@ -167,7 +167,7 @@ const Container = styled.table`
       }
     }
   }
-  ${props =>
+  ${(props) =>
     props.compact &&
     css`
       border-radius: 0;
@@ -202,7 +202,7 @@ const SortableHeadContainer = styled.th`
       }
     }
   }
-  ${props =>
+  ${(props) =>
     props.sorted &&
     css`
       .th-container .th-content {
@@ -245,6 +245,10 @@ export default class Table extends Component {
   static SortableHead = SortableHead;
   render() {
     const { children, ...props } = this.props;
-    return <Container className="table" {...props}>{children}</Container>;
+    return (
+      <Container className="table" {...props}>
+        {children}
+      </Container>
+    );
   }
 }

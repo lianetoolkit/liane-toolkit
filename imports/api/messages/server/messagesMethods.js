@@ -13,6 +13,19 @@ const markdown = new MarkdownIt({
   linkify: true,
 });
 
+export const getMessage = new ValidatedMethod({
+  name: "messages.get",
+  validate: new SimpleSchema({
+    messageId: {
+      type: String,
+    },
+  }).validator(),
+  run({ messageId }) {
+    logger.debug("messages.get called", { messageId });
+    return Messages.findOne(messageId, { fields: { title: 1, content: 1 } });
+  },
+});
+
 export const createMessage = new ValidatedMethod({
   name: "messages.new",
   validate: new SimpleSchema({

@@ -7,6 +7,8 @@ import App from "/imports/ui2/containers/App.jsx";
 import MyAccount from "/imports/ui2/pages/MyAccount.jsx";
 import Transparency from "/imports/ui2/pages/Transparency.jsx";
 
+import MessagePage from "/imports/ui2/pages/Message.jsx";
+
 import PeopleFormPage from "/imports/ui2/containers/PeopleFormPage.jsx";
 
 import PeoplePage from "/imports/ui2/pages/People.jsx";
@@ -110,6 +112,17 @@ appRoutes.route("/account", {
   action: function () {
     addTitle(`${APP_NAME} | My account`);
     return mount(App, { content: { component: MyAccount } });
+  },
+});
+
+appRoutes.route("/messages/:messageId", {
+  name: "App.message",
+  action: function (params) {
+    addTitle(`${APP_NAME} | Message`);
+    return mount(App, {
+      content: { component: MessagePage },
+      messageId: params.messageId,
+    });
   },
 });
 

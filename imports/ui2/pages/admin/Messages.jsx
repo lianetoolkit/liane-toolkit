@@ -98,10 +98,11 @@ class UsersPage extends Component {
                 </th>
                 <th>
                   <FormattedMessage
-                    id="app.admin.messages.type"
-                    defaultMessage="Message type"
+                    id="app.admin.messages.target"
+                    defaultMessage="Message target"
                   />
                 </th>
+                <th />
                 <th>
                   <FormattedMessage
                     id="app.admin.messages.created_label"
@@ -116,6 +117,17 @@ class UsersPage extends Component {
                   <td className="fill">{message.title}</td>
                   <td>{message.recipientCount}</td>
                   <td>{message.type}</td>
+                  <td>
+                    <Button
+                      className="button small"
+                      href={FlowRouter.path(`/messages/${message._id}`)}
+                    >
+                      <FormattedMessage
+                        id="app.admin.messages.view_message"
+                        defaultMessage="View message"
+                      />
+                    </Button>
+                  </td>
                   <td className="small">
                     {moment(message.createdAt).format("L")}
                   </td>
