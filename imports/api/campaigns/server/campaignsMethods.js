@@ -283,10 +283,6 @@ export const campaignsCreate = new ValidatedMethod({
       userFacebookId: user.services.facebook.id,
       facebookId: account.id,
       accessToken: accountToken.result,
-      chatbot: {
-        active: false,
-        init_text_response: false,
-      },
     };
 
     campaignId = Campaigns.insert(insertDoc);

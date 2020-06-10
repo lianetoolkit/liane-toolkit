@@ -20,8 +20,6 @@ import PeopleSinglePage from "/imports/ui2/containers/PeopleSinglePage.jsx";
 
 import AdsetPage from "/imports/ui2/pages/Adset.jsx";
 
-import ChatbotPage from "/imports/ui2/pages/chatbot/index.jsx";
-
 import CampaignInvitePage from "/imports/ui2/pages/campaign/Invite.jsx";
 import CampaignSettingsPage from "/imports/ui2/pages/campaign/settings/General.jsx";
 import CampaignFacebookPage from "/imports/ui2/pages/campaign/settings/Facebook.jsx";
@@ -215,17 +213,6 @@ appRoutes.route("/form_settings", {
   action: function () {
     addTitle(`${APP_NAME} | Form Settings`);
     return mount(App, { content: { component: FormSettingsPage } });
-  },
-});
-
-appRoutes.route("/chatbot", {
-  name: "App.chatbot",
-  action: function (params, queryParams) {
-    addTitle(`${APP_NAME} | Chatbot`);
-    return mount(App, {
-      content: { component: ChatbotPage },
-      module: queryParams.module,
-    });
   },
 });
 
