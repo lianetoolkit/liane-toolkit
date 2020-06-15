@@ -7,6 +7,8 @@ import App from "/imports/ui2/containers/App.jsx";
 import MyAccount from "/imports/ui2/pages/MyAccount.jsx";
 import Transparency from "/imports/ui2/pages/Transparency.jsx";
 
+import MessagePage from "/imports/ui2/pages/Message.jsx";
+
 import PeopleFormPage from "/imports/ui2/containers/PeopleFormPage.jsx";
 
 import PeoplePage from "/imports/ui2/pages/People.jsx";
@@ -18,8 +20,6 @@ import CommentsPage from "/imports/ui2/containers/CommentsPage.jsx";
 import PeopleSinglePage from "/imports/ui2/containers/PeopleSinglePage.jsx";
 
 import AdsetPage from "/imports/ui2/pages/Adset.jsx";
-
-import ChatbotPage from "/imports/ui2/pages/chatbot/index.jsx";
 
 import CampaignInvitePage from "/imports/ui2/pages/campaign/Invite.jsx";
 import CampaignSettingsPage from "/imports/ui2/pages/campaign/settings/General.jsx";
@@ -111,6 +111,17 @@ appRoutes.route("/account", {
   action: function () {
     addTitle(`${APP_NAME} | My account`);
     return mount(App, { content: { component: MyAccount } });
+  },
+});
+
+appRoutes.route("/messages/:messageId", {
+  name: "App.message",
+  action: function (params) {
+    addTitle(`${APP_NAME} | Message`);
+    return mount(App, {
+      content: { component: MessagePage },
+      messageId: params.messageId,
+    });
   },
 });
 
@@ -216,17 +227,6 @@ appRoutes.route("/form_settings", {
   },
 });
 
-appRoutes.route("/chatbot", {
-  name: "App.chatbot",
-  action: function (params, queryParams) {
-    addTitle(`${APP_NAME} | Chatbot`);
-    return mount(App, {
-      content: { component: ChatbotPage },
-      module: queryParams.module,
-    });
-  },
-});
-
 appRoutes.route("/campaign/invite", {
   name: "App.campaign.invite",
   action: function (params, queryParams) {
@@ -282,12 +282,14 @@ appRoutes.route("/campaign/settings/actions", {
   },
 });
 
-appRoutes.route("/admin/:section?", {
+appRoutes.route("/admin/:section?/:subsection?", {
   name: "App.admin",
   action: function (params, queryParams) {
     addTitle(`${APP_NAME} | Administration`);
     return mount(App, {
-      content: { component: AdminPage.getSection(params.section) },
+      content: {
+        component: AdminPage.getSection(params.section, params.subsection),
+      },
       query: { ...queryParams },
     });
   },

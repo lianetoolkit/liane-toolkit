@@ -4,7 +4,7 @@ import {
   intlShape,
   defineMessages,
   FormattedMessage,
-  FormattedHTMLMessage
+  FormattedHTMLMessage,
 } from "react-intl";
 import styled from "styled-components";
 
@@ -21,12 +21,12 @@ import PeopleBlock from "../components/blocks/PeopleBlock.jsx";
 const messages = defineMessages({
   donors: {
     id: "app.dashboard.donors.title",
-    defaultMessage: "Donors"
+    defaultMessage: "Donors",
   },
   volunteers: {
     id: "app.dashboard.volunteers.title",
-    defaultMessage: "Volunteers"
-  }
+    defaultMessage: "Volunteers",
+  },
 });
 
 const FirstRunContainer = styled.div`
@@ -59,7 +59,7 @@ class DashboardPage extends Component {
     super(props);
     this.state = {
       counts: {},
-      ready: false
+      ready: false,
     };
   }
   componentDidMount() {
@@ -79,12 +79,12 @@ class DashboardPage extends Component {
       if (!err) {
         this.setState({
           counts: res,
-          ready: !this.isFirstRun()
+          ready: !this.isFirstRun(),
         });
       }
     });
   }
-  isFirstRun = props => {
+  isFirstRun = (props) => {
     const { entriesJob, runningEntriesJobs } = props || this.props;
     return (
       entriesJob &&
@@ -133,9 +133,9 @@ class DashboardPage extends Component {
               query={{
                 campaignId,
                 query: {
-                  "campaignMeta.volunteer": true
+                  "campaignMeta.volunteer": true,
                 },
-                options: {}
+                options: {},
               }}
             />
           </Dashboard.Box>
@@ -146,9 +146,9 @@ class DashboardPage extends Component {
               query={{
                 campaignId,
                 query: {
-                  "campaignMeta.donor": true
+                  "campaignMeta.donor": true,
                 },
-                options: {}
+                options: {},
               }}
             />
           </Dashboard.Box>
@@ -160,7 +160,7 @@ class DashboardPage extends Component {
                 values={{
                   people: counts.people,
                   comments: counts.comments,
-                  reactions: counts.likes
+                  reactions: counts.likes,
                 }}
               />
             </p>
@@ -185,28 +185,6 @@ class DashboardPage extends Component {
           </Dashboard.Box>
         </Dashboard.Row>
         <Dashboard.Row>
-          {/* <Dashboard.Box minimal>
-            <header>
-              <FontAwesomeIcon icon={["fab", "facebook-messenger"]} />
-              <h3>Chatbot</h3>
-            </header>
-            <section>
-              <p>
-                <FormattedMessage
-                  id="app.dashboard.chatbot.intro"
-                  defaultMessage="Configure your chatbot to spread your message and gather supporters"
-                />
-              </p>
-            </section>
-            <footer>
-              <Button href={FlowRouter.path("App.chatbot")}>
-                <FormattedMessage
-                  id="app.dashboard.chatbot.button"
-                  defaultMessage="Setup Chatbot"
-                />
-              </Button>
-            </footer>
-          </Dashboard.Box> */}
           <Dashboard.Box minimal>
             <header>
               <FontAwesomeIcon icon="map-marked" />
@@ -295,7 +273,7 @@ class DashboardPage extends Component {
 }
 
 DashboardPage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(DashboardPage);

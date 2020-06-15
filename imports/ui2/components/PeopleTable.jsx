@@ -29,7 +29,6 @@ import PersonReactions from "./PersonReactions.jsx";
 import PersonEdit from "./PersonEdit.jsx";
 import PersonContactIcons from "./PersonContactIcons.jsx";
 import PersonTags from "./PersonTags.jsx";
-import PersonChatIcon from "./PersonChatIcon.jsx";
 import Reply from "./Reply.jsx";
 import { getCommentUrl } from "./Comment.jsx";
 
@@ -415,15 +414,7 @@ class PeopleTable extends Component {
     return [];
   }
   render() {
-    const {
-      intl,
-      people,
-      tags,
-      chatColumn,
-      onChange,
-      onSort,
-      ...props
-    } = this.props;
+    const { intl, people, tags, onChange, onSort, ...props } = this.props;
     const { expanded } = this.state;
     return (
       <Container className="people-table">
@@ -432,15 +423,6 @@ class PeopleTable extends Component {
             <thead>
               <tr>
                 <th colSpan="2" />
-                {chatColumn ? (
-                  <th>
-                    <FontAwesomeIcon
-                      icon={["fab", "facebook-messenger"]}
-                      data-tip="Chatbot conversation status"
-                      data-for="people-table-header-tip"
-                    />
-                  </th>
-                ) : null}
                 <Table.SortableHead
                   className="fill"
                   onClick={this._handleSortClick("name", "asc")}
@@ -545,11 +527,6 @@ class PeopleTable extends Component {
                       </ReactTooltip>
                     ) : null}
                   </td>
-                  {chatColumn ? (
-                    <td>
-                      <PersonChatIcon person={person} />
-                    </td>
-                  ) : null}
                   <td className="fill highlight">
                     <p className="extra-actions show-on-hover">
                       <a
@@ -608,8 +585,7 @@ class PeopleTable extends Component {
                         simple
                       />
                     </td>
-                    {/* {chatColumn ? <td className="extra" /> : null} */}
-                    <td className="extra fill" colSpan={chatColumn ? "2" : "1"}>
+                    <td className="extra fill" colSpan="1">
                       <PersonSummary person={person} tags={this.props.tags} />
                     </td>
                     <td className="extra" colSpan="4">

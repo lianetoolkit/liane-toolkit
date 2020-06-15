@@ -38,7 +38,6 @@ import "/imports/api/facebook/comments/server/commentsPublications.js";
 // people
 import "/imports/api/facebook/people/server/peopleMethods.js";
 import "/imports/api/facebook/people/server/peoplePublications.js";
-import "/imports/api/facebook/people/server/peopleRest.js";
 
 // geolocations
 import "/imports/api/geolocations/server/geolocationsMethods.js";
@@ -58,6 +57,10 @@ import "/imports/api/mapFeatures/server/mapFeaturesPublications.js";
 // notifications
 import "/imports/api/notifications/server/notificationsMethods.js";
 import "/imports/api/notifications/server/notificationsPublications.js";
+
+// messages
+import "/imports/api/messages/server/messagesMethods.js";
+import "/imports/api/messages/server/messagesPublications.js";
 
 // jobs
 import "/imports/api/jobs/server/jobs.js";

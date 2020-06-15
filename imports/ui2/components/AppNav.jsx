@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,16 +17,16 @@ import NotificationsNav from "./NotificationsPopup.jsx";
 const messages = defineMessages({
   intelligenceStrategy: {
     id: "app.nav.intelligence_strategy",
-    defaultMessage: "Intelligence and Strategy"
+    defaultMessage: "Intelligence and Strategy",
   },
   peopleCommunication: {
     id: "app.nav.people_communication",
-    defaultMessage: "People and Communication"
+    defaultMessage: "People and Communication",
   },
   electoralCanvas: {
     id: "app.nav.electoral_canvas",
-    defaultMessage: "Electoral Canvas"
-  }
+    defaultMessage: "Electoral Canvas",
+  },
 });
 
 const Container = styled.nav`
@@ -86,7 +86,7 @@ const NavItemContainer = styled.li`
       font-size: 0.8em;
     }
   }
-  ${props =>
+  ${(props) =>
     !props.clean &&
     css`
       a {
@@ -180,7 +180,7 @@ class NavItem extends Component {
 }
 
 class SettingsNav extends Component {
-  _logout = () => ev => {
+  _logout = () => (ev) => {
     ev.preventDefault();
     Meteor.logout();
     window.location.reload();
@@ -244,7 +244,7 @@ class SettingsNav extends Component {
 }
 
 class CampaignNav extends Component {
-  _handleClick = campaignId => ev => {
+  _handleClick = (campaignId) => (ev) => {
     ev.preventDefault();
     Session.set("campaignId", campaignId);
     window.location.reload();
@@ -259,7 +259,7 @@ class CampaignNav extends Component {
         trigger={<FontAwesomeIcon icon="chevron-down" />}
       >
         <Dropdown.Content>
-          {campaigns.map(campaign => (
+          {campaigns.map((campaign) => (
             <Dropdown.NavItem
               key={campaign._id}
               href="javascript:void(0);"
@@ -335,9 +335,6 @@ class AppNav extends Component {
                           </a>
                         </li>
                       ) : null}
-                      {/* <li>
-                      <a href={FlowRouter.path("App.chatbot")}>Chatbot</a>
-                    </li> */}
                       {userCan("view", "faq") ? (
                         <li>
                           <a href={FlowRouter.path("App.faq")}>
@@ -386,7 +383,7 @@ class AppNav extends Component {
 }
 
 AppNav.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(AppNav);

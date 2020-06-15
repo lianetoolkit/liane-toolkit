@@ -29,6 +29,7 @@ Notifications.schema = new SimpleSchema({
   category: {
     type: String,
     index: 1,
+    optional: true,
   },
   dataRef: {
     type: String,

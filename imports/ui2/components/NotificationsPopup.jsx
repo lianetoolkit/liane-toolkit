@@ -47,7 +47,6 @@ class NotificationItem extends Component {
     if (path) {
       FlowRouter.go(path);
     }
-    console.log("triggered");
   };
   _handleRemoveClick = ev => {
     ev.preventDefault();

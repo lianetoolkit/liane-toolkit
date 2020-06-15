@@ -530,11 +530,6 @@ class PeoplePage extends Component {
       />
     );
   };
-  _hasChatbot = () => {
-    const { campaign } = this.props;
-    const config = get(campaign, "facebookAccount.chatbot.config");
-    return config && config.active && !config.test;
-  };
   render() {
     const {
       intl,
@@ -834,7 +829,6 @@ class PeoplePage extends Component {
               options={options}
               onChange={this._handlePeopleChange}
               onSort={this._handleTableSort}
-              chatColumn={this._hasChatbot()}
               compact
               scrollable
             />

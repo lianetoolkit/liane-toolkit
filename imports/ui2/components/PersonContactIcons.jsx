@@ -14,24 +14,24 @@ import CopyToClipboard from "./CopyToClipboard.jsx";
 const messages = defineMessages({
   notAvailable: {
     id: "app.people.contact_icons.not_available",
-    defaultMessage: "Not available"
+    defaultMessage: "Not available",
   },
   copy: {
     id: "app.people.contact_icons.data_copy",
-    defaultMessage: "{data} (copy)"
+    defaultMessage: "{data} (copy)",
   },
   clickToChat: {
     id: "app.people.contact_icons.click_to_chat",
-    defaultMessage: "Send message using WhatsApp"
+    defaultMessage: "Send message using WhatsApp",
   },
   filledForm: {
     id: "app.people.contact_icons.filled_form",
-    defaultMessage: "Filled the form (copy link)"
+    defaultMessage: "Filled the form (copy link)",
   },
   notFilledForm: {
     id: "app.people.contact_icons.not_filled_form",
-    defaultMessage: "Did not filled the form (copy link)"
-  }
+    defaultMessage: "Did not filled the form (copy link)",
+  },
 });
 
 const Container = styled.div`
@@ -62,7 +62,7 @@ class PersonContactIcons extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      copied: false
+      copied: false,
     };
   }
   componentDidUpdate() {
@@ -97,16 +97,16 @@ class PersonContactIcons extends Component {
   };
   _handleClick = (ev, fade) => {
     this.setState({
-      copied: true
+      copied: true,
     });
     fade();
   };
   _handleMouseLeave = () => {
     this.setState({
-      copied: false
+      copied: false,
     });
   };
-  _handleExtVoid = ev => {
+  _handleExtVoid = (ev) => {
     if (ev.currentTarget.href.indexOf("javascript:void") != -1)
       ev.preventDefault();
   };
@@ -181,7 +181,7 @@ class PersonContactIcons extends Component {
 }
 
 PersonContactIcons.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(PersonContactIcons);

@@ -13,6 +13,8 @@ import { get, set } from "lodash";
 
 import { alertStore } from "../containers/Alerts.jsx";
 
+import { Meta } from "/imports/ui2/utils/people";
+
 import Form from "./Form.jsx";
 import TabNav from "./TabNav.jsx";
 import TagSelect from "./TagSelect.jsx";
@@ -280,55 +282,42 @@ class PersonEdit extends Component {
               className={tab == "basic_info" ? "active" : ""}
               onClick={this._handleNavClick("basic_info")}
             >
-              <FormattedMessage
-                id="app.people.edit.general_label"
-                defaultMessage="General"
-              />
+              {intl.formatMessage(Meta.getSectionLabel("general"))}
             </a>
             <a
               href="javascript:void(0);"
               className={tab == "address" ? "active" : ""}
               onClick={this._handleNavClick("address", "basic_info")}
             >
-              <FormattedMessage
-                id="app.people.edit.address_label"
-                defaultMessage="Address"
-              />
+              {intl.formatMessage(Meta.getSectionLabel("address"))}
             </a>
             <a
               href="javascript:void(0);"
               className={tab == "contact" ? "active" : ""}
               onClick={this._handleNavClick("contact")}
             >
-              <FormattedMessage
-                id="app.people.edit.contact_label"
-                defaultMessage="Contact info"
-              />
+              {intl.formatMessage(Meta.getSectionLabel("contact"))}
             </a>
             <a
               href="javascript:void(0);"
               className={tab == "social_networks" ? "active" : ""}
               onClick={this._handleNavClick("social_networks")}
             >
-              <FormattedMessage
-                id="app.people.edit.social_networks_label"
-                defaultMessage="Social networks"
-              />
+              {intl.formatMessage(Meta.getSectionLabel("networks"))}
             </a>
             <a
               href="javascript:void(0);"
               className={tab == "extra" ? "active" : ""}
               onClick={this._handleNavClick("extra")}
             >
-              <FormattedMessage
-                id="app.people.edit.extra_fields_label"
-                defaultMessage="Extra fields"
-              />
+              {intl.formatMessage(Meta.getSectionLabel("extra"))}
             </a>
           </TabNav>
           {tab == "basic_info" ? (
             <div>
-              <Form.Field label={intl.formatMessage(profileLabels.nameLabel)}>
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("general", "name"))}
+              >
                 <input
                   type="text"
                   name="name"
@@ -337,7 +326,7 @@ class PersonEdit extends Component {
                 />
               </Form.Field>
               <Form.Field
-                label={intl.formatMessage(profileLabels.birthdayLabel)}
+                label={intl.formatMessage(Meta.getLabel("general", "birthday"))}
               >
                 <DatePicker
                   onChange={(date) => {
@@ -355,7 +344,9 @@ class PersonEdit extends Component {
                   dropdownMode="select"
                 />
               </Form.Field>
-              <Form.Field label={intl.formatMessage(profileLabels.genderLabel)}>
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("general", "gender"))}
+              >
                 <Select
                   classNamePrefix="select"
                   name="basic_info.gender"
@@ -366,7 +357,11 @@ class PersonEdit extends Component {
                   options={this.getGenderOptions()}
                 />
               </Form.Field>
-              <Form.Field label={intl.formatMessage(profileLabels.jobLabel)}>
+              <Form.Field
+                label={intl.formatMessage(
+                  Meta.getLabel("general", "occupation")
+                )}
+              >
                 <input
                   type="text"
                   name="basic_info.occupation"
@@ -374,14 +369,18 @@ class PersonEdit extends Component {
                   onChange={this._handleChange}
                 />
               </Form.Field>
-              <Form.Field label={intl.formatMessage(profileLabels.skillsLabel)}>
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("general", "skills"))}
+              >
                 <SkillsField
                   name="basic_info.skills"
                   onChange={this._handleChange}
                   value={formData.basic_info.skills}
                 />
               </Form.Field>
-              <Form.Field label={intl.formatMessage(profileLabels.tagsLabel)}>
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("general", "tags"))}
+              >
                 <TagSelect
                   name="basic_info.tags"
                   onChange={this._handleChange}
@@ -399,7 +398,9 @@ class PersonEdit extends Component {
           ) : null}
           {tab == "contact" ? (
             <div>
-              <Form.Field label={intl.formatMessage(profileLabels.emailLabel)}>
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("contact", "email"))}
+              >
                 <input
                   type="email"
                   name="contact.email"
@@ -407,7 +408,9 @@ class PersonEdit extends Component {
                   value={formData.contact.email}
                 />
               </Form.Field>
-              <Form.Field label={intl.formatMessage(profileLabels.phoneLabel)}>
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("contact", "phone"))}
+              >
                 <input
                   type="text"
                   name="contact.cellphone"
@@ -419,7 +422,11 @@ class PersonEdit extends Component {
           ) : null}
           {tab == "social_networks" ? (
             <div>
-              <Form.Field label="Instagram">
+              <Form.Field
+                label={intl.formatMessage(
+                  Meta.getLabel("networks", "instagram")
+                )}
+              >
                 <input
                   type="text"
                   name="social_networks.instagram"
@@ -428,7 +435,9 @@ class PersonEdit extends Component {
                   value={formData.social_networks.instagram}
                 />
               </Form.Field>
-              <Form.Field label="Twitter">
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("networks", "twitter"))}
+              >
                 <input
                   type="text"
                   name="social_networks.twitter"

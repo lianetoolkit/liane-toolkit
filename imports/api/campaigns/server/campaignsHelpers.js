@@ -102,9 +102,6 @@ const CampaignsHelpers = {
       userFacebookId: user.services.facebook.id,
       facebookId: account.id,
       accessToken: token.result,
-      chatbot: {
-        active: false,
-      },
     };
 
     // Facebook subscription
@@ -164,9 +161,6 @@ const CampaignsHelpers = {
     const updateObj = {
       facebookId: account.id,
       accessToken: token.result,
-      chatbot: {
-        active: false,
-      },
     };
 
     // Facebook subscription
