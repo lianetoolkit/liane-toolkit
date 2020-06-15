@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   injectIntl,
   intlShape,
@@ -12,38 +12,42 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import { get, pick, debounce, defaultsDeep } from "lodash";
 
-import { userCan } from "/imports/ui2/utils/permissions";
 import { Meta } from "../utils/people";
 
 import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
 
 import PeopleExport from "../components/PeopleExport.jsx";
-import { PersonImportButton } from "../components/PersonImport.jsx";
 import Button from "../components/Button.jsx";
 import Table from "../components/Table.jsx";
 
 import Badge from "../components/Badge.jsx";
 import More from "../components/More.jsx";
 import Form from "../components/Form.jsx";
+import TagSelect from "../components/TagSelect.jsx";
+import SkillsField from "../components/SkillsField.jsx";
+import AddressField from "../components/AddressField.jsx";
+import ExtraFields from "../components/ExtraFields.jsx";
+
 import Page from "../components/Page.jsx";
 
 import PageFilters from "../components/PageFilters.jsx";
 import PagePaging from "../components/PagePaging.jsx";
-import PeopleTable from "../components/PeopleTable.jsx";
-import PeopleHistoryChart from "../components/PeopleHistoryChart.jsx";
 
-// import PersonEdit from "../components/PersonEdit.jsx";
-
-// import PeopleLists from "../components/PeopleLists.jsx";
-// import PeopleExports from "../components/PeopleExports.jsx";
-
-import TagFilter from "../components/TagFilter.jsx";
-import PersonMetaButtons, {
-  labels as categoriesLabels,
-} from "../components/PersonMetaButtons.jsx";
-import Reaction from "../components/Reaction.jsx";
-
+Object.byString = function (o, s) {
+  s = s.replace(/\[(\w+)\]/g, ".$1"); // convert indexes to properties
+  s = s.replace(/^\./, ""); // strip a leading dot
+  var a = s.split(".");
+  for (var i = 0, n = a.length; i < n; ++i) {
+    var k = a[i];
+    if (k in o) {
+      o = o[k];
+    } else {
+      return;
+    }
+  }
+  return o;
+};
 const PeopleContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -278,7 +282,10 @@ const Container = styled.div`
     }
   }
 `;
+
 const MergeModal = ({ person }) => {
+  const [, updateState] = useState();
+  const forceUpdate = useCallback(() => updateState({}), []);
   const sections = Meta.getSections();
   let persons = [];
   persons.push(person);
@@ -286,9 +293,49 @@ const MergeModal = ({ person }) => {
     persons.push(child);
   });
   const counter = persons.length;
+  const [activePersons, setActivePerson] = useState(Array(counter).fill(true));
+  const personWidth = `${Math.floor(100 / counter - 1)}%`;
   return (
     <Container>
       <div>
+        <div
+          style={{
+            flex: counter,
+            flexDirection: "row",
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          {persons.map((el, i) => {
+            return (
+              <a
+                href="#"
+                style={{
+                  width: personWidth,
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  border: "1px solid rgba(51,0,102,0.25)",
+                  textAlign: "center",
+                  borderRadius: 6,
+                  backgroundColor: activePersons[i] ? "#330066" : "#fff",
+                  color: activePersons[i] ? "#fff" : "#330066",
+                  textDecoration: "none",
+                }}
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  let activeList = activePersons;
+                  activeList[i] = !activePersons[i];
+                  setActivePerson(activeList);
+                  forceUpdate();
+                  // return false;
+                }}
+              >
+                Unresolved #{i + 1} &nbsp;
+                {!activePersons[i] ? <Badge>Resolved</Badge> : ``}
+              </a>
+            );
+          })}
+        </div>
         {sections.map((section, i) => {
           const fields = Meta.getList(section);
           return (
@@ -298,8 +345,7 @@ const MergeModal = ({ person }) => {
               </h3>
 
               {fields.map((field) => {
-                const { key, name } = Meta.get(section, field);
-                // console.log(Meta.getLabel(section, key));
+                const { key, name, type } = Meta.get(section, field);
                 return (
                   <div
                     style={{
@@ -307,24 +353,53 @@ const MergeModal = ({ person }) => {
                       flexDirection: "row",
                       display: "flex",
                       justifyContent: "space-between",
-                      marginBottom: 15,
                     }}
                   >
-                    {persons.map((el) => {
-                      console.log(el);
+                    {persons.map((el, index) => {
+                      const value = Object.byString(el, key);
+
+                      if (value) {
+                        return (
+                          <div
+                            style={{
+                              width: personWidth,
+                              marginBottom: 15,
+                              opacity: activePersons[index] ? 1 : 0.3,
+                            }}
+                          >
+                            {type == "address" ? (
+                              <Form.Field label={name}>
+                                <input
+                                  type="text"
+                                  name={key}
+                                  value={JSON.stringify(value)}
+                                  // onChange={}
+                                />
+                              </Form.Field>
+                            ) : null}
+                            {type == "string" ? (
+                              <Form.Field label={name}>
+                                <input
+                                  type="text"
+                                  name={key}
+                                  value={value}
+                                  // onChange={}
+                                />
+                              </Form.Field>
+                            ) : (
+                              ``
+                            )}
+                          </div>
+                        );
+                      }
                       return (
                         <div
-                          style={{ width: `${Math.floor(100 / counter - 1)}%` }}
+                          style={{
+                            width: personWidth,
+                            opacity: activePersons[index] ? 1 : 0.3,
+                          }}
                         >
-                          <Form.Field label={name}>
-                            <input
-                              type="text"
-                              name={key}
-                              value={``}
-                              placeholder={name}
-                              // onChange={}
-                            />
-                          </Form.Field>
+                          &nbsp;
                         </div>
                       );
                     })}
