@@ -40,13 +40,17 @@ Meteor.publishComposite("people.unresolved", function ({ campaignId }) {
     if (allowed) {
       return {
         find: function () {
-          return People.find({ campaignId, unresolved: true });
+          return People.find({
+            campaignId,
+            unresolved: true,
+            // related: { $exists: true },
+          });
         },
         children(person) {
           let children = [];
-          if (person.related && person.related.length) {
-            children.push(People.find({ _id: { $in: person.related } }));
-          }
+          // if (person.related && person.related.length) {
+          //   children.push(People.find({ _id: { $in: person.related } }));
+          // }
           return children;
         },
       };

@@ -92,52 +92,53 @@ const FilterMenuGroup = styled.div`
   }
 `;
 
-const UnresolvedPage = ({ campaignId }) => {
+const UnresolvedPage = ({ campaignId, people }) => {
   const [loading, setLoading] = useState(true);
-  const [people, setPeople] = useState([]);
+  // const [people, setPeople] = useState([]);
+  console.log(people);
   const options = {
     skip: 0,
     limit: 20,
   };
-  useEffect(() => {
-    fetchPeople();
-  }, []);
-  fetchPeople = debounce(() => {
-    // const { query, options } = this.state;
-    console.log(">> fetchPeople");
-    // FlowRouter.setQueryParams(this.sanitizeQueryParams(query));
-    // FlowRouter.setQueryParams(
-    //   this.sanitizeQueryParams(options, ["sort", "order"])
-    // );
-    if (loading && campaignId) {
-      const methodParams = {
-        campaignId,
-        query: {
-          unresolved: true,
-        },
-        options: {},
-      };
-      Meteor.call("people.search", methodParams, (err, data) => {
-        if (err) {
-          // console.log("dataa not found");
-          setLoading(false);
-        } else {
-          setPeople(data);
-          console.log("dataa found", data);
-          setLoading(false);
-        }
-      });
-      //   Meteor.call("people.search.count", methodParams, (err, data) => {
-      //     if (err) {
-      //       this.setState({
-      //         loadingCount: false,
-      //       });
-      //     } else {
-      //       this.setState({ count: data, loadingCount: false });
-      //     }
-      //   });
-    }
-  }, 200);
+  // useEffect(() => {
+  //   fetchPeople();
+  // }, []);
+  // fetchPeople = debounce(() => {
+  //   // const { query, options } = this.state;
+  //   console.log(">> fetchPeople");
+  //   // FlowRouter.setQueryParams(this.sanitizeQueryParams(query));
+  //   // FlowRouter.setQueryParams(
+  //   //   this.sanitizeQueryParams(options, ["sort", "order"])
+  //   // );
+  //   if (loading && campaignId) {
+  //     const methodParams = {
+  //       campaignId,
+  //       query: {
+  //         unresolved: true,
+  //       },
+  //       options: {},
+  //     };
+  //     Meteor.call("people.search", methodParams, (err, data) => {
+  //       if (err) {
+  //         // console.log("dataa not found");
+  //         setLoading(false);
+  //       } else {
+  //         setPeople(data);
+  //         console.log("dataa found", data);
+  //         setLoading(false);
+  //       }
+  //     });
+  //     //   Meteor.call("people.search.count", methodParams, (err, data) => {
+  //     //     if (err) {
+  //     //       this.setState({
+  //     //         loadingCount: false,
+  //     //       });
+  //     //     } else {
+  //     //       this.setState({ count: data, loadingCount: false });
+  //     //     }
+  //     //   });
+  //   }
+  // }, 200);
   // fetchPeople();
   // console.log();
   return (
@@ -277,9 +278,36 @@ const Container = styled.div`
     }
   }
 `;
+const MergeModal = ({ person }) => {
+  const counter = person.related.length + 1;
+  const fields = [
+    "name",
+    "person.campaignMeta.contact.email",
+    "person.campaignMeta.contact.phone",
+  ];
 
+  return (
+    <Container>
+      <div>
+        {fields.map((key) => {
+          return (
+            <Form.Field label={key}>
+              <input type="text" name="basic_info.occupation" value={``} />
+            </Form.Field>
+          );
+        })}
+      </div>
+    </Container>
+  );
+};
 const UnresolvedTable = ({ people }) => {
   const [selected, setSelected] = useState(null);
+
+  const displayPerson = (person) => {
+    setSelected(person._id);
+    modalStore.setTitle(`Resolve Conflicts with ${person.name}`);
+    modalStore.set(<MergeModal person={person} />);
+  };
 
   return (
     <Container className="people-table">
@@ -290,8 +318,8 @@ const UnresolvedTable = ({ people }) => {
               <th>Name</th>
               <th>Phone</th>
               <th>Email</th>
-              {/* <th>Meta</th> */}
-              <th>Actions</th>
+              <th>Source</th>
+              <th>Unresolved</th>
             </tr>
           </thead>
 
@@ -303,7 +331,7 @@ const UnresolvedTable = ({ people }) => {
               <tr
                 id={`table-person-${person._id}`}
                 className="interactive"
-                onClick={() => setSelected(person._id)}
+                onClick={() => displayPerson(person)}
               >
                 <td>{person.name}</td>
                 <td>
@@ -312,64 +340,9 @@ const UnresolvedTable = ({ people }) => {
                 <td>
                   {person.campaignMeta && person.campaignMeta.contact.email}
                 </td>
-                <td
-                  rowSpan={selected == person._id ? 4 : 1}
-                  className={selected == person._id ? `extra` : ``}
-                >
-                  <Button primary small>
-                    Merge
-                  </Button>
-                </td>
+                <td>{person.source && person.source}</td>
+                <td> {person.related && person.related.length + 1} </td>
               </tr>
-              {selected == person._id ? (
-                <>
-                  <tr className="person-extra">
-                    <td className="extra">
-                      <input type="checkbox" checked></input>&nbsp;
-                      {person.name}
-                    </td>
-                    <td className="extra">
-                      <input type="checkbox"></input>&nbsp;
-                      {person.campaignMeta &&
-                        person.campaignMeta.contact.cellphone}
-                    </td>
-                    <td className="extra">
-                      <input type="checkbox"></input>&nbsp;
-                      {person.campaignMeta && person.campaignMeta.contact.email}
-                    </td>
-                  </tr>
-                  <tr className="person-extra">
-                    <td className="extra">
-                      <input type="checkbox"></input>&nbsp;
-                      {person.name}
-                    </td>
-                    <td className="extra">
-                      <input type="checkbox"></input>&nbsp;
-                      {person.campaignMeta &&
-                        person.campaignMeta.contact.cellphone}
-                    </td>
-                    <td className="extra">
-                      <input type="checkbox" checked></input>&nbsp;
-                      {person.campaignMeta && person.campaignMeta.contact.email}
-                    </td>
-                  </tr>
-                  <tr className="person-extra">
-                    <td className="extra">
-                      <input type="checkbox"></input>&nbsp;
-                      {person.name}
-                    </td>
-                    <td className="extra">
-                      <input type="checkbox" checked></input>&nbsp;
-                      {person.campaignMeta &&
-                        person.campaignMeta.contact.cellphone}
-                    </td>
-                    <td className="extra">
-                      <input type="checkbox"></input>&nbsp;
-                      {person.campaignMeta && person.campaignMeta.contact.email}
-                    </td>
-                  </tr>
-                </>
-              ) : null}
             </tbody>
           ))}
         </Table>
