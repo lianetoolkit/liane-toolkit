@@ -13,6 +13,7 @@ import Select from "react-select";
 import { get, pick, debounce, defaultsDeep } from "lodash";
 
 import { userCan } from "/imports/ui2/utils/permissions";
+import { Meta } from "../utils/people";
 
 import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
@@ -95,7 +96,6 @@ const FilterMenuGroup = styled.div`
 const UnresolvedPage = ({ campaignId, people }) => {
   const [loading, setLoading] = useState(true);
   // const [people, setPeople] = useState([]);
-  console.log(people);
   const options = {
     skip: 0,
     limit: 20,
@@ -279,23 +279,68 @@ const Container = styled.div`
   }
 `;
 const MergeModal = ({ person }) => {
-  const counter = person.related.length + 1;
-  const fields = [
-    "name",
-    "person.campaignMeta.contact.email",
-    "person.campaignMeta.contact.phone",
-  ];
-
+  const sections = Meta.getSections();
+  let persons = [];
+  persons.push(person);
+  person.children.map((child) => {
+    persons.push(child);
+  });
+  const counter = persons.length;
   return (
     <Container>
       <div>
-        {fields.map((key) => {
+        {sections.map((section, i) => {
+          const fields = Meta.getList(section);
+          return (
+            <>
+              <h3 key={`section-${i}`}>
+                {Meta.getSectionLabel(section).defaultMessage}
+              </h3>
+
+              {fields.map((field) => {
+                const { key, name } = Meta.get(section, field);
+                // console.log(Meta.getLabel(section, key));
+                return (
+                  <div
+                    style={{
+                      flex: counter,
+                      flexDirection: "row",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginBottom: 15,
+                    }}
+                  >
+                    {persons.map((el) => {
+                      console.log(el);
+                      return (
+                        <div
+                          style={{ width: `${Math.floor(100 / counter - 1)}%` }}
+                        >
+                          <Form.Field label={name}>
+                            <input
+                              type="text"
+                              name={key}
+                              value={``}
+                              placeholder={name}
+                              // onChange={}
+                            />
+                          </Form.Field>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </>
+          );
+        })}
+        {/* {fields.map((key) => {
           return (
             <Form.Field label={key}>
               <input type="text" name="basic_info.occupation" value={``} />
             </Form.Field>
           );
-        })}
+        })} */}
       </div>
     </Container>
   );
