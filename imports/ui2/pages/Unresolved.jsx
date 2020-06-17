@@ -248,13 +248,22 @@ const Container = styled.div`
     border-radius: 6px;
     text-decoration: none;
   }
+  .label {
+    color: #333;
+    display: block;
+    font-size: 0.8em;
+    margin-bottom: 0.25rem;
+  }
   .field-option {
     border: 1px solid #ddd;
     padding: 5px 10px;
     border-radius: 7px;
-    .input-container {
-      border: 0;
-      font-size: 14px;
+    font-size: 14px;
+    overflow: hidden;
+
+    .value-checkbox {
+      flex: 1;
+      margin-right: 5px;
     }
   }
 `;
@@ -352,70 +361,63 @@ const MergeModal = ({ person }) => {
                 const { key, name, type } = Meta.get(section, field);
                 if (!fieldsToShow.includes(key)) return null;
                 return (
-                  <div
-                    style={{
-                      flex: counter,
-                      flexDirection: "row",
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    {persons.map((el, index) => {
-                      const value = Object.byString(el, key);
-                      if (value) {
+                  <>
+                    <div className="label">
+                      {Meta.getLabel(section, name).defaultMessage}
+                    </div>
+                    <div
+                      style={{
+                        flex: counter,
+                        flexDirection: "row",
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      {persons.map((el, index) => {
+                        const value = Object.byString(el, key);
+                        if (value) {
+                          return (
+                            <div
+                              style={{
+                                width: personWidth,
+                                marginBottom: 15,
+                                opacity: activePersons[index] ? 1 : 0.3,
+                              }}
+                            >
+                              <div className="field-option" label={name}>
+                                <input
+                                  type="checkbox"
+                                  className="value-checkbox"
+                                />
+                                {typeof value === "object"
+                                  ? JSON.stringify(value)
+                                  : value}
+                              </div>
+                            </div>
+                          );
+                        }
                         return (
                           <div
                             style={{
                               width: personWidth,
-                              marginBottom: 15,
                               opacity: activePersons[index] ? 1 : 0.3,
                             }}
                           >
-                            {type == "address" ? (
-                              <Form.Field
-                                label={
-                                  Meta.getLabel(section, name).defaultMessage
-                                }
-                              >
-                                <input
-                                  type="text"
-                                  name={key}
-                                  value={JSON.stringify(value)}
-                                  // onChange={}
-                                />
-                              </Form.Field>
-                            ) : null}
-                            {type == "string" ? (
-                              <Form.Field className="field-option" label={name}>
-                                {value}
-                              </Form.Field>
-                            ) : (
-                              ``
-                            )}
+                            &nbsp;
                           </div>
                         );
-                      }
-                      return (
-                        <div
-                          style={{
-                            width: personWidth,
-                            opacity: activePersons[index] ? 1 : 0.3,
-                          }}
-                        >
-                          &nbsp;
-                        </div>
-                      );
-                    })}
-                    <div
-                      style={{
-                        width: personWidth,
-                        marginBottom: 15,
-                      }}
-                    >
-                      {" "}
-                      Final State
+                      })}
+                      <div
+                        style={{
+                          width: personWidth,
+                          marginBottom: 15,
+                        }}
+                      >
+                        {" "}
+                        Final State
+                      </div>
                     </div>
-                  </div>
+                  </>
                 );
               })}
             </>
