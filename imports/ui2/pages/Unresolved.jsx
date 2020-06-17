@@ -104,47 +104,6 @@ const UnresolvedPage = ({ campaignId, people }) => {
     skip: 0,
     limit: 20,
   };
-  // useEffect(() => {
-  //   fetchPeople();
-  // }, []);
-  // fetchPeople = debounce(() => {
-  //   // const { query, options } = this.state;
-  //   console.log(">> fetchPeople");
-  //   // FlowRouter.setQueryParams(this.sanitizeQueryParams(query));
-  //   // FlowRouter.setQueryParams(
-  //   //   this.sanitizeQueryParams(options, ["sort", "order"])
-  //   // );
-  //   if (loading && campaignId) {
-  //     const methodParams = {
-  //       campaignId,
-  //       query: {
-  //         unresolved: true,
-  //       },
-  //       options: {},
-  //     };
-  //     Meteor.call("people.search", methodParams, (err, data) => {
-  //       if (err) {
-  //         // console.log("dataa not found");
-  //         setLoading(false);
-  //       } else {
-  //         setPeople(data);
-  //         console.log("dataa found", data);
-  //         setLoading(false);
-  //       }
-  //     });
-  //     //   Meteor.call("people.search.count", methodParams, (err, data) => {
-  //     //     if (err) {
-  //     //       this.setState({
-  //     //         loadingCount: false,
-  //     //       });
-  //     //     } else {
-  //     //       this.setState({ count: data, loadingCount: false });
-  //     //     }
-  //     //   });
-  //   }
-  // }, 200);
-  // fetchPeople();
-  // console.log();
   return (
     <>
       <Page.Nav full plain>
@@ -281,6 +240,23 @@ const Container = styled.div`
       }
     }
   }
+  .unresolved-btn {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border: 1px solid rgba(51, 0, 102, 0.25);
+    text-align: center;
+    border-radius: 6px;
+    text-decoration: none;
+  }
+  .field-option {
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    border-radius: 7px;
+    .input-container {
+      border: 0;
+      font-size: 14px;
+    }
+  }
 `;
 
 const MergeModal = ({ person }) => {
@@ -294,7 +270,29 @@ const MergeModal = ({ person }) => {
   });
   const counter = persons.length;
   const [activePersons, setActivePerson] = useState(Array(counter).fill(true));
-  const personWidth = `${Math.floor(100 / counter - 1)}%`;
+  const personWidth = `${Math.floor(100 / (counter + 1) - 1)}%`;
+  const final = {};
+  const fieldsToShow = [];
+  const sectionsToShow = [];
+  // get the content
+  sections.map((section, i) => {
+    const fields = Meta.getList(section);
+    fields.map((field) => {
+      const { key } = Meta.get(section, field);
+      let newField = [];
+      persons.map((el, index) => {
+        let newValue = (value = Object.byString(el, key));
+        if (newValue) {
+          newField.push(newValue);
+        }
+      });
+      if (newField.length > 0) {
+        fieldsToShow.push(key);
+        if (!sectionsToShow.includes(section)) sectionsToShow.push(section);
+      }
+    });
+  });
+  console.log(fieldsToShow);
   return (
     <Container>
       <div>
@@ -310,16 +308,11 @@ const MergeModal = ({ person }) => {
             return (
               <a
                 href="#"
+                className="unresolved-btn"
                 style={{
                   width: personWidth,
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  border: "1px solid rgba(51,0,102,0.25)",
-                  textAlign: "center",
-                  borderRadius: 6,
                   backgroundColor: activePersons[i] ? "#330066" : "#fff",
                   color: activePersons[i] ? "#fff" : "#330066",
-                  textDecoration: "none",
                 }}
                 onClick={(ev) => {
                   ev.preventDefault();
@@ -335,8 +328,19 @@ const MergeModal = ({ person }) => {
               </a>
             );
           })}
+          <div
+            className="unresolved-btn"
+            style={{
+              width: personWidth,
+              backgroundColor: "#fff",
+              color: "#330066",
+            }}
+          >
+            Merged Result
+          </div>
         </div>
         {sections.map((section, i) => {
+          if (!sectionsToShow.includes(section)) return null;
           const fields = Meta.getList(section);
           return (
             <>
@@ -346,6 +350,7 @@ const MergeModal = ({ person }) => {
 
               {fields.map((field) => {
                 const { key, name, type } = Meta.get(section, field);
+                if (!fieldsToShow.includes(key)) return null;
                 return (
                   <div
                     style={{
@@ -357,7 +362,6 @@ const MergeModal = ({ person }) => {
                   >
                     {persons.map((el, index) => {
                       const value = Object.byString(el, key);
-
                       if (value) {
                         return (
                           <div
@@ -368,7 +372,11 @@ const MergeModal = ({ person }) => {
                             }}
                           >
                             {type == "address" ? (
-                              <Form.Field label={name}>
+                              <Form.Field
+                                label={
+                                  Meta.getLabel(section, name).defaultMessage
+                                }
+                              >
                                 <input
                                   type="text"
                                   name={key}
@@ -378,13 +386,8 @@ const MergeModal = ({ person }) => {
                               </Form.Field>
                             ) : null}
                             {type == "string" ? (
-                              <Form.Field label={name}>
-                                <input
-                                  type="text"
-                                  name={key}
-                                  value={value}
-                                  // onChange={}
-                                />
+                              <Form.Field className="field-option" label={name}>
+                                {value}
                               </Form.Field>
                             ) : (
                               ``
@@ -403,19 +406,21 @@ const MergeModal = ({ person }) => {
                         </div>
                       );
                     })}
+                    <div
+                      style={{
+                        width: personWidth,
+                        marginBottom: 15,
+                      }}
+                    >
+                      {" "}
+                      Final State
+                    </div>
                   </div>
                 );
               })}
             </>
           );
         })}
-        {/* {fields.map((key) => {
-          return (
-            <Form.Field label={key}>
-              <input type="text" name="basic_info.occupation" value={``} />
-            </Form.Field>
-          );
-        })} */}
       </div>
     </Container>
   );
