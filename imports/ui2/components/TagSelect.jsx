@@ -79,6 +79,7 @@ export default class TagSelect extends Component {
       <CreatableSelect
         classNamePrefix="select-search"
         isMulti
+        isClearable={false}
         placeholder={placeholder || "Tags..."}
         options={options}
         onCreateOption={this._handleCreateOption}

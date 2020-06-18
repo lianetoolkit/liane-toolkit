@@ -586,7 +586,11 @@ class PeopleTable extends Component {
                       />
                     </td>
                     <td className="extra fill" colSpan="1">
-                      <PersonSummary person={person} tags={this.props.tags} />
+                      <PersonSummary
+                        person={person}
+                        tags={this.props.tags}
+                        onUpdate={this._handleEditSuccess}
+                      />
                     </td>
                     <td className="extra" colSpan="4">
                       <div className="person-reactions">
