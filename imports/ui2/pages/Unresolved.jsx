@@ -241,12 +241,15 @@ const Container = styled.div`
     }
   }
   .unresolved-btn {
-    padding-top: 10px;
-    padding-bottom: 10px;
     border: 1px solid rgba(51, 0, 102, 0.25);
-    text-align: center;
+    text-align: left;
     border-radius: 6px;
     text-decoration: none;
+    overflow: hidden;
+    padding: 10px 5px;
+    display: block;
+    font-size: 13px;
+    font-weight: normal;
   }
   .label {
     color: #333;
@@ -254,16 +257,35 @@ const Container = styled.div`
     font-size: 0.8em;
     margin-bottom: 0.25rem;
   }
-  .field-option {
+  .final-value {
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 25px;
     border: 1px solid #ddd;
-    padding: 5px 10px;
     border-radius: 7px;
+    padding: 5px 10px;
+  }
+  .header-column {
     font-size: 14px;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    text-align: center;
+  }
+  .field-option {
+    word-break: break-all;
+    font-weight: normal;
+    border: 1px solid #ddd;
+    padding: 8px 10px;
+    border-radius: 7px;
+    font-size: 13px;
     overflow: hidden;
 
     .value-checkbox {
       flex: 1;
-      margin-right: 5px;
+      position: relative;
+      left: -10px;
+      margin: 0;
     }
   }
 `;
@@ -272,18 +294,22 @@ const MergeModal = ({ person }) => {
   const [, updateState] = useState();
   const forceUpdate = useCallback(() => updateState({}), []);
   const sections = Meta.getSections();
+
+  //Join the person and its related ones
   let persons = [];
   persons.push(person);
   person.children.map((child) => {
     persons.push(child);
   });
   const counter = persons.length;
+  // Adding an extra person for the final column
+  const personWidth = `${Math.floor(100 / counter - 1)}%`;
+
   const [activePersons, setActivePerson] = useState(Array(counter).fill(true));
-  const personWidth = `${Math.floor(100 / (counter + 1) - 1)}%`;
-  const final = {};
+  const initialValues = {};
   const fieldsToShow = [];
   const sectionsToShow = [];
-  // get the content
+  /* Loop on Sections > Fields > Persons  */
   sections.map((section, i) => {
     const fields = Meta.getList(section);
     fields.map((field) => {
@@ -291,8 +317,9 @@ const MergeModal = ({ person }) => {
       let newField = [];
       persons.map((el, index) => {
         let newValue = (value = Object.byString(el, key));
-        if (newValue) {
+        if (newValue && newField.length == 0) {
           newField.push(newValue);
+          initialValues[key] = { person: index, value: newValue };
         }
       });
       if (newField.length > 0) {
@@ -301,7 +328,9 @@ const MergeModal = ({ person }) => {
       }
     });
   });
-  console.log(fieldsToShow);
+
+  const [selectedValues, setSelectedValues] = useState(initialValues);
+
   return (
     <Container>
       <div>
@@ -315,38 +344,45 @@ const MergeModal = ({ person }) => {
         >
           {persons.map((el, i) => {
             return (
-              <a
-                href="#"
-                className="unresolved-btn"
+              <div
                 style={{
                   width: personWidth,
-                  backgroundColor: activePersons[i] ? "#330066" : "#fff",
-                  color: activePersons[i] ? "#fff" : "#330066",
-                }}
-                onClick={(ev) => {
-                  ev.preventDefault();
-                  let activeList = activePersons;
-                  activeList[i] = !activePersons[i];
-                  setActivePerson(activeList);
-                  forceUpdate();
-                  // return false;
                 }}
               >
-                Unresolved #{i + 1} &nbsp;
-                {!activePersons[i] ? <Badge>Resolved</Badge> : ``}
-              </a>
+                <a
+                  href="#"
+                  className="unresolved-btn header-column"
+                  style={{
+                    backgroundColor: activePersons[i] ? "#fc0" : "#fff",
+                    color: activePersons[i] ? "#444" : "#330066",
+                  }}
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    let activeList = activePersons;
+                    activeList[i] = !activePersons[i];
+                    setActivePerson(activeList);
+
+                    let activeSelectedValues = selectedValues;
+                    Object.keys(activeSelectedValues).map((field) => {
+                      if (
+                        activeSelectedValues[field].person == i &&
+                        activeList[i] == false
+                      ) {
+                        activeSelectedValues[field].value = null;
+                        activeSelectedValues[field].person = null;
+                      }
+                    });
+                    setSelectedValues(activeSelectedValues);
+
+                    forceUpdate();
+                  }}
+                >
+                  Unresolved #{i + 1} &nbsp;
+                  {!activePersons[i] ? <Badge>Resolved</Badge> : ``}
+                </a>
+              </div>
             );
           })}
-          <div
-            className="unresolved-btn"
-            style={{
-              width: personWidth,
-              backgroundColor: "#fff",
-              color: "#330066",
-            }}
-          >
-            Merged Result
-          </div>
         </div>
         {sections.map((section, i) => {
           if (!sectionsToShow.includes(section)) return null;
@@ -375,25 +411,51 @@ const MergeModal = ({ person }) => {
                     >
                       {persons.map((el, index) => {
                         const value = Object.byString(el, key);
+                        const selected = selectedValues[key].person == index;
                         if (value) {
                           return (
-                            <div
+                            <label
                               style={{
                                 width: personWidth,
-                                marginBottom: 15,
                                 opacity: activePersons[index] ? 1 : 0.3,
                               }}
                             >
-                              <div className="field-option" label={name}>
+                              <div
+                                className="unresolved-btn"
+                                style={{
+                                  backgroundColor: selected
+                                    ? "#330066"
+                                    : "#fff",
+                                  color: selected ? "#fff" : "#330066",
+                                }}
+                              >
                                 <input
                                   type="checkbox"
+                                  checked={selected}
+                                  onClick={() => {
+                                    let activeSelectedValues = selectedValues;
+                                    if (selected) {
+                                      activeSelectedValues[key] = {
+                                        person: null,
+                                        value: null,
+                                      };
+                                    } else {
+                                      activeSelectedValues[key] = {
+                                        person: index,
+                                        value: value,
+                                      };
+                                    }
+
+                                    setSelectedValues(activeSelectedValues);
+                                    forceUpdate();
+                                  }}
                                   className="value-checkbox"
                                 />
                                 {typeof value === "object"
-                                  ? JSON.stringify(value)
+                                  ? Object.values(value).join(", ")
                                   : value}
                               </div>
-                            </div>
+                            </label>
                           );
                         }
                         return (
@@ -407,15 +469,6 @@ const MergeModal = ({ person }) => {
                           </div>
                         );
                       })}
-                      <div
-                        style={{
-                          width: personWidth,
-                          marginBottom: 15,
-                        }}
-                      >
-                        {" "}
-                        Final State
-                      </div>
                     </div>
                   </>
                 );
@@ -423,6 +476,11 @@ const MergeModal = ({ person }) => {
             </>
           );
         })}
+      </div>
+      <div>
+        <a href="#" className="button" style={{ textAlign: "center" }}>
+          Continue
+        </a>
       </div>
     </Container>
   );
