@@ -429,26 +429,6 @@ export const exchangeFBToken = new ValidatedMethod({
   },
 });
 
-export const getAdAccounts = new ValidatedMethod({
-  name: "users.getAdAccounts",
-  validate() {},
-  run() {
-    this.unblock();
-    logger.debug("users.getAdAccounts called");
-
-    const userId = Meteor.userId();
-    if (!userId) {
-      throw new Meteor.Error(401, "You need to login");
-    }
-
-    const user = Meteor.users.findOne(userId);
-
-    const token = user.services.facebook.accessToken;
-
-    return UsersHelpers.getUserAdAccounts({ token });
-  },
-});
-
 export const usersSearch = new ValidatedMethod({
   name: "users.search",
   validate: new SimpleSchema({
