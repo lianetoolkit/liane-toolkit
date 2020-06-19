@@ -68,7 +68,7 @@ export const createMessage = new ValidatedMethod({
     });
 
     cursor.forEach((user) => {
-      const email = emails[user.userLanguage || "en"];
+      const email = { ...emails[user.userLanguage || "en"] };
       email.body = email.body.replace("%NAME%", user.name);
       NotificationsHelpers.add({
         userId: user._id,

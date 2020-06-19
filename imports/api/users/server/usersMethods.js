@@ -118,9 +118,6 @@ export const mailSubscribe = new ValidatedMethod({
           to: `${Meteor.settings.email.admins.join(", ")}`,
           subject: `[New Subscription] ${name}`,
           html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Country:</strong> ${country}</p>`,
-        })
-        .catch((err) => {
-          logger.debug("error sending email", err);
         });
     } else {
       throw new Meteor.Error(500, "Mailing not configured");
