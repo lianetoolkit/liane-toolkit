@@ -318,7 +318,7 @@ class PeopleTable extends Component {
       const { people } = this.props;
       const newPeople = people.map((p) => {
         if (p._id == person._id) {
-          return person;
+          return {...p, ...person};
         }
         return p;
       });
