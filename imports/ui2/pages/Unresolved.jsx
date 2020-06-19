@@ -240,6 +240,11 @@ const Container = styled.div`
       }
     }
   }
+  .row-container {
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+  }
   .unresolved-btn {
     border: 1px solid rgba(51, 0, 102, 0.25);
     text-align: left;
@@ -250,6 +255,10 @@ const Container = styled.div`
     display: block;
     font-size: 13px;
     font-weight: normal;
+  }
+  .col-1/2 {
+    width: 45%;
+    justify-content: space-between;
   }
   .label {
     color: #333;
@@ -291,10 +300,14 @@ const Container = styled.div`
 `;
 
 const MergeModal = ({ person }) => {
+  // To force the render
   const [, updateState] = useState();
   const forceUpdate = useCallback(() => updateState({}), []);
-  const sections = Meta.getSections();
 
+  //
+  const [view, setView] = useState("list");
+
+  const sections = Meta.getSections();
   //Join the person and its related ones
   let persons = [];
   persons.push(person);
@@ -329,17 +342,95 @@ const MergeModal = ({ person }) => {
     });
   });
 
+  const confirm = () => {};
+
   const [selectedValues, setSelectedValues] = useState(initialValues);
 
+  if (view == "confirm") {
+    let oldRelated = null;
+    return (
+      <Container>
+        {/* Check persons  */}
+        {activePersons.map((state, index) => {
+          if (state == false) {
+            return (
+              <>
+                <div className="label">#ID {persons[index]._id}</div>
+                <h2 style={{ marginTop: 0 }}>
+                  {persons[index].name} will be mark as resolved
+                </h2>
+              </>
+            );
+          } else {
+            if (!oldRelated) {
+              oldRelated = persons[index]._id;
+              return (
+                <>
+                  <div className="label">#ID {persons[index]._id}</div>
+                  <h2 style={{ marginTop: 0 }}>
+                    {persons[index].name} will be updated and mark as resolved
+                  </h2>
+                  <table>
+                    {Object.keys(selectedValues).map((key) => {
+                      return (
+                        <tr>
+                          <td>{key}</td>
+                          <td>
+                            {typeof selectedValues[key].value == "object"
+                              ? Object.values(selectedValues[key].value).join(
+                                  ", "
+                                )
+                              : selectedValues[key].value}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    <tr></tr>
+                  </table>
+                  {/* <div>{JSON.stringify()}</div> */}
+                </>
+              );
+            } else {
+              return (
+                <>
+                  <div className="label">#ID {persons[index]._id}</div>
+                  <h2 style={{ marginTop: 0 }}>
+                    {persons[index].name} will be deleted
+                  </h2>
+                </>
+              );
+            }
+          }
+        })}
+
+        <div className=" row-container" style={{ flex: 2 }}>
+          <a
+            href="#"
+            className="button secondary"
+            style={{ textAlign: "center" }}
+            onClick={() => setView("list")}
+          >
+            Back
+          </a>
+          <a
+            href="#"
+            className="button col-1/2"
+            style={{ textAlign: "center" }}
+            onClick={confirm}
+          >
+            Confirm
+          </a>
+        </div>
+      </Container>
+    );
+  }
   return (
     <Container>
       <div>
         <div
+          className="row-container"
           style={{
             flex: counter,
-            flexDirection: "row",
-            display: "flex",
-            justifyContent: "space-between",
           }}
         >
           {persons.map((el, i) => {
@@ -402,11 +493,9 @@ const MergeModal = ({ person }) => {
                       {Meta.getLabel(section, name).defaultMessage}
                     </div>
                     <div
+                      className="row-container"
                       style={{
                         flex: counter,
-                        flexDirection: "row",
-                        display: "flex",
-                        justifyContent: "space-between",
                       }}
                     >
                       {persons.map((el, index) => {
@@ -432,7 +521,7 @@ const MergeModal = ({ person }) => {
                                 <input
                                   type="checkbox"
                                   checked={selected}
-                                  onClick={() => {
+                                  onChange={() => {
                                     let activeSelectedValues = selectedValues;
                                     if (selected) {
                                       activeSelectedValues[key] = {
@@ -478,7 +567,12 @@ const MergeModal = ({ person }) => {
         })}
       </div>
       <div>
-        <a href="#" className="button" style={{ textAlign: "center" }}>
+        <a
+          href="#"
+          className="button"
+          style={{ textAlign: "center" }}
+          onClick={() => setView("confirm")}
+        >
           Continue
         </a>
       </div>
