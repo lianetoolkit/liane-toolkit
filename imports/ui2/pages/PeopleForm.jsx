@@ -91,6 +91,7 @@ const Header = styled.header`
     h1 {
       margin: 0;
       img {
+        display: block;
         max-width: 50px;
         height: auto;
       }
@@ -299,7 +300,7 @@ class PeopleForm extends Component {
             <div className="header-content">
               <h1>
                 <a href={FlowRouter.path("App.dashboard")}>
-                  <img src="/images/logo_icon.svg" alt="Liane" />
+                  <img src="/images/logo_icon.png" alt="Liane" />
                 </a>
               </h1>
             </div>

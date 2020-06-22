@@ -4,10 +4,12 @@ import {
   intlShape,
   defineMessages,
   FormattedMessage,
-  FormattedHTMLMessage
+  FormattedHTMLMessage,
 } from "react-intl";
 import styled from "styled-components";
 import moment from "moment";
+
+import { userCan } from "/imports/ui2/utils/permissions";
 
 import { modalStore } from "../containers/Modal.jsx";
 
@@ -20,28 +22,28 @@ import PersonNamePopup from "./PersonNamePopup.jsx";
 const messages = defineMessages({
   countNoComments: {
     id: "app.comments.counts.no_comments",
-    defaultMessage: "No comments"
+    defaultMessage: "No comments",
   },
   countOneComment: {
     id: "app.comments.counts.one_comment",
-    defaultMessage: "1 comment"
+    defaultMessage: "1 comment",
   },
   countAnyComments: {
     id: "app.comments.counts.any_comments",
-    defaultMessage: "{count} comments"
+    defaultMessage: "{count} comments",
   },
   replyUnknownPerson: {
     id: "app.reply.unknown_person",
-    defaultMessage: "unknown person"
+    defaultMessage: "unknown person",
   },
   replyTitle: {
     id: "app.reply.title",
-    defaultMessage: "Replying {name}"
+    defaultMessage: "Replying {name}",
   },
   commentUnknown: {
     id: "app.comment.header.unknown_name",
-    defaultMessage: "Unknown person"
-  }
+    defaultMessage: "Unknown person",
+  },
 });
 
 const Container = styled.article`
@@ -180,16 +182,35 @@ class Count extends Component {
 }
 
 Count.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 const CountIntl = injectIntl(Count);
+
+export const getFBUrl = (params) => {
+  const encoded = Object.keys(params)
+    .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+    .join("&");
+  return `https://www.facebook.com/permalink.php?${encoded}`;
+};
+
+export const getCommentUrl = (comment) => {
+  const id = comment.facebookAccountId;
+  const story_fbid = comment._id.split("_")[0];
+  const comment_id = comment._id.split("_")[1];
+  return getFBUrl({
+    id,
+    story_fbid,
+    comment_id,
+    comment_tracking: '{"tn":"R"}',
+  });
+};
 
 class Comment extends Component {
   static Count = CountIntl;
   action = () => {
     const { comment } = this.props;
-    const url = this.getCommentUrl();
+    const url = getCommentUrl(comment);
     if (comment.parent) {
       const parentUrl = this.getParentUrl();
       return (
@@ -210,38 +231,20 @@ class Comment extends Component {
       );
     }
   };
-  getCommentUrl = () => {
-    const { comment } = this.props;
-    const id = comment.facebookAccountId;
-    const story_fbid = comment._id.split("_")[0];
-    const comment_id = comment._id.split("_")[1];
-    return this.getFBUrl({
-      id,
-      story_fbid,
-      comment_id,
-      comment_tracking: '{"tn":"R"}'
-    });
-  };
   getParentUrl = () => {
     const { comment } = this.props;
     const id = comment.facebookAccountId;
     const story_fbid = comment.parentId.split("_")[0];
     const comment_id = comment.parentId.split("_")[1];
-    return this.getFBUrl({ id, story_fbid, comment_id });
+    return getFBUrl({ id, story_fbid, comment_id });
   };
   getPostUrl = () => {
     const { comment } = this.props;
     const id = comment.facebookAccountId;
     const story_fbid = comment._id.split("_")[0];
-    return this.getFBUrl({ id, story_fbid });
+    return getFBUrl({ id, story_fbid });
   };
-  getFBUrl = params => {
-    const encoded = Object.keys(params)
-      .map(key => `${key}=${encodeURIComponent(params[key])}`)
-      .join("&");
-    return `https://www.facebook.com/permalink.php?${encoded}`;
-  };
-  _handleReplyClick = ev => {
+  _handleReplyClick = (ev) => {
     const { intl, comment } = this.props;
     ev.preventDefault();
     const name = comment.person
@@ -293,14 +296,14 @@ class Comment extends Component {
                       defaultMessage="You replied"
                     />
                   </p>
-                  {comment.adminReplies.map(reply => (
+                  {comment.adminReplies.map((reply) => (
                     <p className="reply" key={reply._id}>
                       {reply.message}
                     </p>
                   ))}
                 </>
               ) : null}
-              {actions ? (
+              {actions && userCan("edit", "comments") ? (
                 <div className="comment-fb-actions">
                   <Button
                     onClick={this._handleReplyClick}
@@ -325,7 +328,7 @@ class Comment extends Component {
 }
 
 Comment.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(Comment);

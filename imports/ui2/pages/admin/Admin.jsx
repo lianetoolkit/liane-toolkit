@@ -9,13 +9,16 @@ import CampaignsContainer from "/imports/ui2/containers/admin/Campaigns.jsx";
 import UsersContainer from "/imports/ui2/containers/admin/Users.jsx";
 import GeolocationsContainer from "/imports/ui2/containers/admin/Geolocations.jsx";
 import JobsContainer from "/imports/ui2/containers/admin/Jobs.jsx";
+import MessagesPage from "/imports/ui2/containers/admin/Messages.jsx";
+
+import NewMessagePage from "/imports/ui2/pages/admin/NewMessage.jsx";
 
 class AdminContainer extends Component {
   render() {
-    const { children } = this.props;
+    const { children, full } = this.props;
     return (
       <>
-        <Page.Nav full>
+        <Page.Nav full={full}>
           <h3>
             <FormattedMessage
               id="app.admin.nav.title"
@@ -43,6 +46,12 @@ class AdminContainer extends Component {
           <a href={FlowRouter.path("App.admin", { section: "users" })}>
             <FormattedMessage id="app.admin.nav.users" defaultMessage="Users" />
           </a>
+          <a href={FlowRouter.path("App.admin", { section: "messages" })}>
+            <FormattedMessage
+              id="app.admin.nav.messages"
+              defaultMessage="Messages"
+            />
+          </a>
           <a href={FlowRouter.path("App.admin", { section: "jobs" })}>
             <FormattedMessage id="app.admin.nav.jobs" defaultMessage="Jobs" />
           </a>
@@ -66,9 +75,10 @@ export class Index extends Component {
 }
 
 export default {
-  getSection(section = "") {
+  getSection(section = "", subsection = "") {
+    let full = true;
     let children = null;
-    return function(props) {
+    return function (props) {
       switch (section) {
         case "":
           children = <Index {...props} />;
@@ -88,6 +98,14 @@ export default {
         case "users":
           children = <UsersContainer {...props} />;
           break;
+        case "messages":
+          if (subsection == "new") {
+            full = false;
+            children = <NewMessagePage {...props} />;
+          } else {
+            children = <MessagesPage {...props} />;
+          }
+          break;
         case "jobs":
           children = <JobsContainer {...props} />;
           break;
@@ -95,7 +113,7 @@ export default {
           children = <h2>404</h2>;
           break;
       }
-      return <AdminContainer>{children}</AdminContainer>;
+      return <AdminContainer full={full}>{children}</AdminContainer>;
     };
-  }
+  },
 };

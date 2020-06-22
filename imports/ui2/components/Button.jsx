@@ -3,12 +3,12 @@ import styled, { css } from "styled-components";
 
 const styles = css`
   text-align: center;
-  color: #6633cc;
+  color: #330066;
   text-decoration: none;
   padding: 0.5rem 1rem;
   margin: 0 0.5rem;
-  border-radius: 3rem;
-  border: 1px solid rgba(102, 51, 204, 0.25);
+  border-radius: 7px;
+  border: 1px solid rgba(51, 0, 102, 0.25);
   background: rgba(255, 255, 255, 0.6);
   display: inline-block;
   box-sizing: border-box;
@@ -27,7 +27,7 @@ const styles = css`
     > a {
       flex: 1 1 100%;
       padding: 0.5rem 1rem;
-      color: #6633cc;
+      color: #330066;
       text-decoration: none;
       &:hover {
         color: inherit;
@@ -36,7 +36,7 @@ const styles = css`
     .icon {
       flex: 0 0 auto;
       padding: 0.5rem 1rem;
-      border-left: 1px solid #6633cc;
+      border-left: 1px solid #330066;
     }
     &:hover {
       .icon {
@@ -45,7 +45,7 @@ const styles = css`
     }
   }
   &.primary {
-    background: #63c;
+    background: #f5911e;
     color: #fff;
     font-size: 1em;
     &:hover,
@@ -100,11 +100,11 @@ const ButtonGroupContainer = styled.span`
       &:hover,
       &:focus,
       &:active {
-        background-color: rgba(102, 51, 204, 0.5);
+        background-color: rgba(51, 0, 102, 0.5);
         color: #fff;
       }
       &.active {
-        background-color: #63c;
+        background-color: #330066;
         color: #fff;
       }
     }
@@ -117,23 +117,23 @@ const ButtonGroupContainer = styled.span`
         border-radius: 0;
       }
       .button:first-child {
-        border-top-left-radius: 3rem;
-        border-bottom-left-radius: 3rem;
+        border-top-left-radius: 7px;
+        border-bottom-left-radius: 7px;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
         border-left-width: 1px;
       }
       .button:last-child {
-        border-top-right-radius: 3rem;
-        border-bottom-right-radius: 3rem;
+        border-top-right-radius: 7px;
+        border-bottom-right-radius: 7px;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
       }
       .button:only-child {
-        border-top-right-radius: 3rem;
-        border-bottom-right-radius: 3rem;
-        border-top-left-radius: 3rem;
-        border-bottom-left-radius: 3rem;
+        border-top-right-radius: 7px;
+        border-bottom-right-radius: 7px;
+        border-top-left-radius: 7px;
+        border-bottom-left-radius: 7px;
       }
     `}
   ${props =>

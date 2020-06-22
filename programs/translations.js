@@ -7,14 +7,14 @@ if (typeof Meteor == "undefined") {
 
   const FILES_TO_PARSE = "imports/**/!(*.test).{js,jsx}";
 
-  const glob = pattern =>
+  const glob = (pattern) =>
     new Promise((resolve, reject) => {
       nodeGlob(pattern, (error, value) =>
         error ? reject(error) : resolve(value)
       );
     });
 
-  const readFile = fileName =>
+  const readFile = (fileName) =>
     new Promise((resolve, reject) => {
       fs.readFile(fileName, "utf8", (error, value) =>
         error ? reject(error) : resolve(value)
@@ -25,14 +25,29 @@ if (typeof Meteor == "undefined") {
 
   let messageMap = {};
 
-  const extractFromFile = async filename => {
+  // features messages
+  const notificationsMessages = require("../locales/features/notifications")
+    .list;
+  for (let message of notificationsMessages) {
+    messageMap[message.id] = message;
+  }
+  const permissionsMessages = require("../locales/features/permissions").list;
+  for (let message of permissionsMessages) {
+    messageMap[message.id] = message;
+  }
+  const peopleMetaMessages = require("../locales/features/peopleMeta").list;
+  for (let message of peopleMetaMessages) {
+    messageMap[message.id] = message;
+  }
+
+  const extractFromFile = async (filename) => {
     try {
       if (filename.indexOf("/server/") == -1) {
         const code = await readFile(filename);
         const output = await transform(code, {
           filename,
           presets: ["@babel/preset-env", "@babel/preset-react"],
-          plugins: ["@babel/plugin-proposal-class-properties", "react-intl"]
+          plugins: ["@babel/plugin-proposal-class-properties", "react-intl"],
         });
         const messages = get(output, "metadata.react-intl.messages", []);
 
@@ -49,9 +64,9 @@ if (typeof Meteor == "undefined") {
 
   const memoryTask = glob(FILES_TO_PARSE);
 
-  memoryTask.then(files => {
+  memoryTask.then((files) => {
     const extractTask = Promise.all(
-      files.map(fileName => extractFromFile(fileName))
+      files.map((fileName) => extractFromFile(fileName))
     );
     extractTask.then(() => {
       mkdirp("./locales/messages");
@@ -61,14 +76,14 @@ if (typeof Meteor == "undefined") {
       );
 
       const {
-        default: manageTranslations
+        default: manageTranslations,
       } = require("react-intl-translations-manager");
 
       manageTranslations({
         messagesDirectory: "./locales/messages",
         translationsDirectory: "./locales/",
         languages: ["en", "es", "pt-BR"],
-        singleMessagesFile: true
+        singleMessagesFile: true,
       });
     });
   });

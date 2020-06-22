@@ -28,11 +28,12 @@ export const trackRouteEntry = context => {
   Meteor.setTimeout(() => {
     const connectionId = Meteor.connection._lastSessionId;
     const userId = Meteor.userId();
-    if (userId) {
+    const campaignId = Session.get("campaignId");
+    if (userId && campaignId) {
       Meteor.call("log", {
         type: "view",
         path: context.path,
-        campaignId: Session.get("campaignId")
+        campaignId
       });
     }
   }, 3000);

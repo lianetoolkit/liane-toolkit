@@ -35,11 +35,17 @@ const Container = styled.div`
 
 class OrLine extends Component {
   render() {
-    const { intl } = this.props;
+    const { intl, bgColor } = this.props;
     const text = this.props.children || intl.formatMessage(messages.orLabel);
+    let spanStyles = {};
+    if (bgColor) {
+      spanStyles.backgroundColor = bgColor;
+    }
     return (
       <Container className="or-line">
-        <span className="or-text">{text}</span>
+        <span className="or-text" style={spanStyles}>
+          {text}
+        </span>
       </Container>
     );
   }

@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { injectIntl, intlShape, defineMessages } from "react-intl";
+import { parsePhoneNumberFromString } from "libphonenumber-js/mobile";
+import { ClientStorage } from "meteor/ostrio:cstorage";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,32 +14,45 @@ import CopyToClipboard from "./CopyToClipboard.jsx";
 const messages = defineMessages({
   notAvailable: {
     id: "app.people.contact_icons.not_available",
-    defaultMessage: "Not available"
+    defaultMessage: "Not available",
   },
   copy: {
     id: "app.people.contact_icons.data_copy",
-    defaultMessage: "{data} (copy)"
+    defaultMessage: "{data} (copy)",
+  },
+  clickToChat: {
+    id: "app.people.contact_icons.click_to_chat",
+    defaultMessage: "Send message using WhatsApp",
   },
   filledForm: {
     id: "app.people.contact_icons.filled_form",
-    defaultMessage: "Filled the form (copy link)"
+    defaultMessage: "Filled the form (copy link)",
   },
   notFilledForm: {
     id: "app.people.contact_icons.not_filled_form",
-    defaultMessage: "Did not filled the form (copy link)"
-  }
+    defaultMessage: "Did not filled the form (copy link)",
+  },
 });
 
 const Container = styled.div`
   a {
     display: inline-block;
-    margin: 0 0.3rem;
+    margin: 0 0.1rem;
     opacity: 0.2;
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
     &.active {
       opacity: 1;
       &:hover,
       &:focus {
         color: #f60;
+      }
+      &.whatsapp {
+        border-radius: 100%;
+        color: #fff;
+        background: #25d366;
       }
     }
   }
@@ -47,7 +62,7 @@ class PersonContactIcons extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      copied: false
+      copied: false,
     };
   }
   componentDidUpdate() {
@@ -69,24 +84,40 @@ class PersonContactIcons extends Component {
     const { person } = this.props;
     return person.filledForm;
   }
+  _getLink = () => {
+    const phone = this.getMeta("contact.cellphone");
+    const country = ClientStorage.get("country");
+    if (phone && country) {
+      const parsed = parsePhoneNumberFromString(phone, country);
+      if (parsed) {
+        return `https://wa.me/${parsed.number.replace("+", "")}`;
+      }
+    }
+    return false;
+  };
   _handleClick = (ev, fade) => {
     this.setState({
-      copied: true
+      copied: true,
     });
     fade();
   };
   _handleMouseLeave = () => {
     this.setState({
-      copied: false
+      copied: false,
     });
+  };
+  _handleExtVoid = (ev) => {
+    if (ev.currentTarget.href.indexOf("javascript:void") != -1)
+      ev.preventDefault();
   };
   render() {
     const { intl, person } = this.props;
     const { copied } = this.state;
-    const email = this.getMeta("contact.email");
-    const phone = this.getMeta("contact.cellphone");
-    const form = this.filledForm();
     if (person) {
+      const email = this.getMeta("contact.email");
+      const phone = this.getMeta("contact.cellphone");
+      const whatsapp = this._getLink();
+      const form = this.filledForm();
       return (
         <Container>
           <CopyToClipboard
@@ -111,6 +142,19 @@ class PersonContactIcons extends Component {
           >
             <FontAwesomeIcon icon="phone" />
           </CopyToClipboard>
+          <a
+            className={whatsapp ? "active whatsapp" : ""}
+            href={whatsapp || "javascript:void(0);"}
+            target="_blank"
+            rel="external"
+            data-tip={
+              whatsapp ? intl.formatMessage(messages.clickToChat) : null
+            }
+            data-for={`person-contact-icons-${person._id}`}
+            onClick={this._handleExtVoid}
+          >
+            <FontAwesomeIcon icon={["fab", "whatsapp"]} />
+          </a>
           <CopyToClipboard
             text={getFormUrl(person.formId)}
             className={form ? "active" : ""}
@@ -137,7 +181,7 @@ class PersonContactIcons extends Component {
 }
 
 PersonContactIcons.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(PersonContactIcons);

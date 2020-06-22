@@ -10,6 +10,8 @@ import styled from "styled-components";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { userCan } from "/imports/ui2/utils/permissions";
+
 import { alertStore } from "../containers/Alerts.jsx";
 
 import Comment from "../components/Comment.jsx";
@@ -90,32 +92,32 @@ const CommentContainer = styled.article`
       margin: 0 0.25rem;
       justify-content: center;
       align-items: center;
-      color: #63c;
-      background-color: rgba(102, 51, 204, 0);
-      border: 1px solid rgba(102, 51, 204, 0.25);
+      color: #306;
+      background-color: rgba(51, 0, 102, 0);
+      border: 1px solid rgba(51, 0, 102, 0.25);
       border-radius: 100%;
       transition: all 0.1s linear;
       &:hover {
-        background-color: rgba(102, 51, 204, 0.5);
+        background-color: rgba(51, 0, 102, 0.5);
         color: #fff;
       }
       &.active {
-        background-color: #63c;
+        background-color: #306;
         color: #fff;
         &:hover {
-          background-color: rgba(102, 51, 204, 0.75);
+          background-color: rgba(51, 0, 102, 0.75);
         }
       }
       &.troll {
         color: #c00;
-        background-color: rgba(204, 0, 0, 0);
-        border: 1px solid rgba(204, 0, 0, 0.25);
+        background-color: rgba(204, 51, 51, 0);
+        border: 1px solid rgba(204, 51, 51, 0.25);
         &:hover {
-          background-color: rgba(204, 0, 0, 0.5);
+          background-color: rgba(204, 51, 51, 0.5);
           color: #fff;
         }
         &.active {
-          background-color: #c00;
+          background-color: #ca3333;
           color: #fff;
           &:hover {
             background-color: rgba(204, 0, 0, 0.75);
@@ -128,7 +130,7 @@ const CommentContainer = styled.article`
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 102, 51, 0.1);
+    background: rgba(245, 145, 30, 0.1);
     border-left: 1px solid #eee;
     a {
       width: 40px;
@@ -138,10 +140,10 @@ const CommentContainer = styled.article`
       justify-content: center;
       align-items: center;
       border-radius: 100%;
-      color: #006633;
+      color: #f5911e;
       &:hover,
       &:focus {
-        background: #006633;
+        background: #f5911e;
         color: #fff;
       }
     }
@@ -257,7 +259,9 @@ class CommentList extends Component {
       ? intl.formatMessage(messages.commentResolved)
       : intl.formatMessage(messages.commentUnresolved);
     if (
-      confirm(intl.formatMessage(messages.confirmResolution, { resolution: label }))
+      confirm(
+        intl.formatMessage(messages.confirmResolution, { resolution: label })
+      )
     ) {
       Meteor.call(
         "comments.resolve",
@@ -282,63 +286,71 @@ class CommentList extends Component {
             <div className="comment-content">
               <Comment comment={comment} actions={true} />
             </div>
-            <div className="comment-actions">
-              <p className="action-label">
-                <FormattedMessage
-                  id="app.comment.actions_title"
-                  defaultMessage="Actions"
-                />
-              </p>
-              <div className="action-icons">
-                <a
-                  href="javascript:void(0);"
-                  data-tip={intl.formatMessage(messages.tagQuestion)}
+            {userCan("categorize", "comments") ? (
+              <>
+                <div className="comment-actions">
+                  <p className="action-label">
+                    <FormattedMessage
+                      id="app.comment.actions_title"
+                      defaultMessage="Actions"
+                    />
+                  </p>
+                  <div className="action-icons">
+                    <a
+                      href="javascript:void(0);"
+                      data-tip={intl.formatMessage(messages.tagQuestion)}
+                      className={
+                        this.hasCategory(comment, "question") ? "active" : ""
+                      }
+                      onClick={this._handleCategoryClick(comment, "question")}
+                    >
+                      <FontAwesomeIcon icon="question" />
+                    </a>
+                    <a
+                      href="javascript:void(0);"
+                      data-tip={intl.formatMessage(messages.tagVote)}
+                      className={
+                        this.hasCategory(comment, "vote") ? "active" : ""
+                      }
+                      onClick={this._handleCategoryClick(comment, "vote")}
+                    >
+                      <FontAwesomeIcon icon="thumbs-up" />
+                    </a>
+                    <a
+                      href="javascript:void(0);"
+                      data-tip={intl.formatMessage(messages.tagTroll)}
+                      className={
+                        this.isTroll(comment) ? "active troll" : "troll"
+                      }
+                      onClick={this._handleTrollClick(comment)}
+                    >
+                      <FontAwesomeIcon icon="ban" />
+                    </a>
+                  </div>
+                </div>
+                <div
                   className={
-                    this.hasCategory(comment, "question") ? "active" : ""
+                    "comment-resolve " + (comment.resolved ? "resolved" : "")
                   }
-                  onClick={this._handleCategoryClick(comment, "question")}
                 >
-                  <FontAwesomeIcon icon="question" />
-                </a>
-                <a
-                  href="javascript:void(0);"
-                  data-tip={intl.formatMessage(messages.tagVote)}
-                  className={this.hasCategory(comment, "vote") ? "active" : ""}
-                  onClick={this._handleCategoryClick(comment, "vote")}
-                >
-                  <FontAwesomeIcon icon="thumbs-up" />
-                </a>
-                <a
-                  href="javascript:void(0);"
-                  data-tip={intl.formatMessage(messages.tagTroll)}
-                  className={this.isTroll(comment) ? "active troll" : "troll"}
-                  onClick={this._handleTrollClick(comment)}
-                >
-                  <FontAwesomeIcon icon="ban" />
-                </a>
-              </div>
-            </div>
-            <div
-              className={
-                "comment-resolve " + (comment.resolved ? "resolved" : "")
-              }
-            >
-              <a
-                href="javascript:void(0);"
-                data-tip={
-                  intl.formatMessage(messages.tagAs) +
-                  " " +
-                  (comment.resolved
-                    ? intl.formatMessage(messages.commentUnresolved)
-                    : intl.formatMessage(messages.commentResolved))
-                }
-                onClick={this._handleResolveClick(comment)}
-              >
-                <FontAwesomeIcon
-                  icon={comment.resolved ? "undo-alt" : "check"}
-                />
-              </a>
-            </div>
+                  <a
+                    href="javascript:void(0);"
+                    data-tip={
+                      intl.formatMessage(messages.tagAs) +
+                      " " +
+                      (comment.resolved
+                        ? intl.formatMessage(messages.commentUnresolved)
+                        : intl.formatMessage(messages.commentResolved))
+                    }
+                    onClick={this._handleResolveClick(comment)}
+                  >
+                    <FontAwesomeIcon
+                      icon={comment.resolved ? "undo-alt" : "check"}
+                    />
+                  </a>
+                </div>
+              </>
+            ) : null}
           </CommentContainer>
         ))}
         <ReactTooltip effect="solid" />

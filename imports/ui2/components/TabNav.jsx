@@ -8,7 +8,8 @@ const Container = styled.nav`
   margin: 0 0 2rem;
   font-size: 0.8em;
   font-weight: 600;
-  background: #333;
+  background: #f7f7f7;
+  border-bottom: 1px solid #ddd;
   a {
     text-align: center;
     flex: 1 1 auto;
@@ -30,7 +31,7 @@ const Container = styled.nav`
   ${props =>
     props.dark &&
     css`
-      background: #333;
+      background: #111;
       a {
         color: rgba(255, 255, 255, 0.6);
         &:hover,

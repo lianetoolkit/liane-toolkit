@@ -63,7 +63,7 @@ const FeedbackButtonContainer = styled.a`
   position: fixed;
   bottom: 0;
   right: 1rem;
-  background: #f60;
+  background: #ca3333;
   color: #fff;
   line-height: 1;
   padding: 0.5rem 1rem;

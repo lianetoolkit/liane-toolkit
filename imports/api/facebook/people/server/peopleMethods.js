@@ -9,6 +9,7 @@ import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { CommentsHelpers } from "/imports/api/facebook/comments/server/commentsHelpers.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
+import { NotificationsHelpers } from "/imports/api/notifications/server/notificationsHelpers";
 import _ from "underscore";
 import moment from "moment";
 import { get, set, merge, pick, compact, uniq } from "lodash";
@@ -23,8 +24,8 @@ export const peopleDetail = new ValidatedMethod({
   name: "people.detail",
   validate: new SimpleSchema({
     personId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ personId }) {
     logger.debug("people.detail called", { personId });
@@ -35,30 +36,32 @@ export const peopleDetail = new ValidatedMethod({
     if (!person) throw new Meteor.Error(404, "Person not found");
 
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: person.campaignId,
-        userId
+        userId,
+        feature: "people",
+        permission: "view",
       })
     )
       throw new Meteor.Error(400, "Not allowed");
 
     person.tags = PeopleTags.find({
-      _id: { $in: get(person, "campaignMeta.basic_info.tags") }
+      _id: { $in: get(person, "campaignMeta.basic_info.tags") },
     }).fetch();
 
     return person;
-  }
+  },
 });
 
 export const resolveZipcode = new ValidatedMethod({
   name: "people.resolveZipcode",
   validate: new SimpleSchema({
     country: {
-      type: String
+      type: String,
     },
     zipcode: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ country, zipcode }) {
     this.unblock();
@@ -87,13 +90,13 @@ export const resolveZipcode = new ValidatedMethod({
           if (data && data.places && data.places.length) {
             return {
               state: data.places[0]["state abbreviation"],
-              city: data.places[0]["place name"]
+              city: data.places[0]["place name"],
             };
           }
           return data;
         }
     }
-  }
+  },
 });
 
 const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
@@ -113,15 +116,14 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
       facebookAccountId: 1,
       campaignId: 1,
       counts: 1,
-      chatbotStatus: 1,
       campaignMeta: 1,
       lastInteractionDate: 1,
       canReceivePrivateReply: 1,
       receivedAutoPrivateReply: 1,
       filledForm: 1,
       formId: 1,
-      createdAt: 1
-    }
+      createdAt: 1,
+    },
   };
 
   if (options.sort) {
@@ -129,7 +131,7 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
       case "comments":
       case "likes":
         queryOptions.sort = {
-          [`counts.${options.sort}`]: options.order || -1
+          [`counts.${options.sort}`]: options.order || -1,
         };
         break;
       case "name":
@@ -137,7 +139,7 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
         break;
       case "lastInteraction":
         queryOptions.sort = {
-          lastInteractionDate: options.order || -1
+          lastInteractionDate: options.order || -1,
         };
         break;
       default:
@@ -152,20 +154,18 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
       query.createdAt["$gte"] = new Date(creation_from);
     }
     if (creation_to) {
-      query.createdAt["$lt"] = moment(creation_to)
-        .add("1", "day")
-        .toDate();
+      query.createdAt["$lt"] = moment(creation_to).add("1", "day").toDate();
     }
   }
 
   if (reaction_count) {
     if (!reaction_type || reaction_type == "any" || reaction_type == "all") {
       query[`counts.likes`] = {
-        $gte: parseInt(reaction_count)
+        $gte: parseInt(reaction_count),
       };
     } else {
       query[`counts.reactions.${reaction_type}`] = {
-        $gte: parseInt(reaction_count)
+        $gte: parseInt(reaction_count),
       };
     }
   }
@@ -178,6 +178,11 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
     }
   }
   delete query.q;
+
+  if (query.starred) {
+    query["campaignMeta.starred"] = true;
+  }
+  delete query.starred;
 
   if (query.category) {
     query[`campaignMeta.${query.category}`] = true;
@@ -232,76 +237,99 @@ export const peopleSearch = new ValidatedMethod({
   name: "people.search",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     query: {
       type: Object,
-      blackbox: true
+      blackbox: true,
     },
     options: {
       type: Object,
-      blackbox: true
-    }
+      blackbox: true,
+    },
   }).validator(),
   run({ campaignId, query, options }) {
     this.unblock();
     logger.debug("people.search called", {
       campaignId,
       query,
-      options
+      options,
     });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
     const searchQuery = buildSearchQuery({
       campaignId,
       rawQuery: query,
-      options
+      options,
     });
 
-    const cursor = People.find(searchQuery.query, searchQuery.options);
+    const cursor = People.find(searchQuery.query, {
+      ...searchQuery.options,
+      transform: (person) => {
+        person.latestComment = Comments.findOne(
+          { personId: person.facebookId },
+          { sort: { created_time: -1 } }
+        );
+        return person;
+      },
+    });
 
     const result = cursor.fetch();
 
     return result;
-  }
+  },
 });
 
 export const peopleSearchCount = new ValidatedMethod({
   name: "people.search.count",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     query: {
       type: Object,
-      blackbox: true
+      blackbox: true,
     },
     options: {
       type: Object,
-      blackbox: true
-    }
+      blackbox: true,
+    },
   }).validator(),
   run({ campaignId, query, options }) {
     this.unblock();
     logger.debug("people.search.count called", {
       campaignId,
       query,
-      options
+      options,
     });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
     const searchQuery = buildSearchQuery({
       campaignId,
       rawQuery: query,
-      options
+      options,
     });
 
     const result = Promise.await(
@@ -309,22 +337,29 @@ export const peopleSearchCount = new ValidatedMethod({
     );
 
     return result;
-  }
+  },
 });
 
 export const peopleHistory = new ValidatedMethod({
   name: "people.history",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId }) {
     this.unblock();
     logger.debug("people.history called", { campaignId });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -368,10 +403,8 @@ export const peopleHistory = new ValidatedMethod({
           source: "facebook",
           createdAt: {
             $gte: moment(formattedDate).toDate(),
-            $lte: moment(formattedDate)
-              .add(1, "day")
-              .toDate()
-          }
+            $lte: moment(formattedDate).add(1, "day").toDate(),
+          },
         }).count();
       }
       total += history[formattedDate];
@@ -380,32 +413,39 @@ export const peopleHistory = new ValidatedMethod({
     redisClient.setSync(redisKey, JSON.stringify(history));
 
     return { total, history };
-  }
+  },
 });
 
 export const peopleSummaryCounts = new ValidatedMethod({
   name: "people.summaryCounts",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     facebookId: {
       type: String,
-      optional: true
+      optional: true,
     },
     queries: {
-      type: Array
+      type: Array,
     },
     "queries.$": {
       type: Object,
-      blackbox: true
-    }
+      blackbox: true,
+    },
   }).validator(),
   run({ campaignId, facebookId, queries }) {
     logger.debug("peole.summaryCounts called", { queries });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -415,30 +455,30 @@ export const peopleSummaryCounts = new ValidatedMethod({
       const query = buildSearchQuery({
         campaignId,
         rawQuery,
-        options: {}
+        options: {},
       });
       results.push(Promise.await(People.rawCollection().count(query.query)));
     }
 
     return results;
-  }
+  },
 });
 
 export const peopleReplyComment = new ValidatedMethod({
   name: "people.getReplyComment",
   validate: new SimpleSchema({
     personId: {
-      type: String
+      type: String,
     },
     facebookAccountId: {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ personId, facebookAccountId }) {
     logger.debug("people.getReplyComment called", {
       personId,
-      facebookAccountId
+      facebookAccountId,
     });
 
     const userId = Meteor.userId();
@@ -447,9 +487,11 @@ export const peopleReplyComment = new ValidatedMethod({
       throw new Meteor.Error(401, "Person not found");
     }
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: person.campaignId,
-        userId
+        userId,
+        feature: "comments",
+        permission: "edit",
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -463,7 +505,7 @@ export const peopleReplyComment = new ValidatedMethod({
       campaign.facebookAccount ||
       _.find(
         campaign.accounts,
-        account => account.facebookId == facebookAccountId
+        (account) => account.facebookId == facebookAccountId
       );
 
     if (!campaignAccount) {
@@ -482,12 +524,10 @@ export const peopleReplyComment = new ValidatedMethod({
             {
               can_reply_privately: { $exists: false },
               created_time: {
-                $gte: moment()
-                  .subtract(4, "months")
-                  .toISOString()
-              }
-            }
-          ]
+                $gte: moment().subtract(4, "months").toISOString(),
+              },
+            },
+          ],
         },
         { sort: { created_time: -1 } }
       );
@@ -506,7 +546,7 @@ export const peopleReplyComment = new ValidatedMethod({
         fbRes = Promise.await(
           FB.api(comment._id, {
             fields: ["can_reply_privately"],
-            access_token
+            access_token,
           })
         );
       } catch (e) {
@@ -518,7 +558,7 @@ export const peopleReplyComment = new ValidatedMethod({
             // Comment does not exist
             CommentsHelpers.removeComment({
               facebookAccountId,
-              data: comment._id
+              data: comment._id,
             });
             getComment();
             validateFB();
@@ -541,58 +581,55 @@ export const peopleReplyComment = new ValidatedMethod({
           {
             $set: {
               lastValidation: new Date(),
-              can_reply_privately: fbRes.can_reply_privately
-            }
+              can_reply_privately: fbRes.can_reply_privately,
+            },
           }
         );
         if (!fbRes.can_reply_privately) {
           People.update(person._id, {
-            $pull: { canReceivePrivateReply: facebookAccountId }
+            $pull: { canReceivePrivateReply: facebookAccountId },
           });
           return;
         }
       }
       comment.person = People.findOne({
         facebookId: comment.personId,
-        campaignId: campaign._id
+        campaignId: campaign._id,
       });
       comment.entry = Entries.findOne(comment.entryId);
     }
 
     return {
       comment,
-      defaultMessage: campaign.autoReplyMessage
+      defaultMessage: campaign.autoReplyMessage,
     };
-  }
+  },
 });
 
 export const peopleSendPrivateReply = new ValidatedMethod({
   name: "people.sendPrivateReply",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     personId: {
-      type: String
+      type: String,
     },
     commentId: {
-      type: String
+      type: String,
     },
     message: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId, personId, commentId, message }) {
     logger.debug("people.sendPrivateReply called", {
       campaignId,
       commentId,
-      message
+      message,
     });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
-      throw new Meteor.Error(401, "You are not allowed to do this action");
-    }
 
     const comment = Comments.findOne(commentId);
 
@@ -601,9 +638,11 @@ export const peopleSendPrivateReply = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.hasAccount", {
+      !Meteor.call("campaigns.userCan", {
         campaignId,
-        facebookId: comment.facebookAccountId
+        userId,
+        feature: "comments",
+        permission: "edit",
       })
     ) {
       throw new Meteor.Error(
@@ -638,7 +677,7 @@ export const peopleSendPrivateReply = new ValidatedMethod({
       return formUrl;
     };
 
-    const parseMessage = message => {
+    const parseMessage = (message) => {
       // Replace [form] for the form url
       message = message.replace("[form]", getFormUrl());
       // Replace [name] for the person name
@@ -651,8 +690,8 @@ export const peopleSendPrivateReply = new ValidatedMethod({
         { _id: comment._id },
         {
           $set: {
-            can_reply_privately: false
-          }
+            can_reply_privately: false,
+          },
         }
       );
     };
@@ -662,7 +701,7 @@ export const peopleSendPrivateReply = new ValidatedMethod({
         FB.api(`${comment._id}/private_replies`, "POST", {
           access_token: campaignAccount.accessToken,
           id: comment._id,
-          message: parseMessage(message)
+          message: parseMessage(message),
         })
       );
     } catch (error) {
@@ -706,30 +745,30 @@ export const peopleSendPrivateReply = new ValidatedMethod({
     Meteor.call("log", {
       type: "comments.privateReply",
       campaignId,
-      data: { personId, commentId }
+      data: { personId, commentId },
     });
     return response;
-  }
+  },
 });
 
 export const updatePersonMeta = new ValidatedMethod({
   name: "facebook.people.updatePersonMeta",
   validate: new SimpleSchema({
     personId: {
-      type: String
+      type: String,
     },
     metaKey: {
-      type: String
+      type: String,
     },
     metaValue: {
-      type: Match.OneOf(String, Boolean)
-    }
+      type: Match.OneOf(String, Boolean),
+    },
   }).validator(),
   run({ personId, metaKey, metaValue }) {
     logger.debug("facebook.people.updatePersonMeta called", {
       personId,
       metaKey,
-      metaValue
+      metaValue,
     });
 
     const userId = Meteor.userId();
@@ -738,9 +777,11 @@ export const updatePersonMeta = new ValidatedMethod({
       throw new Meteor.Error(401, "Person not found");
     }
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: person.campaignId,
-        userId
+        userId,
+        feature: "people",
+        permission: "categorize",
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -756,55 +797,103 @@ export const updatePersonMeta = new ValidatedMethod({
     Meteor.call("log", {
       type: "people.categoryUpdate",
       campaignId: person.campaignId,
-      data: { personId, key: metaKey, value: metaValue }
+      data: { personId, key: metaKey, value: metaValue },
     });
 
     return res;
-  }
+  },
+});
+
+export const updateTags = new ValidatedMethod({
+  name: "people.updateTags",
+  validate: new SimpleSchema({
+    personId: {
+      type: String,
+    },
+    tags: {
+      type: Array,
+    },
+    "tags.$": {
+      type: String,
+    },
+  }).validator(),
+  run({ personId, tags }) {
+    logger.debug("person.tags called", { personId, tags });
+
+    const userId = Meteor.userId();
+
+    const person = People.findOne(personId);
+
+    const campaignId = person.campaignId;
+
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "edit",
+      })
+    ) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    People.update(personId, {
+      $set: {
+        "campaignMeta.basic_info.tags": tags,
+      },
+    });
+  },
 });
 
 export const getPersonIdFromFacebook = new ValidatedMethod({
   name: "people.getPersonIdFromFacebook",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     facebookId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId, facebookId }) {
     this.unblock();
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
     return People.findOne(
       {
         campaignId,
-        facebookId
+        facebookId,
       },
       {
         fields: {
-          _id: 1
-        }
+          _id: 1,
+        },
       }
     );
-  }
+  },
 });
 
 export const peopleFormId = new ValidatedMethod({
   name: "people.formId",
   validate: new SimpleSchema({
     personId: {
-      type: String
+      type: String,
     },
     regenerate: {
       type: Boolean,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ personId, regenerate }) {
     logger.debug("people.formId called", { personId });
@@ -813,7 +902,14 @@ export const peopleFormId = new ValidatedMethod({
     const campaignId = person.campaignId;
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId: person.campaignId,
+        userId,
+        feature: "people",
+        permission: "view",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -828,32 +924,39 @@ export const peopleFormId = new ValidatedMethod({
       Meteor.call("log", {
         type: "people.updateForm",
         campaignId,
-        data: { personId }
+        data: { personId },
       });
     }
 
     return {
       formId,
-      filledForm: person.filledForm
+      filledForm: person.filledForm,
     };
-  }
+  },
 });
 
 export const peopleCreate = new ValidatedMethod({
   name: "people.create",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     name: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId, name }) {
     logger.debug("people.create called", { campaignId, name });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "edit",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -864,39 +967,39 @@ export const peopleCreate = new ValidatedMethod({
     const res = People.insert({
       campaignId,
       name,
-      source: "manual"
+      source: "manual",
     });
 
     Meteor.call("log", {
       type: "people.add",
       campaignId,
-      data: { personId: res }
+      data: { personId: res },
     });
 
     return res;
-  }
+  },
 });
 
 export const peopleMetaUpdate = new ValidatedMethod({
   name: "people.metaUpdate",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     personId: {
-      type: String
+      type: String,
     },
     name: {
       type: String,
-      optional: true
+      optional: true,
     },
     sectionKey: {
-      type: String
+      type: String,
     },
     data: {
       type: Object,
-      blackbox: true
-    }
+      blackbox: true,
+    },
   }).validator(),
   run({ campaignId, personId, name, sectionKey, data }) {
     logger.debug("people.metaUpdate called", {
@@ -904,14 +1007,21 @@ export const peopleMetaUpdate = new ValidatedMethod({
       personId,
       name,
       sectionKey,
-      data
+      data,
     });
 
     let $set = {};
     let $unset = {};
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "edit",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -951,7 +1061,7 @@ export const peopleMetaUpdate = new ValidatedMethod({
 
     $set = {
       ...$set,
-      [`campaignMeta.${sectionKey}`]: data
+      [`campaignMeta.${sectionKey}`]: data,
     };
 
     if (Object.keys($set).length) {
@@ -965,7 +1075,7 @@ export const peopleMetaUpdate = new ValidatedMethod({
     People.update(
       {
         campaignId,
-        _id: personId
+        _id: personId,
       },
       update
     );
@@ -973,19 +1083,19 @@ export const peopleMetaUpdate = new ValidatedMethod({
     Meteor.call("log", {
       type: "people.edit",
       campaignId,
-      data: { personId }
+      data: { personId },
     });
 
     return People.findOne(personId);
-  }
+  },
 });
 
 export const removePeople = new ValidatedMethod({
   name: "people.remove",
   validate: new SimpleSchema({
     personId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ personId }) {
     logger.debug("people.remove called", { personId });
@@ -998,9 +1108,11 @@ export const removePeople = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: person.campaignId,
-        userId
+        userId,
+        feature: "people",
+        permission: "edit",
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -1011,27 +1123,27 @@ export const removePeople = new ValidatedMethod({
     Meteor.call("log", {
       type: "people.remove",
       campaignId: person.campaignId,
-      data: { personId }
+      data: { personId },
     });
-  }
+  },
 });
 
 export const exportPeople = new ValidatedMethod({
   name: "people.export",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     rawQuery: {
       type: Object,
       blackbox: true,
-      optional: true
+      optional: true,
     },
     options: {
       type: Object,
       blackbox: true,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ campaignId, rawQuery, options }) {
     this.unblock();
@@ -1040,17 +1152,24 @@ export const exportPeople = new ValidatedMethod({
     let searchQuery = buildSearchQuery({
       campaignId,
       rawQuery: rawQuery || {},
-      options: options || {}
+      options: options || {},
     });
 
     if (searchQuery.query.$text) {
       searchQuery.options.projection = {
-        score: { $meta: "textScore" }
+        score: { $meta: "textScore" },
       };
     }
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "export",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -1058,74 +1177,81 @@ export const exportPeople = new ValidatedMethod({
       jobType: "people.export",
       jobData: {
         campaignId,
-        query: JSON.stringify(searchQuery)
-      }
+        query: JSON.stringify(searchQuery),
+      },
     });
 
     Meteor.call("log", {
       type: "people.export",
       campaignId,
-      data: { query: JSON.stringify(searchQuery) }
+      data: { query: JSON.stringify(searchQuery) },
     });
-  }
+  },
 });
 
 export const importPeople = new ValidatedMethod({
   name: "people.import",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     config: {
       type: Object,
-      blackbox: true
+      blackbox: true,
     },
     filename: {
-      type: String
+      type: String,
     },
     data: {
       type: Object,
-      blackbox: true
+      blackbox: true,
     },
     defaultValues: {
       type: Object,
-      optional: true
+      optional: true,
     },
     "defaultValues.tags": {
       type: Array,
-      optional: true
+      optional: true,
     },
     "defaultValues.tags.$": {
-      type: String
+      type: String,
     },
     "defaultValues.labels": {
       type: Object,
       optional: true,
-      blackbox: true
+      blackbox: true,
     },
     "defaultValues.country": {
       type: String,
-      optional: true
+      optional: true,
     },
     "defaultValues.region": {
       type: String,
-      optional: true
+      optional: true,
     },
     "defaultValues.city": {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ campaignId, config, filename, data, defaultValues }) {
     logger.debug("people.import called", {
       campaignId,
       config,
       data,
-      defaultValues
+      defaultValues,
     });
 
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "import",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -1134,25 +1260,25 @@ export const importPeople = new ValidatedMethod({
       config,
       filename,
       data,
-      defaultValues
+      defaultValues,
     });
 
     Meteor.call("log", {
       type: "people.import.add",
       campaignId,
-      data: { defaultValues }
+      data: { defaultValues },
     });
 
     return res;
-  }
+  },
 });
 
 export const findDuplicates = new ValidatedMethod({
   name: "people.findDuplicates",
   validate: new SimpleSchema({
     personId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ personId }) {
     logger.debug("people.findDuplicates called", { personId });
@@ -1168,9 +1294,11 @@ export const findDuplicates = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: person.campaignId,
-        userId
+        userId,
+        feature: "people",
+        permission: "edit",
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -1181,32 +1309,32 @@ export const findDuplicates = new ValidatedMethod({
     Meteor.call("log", {
       type: "people.findDuplicates",
       campaignId: person.campaignId,
-      data: { personId }
+      data: { personId },
     });
 
     return res;
-  }
+  },
 });
 
 export const mergePeople = new ValidatedMethod({
   name: "people.merge",
   validate: new SimpleSchema({
     personId: {
-      type: String
+      type: String,
     },
     merged: {
       type: Object,
-      blackbox: true
+      blackbox: true,
     },
     from: {
-      type: Array
+      type: Array,
     },
     "from.$": {
-      type: String
+      type: String,
     },
     remove: {
-      type: Boolean
-    }
+      type: Boolean,
+    },
   }).validator(),
   run({ personId, merged, from, remove }) {
     logger.debug("people.merge called", { personId, merged, from, remove });
@@ -1220,9 +1348,11 @@ export const mergePeople = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: person.campaignId,
-        userId
+        userId,
+        feature: "people",
+        permission: "edit",
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -1236,16 +1366,16 @@ export const mergePeople = new ValidatedMethod({
       "facebookId",
       "counts",
       "facebookAccounts",
-      "lastInteractionDate"
+      "lastInteractionDate",
     ];
 
     const people = People.find({
       campaignId: person.campaignId,
-      _id: { $in: from }
+      _id: { $in: from },
     }).fetch();
 
     const uniqFacebookIds = compact(
-      uniq([person.facebookId, ...people.map(p => p.facebookId)])
+      uniq([person.facebookId, ...people.map((p) => p.facebookId)])
     );
 
     if (uniqFacebookIds.length > 1) {
@@ -1259,7 +1389,7 @@ export const mergePeople = new ValidatedMethod({
 
     merge(
       $set,
-      ...people.map(p => pick(p, autoFields)),
+      ...people.map((p) => pick(p, autoFields)),
       pick(merged, autoFields)
     );
 
@@ -1279,46 +1409,46 @@ export const mergePeople = new ValidatedMethod({
 
     People.update(
       {
-        _id: person._id
+        _id: person._id,
       },
       {
-        $set
+        $set,
       }
     );
 
     if (remove) {
       People.remove({
         campaignId: person.campaignId,
-        _id: { $in: from }
+        _id: { $in: from },
       });
     }
 
     Meteor.call("log", {
       type: "people.merge",
       campaignId: person.campaignId,
-      data: { personId }
+      data: { personId },
     });
 
     return;
-  }
+  },
 });
 
 export const peopleFormConnectFacebook = new ValidatedMethod({
   name: "peopleForm.connectFacebook",
   validate: new SimpleSchema({
     token: {
-      type: String
+      type: String,
     },
     secret: {
-      type: String
+      type: String,
     },
     campaignId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ token, secret, campaignId }) {
     logger.debug("peopleForm.connectFacebook called", {
-      campaignId
+      campaignId,
     });
 
     const credential = Facebook.retrieveCredential(token, secret);
@@ -1337,14 +1467,14 @@ export const peopleFormConnectFacebook = new ValidatedMethod({
         data = Promise.await(
           FB.api(credential.serviceData.id, {
             fields: ["id", "name", "email"],
-            access_token: credential.serviceData.accessToken
+            access_token: credential.serviceData.accessToken,
           })
         );
         pagesIds = Promise.await(
           FB.api(credential.serviceData.id + "/ids_for_pages", {
             app: Meteor.settings.facebook.clientId,
             access_token: pageToken,
-            appsecret_proof: secretProof.update(pageToken).digest("hex")
+            appsecret_proof: secretProof.update(pageToken).digest("hex"),
           })
         );
       } catch (err) {
@@ -1352,7 +1482,7 @@ export const peopleFormConnectFacebook = new ValidatedMethod({
         throw new Meteor.Error(500, "Unexpected error, please try again.");
       }
       const facebookId = pagesIds.data.find(
-        pageId => pageId.page.id == campaign.facebookAccount.facebookId
+        (pageId) => pageId.page.id == campaign.facebookAccount.facebookId
       ).id;
       if (data && facebookId) {
         People.upsert(
@@ -1361,11 +1491,11 @@ export const peopleFormConnectFacebook = new ValidatedMethod({
             $set: {
               campaignId,
               name: data.name,
-              "campaignMeta.contact.email": data.email
+              "campaignMeta.contact.email": data.email,
             },
             $setOnInsert: {
-              source: "form"
-            }
+              source: "form",
+            },
           }
         );
         const person = People.findOne({ campaignId, facebookId });
@@ -1375,100 +1505,100 @@ export const peopleFormConnectFacebook = new ValidatedMethod({
       }
     }
     throw new Meteor.Error(500, "Error fetching user data");
-  }
+  },
 });
 
 export const peopleFormSubmit = new ValidatedMethod({
   name: "peopleForm.submit",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     formId: {
       type: String,
-      optional: true
+      optional: true,
     },
     facebookId: {
       type: String,
-      optional: true
+      optional: true,
     },
     recaptcha: {
       type: String,
-      optional: true
+      optional: true,
     },
     name: {
-      type: String
+      type: String,
     },
     email: {
       type: String,
-      optional: true
+      optional: true,
     },
     cellphone: {
       type: String,
-      optional: true
+      optional: true,
     },
     birthday: {
       type: Date,
-      optional: true
+      optional: true,
     },
     address: {
       type: Object,
-      optional: true
+      optional: true,
     },
     "address.country": {
-      type: String
+      type: String,
     },
     "address.zipcode": {
       type: String,
-      optional: true
+      optional: true,
     },
     "address.region": {
       type: String,
-      optional: true
+      optional: true,
     },
     "address.city": {
       type: String,
-      optional: true
+      optional: true,
     },
     "address.neighbourhood": {
       type: String,
-      optional: true
+      optional: true,
     },
     "address.street": {
       type: String,
-      optional: true
+      optional: true,
     },
     "address.number": {
       type: String,
-      optional: true
+      optional: true,
     },
     "address.complement": {
       type: String,
-      optional: true
+      optional: true,
     },
     skills: {
       type: Array,
-      optional: true
+      optional: true,
     },
     "skills.$": {
-      type: String
+      type: String,
     },
     supporter: {
       type: Boolean,
-      optional: true
+      optional: true,
     },
     mobilizer: {
       type: Boolean,
-      optional: true
+      optional: true,
     },
     donor: {
       type: Boolean,
-      optional: true
+      optional: true,
     },
     volunteer: {
       type: Boolean,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run(formData) {
     const { campaignId, formId, facebookId, recaptcha, ...data } = formData;
@@ -1479,7 +1609,7 @@ export const peopleFormSubmit = new ValidatedMethod({
     }
 
     let $set = {
-      filledForm: true
+      filledForm: true,
     };
     let $unset = {};
 
@@ -1513,8 +1643,8 @@ export const peopleFormSubmit = new ValidatedMethod({
             method: "post",
             params: {
               secret: recaptchaSecret,
-              response: recaptcha
-            }
+              response: recaptcha,
+            },
           })
         );
         if (!res.data.success) {
@@ -1552,6 +1682,7 @@ export const peopleFormSubmit = new ValidatedMethod({
     }
 
     let personId;
+    let newPerson = true;
 
     if (formId || facebookId) {
       let selector = formId ? { formId } : { facebookId };
@@ -1559,10 +1690,11 @@ export const peopleFormSubmit = new ValidatedMethod({
       if (!person) {
         throw new Meteor.Error(400, "Unauthorized request");
       }
+      newPerson = false;
       People.update(selector, update);
       newFormId = PeopleHelpers.getFormId({
         personId: person._id,
-        generate: true
+        generate: true,
       });
       personId = person._id;
     } else {
@@ -1570,80 +1702,105 @@ export const peopleFormSubmit = new ValidatedMethod({
       People.upsert(
         {
           campaignId,
-          _id: id
+          _id: id,
         },
         {
           ...update,
           $setOnInsert: {
-            source: "form"
-          }
+            source: "form",
+          },
         }
       );
       newFormId = PeopleHelpers.getFormId({
         personId: id,
-        generate: true
+        generate: true,
       });
       personId = id;
     }
 
+    NotificationsHelpers.add({
+      campaignId,
+      category: newPerson ? "newFormUser" : "updateFormUser",
+      metadata: {
+        name: People.findOne(personId).name,
+        personId,
+      },
+      path: `/people/${personId}`,
+      dataRef: personId,
+    });
+
     Meteor.call("log", {
       type: "people.formEntry",
       campaignId,
-      data: { personId }
+      data: { personId },
     });
     return newFormId;
-  }
+  },
 });
 
 export const peopleGetTags = new ValidatedMethod({
   name: "people.getTags",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId }) {
     logger.debug("people.getTags called", { campaignId });
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     return PeopleTags.find({ campaignId }).fetch();
-  }
+  },
 });
 
 export const peopleCreateTag = new ValidatedMethod({
   name: "people.createTag",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     name: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId, name }) {
     logger.debug("peopleTags.create called", { campaignId });
     const userId = Meteor.userId();
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "edit",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     const res = PeopleTags.insert({ campaignId, name });
     Meteor.call("log", {
       type: "people.tags.add",
       campaignId,
-      data: { tagId: res }
+      data: { tagId: res },
     });
     return res;
-  }
+  },
 });
 
 export const peopleListsCount = new ValidatedMethod({
   name: "peopleLists.peopleCount",
   validate: new SimpleSchema({
     listId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ listId }) {
     logger.debug("peopleLists.peopleCount called", { listId });
@@ -1653,19 +1810,26 @@ export const peopleListsCount = new ValidatedMethod({
       throw new Meteor.Error(404, "List not found");
     }
     const campaignId = list.campaignId;
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     return People.find({ listId }).count();
-  }
+  },
 });
 
 export const peopleListsRemove = new ValidatedMethod({
   name: "peopleLists.remove",
   validate: new SimpleSchema({
     listId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ listId }) {
     logger.debug("peopleLists.peopleCount called", { listId });
@@ -1675,7 +1839,14 @@ export const peopleListsRemove = new ValidatedMethod({
       throw new Meteor.Error(404, "List not found");
     }
     const campaignId = list.campaignId;
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "edit",
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     People.remove({ listId });
@@ -1683,8 +1854,8 @@ export const peopleListsRemove = new ValidatedMethod({
     Meteor.call("log", {
       type: "people.imports.remove",
       campaignId,
-      data: { listId }
+      data: { listId },
     });
     return res;
-  }
+  },
 });

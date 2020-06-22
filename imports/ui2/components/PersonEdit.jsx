@@ -1,4 +1,10 @@
 import React, { Component } from "react";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+} from "react-intl";
 import styled from "styled-components";
 import moment from "moment";
 import Select from "react-select";
@@ -7,6 +13,8 @@ import { get, set } from "lodash";
 
 import { alertStore } from "../containers/Alerts.jsx";
 
+import { Meta } from "/imports/ui2/utils/people";
+
 import Form from "./Form.jsx";
 import TabNav from "./TabNav.jsx";
 import TagSelect from "./TagSelect.jsx";
@@ -14,9 +22,82 @@ import SkillsField from "./SkillsField.jsx";
 import AddressField from "./AddressField.jsx";
 import ExtraFields from "./ExtraFields.jsx";
 
+export const genderLabels = defineMessages({
+  cis_woman: {
+    id: "app.people.gender.cis_woman",
+    defaultMessage: "Cisgender woman",
+  },
+  cis_man: {
+    id: "app.people.gender.cis_man",
+    defaultMessage: "Cisgender man",
+  },
+  trans_woman: {
+    id: "app.people.gender.trans_woman",
+    defaultMessage: "Trans woman",
+  },
+  trans_man: {
+    id: "app.people.gender.trans_man",
+    defaultMessage: "Trans man",
+  },
+  transvestite: {
+    id: "app.people.gender.transvestite",
+    defaultMessage: "Transvestite",
+  },
+  non_binary: {
+    id: "app.people.gender.non_binary",
+    defaultMessage: "Non binary",
+  },
+});
+
+export const profileLabels = defineMessages({
+  nameLabel: {
+    id: "app.people.profile.name_label",
+    defaultMessage: "Name",
+  },
+  birthdayLabel: {
+    id: "app.people.profile.birthday_label",
+    defaultMessage: "Birthday",
+  },
+  genderLabel: {
+    id: "app.people.profile.gender_label",
+    defaultMessage: "Gender",
+  },
+  jobLabel: {
+    id: "app.people.profile.job_label",
+    defaultMessage: "Job/Occupation",
+  },
+  skillsLabel: {
+    id: "app.people.profile.skills_label",
+    defaultMessage: "Skills",
+  },
+  addressLabel: {
+    id: "app.people.profile.address_label",
+    defaultMessage: "Address",
+  },
+  tagsLabel: {
+    id: "app.people.profile.tags_label",
+    defaultMessage: "Tags",
+  },
+  emailLabel: {
+    id: "app.people.profile.email_label",
+    defaultMessage: "Email",
+  },
+  phoneLabel: {
+    id: "app.people.profile.phone_label",
+    defaultMessage: "Phone number",
+  },
+});
+
+const messages = defineMessages({
+  saveLabel: {
+    id: "app.people.edit.save_label",
+    defaultMessage: "Save",
+  },
+});
+
 const Container = styled.div`
   .tab-nav {
-    margin: -2rem -2rem 2rem -2rem;
+    margin: -2rem -3rem 2rem -3rem;
     padding: 1rem 0 0;
   }
   input[type="submit"] {
@@ -24,7 +105,7 @@ const Container = styled.div`
   }
 `;
 
-export default class PersonEdit extends Component {
+class PersonEdit extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -36,8 +117,8 @@ export default class PersonEdit extends Component {
         basic_info: {},
         contact: {},
         social_networks: {},
-        extra: []
-      }
+        extra: [],
+      },
     };
   }
   static getDerivedStateFromProps({ person }, state) {
@@ -47,22 +128,22 @@ export default class PersonEdit extends Component {
         formData: {
           ...state.formData,
           name: person.name,
-          ...person.campaignMeta
-        }
+          ...person.campaignMeta,
+        },
       };
     }
     return null;
   }
-  _handleNavClick = (tab, sectionKey) => ev => {
+  _handleNavClick = (tab, sectionKey) => (ev) => {
     ev.preventDefault();
     this.setState({ tab, sectionKey: sectionKey || tab });
   };
-  _handleChange = ev => {
+  _handleChange = (ev) => {
     const { formData } = this.state;
     const newFormData = Object.assign({}, formData);
     set(newFormData, ev.target.name, ev.target.value);
     this.setState({
-      formData: newFormData
+      formData: newFormData,
     });
   };
   _handleSelectChange = (selected, { name }) => {
@@ -74,7 +155,7 @@ export default class PersonEdit extends Component {
     const newFormData = Object.assign({}, formData);
     set(newFormData, name, value);
     this.setState({
-      formData: newFormData
+      formData: newFormData,
     });
   };
   _handleAddressChange = ({ name, value }) => {
@@ -82,23 +163,23 @@ export default class PersonEdit extends Component {
     const newFormData = Object.assign({}, formData);
     set(newFormData, name, value);
     this.setState({
-      formData: newFormData
+      formData: newFormData,
     });
   };
-  _handleExtraFieldsChange = value => {
+  _handleExtraFieldsChange = (value) => {
     this.setState({
       formData: {
         ...this.state.formData,
-        extra: value
-      }
+        extra: value,
+      },
     });
   };
-  _handleSubmit = ev => {
+  _handleSubmit = (ev) => {
     ev.preventDefault();
     const { onSuccess, onError } = this.props;
     const { id, sectionKey, formData } = this.state;
     const campaignId = Session.get("campaignId");
-    const update = createdId => {
+    const update = (createdId) => {
       Meteor.call(
         "people.metaUpdate",
         {
@@ -106,11 +187,11 @@ export default class PersonEdit extends Component {
           personId: id || createdId,
           name: formData.name,
           sectionKey,
-          data: formData[sectionKey]
+          data: formData[sectionKey],
         },
         (err, res) => {
           if (!err) {
-            alertStore.add("Profile updated", "success");
+            alertStore.add(null, "success");
             if (onSuccess) {
               onSuccess(res, "updated", formData);
             }
@@ -135,7 +216,7 @@ export default class PersonEdit extends Component {
             }
           } else {
             this.setState({
-              id: res
+              id: res,
             });
             update(res);
             if (onSuccess) {
@@ -149,39 +230,38 @@ export default class PersonEdit extends Component {
     }
   };
   genderOptions = [
-    {
-      value: "cis_woman",
-      label: "Cisgender woman"
-    },
-    {
-      value: "cis_man",
-      label: "Cisgender man"
-    },
-    {
-      value: "trans_woman",
-      label: "Trans woman"
-    },
-    {
-      value: "trans_man",
-      label: "Trans man"
-    },
-    {
-      value: "transvestite",
-      label: "Transvestite"
-    },
-    {
-      value: "non_binary",
-      label: "Non binary"
-    }
+    "cis_woman",
+    "cis_man",
+    "trans_woman",
+    "trans_man",
+    "transvestite",
+    "non_binary",
   ];
-  getGenderValue() {
+  getGenderOptions = () => {
+    const { intl } = this.props;
+    let options = [];
+    for (const option of this.genderOptions) {
+      options.push({
+        value: option,
+        label: genderLabels[option]
+          ? intl.formatMessage(genderLabels[option])
+          : option,
+      });
+    }
+    return options;
+  };
+  getGenderValue = () => {
+    const { intl } = this.props;
     const { formData } = this.state;
     const value = get(formData, "basic_info.gender");
-    if (value) {
-      return this.genderOptions.find(option => option.value == value);
+    if (value && this.genderOptions.find((option) => option == value)) {
+      return {
+        value,
+        label: intl.formatMessage(genderLabels[value]),
+      };
     }
     return null;
-  }
+  };
   getBirthdayValue() {
     const { formData } = this.state;
     const value = get(formData, "basic_info.birthday");
@@ -191,67 +271,70 @@ export default class PersonEdit extends Component {
     return null;
   }
   render() {
-    const { person } = this.props;
+    const { intl, person } = this.props;
     const { tab, sectionKey, formData } = this.state;
     return (
       <Container>
         <Form onSubmit={this._handleSubmit}>
-          <TabNav dark>
+          <TabNav>
             <a
               href="javascript:void(0);"
               className={tab == "basic_info" ? "active" : ""}
               onClick={this._handleNavClick("basic_info")}
             >
-              General
+              {intl.formatMessage(Meta.getSectionLabel("general"))}
             </a>
             <a
               href="javascript:void(0);"
               className={tab == "address" ? "active" : ""}
               onClick={this._handleNavClick("address", "basic_info")}
             >
-              Address
+              {intl.formatMessage(Meta.getSectionLabel("address"))}
             </a>
             <a
               href="javascript:void(0);"
               className={tab == "contact" ? "active" : ""}
               onClick={this._handleNavClick("contact")}
             >
-              Contact info
+              {intl.formatMessage(Meta.getSectionLabel("contact"))}
             </a>
             <a
               href="javascript:void(0);"
               className={tab == "social_networks" ? "active" : ""}
               onClick={this._handleNavClick("social_networks")}
             >
-              Social networks
+              {intl.formatMessage(Meta.getSectionLabel("networks"))}
             </a>
             <a
               href="javascript:void(0);"
               className={tab == "extra" ? "active" : ""}
               onClick={this._handleNavClick("extra")}
             >
-              Extra fields
+              {intl.formatMessage(Meta.getSectionLabel("extra"))}
             </a>
           </TabNav>
           {tab == "basic_info" ? (
             <div>
-              <Form.Field label="Name">
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("general", "name"))}
+              >
                 <input
                   type="text"
                   name="name"
-                  placeholder="Name"
                   value={formData.name}
                   onChange={this._handleChange}
                 />
               </Form.Field>
-              <Form.Field label="Birthday">
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("general", "birthday"))}
+              >
                 <DatePicker
-                  onChange={date => {
+                  onChange={(date) => {
                     this._handleChange({
                       target: {
                         name: "basic_info.birthday",
-                        value: date.toDate()
-                      }
+                        value: date.toDate(),
+                      },
                     });
                   }}
                   selected={this.getBirthdayValue()}
@@ -261,7 +344,9 @@ export default class PersonEdit extends Component {
                   dropdownMode="select"
                 />
               </Form.Field>
-              <Form.Field label="Gender">
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("general", "gender"))}
+              >
                 <Select
                   classNamePrefix="select"
                   name="basic_info.gender"
@@ -269,26 +354,33 @@ export default class PersonEdit extends Component {
                   isSearchable={false}
                   value={this.getGenderValue()}
                   onChange={this._handleSelectChange}
-                  options={this.genderOptions}
+                  options={this.getGenderOptions()}
                 />
               </Form.Field>
-              <Form.Field label="Job/Occupation">
+              <Form.Field
+                label={intl.formatMessage(
+                  Meta.getLabel("general", "occupation")
+                )}
+              >
                 <input
                   type="text"
                   name="basic_info.occupation"
-                  placeholder="Job/Occupation"
                   value={formData.basic_info.occupation}
                   onChange={this._handleChange}
                 />
               </Form.Field>
-              <Form.Field label="Skills">
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("general", "skills"))}
+              >
                 <SkillsField
                   name="basic_info.skills"
                   onChange={this._handleChange}
                   value={formData.basic_info.skills}
                 />
               </Form.Field>
-              <Form.Field label="Tags">
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("general", "tags"))}
+              >
                 <TagSelect
                   name="basic_info.tags"
                   onChange={this._handleChange}
@@ -306,20 +398,22 @@ export default class PersonEdit extends Component {
           ) : null}
           {tab == "contact" ? (
             <div>
-              <Form.Field label="Email">
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("contact", "email"))}
+              >
                 <input
                   type="email"
                   name="contact.email"
-                  placeholder="Email"
                   onChange={this._handleChange}
                   value={formData.contact.email}
                 />
               </Form.Field>
-              <Form.Field label="Phone number">
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("contact", "phone"))}
+              >
                 <input
                   type="text"
                   name="contact.cellphone"
-                  placeholder="Phone number"
                   onChange={this._handleChange}
                   value={formData.contact.cellphone}
                 />
@@ -328,7 +422,11 @@ export default class PersonEdit extends Component {
           ) : null}
           {tab == "social_networks" ? (
             <div>
-              <Form.Field label="Instagram">
+              <Form.Field
+                label={intl.formatMessage(
+                  Meta.getLabel("networks", "instagram")
+                )}
+              >
                 <input
                   type="text"
                   name="social_networks.instagram"
@@ -337,7 +435,9 @@ export default class PersonEdit extends Component {
                   value={formData.social_networks.instagram}
                 />
               </Form.Field>
-              <Form.Field label="Twitter">
+              <Form.Field
+                label={intl.formatMessage(Meta.getLabel("networks", "twitter"))}
+              >
                 <input
                   type="text"
                   name="social_networks.twitter"
@@ -351,8 +451,16 @@ export default class PersonEdit extends Component {
           {tab == "extra" ? (
             <div>
               <p>
-                Add extra fields for this profile. E.g.,{" "}
-                <span style={{ fontStyle: "italic" }}>sign: scorpio</span>.
+                <FormattedMessage
+                  id="app.people.edit.extra_fields.description"
+                  defaultMessage="Add extra fields for this profile."
+                />{" "}
+                <span style={{ fontStyle: "italic" }}>
+                  <FormattedMessage
+                    id="app.people.edit.extra_fields.example"
+                    defaultMessage="E.g., sign: scorpio"
+                  />
+                </span>
               </p>
               <ExtraFields
                 onChange={this._handleExtraFieldsChange}
@@ -360,9 +468,15 @@ export default class PersonEdit extends Component {
               />
             </div>
           ) : null}
-          <input type="submit" value="Save" />
+          <input type="submit" value={intl.formatMessage(messages.saveLabel)} />
         </Form>
       </Container>
     );
   }
 }
+
+PersonEdit.propTypes = {
+  intl: intlShape.isRequired,
+};
+
+export default injectIntl(PersonEdit);

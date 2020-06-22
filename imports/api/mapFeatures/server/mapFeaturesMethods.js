@@ -38,7 +38,14 @@ export const createMapFeature = new ValidatedMethod({
       throw new Meteor.Error(401, "You need to login");
     }
 
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "map",
+        permission: "edit"
+      })
+    ) {
       throw new Meteor.Error(400, "Not allowed");
     }
 
@@ -108,9 +115,11 @@ export const updateMapFeature = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.canManage", {
+      !Meteor.call("campaigns.userCan", {
         campaignId: feature.campaignId,
-        userId
+        userId,
+        feature: "map",
+        permission: "edit"
       })
     ) {
       throw new Meteor.Error(400, "Not allowed");
@@ -157,6 +166,17 @@ export const removeMapFeature = new ValidatedMethod({
 
     if (!feature) {
       throw new Meteor.Error(404, "Feature not found");
+    }
+
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId: feature.campaignId,
+        userId,
+        feature: "map",
+        permission: "edit"
+      })
+    ) {
+      throw new Meteor.Error(400, "Not allowed");
     }
 
     const res = MapFeatures.remove(id);

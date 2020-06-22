@@ -79,20 +79,25 @@ class MapLayerSelect extends Component {
     return null;
   };
   render() {
-    const { intl, name } = this.props;
+    const { intl, name, disabled } = this.props;
     const { options } = this.state;
-    return (
-      <CreatableSelect
-        classNamePrefix="select-search"
-        cacheOptions
-        placeholder={intl.formatMessage(messages.placeholder)}
-        options={options}
-        onCreateOption={this._handleCreateOption}
-        onChange={this._handleChange}
-        name={name}
-        value={this._buildValue()}
-      />
-    );
+    const value = this._buildValue();
+    if (disabled) {
+      return <input type="text" disabled value={value ? value.label : ""} />;
+    } else {
+      return (
+        <CreatableSelect
+          classNamePrefix="select-search"
+          cacheOptions
+          placeholder={intl.formatMessage(messages.placeholder)}
+          options={options}
+          onCreateOption={this._handleCreateOption}
+          onChange={this._handleChange}
+          name={name}
+          value={value}
+        />
+      );
+    }
   }
 }
 

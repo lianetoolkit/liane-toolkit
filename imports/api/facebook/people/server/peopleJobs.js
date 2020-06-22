@@ -1,9 +1,45 @@
 import {
   People,
   PeopleLists,
-  PeopleExports
+  PeopleExports,
 } from "/imports/api/facebook/people/people.js";
 import { PeopleHelpers } from "./peopleHelpers.js";
+import { NotificationsHelpers } from "/imports/api/notifications/server/notificationsHelpers";
+import { Jobs } from "/imports/api/jobs/jobs";
+import { Promise } from "meteor/promise";
+
+let importJobs = {};
+const updateImportJob = (job, personJobId) => {
+  const id = job._doc._id;
+  if (!importJobs[id]) importJobs[id] = {};
+  importJobs[id][personJobId] = true;
+  const completed = Object.keys(importJobs[id]).length;
+  const jobData = job._doc.data;
+  console.log(jobData);
+  if (completed == jobData.count) {
+    delete importJobs[id];
+    job.done();
+    job.remove();
+    NotificationsHelpers.clear({
+      campaignId: jobData.campaignId,
+      category: "peopleImportStart",
+      dataRef: jobData.listId,
+    });
+    NotificationsHelpers.add({
+      campaignId: jobData.campaignId,
+      category: "peopleImportEnd",
+      dataRef: jobData.listId,
+      skipEmailNotify: true,
+      path: `/people?source=list%3A${jobData.listId}`,
+    });
+  } else {
+    job.progress(completed, jobData.count, { echo: true }, (err, res) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+  }
+};
 
 const PeopleJobs = {
   /* TODO */
@@ -13,17 +49,17 @@ const PeopleJobs = {
     },
     workerOptions: {
       concurrency: 1,
-      pollInterval: 2500
+      pollInterval: 2500,
     },
     jobOptions() {
       const options = {
         retry: {
           retries: 5,
-          wait: 5 * 1000
-        }
+          wait: 5 * 1000,
+        },
       };
       return options;
-    }
+    },
   },
   "people.updateFBUsers": {
     run({ job }) {
@@ -36,7 +72,7 @@ const PeopleJobs = {
       try {
         PeopleHelpers.updateFBUsers({
           campaignId,
-          facebookAccountId
+          facebookAccountId,
         });
       } catch (error) {
         errored = true;
@@ -51,18 +87,18 @@ const PeopleJobs = {
 
     workerOptions: {
       concurrency: 2,
-      pollInterval: 2500
+      pollInterval: 2500,
     },
 
     jobOptions() {
       const options = {
         retry: {
           retries: 10,
-          wait: 10 * 60 * 1000
-        }
+          wait: 10 * 60 * 1000,
+        },
       };
       return options;
-    }
+    },
   },
   "people.sumPersonInteractions": {
     run({ job }) {
@@ -73,10 +109,10 @@ const PeopleJobs = {
       try {
         const person = People.findOne({
           campaignId: job.data.campaignId,
-          facebookId: job.data.facebookId
+          facebookId: job.data.facebookId,
         });
         PeopleHelpers.updateInteractionCountSum({
-          personId: person._id
+          personId: person._id,
         });
       } catch (error) {
         errored = true;
@@ -89,16 +125,16 @@ const PeopleJobs = {
       }
     },
     workerOptions: {
-      concurrency: 30
+      concurrency: 30,
     },
     jobOptions() {
       return {
         retry: {
           retries: 2,
-          wait: 1000
-        }
+          wait: 1000,
+        },
       };
-    }
+    },
   },
   "people.export": {
     run({ job }) {
@@ -110,7 +146,7 @@ const PeopleJobs = {
       try {
         PeopleHelpers.export({
           campaignId: job.data.campaignId,
-          query: JSON.parse(job.data.query)
+          query: JSON.parse(job.data.query),
         });
       } catch (error) {
         errored = true;
@@ -123,16 +159,16 @@ const PeopleJobs = {
       }
     },
     workerOptions: {
-      concurrency: 5
+      concurrency: 5,
     },
     jobOptions() {
       return {
         retry: {
           retries: 2,
-          wait: 5 * 1000
-        }
+          wait: 5 * 1000,
+        },
       };
-    }
+    },
   },
   "people.expireExport": {
     run({ job }) {
@@ -143,7 +179,7 @@ const PeopleJobs = {
       let errored = false;
       try {
         PeopleHelpers.expireExport({
-          exportId: job.data.exportId
+          exportId: job.data.exportId,
         });
       } catch (error) {
         errored = true;
@@ -156,22 +192,51 @@ const PeopleJobs = {
       }
     },
     workerOptions: {
-      concurrency: 20
+      concurrency: 20,
     },
     jobOptions(job) {
       return {
         after: job.data.expirationDate,
         retry: {
           retries: 0,
-          wait: 5 * 1000
-        }
+          wait: 5 * 1000,
+        },
       };
-    }
+    },
+  },
+  "people.import": {
+    async run({ job }) {
+      logger.debug("people.import job: called");
+      check(job && job.data && job.data.campaignId, String);
+      check(job && job.data && job.data.count, Number);
+      check(job && job.data && job.data.listId, String);
+      NotificationsHelpers.add({
+        campaignId: job.data.campaignId,
+        category: "peopleImportStart",
+        sticky: true,
+        skipEmailNotify: true,
+        dataRef: job.data.listId,
+      });
+    },
+    workerOptions: {
+      concurrency: 10,
+      pollInterval: 2500,
+    },
+    jobOptions() {
+      const options = {
+        retry: {
+          retries: 0,
+          wait: 5 * 1000,
+        },
+      };
+      return options;
+    },
   },
   "people.importPerson": {
     run({ job }) {
       logger.debug("people.importPerson job: called");
       check(job && job.data && job.data.campaignId, String);
+      check(job && job.data && job.data.jobId, String);
       check(job && job.data && job.data.listId, String);
       check(job && job.data && job.data.person, String);
       const campaignId = job.data.campaignId;
@@ -182,13 +247,15 @@ const PeopleJobs = {
         PeopleHelpers.importPerson({
           campaignId,
           listId,
-          person
+          person,
         });
       } catch (error) {
         errored = true;
         return job.fail(error.message);
       } finally {
         if (!errored) {
+          const parentJob = Jobs.getJob(job.data.jobId);
+          updateImportJob(parentJob, job._doc._id);
           job.done();
           return job.remove();
         }
@@ -197,19 +264,19 @@ const PeopleJobs = {
 
     workerOptions: {
       concurrency: 10,
-      pollInterval: 2500
+      pollInterval: 2500,
     },
 
     jobOptions() {
       const options = {
         retry: {
           retries: 0,
-          wait: 5 * 1000
-        }
+          wait: 5 * 1000,
+        },
       };
       return options;
-    }
-  }
+    },
+  },
 };
 
 exports.PeopleJobs = PeopleJobs;

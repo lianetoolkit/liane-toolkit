@@ -157,7 +157,7 @@ const EntriesHelpers = {
     check(facebookId, String);
     check(forceUpdate, Boolean);
 
-    CampaignsHelpers.refreshCampaignAccountsTokens({ campaignId });
+    CampaignsHelpers.refreshCampaignAccountToken({ campaignId });
 
     let campaign;
     let isCampaignAccount = false;

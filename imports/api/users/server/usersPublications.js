@@ -12,7 +12,9 @@ Meteor.publish("users.data", function() {
         name: 1,
         type: 1,
         emails: 1,
-        "services.facebook": 1,
+        // "services.facebook": 1,
+        country: 1,
+        region: 1,
         language: 1,
         createdAt: 1
       }

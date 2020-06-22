@@ -6,8 +6,8 @@ export const queryFAQ = new ValidatedMethod({
   name: "faq.query",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId }) {
     this.unblock();
@@ -24,26 +24,33 @@ export const queryFAQ = new ValidatedMethod({
       throw new Meteor.Error(404, "Campaign not found");
     }
 
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "faq",
+        permission: "view",
+      })
+    ) {
       throw new Meteor.Error(401, "Not allowed");
     }
 
-    return FAQ.find({ campaignId }).fetch();
-  }
+    return FAQ.find({ campaignId }, { sort: { lastUsedAt: -1 } }).fetch();
+  },
 });
 
 export const createFAQ = new ValidatedMethod({
   name: "faq.create",
   validate: new SimpleSchema({
     campaignId: {
-      type: String
+      type: String,
     },
     question: {
-      type: String
+      type: String,
     },
     answer: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ campaignId, question, answer }) {
     this.unblock();
@@ -60,7 +67,14 @@ export const createFAQ = new ValidatedMethod({
       throw new Meteor.Error(404, "Campaign not found");
     }
 
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "faq",
+        permission: "edit",
+      })
+    ) {
       throw new Meteor.Error(401, "Not allowed");
     }
 
@@ -69,25 +83,50 @@ export const createFAQ = new ValidatedMethod({
     Meteor.call("log", {
       type: "faq.add",
       campaignId,
-      data: { faqId: res }
+      data: { faqId: res },
     });
 
     return res;
-  }
+  },
+});
+
+export const updateLastUsed = new ValidatedMethod({
+  name: "faq.updateLastUsed",
+  validate: new SimpleSchema({
+    faqId: {
+      type: String,
+    },
+  }).validator(),
+  run({ faqId }) {
+    const userId = Meteor.userId();
+    const item = FAQ.findOne(faqId);
+    const campaignId = item.campaignId;
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "comments",
+        permission: "edit",
+      })
+    ) {
+      throw new Meteor.Error(401, "Not allowed");
+    }
+    FAQ.update(faqId, { $set: { lastUsedAt: new Date() } });
+  },
 });
 
 export const updateFAQ = new ValidatedMethod({
   name: "faq.update",
   validate: new SimpleSchema({
     _id: {
-      type: String
+      type: String,
     },
     question: {
-      type: String
+      type: String,
     },
     answer: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ _id, question, answer }) {
     this.unblock();
@@ -107,7 +146,14 @@ export const updateFAQ = new ValidatedMethod({
       throw new Meteor.Error(404, "Campaign not found");
     }
 
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "faq",
+        permission: "edit",
+      })
+    ) {
       throw new Meteor.Error(401, "Not allowed");
     }
 
@@ -116,19 +162,19 @@ export const updateFAQ = new ValidatedMethod({
     Meteor.call("log", {
       type: "faq.edit",
       campaignId,
-      data: { faqId: _id }
+      data: { faqId: _id },
     });
 
     return res;
-  }
+  },
 });
 
 export const removeFAQ = new ValidatedMethod({
   name: "faq.remove",
   validate: new SimpleSchema({
     _id: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ _id }) {
     this.unblock();
@@ -148,7 +194,14 @@ export const removeFAQ = new ValidatedMethod({
       throw new Meteor.Error(404, "Campaign not found");
     }
 
-    if (!Meteor.call("campaigns.canManage", { userId, campaignId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        userId,
+        campaignId,
+        feature: "faq",
+        permission: "edit",
+      })
+    ) {
       throw new Meteor.Error(401, "Not allowed");
     }
 
@@ -157,9 +210,9 @@ export const removeFAQ = new ValidatedMethod({
     Meteor.call("log", {
       type: "faq.remove",
       campaignId,
-      data: { faqId: _id }
+      data: { faqId: _id },
     });
 
     return res;
-  }
+  },
 });

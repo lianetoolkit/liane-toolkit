@@ -5,15 +5,22 @@ import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { People } from "/imports/api/facebook/people/people.js";
 
-Meteor.publishComposite("entries.campaignActivity", function({
+Meteor.publishComposite("entries.campaignActivity", function ({
   campaignId,
   facebookId,
   queryParams,
-  limit
+  limit,
 }) {
   this.unblock();
   const userId = this.userId;
-  if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+  if (
+    !Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "comments",
+      permission: "view",
+    })
+  ) {
     return this.ready();
   } else if (
     facebookId &&
@@ -26,7 +33,7 @@ Meteor.publishComposite("entries.campaignActivity", function({
       facebookIds = [facebookId];
     } else {
       const campaign = Campaigns.findOne(campaignId);
-      facebookIds = campaign.accounts.map(acc => acc.facebookId);
+      facebookIds = campaign.accounts.map((acc) => acc.facebookId);
     }
     let query = { resolved: { $ne: true } };
     if (queryParams.resolved == "true") {
@@ -51,26 +58,26 @@ Meteor.publishComposite("entries.campaignActivity", function({
               {
                 ...query,
                 facebookAccountId: account.facebookId,
-                created_time: { $exists: true }
+                created_time: { $exists: true },
               },
               {
                 sort: { created_time: -1 },
-                limit: Math.min(limit || 10, 1000)
+                limit: Math.min(limit || 10, 1000),
               }
             );
           },
           children: [
             {
-              find: function(like) {
+              find: function (like) {
                 return Entries.find({ _id: like.entryId });
-              }
+              },
             },
             {
-              find: function(like) {
+              find: function (like) {
                 return People.find({ facebookId: like.personId, campaignId });
-              }
-            }
-          ]
+              },
+            },
+          ],
         },
         {
           find(account) {
@@ -78,31 +85,31 @@ Meteor.publishComposite("entries.campaignActivity", function({
               {
                 ...query,
                 facebookAccountId: account.facebookId,
-                created_time: { $exists: true }
+                created_time: { $exists: true },
               },
               {
                 sort: { created_time: -1 },
-                limit: Math.min(limit || 10, 1000)
+                limit: Math.min(limit || 10, 1000),
               }
             );
           },
           children: [
             {
-              find: function(comment) {
+              find: function (comment) {
                 return Entries.find({ _id: comment.entryId });
-              }
+              },
             },
             {
-              find: function(comment) {
+              find: function (comment) {
                 return People.find({
                   facebookId: comment.personId,
-                  campaignId
+                  campaignId,
                 });
-              }
-            }
-          ]
-        }
-      ]
+              },
+            },
+          ],
+        },
+      ],
     };
   }
 });

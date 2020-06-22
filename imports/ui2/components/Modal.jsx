@@ -31,18 +31,18 @@ const Container = styled.div`
     z-index: 2;
     header.modal-header {
       border-radius: 7px 7px 0 0;
-      background: #262626;
+      background: #330066;
       border-bottom: 1px solid #222;
-      padding: 1rem 2rem;
+      padding: 1.5rem 3rem;
       h2 {
-        color: #fff;
-        font-size: 1.2em;
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 1em;
         margin: 0;
         line-height: 1;
       }
     }
     .modal-content {
-      padding: 2rem;
+      padding: 2rem 3rem;
     }
   }
   &.small {

@@ -1,6 +1,5 @@
 import { People, PeopleLists, PeopleTags, PeopleExports } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
-import { Contexts } from "/imports/api/contexts/contexts.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
 const { Jobs } = require("/imports/api/jobs/jobs.js");
@@ -11,7 +10,12 @@ Meteor.publish("people.map", function({ campaignId }) {
   check(campaignId, String);
   const userId = this.userId;
   const campaign = Campaigns.findOne(campaignId);
-  const allowed = _.findWhere(campaign.users, { userId });
+  const allowed = Meteor.call("campaigns.userCan", {
+    campaignId,
+    userId,
+    feature: "map",
+    permission: "view"
+  });
   if (allowed) {
     return People.find({
       campaignId,
@@ -32,7 +36,12 @@ Meteor.publish("people.search", function({ search, options }) {
   if (userId) {
     if (options.props.campaignId) {
       const campaign = Campaigns.findOne(options.props.campaignId);
-      const allowed = _.findWhere(campaign.users, { userId });
+      const allowed = Meteor.call("campaigns.userCan", {
+        campaignId: options.props.campaignId,
+        userId,
+        feature: "people",
+        permission: "view"
+      });
       if (allowed) {
         let query = {
           campaignId: options.props.campaignId
@@ -59,7 +68,14 @@ Meteor.publish("people.exports", function({ campaignId }) {
   this.unblock();
   logger.debug("people.exportJobs called", { campaignId });
   const userId = this.userId;
-  if (Meteor.call("campaigns.canManage", { userId, campaignId })) {
+  if (
+    Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "people",
+      permission: "view"
+    })
+  ) {
     return PeopleExports.find(
       { campaignId },
       {
@@ -81,7 +97,14 @@ Meteor.publish("people.exportJobCount", function({ campaignId }) {
   this.unblock();
   logger.debug("people.exportJobCount called", { campaignId });
   const userId = this.userId;
-  if (Meteor.call("campaigns.canManage", { userId, campaignId })) {
+  if (
+    Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "people",
+      permission: "view"
+    })
+  ) {
     Counts.publish(
       this,
       "people.exportJobCount",
@@ -100,7 +123,14 @@ Meteor.publish("people.importJobCount", function({ campaignId }) {
   this.unblock();
   logger.debug("people.importJobCount called", { campaignId });
   const userId = this.userId;
-  if (Meteor.call("campaigns.canManage", { userId, campaignId })) {
+  if (
+    Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "people",
+      permission: "view"
+    })
+  ) {
     Counts.publish(
       this,
       "people.importJobCount",
@@ -124,58 +154,74 @@ Meteor.publishComposite("people.detail", function({ personId }) {
     if (person) {
       const campaign = Campaigns.findOne(person.campaignId);
       const facebookId = campaign.facebookAccount.facebookId;
-      const allowed = _.findWhere(campaign.users, { userId });
+      const allowed = Meteor.call("campaigns.userCan", {
+        campaignId: person.campaignId,
+        userId,
+        feature: "people",
+        permission: "view"
+      });
       if (allowed) {
         return {
           find: function() {
             return People.find({ _id: personId });
           },
-          children: [
-            {
-              find(person) {
-                if (person.facebookId) {
-                  return Comments.find(
-                    { personId: person.facebookId },
-                    {
-                      sort: { created_time: -1 }
-                    }
-                  );
-                }
-              },
-              children(parentComment) {
-                let children = [
-                  {
-                    find: function(comment) {
-                      return Entries.find({ _id: comment.entryId });
-                    }
-                  },
-                  {
-                    find: function(comment) {
-                      return Comments.find(
-                        {
-                          personId: facebookId,
-                          parentId: comment._id
-                        },
-                        {
-                          sort: { created_time: -1 }
-                        }
-                      );
-                    }
+          children(person) {
+            let children = [];
+            if (
+              Meteor.call("campaigns.userCan", {
+                campaignId: person.campaignId,
+                userId,
+                feature: "comments",
+                permission: "view"
+              })
+            ) {
+              children.push({
+                find(person) {
+                  if (person.facebookId) {
+                    return Comments.find(
+                      { personId: person.facebookId },
+                      {
+                        sort: { created_time: -1 }
+                      }
+                    );
                   }
-                ];
-                if (parentComment.parentId) {
-                  children.push({
-                    find: function(comment) {
-                      if (comment.parentId) {
-                        return Comments.find({ _id: comment.parentId });
+                },
+                children(parentComment) {
+                  let children = [
+                    {
+                      find: function(comment) {
+                        return Entries.find({ _id: comment.entryId });
+                      }
+                    },
+                    {
+                      find: function(comment) {
+                        return Comments.find(
+                          {
+                            personId: facebookId,
+                            parentId: comment._id
+                          },
+                          {
+                            sort: { created_time: -1 }
+                          }
+                        );
                       }
                     }
-                  });
+                  ];
+                  if (parentComment.parentId) {
+                    children.push({
+                      find: function(comment) {
+                        if (comment.parentId) {
+                          return Comments.find({ _id: comment.parentId });
+                        }
+                      }
+                    });
+                  }
+                  return children;
                 }
-                return children;
-              }
+              });
             }
-          ]
+            return children;
+          }
         };
       }
     }
@@ -191,7 +237,12 @@ Meteor.publish("people.tags", function({ campaignId }) {
     if (!campaign) {
       return this.ready();
     }
-    const allowed = _.findWhere(campaign.users, { userId });
+    const allowed = Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "people",
+      permission: "view"
+    });
     if (allowed) {
       return PeopleTags.find({ campaignId });
     }
@@ -246,7 +297,13 @@ Meteor.publish("peopleLists.byCampaign", function({ campaignId }) {
   this.unblock();
   const userId = this.userId;
   const campaign = Campaigns.findOne(campaignId);
-  if (campaign && _.findWhere(campaign.users, { userId })) {
+  const allowed = Meteor.call("campaigns.userCan", {
+    campaignId,
+    userId,
+    feature: "people",
+    permission: "view"
+  });
+  if (campaign && allowed) {
     return PeopleLists.find({ campaignId });
   }
   return this.ready();

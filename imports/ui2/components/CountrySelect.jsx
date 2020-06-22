@@ -6,35 +6,36 @@ import Select from "react-select";
 const messages = defineMessages({
   placeholder: {
     id: "app.country_select.placeholder",
-    defaultMessage: "Select a country..."
-  }
+    defaultMessage: "Select a country...",
+  },
 });
 
 class CountrySelect extends Component {
-  _handleChange = selected => {
+  _handleChange = (selected) => {
     const { name, onChange } = this.props;
     if (onChange && typeof onChange == "function") {
-      onChange({ target: { name, value: selected.value } });
+      onChange({ target: { name, value: selected ? selected.value : null } });
     }
   };
   _getOptions = () => {
-    return CountryRegionData.map(c => {
+    return CountryRegionData.map((c) => {
       return {
         value: c[1],
-        label: c[0]
+        label: c[0],
       };
     });
   };
   _getValue = () => {
     const { value } = this.props;
-    return this._getOptions().find(option => option.value == value);
+    return this._getOptions().find((option) => option.value == value);
   };
   render() {
-    const { intl, name } = this.props;
+    const { intl, name, clearable } = this.props;
     return (
       <Select
         classNamePrefix="select-search"
         cacheOptions
+        isClearable={clearable}
         isSearchable={true}
         placeholder={intl.formatMessage(messages.placeholder)}
         options={this._getOptions()}
@@ -47,7 +48,7 @@ class CountrySelect extends Component {
 }
 
 CountrySelect.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(CountrySelect);

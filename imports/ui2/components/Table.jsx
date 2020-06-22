@@ -12,7 +12,7 @@ const Container = styled.table`
   .show-on-hover {
     display: none;
   }
-  a {
+  a:not(.button) {
     color: #333;
     text-decoration: none;
     &:hover,
@@ -155,7 +155,19 @@ const Container = styled.table`
       }
     }
   }
-  ${props =>
+  tbody {
+    tr:first-child {
+      th:first-child {
+        border-radius: 7px 0 0;
+      }
+    }
+    tr:last-child {
+      th:first-child {
+        border-radius: 0 0 0 7px;
+      }
+    }
+  }
+  ${(props) =>
     props.compact &&
     css`
       border-radius: 0;
@@ -190,7 +202,7 @@ const SortableHeadContainer = styled.th`
       }
     }
   }
-  ${props =>
+  ${(props) =>
     props.sorted &&
     css`
       .th-container .th-content {
@@ -233,6 +245,10 @@ export default class Table extends Component {
   static SortableHead = SortableHead;
   render() {
     const { children, ...props } = this.props;
-    return <Container className="table" {...props}>{children}</Container>;
+    return (
+      <Container className="table" {...props}>
+        {children}
+      </Container>
+    );
   }
 }

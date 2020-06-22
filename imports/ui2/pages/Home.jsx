@@ -1,15 +1,26 @@
 import React, { Component } from "react";
-import { FormattedMessage, FormattedHTMLMessage } from "react-intl";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+  FormattedHTMLMessage
+} from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Page from "../components/Page.jsx";
 import { alertStore } from "../containers/Alerts.jsx";
+import { modalStore } from "../containers/Modal.jsx";
+
+import Page from "../components/Page.jsx";
 import Button from "../components/Button.jsx";
 import Loading from "../components/Loading.jsx";
 import OrLine from "../components/OrLine.jsx";
 import Form from "../components/Form.jsx";
 import CountrySelect from "../components/CountrySelect.jsx";
+import FacebookButton from "../components/FacebookButton.jsx";
+
+import ForgotPassword from "../components/ForgotPassword.jsx";
 
 const Container = styled.div`
   flex: 1 1 100%;
@@ -21,162 +32,97 @@ const Container = styled.div`
     font-size: 0.8em;
     border-bottom: 1px solid #eee;
   }
+  hr {
+    margin-bottom: 0;
+  }
 `;
 
 const HighlightContainer = styled.div`
-  padding: 6rem 0 4rem;
+  padding: 6rem 0 8rem;
   position: relative;
   border-bottom: 1px solid #666;
   display: flex;
   flex-direction: column;
   align-items: center;
-  &:after {
-    content: "";
-    background-image: url("/images/elenao_bg.jpeg");
-    background-position: center;
-    background-size: cover;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    opacity: 0.15;
-    z-index: -1;
-  }
+  background-image: url("/images/highlight_pattern.jpg");
+  background-position: top right;
+  background-size: cover;
+  color: #fff;
   h2 {
     max-width: 960px;
-    font-family: "Unica One", monospace;
-    margin: 0 auto 4rem;
+    margin: 0 auto;
     padding: 0;
     text-transform: uppercase;
     flex-direction: column;
     line-height: 1.3;
-    letter-spacing: 0.15rem;
-    color: #333;
-    font-size: 2.5em;
-  }
-`;
-
-const HeaderButtons = styled.nav`
-  width: 100%;
-  max-width 400px;
-  display: flex;
-  align-items: center;
-  margin: 0 -0.5rem 2rem;
-  font-family: "Unica One", monospace;
-  a {
-    width: 100%;
-    text-align: center;
-    background: transparent;
-    color: #6633cc;
-    text-decoration: none;
-    padding: 0.5rem 2rem;
-    margin: 0 0.5rem;
-    border-radius: 3rem;
-    border: 1px solid #6633cc;
-    background: rgba(255, 255, 255, 0.6);
-    &:hover,
-    &:active,
-    &:focus {
-      background: #fff;
-      border-color: #000;
-      color: #000;
-    }
+    color: #fff;
   }
 `;
 
 const LoginFormContainer = styled.form`
-  margin: -3rem 2rem 4rem;
+  margin: -1.7rem auto 0;
   text-align: center;
-  ${"" /* background: #fff;
-  padding: 4rem;
-  border-radius: 1rem;
-  box-sizing: border-box;
-  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15);
-  border: 1px solid #999; */} position: relative;
+  position: relative;
   z-index: 2;
+  ${"" /* border-radius: 7px;
+  max-width: calc(960px - 4rem);
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1); */}
   p,
   h3 {
     margin: 0 0 2rem;
   }
-  input,
-  .button {
-    margin: 0 auto;
-    max-width: 400px;
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 1.25rem;
-    line-height: 1;
-    margin: 0 0 1rem;
-    border: 0;
-    border: 1px solid #ccc;
-    border-radius: 0;
-    background: #f7f7f7;
-    font-size: 1em;
-    border-radius: 2.5rem;
-    font-family: "Open Sans", "Helvetica", "Arial", sans-serif;
-    &:focus {
-      background: #fff;
-    }
-  }
-  input[type="submit"],
   .facebook-button {
-    display: block;
-    max-width: 400px;
-    background: transparent;
-    color: #333;
-    font-size: 0.8em;
-    text-transform: uppercase;
-    letter-spacing: 0.12rem;
-    font-weight: normal;
-    line-height: 1.5;
-    cursor: pointer;
-    padding: 1rem;
-    margin: 1.5rem auto 0;
-    font-size: 1.2em;
-    background: #ffcc00;
-    font-family: "Unica One", monospace;
-    outline: none;
-    border: 0;
-    text-align: center;
-    .fa-facebook-square {
-      margin-right: 1rem;
-    }
-    &:focus,
-    &:hover {
-      background: #333;
-      color: #fff;
-    }
-  }
-  .facebook-button {
-    margin-top: 1rem;
-    background: #3b5998;
-    color: #fff;
-    box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
-  }
-  nav {
-    display: flex;
-    width: 100%;
-    margin-top: 1.5rem;
-    a {
-      flex: 1 1 auto;
-      text-align: center;
-      color: #666;
-      text-transform: uppercase;
-      font-size: 0.8em;
-      &:hover,
-      &:active,
-      &:focus {
-        color: #000;
-      }
-    }
+    display: inline-block;
+    margin: 0 auto 0;
+    max-width: 300px;
+    font-size: 0.9em;
   }
   .terms {
     margin-top: 1rem;
     font-size: 0.8em;
     color: #999;
     text-align: center;
+  }
+  .password-login {
+    form {
+      max-width: 300px;
+      margin: 2rem auto 0;
+      box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+      border-radius: 7px;
+      input {
+        display: block;
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+      }
+      input:first-child {
+        border-radius: 7px 7px 0 0;
+        border-bottom: 0;
+      }
+      input:last-child {
+        border-top: 0;
+        border-radius: 0 0 7px 7px;
+      }
+    }
+    nav {
+      max-width: 300px;
+      margin: 1rem auto 0;
+      display: flex;
+      a {
+        flex: 1 1 auto;
+        text-align: center;
+        color: #777;
+        font-size: 0.8em;
+        text-decoration: none;
+        &:hover,
+        &:active,
+        &:focus {
+          color: #000;
+        }
+      }
+    }
   }
 `;
 
@@ -209,11 +155,10 @@ const UserContainer = styled.div`
 const ClosedContainer = styled.div`
   max-width: 400px;
   box-sizing: border-box;
-  margin: -3rem auto 8rem;
+  margin: -3rem auto 6rem;
   background: #fff;
   border-radius: 7px;
   box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
-  ${"" /* border: 1px solid #bbb; */}
   padding: 2rem;
   z-index: 4;
   position: relative;
@@ -251,10 +196,11 @@ const Intro = styled.section`
       color: #333;
       line-height: 1.5;
       p:first-child {
-        font-size: 1.3em;
+        font-size: 1.4em;
         border-bottom: 2px solid #ddd;
         padding-bottom: 1rem;
         margin-bottom: 1rem;
+        font-weight: 600;
       }
     }
     .features {
@@ -264,7 +210,7 @@ const Intro = styled.section`
 `;
 
 const Features = styled.section`
-  background: #333;
+  background: #111;
   color: #fff;
   margin: 0 0 2rem;
   padding: 4rem 0;
@@ -291,11 +237,9 @@ const Features = styled.section`
     border-radius: 7px;
     display: flex;
     flex-wrap: wrap;
-    font-family: "Unica One", monospace;
     font-weight: normal;
     align-items: center;
-    font-size: 1.3em;
-    letter-spacing: 0.1rem;
+    font-size: 1.2em;
     li {
       flex: 1 1 40%;
       margin: 0;
@@ -334,10 +278,11 @@ const Organization = styled.section`
     margin: 0 auto;
     padding: 0 2rem;
     > div {
-      margin: 0 -1rem;
+      margin: 0 -2rem;
       display: flex;
       > div {
-        margin: 0 1rem;
+        margin: 0 2rem;
+        flex: 1 1 100%;
       }
     }
   }
@@ -349,7 +294,7 @@ const FeatureItemContainer = styled.li`
   .icon {
     margin-right: 2rem;
     font-size: 0.7em;
-    color: #ff6600;
+    color: #f5911e;
   }
 `;
 
@@ -364,13 +309,33 @@ function FeatureItem(props) {
   );
 }
 
-export default class Home extends Component {
+const messages = defineMessages({
+  emailPlaceholder: {
+    id: "app.auth.email_placeholder",
+    defaultMessage: "Email"
+  },
+  passwordPlaceholder: {
+    id: "app.auth.password_placeholder",
+    defaultMessage: "Password"
+  },
+  loginLabel: {
+    id: "app.auth.login_label",
+    defaultMessage: "Login"
+  },
+  forgotPasswordTitle: {
+    id: "app.auth.forgot_password_title",
+    defaultMessage: "Forgot my password"
+  }
+});
+
+class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
       subscribeFormData: { name: "", email: "" },
-      subscribed: false
+      subscribed: false,
+      loginFormData: {}
     };
   }
   componentDidMount() {
@@ -385,31 +350,6 @@ export default class Home extends Component {
         hasMail: res.hasMail
       });
     });
-  };
-  _facebookAuth = () => ev => {
-    ev.preventDefault();
-    this.setState({ loading: true });
-    Meteor.loginWithFacebook(
-      {
-        requestPermissions: ["public_profile", "email"]
-      },
-      err => {
-        if (err) {
-          this.setState({ loading: false });
-          alertStore.add(
-            "Erro durante autenticação, tente novamente.",
-            "error"
-          );
-        } else {
-          Meteor.call("users.exchangeFBToken", (err, data) => {
-            this.setState({ loading: false });
-            if (err) {
-              alertStore.add(err);
-            }
-          });
-        }
-      }
-    );
   };
   _handleSubscribeChange = ({ target }) => {
     this.setState({
@@ -433,8 +373,38 @@ export default class Home extends Component {
       }
     );
   };
+  _handlePasswordLoginSubmit = ev => {
+    ev.preventDefault();
+    const { loginFormData } = this.state;
+    if (loginFormData.email && loginFormData.password) {
+      Meteor.loginWithPassword(
+        loginFormData.email,
+        loginFormData.password,
+        err => {
+          if (err) {
+            alertStore.add(err);
+          }
+        }
+      );
+    }
+  };
+  _handlePasswordLoginChange = ({ target }) => {
+    this.setState({
+      loginFormData: {
+        ...this.state.loginFormData,
+        [target.name]: target.value
+      }
+    });
+  };
+  _handleForgotPwdClick = ev => {
+    ev.preventDefault();
+    const { intl } = this.props;
+    modalStore.setType("small");
+    modalStore.setTitle(intl.formatMessage(messages.forgotPasswordTitle));
+    modalStore.set(<ForgotPassword />);
+  };
   render() {
-    const { isLoggedIn } = this.props;
+    const { intl, isLoggedIn, invite } = this.props;
     const { loading, isClosed, hasMail, subscribed } = this.state;
     const user = Meteor.user();
     return (
@@ -449,7 +419,7 @@ export default class Home extends Component {
               />
             </h2>
           </HighlightContainer>
-          {isClosed && hasMail ? (
+          {isClosed && hasMail && !user && !invite ? (
             <>
               <ClosedContainer>
                 <h3>
@@ -514,24 +484,64 @@ export default class Home extends Component {
               <hr />
             </>
           ) : null}
-          {!isLoggedIn ? (
+          {!isLoggedIn || !user ? (
             <LoginFormContainer>
-              <a
-                className="facebook-button button"
-                onClick={this._facebookAuth()}
-              >
-                <FontAwesomeIcon icon={["fab", "facebook-square"]} />
-                <FormattedMessage
-                  id="app.facebook_login"
-                  defaultMessage="Connect with Facebook"
-                />
-              </a>
+              <FacebookButton type={invite ? "campaigner" : false} />
               <p className="terms">
                 <FormattedHTMLMessage
                   id="app.terms_and_policy"
                   defaultMessage="By registering in LIANE you agree with our <a href='https://files.liane.cc/legal/terms_of_use_v1_pt-br.pdf' target='_blank' rel='external'>terms of use</a> and <a href='https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf' target='_blank' rel='external' >privacy policy</a>."
                 />
               </p>
+              <div className="password-login">
+                <OrLine bgColor="#f7f7f7">
+                  <FormattedMessage
+                    id="app.auth.or_email"
+                    defaultMessage="Or with your email"
+                  />
+                </OrLine>
+                <Form onSubmit={this._handlePasswordLoginSubmit}>
+                  <div className="inputs">
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder={intl.formatMessage(
+                        messages.emailPlaceholder
+                      )}
+                      onChange={this._handlePasswordLoginChange}
+                    />
+                    <input
+                      type="password"
+                      name="password"
+                      placeholder={intl.formatMessage(
+                        messages.passwordPlaceholder
+                      )}
+                      onChange={this._handlePasswordLoginChange}
+                    />
+                    <input
+                      type="submit"
+                      value={intl.formatMessage(messages.loginLabel)}
+                    />
+                  </div>
+                </Form>
+                <nav>
+                  <a href={FlowRouter.path("App.register")}>
+                    <FormattedMessage
+                      id="app.auth.register_link_label"
+                      defaultMessage="Register new account"
+                    />
+                  </a>
+                  <a
+                    href="javascript:void(0);"
+                    onClick={this._handleForgotPwdClick}
+                  >
+                    <FormattedMessage
+                      id="app.auth.forgot_pwd_label"
+                      defaultMessage="Forgot my password"
+                    />
+                  </a>
+                </nav>
+              </div>
             </LoginFormContainer>
           ) : (
             <UserContainer>
@@ -663,7 +673,7 @@ export default class Home extends Component {
           <p className="support-text">
             <FormattedHTMLMessage
               id="app.support_message"
-              defaultMessage="Need help or would like to report a problem? Write to <a href='mailto:contato@liane.cc'>contato@liane.cc</a> and talk to our team."
+              defaultMessage="Need help or would like to report a problem? Write to <a href='mailto:info@liane.voto'>info@liane.voto</a> and talk to our team."
             />
           </p>
           <Organization>
@@ -700,3 +710,9 @@ export default class Home extends Component {
     );
   }
 }
+
+Home.propTypes = {
+  intl: intlShape.isRequired
+};
+
+export default injectIntl(Home);

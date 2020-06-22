@@ -54,7 +54,7 @@ const Container = styled.div`
     text-align: center;
     &:hover,
     &:focus {
-      background: #cc0000;
+      background: #ca3333;
       color: #fff;
     }
     &.disabled {

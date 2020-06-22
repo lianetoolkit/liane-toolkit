@@ -20,7 +20,14 @@ export const queryCount = new ValidatedMethod({
 
     const userId = Meteor.userId();
 
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "comments",
+        permission: "view"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -59,7 +66,14 @@ export const reactComment = new ValidatedMethod({
 
     const userId = Meteor.userId();
 
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "comments",
+        permission: "edit"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -94,7 +108,14 @@ export const resolveComment = new ValidatedMethod({
 
     const userId = Meteor.userId();
 
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "comments",
+        permission: "categorize"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -146,7 +167,14 @@ export const categorizeComment = new ValidatedMethod({
 
     const userId = Meteor.userId();
 
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "comments",
+        permission: "categorize"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
@@ -193,7 +221,14 @@ export const sendComment = new ValidatedMethod({
 
     const userId = Meteor.userId();
 
-    if (!Meteor.call("campaigns.canManage", { campaignId, userId })) {
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "comments",
+        permission: "edit"
+      })
+    ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 

@@ -11,7 +11,7 @@ export default withTracker(props => {
 
   const loading = !faqHandle.ready();
   const faq = faqHandle.ready()
-    ? FAQ.find({ campaignId }, { sort: { createdAt: -1 } }).fetch()
+    ? FAQ.find({ campaignId }, { sort: { lastUsedAt: 1 } }).fetch()
     : [];
 
   return {

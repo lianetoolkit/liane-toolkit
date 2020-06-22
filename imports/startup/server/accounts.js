@@ -1,18 +1,15 @@
 import { Accounts } from "meteor/accounts-base";
 import { Random } from "meteor/random";
 import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
-
-Accounts.emailTemplates.siteName = Meteor.settings.public.appName;
-Accounts.emailTemplates.from = `${Meteor.settings.public.appName} <${
-  Meteor.settings.public.appEmail
-}>`;
+import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
+import { NotificationsHelpers } from "/imports/api/notifications/server/notificationsHelpers.js";
 
 // http://docs.meteor.com/api/accounts-multi.html#AccountsCommon-config
 Accounts.config({
-  sendVerificationEmail: false
+  sendVerificationEmail: true,
 });
 
-Accounts.onLogin(function(data) {
+Accounts.onLogin(function (data) {
   if (data.user.services.facebook) {
     const facebookData = data.user.services.facebook;
     let set = {};
@@ -25,24 +22,25 @@ Accounts.onLogin(function(data) {
       set["emails"] = [
         {
           address: facebookData.email,
-          verified: true
-        }
+          verified: true,
+        },
       ];
     }
     if (Object.keys(set).length) {
       Meteor.users.update(
         {
-          _id: data.user._id
+          _id: data.user._id,
         },
         {
-          $set: set
+          $set: set,
         }
       );
     }
   }
 });
 
-Accounts.onCreateUser(function(options, user) {
+Accounts.onCreateUser(function (options, user) {
+  console.log({ options, user });
   const userProperties = { profile: {} };
 
   const hasUser = !!Meteor.users.findOne();
@@ -50,6 +48,53 @@ Accounts.onCreateUser(function(options, user) {
     user.roles = ["admin"];
   }
   user = _.extend(user, userProperties);
+
+  if (options.name) {
+    user.name = options.name;
+  }
+  if (options.country) {
+    user.country = options.country;
+  }
+  if (options.region) {
+    user.region = options.region;
+  }
+
+  if (options.type) {
+    user.type = options.type;
+  }
+
+  // Validate invitation
+  if (options.invite && options.invite.split("|").length == 2) {
+    const parsedInvite = options.invite.split("|");
+    const campaignId = parsedInvite[1];
+    const inviteId = parsedInvite[0];
+    const campaign = CampaignsHelpers.getInviteCampaign({
+      campaignId,
+      inviteId,
+    });
+    if (campaign) {
+      const invite = campaign.users.find((u) => u.inviteId == inviteId);
+      CampaignsHelpers.applyInvitation({
+        inviteId,
+        campaignId,
+        userId: user._id,
+      });
+      user.email = invite.email;
+      user.type = "user";
+      user.emails[0].verified = true;
+
+      // Notify campaign owner
+      NotificationsHelpers.add({
+        userId: campaign.creatorId,
+        metadata: {
+          name: user.name,
+          campaignName: campaign.name,
+        },
+        category: "campaignInviteAccepted",
+        dataRef: campaignId,
+      });
+    }
+  }
 
   return user;
 });
@@ -59,7 +104,7 @@ ServiceConfiguration.configurations.upsert(
   {
     $set: {
       appId: Meteor.settings.facebook.clientId,
-      secret: Meteor.settings.facebook.clientSecret
-    }
+      secret: Meteor.settings.facebook.clientSecret,
+    },
   }
 );

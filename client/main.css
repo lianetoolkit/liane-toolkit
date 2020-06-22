@@ -43,8 +43,7 @@ body {
 h1,
 h2,
 h3 {
-  font-family: "Unica One", monospace;
-  font-weight: normal;
+  font-weight: 600;
 }
 
 p {
@@ -124,22 +123,42 @@ input[type="submit"] {
   box-sizing: border-box;
   display: block;
   border: 0;
-  background: #63c;
+  background: #f5911e;
   padding: 0.75rem 1.5rem;
-  border-radius: 1.625rem;
+  border-radius: 7px;
   color: #fff;
   cursor: pointer;
-  /* font-family: "Unica One", monospace; */
   font-weight: 600;
   letter-spacing: 0.03rem;
   margin: 0;
   text-decoration: none;
 }
 
+.button.secondary,
+button.secondary,
+input.secondary[type="submit"] {
+  border: 1px solid rgba(51, 0, 102, 0.25);
+  background: rgba(255, 255, 255, 0.6);
+  color: #330066;
+}
+
+.button.secondary:hover,
+.button.secondary:active,
+.button.secondary:focus,
+button.secondary:hover,
+button.secondary:active,
+button.secondary:focus,
+input[type="submit"].secondary:hover,
+input[type="submit"].secondary:active,
+input[type="submit"].secondary:focus {
+  color: #fff;
+  background-color: #333;
+}
+
 .button.delete,
 button.delete,
 input[type="submit"].delete {
-  background-color: #cc0000;
+  background-color: #ca3333;
   color: #fff;
 }
 
@@ -211,7 +230,7 @@ input[type="submit"]:disabled {
 }
 
 #app .marker-cluster {
-  background-color: rgba(0,0,0,0.15);
+  background-color: rgba(0, 0, 0, 0.15);
 }
 
 #app .marker-cluster div {

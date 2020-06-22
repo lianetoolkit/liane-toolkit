@@ -3,11 +3,13 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find } from "lodash";
+
+import { userCan } from "/imports/ui2/utils/permissions";
 
 import Dropdown from "./AppNavDropdown.jsx";
 import NotificationsNav from "./NotificationsPopup.jsx";
@@ -15,16 +17,16 @@ import NotificationsNav from "./NotificationsPopup.jsx";
 const messages = defineMessages({
   intelligenceStrategy: {
     id: "app.nav.intelligence_strategy",
-    defaultMessage: "Intelligence and Strategy"
+    defaultMessage: "Intelligence and Strategy",
   },
   peopleCommunication: {
     id: "app.nav.people_communication",
-    defaultMessage: "People and Communication"
+    defaultMessage: "People and Communication",
   },
   electoralCanvas: {
     id: "app.nav.electoral_canvas",
-    defaultMessage: "Electoral Canvas"
-  }
+    defaultMessage: "Electoral Canvas",
+  },
 });
 
 const Container = styled.nav`
@@ -53,7 +55,24 @@ const Container = styled.nav`
       font-size: 1.15em;
     }
     &:hover {
-      color: #999;
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+  .meta.link-group {
+    margin-top: 0.4rem;
+    margin-bottom: -1px;
+    border-radius: 7px 7px 0 0;
+    background: #482075;
+    padding: 0 0.2rem;
+    border-top: 1px solid #111;
+    border-left: 1px solid #111;
+    border-right: 1px solid #111;
+    box-sizing: border-box;
+    .icon-link {
+      padding-top: 0.5rem;
+    }
+    .dropdown {
+      top: 31px;
     }
   }
 `;
@@ -67,7 +86,7 @@ const NavItemContainer = styled.li`
       font-size: 0.8em;
     }
   }
-  ${props =>
+  ${(props) =>
     !props.clean &&
     css`
       a {
@@ -80,9 +99,9 @@ const NavItemContainer = styled.li`
       &:hover,
       &:active,
       &:focus {
-        color: #999;
+        color: rgba(255, 255, 255, 0.5);
         > a {
-          color: #999;
+          color: rgba(255, 255, 255, 0.5);
         }
       }
       &.active {
@@ -93,31 +112,32 @@ const NavItemContainer = styled.li`
       ul {
         display: none;
         min-width: 200px;
-        background: #333;
-        border-right: 1px solid #222;
-        border-left: 1px solid #222;
-        border-bottom: 1px solid #222;
+        background: #330066;
+        border-right: 1px solid #111;
+        border-left: 1px solid #111;
+        border-bottom: 1px solid #111;
         box-shadow: 0 0.25rem 0.3rem rgba(0, 0, 0, 0.15);
         padding: 0 0 0.5rem;
         border-radius: 0 0 7px 7px;
         li {
           display: block;
           a {
-            color: #ddd;
+            color: rgba(255, 255, 255, 0.75);
             padding: 0.5rem 1rem;
             border: 0;
+            line-height: 1.3;
             span.info {
               font-size: 0.6em;
               font-style: italic;
             }
             &.disabled {
-              color: #666;
+              color: rgba(255, 255, 255, 0.5);
             }
           }
           &:hover {
             a {
               color: #fff;
-              background: #222;
+              background: #111;
               &.disabled {
                 color: #666;
                 background: transparent;
@@ -160,7 +180,7 @@ class NavItem extends Component {
 }
 
 class SettingsNav extends Component {
-  _logout = () => ev => {
+  _logout = () => (ev) => {
     ev.preventDefault();
     Meteor.logout();
     window.location.reload();
@@ -185,7 +205,7 @@ class SettingsNav extends Component {
         trigger={<FontAwesomeIcon icon="cog" />}
       >
         <Dropdown.Content>
-          {campaign ? (
+          {campaign && userCan("admin") ? (
             <>
               <Dropdown.NavItem href={FlowRouter.path("App.campaign.settings")}>
                 <FormattedMessage
@@ -224,7 +244,7 @@ class SettingsNav extends Component {
 }
 
 class CampaignNav extends Component {
-  _handleClick = campaignId => ev => {
+  _handleClick = (campaignId) => (ev) => {
     ev.preventDefault();
     Session.set("campaignId", campaignId);
     window.location.reload();
@@ -239,7 +259,7 @@ class CampaignNav extends Component {
         trigger={<FontAwesomeIcon icon="chevron-down" />}
       >
         <Dropdown.Content>
-          {campaigns.map(campaign => (
+          {campaigns.map((campaign) => (
             <Dropdown.NavItem
               key={campaign._id}
               href="javascript:void(0);"
@@ -272,71 +292,72 @@ class AppNav extends Component {
                 {campaigns.length > 1 ? (
                   <NavItem name={<CampaignNav campaigns={campaigns} />} clean />
                 ) : null}
-                <NavItem
-                  href={FlowRouter.path("App.map")}
-                  name={intl.formatMessage(messages.intelligenceStrategy)}
-                >
-                  <ul>
-                    {/* <li>
-                      <a href="javascript:void(0);" className="disabled">
-                        <FormattedMessage
-                          id="app.nav.my_audience"
-                          defaultMessage="My audience"
-                        />{" "}
-                        <span className="info">
-                          (
+                {userCan("view", "map") ? (
+                  <NavItem
+                    href={FlowRouter.path("App.map")}
+                    name={intl.formatMessage(messages.intelligenceStrategy)}
+                  >
+                    <ul>
+                      <li>
+                        <a href={FlowRouter.path("App.map")}>
                           <FormattedMessage
-                            id="app.soon"
-                            defaultMessage="soon"
+                            id="app.nav.territories"
+                            defaultMessage="Territories"
                           />
-                          )
-                        </span>
-                      </a>
-                    </li> */}
-                    <li>
-                      <a href={FlowRouter.path("App.map")}>
-                        <FormattedMessage
-                          id="app.nav.territories"
-                          defaultMessage="Territories"
-                        />
-                      </a>
-                    </li>
-                  </ul>
-                </NavItem>
-                <NavItem
-                  href={FlowRouter.path("App.people")}
-                  name={intl.formatMessage(messages.peopleCommunication)}
-                >
-                  <ul>
-                    <li>
-                      <a href={FlowRouter.path("App.people")}>
-                        <FormattedMessage
-                          id="app.nav.people_directory"
-                          defaultMessage="People directory"
-                        />
-                      </a>
-                    </li>
-                    <li>
-                      <a href={FlowRouter.path("App.comments")}>
-                        <FormattedMessage
-                          id="app.nav.manage_comments"
-                          defaultMessage="Manage comments"
-                        />
-                      </a>
-                    </li>
-                    {/* <li>
-                      <a href={FlowRouter.path("App.chatbot")}>Chatbot</a>
-                    </li> */}
-                    <li>
-                      <a href={FlowRouter.path("App.faq")}>
-                        <FormattedMessage
-                          id="app.nav.faq"
-                          defaultMessage="Frequently asked questions"
-                        />
-                      </a>
-                    </li>
-                  </ul>
-                </NavItem>
+                        </a>
+                      </li>
+                    </ul>
+                  </NavItem>
+                ) : null}
+                {userCan("view", "people", "comments", "faq", "form") ? (
+                  <NavItem
+                    href="javascript:void(0);"
+                    name={intl.formatMessage(messages.peopleCommunication)}
+                  >
+                    <ul>
+                      {userCan("view", "people") ? (
+                        <li>
+                          <a href={FlowRouter.path("App.people")}>
+                            <FormattedMessage
+                              id="app.nav.people_directory"
+                              defaultMessage="People directory"
+                            />
+                          </a>
+                        </li>
+                      ) : null}
+                      {userCan("view", "comments") ? (
+                        <li>
+                          <a href={FlowRouter.path("App.comments")}>
+                            <FormattedMessage
+                              id="app.nav.manage_comments"
+                              defaultMessage="Manage comments"
+                            />
+                          </a>
+                        </li>
+                      ) : null}
+                      {userCan("view", "faq") ? (
+                        <li>
+                          <a href={FlowRouter.path("App.faq")}>
+                            <FormattedMessage
+                              id="app.nav.faq"
+                              defaultMessage="Frequently asked questions"
+                            />
+                          </a>
+                        </li>
+                      ) : null}
+                      {userCan("edit", "form") ? (
+                        <li>
+                          <a href={FlowRouter.path("App.formSettings")}>
+                            <FormattedMessage
+                              id="app.nav.form"
+                              defaultMessage="Form settings"
+                            />
+                          </a>
+                        </li>
+                      ) : null}
+                    </ul>
+                  </NavItem>
+                ) : null}
                 <NavItem
                   href="https://canvas.liane.cc"
                   target="_blank"
@@ -362,7 +383,7 @@ class AppNav extends Component {
 }
 
 AppNav.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(AppNav);

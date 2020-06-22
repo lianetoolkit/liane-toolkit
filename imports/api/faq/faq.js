@@ -5,15 +5,26 @@ const FAQ = new Mongo.Collection("faq");
 FAQ.schema = new SimpleSchema({
   campaignId: {
     type: String,
-    index: true
+    index: true,
   },
   question: {
     type: String,
-    index: true
+    index: true,
   },
   answer: {
     type: String,
-    index: true
+    index: true,
+  },
+  lastUsedAt: {
+    type: Date,
+    index: true,
+    autoValue() {
+      if (this.isInsert) {
+        return new Date();
+      } else if (this.isUpsert) {
+        return { $setOnInsert: new Date() };
+      }
+    },
   },
   createdAt: {
     type: Date,
@@ -25,8 +36,8 @@ FAQ.schema = new SimpleSchema({
       } else {
         return this.unset();
       }
-    }
-  }
+    },
+  },
 });
 
 FAQ.attachSchema(FAQ.schema);

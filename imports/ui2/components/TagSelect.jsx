@@ -8,7 +8,7 @@ export default class TagSelect extends Component {
     super(props);
     this.state = {
       loading: false,
-      options: []
+      options: [],
     };
   }
   componentDidMount() {
@@ -17,68 +17,70 @@ export default class TagSelect extends Component {
       { campaignId: Session.get("campaignId") },
       (err, res) => {
         this.setState({
-          options: (res || []).map(item => {
+          options: (res || []).map((item) => {
             return {
               value: item._id,
-              label: item.name
+              label: item.name,
             };
-          })
+          }),
         });
       }
     );
   }
-  _handleCreateOption = label => {
+  _handleCreateOption = (label) => {
     const { onChange, name, value } = this.props;
     Meteor.call(
       "people.createTag",
       {
         name: label,
-        campaignId: Session.get("campaignId")
+        campaignId: Session.get("campaignId"),
       },
       (err, res) => {
-        if (!err) {
-          onChange({
-            target: {
-              name,
-              value: [...(value || []), res]
-            }
-          });
+        if (!err && res) {
           this.setState({
             options: [
               {
                 value: res,
-                label
+                label,
               },
-              ...this.state.options
-            ]
+              ...this.state.options,
+            ],
           });
+          if (onChange) {
+            onChange({
+              target: {
+                name,
+                value: [...(value || []), res],
+              },
+            });
+          }
         }
       }
     );
   };
-  _handleChange = value => {
+  _handleChange = (value) => {
     const { onChange, name } = this.props;
     if (onChange) {
-      onChange({ target: { name, value: value.map(item => item.value) } });
+      onChange({ target: { name, value: value.map((item) => item.value) } });
     }
   };
   _buildValue = () => {
     const { options } = this.state;
     const { value } = this.props;
     if (value && options.length) {
-      return options.filter(option => value.indexOf(option.value) !== -1);
+      return options.filter((option) => value.indexOf(option.value) !== -1);
     }
     return [];
   };
   render() {
-    const { name } = this.props;
+    const { name, placeholder } = this.props;
     const { options } = this.state;
     return (
       <CreatableSelect
         classNamePrefix="select-search"
-        cacheOptions
         isMulti
-        placeholder="Tags..."
+        isClearable={false}
+        placeholder={placeholder || "Tags..."}
         options={options}
         onCreateOption={this._handleCreateOption}
         onChange={this._handleChange}

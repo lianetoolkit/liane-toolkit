@@ -1,10 +1,10 @@
 import "./globals.js";
 import "./logger.js";
+import "./email.js";
 import "./redis.js";
 if (!Meteor.settings.public.server || Meteor.settings.public.server == "main") {
   import "./accounts.js";
   import "./api.js";
-  // import "./fixtures.js";
   import "./accessLogs.js";
 } else {
   import "/imports/api/jobs/server/jobs.js";

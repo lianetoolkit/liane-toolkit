@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import ReactDOM from "react-dom";
 import ReactTooltip from "react-tooltip";
@@ -12,34 +12,39 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import { get, debounce } from "lodash";
 
+import { userCan } from "/imports/ui2/utils/permissions";
+
 import { modalStore } from "../containers/Modal.jsx";
 
 import Table from "./Table.jsx";
 import Button from "./Button.jsx";
 import CopyToClipboard from "./CopyToClipboard.jsx";
 import Popup from "./Popup.jsx";
-import PersonMetaButtons from "./PersonMetaButtons.jsx";
+import PersonStarredButton from "./PersonStarredButton.jsx";
+import PersonMetaButtons, {
+  labels as personMetaLabels,
+} from "./PersonMetaButtons.jsx";
 import PersonSummary from "./PersonSummary.jsx";
 import PersonReactions from "./PersonReactions.jsx";
 import PersonEdit from "./PersonEdit.jsx";
 import PersonContactIcons from "./PersonContactIcons.jsx";
 import PersonTags from "./PersonTags.jsx";
-import PersonChatIcon from "./PersonChatIcon.jsx";
 import Reply from "./Reply.jsx";
+import { getCommentUrl } from "./Comment.jsx";
 
 const messages = defineMessages({
   editingPersonTitle: {
     id: "app.people.edit.title",
-    defaultMessage: "Editing {name}"
+    defaultMessage: "Editing {name}",
   },
   sendingPrivateReplyTitle: {
     id: "app.people.sending_pr.title",
-    defaultMessage: "Sending private reply to {name}"
+    defaultMessage: "Sending private reply to {name}",
   },
   editCategories: {
     id: "app.people.table_body.edit_categories",
-    defaultMessage: "Edit categories"
-  }
+    defaultMessage: "Edit categories",
+  },
 });
 
 const Container = styled.div`
@@ -114,13 +119,23 @@ const Container = styled.div`
       justify-content: center;
       margin-bottom: 1rem;
       border-top: 1px solid #666;
-      padding-top: 1rem;
-      span {
+      padding: 0;
+      margin: 0;
+      .count-label {
         font-size: 1.2em;
-        margin-right: 1rem;
+        margin: 1rem 1rem 1rem 0;
         svg {
-          margin-right: 1rem;
+          margin-right: 0.5rem;
         }
+      }
+      .button {
+        text-align: center;
+        margin: 1rem 0;
+        padding: 0.5rem;
+      }
+      .latest-comment {
+        font-size: 0.9em;
+        margin: 1rem 0 1rem 1rem;
       }
     }
   }
@@ -157,7 +172,7 @@ class PersonMetaCircles extends Component {
     const { person, ...props } = this.props;
     return (
       <MetaCircles {...props}>
-        {PersonMetaButtons.keys.map(key =>
+        {PersonMetaButtons.keys.map((key) =>
           get(person, `campaignMeta.${key}`) ? (
             <span key={key} className="meta-circle-container">
               <span
@@ -176,7 +191,7 @@ class PeopleTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: false
+      expanded: false,
     };
   }
   componentDidMount() {
@@ -203,12 +218,12 @@ class PeopleTable extends Component {
   componentWillUnmount() {
     window.removeEventListener("keydown", this._handleKeydown);
   }
-  _handleKeydown = ev => {
+  _handleKeydown = (ev) => {
     const { people } = this.props;
     const { expanded } = this.state;
     let curIndex = -1;
     if (expanded) {
-      curIndex = people.findIndex(p => {
+      curIndex = people.findIndex((p) => {
         return p._id == expanded._id;
       });
     }
@@ -218,7 +233,7 @@ class PeopleTable extends Component {
         case 27: // esc
           if (curIndex > -1) {
             this.setState({
-              expanded: false
+              expanded: false,
             });
           }
           break;
@@ -244,7 +259,7 @@ class PeopleTable extends Component {
         case 13: // (Enter) access profile
           if (curIndex > -1) {
             FlowRouter.go("App.people.detail", {
-              personId: people[curIndex]._id
+              personId: people[curIndex]._id,
             });
           }
         default:
@@ -252,12 +267,12 @@ class PeopleTable extends Component {
     }
     if (target) {
       this.setState({
-        expanded: target
+        expanded: target,
       });
       this.adjustScroll(target._id);
     }
   };
-  adjustScroll = debounce(personId => {
+  adjustScroll = debounce((personId) => {
     const containerOffset = this.container.getBoundingClientRect();
     const node = document.getElementById(`table-person-${personId}`);
     const nodeOffset = node.getBoundingClientRect();
@@ -283,10 +298,10 @@ class PeopleTable extends Component {
     }
     return 0;
   }
-  _handleMetaButtonsChange = data => {
+  _handleMetaButtonsChange = (data) => {
     if (this.props.onChange) {
       const { people } = this.props;
-      const newPeople = people.map(p => {
+      const newPeople = people.map((p) => {
         if (p._id == data.personId) {
           if (!p.campaignMeta) {
             p.campaignMeta = {};
@@ -298,19 +313,19 @@ class PeopleTable extends Component {
       this.props.onChange(newPeople);
     }
   };
-  _handleEditSuccess = person => {
+  _handleEditSuccess = (person) => {
     if (this.props.onChange) {
       const { people } = this.props;
-      const newPeople = people.map(p => {
+      const newPeople = people.map((p) => {
         if (p._id == person._id) {
-          return person;
+          return {...p, ...person};
         }
         return p;
       });
       this.props.onChange(newPeople);
     }
   };
-  _handleEditClick = person => ev => {
+  _handleEditClick = (person) => (ev) => {
     const { intl } = this.props;
     ev.preventDefault();
     modalStore.setTitle(
@@ -320,26 +335,26 @@ class PeopleTable extends Component {
       <PersonEdit person={person} onSuccess={this._handleEditSuccess} />
     );
   };
-  expand = person => ev => {
+  expand = (person) => (ev) => {
     if (ev.target.nodeName == "A" || ev.target.closest("a")) {
       return false;
     }
     const { expanded } = this.state;
     if (expanded && expanded._id == person._id) {
       this.setState({
-        expanded: false
+        expanded: false,
       });
     } else {
       this.setState({
-        expanded: person
+        expanded: person,
       });
     }
   };
-  isExpanded = person => {
+  isExpanded = (person) => {
     const { expanded } = this.state;
     return expanded && expanded._id == person._id;
   };
-  hasMeta = person => {
+  hasMeta = (person) => {
     let has = false;
     for (let key of PersonMetaButtons.keys) {
       if (get(person, `campaignMeta.${key}`)) {
@@ -348,11 +363,12 @@ class PeopleTable extends Component {
     }
     return has;
   };
-  personCategoriesText = person => {
+  personCategoriesText = (person) => {
+    const { intl } = this.props;
     let text = [];
-    PersonMetaButtons.keys.map(key => {
+    PersonMetaButtons.keys.map((key) => {
       if (get(person, `campaignMeta.${key}`)) {
-        text.push(PersonMetaButtons.labels[key]);
+        text.push(intl.formatMessage(personMetaLabels[key]));
       }
     });
     return text.join(", ");
@@ -374,14 +390,14 @@ class PeopleTable extends Component {
       onSort(key, order);
     }
   };
-  getSort = key => {
+  getSort = (key) => {
     const { options } = this.props;
     if (options["sort"] == key) {
       return options["order"];
     }
     return false;
   };
-  _handlePrivateReplyClick = person => ev => {
+  _handlePrivateReplyClick = (person) => (ev) => {
     const { intl } = this.props;
     ev.preventDefault();
     modalStore.setTitle(intl.formatMessage(messages.sendingPrivateReplyTitle));
@@ -392,21 +408,13 @@ class PeopleTable extends Component {
     const personTags = get(person, "campaignMeta.basic_info.tags");
     if (personTags && personTags.length && tags && tags.length) {
       return tags
-        .filter(tag => personTags.indexOf(tag._id) !== -1)
-        .map(tag => tag.name);
+        .filter((tag) => personTags.indexOf(tag._id) !== -1)
+        .map((tag) => tag.name);
     }
     return [];
   }
   render() {
-    const {
-      intl,
-      people,
-      tags,
-      chatColumn,
-      onChange,
-      onSort,
-      ...props
-    } = this.props;
+    const { intl, people, tags, onChange, onSort, ...props } = this.props;
     const { expanded } = this.state;
     return (
       <Container className="people-table">
@@ -414,16 +422,7 @@ class PeopleTable extends Component {
           <Table {...props}>
             <thead>
               <tr>
-                <th />
-                {chatColumn ? (
-                  <th>
-                    <FontAwesomeIcon
-                      icon={["fab", "facebook-messenger"]}
-                      data-tip="Chatbot conversation status"
-                      data-for="people-table-header-tip"
-                    />
-                  </th>
-                ) : null}
+                <th colSpan="2" />
                 <Table.SortableHead
                   className="fill"
                   onClick={this._handleSortClick("name", "asc")}
@@ -469,7 +468,7 @@ class PeopleTable extends Component {
                 </Table.SortableHead>
               </tr>
             </thead>
-            {people.map(person => (
+            {people.map((person) => (
               <tbody
                 key={person._id}
                 className={this.isExpanded(person) ? "active" : ""}
@@ -479,50 +478,60 @@ class PeopleTable extends Component {
                   className="interactive"
                   onClick={this.expand(person)}
                 >
-                  <td style={{ width: "20px", textAlign: "center" }}>
-                    <Popup
-                      trigger={open => (
-                        <div data-tip data-for={`person-meta-${person._id}`}>
-                          {this.hasMeta(person) ? (
-                            <PersonMetaCircles person={person} />
-                          ) : (
-                            <FontAwesomeIcon
-                              icon="grip-horizontal"
-                              className="meta-trigger"
-                            />
-                          )}
-                        </div>
-                      )}
-                      direction="top left"
-                      rounded
-                    >
-                      <PersonMetaButtons
-                        person={person}
-                        onChange={this._handleMetaButtonsChange}
-                        interactive
-                      />
-                    </Popup>
-                    <ReactTooltip
-                      id={`person-meta-${person._id}`}
-                      aria-haspopup="true"
-                      place="left"
-                      effect="solid"
-                    >
-                      {this.hasMeta(person)
-                        ? this.personCategoriesText(person)
-                        : intl.formatMessage(messages.editCategories)}
-                    </ReactTooltip>
+                  <td style={{ borderRight: 0, paddingRight: 0 }}>
+                    <PersonStarredButton
+                      readOnly={!userCan("categorize", "people")}
+                      person={person}
+                      onChange={this._handleMetaButtonsChange}
+                    />
                   </td>
-                  {chatColumn ? (
-                    <td>
-                      <PersonChatIcon person={person} />
-                    </td>
-                  ) : null}
+                  <td style={{ width: "20px", textAlign: "center" }}>
+                    {userCan("categorize", "people") ? (
+                      <Popup
+                        trigger={(open) => (
+                          <div data-tip data-for={`person-meta-${person._id}`}>
+                            {this.hasMeta(person) ? (
+                              <PersonMetaCircles person={person} />
+                            ) : (
+                              <FontAwesomeIcon
+                                icon="grip-horizontal"
+                                className="meta-trigger"
+                              />
+                            )}
+                          </div>
+                        )}
+                        direction="top left"
+                        rounded
+                      >
+                        <PersonMetaButtons
+                          person={person}
+                          onChange={this._handleMetaButtonsChange}
+                          interactive
+                        />
+                      </Popup>
+                    ) : (
+                      <div data-tip data-for={`person-meta-${person._id}`}>
+                        <PersonMetaCircles person={person} />
+                      </div>
+                    )}
+                    {this.hasMeta(person) || userCan("categorize", "people") ? (
+                      <ReactTooltip
+                        id={`person-meta-${person._id}`}
+                        aria-haspopup="true"
+                        place="bottom"
+                        effect="solid"
+                      >
+                        {this.hasMeta(person)
+                          ? this.personCategoriesText(person)
+                          : intl.formatMessage(messages.editCategories)}
+                      </ReactTooltip>
+                    ) : null}
+                  </td>
                   <td className="fill highlight">
                     <p className="extra-actions show-on-hover">
                       <a
                         href={FlowRouter.path("App.people.detail", {
-                          personId: person._id
+                          personId: person._id,
                         })}
                       >
                         <FormattedMessage
@@ -530,15 +539,17 @@ class PeopleTable extends Component {
                           defaultMessage="Access profile"
                         />
                       </a>
-                      <a
-                        href="javascript:void(0);"
-                        onClick={this._handleEditClick(person)}
-                      >
-                        <FormattedMessage
-                          id="app.people.table_body.edit"
-                          defaultMessage="Edit"
-                        />
-                      </a>
+                      {userCan("edit", "people") ? (
+                        <a
+                          href="javascript:void(0);"
+                          onClick={this._handleEditClick(person)}
+                        >
+                          <FormattedMessage
+                            id="app.people.table_body.edit"
+                            defaultMessage="Edit"
+                          />
+                        </a>
+                      ) : null}
                     </p>
                     <span className="person-name">
                       {person.name}
@@ -566,7 +577,7 @@ class PeopleTable extends Component {
                 </tr>
                 {this.isExpanded(person) ? (
                   <tr className="person-extra">
-                    <td className="extra">
+                    <td className="extra" colSpan="2">
                       <PersonMetaButtons
                         person={person}
                         vertical
@@ -574,16 +585,19 @@ class PeopleTable extends Component {
                         simple
                       />
                     </td>
-                    {/* {chatColumn ? <td className="extra" /> : null} */}
-                    <td className="extra fill" colSpan={chatColumn ? "2" : "1"}>
-                      <PersonSummary person={person} tags={this.props.tags} />
+                    <td className="extra fill" colSpan="1">
+                      <PersonSummary
+                        person={person}
+                        tags={this.props.tags}
+                        onUpdate={this._handleEditSuccess}
+                      />
                     </td>
                     <td className="extra" colSpan="4">
                       <div className="person-reactions">
                         <PersonReactions person={person} />
                       </div>
                       <p className="person-comment-count">
-                        <span>
+                        <span className="count-label">
                           <FontAwesomeIcon icon="comment" />{" "}
                           <FormattedMessage
                             id="app.people.table_body.comment_count"
@@ -591,7 +605,8 @@ class PeopleTable extends Component {
                             values={{ amount: this._getComments(person) }}
                           />
                         </span>
-                        {person.canReceivePrivateReply &&
+                        {userCan("edit", "comments") &&
+                        person.canReceivePrivateReply &&
                         person.canReceivePrivateReply.length ? (
                           <Button
                             light
@@ -603,8 +618,23 @@ class PeopleTable extends Component {
                             />
                           </Button>
                         ) : null}
+                        {person.latestComment ? (
+                          <a
+                            href={getCommentUrl(person.latestComment)}
+                            target="_blank"
+                            rel="external"
+                            className="latest-comment"
+                          >
+                            <FontAwesomeIcon
+                              icon={["fab", "facebook-square"]}
+                            />{" "}
+                            <FormattedMessage
+                              id="app.people.table_body.latest_comment_label"
+                              defaultMessage="Go to latest comment"
+                            />
+                          </a>
+                        ) : null}
                       </p>
-                      <p className="person-buttons" />
                     </td>
                   </tr>
                 ) : null}
@@ -624,7 +654,7 @@ class PeopleTable extends Component {
 }
 
 PeopleTable.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(PeopleTable);

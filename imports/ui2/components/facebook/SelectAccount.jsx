@@ -34,13 +34,13 @@ const Container = styled.ul`
         color: #333;
       }
       &:active {
-        background-color: #063;
+        background-color: #f9ae3b;
         color: #fff;
       }
     }
     &.selected {
       a {
-        background-color: #006633;
+        background-color: #f9ae3b;
         color: #fff;
       }
     }

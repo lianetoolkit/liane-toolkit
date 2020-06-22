@@ -1,30 +1,16 @@
 import SimpleSchema from "simpl-schema";
-import nodemailer from "nodemailer";
 import { Feedback } from "../feedback";
-
-let mailTransporter, mailConfig;
-if (Meteor.settings.email && Meteor.settings.email.mail) {
-  mailConfig = Meteor.settings.email.mail;
-  mailTransporter = nodemailer.createTransport({
-    host: mailConfig.host,
-    port: mailConfig.port,
-    secure: mailConfig.secure,
-    auth: {
-      user: mailConfig.username,
-      pass: mailConfig.password
-    }
-  });
-}
+import { sendMail } from "/imports/emails/server/mailer";
 
 export const updateStatus = new ValidatedMethod({
   name: "feedback.updateStatus",
   validate: new SimpleSchema({
     id: {
-      type: String
+      type: String,
     },
     status: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ id, status }) {
     logger.debug("feed.updateStatus called", { id, status });
@@ -39,43 +25,43 @@ export const updateStatus = new ValidatedMethod({
     }
 
     return Feedback.update(id, { $set: { status } });
-  }
+  },
 });
 
 export const sendFeedback = new ValidatedMethod({
   name: "feedback.new",
   validate: new SimpleSchema({
     category: {
-      type: String
+      type: String,
     },
     name: {
-      type: String
+      type: String,
     },
     email: {
-      type: String
+      type: String,
     },
     subject: {
-      type: String
+      type: String,
     },
     message: {
-      type: String
+      type: String,
     },
     context: {
       type: Object,
-      optional: true
+      optional: true,
     },
     "context.os": {
-      type: String
+      type: String,
     },
     "context.browser": {
-      type: String
+      type: String,
     },
     "context.version": {
-      type: String
+      type: String,
     },
     "context.url": {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ category, name, email, subject, message, context }) {
     this.unblock();
@@ -86,7 +72,7 @@ export const sendFeedback = new ValidatedMethod({
       name,
       email,
       subject,
-      message
+      message,
     };
 
     const userId = Meteor.userId();
@@ -96,28 +82,21 @@ export const sendFeedback = new ValidatedMethod({
 
     const id = Feedback.insert(doc);
 
-    if (mailTransporter) {
-      const url = Meteor.absoluteUrl("/admin/tickets?id=" + id);
-      mailTransporter
-        .sendMail({
-          from: `"Liane" <${mailConfig.username}>`,
-          to: `${Meteor.settings.email.admins.join(", ")}`,
-          subject: `[TICKET] ${category.toUpperCase()} from ${name}`,
-          html: `
-        <p><strong>Category:</strong> ${category}</p>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
-        <p><strong>Message:</strong><br/>${message}</p>
-        <hr/>
-        <p>Manage this ticket: <a href="${url}">${url}</a></p>
-        `
-        })
-        .catch(err => {
-          logger.debug("error sending email", err);
-        });
-    }
-  }
+    const url = Meteor.absoluteUrl("/admin/tickets?id=" + id);
+    sendMail({
+      recipient: `${Meteor.settings.email.admins.join(", ")}`,
+      subject: `[TICKET] ${category.toUpperCase()} from ${name}`,
+      body: `
+          <p><strong>Category:</strong> ${category}</p>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Subject:</strong> ${subject}</p>
+          <p><strong>Message:</strong><br/>${message}</p>
+          <hr/>
+          <p>Manage this ticket: <a href="${url}">${url}</a></p>
+        `,
+    });
+  },
 });
 
 export const queryCount = new ValidatedMethod({
@@ -126,10 +105,10 @@ export const queryCount = new ValidatedMethod({
     query: {
       type: Object,
       blackbox: true,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ query }) {
     return Feedback.find(query || {}).count();
-  }
+  },
 });
