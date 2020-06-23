@@ -1,33 +1,23 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import {
   injectIntl,
   intlShape,
   defineMessages,
   FormattedMessage,
 } from "react-intl";
-import ReactTooltip from "react-tooltip";
 import styled, { css } from "styled-components";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
-import { get, pick, debounce, defaultsDeep } from "lodash";
 
 import { Meta } from "../utils/people";
-
 import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
 
-import PeopleExport from "../components/PeopleExport.jsx";
 import Button from "../components/Button.jsx";
 import Table from "../components/Table.jsx";
 
 import Badge from "../components/Badge.jsx";
-import More from "../components/More.jsx";
-import Form from "../components/Form.jsx";
-import TagSelect from "../components/TagSelect.jsx";
-import SkillsField from "../components/SkillsField.jsx";
-import AddressField from "../components/AddressField.jsx";
-import ExtraFields from "../components/ExtraFields.jsx";
 
 import Page from "../components/Page.jsx";
 
@@ -99,7 +89,6 @@ const FilterMenuGroup = styled.div`
 
 const UnresolvedPage = ({ campaignId, people }) => {
   const [loading, setLoading] = useState(true);
-  // const [people, setPeople] = useState([]);
   const options = {
     skip: 0,
     limit: 20,
@@ -119,7 +108,7 @@ const UnresolvedPage = ({ campaignId, people }) => {
                 >
                   People List
                 </Button>
-                <Button onClick={() => {}} active={true}>
+                <Button onClick={() => { }} active={true}>
                   Unresolved <Badge>3</Badge>
                 </Button>
               </Button.Group>
@@ -134,15 +123,15 @@ const UnresolvedPage = ({ campaignId, people }) => {
             limit={options.limit}
             count={people.length}
             loading={people.length}
-            onNext={() => {}}
-            onPrev={() => {}}
+            onNext={() => { }}
+            onPrev={() => { }}
           />
         ) : null}
         {!loading && (!people || !people.length) ? (
           <p className="not-found">No results found.</p>
         ) : (
-          <UnresolvedTable people={people}></UnresolvedTable>
-        )}
+            <UnresolvedTable people={people}></UnresolvedTable>
+          )}
       </PeopleContent>
     </>
   );
@@ -265,6 +254,13 @@ const Container = styled.div`
     display: block;
     font-size: 0.8em;
     margin-bottom: 0.25rem;
+    .idbadge{
+      font-weight: normal;
+      background-color: #ddd;
+      border-radius: 7px;
+      padding: 4px 7px;
+      font-size: 85%;
+    }
   }
   .final-value {
     margin-bottom: 15px;
@@ -280,6 +276,21 @@ const Container = styled.div`
     font-weight: bold;
     border: 1px solid #ccc;
     text-align: center;
+  }
+  .confirm-table {
+    width: 100%;
+    background: #fff;
+    border-spacing: 0;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    border-collapse: collapse;
+    color: #444;
+    td {
+      border: 1px solid #ddd;
+      font-size: 13px;
+      text-align: left;
+      padding: 5px;
+    }
   }
   .field-option {
     word-break: break-all;
@@ -322,17 +333,22 @@ const MergeModal = ({ person }) => {
   const initialValues = {};
   const fieldsToShow = [];
   const sectionsToShow = [];
+  const labels = {};
   /* Loop on Sections > Fields > Persons  */
   sections.map((section, i) => {
     const fields = Meta.getList(section);
     fields.map((field) => {
-      const { key } = Meta.get(section, field);
+      const { key, name } = Meta.get(section, field);
       let newField = [];
       persons.map((el, index) => {
         let newValue = (value = Object.byString(el, key));
         if (newValue && newField.length == 0) {
           newField.push(newValue);
-          initialValues[key] = { person: index, value: newValue };
+          labels[key] = Meta.getLabel(section, name).defaultMessage;
+          initialValues[key] = {
+            person: index,
+            value: newValue,
+          };
         }
       });
       if (newField.length > 0) {
@@ -342,7 +358,19 @@ const MergeModal = ({ person }) => {
     });
   });
 
-  const confirm = () => {};
+  const confirm = () => {
+
+    // Meteor.call("people.merge", data, (err, res) => {
+    //   if (err) {
+    //     alertStore.add(err);
+    //   } else {
+    //     alertStore.add(null, "success");
+    //     modalStore.reset();
+    //   }
+    // });
+
+
+  };
 
   const [selectedValues, setSelectedValues] = useState(initialValues);
 
@@ -355,10 +383,16 @@ const MergeModal = ({ person }) => {
           if (state == false) {
             return (
               <>
-                <div className="label">#ID {persons[index]._id}</div>
-                <h2 style={{ marginTop: 0 }}>
-                  {persons[index].name} will be mark as resolved
-                </h2>
+                <div
+                  className="label"
+                  style={{ marginTop: 10, marginBottom: 10 }}
+                >
+                  <b>
+                    {persons[index].name} <span className="idbadge">#{persons[index]._id}</span>
+                  </b>{" "}
+                  will be{" "}
+                  <Badge>Resolved</Badge>
+                </div>
               </>
             );
           } else {
@@ -366,20 +400,25 @@ const MergeModal = ({ person }) => {
               oldRelated = persons[index]._id;
               return (
                 <>
-                  <div className="label">#ID {persons[index]._id}</div>
-                  <h2 style={{ marginTop: 0 }}>
-                    {persons[index].name} will be updated and mark as resolved
-                  </h2>
-                  <table>
+                  <div
+                    className="label"
+                    style={{ marginTop: 10, marginBottom: 10 }}
+                  >
+                    <b>
+                      {persons[index].name} <span className="idbadge">#{persons[index]._id}</span>
+                    </b>{" "}
+                    will be <Badge>Updated</Badge> final data
+                  </div>
+                  <table className="confirm-table">
                     {Object.keys(selectedValues).map((key) => {
                       return (
                         <tr>
-                          <td>{key}</td>
+                          <td>{labels[key]}</td>
                           <td>
                             {typeof selectedValues[key].value == "object"
                               ? Object.values(selectedValues[key].value).join(
-                                  ", "
-                                )
+                                ", "
+                              )
                               : selectedValues[key].value}
                           </td>
                         </tr>
@@ -387,23 +426,30 @@ const MergeModal = ({ person }) => {
                     })}
                     <tr></tr>
                   </table>
-                  {/* <div>{JSON.stringify()}</div> */}
                 </>
               );
             } else {
               return (
                 <>
-                  <div className="label">#ID {persons[index]._id}</div>
-                  <h2 style={{ marginTop: 0 }}>
-                    {persons[index].name} will be deleted
-                  </h2>
+                  <div
+                    className="label"
+                    style={{ marginTop: 10, marginBottom: 10 }}
+                  >
+                    <b>
+                      {persons[index].name} <span className="idbadge">#{persons[index]._id}</span>
+                    </b>{" "}
+                    will be&nbsp;<Badge>Deleted</Badge>
+                  </div>
                 </>
               );
             }
           }
         })}
 
-        <div className=" row-container" style={{ flex: 2 }}>
+        <div
+          className=" row-container"
+          style={{ flex: 2, borderTop: "1px solid #ddd", paddingTop: 10 }}
+        >
           <a
             href="#"
             className="button secondary"
@@ -489,9 +535,7 @@ const MergeModal = ({ person }) => {
                 if (!fieldsToShow.includes(key)) return null;
                 return (
                   <>
-                    <div className="label">
-                      {Meta.getLabel(section, name).defaultMessage}
-                    </div>
+                    <div className="label">{labels[key]}</div>
                     <div
                       className="row-container"
                       style={{
