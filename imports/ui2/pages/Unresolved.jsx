@@ -1,48 +1,43 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   injectIntl,
   intlShape,
   defineMessages,
   FormattedMessage,
 } from "react-intl";
-import ReactTooltip from "react-tooltip";
 import styled, { css } from "styled-components";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
-import { get, pick, debounce, defaultsDeep } from "lodash";
 
-import { userCan } from "/imports/ui2/utils/permissions";
-
+import { Meta } from "../utils/people";
 import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
 
-import PeopleExport from "../components/PeopleExport.jsx";
-import { PersonImportButton } from "../components/PersonImport.jsx";
 import Button from "../components/Button.jsx";
 import Table from "../components/Table.jsx";
 
 import Badge from "../components/Badge.jsx";
-import More from "../components/More.jsx";
-import Form from "../components/Form.jsx";
+
 import Page from "../components/Page.jsx";
 
 import PageFilters from "../components/PageFilters.jsx";
 import PagePaging from "../components/PagePaging.jsx";
-import PeopleTable from "../components/PeopleTable.jsx";
-import PeopleHistoryChart from "../components/PeopleHistoryChart.jsx";
 
-// import PersonEdit from "../components/PersonEdit.jsx";
-
-// import PeopleLists from "../components/PeopleLists.jsx";
-// import PeopleExports from "../components/PeopleExports.jsx";
-
-import TagFilter from "../components/TagFilter.jsx";
-import PersonMetaButtons, {
-  labels as categoriesLabels,
-} from "../components/PersonMetaButtons.jsx";
-import Reaction from "../components/Reaction.jsx";
-
+Object.byString = function (o, s) {
+  s = s.replace(/\[(\w+)\]/g, ".$1"); // convert indexes to properties
+  s = s.replace(/^\./, ""); // strip a leading dot
+  var a = s.split(".");
+  for (var i = 0, n = a.length; i < n; ++i) {
+    var k = a[i];
+    if (k in o) {
+      o = o[k];
+    } else {
+      return;
+    }
+  }
+  return o;
+};
 const PeopleContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -92,54 +87,12 @@ const FilterMenuGroup = styled.div`
   }
 `;
 
-const UnresolvedPage = ({ campaignId }) => {
+const UnresolvedPage = ({ campaignId, people }) => {
   const [loading, setLoading] = useState(true);
-  const [people, setPeople] = useState([]);
   const options = {
     skip: 0,
     limit: 20,
   };
-  useEffect(() => {
-    fetchPeople();
-  }, []);
-  fetchPeople = debounce(() => {
-    // const { query, options } = this.state;
-    console.log(">> fetchPeople");
-    // FlowRouter.setQueryParams(this.sanitizeQueryParams(query));
-    // FlowRouter.setQueryParams(
-    //   this.sanitizeQueryParams(options, ["sort", "order"])
-    // );
-    if (loading && campaignId) {
-      const methodParams = {
-        campaignId,
-        query: {
-          unresolved: true,
-        },
-        options: {},
-      };
-      Meteor.call("people.search", methodParams, (err, data) => {
-        if (err) {
-          // console.log("dataa not found");
-          setLoading(false);
-        } else {
-          setPeople(data);
-          console.log("dataa found", data);
-          setLoading(false);
-        }
-      });
-      //   Meteor.call("people.search.count", methodParams, (err, data) => {
-      //     if (err) {
-      //       this.setState({
-      //         loadingCount: false,
-      //       });
-      //     } else {
-      //       this.setState({ count: data, loadingCount: false });
-      //     }
-      //   });
-    }
-  }, 200);
-  // fetchPeople();
-  // console.log();
   return (
     <>
       <Page.Nav full plain>
@@ -155,7 +108,7 @@ const UnresolvedPage = ({ campaignId }) => {
                 >
                   People List
                 </Button>
-                <Button onClick={() => {}} active={true}>
+                <Button onClick={() => { }} active={true}>
                   Unresolved <Badge>3</Badge>
                 </Button>
               </Button.Group>
@@ -170,15 +123,15 @@ const UnresolvedPage = ({ campaignId }) => {
             limit={options.limit}
             count={people.length}
             loading={people.length}
-            onNext={() => {}}
-            onPrev={() => {}}
+            onNext={() => { }}
+            onPrev={() => { }}
           />
         ) : null}
         {!loading && (!people || !people.length) ? (
           <p className="not-found">No results found.</p>
         ) : (
-          <UnresolvedTable people={people}></UnresolvedTable>
-        )}
+            <UnresolvedTable people={people}></UnresolvedTable>
+          )}
       </PeopleContent>
     </>
   );
@@ -276,10 +229,408 @@ const Container = styled.div`
       }
     }
   }
+  .row-container {
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+  }
+  .unresolved-btn {
+    border: 1px solid rgba(51, 0, 102, 0.25);
+    text-align: left;
+    border-radius: 6px;
+    text-decoration: none;
+    overflow: hidden;
+    padding: 10px 5px;
+    display: block;
+    font-size: 13px;
+    font-weight: normal;
+  }
+  .col-1/2 {
+    width: 45%;
+    justify-content: space-between;
+  }
+  .label {
+    color: #333;
+    display: block;
+    font-size: 0.8em;
+    margin-bottom: 0.25rem;
+    .idbadge{
+      font-weight: normal;
+      background-color: #ddd;
+      border-radius: 7px;
+      padding: 4px 7px;
+      font-size: 85%;
+    }
+  }
+  .final-value {
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 25px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    padding: 5px 10px;
+  }
+  .header-column {
+    font-size: 14px;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    text-align: center;
+  }
+  .confirm-table {
+    width: 100%;
+    background: #fff;
+    border-spacing: 0;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    border-collapse: collapse;
+    color: #444;
+    td {
+      border: 1px solid #ddd;
+      font-size: 13px;
+      text-align: left;
+      padding: 5px;
+    }
+  }
+  .field-option {
+    word-break: break-all;
+    font-weight: normal;
+    border: 1px solid #ddd;
+    padding: 8px 10px;
+    border-radius: 7px;
+    font-size: 13px;
+    overflow: hidden;
+
+    .value-checkbox {
+      flex: 1;
+      position: relative;
+      left: -10px;
+      margin: 0;
+    }
+  }
 `;
 
+const MergeModal = ({ person }) => {
+  // To force the render
+  const [, updateState] = useState();
+  const forceUpdate = useCallback(() => updateState({}), []);
+
+  //
+  const [view, setView] = useState("list");
+
+  const sections = Meta.getSections();
+  //Join the person and its related ones
+  let persons = [];
+  persons.push(person);
+  person.children.map((child) => {
+    persons.push(child);
+  });
+  const counter = persons.length;
+  // Adding an extra person for the final column
+  const personWidth = `${Math.floor(100 / counter - 1)}%`;
+
+  const [activePersons, setActivePerson] = useState(Array(counter).fill(true));
+  const initialValues = {};
+  const fieldsToShow = [];
+  const sectionsToShow = [];
+  const labels = {};
+  /* Loop on Sections > Fields > Persons  */
+  sections.map((section, i) => {
+    const fields = Meta.getList(section);
+    fields.map((field) => {
+      const { key, name } = Meta.get(section, field);
+      let newField = [];
+      persons.map((el, index) => {
+        let newValue = (value = Object.byString(el, key));
+        if (newValue && newField.length == 0) {
+          newField.push(newValue);
+          labels[key] = Meta.getLabel(section, name).defaultMessage;
+          initialValues[key] = {
+            person: index,
+            value: newValue,
+          };
+        }
+      });
+      if (newField.length > 0) {
+        fieldsToShow.push(key);
+        if (!sectionsToShow.includes(section)) sectionsToShow.push(section);
+      }
+    });
+  });
+
+  const confirm = () => {
+
+    // Meteor.call("people.merge", data, (err, res) => {
+    //   if (err) {
+    //     alertStore.add(err);
+    //   } else {
+    //     alertStore.add(null, "success");
+    //     modalStore.reset();
+    //   }
+    // });
+
+
+  };
+
+  const [selectedValues, setSelectedValues] = useState(initialValues);
+
+  if (view == "confirm") {
+    let oldRelated = null;
+    return (
+      <Container>
+        {/* Check persons  */}
+        {activePersons.map((state, index) => {
+          if (state == false) {
+            return (
+              <>
+                <div
+                  className="label"
+                  style={{ marginTop: 10, marginBottom: 10 }}
+                >
+                  <b>
+                    {persons[index].name} <span className="idbadge">#{persons[index]._id}</span>
+                  </b>{" "}
+                  will be{" "}
+                  <Badge>Resolved</Badge>
+                </div>
+              </>
+            );
+          } else {
+            if (!oldRelated) {
+              oldRelated = persons[index]._id;
+              return (
+                <>
+                  <div
+                    className="label"
+                    style={{ marginTop: 10, marginBottom: 10 }}
+                  >
+                    <b>
+                      {persons[index].name} <span className="idbadge">#{persons[index]._id}</span>
+                    </b>{" "}
+                    will be <Badge>Updated</Badge> final data
+                  </div>
+                  <table className="confirm-table">
+                    {Object.keys(selectedValues).map((key) => {
+                      return (
+                        <tr>
+                          <td>{labels[key]}</td>
+                          <td>
+                            {typeof selectedValues[key].value == "object"
+                              ? Object.values(selectedValues[key].value).join(
+                                ", "
+                              )
+                              : selectedValues[key].value}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    <tr></tr>
+                  </table>
+                </>
+              );
+            } else {
+              return (
+                <>
+                  <div
+                    className="label"
+                    style={{ marginTop: 10, marginBottom: 10 }}
+                  >
+                    <b>
+                      {persons[index].name} <span className="idbadge">#{persons[index]._id}</span>
+                    </b>{" "}
+                    will be&nbsp;<Badge>Deleted</Badge>
+                  </div>
+                </>
+              );
+            }
+          }
+        })}
+
+        <div
+          className=" row-container"
+          style={{ flex: 2, borderTop: "1px solid #ddd", paddingTop: 10 }}
+        >
+          <a
+            href="#"
+            className="button secondary"
+            style={{ textAlign: "center" }}
+            onClick={() => setView("list")}
+          >
+            Back
+          </a>
+          <a
+            href="#"
+            className="button col-1/2"
+            style={{ textAlign: "center" }}
+            onClick={confirm}
+          >
+            Confirm
+          </a>
+        </div>
+      </Container>
+    );
+  }
+  return (
+    <Container>
+      <div>
+        <div
+          className="row-container"
+          style={{
+            flex: counter,
+          }}
+        >
+          {persons.map((el, i) => {
+            return (
+              <div
+                style={{
+                  width: personWidth,
+                }}
+              >
+                <a
+                  href="#"
+                  className="unresolved-btn header-column"
+                  style={{
+                    backgroundColor: activePersons[i] ? "#fc0" : "#fff",
+                    color: activePersons[i] ? "#444" : "#330066",
+                  }}
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    let activeList = activePersons;
+                    activeList[i] = !activePersons[i];
+                    setActivePerson(activeList);
+
+                    let activeSelectedValues = selectedValues;
+                    Object.keys(activeSelectedValues).map((field) => {
+                      if (
+                        activeSelectedValues[field].person == i &&
+                        activeList[i] == false
+                      ) {
+                        activeSelectedValues[field].value = null;
+                        activeSelectedValues[field].person = null;
+                      }
+                    });
+                    setSelectedValues(activeSelectedValues);
+
+                    forceUpdate();
+                  }}
+                >
+                  Unresolved #{i + 1} &nbsp;
+                  {!activePersons[i] ? <Badge>Resolved</Badge> : ``}
+                </a>
+              </div>
+            );
+          })}
+        </div>
+        {sections.map((section, i) => {
+          if (!sectionsToShow.includes(section)) return null;
+          const fields = Meta.getList(section);
+          return (
+            <>
+              <h3 key={`section-${i}`}>
+                {Meta.getSectionLabel(section).defaultMessage}
+              </h3>
+
+              {fields.map((field) => {
+                const { key, name, type } = Meta.get(section, field);
+                if (!fieldsToShow.includes(key)) return null;
+                return (
+                  <>
+                    <div className="label">{labels[key]}</div>
+                    <div
+                      className="row-container"
+                      style={{
+                        flex: counter,
+                      }}
+                    >
+                      {persons.map((el, index) => {
+                        const value = Object.byString(el, key);
+                        const selected = selectedValues[key].person == index;
+                        if (value) {
+                          return (
+                            <label
+                              style={{
+                                width: personWidth,
+                                opacity: activePersons[index] ? 1 : 0.3,
+                              }}
+                            >
+                              <div
+                                className="unresolved-btn"
+                                style={{
+                                  backgroundColor: selected
+                                    ? "#330066"
+                                    : "#fff",
+                                  color: selected ? "#fff" : "#330066",
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={selected}
+                                  onChange={() => {
+                                    let activeSelectedValues = selectedValues;
+                                    if (selected) {
+                                      activeSelectedValues[key] = {
+                                        person: null,
+                                        value: null,
+                                      };
+                                    } else {
+                                      activeSelectedValues[key] = {
+                                        person: index,
+                                        value: value,
+                                      };
+                                    }
+
+                                    setSelectedValues(activeSelectedValues);
+                                    forceUpdate();
+                                  }}
+                                  className="value-checkbox"
+                                />
+                                {typeof value === "object"
+                                  ? Object.values(value).join(", ")
+                                  : value}
+                              </div>
+                            </label>
+                          );
+                        }
+                        return (
+                          <div
+                            style={{
+                              width: personWidth,
+                              opacity: activePersons[index] ? 1 : 0.3,
+                            }}
+                          >
+                            &nbsp;
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                );
+              })}
+            </>
+          );
+        })}
+      </div>
+      <div>
+        <a
+          href="#"
+          className="button"
+          style={{ textAlign: "center" }}
+          onClick={() => setView("confirm")}
+        >
+          Continue
+        </a>
+      </div>
+    </Container>
+  );
+};
 const UnresolvedTable = ({ people }) => {
   const [selected, setSelected] = useState(null);
+
+  const displayPerson = (person) => {
+    setSelected(person._id);
+    modalStore.setTitle(`Resolve Conflicts with ${person.name}`);
+    modalStore.set(<MergeModal person={person} />);
+  };
 
   return (
     <Container className="people-table">
@@ -290,8 +641,8 @@ const UnresolvedTable = ({ people }) => {
               <th>Name</th>
               <th>Phone</th>
               <th>Email</th>
-              {/* <th>Meta</th> */}
-              <th>Actions</th>
+              <th>Source</th>
+              <th>Unresolved</th>
             </tr>
           </thead>
 
@@ -303,7 +654,7 @@ const UnresolvedTable = ({ people }) => {
               <tr
                 id={`table-person-${person._id}`}
                 className="interactive"
-                onClick={() => setSelected(person._id)}
+                onClick={() => displayPerson(person)}
               >
                 <td>{person.name}</td>
                 <td>
@@ -312,64 +663,9 @@ const UnresolvedTable = ({ people }) => {
                 <td>
                   {person.campaignMeta && person.campaignMeta.contact.email}
                 </td>
-                <td
-                  rowSpan={selected == person._id ? 4 : 1}
-                  className={selected == person._id ? `extra` : ``}
-                >
-                  <Button primary small>
-                    Merge
-                  </Button>
-                </td>
+                <td>{person.source && person.source}</td>
+                <td> {person.related && person.related.length + 1} </td>
               </tr>
-              {selected == person._id ? (
-                <>
-                  <tr className="person-extra">
-                    <td className="extra">
-                      <input type="checkbox" checked></input>&nbsp;
-                      {person.name}
-                    </td>
-                    <td className="extra">
-                      <input type="checkbox"></input>&nbsp;
-                      {person.campaignMeta &&
-                        person.campaignMeta.contact.cellphone}
-                    </td>
-                    <td className="extra">
-                      <input type="checkbox"></input>&nbsp;
-                      {person.campaignMeta && person.campaignMeta.contact.email}
-                    </td>
-                  </tr>
-                  <tr className="person-extra">
-                    <td className="extra">
-                      <input type="checkbox"></input>&nbsp;
-                      {person.name}
-                    </td>
-                    <td className="extra">
-                      <input type="checkbox"></input>&nbsp;
-                      {person.campaignMeta &&
-                        person.campaignMeta.contact.cellphone}
-                    </td>
-                    <td className="extra">
-                      <input type="checkbox" checked></input>&nbsp;
-                      {person.campaignMeta && person.campaignMeta.contact.email}
-                    </td>
-                  </tr>
-                  <tr className="person-extra">
-                    <td className="extra">
-                      <input type="checkbox"></input>&nbsp;
-                      {person.name}
-                    </td>
-                    <td className="extra">
-                      <input type="checkbox" checked></input>&nbsp;
-                      {person.campaignMeta &&
-                        person.campaignMeta.contact.cellphone}
-                    </td>
-                    <td className="extra">
-                      <input type="checkbox"></input>&nbsp;
-                      {person.campaignMeta && person.campaignMeta.contact.email}
-                    </td>
-                  </tr>
-                </>
-              ) : null}
             </tbody>
           ))}
         </Table>

@@ -8,7 +8,7 @@ import { pluck } from "underscore";
 
 const CampaignsSubs = new SubsManager();
 
-export default withTracker(props => {
+export default withTracker((props) => {
   const queryParams = props.query;
   const limit = 10;
   const page = parseInt(queryParams.page || 1);
@@ -20,7 +20,7 @@ export default withTracker(props => {
     sort: { createdAt: -1 },
     limit,
     skip,
-    transform: campaign => {
+    transform: (campaign) => {
       campaign.jobs = Jobs.find({
         "data.campaignId": campaign._id,
         type: {
@@ -28,25 +28,25 @@ export default withTracker(props => {
             "campaigns.healthCheck",
             "entries.updateAccountEntries",
             "entries.refetchAccountEntries",
-            "people.updateFBUsers"
-          ]
-        }
+            "people.updateFBUsers",
+          ],
+        },
       }).fetch();
       campaign.users = Meteor.users
         .find({
-          _id: { $in: pluck(campaign.users, "userId") }
+          _id: { $in: pluck(campaign.users, "userId") },
         })
         .fetch();
       campaign.accounts = FacebookAccounts.find({
-        facebookId: campaign.facebookAccount.facebookId
+        facebookId: campaign.facebookAccount.facebookId,
       }).fetch();
       return campaign;
-    }
+    },
   };
 
   const campaignsHandle = CampaignsSubs.subscribe("campaigns.all", {
     query,
-    options
+    options,
   });
 
   const loading = !campaignsHandle.ready();
@@ -61,6 +61,6 @@ export default withTracker(props => {
     loading,
     page,
     limit,
-    campaigns
+    campaigns,
   };
 })(CampaignsPage);
