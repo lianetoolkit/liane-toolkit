@@ -1323,15 +1323,21 @@ export const mergeUnresolvedPeople = new ValidatedMethod({
     campaignId: {
       type: String,
     },
-    updated: {
+    update: {
       type: Object,
       blackbox: true,
     },
     remove: {
       type: Array,
     },
+    "remove.$": {
+      type: String,
+    },
     resolve: {
       type: Array,
+    },
+    "resolve.$": {
+      type: String,
     },
   }).validator(),
   run({ campaignId, update, remove, resolve }) {
