@@ -1459,6 +1459,7 @@ export const inviteUnsentCount = new ValidatedMethod({
     }
 
     return Invites.find({
+      name: { $exists: true },
       email: { $exists: true },
       sent: { $ne: true },
     }).count();
