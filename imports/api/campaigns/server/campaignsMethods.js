@@ -19,6 +19,15 @@ import { People } from "/imports/api/facebook/people/people.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 
+import MarkdownIt from "markdown-it";
+import createEmail from "/imports/emails/server/createEmail";
+
+const markdown = new MarkdownIt({
+  html: true,
+  breaks: true,
+  linkify: true,
+});
+
 import {
   FEATURES,
   PERMISSIONS,
@@ -1570,5 +1579,118 @@ export const removeInvite = new ValidatedMethod({
     Invites.remove(inviteId);
 
     return;
+  },
+});
+
+export const emailInvite = new ValidatedMethod({
+  name: "invites.emailInvite",
+  validate: new SimpleSchema({
+    inviteId: {
+      type: String,
+    },
+    title: {
+      type: String,
+    },
+    message: {
+      type: String,
+    },
+    language: {
+      type: String,
+    },
+  }).validator(),
+  run({ inviteId, title, message, language }) {
+    logger.debug("invites.emailInvite called", { inviteId });
+
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+
+    if (!title) throw new Meteor.Error(400, "You must define a title");
+    if (!message) throw new Meteor.Error(400, "You must define a message");
+    if (!language) throw new Meteor.Error(400, "You must select a language");
+
+    const invite = Invites.findOne(inviteId);
+
+    if (!invite) {
+      throw new Meteor.Error(404, "Invite not found");
+    }
+
+    const email = createEmail(
+      "default",
+      language,
+      { title, content: markdown.render(message) },
+      title
+    );
+    const url = Meteor.absoluteUrl() + "?invite=" + invite.key;
+    email.body = email.body.replace("%NAME%", invite.name);
+    email.body = email.body.replace(
+      "{link}",
+      `<a href="${url}" rel="external" target="_blank">${url}</a>`
+    );
+    sendMail({
+      subject: title,
+      body: email.body,
+      recipient: `"${invite.name}" <${invite.email}>`,
+    });
+
+    Invites.update(invite._id, { $set: { sent: true } });
+  },
+});
+
+export const emailPending = new ValidatedMethod({
+  name: "invites.emailPending",
+  validate: new SimpleSchema({
+    title: {
+      type: String,
+    },
+    message: {
+      type: String,
+    },
+    language: {
+      type: String,
+    },
+  }).validator(),
+  run({ title, message, language }) {
+    logger.debug("invites.emailPending called");
+
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+
+    if (!title) throw new Meteor.Error(400, "You must define a title");
+    if (!message) throw new Meteor.Error(400, "You must define a message");
+    if (!language) throw new Meteor.Error(400, "You must select a language");
+
+    const invites = Invites.find({
+      name: { $exists: true },
+      email: { $exists: true },
+      sent: { $ne: true },
+    });
+
+    if (invites.count()) {
+      const template = createEmail(
+        "default",
+        language,
+        { title, content: markdown.render(message) },
+        title
+      );
+      invites.forEach((invite) => {
+        const email = { ...template };
+        const url = Meteor.absoluteUrl() + "?invite=" + invite.key;
+        email.body = email.body.replace("%NAME%", invite.name);
+        email.body = email.body.replace(
+          "{link}",
+          `<a href="${url}" rel="external" target="_blank">${url}</a>`
+        );
+        sendMail({
+          subject: title,
+          body: email.body,
+          recipient: `"${invite.name}" <${invite.email}>`,
+        });
+        Invites.update(invite._id, { $set: { sent: true } });
+      });
+    }
   },
 });

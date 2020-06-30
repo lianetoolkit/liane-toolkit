@@ -180,8 +180,9 @@ class EmailInvite extends Component {
     super(props);
     this.state = {
       unsentCount: 0,
+      title: "You've got an invite!",
       message:
-        "Hello {name},\n\nWe would like to invite you to create a campaign in Liane.\n\nClick on the link below to use your invitation code:\n\n{link}",
+        "We would like to invite you to create a campaign in Liane.\n\nClick on the link below to use your invitation code:\n\n{link}",
       language: "",
     };
   }
@@ -198,21 +199,60 @@ class EmailInvite extends Component {
   }
   _handleSubmit = (ev) => {
     ev.preventDefault();
-    // Meteor.call("invites.email");
+    const { invite } = this.props;
+    const { title, message, language } = this.state;
+    if (invite) {
+      Meteor.call(
+        "invites.emailInvite",
+        { inviteId: invite._id, title, message, language },
+        (err, res) => {
+          if (err) {
+            alertStore.add(err);
+          } else {
+            alertStore.add(null, "success");
+            modalStore.reset();
+          }
+        }
+      );
+    } else {
+      Meteor.call(
+        "invites.emailPending",
+        { title, message, language },
+        (err, res) => {
+          if (err) {
+            alertStore.add(err);
+          } else {
+            alertStore.add(null, "success");
+            modalStore.reset();
+          }
+        }
+      );
+    }
   };
   render() {
     const { invite } = this.props;
-    const { unsentCount, message, language } = this.state;
+    const { unsentCount, title, message, language } = this.state;
     if (!invite && !unsentCount) return null;
     return (
       <EmailInviteContainer>
         <Form onSubmit={this._handleSubmit}>
+          <Form.Field label="Email subject">
+            <input
+              type="text"
+              value={title}
+              onChange={({ target }) => {
+                this.setState({
+                  title: target.value,
+                });
+              }}
+            />
+          </Form.Field>
           <Form.Field
             label="Email message"
             description={
               <FormattedMessage
                 id="app.admin.invites.email.message_description"
-                defaultMessage="You can use {markdown} to format your message"
+                defaultMessage="Greeting introduction is already handled by our template. You can use {markdown} to format your message"
                 values={{
                   markdown: (
                     <a
@@ -372,13 +412,15 @@ class InvitesPage extends Component {
     }
     return false;
   };
-  _handleEmailClick = (invite) => (ev) => {
+  _handleEmailClick = (invite = false) => (ev) => {
     ev.preventDefault();
     const { unsentCount } = this.state;
-    if (invite) {
+    if (invite === false) {
+      modalStore.setTitle(`Email invite to ${unsentCount} pending invite(s)`);
+    } else if (invite.name && invite.email) {
       modalStore.setTitle(`Email invite to ${invite.name}`);
     } else {
-      modalStore.setTitle(`Email invite to ${unsentCount} pending invite(s)`);
+      return;
     }
     modalStore.set(<EmailInvite invite={invite} />);
   };
@@ -528,7 +570,6 @@ class InvitesPage extends Component {
                             disabled={invite.sent}
                             className={invite.name ? "filled" : ""}
                             type="text"
-                            size="20"
                             name="name"
                             onChange={this._handleDesignateChange(invite._id)}
                             placeholder="Name"
@@ -579,7 +620,7 @@ class InvitesPage extends Component {
                             />
                           </span>
                         ) : (
-                          "Invite not used"
+                          `Invite not used. ${invite.sent ? "Email sent." : ""}`
                         )}
                       </span>
                       <span className="actions">
