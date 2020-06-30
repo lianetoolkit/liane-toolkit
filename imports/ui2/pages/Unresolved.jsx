@@ -89,6 +89,11 @@ const FilterMenuGroup = styled.div`
 
 const UnresolvedPage = ({ campaignId, people }) => {
   const [loading, setLoading] = useState(true);
+  let unresolvedCount = 0;
+  people.map(person => {
+    unresolvedCount = unresolvedCount + person.children.length + 1
+
+  })
   const options = {
     skip: 0,
     limit: 20,
@@ -109,7 +114,7 @@ const UnresolvedPage = ({ campaignId, people }) => {
                   People List
                 </Button>
                 <Button onClick={() => { }} active={true}>
-                  Unresolved <Badge>3</Badge>
+                  Unresolved <Badge>{unresolvedCount}</Badge>
                 </Button>
               </Button.Group>
             </FilterMenuGroup>
@@ -130,7 +135,7 @@ const UnresolvedPage = ({ campaignId, people }) => {
         {!loading && (!people || !people.length) ? (
           <p className="not-found">No results found.</p>
         ) : (
-            <UnresolvedTable people={people}></UnresolvedTable>
+            <UnresolvedTable people={people} campaignId={campaignId}></UnresolvedTable>
           )}
       </PeopleContent>
     </>
@@ -310,7 +315,7 @@ const Container = styled.div`
   }
 `;
 
-const MergeModal = ({ person }) => {
+const MergeModal = ({ person, campaignId }) => {
   // To force the render
   const [, updateState] = useState();
   const forceUpdate = useCallback(() => updateState({}), []);
@@ -359,15 +364,48 @@ const MergeModal = ({ person }) => {
   });
 
   const confirm = () => {
+    // Setting data
+    const data = {
+      campaignId,
+      remove: [],
+      resolve: [],
+      update: null
+    }
 
-    // Meteor.call("people.merge", data, (err, res) => {
-    //   if (err) {
-    //     alertStore.add(err);
-    //   } else {
-    //     alertStore.add(null, "success");
-    //     modalStore.reset();
-    //   }
-    // });
+    // Process 
+    activePersons.map((state, index) => {
+      if (state == false) {
+        // Mark as Resolved
+        data.resolve.push(persons[index]._id);
+      } else {
+        // Process to delete or update  
+        if (!data.update) {
+          oldRelated = persons[index]._id;
+          data.update = {
+            id: persons[index]._id,
+            fields: []
+          };
+          Object.keys(selectedValues).map((key) => {
+            if (selectedValues[key].value == null) return;
+            data.update.fields.push({ field: key, id: persons[selectedValues[key].person]._id })
+          })
+        } else {
+          data.remove.push(persons[index]._id);
+        }
+      }
+    })
+    console.log('data', data)
+
+    // Send
+
+    Meteor.call("people.merge.unresolved", data, (err, res) => {
+      if (err) {
+        alertStore.add(err);
+      } else {
+        alertStore.add(null, "success");
+        modalStore.reset();
+      }
+    });
 
 
   };
@@ -411,6 +449,7 @@ const MergeModal = ({ person }) => {
                   </div>
                   <table className="confirm-table">
                     {Object.keys(selectedValues).map((key) => {
+                      if (selectedValues[key].value == null) return;
                       return (
                         <tr>
                           <td>{labels[key]}</td>
@@ -623,13 +662,13 @@ const MergeModal = ({ person }) => {
     </Container>
   );
 };
-const UnresolvedTable = ({ people }) => {
+const UnresolvedTable = ({ people, campaignId }) => {
   const [selected, setSelected] = useState(null);
 
   const displayPerson = (person) => {
     setSelected(person._id);
     modalStore.setTitle(`Resolve Conflicts with ${person.name}`);
-    modalStore.set(<MergeModal person={person} />);
+    modalStore.set(<MergeModal person={person} campaignId={campaignId} />);
   };
 
   return (

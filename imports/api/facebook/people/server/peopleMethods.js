@@ -1316,6 +1316,47 @@ export const findDuplicates = new ValidatedMethod({
   },
 });
 
+
+export const mergeUnresolvedPeople = new ValidatedMethod({
+  name: "people.merge.unresolved",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String,
+    },
+    updated: {
+      type: Object,
+      blackbox: true,
+    },
+    remove: {
+      type: Array,
+    },
+    resolve: {
+      type: Array,
+    },
+  }).validator(),
+  run({ campaignId, update, remove, resolve }) {
+    logger.debug("people.merge.unresolved", { campaignId, update, remove, resolve });
+
+    const userId = Meteor.userId();
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId: campaignId,
+        userId,
+        feature: "people",
+        permission: "edit",
+      })
+    ) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+    // Update Resolve
+
+    // Update
+
+    // Delete
+    return;
+  },
+});
+
 export const mergePeople = new ValidatedMethod({
   name: "people.merge",
   validate: new SimpleSchema({
