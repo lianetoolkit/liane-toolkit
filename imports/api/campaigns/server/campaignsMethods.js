@@ -19,6 +19,15 @@ import { People } from "/imports/api/facebook/people/people.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 
+import MarkdownIt from "markdown-it";
+import createEmail from "/imports/emails/server/createEmail";
+
+const markdown = new MarkdownIt({
+  html: true,
+  breaks: true,
+  linkify: true,
+});
+
 import {
   FEATURES,
   PERMISSIONS,
@@ -1447,21 +1456,63 @@ export const inviteQueryCount = new ValidatedMethod({
   },
 });
 
-export const createInvite = new ValidatedMethod({
-  name: "invites.new",
+export const inviteUnsentCount = new ValidatedMethod({
+  name: "invites.unsentCount",
   validate() {},
   run() {
-    this.unblock();
-    logger.debug("invites.new called");
+    logger.debug("invites.unsentCount called");
 
     const userId = Meteor.userId();
     if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
       throw new Meteor.Error(401, "You are not allowed to perform this action");
     }
 
-    return Invites.insert({});
+    return Invites.find({
+      name: { $exists: true },
+      email: { $exists: true },
+      sent: { $ne: true },
+    }).count();
   },
 });
+
+export const createInvite = new ValidatedMethod({
+  name: "invites.new",
+  validate: new SimpleSchema({
+    name: {
+      type: String,
+      optional: true,
+    },
+    email: {
+      type: String,
+      optional: true,
+    },
+  }).validator(),
+  run({ name, email }) {
+    this.unblock();
+    logger.debug("invites.new called", { name, email });
+
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+
+    if (email && !validateEmail(email)) {
+      throw new Meteor.Error(400, "Invalid email");
+    }
+
+    const insertDoc = {};
+
+    if (name) insertDoc.name = name;
+    if (email) insertDoc.email = email;
+
+    return Invites.insert(insertDoc);
+  },
+});
+
+const validateEmail = (email) => {
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+};
 
 export const designateInvite = new ValidatedMethod({
   name: "invites.designate",
@@ -1469,13 +1520,22 @@ export const designateInvite = new ValidatedMethod({
     inviteId: {
       type: String,
     },
-    designated: {
+    name: {
       type: String,
+      optional: true,
+    },
+    email: {
+      type: String,
+      optional: true,
     },
   }).validator(),
-  run({ inviteId, designated }) {
+  run({ inviteId, name, email }) {
     this.unblock();
     logger.debug("invites.designate called", { inviteId });
+
+    if (email && !validateEmail(email)) {
+      throw new Meteor.Error(400, "Invalid email");
+    }
 
     const userId = Meteor.userId();
     if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
@@ -1488,7 +1548,7 @@ export const designateInvite = new ValidatedMethod({
       throw new Meteor.Error(404, "Invite not found");
     }
 
-    Invites.update(inviteId, { $set: { designated } });
+    Invites.update(inviteId, { $set: { name, email } });
 
     return;
   },
@@ -1519,5 +1579,118 @@ export const removeInvite = new ValidatedMethod({
     Invites.remove(inviteId);
 
     return;
+  },
+});
+
+export const emailInvite = new ValidatedMethod({
+  name: "invites.emailInvite",
+  validate: new SimpleSchema({
+    inviteId: {
+      type: String,
+    },
+    title: {
+      type: String,
+    },
+    message: {
+      type: String,
+    },
+    language: {
+      type: String,
+    },
+  }).validator(),
+  run({ inviteId, title, message, language }) {
+    logger.debug("invites.emailInvite called", { inviteId });
+
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+
+    if (!title) throw new Meteor.Error(400, "You must define a title");
+    if (!message) throw new Meteor.Error(400, "You must define a message");
+    if (!language) throw new Meteor.Error(400, "You must select a language");
+
+    const invite = Invites.findOne(inviteId);
+
+    if (!invite) {
+      throw new Meteor.Error(404, "Invite not found");
+    }
+
+    const email = createEmail(
+      "default",
+      language,
+      { title, content: markdown.render(message) },
+      title
+    );
+    const url = Meteor.absoluteUrl() + "?invite=" + invite.key;
+    email.body = email.body.replace("%NAME%", invite.name);
+    email.body = email.body.replace(
+      "{link}",
+      `<a href="${url}" rel="external" target="_blank">${url}</a>`
+    );
+    sendMail({
+      subject: title,
+      body: email.body,
+      recipient: `"${invite.name}" <${invite.email}>`,
+    });
+
+    Invites.update(invite._id, { $set: { sent: true } });
+  },
+});
+
+export const emailPending = new ValidatedMethod({
+  name: "invites.emailPending",
+  validate: new SimpleSchema({
+    title: {
+      type: String,
+    },
+    message: {
+      type: String,
+    },
+    language: {
+      type: String,
+    },
+  }).validator(),
+  run({ title, message, language }) {
+    logger.debug("invites.emailPending called");
+
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+
+    if (!title) throw new Meteor.Error(400, "You must define a title");
+    if (!message) throw new Meteor.Error(400, "You must define a message");
+    if (!language) throw new Meteor.Error(400, "You must select a language");
+
+    const invites = Invites.find({
+      name: { $exists: true },
+      email: { $exists: true },
+      sent: { $ne: true },
+    });
+
+    if (invites.count()) {
+      const template = createEmail(
+        "default",
+        language,
+        { title, content: markdown.render(message) },
+        title
+      );
+      invites.forEach((invite) => {
+        const email = { ...template };
+        const url = Meteor.absoluteUrl() + "?invite=" + invite.key;
+        email.body = email.body.replace("%NAME%", invite.name);
+        email.body = email.body.replace(
+          "{link}",
+          `<a href="${url}" rel="external" target="_blank">${url}</a>`
+        );
+        sendMail({
+          subject: title,
+          body: email.body,
+          recipient: `"${invite.name}" <${invite.email}>`,
+        });
+        Invites.update(invite._id, { $set: { sent: true } });
+      });
+    }
   },
 });

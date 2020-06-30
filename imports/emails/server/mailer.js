@@ -16,10 +16,9 @@ export const sendMail = async ({
     return;
   }
 
-  language = language || (data.user ? data.user.userLanguage : "en");
-
   let emailData;
   if (!subject && !body) {
+    language = language || (data.user ? data.user.userLanguage : "en");
     const emailData = createEmail(type, language, data);
   }
 
@@ -27,7 +26,7 @@ export const sendMail = async ({
     jobType: "emails.sendMail",
     jobData: {
       from: `"Liane" <${Meteor.settings.public.appEmail}>`,
-      to: recipient || data.user.emails[0].address,
+      to: recipient || `"${data.user.name}" <${data.user.emails[0].address}>`,
       subject: subject || emailData.subject,
       html: body || emailData.body,
     },
