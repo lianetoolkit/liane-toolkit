@@ -12,6 +12,8 @@ import { modalStore } from "/imports/ui2/containers/Modal.jsx";
 import CopyToClipboard from "/imports/ui2/components/CopyToClipboard.jsx";
 import Loading from "/imports/ui2/components/Loading.jsx";
 import Table from "/imports/ui2/components/Table.jsx";
+import Form from "/imports/ui2/components/Form.jsx";
+import LanguageSelect from "/imports/ui2/components/LanguageSelect.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
 import Page from "/imports/ui2/components/Page.jsx";
 import PagePaging from "/imports/ui2/components/PagePaging.jsx";
@@ -149,13 +151,6 @@ const Container = styled.div`
   }
 `;
 
-const ImportContainer = styled.div`
-  .button {
-    margin: 0;
-    display: block;
-  }
-`;
-
 const TableContainer = styled.div`
   flex: 1 1 100%;
   overflow-x: hidden;
@@ -165,6 +160,101 @@ const TableContainer = styled.div`
     margin-bottom: 4rem;
   }
 `;
+
+const ImportContainer = styled.div`
+  .button {
+    margin: 0;
+    display: block;
+  }
+`;
+
+const EmailInviteContainer = styled.div`
+  textarea {
+    height: 250px;
+    line-height: 1.5;
+  }
+`;
+
+class EmailInvite extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      unsentCount: 0,
+      message:
+        "Hello {name},\n\nWe would like to invite you to create a campaign in Liane.\n\nClick on the link below to use your invitation code:\n\n{link}",
+      language: "",
+    };
+  }
+  componentDidMount() {
+    Meteor.call("invites.unsentCount", {}, (err, res) => {
+      if (err) {
+        alertStore.add(err);
+      } else {
+        this.setState({
+          unsentCount: res,
+        });
+      }
+    });
+  }
+  _handleSubmit = (ev) => {
+    ev.preventDefault();
+    // Meteor.call("invites.email");
+  };
+  render() {
+    const { invite } = this.props;
+    const { unsentCount, message, language } = this.state;
+    if (!invite && !unsentCount) return null;
+    return (
+      <EmailInviteContainer>
+        <Form onSubmit={this._handleSubmit}>
+          <Form.Field
+            label="Email message"
+            description={
+              <FormattedMessage
+                id="app.admin.invites.email.message_description"
+                defaultMessage="You can use {markdown} to format your message"
+                values={{
+                  markdown: (
+                    <a
+                      href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet"
+                      rel="external"
+                      target="_blank"
+                    >
+                      markdown
+                    </a>
+                  ),
+                }}
+              />
+            }
+          >
+            <textarea
+              value={message}
+              onChange={({ target }) => {
+                this.setState({ message: target.value });
+              }}
+            />
+          </Form.Field>
+          <Form.Field label="Language">
+            <LanguageSelect
+              value={language}
+              onChange={({ target }) => {
+                this.setState({ language: target.value });
+              }}
+            />
+          </Form.Field>
+          <input
+            type="submit"
+            value={
+              invite
+                ? `Send invite to ${invite.name}`
+                : `Email ${unsentCount} pending invite(s)`
+            }
+          />
+        </Form>
+      </EmailInviteContainer>
+    );
+  }
+}
 
 class InvitesPage extends Component {
   constructor(props) {
@@ -282,6 +372,16 @@ class InvitesPage extends Component {
     }
     return false;
   };
+  _handleEmailClick = (invite) => (ev) => {
+    ev.preventDefault();
+    const { unsentCount } = this.state;
+    if (invite) {
+      modalStore.setTitle(`Email invite to ${invite.name}`);
+    } else {
+      modalStore.setTitle(`Email invite to ${unsentCount} pending invite(s)`);
+    }
+    modalStore.set(<EmailInvite invite={invite} />);
+  };
   _fetchQueryCount = () => {
     Meteor.call("invites.queryCount", { query: {} }, (err, res) => {
       this.setState({ loadingCount: false, count: res });
@@ -383,7 +483,9 @@ class InvitesPage extends Component {
           onPrev={this._handlePrev}
         >
           {unsentCount ? (
-            <Button>Email {unsentCount} pending invite(s)</Button>
+            <Button onClick={this._handleEmailClick()}>
+              Email {unsentCount} pending invite(s)
+            </Button>
           ) : null}
           <Button onClick={this._handleImportClick}>Import spreadsheet</Button>
           <Button primary onClick={this._handleNewClick}>
@@ -486,7 +588,7 @@ class InvitesPage extends Component {
                             className={`small ${
                               !invite.email || !invite.name ? "disabled" : ""
                             }`}
-                            // onClick={}
+                            onClick={this._handleEmailClick(invite)}
                           >
                             <FontAwesomeIcon icon="envelope" />
                             <FormattedMessage
