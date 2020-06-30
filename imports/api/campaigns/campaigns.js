@@ -177,8 +177,17 @@ Invites.schema = new SimpleSchema({
       }
     },
   },
-  designated: {
+  name: {
     type: String,
+    optional: true,
+  },
+  email: {
+    type: String,
+    optional: true,
+  },
+  sent: {
+    type: Boolean,
+    defaultValue: false,
     optional: true,
   },
   used: {

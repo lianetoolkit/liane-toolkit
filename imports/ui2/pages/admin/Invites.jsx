@@ -2,12 +2,15 @@ import React, { Component } from "react";
 import { injectIntl, intlShape, FormattedMessage } from "react-intl";
 import styled from "styled-components";
 import moment from "moment";
+import XLSX from "xlsx";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { alertStore } from "/imports/ui2/containers/Alerts.jsx";
 import { modalStore } from "/imports/ui2/containers/Modal.jsx";
 
 import CopyToClipboard from "/imports/ui2/components/CopyToClipboard.jsx";
+import Loading from "/imports/ui2/components/Loading.jsx";
 import Table from "/imports/ui2/components/Table.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
 import Page from "/imports/ui2/components/Page.jsx";
@@ -66,6 +69,14 @@ const Container = styled.div`
       font-size: 0.9em;
       a {
         color: #63c;
+        &.disabled,
+        &.disabled:hover,
+        &.disabled:active,
+        &.disabled:focus {
+          color: #ccc;
+          background: #fff;
+          border-color: #ddd;
+        }
         &.remove {
           color: red;
           border-color: red;
@@ -74,12 +85,14 @@ const Container = styled.div`
           color: #fff;
         }
       }
+      form {
+      }
     }
   }
   .fa-check,
   .fa-ban {
     float: left;
-    margin-right: 1rem;
+    margin-right: 0.5rem;
     font-size: 18px;
   }
   .fa-check {
@@ -89,17 +102,19 @@ const Container = styled.div`
     color: red;
   }
   a {
+    .fa-envelope,
     .fa-copy {
       margin-right: 0.25rem;
     }
   }
   .designate-form {
-    margin -0.5rem 0;
+    margin -0.5rem 0 -0.5rem -0.5rem;
+    display: flex;
+    align-items: center;
     input {
-      font-size: 0.8rem;
-      width: 240px;
+      font-size: 0.8em;
       padding: 0.5rem;
-      margin: 0;
+      margin: 0 0.5rem 0 0;
       &.filled {
         border-color: #f7f7f7;
       }
@@ -108,7 +123,36 @@ const Container = styled.div`
       &:focus {
         border-color: #ddd;
       }
+      &:last-child {
+        margin: 0;
+      }
     }
+    input[type=text] {
+      width: 120px;
+    }
+    input[type=email] {
+      width: 180px;
+    }
+    input[type=submit] {
+      background: transparent;
+      color: #63c;
+      border: 1px solid rgba(51,0,102,0.25);
+      font-weight: normal;
+      padding: 0.5rem 0.8rem;
+      &:hover,
+      &:focus {
+        background: #333;
+        color: #fff;
+        border-color: #333;
+      }
+    }
+  }
+`;
+
+const ImportContainer = styled.div`
+  .button {
+    margin: 0;
+    display: block;
   }
 `;
 
@@ -127,19 +171,132 @@ class InvitesPage extends Component {
     super(props);
     this.state = {
       loadingCount: false,
+      unsentCount: 0,
       count: 0,
-      designations: {}
+      designations: {},
+      importing: false,
     };
   }
-  componentDidUpdate(prevProps) {}
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      JSON.stringify(prevProps.invites) != JSON.stringify(this.props.invites)
+    ) {
+      this._fetchQueryCount();
+      this._fetchUnsent();
+      this._updateDesignated();
+    }
+  }
   componentDidMount() {
     this.setState({ loadingCount: true });
+    this._fetchQueryCount();
+    this._fetchUnsent();
+    this._updateDesignated();
+  }
+  createInvite = (name, email, cb) => {
+    Meteor.call("invites.new", { name, email }, cb);
+  };
+  _updateDesignated = () => {
+    const { invites } = this.props;
+    const designations = {};
+    for (const invite of invites) {
+      designations[invite._id] = {
+        name: invite.name || "",
+        email: invite.email || "",
+      };
+    }
+    this.setState({ designations });
+  };
+  _handleImportClick = (ev) => {
+    ev.preventDefault();
+    const { importCount } = this.props;
+    if (!importCount) {
+      this.importInput.click();
+    }
+  };
+  _handleImport = (ev) => {
+    let file = ev.currentTarget.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      let bytes = new Uint8Array(reader.result);
+      const wb = XLSX.read(bytes, { type: "array" });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(sheet);
+      this.importInput.value = null;
+      this.importInput.dispatchEvent(new Event("input", { bubbles: true }));
+      modalStore.setTitle(`Importing invites from ${file.name}`);
+      modalStore.set(
+        <ImportContainer>
+          <p>
+            Import <strong>{json.length} entries</strong> as invite links?
+          </p>
+          <Button primary onClick={this._doImport(json)}>
+            Confirm import
+          </Button>
+        </ImportContainer>,
+        this._handleClose
+      );
+    };
+    reader.readAsArrayBuffer(file);
+  };
+  _doImport = (data) => (ev) => {
+    ev.preventDefault();
+    modalStore.reset(true);
+    this.setState({ importing: true });
+    const nameRegex = /name|nome|fullname/;
+    const emailRegex = /email|e-mail/;
+    let promises = [];
+    for (const entry of data) {
+      const nameKey = Object.keys(entry).find((k) =>
+        k.trim().toLowerCase().match(nameRegex)
+      );
+      const emailKey = Object.keys(entry).find((k) =>
+        k.trim().toLowerCase().match(emailRegex)
+      );
+      if (nameKey && emailKey && entry[nameKey] && entry[emailKey]) {
+        const promise = new Promise((resolve, reject) => {
+          this.createInvite(entry[nameKey], entry[emailKey], (err, res) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(res);
+            }
+          });
+        });
+        promises.push(promise);
+      }
+    }
+    Promise.all(promises)
+      .then(() => {
+        this.setState({ importing: false });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  _handleClose = () => {
+    const { intl } = this.props;
+    if (confirm("Are you sure you'd like to cancel this import?")) {
+      this.importInput.value = null;
+      this.importInput.dispatchEvent(new Event("input", { bubbles: true }));
+      return true;
+    }
+    return false;
+  };
+  _fetchQueryCount = () => {
     Meteor.call("invites.queryCount", { query: {} }, (err, res) => {
       this.setState({ loadingCount: false, count: res });
     });
-  }
-  createInvite = () => {
-    Meteor.call("invites.new");
+  };
+  _fetchUnsent = () => {
+    Meteor.call("invites.unsentCount", {}, (err, res) => {
+      if (err) {
+        alertStore.add(err);
+      } else {
+        this.setState({
+          unsentCount: res,
+        });
+      }
+    });
   };
   _handleNext = () => {
     const { page, limit } = this.props;
@@ -154,44 +311,69 @@ class InvitesPage extends Component {
       FlowRouter.setQueryParams({ page: page - 1 });
     }
   };
-  _getLink = inviteKey => {
+  _getLink = (inviteKey) => {
     return Meteor.absoluteUrl() + "?invite=" + inviteKey;
   };
-  _handleDesignateForm = inviteId => ev => {
+  _handleDesignateForm = (inviteId) => (ev) => {
     ev.preventDefault();
     const designated = this.state.designations[inviteId];
-    if (typeof designated == "string") {
-      Meteor.call("invites.designate", { inviteId, designated });
-    }
+    Meteor.call(
+      "invites.designate",
+      { inviteId, ...designated },
+      (err, res) => {
+        if (err) {
+          alertStore.add(err);
+        } else {
+          alertStore.add(null, "success");
+        }
+      }
+    );
   };
-  _handleDesignateChange = inviteId => ({ target }) => {
+  _handleDesignateChange = (inviteId) => ({ target }) => {
     this.setState({
       designations: {
         ...this.state.designations,
-        [inviteId]: target.value
-      }
+        [inviteId]: {
+          ...(this.state.designations[inviteId] || {}),
+          [target.name]: target.value,
+        },
+      },
     });
   };
-  _handleDesignateClick = inviteId => ev => {
+  _handleDesignateClick = (inviteId) => (ev) => {
     ev.preventDefault();
     Meteor.call("invites.designate", { inviteId });
   };
-  _handleCopyClick = inviteKey => ev => {
+  _handleRemoveClick = (inviteId) => (ev) => {
     ev.preventDefault();
+    Meteor.call("invites.remove", { inviteId }, (err, res) => {
+      if (err) {
+        alertStore.add(err);
+      }
+    });
   };
-  _handleRemoveClick = inviteId => ev => {
-    ev.preventDefault();
-    Meteor.call("invites.remove", { inviteId });
-  };
-  _handleNewClick = ev => {
+  _handleNewClick = (ev) => {
     ev.preventDefault();
     this.createInvite();
   };
   render() {
     const { intl, invites, page, limit } = this.props;
-    const { designations, loadingCount, count } = this.state;
+    const {
+      designations,
+      loadingCount,
+      count,
+      unsentCount,
+      importing,
+    } = this.state;
+    if (importing) return <Loading full />;
     return (
       <Container>
+        <input
+          type="file"
+          onChange={this._handleImport}
+          style={{ display: "none" }}
+          ref={(input) => (this.importInput = input)}
+        />
         <PagePaging
           skip={page - 1}
           limit={limit}
@@ -199,17 +381,23 @@ class InvitesPage extends Component {
           loading={loadingCount}
           onNext={this._handleNext}
           onPrev={this._handlePrev}
-        />
+        >
+          {unsentCount ? (
+            <Button>Email {unsentCount} pending invite(s)</Button>
+          ) : null}
+          <Button onClick={this._handleImportClick}>Import spreadsheet</Button>
+          <Button primary onClick={this._handleNewClick}>
+            +{" "}
+            <FormattedMessage
+              id="app.admin.invites.new"
+              defaultMessage="New invite"
+            />
+          </Button>
+        </PagePaging>
         <TableContainer>
           <Table compact>
             <thead>
               <tr>
-                <th>
-                  <FormattedMessage
-                    id="app.admin.invites.invite_id"
-                    defaultMessage="Invite ID"
-                  />
-                </th>
                 <th>
                   <FormattedMessage
                     id="app.admin.invites.designated"
@@ -218,69 +406,56 @@ class InvitesPage extends Component {
                 </th>
                 <th className="fill">
                   <FormattedMessage
-                    id="app.admin.invites.available"
-                    defaultMessage="Available"
-                  />
-                </th>
-                <th>
-                  <FormattedMessage
-                    id="app.admin.invites.created"
-                    defaultMessage="Created"
+                    id="app.admin.invites.status"
+                    defaultMessage="Status"
                   />
                 </th>
               </tr>
             </thead>
-            {invites.map(invite => (
+            {invites.map((invite) => (
               <tbody key={invite._id}>
                 <tr className={invite.used ? "used" : ""}>
-                  <td className="small invite-id">{invite.key}</td>
                   <td>
                     <span className="content-action">
-                      <span className="content">
-                        <FontAwesomeIcon
-                          icon={invite.designated ? "check" : "ban"}
-                        />
-                      </span>
                       <span className="actions">
                         <form
                           className="designate-form"
                           onSubmit={this._handleDesignateForm(invite._id)}
                         >
                           <input
-                            className={invite.designated ? "filled" : ""}
+                            disabled={invite.sent}
+                            className={invite.name ? "filled" : ""}
                             type="text"
+                            size="20"
+                            name="name"
                             onChange={this._handleDesignateChange(invite._id)}
-                            placeholder="Type a name or email and press enter"
+                            placeholder="Name"
                             value={
-                              typeof designations[invite._id] == "string"
-                                ? designations[invite._id]
-                                : invite.designated
+                              designations[invite._id]
+                                ? designations[invite._id].name
+                                : ""
                             }
+                          />
+                          <input
+                            disabled={invite.sent}
+                            className={invite.email ? "filled" : ""}
+                            type="email"
+                            name="email"
+                            onChange={this._handleDesignateChange(invite._id)}
+                            placeholder="Email"
+                            value={
+                              designations[invite._id]
+                                ? designations[invite._id].email
+                                : ""
+                            }
+                          />
+                          <input
+                            className="button small"
+                            value="Update"
+                            type="submit"
                           />
                         </form>
                       </span>
-                      {/* {invite.designated ? (
-                        <span className="content">
-                          <FontAwesomeIcon icon="check" />
-                        </span>
-                      ) : (
-                        <>
-                          <span className="content">
-                            <FontAwesomeIcon icon="ban" />
-                          </span>
-                          <span className="actions">
-                            <Button
-                              className="small"
-                              onClick={this._handleDesignateClick(invite._id)}
-                            >
-                              <FormattedMessage
-                                id="app.admin.invites.mark_designated"
-                                defaultMessage="Mark as designated"
-                              />
-                            </Button>
-                          </span>
-                        </>
-                      )} */}
                     </span>
                   </td>
                   <td className="fill">
@@ -301,15 +476,28 @@ class InvitesPage extends Component {
                               values={{ name: invite.user.name }}
                             />
                           </span>
-                        ) : null}
+                        ) : (
+                          "Invite not used"
+                        )}
                       </span>
                       <span className="actions">
+                        {!invite.sent ? (
+                          <Button
+                            className={`small ${
+                              !invite.email || !invite.name ? "disabled" : ""
+                            }`}
+                            // onClick={}
+                          >
+                            <FontAwesomeIcon icon="envelope" />
+                            <FormattedMessage
+                              id="app.admin.invites.send_email"
+                              defaultMessage="Email invite"
+                            />
+                          </Button>
+                        ) : null}
                         {!invite.used ? (
                           <CopyToClipboard text={this._getLink(invite.key)}>
-                            <Button
-                              className="small"
-                              onClick={this._handleCopyClick(invite._id)}
-                            >
+                            <Button className="small">
                               <FontAwesomeIcon icon="copy" />
                               <FormattedMessage
                                 id="app.admin.invites.copy"
@@ -330,30 +518,18 @@ class InvitesPage extends Component {
                       </span>
                     </span>
                   </td>
-                  <td className="small">
-                    {moment(invite.createdAt).format("LLL")}
-                  </td>
                 </tr>
               </tbody>
             ))}
           </Table>
         </TableContainer>
-        <div className="new-person">
-          <Button onClick={this._handleNewClick}>
-            +{" "}
-            <FormattedMessage
-              id="app.admin.invites.new"
-              defaultMessage="New invite"
-            />
-          </Button>
-        </div>
       </Container>
     );
   }
 }
 
 InvitesPage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(InvitesPage);
