@@ -309,18 +309,20 @@ export const campaignsCreate = new ValidatedMethod({
     }
 
     const geolocationData = Geolocations.findOne(geolocationId);
+    const creatorData = Meteor.users.findOne(userId);
     Meteor.call("log", {
       type: "campaigns.add",
       campaignId,
       data: {
         name,
         geolocationId,
-        geolocationName: geolocationData.name,
-        geolocationType: geolocationData.regionType,
         candidate,
         party,
         office,
         country,
+        userName: creatorData.name,
+        geolocationName: geolocationData.name,
+        geolocationType: geolocationData.regionType,
         accountId: account.id,
         accountName: account.name,
         invite: hasInvite ? invite : false,
@@ -915,6 +917,9 @@ export const acceptInvite = new ValidatedMethod({
     Meteor.call("log", {
       type: "campaigns.users.invite.accepted",
       campaignId,
+      data: {
+        name: currentUser.name,
+      },
     });
   },
 });
@@ -1371,6 +1376,9 @@ export const applyInvitation = new ValidatedMethod({
     Meteor.call("log", {
       type: "campaigns.users.invite.accepted",
       campaignId,
+      data: {
+        name: user.name,
+      },
     });
 
     return { campaignId };
