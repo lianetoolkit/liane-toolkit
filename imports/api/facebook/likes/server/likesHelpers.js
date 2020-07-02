@@ -184,7 +184,7 @@ const LikesHelpers = {
       accountId: facebookAccountId,
       personId: query.personId,
       objectType: data.reaction_type,
-      objectId: query.entryId,
+      parentId: query.entryId,
       data: {
         isCommentReaction: data.comment_id || false,
       },
