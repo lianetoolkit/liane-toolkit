@@ -10,6 +10,7 @@ import { Jobs } from "/imports/api/jobs/jobs.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { GeolocationsHelpers } from "/imports/api/geolocations/server/geolocationsHelpers.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
+import { Geolocations } from "/imports/api/geolocations/geolocations";
 import { Notifications } from "/imports/api/notifications/notifications";
 import { NotificationsHelpers } from "/imports/api/notifications/server/notificationsHelpers";
 import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
@@ -307,10 +308,23 @@ export const campaignsCreate = new ValidatedMethod({
       );
     }
 
+    const geolocationData = Geolocations.findOne(geolocationId);
     Meteor.call("log", {
       type: "campaigns.add",
       campaignId,
-      data: { name },
+      data: {
+        name,
+        geolocationId,
+        geolocationName: geolocationData.name,
+        geolocationType: geolocationData.regionType,
+        candidate,
+        party,
+        office,
+        country,
+        accountId: account.id,
+        accountName: account.name,
+        invite: hasInvite ? invite : false,
+      },
     });
 
     return { result: campaignId };
@@ -510,6 +524,12 @@ export const campaignsFormUpdate = new ValidatedMethod({
       },
       { $set }
     );
+
+    Meteor.call("log", {
+      type: "campaigns.formUpdate",
+      campaignId,
+      data,
+    });
   },
 });
 
@@ -563,6 +583,11 @@ export const campaignsUpdate = new ValidatedMethod({
       },
       { $set: data }
     );
+    Meteor.call("log", {
+      type: "campaigns.update",
+      campaignId,
+      data,
+    });
   },
 });
 
@@ -603,7 +628,6 @@ export const campaignsRemove = new ValidatedMethod({
     Meteor.call("log", {
       type: "campaigns.remove",
       campaignId,
-      data: { name: campaign.name },
     });
 
     return res;
@@ -638,11 +662,18 @@ export const campaignsSuspend = new ValidatedMethod({
       throw new Meteor.Error(403, "Permission denied");
     }
 
+    let logType;
     if (suspend) {
-      return CampaignsHelpers.suspendCampaign({ campaignId });
+      logType = "suspended";
+      CampaignsHelpers.suspendCampaign({ campaignId });
     } else {
-      return CampaignsHelpers.activateCampaign({ campaignId });
+      logType = "activated";
+      CampaignsHelpers.activateCampaign({ campaignId });
     }
+    Meteor.call("log", {
+      type: `campaigns.${logType}`,
+      campaignId,
+    });
   },
 });
 
@@ -774,6 +805,10 @@ export const campaignUpdateFacebook = new ValidatedMethod({
     if (job) {
       Jobs.getJob(job._id).restart();
     }
+    Meteor.call("log", {
+      type: "campaigns.facebook.token.update",
+      campaignId,
+    });
   },
 });
 
@@ -876,6 +911,11 @@ export const acceptInvite = new ValidatedMethod({
       dataRef: campaignId,
       category: "campaignInvite",
     });
+
+    Meteor.call("log", {
+      type: "campaigns.users.invite.accepted",
+      campaignId,
+    });
   },
 });
 
@@ -933,6 +973,11 @@ export const declineInvite = new ValidatedMethod({
       userId,
       dataRef: campaignId,
       category: "campaignInvite",
+    });
+
+    Meteor.call("log", {
+      type: "campaigns.users.invite.declined",
+      campaignId,
     });
   },
 });
@@ -1321,6 +1366,11 @@ export const applyInvitation = new ValidatedMethod({
         category: "campaignInviteAccepted",
         dataRef: campaignId,
       });
+    });
+
+    Meteor.call("log", {
+      type: "campaigns.users.invite.accepted",
+      campaignId,
     });
 
     return { campaignId };
