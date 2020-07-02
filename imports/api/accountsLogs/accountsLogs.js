@@ -1,27 +1,9 @@
 import SimpleSchema from "simpl-schema";
 
-const AccessLogs = new Mongo.Collection("access_logs");
+const AccountsLogs = new Mongo.Collection("accounts_logs");
 
-AccessLogs.schema = new SimpleSchema({
-  connectionId: {
-    type: String,
-    index: true,
-  },
-  ip: {
-    type: String,
-    index: true,
-  },
-  country: {
-    type: String,
-    index: true,
-    optional: true,
-  },
-  campaignId: {
-    type: String,
-    index: true,
-    optional: true,
-  },
-  userId: {
+AccountsLogs.schema = new SimpleSchema({
+  accountId: {
     type: String,
     index: true,
   },
@@ -29,8 +11,28 @@ AccessLogs.schema = new SimpleSchema({
     type: String,
     index: true,
   },
-  path: {
+  personId: {
     type: String,
+    index: true,
+  },
+  objectType: {
+    type: String,
+    index: true,
+    optional: true,
+  },
+  objectId: {
+    type: String,
+    index: true,
+    optional: true,
+  },
+  parentId: {
+    type: String,
+    index: true,
+    optional: true,
+  },
+  isAdmin: {
+    type: Boolean,
+    defaultValue: false,
     index: true,
     optional: true,
   },
@@ -53,6 +55,6 @@ AccessLogs.schema = new SimpleSchema({
   },
 });
 
-AccessLogs.attachSchema(AccessLogs.schema);
+AccountsLogs.attachSchema(AccountsLogs.schema);
 
-exports.AccessLogs = AccessLogs;
+exports.AccountsLogs = AccountsLogs;

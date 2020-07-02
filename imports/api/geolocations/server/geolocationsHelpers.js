@@ -16,7 +16,7 @@ const GeolocationsHelpers = {
     return this.facebookSearch({
       location_types: ["country"],
       q: countryCode,
-      match_country_code: true
+      match_country_code: true,
     })[0];
   },
   findFacebookFromNominatim({ data, regionType, defaultQuery, accessToken }) {
@@ -25,7 +25,7 @@ const GeolocationsHelpers = {
     let query = {
       type: "adgeolocation",
       access_token: accessToken,
-      ...defaultQuery
+      ...defaultQuery,
     };
     switch (regionType) {
       case "country":
@@ -33,7 +33,7 @@ const GeolocationsHelpers = {
           ...query,
           location_types: ["country"],
           q: data.address.country_code,
-          match_country_code: true
+          match_country_code: true,
         });
         break;
       case "state":
@@ -41,7 +41,7 @@ const GeolocationsHelpers = {
           ...query,
           location_types: ["region"],
           country_code: data.address.country_code,
-          q: data.namedetails.name
+          q: data.namedetails.name,
         })[0];
         break;
       case "city":
@@ -49,14 +49,14 @@ const GeolocationsHelpers = {
           ...query,
           location_types: ["city"],
           country_code: data.address.country_code,
-          q: data.namedetails.name
+          q: data.namedetails.name,
         };
         if (!defaultQuery.region_id) {
           const region = this.facebookSearch({
             ...query,
             location_types: ["region"],
             country_code: data.address.country_code,
-            q: data.address.state
+            q: data.address.state,
           });
           if (region && region.length) {
             cityQuery["region_id"] = region[0].key;
@@ -64,7 +64,7 @@ const GeolocationsHelpers = {
         }
         res = this.facebookSearch(cityQuery);
         res = res.filter(
-          item => item.type == "city" || item.type == "subcity"
+          (item) => item.type == "city" || item.type == "subcity"
         )[0];
         break;
     }
@@ -78,8 +78,8 @@ const GeolocationsHelpers = {
           format: "json",
           addressdetails: 1,
           namedetails: 1,
-          ...query
-        }
+          ...query,
+        },
       })
     );
     return res.data;
@@ -102,7 +102,7 @@ const GeolocationsHelpers = {
       format: "json",
       addressdetails: 1,
       extratags: 1,
-      namedetails: 1
+      namedetails: 1,
     };
     if (withPolygon) {
       params["polygon_geojson"] = 1;
@@ -133,14 +133,14 @@ const GeolocationsHelpers = {
     if (type == "city") {
       const osmStateRes = this.nominatimSearch({
         state: osm.address.state,
-        country: osm.address.country
+        country: osm.address.country,
       });
       if (osmStateRes && osmStateRes.length) {
         const osmState = osmStateRes[0];
         const fbState = this.findFacebookFromNominatim({
           accessToken,
           data: osmState,
-          regionType: "state"
+          regionType: "state",
         });
         if (fbState) {
           defaultQuery = { region_id: fbState.key };
@@ -151,14 +151,14 @@ const GeolocationsHelpers = {
       accessToken,
       defaultQuery,
       data: osm,
-      regionType: type
+      regionType: type,
     });
 
     let doc = {
       name: osm.namedetails.name,
       type: "location",
       regionType: type,
-      osm
+      osm,
     };
     if (fbData) {
       doc.facebook = [fbData];
@@ -180,7 +180,7 @@ const GeolocationsHelpers = {
       delete geolocation.osm.geojson;
     }
     return geolocation;
-  }
+  },
 };
 
 exports.GeolocationsHelpers = GeolocationsHelpers;

@@ -1184,7 +1184,7 @@ export const exportPeople = new ValidatedMethod({
     Meteor.call("log", {
       type: "people.export",
       campaignId,
-      data: { query: JSON.stringify(searchQuery) },
+      data: searchQuery,
     });
   },
 });
@@ -1266,7 +1266,7 @@ export const importPeople = new ValidatedMethod({
     Meteor.call("log", {
       type: "people.import.add",
       campaignId,
-      data: { defaultValues },
+      data: { defaultValues, importSize: data.length },
     });
 
     return res;
@@ -1773,7 +1773,7 @@ export const peopleFormSubmit = new ValidatedMethod({
     Meteor.call("log", {
       type: "people.formEntry",
       campaignId,
-      data: { personId },
+      data: { personId, newPerson },
     });
     return newFormId;
   },
