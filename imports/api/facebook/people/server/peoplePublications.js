@@ -197,7 +197,6 @@ Meteor.publish("people.unresolved.count", function ({ campaignId }) {
       People.find({
         campaignId,
         unresolved: true,
-        // related: { $exists: true },
       })
     );
     return;

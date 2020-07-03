@@ -567,7 +567,7 @@ class PeoplePage extends Component {
                     }}
                     active={false}
                   >
-                    Unresolved <Badge>{peopleCounter}</Badge>
+                    Unresolved {peopleCounter !== 0 ? <Badge>{peopleCounter}</Badge> : ``}
                   </Button>
                 </Button.Group>
               </FilterMenuGroup>
