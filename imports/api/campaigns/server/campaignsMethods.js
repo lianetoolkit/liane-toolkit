@@ -1,6 +1,6 @@
 import SimpleSchema from "simpl-schema";
 import { Random } from "meteor/random";
-import mailer, { sendMail } from "/imports/emails/server/mailer";
+import { sendMail } from "/imports/emails/server/mailer";
 import { Campaigns, Invites } from "/imports/api/campaigns/campaigns.js";
 import { CampaignsHelpers } from "./campaignsHelpers.js";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
@@ -989,9 +989,7 @@ export const addUser = new ValidatedMethod({
       if (_.findWhere(campaign.users, { email })) {
         throw new Meteor.Error(401, "User already invited.");
       }
-      if (!mailer) {
-        throw new Meteor.Error("Mailer not found, unable to invite user");
-      }
+      throw new Meteor.Error("Mailer not found, unable to invite user");
       inviteId = Random.id();
       const url = Meteor.absoluteUrl(
         `/register?campaignInvite=${inviteId}|${campaign._id}`

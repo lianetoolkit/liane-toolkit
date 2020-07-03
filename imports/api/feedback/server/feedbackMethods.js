@@ -1,16 +1,16 @@
 import SimpleSchema from "simpl-schema";
 import { Feedback } from "../feedback";
-import mailer, { sendMail } from "/imports/utils/server/mailer";
+import { sendMail } from "/imports/emails/server/mailer";
 
 export const updateStatus = new ValidatedMethod({
   name: "feedback.updateStatus",
   validate: new SimpleSchema({
     id: {
-      type: String
+      type: String,
     },
     status: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ id, status }) {
     logger.debug("feed.updateStatus called", { id, status });
@@ -25,43 +25,43 @@ export const updateStatus = new ValidatedMethod({
     }
 
     return Feedback.update(id, { $set: { status } });
-  }
+  },
 });
 
 export const sendFeedback = new ValidatedMethod({
   name: "feedback.new",
   validate: new SimpleSchema({
     category: {
-      type: String
+      type: String,
     },
     name: {
-      type: String
+      type: String,
     },
     email: {
-      type: String
+      type: String,
     },
     subject: {
-      type: String
+      type: String,
     },
     message: {
-      type: String
+      type: String,
     },
     context: {
       type: Object,
-      optional: true
+      optional: true,
     },
     "context.os": {
-      type: String
+      type: String,
     },
     "context.browser": {
-      type: String
+      type: String,
     },
     "context.version": {
-      type: String
+      type: String,
     },
     "context.url": {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ category, name, email, subject, message, context }) {
     this.unblock();
@@ -72,7 +72,7 @@ export const sendFeedback = new ValidatedMethod({
       name,
       email,
       subject,
-      message
+      message,
     };
 
     const userId = Meteor.userId();
@@ -82,12 +82,11 @@ export const sendFeedback = new ValidatedMethod({
 
     const id = Feedback.insert(doc);
 
-    if (mailer) {
-      const url = Meteor.absoluteUrl("/admin/tickets?id=" + id);
-      sendMail({
-        to: `${Meteor.settings.email.admins.join(", ")}`,
-        subject: `[TICKET] ${category.toUpperCase()} from ${name}`,
-        body: `
+    const url = Meteor.absoluteUrl("/admin/tickets?id=" + id);
+    sendMail({
+      recipient: `${Meteor.settings.email.admins.join(", ")}`,
+      subject: `[TICKET] ${category.toUpperCase()} from ${name}`,
+      body: `
           <p><strong>Category:</strong> ${category}</p>
           <p><strong>Name:</strong> ${name}</p>
           <p><strong>Email:</strong> ${email}</p>
@@ -95,10 +94,9 @@ export const sendFeedback = new ValidatedMethod({
           <p><strong>Message:</strong><br/>${message}</p>
           <hr/>
           <p>Manage this ticket: <a href="${url}">${url}</a></p>
-        `
-      });
-    }
-  }
+        `,
+    });
+  },
 });
 
 export const queryCount = new ValidatedMethod({
@@ -107,10 +105,10 @@ export const queryCount = new ValidatedMethod({
     query: {
       type: Object,
       blackbox: true,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ query }) {
     return Feedback.find(query || {}).count();
-  }
+  },
 });

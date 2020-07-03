@@ -118,9 +118,6 @@ export const mailSubscribe = new ValidatedMethod({
           to: `${Meteor.settings.email.admins.join(", ")}`,
           subject: `[New Subscription] ${name}`,
           html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Country:</strong> ${country}</p>`,
-        })
-        .catch((err) => {
-          logger.debug("error sending email", err);
         });
     } else {
       throw new Meteor.Error(500, "Mailing not configured");
@@ -429,26 +426,6 @@ export const exchangeFBToken = new ValidatedMethod({
     });
 
     return token;
-  },
-});
-
-export const getAdAccounts = new ValidatedMethod({
-  name: "users.getAdAccounts",
-  validate() {},
-  run() {
-    this.unblock();
-    logger.debug("users.getAdAccounts called");
-
-    const userId = Meteor.userId();
-    if (!userId) {
-      throw new Meteor.Error(401, "You need to login");
-    }
-
-    const user = Meteor.users.findOne(userId);
-
-    const token = user.services.facebook.accessToken;
-
-    return UsersHelpers.getUserAdAccounts({ token });
   },
 });
 

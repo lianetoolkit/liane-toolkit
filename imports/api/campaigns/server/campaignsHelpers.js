@@ -458,13 +458,6 @@ const CampaignsHelpers = {
     Campaigns.update({ _id: campaignId }, { $set: { status: "active" } });
     this.refreshCampaignJobs({ campaignId });
   },
-  suspendAdAccount({ campaignId }) {
-    check(campaignId, String);
-    Campaigns.update(
-      { _id: campaignId },
-      { $set: { adAccountId: null, status: "invalid_adaccount" } }
-    );
-  },
 };
 
 exports.CampaignsHelpers = CampaignsHelpers;

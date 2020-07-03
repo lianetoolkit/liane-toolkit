@@ -73,6 +73,10 @@ const jobsLabels = defineMessages({
     id: "app.jobs.labels.people.importPerson",
     defaultMessage: "Person import",
   },
+  "emails.sendMail": {
+    id: "app.jobs.labels.emails.sendMail",
+    defaultMessage: "Email",
+  },
 });
 
 const statusLabels = defineMessages({

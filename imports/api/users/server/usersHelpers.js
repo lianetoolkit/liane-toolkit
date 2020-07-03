@@ -90,22 +90,6 @@ const UsersHelpers = {
     );
     return { result: response.access_token };
   },
-  getUserAdAccounts({ token }) {
-    check(token, String);
-    let result;
-    try {
-      response = Promise.await(
-        FB.api("me/adaccounts", {
-          fields: ["account_id", "users"],
-          access_token: token,
-        })
-      );
-      result = response.data;
-    } catch (error) {
-      throw new Meteor.Error(500, "Error trying to fetch ad accounts.");
-    }
-    return { result };
-  },
   getUserByToken({ token }) {
     check(token, String);
     return Meteor.users.findOne({
