@@ -4,13 +4,23 @@ import { get } from "lodash";
 
 import Reaction from "./Reaction.jsx";
 
-const reactions = ["like", "love", "wow", "haha", "sad", "angry"];
+const reactions = [
+  "like",
+  "care",
+  "thankful",
+  "love",
+  "wow",
+  "haha",
+  "sad",
+  "angry",
+];
 
 const Container = styled.ul`
   display: flex;
   width: 100%;
   margin: 0 0 1rem;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
   padding: 0;
   list-style: none;
   li {
@@ -32,14 +42,21 @@ export default class PersonReactions extends Component {
     const { person } = this.props;
     return get(person, `counts.reactions.${reaction}`) || 0;
   }
+  renderReaction(reaction) {
+    const val = this.reactionVal(reaction);
+    if (val) {
+      return (
+        <li>
+          <Reaction reaction={reaction} /> {val}
+        </li>
+      );
+    }
+    return null;
+  }
   render() {
     return (
       <Container className="person-reactions-count">
-        {reactions.map(reaction => (
-          <li key={reaction}>
-            <Reaction reaction={reaction} /> {this.reactionVal(reaction)}
-          </li>
-        ))}
+        {reactions.map((reaction) => this.renderReaction(reaction))}
       </Container>
     );
   }

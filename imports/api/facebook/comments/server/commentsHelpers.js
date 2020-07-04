@@ -43,6 +43,8 @@ const commentsFields = [
   "comment_count",
   "reactions.limit(0).summary(true).as(reaction)",
   "reactions.type(LIKE).limit(0).summary(true).as(like)",
+  "reactions.type(CARE).limit(0).summary(true).as(care)",
+  "reactions.type(PRIDE).limit(0).summary(true).as(pride)",
   "reactions.type(LOVE).limit(0).summary(true).as(love)",
   "reactions.type(WOW).limit(0).summary(true).as(wow)",
   "reactions.type(HAHA).limit(0).summary(true).as(haha)",
@@ -113,6 +115,8 @@ const CommentsHelpers = {
     // Remove raw reaction count
     delete comment.reaction;
     delete comment.like;
+    delete comment.care;
+    delete comment.pride;
     delete comment.love;
     delete comment.wow;
     delete comment.haha;
@@ -455,6 +459,8 @@ const CommentsHelpers = {
   getReactionCountFromFBData({ comment }) {
     return {
       like: comment.like ? comment.like.summary.total_count : 0,
+      care: comment.care ? comment.care.summary.total_count : 0,
+      pride: comment.pride ? comment.pride.summary.total_count : 0,
       love: comment.love ? comment.love.summary.total_count : 0,
       wow: comment.wow ? comment.wow.summary.total_count : 0,
       haha: comment.haha ? comment.haha.summary.total_count : 0,
@@ -489,6 +495,8 @@ const CommentsHelpers = {
       // Remove raw reaction count
       delete comment.reaction;
       delete comment.like;
+      delete comment.care;
+      delete comment.pride;
       delete comment.love;
       delete comment.wow;
       delete comment.haha;
