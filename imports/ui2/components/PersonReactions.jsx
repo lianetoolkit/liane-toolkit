@@ -7,6 +7,7 @@ import Reaction from "./Reaction.jsx";
 const reactions = [
   "like",
   "care",
+  "pride",
   "thankful",
   "love",
   "wow",
@@ -31,8 +32,9 @@ const Container = styled.ul`
     align-items: center;
     font-weight: 600;
     font-size: 1.1em;
+    margin-right: 1rem;
     img {
-      margin-right: 0.75rem;
+      margin-right: 0.5rem;
     }
   }
 `;
