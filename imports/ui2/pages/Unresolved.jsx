@@ -87,13 +87,9 @@ const FilterMenuGroup = styled.div`
   }
 `;
 
-const UnresolvedPage = ({ campaignId, people }) => {
+const UnresolvedPage = ({ campaignId, people, peopleCounter }) => {
   const [loading, setLoading] = useState(true);
-  let unresolvedCount = 0;
-  people.map(person => {
-    unresolvedCount = unresolvedCount + person.children.length + 1
 
-  })
   const options = {
     skip: 0,
     limit: 20,
@@ -114,7 +110,7 @@ const UnresolvedPage = ({ campaignId, people }) => {
                   People List
                 </Button>
                 <Button onClick={() => { }} active={true}>
-                  Unresolved <Badge>{unresolvedCount}</Badge>
+                  Unresolved <Badge>{peopleCounter}</Badge>
                 </Button>
               </Button.Group>
             </FilterMenuGroup>
@@ -135,7 +131,7 @@ const UnresolvedPage = ({ campaignId, people }) => {
         {!loading && (!people || !people.length) ? (
           <p className="not-found">No results found.</p>
         ) : (
-            <UnresolvedTable people={people} campaignId={campaignId}></UnresolvedTable>
+            <UnresolvedTable people={people} campaignId={campaignId} ></UnresolvedTable>
           )}
       </PeopleContent>
     </>
@@ -394,7 +390,6 @@ const MergeModal = ({ person, campaignId }) => {
         }
       }
     })
-    console.log('data', data)
 
     // Send
 

@@ -1316,6 +1316,20 @@ export const findDuplicates = new ValidatedMethod({
   },
 });
 
+Object.byString = function (o, s) {
+  s = s.replace(/\[(\w+)\]/g, ".$1"); // convert indexes to properties
+  s = s.replace(/^\./, ""); // strip a leading dot
+  var a = s.split(".");
+  for (var i = 0, n = a.length; i < n; ++i) {
+    var k = a[i];
+    if (k in o) {
+      o = o[k];
+    } else {
+      return;
+    }
+  }
+  return o;
+};
 
 export const mergeUnresolvedPeople = new ValidatedMethod({
   name: "people.merge.unresolved",
@@ -1323,15 +1337,21 @@ export const mergeUnresolvedPeople = new ValidatedMethod({
     campaignId: {
       type: String,
     },
-    updated: {
+    update: {
       type: Object,
       blackbox: true,
     },
     remove: {
       type: Array,
     },
+    "remove.$": {
+      type: String,
+    },
     resolve: {
       type: Array,
+    },
+    "resolve.$": {
+      type: String,
     },
   }).validator(),
   run({ campaignId, update, remove, resolve }) {
@@ -1349,10 +1369,45 @@ export const mergeUnresolvedPeople = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
     // Update Resolve
-
+    const $set = {
+      unresolved: false
+    }
+    resolve.map(personId => {
+      People.update(
+        {
+          _id: personId,
+        },
+        {
+          $set,
+        }
+      );
+    })
     // Update
-
+    let $updateSet = {
+      unresolved: false,
+      related: []
+    }
+    update.fields.map(({ field, id }) => {
+      if (id != update.id) {
+        const valueFrom = People.findOne(id);
+        $updateSet[field] = Object.byString(valueFrom, field);
+      }
+    })
+    People.update(
+      {
+        _id: update.id
+      },
+      {
+        $set: $updateSet,
+      }
+    );
     // Delete
+    const removeObj = {
+      campaignId: campaignId,
+      _id: { $in: remove },
+    };
+    People.remove(removeObj);
+
     return;
   },
 });

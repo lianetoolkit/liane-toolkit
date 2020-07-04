@@ -537,6 +537,7 @@ class PeoplePage extends Component {
       importCount,
       exportCount,
       peopleExports,
+      peopleCounter
     } = this.props;
     const {
       loading,
@@ -557,7 +558,7 @@ class PeoplePage extends Component {
             <div className="filters">
               <FilterMenuGroup>
                 <Button.Group toggler className="people-tab-menu">
-                  <Button onClick={() => {}} active={true}>
+                  <Button onClick={() => { }} active={true}>
                     People List
                   </Button>
                   <Button
@@ -566,7 +567,7 @@ class PeoplePage extends Component {
                     }}
                     active={false}
                   >
-                    Unresolved <Badge>3</Badge>
+                    Unresolved {peopleCounter !== 0 ? <Badge>{peopleCounter}</Badge> : ``}
                   </Button>
                 </Button.Group>
               </FilterMenuGroup>
@@ -823,16 +824,16 @@ class PeoplePage extends Component {
           {!loading && (!people || !people.length) ? (
             <p className="not-found">No results found.</p>
           ) : (
-            <PeopleTable
-              tags={this.props.tags}
-              people={people}
-              options={options}
-              onChange={this._handlePeopleChange}
-              onSort={this._handleTableSort}
-              compact
-              scrollable
-            />
-          )}
+              <PeopleTable
+                tags={this.props.tags}
+                people={people}
+                options={options}
+                onChange={this._handlePeopleChange}
+                onSort={this._handleTableSort}
+                compact
+                scrollable
+              />
+            )}
           {userCan("edit", "people") ? (
             <div className="new-person">
               <Button onClick={this._handleNewClick}>

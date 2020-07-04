@@ -179,6 +179,31 @@ Meteor.publish("people.importJobCount", function ({ campaignId }) {
   return this.ready();
 });
 
+Meteor.publish("people.unresolved.count", function ({ campaignId }) {
+  this.unblock();
+  logger.debug("people.unresolved.count called", { campaignId });
+  const userId = this.userId;
+  if (
+    Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "people",
+      permission: "view",
+    })
+  ) {
+    Counts.publish(
+      this,
+      "people.unresolved.count",
+      People.find({
+        campaignId,
+        unresolved: true,
+      })
+    );
+    return;
+  }
+  return this.ready();
+});
+
 Meteor.publishComposite("people.detail", function ({ personId }) {
   logger.debug("people.detail called", { personId });
 
