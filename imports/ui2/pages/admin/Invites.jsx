@@ -554,6 +554,12 @@ class InvitesPage extends Component {
                     defaultMessage="Status"
                   />
                 </th>
+                <th>
+                  <FormattedMessage
+                    id="app.admin.invites.created"
+                    defaultMessage="Created"
+                  />
+                </th>
               </tr>
             </thead>
             {invites.map((invite) => (
@@ -660,6 +666,9 @@ class InvitesPage extends Component {
                         </Button>
                       </span>
                     </span>
+                  </td>
+                  <td className="small">
+                    {moment(invite.createdAt).format("L")}
                   </td>
                 </tr>
               </tbody>
