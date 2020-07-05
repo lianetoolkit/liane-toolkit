@@ -799,14 +799,13 @@ export const campaignUpdateFacebook = new ValidatedMethod({
       },
     });
 
-    const job = Jobs.findOne({
-      "data.campaignId": campaignId,
-      type: "campaigns.healthCheck",
+    FacebookAccountsHelpers.updateFBSubscription({
+      facebookAccountId: campaign.facebookAccount.facebookId,
+      token: accountToken.result,
     });
 
-    if (job) {
-      Jobs.getJob(job._id).restart();
-    }
+    CampaignsHelpers.refreshHealthCheck({ campaignId });
+
     Meteor.call("log", {
       type: "campaigns.facebook.token.update",
       campaignId,

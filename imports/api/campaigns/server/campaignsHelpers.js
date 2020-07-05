@@ -80,6 +80,39 @@ const CampaignsHelpers = {
       }
     );
   },
+  disconnectAccount({ campaignId }) {
+    if (!campaignId) {
+      throw new Meteor.Error(400, "Campaign ID is required");
+    }
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+    const appToken = Promise.await(
+      FB.api("oauth/access_token", {
+        client_id: Meteor.settings.facebook.clientId,
+        client_secret: Meteor.settings.facebook.clientSecret,
+        grant_type: "client_credentials",
+      })
+    );
+    try {
+      Promise.await(
+        FB.api(
+          `${campaign.facebookAccount.facebookId}/subscribed_apps`,
+          "delete",
+          {
+            access_token: appToken.access_token,
+          }
+        )
+      );
+    } catch (err) {}
+    Campaigns.update(campaignId, {
+      $set: {
+        "facebookAccount.accessToken": "invalid",
+      },
+    });
+    return;
+  },
   setMainAccount({ user, campaignId, account }) {
     check(campaignId, String);
     check(account, Object);
@@ -164,24 +197,10 @@ const CampaignsHelpers = {
     };
 
     // Facebook subscription
-    try {
-      const fbRes = Promise.await(
-        FB.api(`${account.id}/subscribed_apps`, "post", {
-          subscribed_fields: [
-            "feed",
-            "messages",
-            "message_deliveries",
-            "messaging_postbacks",
-            "messaging_optins",
-            "message_deliveries",
-            "message_reads",
-          ],
-          access_token: token.result,
-        })
-      );
-    } catch (err) {
-      throw new Meteor.Error(500, "Error trying to subscribe");
-    }
+    FacebookAccountsHelpers.updateFBSubscription({
+      facebookAccountId: account.id,
+      token: token.result,
+    });
 
     Campaigns.update(
       { _id: campaignId },
