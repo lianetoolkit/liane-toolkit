@@ -16,6 +16,7 @@ const CampaignsJobs = {
         });
       } catch (error) {
         errored = true;
+        CampaignsHelpers.disconnectAccount({ campaignId });
         return job.fail(error.message);
       } finally {
         if (!errored) {

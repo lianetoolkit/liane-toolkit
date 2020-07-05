@@ -74,6 +74,39 @@ const CampaignsHelpers = {
       }
     }
   },
+  disconnectAccount({ campaignId }) {
+    if (!campaignId) {
+      throw new Meteor.Error(400, "Campaign ID is required");
+    }
+    const campaign = Campaigns.findOne(campaignId);
+    if (!campaign) {
+      throw new Meteor.Error(404, "Campaign not found");
+    }
+    const appToken = Promise.await(
+      FB.api("oauth/access_token", {
+        client_id: Meteor.settings.facebook.clientId,
+        client_secret: Meteor.settings.facebook.clientSecret,
+        grant_type: "client_credentials",
+      })
+    );
+    try {
+      Promise.await(
+        FB.api(
+          `${campaign.facebookAccount.facebookId}/subscribed_apps`,
+          "delete",
+          {
+            access_token: appToken.access_token,
+          }
+        )
+      );
+    } catch (err) {}
+    Campaigns.update(campaignId, {
+      $set: {
+        "facebookAccount.accessToken": "invalid",
+      },
+    });
+    return;
+  },
   setMainAccount({ campaignId, account }) {
     check(campaignId, String);
     check(account, Object);
