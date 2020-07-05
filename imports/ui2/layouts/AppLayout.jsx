@@ -21,12 +21,16 @@ import InviteNotification from "../components/InviteNotification.jsx";
 
 import { FeedbackButton } from "../components/Feedback.jsx";
 
+import moment from "moment";
+require("moment/locale/es");
+require("moment/locale/pt-br");
+
 let language =
   (navigator.languages && navigator.languages[0]) ||
   navigator.language ||
   navigator.userLanguage;
 
-const findLocale = language => {
+const findLocale = (language) => {
   let locale = false;
   const languageWRC = language.toLowerCase().split(/[_-]+/)[0];
   for (const key in localeData) {
@@ -48,14 +52,14 @@ const publicRoutes = [
   "App.dashboard",
   "App.transparency",
   "App.register",
-  "App.resetPassword"
+  "App.resetPassword",
 ];
 
 export default class AppLayout extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      locale: "en"
+      locale: "en",
     };
   }
   componentDidMount() {
@@ -77,11 +81,11 @@ export default class AppLayout extends Component {
     }
     ClientStorage.set("language", locale);
     this.setState({
-      locale
+      locale,
     });
   };
   componentWillReceiveProps({ isLoggedIn, connected, routeName }) {
-    FlowRouter.withReplaceState(function() {
+    FlowRouter.withReplaceState(function () {
       if (connected && !isLoggedIn && publicRoutes.indexOf(routeName) == -1) {
         FlowRouter.go("App.dashboard");
       }
@@ -101,6 +105,7 @@ export default class AppLayout extends Component {
     } else {
       content = this.props.content;
     }
+    moment.locale(locale.toLowerCase());
     if (connected && ready) {
       return (
         <IntlProvider locale={locale} messages={messages}>
