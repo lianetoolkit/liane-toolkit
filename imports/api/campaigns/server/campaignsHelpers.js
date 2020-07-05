@@ -5,7 +5,7 @@ import {
   People,
   PeopleTags,
   PeopleLists,
-  PeopleExports
+  PeopleExports,
 } from "/imports/api/facebook/people/people.js";
 import { PeopleHelpers } from "/imports/api/facebook/people/server/peopleHelpers.js";
 import { MapFeatures } from "/imports/api/mapFeatures/mapFeatures";
@@ -34,16 +34,16 @@ const CampaignsHelpers = {
       let userAccounts = {};
       try {
         userAccounts = FacebookAccountsHelpers.getUserAccounts({
-          userId: campaignUser.userId
+          userId: campaignUser.userId,
         });
       } catch (e) {
         console.log(e);
       }
       if (userAccounts && userAccounts.result && userAccounts.result.length) {
-        userAccounts.result.forEach(acc => {
-          if (accounts.find(account => acc.id == account.facebookId)) {
+        userAccounts.result.forEach((acc) => {
+          if (accounts.find((account) => acc.id == account.facebookId)) {
             const tokenDebug = UsersHelpers.debugFBToken({
-              token: acc.access_token
+              token: acc.access_token,
             });
             if (tokenDebug && tokenDebug.is_valid) {
               tokens[acc.id] = acc.access_token;
@@ -56,19 +56,21 @@ const CampaignsHelpers = {
     for (let account of accounts) {
       if (tokens[account.facebookId]) {
         const longToken = FacebookAccountsHelpers.exchangeFBToken({
-          token: tokens[account.facebookId]
+          token: tokens[account.facebookId],
         });
         Campaigns.update(
           {
             _id: campaignId,
-            "accounts.facebookId": account.facebookId
+            "accounts.facebookId": account.facebookId,
           },
           {
             $set: {
-              "accounts.$.accessToken": longToken.result
-            }
+              "accounts.$.accessToken": longToken.result,
+            },
           }
         );
+      } else {
+        throw new Meteor.Error(500, "Unable to retrieve token");
       }
     }
   },
@@ -80,28 +82,28 @@ const CampaignsHelpers = {
       $set: {
         name: account.name,
         category: account.category,
-        fanCount: account.fan_count
-      }
+        fanCount: account.fan_count,
+      },
     };
 
     FacebookAccounts.upsert({ facebookId: account.id }, upsertObj);
 
     const token = FacebookAccountsHelpers.exchangeFBToken({
-      token: account.access_token
+      token: account.access_token,
     });
 
     const updateObj = {
       facebookId: account.id,
       accessToken: token.result,
       chatbot: {
-        active: false
-      }
+        active: false,
+      },
     };
 
     // Facebook subscription
     FacebookAccountsHelpers.updateFBSubscription({
       facebookAccountId: account.id,
-      token: token.result
+      token: token.result,
     });
 
     Campaigns.update(
@@ -114,15 +116,15 @@ const CampaignsHelpers = {
       jobData: {
         campaignId,
         facebookId: account.id,
-        accessToken: token.result
-      }
+        accessToken: token.result,
+      },
     });
 
     JobsHelpers.addJob({
       jobType: "campaigns.healthCheck",
       jobData: {
-        campaignId
-      }
+        campaignId,
+      },
     });
     // JobsHelpers.addJob({
     //   jobType: "audiences.updateAccountAudience",
@@ -135,8 +137,8 @@ const CampaignsHelpers = {
       jobType: "people.updateFBUsers",
       jobData: {
         campaignId,
-        facebookAccountId: account.id
-      }
+        facebookAccountId: account.id,
+      },
     });
     return;
   },
@@ -148,22 +150,22 @@ const CampaignsHelpers = {
       $set: {
         name: account.name,
         category: account.category,
-        fanCount: account.fan_count
-      }
+        fanCount: account.fan_count,
+      },
     };
 
     FacebookAccounts.upsert({ facebookId: account.id }, upsertObj);
 
     const token = FacebookAccountsHelpers.exchangeFBToken({
-      token: account.access_token
+      token: account.access_token,
     });
 
     const updateObj = {
       facebookId: account.id,
       accessToken: token.result,
       chatbot: {
-        active: false
-      }
+        active: false,
+      },
     };
 
     // Facebook subscription
@@ -177,9 +179,9 @@ const CampaignsHelpers = {
             "messaging_postbacks",
             "messaging_optins",
             "message_deliveries",
-            "message_reads"
+            "message_reads",
           ],
-          access_token: token.result
+          access_token: token.result,
         })
       );
     } catch (err) {
@@ -196,22 +198,22 @@ const CampaignsHelpers = {
       jobData: {
         campaignId,
         facebookId: account.id,
-        accessToken: token.result
-      }
+        accessToken: token.result,
+      },
     });
     JobsHelpers.addJob({
       jobType: "audiences.updateAccountAudience",
       jobData: {
         campaignId,
-        facebookAccountId: account.id
-      }
+        facebookAccountId: account.id,
+      },
     });
     JobsHelpers.addJob({
       jobType: "people.updateFBUsers",
       jobData: {
         campaignId,
-        facebookAccountId: account.id
-      }
+        facebookAccountId: account.id,
+      },
     });
     return;
   },
@@ -227,21 +229,21 @@ const CampaignsHelpers = {
 
     let account;
     if (campaign.accounts && campaign.accounts.length) {
-      account = campaign.accounts.find(acc => acc.facebookId == facebookId);
+      account = campaign.accounts.find((acc) => acc.facebookId == facebookId);
     }
 
     FacebookAudiences.remove({
       campaignId,
-      facebookAccountId: facebookId
+      facebookAccountId: facebookId,
     });
 
     // Remove entry jobs
     Jobs.remove({
       $or: [
         { "data.facebookId": facebookId },
-        { "data.facebookAccountId": facebookId }
+        { "data.facebookAccountId": facebookId },
       ],
-      "data.campaignId": campaignId
+      "data.campaignId": campaignId,
     });
 
     if (account) {
@@ -255,14 +257,14 @@ const CampaignsHelpers = {
 
     logger.debug("CampaignsHelpers.addAudienceAccountToCampaign: called", {
       campaignId,
-      account
+      account,
     });
 
     throw new Meteor.Error(500, "This method is unavailable");
 
     let updateObj = {
       facebookId: account.id,
-      name: account.name
+      name: account.name,
     };
 
     if (account.fan_count) {
@@ -272,7 +274,7 @@ const CampaignsHelpers = {
     const campaign = Campaigns.findOne(campaignId);
 
     const audienceAccount = _.findWhere(campaign.audienceAccounts, {
-      facebookId: account.id
+      facebookId: account.id,
     });
 
     if (audienceAccount) {
@@ -288,8 +290,8 @@ const CampaignsHelpers = {
       jobType: "audiences.updateAccountAudience",
       jobData: {
         campaignId,
-        facebookAccountId: account.id
-      }
+        facebookAccountId: account.id,
+      },
     });
     return;
   },
@@ -298,7 +300,7 @@ const CampaignsHelpers = {
     check(facebookId, String);
 
     const audienceAccount = _.findWhere(campaign.audienceAccounts, {
-      facebookId
+      facebookId,
     });
 
     if (!audienceAccount) {
@@ -307,12 +309,12 @@ const CampaignsHelpers = {
 
     Jobs.remove({
       "data.campaignId": campaignId,
-      "data.facebookAccountId": facebookId
+      "data.facebookAccountId": facebookId,
     });
 
     FacebookAudiences.remove({
       campaignId,
-      facebookAccountId: facebookId
+      facebookAccountId: facebookId,
     });
 
     return Campaigns.update(
@@ -323,7 +325,7 @@ const CampaignsHelpers = {
   refreshHealthCheck({ campaignId }) {
     const healthCheckJob = Jobs.findOne({
       type: "campaigns.healthCheck",
-      "data.campaignId": campaignId
+      "data.campaignId": campaignId,
     });
     if (healthCheckJob) {
       if (
@@ -338,8 +340,8 @@ const CampaignsHelpers = {
       JobsHelpers.addJob({
         jobType: "campaigns.healthCheck",
         jobData: {
-          campaignId
-        }
+          campaignId,
+        },
       });
     }
   },
@@ -365,13 +367,13 @@ const CampaignsHelpers = {
     }
     if (accountsIds.length) {
       const accounts = FacebookAccounts.find({
-        facebookId: { $in: accountsIds }
+        facebookId: { $in: accountsIds },
       }).fetch();
       for (const account of accounts) {
         this.refreshAccountJob({
           campaignId,
           facebookAccountId: account.facebookId,
-          type: "entries"
+          type: "entries",
         });
         // this.refreshAccountJob({
         //   campaignId,
@@ -385,7 +387,7 @@ const CampaignsHelpers = {
     logger.debug("CampaignsHelpers.refreshAccountJob: called", {
       campaignId,
       facebookAccountId,
-      type
+      type,
     });
     const campaign = Campaigns.findOne(campaignId);
 
@@ -395,7 +397,7 @@ const CampaignsHelpers = {
 
     const account =
       _.findWhere(campaign.accounts, {
-        facebookId: facebookAccountId
+        facebookId: facebookAccountId,
       }) || campaign.facebookAccount;
 
     let jobType, jobData;
@@ -405,7 +407,7 @@ const CampaignsHelpers = {
         jobData = {
           facebookId: facebookAccountId,
           accessToken: account.accessToken,
-          campaignId: campaign._id
+          campaignId: campaign._id,
         };
         break;
       case "refetch":
@@ -413,27 +415,27 @@ const CampaignsHelpers = {
         jobData = {
           facebookId: facebookAccountId,
           accessToken: account.accessToken,
-          campaignId: campaign._id
+          campaignId: campaign._id,
         };
         break;
       case "audiences":
         jobType = "audiences.updateAccountAudience";
         jobData = {
           campaignId: campaign._id,
-          facebookAccountId: facebookAccountId
+          facebookAccountId: facebookAccountId,
         };
         break;
       case "fbUsers":
         jobType = "people.updateFBUsers";
         jobData = {
           campaignId,
-          facebookAccountId
+          facebookAccountId,
         };
         break;
     }
 
     const query = {
-      type: jobType
+      type: jobType,
     };
 
     for (const prop in jobData) {
@@ -453,7 +455,7 @@ const CampaignsHelpers = {
     } else {
       JobsHelpers.addJob({
         jobType,
-        jobData
+        jobData,
       });
     }
   },
@@ -467,7 +469,7 @@ const CampaignsHelpers = {
     // Expire and remove exports
     const exportJobs = Jobs.find({
       type: "people.expireExport",
-      "data.campaignId": campaignId
+      "data.campaignId": campaignId,
     }).fetch();
     if (exportJobs && exportJobs.length) {
       for (let job of exportJobs) {
@@ -493,20 +495,20 @@ const CampaignsHelpers = {
     }
     const accounts = FacebookAccounts.find({
       facebookId: {
-        $in: accountsIds
-      }
+        $in: accountsIds,
+      },
     }).fetch();
     for (const account of accounts) {
       const accountCampaignsCount = Campaigns.find({
         $or: [
           { accounts: { $elemMatch: { facebookId: account.facebookId } } },
-          { "facebookAccount.facebookId": account.facebookId }
-        ]
+          { "facebookAccount.facebookId": account.facebookId },
+        ],
       }).count();
       if (accountCampaignsCount <= 1) {
         FacebookAccountsHelpers.removeAccount({
           facebookAccountId: account.facebookId,
-          token: campaign.facebookAccount.accessToken
+          token: campaign.facebookAccount.accessToken,
         });
       }
     }
@@ -533,7 +535,7 @@ const CampaignsHelpers = {
       { _id: campaignId },
       { $set: { adAccountId: null, status: "invalid_adaccount" } }
     );
-  }
+  },
 };
 
 exports.CampaignsHelpers = CampaignsHelpers;
