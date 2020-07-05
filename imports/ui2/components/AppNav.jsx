@@ -358,12 +358,12 @@ class AppNav extends Component {
                     </ul>
                   </NavItem>
                 ) : null}
-                <NavItem
+                {/* <NavItem
                   href="https://canvas.liane.cc"
                   target="_blank"
                   rel="external"
                   name={intl.formatMessage(messages.electoralCanvas)}
-                />
+                /> */}
               </ul>
             ) : null}
           </div>
