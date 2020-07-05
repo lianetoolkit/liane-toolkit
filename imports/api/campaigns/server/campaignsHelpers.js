@@ -245,6 +245,7 @@ const CampaignsHelpers = {
         healthCheckJob.status == "cancelled"
       ) {
         Jobs.getJob(healthCheckJob._id).restart();
+        Jobs.getJob(healthCheckJob._id).ready({ time: Jobs.foreverDate });
       } else if (healthCheckJob.status == "waiting") {
         Jobs.getJob(healthCheckJob._id).ready({ time: Jobs.foreverDate });
       }

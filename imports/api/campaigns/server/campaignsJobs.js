@@ -33,7 +33,7 @@ const CampaignsJobs = {
     jobOptions() {
       const options = {
         retry: {
-          retries: 3,
+          retries: 0,
           wait: 5 * 60 * 1000
         },
         repeat: {
