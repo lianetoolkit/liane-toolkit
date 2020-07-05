@@ -22,7 +22,7 @@ const SUBSCRIPTION_FIELDS = [
   "message_deliveries",
   "message_reads",
   "messaging_postbacks",
-  "messaging_optins"
+  "messaging_optins",
 ];
 
 const FacebookAccountsHelpers = {
@@ -33,7 +33,7 @@ const FacebookAccountsHelpers = {
       Promise.await(
         FB.api(`${facebookAccountId}/subscribed_apps`, "post", {
           subscribed_fields: SUBSCRIPTION_FIELDS,
-          access_token: token
+          access_token: token,
         })
       );
     } catch (err) {
@@ -63,7 +63,7 @@ const FacebookAccountsHelpers = {
         FB.api("me/accounts", {
           fields: ["name", "fan_count", "category", "access_token", "tasks"],
           limit: 10,
-          access_token: accessToken
+          access_token: accessToken,
         })
       );
       data = response.data;
@@ -81,7 +81,7 @@ const FacebookAccountsHelpers = {
       throw new Meteor.Error(500, "Error trying to fetch your accounts");
     }
 
-    data = data.filter(account => account.tasks.indexOf("MANAGE") != -1);
+    data = data.filter((account) => account.tasks.indexOf("MANAGE") != -1);
 
     return { result: data };
   },
@@ -94,7 +94,7 @@ const FacebookAccountsHelpers = {
     try {
       Promise.await(
         FB.api(`${facebookAccountId}/subscribed_apps`, "delete", {
-          access_token: token
+          access_token: token,
         })
       );
     } catch (err) {
@@ -112,7 +112,7 @@ const FacebookAccountsHelpers = {
 
     logger.debug("FacebookAccountsHelpers.getUserAccount: called", {
       userId,
-      facebookAccountId
+      facebookAccountId,
     });
 
     const user = Meteor.users.findOne(userId);
@@ -128,7 +128,7 @@ const FacebookAccountsHelpers = {
     return Promise.await(
       FB.api(facebookAccountId, {
         fields: ["name", "fan_count", "access_token", "category"],
-        access_token: accessToken
+        access_token: accessToken,
       })
     );
   },
@@ -140,11 +140,11 @@ const FacebookAccountsHelpers = {
         Object.assign(
           {
             grant_type: "fb_exchange_token",
-            fb_exchange_token: token
+            fb_exchange_token: token,
           },
           {
             client_id: Meteor.settings.facebook.clientId,
-            client_secret: Meteor.settings.facebook.clientSecret
+            client_secret: Meteor.settings.facebook.clientSecret,
           }
         )
       )
@@ -155,7 +155,7 @@ const FacebookAccountsHelpers = {
     check(facebookId, String);
     return Campaigns.find({
       status: { $ne: "suspended" },
-      "facebookAccount.facebookId": facebookId
+      "facebookAccount.facebookId": facebookId,
     }).fetch();
   },
   fetchFBAccount({ userId, address }) {
@@ -184,7 +184,7 @@ const FacebookAccountsHelpers = {
     return Promise.await(
       FB.api(id, {
         fields: ["name", "fan_count", "website", "link"],
-        access_token: accessToken
+        access_token: accessToken,
       })
     );
   },
@@ -208,10 +208,10 @@ const FacebookAccountsHelpers = {
         q,
         type: "page",
         fields: ["name", "fan_count", "website", "link"],
-        access_token: accessToken
+        access_token: accessToken,
       })
     );
-  }
+  },
 };
 
 exports.FacebookAccountsHelpers = FacebookAccountsHelpers;
