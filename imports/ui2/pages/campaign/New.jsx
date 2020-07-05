@@ -4,7 +4,7 @@ import {
   intlShape,
   defineMessages,
   FormattedMessage,
-  FormattedHTMLMessage
+  FormattedHTMLMessage,
 } from "react-intl";
 import { ClientStorage } from "meteor/ostrio:cstorage";
 
@@ -21,24 +21,24 @@ import UserUpgrade from "../../components/UserUpgrade.jsx";
 const messages = defineMessages({
   nameLabel: {
     id: "app.campaign.form.name.label",
-    defaultMessage: "Define a name for your campaign"
+    defaultMessage: "Define a name for your campaign",
   },
   namePlaceholder: {
     id: "app.campaign.form.name.placeholder",
-    defaultMessage: "Campaign name"
+    defaultMessage: "Campaign name",
   },
   countryLabel: {
     id: "app.campaign.form.country.label",
-    defaultMessage: "Select the country for your campaign"
+    defaultMessage: "Select the country for your campaign",
   },
   submitLabel: {
     id: "app.campaign.form.submit",
-    defaultMessage: "Register campaign"
+    defaultMessage: "Register campaign",
   },
   requiredFields: {
     id: "app.campaign.form.required_fields_warning",
-    defaultMessage: "You must fill all the required fields"
-  }
+    defaultMessage: "You must fill all the required fields",
+  },
 });
 
 class NewCampaignPage extends Component {
@@ -50,8 +50,8 @@ class NewCampaignPage extends Component {
       loading: false,
       formData: {
         name: "",
-        facebookAccountId: ""
-      }
+        facebookAccountId: "",
+      },
     };
   }
   componentDidMount() {
@@ -65,7 +65,7 @@ class NewCampaignPage extends Component {
       } else {
         this.setState({
           ready: true,
-          isValidCampaigner: res
+          isValidCampaigner: res,
         });
       }
     });
@@ -74,8 +74,8 @@ class NewCampaignPage extends Component {
     this.setState({
       formData: {
         ...this.state.formData,
-        [target.name]: target.value
-      }
+        [target.name]: target.value,
+      },
     });
   };
   _filledForm = () => {
@@ -96,20 +96,20 @@ class NewCampaignPage extends Component {
           geolocation: {
             type,
             osm_id: geolocation.osm_id,
-            osm_type: geolocation.osm_type
-          }
-        }
+            osm_type: geolocation.osm_type,
+          },
+        },
       });
     } else {
       this.setState({
         formData: {
           ...this.state.formData,
-          geolocation: {}
-        }
+          geolocation: {},
+        },
       });
     }
   };
-  _handleSubmit = ev => {
+  _handleSubmit = (ev) => {
     ev.preventDefault();
     const { intl } = this.props;
     const { loading } = this.state;
@@ -117,13 +117,17 @@ class NewCampaignPage extends Component {
     if (this._filledForm() && !loading) {
       const { formData } = this.state;
       this.setState({
-        loading: true
+        loading: true,
       });
-      Meteor.call("campaigns.create", { ...formData, invite }, (err, data) => {
+      let data = { ...formData };
+      if (invite) {
+        data.invite = invite;
+      }
+      Meteor.call("campaigns.create", data, (err, data) => {
         if (err) {
           alertStore.add(err);
           this.setState({
-            loading: false
+            loading: false,
           });
         } else {
           Session.set("campaignId", data.result);
@@ -201,7 +205,7 @@ class NewCampaignPage extends Component {
 }
 
 NewCampaignPage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(NewCampaignPage);
