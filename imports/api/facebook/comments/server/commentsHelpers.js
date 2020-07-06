@@ -126,15 +126,19 @@ const CommentsHelpers = {
 
     Comments.upsert({ _id: data.comment_id }, { $set: comment });
 
-    AccountsLogs.insert({
-      type: "comments.add",
-      accountId: facebookAccountId,
-      isAdmin: comment.personId == facebookAccountId,
-      objectId: data.comment_id,
-      objectType: "comment",
-      parentId: comment.parentId || comment.entryId,
-      personId: comment.personId,
-    });
+    if (data.verb == "add") {
+      AccountsLogs.insert({
+        type: "comments.add",
+        accountId: facebookAccountId,
+        isAdmin: comment.personId == facebookAccountId,
+        objectId: data.comment_id,
+        objectType: "comment",
+        parentId: comment.parentId || comment.entryId,
+        personId: comment.personId,
+      });
+    } else if (data.verb == "edited") {
+      // Should it log comments editions?
+    }
 
     // Update adminReplied if comment does not have it already
     if (data.hasOwnProperty("adminReplied")) {
