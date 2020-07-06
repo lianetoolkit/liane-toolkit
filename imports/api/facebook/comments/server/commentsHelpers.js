@@ -126,19 +126,22 @@ const CommentsHelpers = {
 
     Comments.upsert({ _id: data.comment_id }, { $set: comment });
 
-    if (data.verb == "add") {
-      AccountsLogs.insert({
-        type: "comments.add",
-        accountId: facebookAccountId,
-        isAdmin: comment.personId == facebookAccountId,
-        objectId: data.comment_id,
-        objectType: "comment",
-        parentId: comment.parentId || comment.entryId,
+    AccountsLogs.upsert(
+      {
+        type: `comments.${data.verb}`,
         personId: comment.personId,
-      });
-    } else if (data.verb == "edited") {
-      // Should it log comments editions?
-    }
+        objectId: data.comment_id,
+        timestamp: data.created_time * 1000,
+      },
+      {
+        $setOnInsert: {
+          objectType: "comment",
+          accountId: facebookAccountId,
+          isAdmin: comment.personId == facebookAccountId,
+          parentId: comment.parentId || comment.entryId,
+        },
+      }
+    );
 
     // Update adminReplied if comment does not have it already
     if (data.hasOwnProperty("adminReplied")) {
@@ -251,6 +254,7 @@ const CommentsHelpers = {
             type: "people.new",
             accountId: facebookAccountId,
             personId: comment.personId,
+            timestamp: data.created_time * 1000,
           });
         }
       }
@@ -294,13 +298,20 @@ const CommentsHelpers = {
 
     Comments.remove(comment._id);
 
-    AccountsLogs.insert({
-      type: "comments.remove",
-      accountId: comment.facebookAccountId,
-      personId: comment.personId,
-      objectId: comment._id,
-      objectType: "comment",
-    });
+    AccountsLogs.upsert(
+      {
+        type: "comments.remove",
+        objectId: comment._id,
+        personId: comment.personId,
+      },
+      {
+        $setOnInsert: {
+          accountId: comment.facebookAccountId,
+          objectType: "comment",
+          timestamp: data.created_time * 1000,
+        },
+      }
+    );
 
     // Update entry
     try {
