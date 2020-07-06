@@ -405,7 +405,7 @@
   "app.nav.people_directory": "Directorio de personas",
   "app.nav.territories": "Territorios",
   "app.notifications.campaign_invite": "{name} te invitó a ser parte de su campaña.",
-  "app.notifications.campaign_invite_accepted": "{name} no aceptó tu invitación para ser parte de {campaignName}.",
+  "app.notifications.campaign_invite_accepted": "{name} aceptó tu invitación para ser parte de {campaignName}.",
   "app.notifications.campaign_invite_declined": "{name} no aceptó tu invitación para ser parte de {campaignName}",
   "app.notifications.new_form_user": "{name} just registered through your form!",
   "app.notifications.not_found": "¡No hay notificaciones por el momento!",
