@@ -43,15 +43,6 @@ AccountsLogs.schema = new SimpleSchema({
   },
   timestamp: {
     type: Number,
-    autoValue() {
-      if (this.isInsert) {
-        return Date.now();
-      } else if (this.isUpsert) {
-        return { $setOnInsert: Date.now() };
-      } else {
-        return this.unset();
-      }
-    },
   },
 });
 

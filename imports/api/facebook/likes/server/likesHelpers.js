@@ -70,17 +70,25 @@ const LikesHelpers = {
       { upsert: true, multi: false }
     );
 
-    AccountsLogs.insert({
-      type: "reactions.add",
-      accountId: facebookAccountId,
-      isAdmin: reaction.personId == facebookAccountId,
-      parentId: reaction.entryId,
-      objectType: data.reaction_type,
-      personId: reaction.personId,
-      data: {
-        isCommentReaction: data.comment_id || false,
+    AccountsLogs.upsert(
+      {
+        accountId: facebookAccountId,
+        type: `reactions.${data.verb}`,
+        parentId: reaction.entryId,
+        personId: reaction.personId,
+        timestamp: data.created_time * 1000,
+        objectType: data.reaction_type,
       },
-    });
+      {
+        $setOnInsert: {
+          isAdmin: reaction.personId == facebookAccountId,
+          objectType: data.reaction_type,
+          data: {
+            isCommentReaction: data.comment_id || false,
+          },
+        },
+      }
+    );
 
     // Update entry interaction count
     try {
@@ -161,6 +169,7 @@ const LikesHelpers = {
             type: "people.new",
             accountId: facebookAccountId,
             personId: reaction.personId,
+            timestamp: data.created_time * 1000,
           });
         }
       }
@@ -179,16 +188,23 @@ const LikesHelpers = {
     }
     Likes.remove(query);
 
-    AccountsLogs.insert({
-      type: "reactions.remove",
-      accountId: facebookAccountId,
-      personId: query.personId,
-      objectType: data.reaction_type,
-      parentId: query.entryId,
-      data: {
-        isCommentReaction: data.comment_id || false,
+    AccountsLogs.upsert(
+      {
+        type: "reactions.remove",
+        timestamp: data.created_time * 1000,
+        accountId: facebookAccountId,
+        personId: query.personId,
+        objectType: data.reaction_type,
+        parentId: query.entryId,
       },
-    });
+      {
+        $setOnInsert: {
+          data: {
+            isCommentReaction: data.comment_id || false,
+          },
+        },
+      }
+    );
 
     // Update entry
     try {
