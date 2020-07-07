@@ -183,7 +183,16 @@ class NewCampaignPage extends Component {
           <p>
             <FormattedMessage
               id="app.campaigns.disabled_text"
-              defaultMessage="Your account is not currently allowed to create a new campaign."
+              defaultMessage="Campaign creation is currently invitation only, contact {email} for more information!"
+              values={{
+                email: Meteor.settings.public.contactEmail,
+              }}
+            />
+          </p>
+          <p>
+            <FormattedMessage
+              id="app.campaigns.disabled_text_2"
+              defaultMessage="If you want to join the team of an existing campaign, contact the administrator of that campaign."
             />
           </p>
         </Page.Boxed>
