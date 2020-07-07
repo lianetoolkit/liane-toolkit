@@ -167,7 +167,6 @@ class NewCampaignPage extends Component {
   render() {
     const { intl } = this.props;
     const { ready, validation, loading, formData } = this.state;
-    console.log(validation);
     if (!ready) {
       return <Loading full />;
     }
