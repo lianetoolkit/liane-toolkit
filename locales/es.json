@@ -2,7 +2,7 @@
   "app.account_select.select_label": "Selecciona abajo tu tipo de cuenta",
   "app.account_select.select_option_campaigner": "Quiero crear una campaña",
   "app.account_select.select_option_user": "Participaré en una campaña existente",
-  "app.account_select.submit": "Elige el tipo de campaña",
+  "app.account_select.submit": "Confirmar",
   "app.account_select.warning": "Aviso: Para crear una campaña debes tener acceso administrativo a la página de Facebook que quieres utilizar.",
   "app.address.city.label": "Ciudad",
   "app.address.complement.label": "Complemento",
