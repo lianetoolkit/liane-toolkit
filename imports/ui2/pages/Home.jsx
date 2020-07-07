@@ -60,13 +60,13 @@ const HighlightContainer = styled.div`
 `;
 
 const Content = styled.div`
-  margin: 0 auto;
+  margin: 0 auto 4rem;
   ${(props) =>
     props.centered &&
     css`
+      max-width: 960px;
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      justify-content: space-between;
     `}
 `;
 
@@ -78,8 +78,8 @@ const LoginFormContainer = styled.form`
   ${(props) =>
     props.floated &&
     css`
-      float: left;
-      margin: -1.7rem 2rem 4rem;
+      margin: 4rem 2rem 4rem;
+      max-width: 350px;
     `}
   p,
   h3 {
@@ -167,14 +167,13 @@ const UserContainer = styled.div`
 const ClosedContainer = styled.div`
   max-width: 400px;
   box-sizing: border-box;
-  margin: -4rem 2rem 6rem;
+  margin: -4rem 2rem 0;
   background: #fff;
   border-radius: 7px;
   box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
   padding: 2rem;
   z-index: 4;
   position: relative;
-  float: left;
   h3 {
     font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     margin: 0 0 2rem;
