@@ -4,9 +4,9 @@ import {
   intlShape,
   defineMessages,
   FormattedMessage,
-  FormattedHTMLMessage
+  FormattedHTMLMessage,
 } from "react-intl";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { alertStore } from "../containers/Alerts.jsx";
@@ -59,16 +59,28 @@ const HighlightContainer = styled.div`
   }
 `;
 
+const Content = styled.div`
+  margin: 0 auto;
+  ${(props) =>
+    props.centered &&
+    css`
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    `}
+`;
+
 const LoginFormContainer = styled.form`
-  margin: -1.7rem auto 0;
+  margin: -1.7rem auto 4rem;
   text-align: center;
   position: relative;
   z-index: 2;
-  ${"" /* border-radius: 7px;
-  max-width: calc(960px - 4rem);
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1); */}
+  ${(props) =>
+    props.floated &&
+    css`
+      float: left;
+      margin: -1.7rem 2rem 4rem;
+    `}
   p,
   h3 {
     margin: 0 0 2rem;
@@ -155,13 +167,14 @@ const UserContainer = styled.div`
 const ClosedContainer = styled.div`
   max-width: 400px;
   box-sizing: border-box;
-  margin: -3rem auto 6rem;
+  margin: -4rem 2rem 6rem;
   background: #fff;
   border-radius: 7px;
   box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
   padding: 2rem;
   z-index: 4;
   position: relative;
+  float: left;
   h3 {
     font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     margin: 0 0 2rem;
@@ -183,149 +196,23 @@ const ClosedContainer = styled.div`
   }
 `;
 
-const Intro = styled.section`
-  max-width: 960px;
-  margin: 6rem auto 6rem;
-  padding: 0 2rem;
-  .first {
-    max-width: 750px;
-    display: flex;
-    align-items: center;
-    .intro-text {
-      flex: 1 1 100%;
-      color: #333;
-      line-height: 1.5;
-      p:first-child {
-        font-size: 1.4em;
-        border-bottom: 2px solid #ddd;
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
-        font-weight: 600;
-      }
-    }
-    .features {
-      flex: 1 1.5 100%;
-    }
-  }
-`;
-
-const Features = styled.section`
-  background: #111;
-  color: #fff;
-  margin: 0 0 2rem;
-  padding: 4rem 0;
-  div {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    display: flex;
-  }
-  h2 {
-    flex: 1 1 auto;
-    text-align: right;
-    border-right: 2px solid #444;
-    padding: 1rem 2rem 0 0;
-    margin: 0 1rem 0 0;
-    line-height: 1.5;
-    color: #ffcc00;
-  }
-  ul {
-    flex: 1 1 auto;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border-radius: 7px;
-    display: flex;
-    flex-wrap: wrap;
-    font-weight: normal;
-    align-items: center;
-    font-size: 1.2em;
-    li {
-      flex: 1 1 40%;
-      margin: 0;
-      padding: 1rem;
-      position: relative;
-      &:last-child {
-        border-bottom: 0;
-      }
-      .with-extra {
-        position: relative;
-      }
-      .extra {
-        color: #666;
-        display: inline-block;
-        position: absolute;
-        bottom: -1.25rem;
-        left: 0rem;
-        font-size: 0.6em;
-        font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-        letter-spacing: 0;
-        background: #393939;
-        border-radius: 7px;
-        padding: 0.2rem 0.3rem;
-        text-align: center;
-        line-height: 1.2;
-      }
-    }
-  }
-`;
-
-const Organization = styled.section`
-  padding: 4rem 0;
-  background: #fff;
-  .org-content {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    > div {
-      margin: 0 -2rem;
-      display: flex;
-      > div {
-        margin: 0 2rem;
-        flex: 1 1 100%;
-      }
-    }
-  }
-`;
-
-const FeatureItemContainer = styled.li`
-  display: flex;
-  align-items: center;
-  .icon {
-    margin-right: 2rem;
-    font-size: 0.7em;
-    color: #f5911e;
-  }
-`;
-
-function FeatureItem(props) {
-  return (
-    <FeatureItemContainer>
-      <span className="icon">
-        <FontAwesomeIcon icon="star" />
-      </span>
-      {props.children}
-    </FeatureItemContainer>
-  );
-}
-
 const messages = defineMessages({
   emailPlaceholder: {
     id: "app.auth.email_placeholder",
-    defaultMessage: "Email"
+    defaultMessage: "Email",
   },
   passwordPlaceholder: {
     id: "app.auth.password_placeholder",
-    defaultMessage: "Password"
+    defaultMessage: "Password",
   },
   loginLabel: {
     id: "app.auth.login_label",
-    defaultMessage: "Login"
+    defaultMessage: "Login",
   },
   forgotPasswordTitle: {
     id: "app.auth.forgot_password_title",
-    defaultMessage: "Forgot my password"
-  }
+    defaultMessage: "Forgot my password",
+  },
 });
 
 class Home extends Component {
@@ -335,7 +222,7 @@ class Home extends Component {
       loading: false,
       subscribeFormData: { name: "", email: "" },
       subscribed: false,
-      loginFormData: {}
+      loginFormData: {},
     };
   }
   componentDidMount() {
@@ -347,7 +234,7 @@ class Home extends Component {
       this.setState({ loading: false });
       this.setState({
         isClosed: res.isPrivate,
-        hasMail: res.hasMail
+        hasMail: res.hasMail,
       });
     });
   };
@@ -355,11 +242,11 @@ class Home extends Component {
     this.setState({
       subscribeFormData: {
         ...this.state.subscribeFormData,
-        [target.name]: target.value
-      }
+        [target.name]: target.value,
+      },
     });
   };
-  _handleSubscribeSubmit = ev => {
+  _handleSubscribeSubmit = (ev) => {
     ev.preventDefault();
     Meteor.call(
       "users.mailSubscribe",
@@ -373,14 +260,14 @@ class Home extends Component {
       }
     );
   };
-  _handlePasswordLoginSubmit = ev => {
+  _handlePasswordLoginSubmit = (ev) => {
     ev.preventDefault();
     const { loginFormData } = this.state;
     if (loginFormData.email && loginFormData.password) {
       Meteor.loginWithPassword(
         loginFormData.email,
         loginFormData.password,
-        err => {
+        (err) => {
           if (err) {
             alertStore.add(err);
           }
@@ -392,16 +279,22 @@ class Home extends Component {
     this.setState({
       loginFormData: {
         ...this.state.loginFormData,
-        [target.name]: target.value
-      }
+        [target.name]: target.value,
+      },
     });
   };
-  _handleForgotPwdClick = ev => {
+  _handleForgotPwdClick = (ev) => {
     ev.preventDefault();
     const { intl } = this.props;
     modalStore.setType("small");
     modalStore.setTitle(intl.formatMessage(messages.forgotPasswordTitle));
     modalStore.set(<ForgotPassword />);
+  };
+  _showForm = () => {
+    const { isLoggedIn, invite } = this.props;
+    const { isClosed, hasMail } = this.state;
+    const user = Meteor.user();
+    return isClosed && hasMail && !user && !invite;
   };
   render() {
     const { intl, isLoggedIn, invite } = this.props;
@@ -419,8 +312,8 @@ class Home extends Component {
               />
             </h2>
           </HighlightContainer>
-          {isClosed && hasMail && !user && !invite ? (
-            <>
+          <Content centered={this._showForm()}>
+            {this._showForm() ? (
               <ClosedContainer>
                 <h3>
                   <FormattedMessage
@@ -465,7 +358,7 @@ class Home extends Component {
                           defaultMessage="By submitting this form you agree with our <a href='{url}' target='_blank'>privacy policy</a>."
                           values={{
                             url:
-                              "https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf"
+                              "https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf",
                           }}
                         />
                       </p>
@@ -481,230 +374,133 @@ class Home extends Component {
                   </p>
                 )}
               </ClosedContainer>
-              <hr />
-            </>
-          ) : null}
-          {!isLoggedIn || !user ? (
-            <LoginFormContainer>
-              <FacebookButton type={invite ? "campaigner" : false} />
-              <p className="terms">
-                <FormattedHTMLMessage
-                  id="app.terms_and_policy"
-                  defaultMessage="By registering in LIANE you agree with our <a href='https://files.liane.cc/legal/terms_of_use_v1_pt-br.pdf' target='_blank' rel='external'>terms of use</a> and <a href='https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf' target='_blank' rel='external' >privacy policy</a>."
-                />
-              </p>
-              <div className="password-login">
-                <OrLine bgColor="#f7f7f7">
-                  <FormattedMessage
-                    id="app.auth.or_email"
-                    defaultMessage="Or with your email"
-                  />
-                </OrLine>
-                <Form onSubmit={this._handlePasswordLoginSubmit}>
-                  <div className="inputs">
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder={intl.formatMessage(
-                        messages.emailPlaceholder
-                      )}
-                      onChange={this._handlePasswordLoginChange}
-                    />
-                    <input
-                      type="password"
-                      name="password"
-                      placeholder={intl.formatMessage(
-                        messages.passwordPlaceholder
-                      )}
-                      onChange={this._handlePasswordLoginChange}
-                    />
-                    <input
-                      type="submit"
-                      value={intl.formatMessage(messages.loginLabel)}
-                    />
-                  </div>
-                </Form>
-                <nav>
-                  <a href={FlowRouter.path("App.register")}>
-                    <FormattedMessage
-                      id="app.auth.register_link_label"
-                      defaultMessage="Register new account"
-                    />
-                  </a>
-                  <a
-                    href="javascript:void(0);"
-                    onClick={this._handleForgotPwdClick}
-                  >
-                    <FormattedMessage
-                      id="app.auth.forgot_pwd_label"
-                      defaultMessage="Forgot my password"
-                    />
-                  </a>
-                </nav>
-              </div>
-            </LoginFormContainer>
-          ) : (
-            <UserContainer>
-              <h3>
-                <FormattedMessage
-                  id="app.connected_as"
-                  defaultMessage="Connected as"
-                />{" "}
-                <strong>{user.name}</strong>
-              </h3>
-              {!user.type ? (
-                <p>
-                  <FormattedMessage
-                    id="app.waiting_user_type"
-                    defaultMessage="Waiting selection of user type."
+            ) : null}
+            {!isLoggedIn || !user ? (
+              <LoginFormContainer floated={this._showForm()}>
+                <FacebookButton type={invite ? "campaigner" : false} />
+                <p className="terms">
+                  <FormattedHTMLMessage
+                    id="app.terms_and_policy"
+                    defaultMessage="By registering in LIANE you agree with our <a href='https://files.liane.cc/legal/terms_of_use_v1_pt-br.pdf' target='_blank' rel='external'>terms of use</a> and <a href='https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf' target='_blank' rel='external' >privacy policy</a>."
                   />
                 </p>
-              ) : (
-                <div>
-                  {user.type == "campaigner" ? (
-                    <>
-                      <Button
-                        primary
-                        href={FlowRouter.path("App.campaign.new")}
-                      >
-                        <FormattedMessage
-                          id="app.create_campaign"
-                          defaultMessage="Create new campaign"
-                        />
-                      </Button>
-                      <OrLine />
-                    </>
-                  ) : null}
-                  <p>
+                <div className="password-login">
+                  <OrLine bgColor="#f7f7f7">
                     <FormattedMessage
-                      id="app.connect_campaign"
-                      defaultMessage="Connect with an existing campaign by forwarding your email to the person responsible"
+                      id="app.auth.or_email"
+                      defaultMessage="Or with your email"
                     />
-                    :
-                  </p>
-                  <input type="text" disabled value={user.emails[0].address} />
-                  <Button.Group>
-                    <Button href={FlowRouter.path("App.account")}>
-                      <FormattedMessage
-                        id="app.my_account"
-                        defaultMessage="My account"
+                  </OrLine>
+                  <Form onSubmit={this._handlePasswordLoginSubmit}>
+                    <div className="inputs">
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder={intl.formatMessage(
+                          messages.emailPlaceholder
+                        )}
+                        onChange={this._handlePasswordLoginChange}
                       />
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        Meteor.logout();
-                      }}
+                      <input
+                        type="password"
+                        name="password"
+                        placeholder={intl.formatMessage(
+                          messages.passwordPlaceholder
+                        )}
+                        onChange={this._handlePasswordLoginChange}
+                      />
+                      <input
+                        type="submit"
+                        value={intl.formatMessage(messages.loginLabel)}
+                      />
+                    </div>
+                  </Form>
+                  <nav>
+                    <a href={FlowRouter.path("App.register")}>
+                      <FormattedMessage
+                        id="app.auth.register_link_label"
+                        defaultMessage="Register new account"
+                      />
+                    </a>
+                    <a
+                      href="javascript:void(0);"
+                      onClick={this._handleForgotPwdClick}
                     >
                       <FormattedMessage
-                        id="app.logout"
-                        defaultMessage="Logout"
+                        id="app.auth.forgot_pwd_label"
+                        defaultMessage="Forgot my password"
                       />
-                    </Button>
-                  </Button.Group>
+                    </a>
+                  </nav>
                 </div>
-              )}
-            </UserContainer>
-          )}
-          <Intro>
-            <div className="first">
-              <div className="intro-text">
-                <p>
+              </LoginFormContainer>
+            ) : (
+              <UserContainer>
+                <h3>
                   <FormattedMessage
-                    id="app.intro_text_1"
-                    defaultMessage="Liane is a set of open and free technologies and solutions, developed by Instituto Update to boost innovative and low-cost political campaigns in Latin America."
-                  />
-                </p>
-                <p>
-                  <FormattedMessage
-                    id="app.intro_text_2"
-                    defaultMessage="Offers access to powerful tools empowering campaigns that seeks political innovation, that being the development of practices to bring citizens closer to politics, fight inequalities and strengthen democracy."
-                  />
-                </p>
-              </div>
-            </div>
-          </Intro>
-          <Features>
-            <div>
-              <ul>
-                <FeatureItem>
-                  <FormattedMessage
-                    id="app.features.canvas"
-                    defaultMessage="Electoral canvas for planning"
-                  />
-                </FeatureItem>
-                <FeatureItem>
-                  <FormattedMessage
-                    id="app.features.crm"
-                    defaultMessage="Contacts and relationship management"
-                  />
-                </FeatureItem>
-                <FeatureItem>
-                  <FormattedMessage
-                    id="app.features.volunteers_donors"
-                    defaultMessage="Donors and volunteers management"
-                  />
-                </FeatureItem>
-                <FeatureItem>
-                  <FormattedMessage
-                    id="app.features.conversations"
-                    defaultMessage="Manage Facebook conversations"
-                  />
-                </FeatureItem>
-                <FeatureItem>
-                  <FormattedMessage
-                    id="app.features.map"
-                    defaultMessage="Mapping of actions in the territory"
-                  />
-                </FeatureItem>
-                <FeatureItem>
-                  <span className="with-extra">
-                    <span className="extra">
-                      <FormattedMessage id="app.soon" defaultMessage="soon" />
-                    </span>
-                    <FormattedMessage
-                      id="app.features.audience"
-                      defaultMessage="Facebook audience analysis"
-                    />
-                  </span>
-                </FeatureItem>
-              </ul>
-            </div>
-          </Features>
-          <p className="support-text">
-            <FormattedHTMLMessage
-              id="app.support_message"
-              defaultMessage="Need help or would like to report a problem? Write to <a href='mailto:info@liane.voto'>info@liane.voto</a> and talk to our team."
-            />
-          </p>
-          <Organization>
-            <div className="org-content">
-              <div>
-                <div>
-                  <h2>Instituto Update</h2>
+                    id="app.connected_as"
+                    defaultMessage="Connected as"
+                  />{" "}
+                  <strong>{user.name}</strong>
+                </h3>
+                {!user.type ? (
                   <p>
                     <FormattedMessage
-                      id="app.home.instituto_update"
-                      defaultMessage="Instituto Update is a not-for-profit civil society organization that fosters political innovation in Latin America. Develops intelligence and civic technology projects to bring citizens closer to politics and strengthen democracy based on the vision of political renovation centered on diversity and combating inequalities."
+                      id="app.waiting_user_type"
+                      defaultMessage="Waiting selection of user type."
                     />
                   </p>
-                </div>
-                <div>
-                  <h2>
-                    <FormattedMessage
-                      id="app.home.liane_header"
-                      defaultMessage="Who was Liane?"
+                ) : (
+                  <div>
+                    {user.type == "campaigner" ? (
+                      <>
+                        <Button
+                          primary
+                          href={FlowRouter.path("App.campaign.new")}
+                        >
+                          <FormattedMessage
+                            id="app.create_campaign"
+                            defaultMessage="Create new campaign"
+                          />
+                        </Button>
+                        <OrLine />
+                      </>
+                    ) : null}
+                    <p>
+                      <FormattedMessage
+                        id="app.connect_campaign"
+                        defaultMessage="Connect with an existing campaign by forwarding your email to the person responsible"
+                      />
+                      :
+                    </p>
+                    <input
+                      type="text"
+                      disabled
+                      value={user.emails[0].address}
                     />
-                  </h2>
-                  <p>
-                    <FormattedMessage
-                      id="app.home.liane_text"
-                      defaultMessage="The name is a tribute to Liane Lira, friend and activist who passed away in 2015 and dedicated her life to processes of mobilization, strengthening democracy and political transparency."
-                    />
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Organization>
+                    <Button.Group>
+                      <Button href={FlowRouter.path("App.account")}>
+                        <FormattedMessage
+                          id="app.my_account"
+                          defaultMessage="My account"
+                        />
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          Meteor.logout();
+                        }}
+                      >
+                        <FormattedMessage
+                          id="app.logout"
+                          defaultMessage="Logout"
+                        />
+                      </Button>
+                    </Button.Group>
+                  </div>
+                )}
+              </UserContainer>
+            )}
+          </Content>
         </Container>
       </Page>
     );
@@ -712,7 +508,7 @@ class Home extends Component {
 }
 
 Home.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(Home);
