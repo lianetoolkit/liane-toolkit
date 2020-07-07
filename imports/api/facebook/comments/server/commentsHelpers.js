@@ -369,11 +369,26 @@ const CommentsHelpers = {
       facebookId: facebookAccountId,
     });
 
+    const people = {};
+    for (const person of commentedPeople) {
+      if (!people[person.id]) {
+        people[person.id] = {
+          name: person.name,
+          latestComment: 0,
+        };
+      }
+      people[person.id].latestComment = Math.max(
+        person.comment.created_time || 0,
+        people[person.id].latestComment
+      );
+    }
+
     if (commentedPeople.length) {
       const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
-      for (const commentedPerson of commentedPeople) {
+      for (const personId in people) {
+        const commentedPerson = people[personId];
         const query = {
-          personId: commentedPerson.id,
+          personId: personId,
           facebookAccountId: facebookAccountId,
         };
         const commentsCount = Comments.find(query).count();
@@ -409,11 +424,9 @@ const CommentsHelpers = {
           $set: set,
         };
 
-        if (commentedPerson.comment.created_time) {
+        if (commentedPerson.latestComment) {
           updateObj.$max = {
-            lastInteractionDate: new Date(
-              commentedPerson.comment.created_time || 0
-            ),
+            lastInteractionDate: new Date(commentedPerson.latestComment),
           };
         }
         if (Object.keys(addToSet).length) {
@@ -428,7 +441,7 @@ const CommentsHelpers = {
           peopleBulk
             .find({
               campaignId: campaign._id,
-              facebookId: commentedPerson.id,
+              facebookId: personId,
             })
             .upsert()
             .update({

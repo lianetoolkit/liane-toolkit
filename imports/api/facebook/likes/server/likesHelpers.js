@@ -279,9 +279,24 @@ const LikesHelpers = {
       facebookId: facebookAccountId,
     });
 
+    const people = {};
+    for (const person of likedPeople) {
+      if (!people[person.id]) {
+        people[person.id] = {
+          name: person.name,
+          latestReaction: 0,
+        };
+      }
+      people[person.id].latestReaction = Math.max(
+        person.like.created_time || 0,
+        people[person.id].latestReaction
+      );
+    }
+
     if (likedPeople.length) {
-      const peopleBulk = People.rawCollection().initializeOrderedBulkOp();
-      for (const likedPerson of likedPeople) {
+      const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
+      for (const personId in people) {
+        const likedPerson = people[personId];
         let set = {
           updatedAt: new Date(),
         };
@@ -290,7 +305,7 @@ const LikesHelpers = {
         set["facebookAccountId"] = facebookAccountId;
         set["counts"] = PeopleHelpers.getInteractionCount({
           facebookAccountId,
-          facebookId: likedPerson.id,
+          facebookId: personId,
         });
 
         let updateObj = {
@@ -304,9 +319,9 @@ const LikesHelpers = {
           },
         };
 
-        if (likedPerson.like.created_time) {
+        if (likedPerson.latestReaction) {
           updateObj.$max = {
-            lastInteractionDate: new Date(likedPerson.like.created_time),
+            lastInteractionDate: new Date(likedPerson.latestReaction),
           };
         }
 
@@ -315,7 +330,7 @@ const LikesHelpers = {
           peopleBulk
             .find({
               campaignId: campaign._id,
-              facebookId: likedPerson.id,
+              facebookId: personId,
             })
             .upsert()
             .update({
