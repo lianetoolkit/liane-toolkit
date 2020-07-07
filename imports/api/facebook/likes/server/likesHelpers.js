@@ -25,19 +25,19 @@ const rawLikes = Likes.rawCollection();
 rawLikes.distinctAsync = Meteor.wrapAsync(rawLikes.distinct);
 
 const LikesHelpers = {
-  handleWebhook({ facebookAccountId, data }) {
+  handleWebhook({ facebookAccountId, data, time }) {
     switch (data.verb) {
       case "add":
       case "edit":
-        this.upsertReaction({ facebookAccountId, data });
+        this.upsertReaction({ facebookAccountId, data, time });
         break;
       case "remove":
-        this.removeReaction({ facebookAccountId, data });
+        this.removeReaction({ facebookAccountId, data, time });
         break;
       default:
     }
   },
-  upsertReaction({ facebookAccountId, data }) {
+  upsertReaction({ facebookAccountId, data, time }) {
     if (!data.from) return;
     let reaction = {
       facebookAccountId,
@@ -45,8 +45,12 @@ const LikesHelpers = {
       personId: data.from.id,
       name: data.from.name,
       type: data.reaction_type.toUpperCase(),
-      created_time: data.created_time * 1000,
     };
+    if (data.created_time || time) {
+      reaction.created_time = (data.created_time || time) * 1000;
+    } else {
+      reaction.created_time = Date.now();
+    }
     let query = { personId: reaction.personId, entryId: reaction.entryId };
     // Handle entry comment reaction
     if (data.comment_id) {
@@ -76,16 +80,15 @@ const LikesHelpers = {
         type: `reactions.${data.verb}`,
         parentId: reaction.entryId,
         personId: reaction.personId,
-        timestamp: data.created_time * 1000,
         objectType: data.reaction_type,
+        data: {
+          isCommentReaction: data.comment_id || false,
+        },
       },
       {
         $setOnInsert: {
+          timestamp: reaction.created_time,
           isAdmin: reaction.personId == facebookAccountId,
-          objectType: data.reaction_type,
-          data: {
-            isCommentReaction: data.comment_id || false,
-          },
         },
       }
     );
@@ -169,13 +172,13 @@ const LikesHelpers = {
             type: "people.new",
             accountId: facebookAccountId,
             personId: reaction.personId,
-            timestamp: data.created_time * 1000,
+            timestamp: reaction.created_time,
           });
         }
       }
     }
   },
-  removeReaction({ facebookAccountId, data }) {
+  removeReaction({ facebookAccountId, data, time }) {
     if (!data.from) return;
     let query = {
       personId: data.from.id,
@@ -188,10 +191,17 @@ const LikesHelpers = {
     }
     Likes.remove(query);
 
+    let timestamp;
+    if (data.created_time || time) {
+      timestamp = (data.created_time || time) * 1000;
+    } else {
+      timestamp = Date.now();
+    }
+
     AccountsLogs.upsert(
       {
         type: "reactions.remove",
-        timestamp: data.created_time * 1000,
+        timestamp: timestamp,
         accountId: facebookAccountId,
         personId: query.personId,
         objectType: data.reaction_type,

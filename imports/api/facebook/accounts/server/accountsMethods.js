@@ -60,6 +60,7 @@ export const webhookUpdate = new ValidatedMethod({
               LikesHelpers.handleWebhook({
                 facebookAccountId,
                 data: item.value,
+                time: entry.time,
               });
               break;
             case "album":
