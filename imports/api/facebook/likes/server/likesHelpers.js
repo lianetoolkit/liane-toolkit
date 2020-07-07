@@ -87,8 +87,10 @@ const LikesHelpers = {
       },
       {
         $setOnInsert: {
-          timestamp: reaction.created_time,
           isAdmin: reaction.personId == facebookAccountId,
+        },
+        $set: {
+          timestamp: reaction.created_time,
         },
       }
     );
@@ -201,17 +203,17 @@ const LikesHelpers = {
     AccountsLogs.upsert(
       {
         type: "reactions.remove",
-        timestamp: timestamp,
         accountId: facebookAccountId,
         personId: query.personId,
         objectType: data.reaction_type,
         parentId: query.entryId,
+        data: {
+          isCommentReaction: data.comment_id || false,
+        },
       },
       {
-        $setOnInsert: {
-          data: {
-            isCommentReaction: data.comment_id || false,
-          },
+        $set: {
+          timestamp: timestamp,
         },
       }
     );
