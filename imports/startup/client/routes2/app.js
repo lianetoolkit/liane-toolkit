@@ -46,6 +46,7 @@ appRoutes.route("/", {
     addTitle(`${APP_NAME} | Technology for Political Innovation`);
     return mount(App, {
       invite: queryParams.invite && queryParams.invite,
+      campaignId: queryParams.campaignId,
     });
   },
 });

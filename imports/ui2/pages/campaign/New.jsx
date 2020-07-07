@@ -154,10 +154,7 @@ class NewCampaignPage extends Component {
             loading: false,
           });
         } else {
-          Session.set("campaignId", data.result);
-          ClientStorage.set("invite", false);
-          FlowRouter.go("App.dashboard");
-          window.location.reload();
+          window.location = `/?campaignId=${data.result}`;
         }
       });
     } else {
