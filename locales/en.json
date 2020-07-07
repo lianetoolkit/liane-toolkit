@@ -184,7 +184,7 @@
   "app.campaign_settings.team_title": "Team",
   "app.campaign_settings.team_update_button_label": "Update member",
   "app.campaign_settings.title": "Campaign settings",
-  "app.campaigns.disabled_text": "Your account is not currently allowed to create a new campaign.",
+  "app.campaigns.disabled_text": "Campaign creation is currently not open to the public. If you wish to receive an invite to create your campaign, contact us at {email}!",
   "app.campaigns.disabled_text_2": "If you want to join the team of an existing campaign, contact the administrator of that campaign.",
   "app.campaigns.disabled_title": "Campaign creation not available",
   "app.coment.you_replied": "You replied",

@@ -184,7 +184,7 @@
   "app.campaign_settings.team_title": "Equipe",
   "app.campaign_settings.team_update_button_label": "Atualizar permissões",
   "app.campaign_settings.title": "Configurações de campanha",
-  "app.campaigns.disabled_text": "A criação de novas campanhas está atualmente restrita a convites. Fale com a gente em {email} para mais informações!",
+  "app.campaigns.disabled_text": "A criação de novas campanhas não está aberta ao público. Se você deseja receber um convite para criar sua campanha, fale com a gente em {email}!",
   "app.campaigns.disabled_text_2": "Se você quer integrar o time de uma campanha já existente, entre em contato com o administrador dessa campanha.",
   "app.campaigns.disabled_title": "Criação de campanha não disponível",
   "app.coment.you_replied": "Você respondeu",
@@ -643,7 +643,7 @@
   "app.unexpected_error": "Ocorreu um erro inesperado.",
   "app.user_select.placeholder": "Selecione um usuário...",
   "app.user_upgrade.button_label": "Clique aqui para gerir uma campanha!",
-  "app.user_upgrade.text": "Atualmente você não pode criar uma campanha. Pedimos que se conecte com sua conta Facebook para e forneça permissões requeridas para habilitar todas as nossas funcionalidades.",
+  "app.user_upgrade.text": "Atualmente você não pode criar uma campanha. Pedimos que se conecte com sua conta Facebook e forneça permissões requeridas para habilitar todas as nossas funcionalidades.",
   "app.user_upgrade.title": "Atualize sua conta!",
   "app.waiting_user_type": "Aguardando seleção de tipo de usuário."
 }
