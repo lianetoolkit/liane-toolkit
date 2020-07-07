@@ -4,7 +4,7 @@ import {
   intlShape,
   defineMessages,
   FormattedMessage,
-  FormattedHTMLMessage
+  FormattedHTMLMessage,
 } from "react-intl";
 
 import Nav from "./Nav.jsx";
@@ -15,18 +15,18 @@ const messages = defineMessages({
   confirmRemove: {
     id: "app.campaign_settings.confirm_remove_label",
     defaultMessage:
-      "Are you sure you'd like to permanently remove your campaign?"
-  }
+      "Are you sure you'd like to permanently remove your campaign?",
+  },
 });
 
 class CampaignActionsPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false
+      loading: false,
     };
   }
-  _handleClick = ev => {
+  _handleClick = (ev) => {
     ev.preventDefault();
     const { intl, campaignId } = this.props;
     if (confirm(intl.formatMessage(messages.confirmRemove))) {
@@ -36,7 +36,7 @@ class CampaignActionsPage extends Component {
         if (err) {
           console.log(err);
         } else {
-          FlowRouter.go("App.dashboard");
+          window.location = "/";
         }
       });
     }
@@ -51,7 +51,7 @@ class CampaignActionsPage extends Component {
       return (
         <>
           <Nav campaign={campaign} />
-          <Form onSubmit={ev => ev.preventDefault()}>
+          <Form onSubmit={(ev) => ev.preventDefault()}>
             <Form.Content>
               <button className="delete" onClick={this._handleClick}>
                 <FormattedMessage
@@ -76,7 +76,7 @@ class CampaignActionsPage extends Component {
 }
 
 CampaignActionsPage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(CampaignActionsPage);
