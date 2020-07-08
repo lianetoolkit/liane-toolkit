@@ -196,6 +196,7 @@ export default withTracker((props) => {
       } else if (campaign.creatorId == Meteor.userId()) {
         isAdmin = true;
       }
+      if (!campaign.type) campaign.type = "electoral";
       ClientStorage.set("admin", isAdmin);
       ClientStorage.set("permissions", campaignUser.campaign.permissions);
       ClientStorage.set("campaignType", campaign.type);
