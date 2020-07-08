@@ -19,7 +19,7 @@ export const sendMail = async ({
   let emailData;
   if (!subject && !body) {
     language = language || (data.user ? data.user.userLanguage : "en");
-    const emailData = createEmail(type, language, data);
+    emailData = createEmail(type, language, data);
   }
 
   JobsHelpers.addJob({
