@@ -10,7 +10,6 @@ People.schema = new SimpleSchema({
     type: String,
     index: true,
     optional: true,
-    unique: true,
   },
   name: {
     type: String,
@@ -216,9 +215,6 @@ Meteor.startup(() => {
     People.rawCollection().createIndex({
       name: "text",
       "campaignMeta.contact.email": "text",
-    });
-    People.rawCollection().createIndex({
-      facebookAccounts: 1,
     });
     People.rawCollection().createIndex(
       {

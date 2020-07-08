@@ -28,7 +28,7 @@
     "leaflet-draw": "^1.0.4",
     "leaflet.markercluster": "^1.4.1",
     "libphonenumber-js": "^1.7.44",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.17",
     "markdown-it": "^11.0.0",
     "meteor-node-stubs": "~0.2.4",
     "moment": "^2.27.0",
