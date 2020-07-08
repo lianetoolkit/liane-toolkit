@@ -14,6 +14,7 @@ import Page from "../../components/Page.jsx";
 import Form from "../../components/Form.jsx";
 import Loading from "../../components/Loading.jsx";
 import SelectAccount from "../../components/facebook/SelectAccount.jsx";
+import CampaignTypeSelect from "../../components/CampaignTypeSelect.jsx";
 import OfficeField from "../../components/OfficeField.jsx";
 import CountrySelect from "../../components/CountrySelect.jsx";
 import GeolocationSelect from "../../components/GeolocationSelect.jsx";
@@ -27,6 +28,18 @@ const messages = defineMessages({
   namePlaceholder: {
     id: "app.campaign.form.name.placeholder",
     defaultMessage: "Title of your campaign",
+  },
+  typeLabel: {
+    id: "app.campaign.form.type.label",
+    defaultMessage: "What type of campaign are you running?",
+  },
+  typePlaceholder: {
+    id: "app.campaign.form.type.placeholder",
+    defaultMessage: "Campaign type",
+  },
+  causeLabel: {
+    id: "app.campaign.form.cause.label",
+    defaultMessage: "What is your main cause?",
   },
   candidateLabel: {
     id: "app.campaign.form.candidate.label",
@@ -71,6 +84,7 @@ class NewCampaignPage extends Component {
       loading: false,
       formData: {
         name: "",
+        type: "",
         facebookAccountId: "",
       },
     };
@@ -104,13 +118,27 @@ class NewCampaignPage extends Component {
   };
   _filledForm = () => {
     const { formData } = this.state;
-    return (
+    const defaultValidation =
       formData.name &&
+      formData.type &&
       formData.country &&
       formData.facebookAccountId &&
       formData.geolocation &&
-      formData.geolocation.osm_id
-    );
+      formData.geolocation.osm_id;
+
+    if (formData.type.match(/electoral|mandate/)) {
+      return (
+        defaultValidation &&
+        formData.party &&
+        formData.candidate &&
+        formData.office
+      );
+    }
+
+    if (formData.type.match(/mobilization/)) {
+      return defaultValidation && formData.cause;
+    }
+    return defaultValidation;
   };
   _handleGeolocationChange = ({ geolocation, type }) => {
     if (geolocation) {
@@ -216,24 +244,48 @@ class NewCampaignPage extends Component {
               value={formData.name}
             />
           </Form.Field>
-          <Form.Field label={intl.formatMessage(messages.candidateLabel)}>
-            <input
-              type="text"
-              name="candidate"
-              placeholder={intl.formatMessage(messages.candidatePlaceholder)}
+          <Form.Field label={intl.formatMessage(messages.typeLabel)}>
+            <CampaignTypeSelect
+              name="type"
+              placeholder={intl.formatMessage(messages.typePlaceholder)}
               onChange={this._handleChange}
-              value={formData.candidate}
+              value={formData.type}
             />
           </Form.Field>
-          <Form.Field label={intl.formatMessage(messages.partyLabel)}>
-            <input
-              type="text"
-              name="party"
-              placeholder={intl.formatMessage(messages.partyPlaceholder)}
-              onChange={this._handleChange}
-              value={formData.party}
-            />
-          </Form.Field>
+          {formData.type.match(/electoral|mandate/) ? (
+            <>
+              <Form.Field label={intl.formatMessage(messages.candidateLabel)}>
+                <input
+                  type="text"
+                  name="candidate"
+                  placeholder={intl.formatMessage(
+                    messages.candidatePlaceholder
+                  )}
+                  onChange={this._handleChange}
+                  value={formData.candidate}
+                />
+              </Form.Field>
+              <Form.Field label={intl.formatMessage(messages.partyLabel)}>
+                <input
+                  type="text"
+                  name="party"
+                  placeholder={intl.formatMessage(messages.partyPlaceholder)}
+                  onChange={this._handleChange}
+                  value={formData.party}
+                />
+              </Form.Field>
+            </>
+          ) : null}
+          {formData.type.match(/mobilization/) ? (
+            <Form.Field label={intl.formatMessage(messages.causeLabel)}>
+              <input
+                type="text"
+                name="cause"
+                onChange={this._handleChange}
+                value={formData.cause}
+              />
+            </Form.Field>
+          ) : null}
           <Form.Field label={intl.formatMessage(messages.countryLabel)}>
             <CountrySelect
               name="country"
@@ -241,20 +293,20 @@ class NewCampaignPage extends Component {
               onChange={this._handleChange}
             />
           </Form.Field>
-          {formData.country ? (
-            <>
-              <Form.Field label={intl.formatMessage(messages.officeLabel)}>
-                <OfficeField
-                  country={formData.country}
-                  name="office"
-                  onChange={this._handleChange}
-                />
-              </Form.Field>
-              <GeolocationSelect
+          {formData.country && formData.type.match(/electoral|mandate/) ? (
+            <Form.Field label={intl.formatMessage(messages.officeLabel)}>
+              <OfficeField
                 country={formData.country}
-                onChange={this._handleGeolocationChange}
+                name="office"
+                onChange={this._handleChange}
               />
-            </>
+            </Form.Field>
+          ) : null}
+          {formData.country ? (
+            <GeolocationSelect
+              country={formData.country}
+              onChange={this._handleGeolocationChange}
+            />
           ) : null}
           <p>
             <FormattedMessage

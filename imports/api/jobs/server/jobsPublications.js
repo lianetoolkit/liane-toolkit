@@ -5,10 +5,9 @@ Meteor.publish("jobs.byCampaign", function ({ campaignId, type, status }) {
   const currentUser = this.userId;
   if (
     currentUser &&
-    Meteor.call("campaigns.userCan", {
+    Meteor.call("campaigns.isUserTeam", {
       campaignId,
       userId: currentUser,
-      feature: "admin",
     })
   ) {
     let selector = { "data.campaignId": campaignId };

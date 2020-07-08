@@ -79,6 +79,7 @@ Meteor.publish("campaigns.byUser", function () {
         fields: {
           _id: 1,
           name: 1,
+          type: 1,
           users: 1,
         },
       }
@@ -108,9 +109,11 @@ Meteor.publishComposite("campaigns.publicDetail", function ({
       return Campaigns.find(selector, {
         fields: {
           name: 1,
+          type: 1,
           party: 1,
           candidate: 1,
           office: 1,
+          cause: 1,
           country: 1,
           "forms.slug": 1,
           "forms.crm": 1,
@@ -128,9 +131,11 @@ Meteor.publishComposite("campaigns.detail", function ({ campaignId }) {
     "facebookAccount.facebookId": 1,
     "facebookAccount.userFacebookId": 1,
     name: 1,
+    type: 1,
     candidate: 1,
     party: 1,
     office: 1,
+    cause: 1,
     country: 1,
     creatorId: 1,
     geolocationId: 1,

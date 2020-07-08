@@ -64,15 +64,26 @@ Campaigns.schema = new SimpleSchema({
   name: {
     type: String,
   },
+  type: {
+    type: String,
+    allowedValues: ["electoral", "mandate", "mobilization", "marketing"],
+  },
   party: {
     type: String,
+    optional: true,
   },
   candidate: {
     type: String,
+    optional: true,
   },
   office: {
     type: String,
+    optional: true,
     index: true,
+  },
+  cause: {
+    type: String,
+    optional: true,
   },
   creatorId: {
     type: String,
