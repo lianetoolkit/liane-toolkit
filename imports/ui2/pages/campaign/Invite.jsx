@@ -9,6 +9,7 @@ import Table from "../../components/Table.jsx";
 import Button from "../../components/Button.jsx";
 
 import { messages as officeMessages } from "../../components/OfficeField.jsx";
+import { messages as campaignTypeMessages } from "../../components/CampaignTypeSelect.jsx";
 
 class CampaignInvitePage extends Component {
   constructor(props) {
@@ -25,16 +26,15 @@ class CampaignInvitePage extends Component {
           if (err) {
             console.log(err);
           } else {
-            console.log(res);
             this.setState({
-              campaign: res
+              campaign: res,
             });
           }
         }
       );
     }
   }
-  _handleDeclineClick = ev => {
+  _handleDeclineClick = (ev) => {
     ev.preventDefault();
     const { campaignInviteId } = this.props;
     Meteor.call(
@@ -49,7 +49,7 @@ class CampaignInvitePage extends Component {
       }
     );
   };
-  _handleAcceptClick = ev => {
+  _handleAcceptClick = (ev) => {
     ev.preventDefault();
     const { campaignInviteId } = this.props;
     Meteor.call(
@@ -64,11 +64,17 @@ class CampaignInvitePage extends Component {
       }
     );
   };
-  _officeLabel = office => {
+  _officeLabel = (office) => {
     const { intl } = this.props;
     if (officeMessages[office])
       return intl.formatMessage(officeMessages[office]);
     return office;
+  };
+  _typeLabel = (type) => {
+    const { intl } = this.props;
+    if (campaignTypeMessages[type])
+      return intl.formatMessage(campaignTypeMessages[type]);
+    return type;
   };
   render() {
     const { campaignInviteId } = this.props;
@@ -97,30 +103,56 @@ class CampaignInvitePage extends Component {
                 <tr>
                   <th>
                     <FormattedMessage
-                      id="app.campaign_invite.candidate_label"
-                      defaultMessage="Candidate"
+                      id="app.campaign_invite.type_label"
+                      defaultMessage="Type"
                     />
                   </th>
-                  <td className="fill">{campaign.candidate}</td>
+                  <td className="fill">{this._typeLabel(campaign.type)}</td>
                 </tr>
-                <tr>
-                  <th>
-                    <FormattedMessage
-                      id="app.campaign_invite.party_label"
-                      defaultMessage="Party/movement/coalition"
-                    />
-                  </th>
-                  <td className="fill">{campaign.party}</td>
-                </tr>
-                <tr>
-                  <th>
-                    <FormattedMessage
-                      id="app.campaign_invite.office_label"
-                      defaultMessage="Office"
-                    />
-                  </th>
-                  <td className="fill">{this._officeLabel(campaign.office)}</td>
-                </tr>
+                {campaign.type.match(/electoral|mandate/) ? (
+                  <>
+                    <tr>
+                      <th>
+                        <FormattedMessage
+                          id="app.campaign_invite.candidate_label"
+                          defaultMessage="Candidate"
+                        />
+                      </th>
+                      <td className="fill">{campaign.candidate}</td>
+                    </tr>
+                    <tr>
+                      <th>
+                        <FormattedMessage
+                          id="app.campaign_invite.party_label"
+                          defaultMessage="Party/movement/coalition"
+                        />
+                      </th>
+                      <td className="fill">{campaign.party}</td>
+                    </tr>
+                    <tr>
+                      <th>
+                        <FormattedMessage
+                          id="app.campaign_invite.office_label"
+                          defaultMessage="Office"
+                        />
+                      </th>
+                      <td className="fill">
+                        {this._officeLabel(campaign.office)}
+                      </td>
+                    </tr>
+                  </>
+                ) : null}
+                {campaign.type.match(/mobilization/) ? (
+                  <tr>
+                    <th>
+                      <FormattedMessage
+                        id="app.campaign_invite.cause_label"
+                        defaultMessage="Cause"
+                      />
+                    </th>
+                    <td className="fill">{campaign.cause}</td>
+                  </tr>
+                ) : null}
               </tbody>
             </Table>
           </div>
@@ -146,7 +178,7 @@ class CampaignInvitePage extends Component {
 }
 
 CampaignInvitePage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(CampaignInvitePage);

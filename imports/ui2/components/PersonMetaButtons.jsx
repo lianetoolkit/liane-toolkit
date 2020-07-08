@@ -4,46 +4,47 @@ import {
   intlShape,
   defineMessages,
   FormattedMessage,
-  FormattedHTMLMessage
+  FormattedHTMLMessage,
 } from "react-intl";
 import ReactTooltip from "react-tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ClientStorage } from "meteor/ostrio:cstorage";
 import styled, { css } from "styled-components";
 import { alertStore } from "../containers/Alerts.jsx";
 
 export const labels = defineMessages({
   supporter: {
     id: "app.people.category.supporter",
-    defaultMessage: "Supporter"
+    defaultMessage: "Supporter",
   },
   volunteer: {
     id: "app.people.category.volunteer",
-    defaultMessage: "Volunteer"
+    defaultMessage: "Volunteer",
   },
   mobilizer: {
     id: "app.people.category.mobilizer",
-    defaultMessage: "Mobilizer"
+    defaultMessage: "Mobilizer",
   },
   donor: {
     id: "app.people.category.donor",
-    defaultMessage: "Donor"
+    defaultMessage: "Donor",
   },
   influencer: {
     id: "app.people.category.influencer",
-    defaultMessage: "Influencer"
+    defaultMessage: "Influencer",
   },
   voter: {
     id: "app.people.category.voter",
-    defaultMessage: "Declared vote"
+    defaultMessage: "Declared vote",
   },
   "non-voter": {
     id: "app.people.category.non_voter",
-    defaultMessage: "Can't vote"
+    defaultMessage: "Can't vote",
   },
   troll: {
     id: "app.people.category.troll",
-    defaultMessage: "Troll"
-  }
+    defaultMessage: "Troll",
+  },
 });
 
 const Container = styled.div`
@@ -95,7 +96,7 @@ const Container = styled.div`
       font-size: 1.8em;
     }
   }
-  ${props =>
+  ${(props) =>
     props.vertical &&
     css`
       flex-direction: column;
@@ -103,7 +104,7 @@ const Container = styled.div`
         margin: 0 0 1rem;
       }
     `}
-  ${props =>
+  ${(props) =>
     props.simple &&
     css`
       font-size: 1em;
@@ -113,7 +114,7 @@ const Container = styled.div`
         padding: 0;
       }
     `}
-  ${props =>
+  ${(props) =>
     props.readOnly &&
     css`
       a.meta-icon {
@@ -124,7 +125,7 @@ const Container = styled.div`
         }
       }
     `}
-  ${props =>
+  ${(props) =>
     props.interactive &&
     css`
       a.meta-icon {
@@ -151,13 +152,7 @@ const Container = styled.div`
 `;
 
 class PersonMetaButtons extends React.Component {
-  static keys = [
-    "volunteer",
-    "donor",
-    "voter",
-    "non-voter",
-    "troll"
-  ];
+  static keys = ["volunteer", "donor", "voter", "non-voter", "troll"];
   static colors = {
     supporter: "#7171fc",
     volunteer: "#ffa500",
@@ -166,7 +161,7 @@ class PersonMetaButtons extends React.Component {
     influencer: "#f399cc",
     voter: "#31d5d5",
     "non-voter": "#f25ff2",
-    troll: "#ff5656"
+    troll: "#ff5656",
   };
   static labels = {
     supporter: "Supporter",
@@ -176,16 +171,16 @@ class PersonMetaButtons extends React.Component {
     influencer: "Influencer",
     voter: "Declared vote",
     "non-voter": "Cant't vote",
-    troll: "Troll"
+    troll: "Troll",
   };
   constructor(props) {
     super(props);
     this.state = {
-      loading: {}
+      loading: {},
     };
     this._handleClick = this._handleClick.bind(this);
   }
-  getLabel = key => {
+  getLabel = (key) => {
     const { intl } = this.props;
     return intl.formatMessage(labels[key]);
   };
@@ -197,18 +192,18 @@ class PersonMetaButtons extends React.Component {
     if (person) {
       person.campaignMeta = person.campaignMeta || {};
       const personId = person.personId || person.__originalId || person._id;
-      return ev => {
+      return (ev) => {
         this.setState({
           loading: {
-            [key]: true
-          }
+            [key]: true,
+          },
         });
         const data = {
           personId,
           metaKey: key,
-          metaValue: person.campaignMeta[key] ? false : true
+          metaValue: person.campaignMeta[key] ? false : true,
         };
-        Meteor.call("facebook.people.updatePersonMeta", data, error => {
+        Meteor.call("facebook.people.updatePersonMeta", data, (error) => {
           if (error) {
             alertStore.add(error);
           } else {
@@ -219,8 +214,8 @@ class PersonMetaButtons extends React.Component {
           }
           this.setState({
             loading: {
-              [key]: false
-            }
+              [key]: false,
+            },
           });
         });
       };
@@ -283,6 +278,14 @@ class PersonMetaButtons extends React.Component {
   _metaButton(data = {}, key) {
     const { person, size, readOnly, simple, text, vertical } = this.props;
     const { loading } = this.state;
+
+    const campaignType = ClientStorage.get("campaignType");
+
+    if (!campaignType.match(/electoral|mandate/)) {
+      if (key.match(/voter|non-voter/)) {
+        return null;
+      }
+    }
 
     const hasMeta = this._hasMeta(data, key);
 
@@ -363,7 +366,7 @@ class PersonMetaButtons extends React.Component {
 }
 
 PersonMetaButtons.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(PersonMetaButtons);

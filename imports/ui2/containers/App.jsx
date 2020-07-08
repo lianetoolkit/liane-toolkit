@@ -116,12 +116,14 @@ export default withTracker((props) => {
     const currentCampaignOptions = {
       fields: {
         name: 1,
+        type: 1,
         users: 1,
         country: 1,
         facebookAccount: 1,
         candidate: 1,
         party: 1,
         office: 1,
+        cause: 1,
         creatorId: 1,
         geolocationId: 1,
         forms: 1,
@@ -196,6 +198,7 @@ export default withTracker((props) => {
       }
       ClientStorage.set("admin", isAdmin);
       ClientStorage.set("permissions", campaignUser.campaign.permissions);
+      ClientStorage.set("campaignType", campaign.type);
     }
 
     // Tags

@@ -38,7 +38,7 @@ import {
 const PRIVATE = Meteor.settings.private;
 
 export const canManageCampaign = new ValidatedMethod({
-  name: "campaigns.canManage",
+  name: "campaigns.isUserTeam",
   validate: new SimpleSchema({
     campaignId: {
       type: String,
@@ -171,14 +171,24 @@ export const campaignsCreate = new ValidatedMethod({
     name: {
       type: String,
     },
+    type: {
+      type: String,
+    },
     party: {
       type: String,
+      optional: true,
     },
     candidate: {
       type: String,
+      optional: true,
     },
     office: {
       type: String,
+      optional: true,
+    },
+    cause: {
+      type: String,
+      optional: true,
     },
     country: {
       type: String,
@@ -207,10 +217,12 @@ export const campaignsCreate = new ValidatedMethod({
   }).validator(),
   run({
     name,
+    type,
     country,
     party,
     candidate,
     office,
+    cause,
     geolocation,
     facebookAccountId,
     invite,
@@ -219,9 +231,7 @@ export const campaignsCreate = new ValidatedMethod({
 
     logger.debug("campaigns.create called", {
       name,
-      country,
-      party,
-      office,
+      type,
       country,
       geolocation,
       facebookAccountId,
@@ -254,12 +264,26 @@ export const campaignsCreate = new ValidatedMethod({
     let insertDoc = {
       users,
       name,
-      candidate,
-      party,
-      office,
+      type,
       country,
       creatorId: userId,
     };
+
+    if (type.match(/electoral|mandate/)) {
+      if (!party) throw new Meteor.Error(400, "You must define a party");
+      if (!candidate)
+        throw new Meteor.Error(400, "You must define a candidacy name");
+      if (!office)
+        throw new Meteor.Error(400, "You must define an office position");
+      insertDoc.party = party;
+      insertDoc.candidate = candidate;
+      insertDoc.office = office;
+    }
+
+    if (type.match(/mobilization/)) {
+      if (!cause) throw new Meteor.Error(400, "You must define a cause");
+      insertDoc.cause = cause;
+    }
 
     const user = Meteor.users.findOne(userId);
     const token = user.services.facebook.accessToken;
@@ -315,10 +339,12 @@ export const campaignsCreate = new ValidatedMethod({
       campaignId,
       data: {
         name,
+        type,
         geolocationId,
         candidate,
         party,
         office,
+        cause,
         country,
         userName: creatorData.name,
         geolocationName: geolocationData.name,
@@ -547,9 +573,15 @@ export const campaignsUpdate = new ValidatedMethod({
     },
     candidate: {
       type: String,
+      optional: true,
     },
     party: {
       type: String,
+      optional: true,
+    },
+    cause: {
+      type: String,
+      optional: true,
     },
   }).validator(),
   run({ campaignId, ...data }) {
@@ -579,11 +611,37 @@ export const campaignsUpdate = new ValidatedMethod({
       throw new Meteor.Error(401, "Not allowed");
     }
 
+    if (!data.name) {
+      throw new Meteor.Error(400, "You must have a name");
+    }
+
+    const $set = {
+      name: data.name,
+    };
+
+    if (campaign.type.match(/electoral|mandate/)) {
+      if (!data.candidate) {
+        throw new Meteor.Error(400, "You must have a candidacy name");
+      }
+      if (!data.party) {
+        throw new Meteor.Error(400, "You must have a party");
+      }
+      $set.candidate = data.candidate;
+      $set.party = data.party;
+    }
+
+    if (campaign.type.match(/mobilization/)) {
+      if (!data.cause) {
+        throw new Meteor.Error(400, "You must have a cause");
+      }
+      $set.cause = data.cause;
+    }
+
     Campaigns.update(
       {
         _id: campaignId,
       },
-      { $set: data }
+      { $set }
     );
     Meteor.call("log", {
       type: "campaigns.update",
@@ -858,9 +916,11 @@ export const campaignInviteData = new ValidatedMethod({
       {
         fields: {
           name: 1,
+          type: 1,
           office: 1,
           party: 1,
           candidate: 1,
+          cause: 1,
         },
       }
     );
@@ -1443,10 +1503,9 @@ export const campaignCounts = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.userCan", {
+      !Meteor.call("campaigns.isUserTeam", {
         userId,
         campaignId,
-        feature: "admin",
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");

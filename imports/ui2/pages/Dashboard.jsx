@@ -92,15 +92,18 @@ class DashboardPage extends Component {
       (entriesJob.status == "running" || runningEntriesJobs.length)
     );
   };
+  isLoading = () => {
+    const { campaignId, entriesJob } = this.props;
+    console.log(entriesJob);
+    return;
+    !campaignId ||
+      !entriesJob ||
+      (entriesJob.repeated == 0 && entriesJob.status !== "running");
+  };
   render() {
     const { intl, campaignId, entriesJob } = this.props;
     const { ready, counts } = this.state;
-    if (
-      !campaignId ||
-      !entriesJob ||
-      (entriesJob.repeated == 0 && entriesJob.status !== "running")
-    )
-      return <Loading full />;
+    if (this.isLoading()) return <Loading full />;
     if (this.isFirstRun()) {
       return (
         <FirstRunContainer>

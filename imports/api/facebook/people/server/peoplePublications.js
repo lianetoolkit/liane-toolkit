@@ -5,7 +5,7 @@ import { Entries } from "/imports/api/facebook/entries/entries.js";
 const { Jobs } = require("/imports/api/jobs/jobs.js");
 import _ from "underscore";
 
-Meteor.publish("people.map", function({ campaignId }) {
+Meteor.publish("people.map", function ({ campaignId }) {
   this.unblock();
   check(campaignId, String);
   const userId = this.userId;
@@ -14,21 +14,21 @@ Meteor.publish("people.map", function({ campaignId }) {
     campaignId,
     userId,
     feature: "map",
-    permission: "view"
+    permission: "view",
   });
   if (allowed) {
     return People.find({
       campaignId,
-      "location.coordinates": { $exists: true }
+      "location.coordinates": { $exists: true },
     });
   }
   return this.ready();
 });
 
-Meteor.publish("people.search", function({ search, options }) {
+Meteor.publish("people.search", function ({ search, options }) {
   logger.debug("people.search called", {
     search,
-    options
+    options,
   });
   check(search, Object);
   check(options, Object);
@@ -40,17 +40,17 @@ Meteor.publish("people.search", function({ search, options }) {
         campaignId: options.props.campaignId,
         userId,
         feature: "people",
-        permission: "view"
+        permission: "view",
       });
       if (allowed) {
         let query = {
-          campaignId: options.props.campaignId
+          campaignId: options.props.campaignId,
         };
         if (search.q) {
           let regex = new RegExp(search.q, "i");
           query.$or = [
             { name: regex },
-            { "campaignMeta.contact.email": regex }
+            { "campaignMeta.contact.email": regex },
           ];
         }
         Mongo.Collection._publishCursor(
@@ -64,7 +64,7 @@ Meteor.publish("people.search", function({ search, options }) {
   return this.ready();
 });
 
-Meteor.publish("people.exports", function({ campaignId }) {
+Meteor.publish("people.exports", function ({ campaignId }) {
   this.unblock();
   logger.debug("people.exportJobs called", { campaignId });
   const userId = this.userId;
@@ -73,7 +73,7 @@ Meteor.publish("people.exports", function({ campaignId }) {
       campaignId,
       userId,
       feature: "people",
-      permission: "view"
+      permission: "view",
     })
   ) {
     return PeopleExports.find(
@@ -85,24 +85,22 @@ Meteor.publish("people.exports", function({ campaignId }) {
           url: 1,
           expired: 1,
           expiresAt: 1,
-          createdAt: 1
-        }
+          createdAt: 1,
+        },
       }
     );
   }
   return this.ready();
 });
 
-Meteor.publish("people.exportJobCount", function({ campaignId }) {
+Meteor.publish("people.exportJobCount", function ({ campaignId }) {
   this.unblock();
   logger.debug("people.exportJobCount called", { campaignId });
   const userId = this.userId;
   if (
-    Meteor.call("campaigns.userCan", {
+    Meteor.call("campaigns.isUserTeam", {
       campaignId,
       userId,
-      feature: "people",
-      permission: "view"
     })
   ) {
     Counts.publish(
@@ -111,7 +109,7 @@ Meteor.publish("people.exportJobCount", function({ campaignId }) {
       Jobs.find({
         type: "people.export",
         "data.campaignId": campaignId,
-        status: { $ne: "failed" }
+        status: { $ne: "failed" },
       })
     );
     return;
@@ -119,16 +117,14 @@ Meteor.publish("people.exportJobCount", function({ campaignId }) {
   return this.ready();
 });
 
-Meteor.publish("people.importJobCount", function({ campaignId }) {
+Meteor.publish("people.importJobCount", function ({ campaignId }) {
   this.unblock();
   logger.debug("people.importJobCount called", { campaignId });
   const userId = this.userId;
   if (
-    Meteor.call("campaigns.userCan", {
+    Meteor.call("campaigns.isUserTeam", {
       campaignId,
       userId,
-      feature: "people",
-      permission: "view"
     })
   ) {
     Counts.publish(
@@ -137,7 +133,7 @@ Meteor.publish("people.importJobCount", function({ campaignId }) {
       Jobs.find({
         type: "people.importPerson",
         "data.campaignId": campaignId,
-        status: { $ne: "failed" }
+        status: { $ne: "failed" },
       })
     );
     return;
@@ -145,7 +141,7 @@ Meteor.publish("people.importJobCount", function({ campaignId }) {
   return this.ready();
 });
 
-Meteor.publishComposite("people.detail", function({ personId }) {
+Meteor.publishComposite("people.detail", function ({ personId }) {
   logger.debug("people.detail called", { personId });
 
   const userId = this.userId;
@@ -158,11 +154,11 @@ Meteor.publishComposite("people.detail", function({ personId }) {
         campaignId: person.campaignId,
         userId,
         feature: "people",
-        permission: "view"
+        permission: "view",
       });
       if (allowed) {
         return {
-          find: function() {
+          find: function () {
             return People.find({ _id: personId });
           },
           children(person) {
@@ -172,7 +168,7 @@ Meteor.publishComposite("people.detail", function({ personId }) {
                 campaignId: person.campaignId,
                 userId,
                 feature: "comments",
-                permission: "view"
+                permission: "view",
               })
             ) {
               children.push({
@@ -181,7 +177,7 @@ Meteor.publishComposite("people.detail", function({ personId }) {
                     return Comments.find(
                       { personId: person.facebookId },
                       {
-                        sort: { created_time: -1 }
+                        sort: { created_time: -1 },
                       }
                     );
                   }
@@ -189,39 +185,39 @@ Meteor.publishComposite("people.detail", function({ personId }) {
                 children(parentComment) {
                   let children = [
                     {
-                      find: function(comment) {
+                      find: function (comment) {
                         return Entries.find({ _id: comment.entryId });
-                      }
+                      },
                     },
                     {
-                      find: function(comment) {
+                      find: function (comment) {
                         return Comments.find(
                           {
                             personId: facebookId,
-                            parentId: comment._id
+                            parentId: comment._id,
                           },
                           {
-                            sort: { created_time: -1 }
+                            sort: { created_time: -1 },
                           }
                         );
-                      }
-                    }
+                      },
+                    },
                   ];
                   if (parentComment.parentId) {
                     children.push({
-                      find: function(comment) {
+                      find: function (comment) {
                         if (comment.parentId) {
                           return Comments.find({ _id: comment.parentId });
                         }
-                      }
+                      },
                     });
                   }
                   return children;
-                }
+                },
               });
             }
             return children;
-          }
+          },
         };
       }
     }
@@ -229,7 +225,7 @@ Meteor.publishComposite("people.detail", function({ personId }) {
   return this.ready();
 });
 
-Meteor.publish("people.tags", function({ campaignId }) {
+Meteor.publish("people.tags", function ({ campaignId }) {
   logger.debug("people.tags called", { campaignId });
   const userId = this.userId;
   if (userId) {
@@ -241,7 +237,7 @@ Meteor.publish("people.tags", function({ campaignId }) {
       campaignId,
       userId,
       feature: "people",
-      permission: "view"
+      permission: "view",
     });
     if (allowed) {
       return PeopleTags.find({ campaignId });
@@ -250,7 +246,7 @@ Meteor.publish("people.tags", function({ campaignId }) {
   return this.ready();
 });
 
-Meteor.publishComposite("people.form.detail", function({ formId, psid }) {
+Meteor.publishComposite("people.form.detail", function ({ formId, psid }) {
   logger.debug("people.form.detail called", { formId, psid });
   let selector = {};
   if (formId) selector = { formId };
@@ -261,7 +257,7 @@ Meteor.publishComposite("people.form.detail", function({ formId, psid }) {
   }
   const campaign = Campaigns.findOne({ _id: person.campaignId });
   return {
-    find: function() {
+    find: function () {
       return People.find(selector, {
         fields: {
           name: 1,
@@ -270,8 +266,8 @@ Meteor.publishComposite("people.form.detail", function({ formId, psid }) {
           "campaignMeta.basic_info": 1,
           "campaignMeta.donor": 1,
           "campaignMeta.supporter": 1,
-          "campaignMeta.mobilizer": 1
-        }
+          "campaignMeta.mobilizer": 1,
+        },
       });
     },
     children: [
@@ -283,17 +279,17 @@ Meteor.publishComposite("people.form.detail", function({ formId, psid }) {
               fields: {
                 name: 1,
                 country: 1,
-                "forms.crm": 1
-              }
+                "forms.crm": 1,
+              },
             }
           );
-        }
-      }
-    ]
+        },
+      },
+    ],
   };
 });
 
-Meteor.publish("peopleLists.byCampaign", function({ campaignId }) {
+Meteor.publish("peopleLists.byCampaign", function ({ campaignId }) {
   this.unblock();
   const userId = this.userId;
   const campaign = Campaigns.findOne(campaignId);
@@ -301,7 +297,7 @@ Meteor.publish("peopleLists.byCampaign", function({ campaignId }) {
     campaignId,
     userId,
     feature: "people",
-    permission: "view"
+    permission: "view",
   });
   if (campaign && allowed) {
     return PeopleLists.find({ campaignId });
