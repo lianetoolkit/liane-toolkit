@@ -131,7 +131,7 @@ const CommentsHelpers = {
         type: `comments.${data.verb}`,
         personId: comment.personId,
         objectId: data.comment_id,
-        timestamp: data.created_time * 1000,
+        timestamp: new Date(comment.created_time).getTime(),
       },
       {
         $setOnInsert: {
@@ -254,7 +254,7 @@ const CommentsHelpers = {
             type: "people.new",
             accountId: facebookAccountId,
             personId: comment.personId,
-            timestamp: data.created_time * 1000,
+            timestamp: new Date(comment.created_time).getTime(),
           });
         }
       }
