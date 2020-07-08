@@ -13,6 +13,7 @@ export const accessLog = new ValidatedMethod({
     },
     campaignId: {
       type: String,
+      optional: true,
     },
     data: {
       type: Object,
@@ -28,7 +29,6 @@ export const accessLog = new ValidatedMethod({
       connectionId: this.connection.id,
       ip: this.connection.clientAddress,
       userId: this.userId,
-      campaignId,
       type,
     };
     if (path) {
@@ -36,6 +36,9 @@ export const accessLog = new ValidatedMethod({
     }
     if (data) {
       doc.data = data;
+    }
+    if (campaignId) {
+      doc.campaignId = campaignId;
     }
     AccessLogs.insert(doc);
     // }

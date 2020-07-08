@@ -154,10 +154,7 @@ class NewCampaignPage extends Component {
             loading: false,
           });
         } else {
-          Session.set("campaignId", data.result);
-          ClientStorage.set("invite", false);
-          FlowRouter.go("App.dashboard");
-          window.location.reload();
+          window.location = `/?campaignId=${data.result}`;
         }
       });
     } else {
@@ -167,7 +164,6 @@ class NewCampaignPage extends Component {
   render() {
     const { intl } = this.props;
     const { ready, validation, loading, formData } = this.state;
-    console.log(validation);
     if (!ready) {
       return <Loading full />;
     }
@@ -183,7 +179,16 @@ class NewCampaignPage extends Component {
           <p>
             <FormattedMessage
               id="app.campaigns.disabled_text"
-              defaultMessage="Your account is not currently allowed to create a new campaign."
+              defaultMessage="Campaign creation is currently invitation only, contact {email} for more information!"
+              values={{
+                email: Meteor.settings.public.contactEmail,
+              }}
+            />
+          </p>
+          <p>
+            <FormattedMessage
+              id="app.campaigns.disabled_text_2"
+              defaultMessage="If you want to join the team of an existing campaign, contact the administrator of that campaign."
             />
           </p>
         </Page.Boxed>

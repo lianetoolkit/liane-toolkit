@@ -25,19 +25,19 @@ const rawLikes = Likes.rawCollection();
 rawLikes.distinctAsync = Meteor.wrapAsync(rawLikes.distinct);
 
 const LikesHelpers = {
-  handleWebhook({ facebookAccountId, data }) {
+  handleWebhook({ facebookAccountId, data, time }) {
     switch (data.verb) {
       case "add":
       case "edit":
-        this.upsertReaction({ facebookAccountId, data });
+        this.upsertReaction({ facebookAccountId, data, time });
         break;
       case "remove":
-        this.removeReaction({ facebookAccountId, data });
+        this.removeReaction({ facebookAccountId, data, time });
         break;
       default:
     }
   },
-  upsertReaction({ facebookAccountId, data }) {
+  upsertReaction({ facebookAccountId, data, time }) {
     if (!data.from) return;
     let reaction = {
       facebookAccountId,
@@ -45,8 +45,12 @@ const LikesHelpers = {
       personId: data.from.id,
       name: data.from.name,
       type: data.reaction_type.toUpperCase(),
-      created_time: data.created_time * 1000,
     };
+    if (data.created_time || time) {
+      reaction.created_time = (data.created_time || time) * 1000;
+    } else {
+      reaction.created_time = Date.now();
+    }
     let query = { personId: reaction.personId, entryId: reaction.entryId };
     // Handle entry comment reaction
     if (data.comment_id) {
@@ -76,16 +80,17 @@ const LikesHelpers = {
         type: `reactions.${data.verb}`,
         parentId: reaction.entryId,
         personId: reaction.personId,
-        timestamp: data.created_time * 1000,
         objectType: data.reaction_type,
+        data: {
+          isCommentReaction: data.comment_id || false,
+        },
       },
       {
         $setOnInsert: {
           isAdmin: reaction.personId == facebookAccountId,
-          objectType: data.reaction_type,
-          data: {
-            isCommentReaction: data.comment_id || false,
-          },
+        },
+        $set: {
+          timestamp: reaction.created_time,
         },
       }
     );
@@ -169,13 +174,13 @@ const LikesHelpers = {
             type: "people.new",
             accountId: facebookAccountId,
             personId: reaction.personId,
-            timestamp: data.created_time * 1000,
+            timestamp: reaction.created_time,
           });
         }
       }
     }
   },
-  removeReaction({ facebookAccountId, data }) {
+  removeReaction({ facebookAccountId, data, time }) {
     if (!data.from) return;
     let query = {
       personId: data.from.id,
@@ -188,20 +193,27 @@ const LikesHelpers = {
     }
     Likes.remove(query);
 
+    let timestamp;
+    if (data.created_time || time) {
+      timestamp = (data.created_time || time) * 1000;
+    } else {
+      timestamp = Date.now();
+    }
+
     AccountsLogs.upsert(
       {
         type: "reactions.remove",
-        timestamp: data.created_time * 1000,
         accountId: facebookAccountId,
         personId: query.personId,
         objectType: data.reaction_type,
         parentId: query.entryId,
+        data: {
+          isCommentReaction: data.comment_id || false,
+        },
       },
       {
-        $setOnInsert: {
-          data: {
-            isCommentReaction: data.comment_id || false,
-          },
+        $set: {
+          timestamp: timestamp,
         },
       }
     );
@@ -279,9 +291,24 @@ const LikesHelpers = {
       facebookId: facebookAccountId,
     });
 
+    const people = {};
+    for (const person of likedPeople) {
+      if (!people[person.id]) {
+        people[person.id] = {
+          name: person.name,
+          latestReaction: 0,
+        };
+      }
+      people[person.id].latestReaction = Math.max(
+        person.like.created_time || 0,
+        people[person.id].latestReaction
+      );
+    }
+
     if (likedPeople.length) {
-      const peopleBulk = People.rawCollection().initializeOrderedBulkOp();
-      for (const likedPerson of likedPeople) {
+      const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
+      for (const personId in people) {
+        const likedPerson = people[personId];
         let set = {
           updatedAt: new Date(),
         };
@@ -290,7 +317,7 @@ const LikesHelpers = {
         set["facebookAccountId"] = facebookAccountId;
         set["counts"] = PeopleHelpers.getInteractionCount({
           facebookAccountId,
-          facebookId: likedPerson.id,
+          facebookId: personId,
         });
 
         let updateObj = {
@@ -304,9 +331,9 @@ const LikesHelpers = {
           },
         };
 
-        if (likedPerson.like.created_time) {
+        if (likedPerson.latestReaction) {
           updateObj.$max = {
-            lastInteractionDate: new Date(likedPerson.like.created_time),
+            lastInteractionDate: new Date(likedPerson.latestReaction),
           };
         }
 
@@ -315,7 +342,7 @@ const LikesHelpers = {
           peopleBulk
             .find({
               campaignId: campaign._id,
-              facebookId: likedPerson.id,
+              facebookId: personId,
             })
             .upsert()
             .update({
