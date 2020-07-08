@@ -24,6 +24,7 @@
     "flat": "^4.1.0",
     "humanize-plus": "^1.8.2",
     "ioredis": "^3.2.2",
+    "jquery": "^3.5.1",
     "leaflet": "^1.6.0",
     "leaflet-draw": "^1.0.4",
     "leaflet.markercluster": "^1.4.1",
