@@ -40,3 +40,5 @@ underscore@1.0.10
 ostrio:cstorage
 lamhieu:unblock
 blaze-html-templates
+jquery
+okgrow:analytics
