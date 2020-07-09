@@ -10,7 +10,7 @@ import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
 import { Random } from "meteor/random";
-import { uniqBy, groupBy, mapKeys, flatten, get, set, cloneDeep } from "lodash";
+import { uniqBy, groupBy, mapKeys, flatten, get, set, cloneDeep, pick } from "lodash";
 import Papa from "papaparse";
 import crypto from "crypto";
 import fs from "fs";
@@ -118,7 +118,7 @@ const PeopleHelpers = {
           address: get(person, "campaignMeta.basic_info.address"),
         })
       );
-    } catch (err) {}
+    } catch (err) { }
     People.update(personId, { $set: { location } });
   },
   geocode({ address }) {
@@ -511,8 +511,42 @@ const PeopleHelpers = {
 
     return;
   },
+  markUnresolve({ personId, related = [] }) {
+    let $set = { unresolved: true }
+    let $addToSet = {}
+    if (related.length > 0) {
+      $set.related = related;
+    }
+    People.update(personId, { $set, $addToSet });
+  },
+  registerDuplicates({ personId }) {
+    res = this.findDuplicates({ personId });
+
+
+    if (res.none) {
+      const persons = res.none;
+      let ids = [];
+      // get the ids 
+      persons.map((person, index) => {
+        if (index != 0) {
+          ids.push(person._id)
+          this.markUnresolve({
+            personId: person._id
+          })
+        }
+      });
+      ids.push(personId);
+      this.markUnresolve({
+        personId: persons[0]._id,
+        related: ids
+      })
+    }
+  },
   findDuplicates({ personId }) {
+
     const person = People.findOne(personId);
+    console.log('>>  peopleHelpers > findDuplicates ')
+    // ! Check Phone Number 
     let matches = [];
     const _queries = () => {
       let queries = [];
