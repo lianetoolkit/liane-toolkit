@@ -384,13 +384,17 @@ class InvitesPage extends Component {
       );
       if (nameKey && emailKey && entry[nameKey] && entry[emailKey]) {
         const promise = new Promise((resolve, reject) => {
-          this.createInvite(entry[nameKey], entry[emailKey], (err, res) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(res);
+          this.createInvite(
+            entry[nameKey],
+            entry[emailKey].trim().toLowerCase(),
+            (err, res) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(res);
+              }
             }
-          });
+          );
         });
         promises.push(promise);
       }
@@ -400,7 +404,8 @@ class InvitesPage extends Component {
         this.setState({ importing: false });
       })
       .catch((err) => {
-        console.log(err);
+        this.setState({ importing: false });
+        alertStore.add(err);
       });
   };
   _handleClose = () => {
