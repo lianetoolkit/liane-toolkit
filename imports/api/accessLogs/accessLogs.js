@@ -5,39 +5,39 @@ const AccessLogs = new Mongo.Collection("access_logs");
 AccessLogs.schema = new SimpleSchema({
   connectionId: {
     type: String,
-    index: true
+    index: true,
   },
   ip: {
     type: String,
-    index: true
+    index: true,
   },
   country: {
     type: String,
     index: true,
-    optional: true
+    optional: true,
   },
   campaignId: {
     type: String,
     index: true,
-    optional: true
+    optional: true,
   },
   userId: {
     type: String,
-    index: true
+    index: true,
   },
   type: {
     type: String,
-    index: true
+    index: true,
   },
   path: {
     type: String,
     index: true,
-    optional: true
+    optional: true,
   },
   data: {
     type: Object,
     optional: true,
-    blackbox: true
+    blackbox: true,
   },
   timestamp: {
     type: Number,
@@ -49,8 +49,8 @@ AccessLogs.schema = new SimpleSchema({
       } else {
         return this.unset();
       }
-    }
-  }
+    },
+  },
 });
 
 AccessLogs.attachSchema(AccessLogs.schema);

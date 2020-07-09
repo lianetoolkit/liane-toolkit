@@ -27,6 +27,8 @@ export default withTracker((props) => {
   const userHandle = AppSubs.subscribe("users.data");
   const notificationsHandle = AppSubs.subscribe("notifications.byUser");
 
+  const routeName = FlowRouter.getRouteName();
+
   const connected = Meteor.status().connected;
   const isLoggedIn = Meteor.userId() !== null;
   const user = userHandle.ready()
@@ -61,6 +63,11 @@ export default withTracker((props) => {
     );
   }
 
+  if (props.campaignId) {
+    Session.set("campaignId", props.campaignId);
+    FlowRouter.setQueryParams({ campaignId: null });
+  }
+
   const incomingCampaignId = Session.get("campaignId");
 
   if (incomingCampaignId) {
@@ -69,7 +76,11 @@ export default withTracker((props) => {
   }
 
   let hasCampaign = false;
-  if (campaignsHandle.ready() && campaigns.length) {
+  if (
+    campaignsHandle.ready() &&
+    campaigns.length &&
+    routeName != "App.campaign.new"
+  ) {
     if (ClientStorage.has("campaign")) {
       hasCampaign = true;
       let currentCampaign = ClientStorage.get("campaign");
@@ -101,16 +112,18 @@ export default withTracker((props) => {
 
   let importCount = 0;
   let exportCount = 0;
-  if (campaignId) {
+  if (campaignId && routeName != "App.campaign.new") {
     const currentCampaignOptions = {
       fields: {
         name: 1,
+        type: 1,
         users: 1,
         country: 1,
         facebookAccount: 1,
         candidate: 1,
         party: 1,
         office: 1,
+        cause: 1,
         creatorId: 1,
         geolocationId: 1,
         forms: 1,
@@ -183,8 +196,10 @@ export default withTracker((props) => {
       } else if (campaign.creatorId == Meteor.userId()) {
         isAdmin = true;
       }
+      if (!campaign.type) campaign.type = "electoral";
       ClientStorage.set("admin", isAdmin);
       ClientStorage.set("permissions", campaignUser.campaign.permissions);
+      ClientStorage.set("campaignType", campaign.type);
     }
 
     // Tags

@@ -7,6 +7,7 @@ import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js
 import { EntriesHelpers } from "/imports/api/facebook/entries/server/entriesHelpers.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
+import { AccountsLogs } from "/imports/api/accountsLogs/accountsLogs";
 import { HTTP } from "meteor/http";
 import { Random } from "meteor/random";
 import _ from "underscore";
@@ -42,12 +43,14 @@ const commentsFields = [
   "comment_count",
   "reactions.limit(0).summary(true).as(reaction)",
   "reactions.type(LIKE).limit(0).summary(true).as(like)",
+  "reactions.type(CARE).limit(0).summary(true).as(care)",
+  "reactions.type(PRIDE).limit(0).summary(true).as(pride)",
   "reactions.type(LOVE).limit(0).summary(true).as(love)",
   "reactions.type(WOW).limit(0).summary(true).as(wow)",
   "reactions.type(HAHA).limit(0).summary(true).as(haha)",
   "reactions.type(SAD).limit(0).summary(true).as(sad)",
   "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
-  "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
+  "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)",
 ];
 
 const CommentsHelpers = {
@@ -65,7 +68,7 @@ const CommentsHelpers = {
   },
   upsertComment({ facebookAccountId, data }) {
     const campaignWithToken = Campaigns.findOne({
-      "facebookAccount.facebookId": facebookAccountId
+      "facebookAccount.facebookId": facebookAccountId,
     });
     if (!campaignWithToken || !campaignWithToken.facebookAccount.accessToken) {
       throw new Meteor.Error(400, "Facebook account not available");
@@ -75,7 +78,7 @@ const CommentsHelpers = {
       comment = Promise.await(
         FB.api(data.comment_id, {
           fields: commentsFields,
-          access_token: campaignWithToken.facebookAccount.accessToken
+          access_token: campaignWithToken.facebookAccount.accessToken,
         })
       );
     } catch (error) {
@@ -91,8 +94,8 @@ const CommentsHelpers = {
           post_id: comment.post_id,
           adminReplied: comment.from
             ? comment.from.id == facebookAccountId
-            : false
-        }
+            : false,
+        },
       });
     }
     let from;
@@ -112,6 +115,8 @@ const CommentsHelpers = {
     // Remove raw reaction count
     delete comment.reaction;
     delete comment.like;
+    delete comment.care;
+    delete comment.pride;
     delete comment.love;
     delete comment.wow;
     delete comment.haha;
@@ -121,12 +126,29 @@ const CommentsHelpers = {
 
     Comments.upsert({ _id: data.comment_id }, { $set: comment });
 
+    AccountsLogs.upsert(
+      {
+        type: `comments.${data.verb}`,
+        personId: comment.personId,
+        objectId: data.comment_id,
+        timestamp: new Date(comment.created_time).getTime(),
+      },
+      {
+        $setOnInsert: {
+          objectType: "comment",
+          accountId: facebookAccountId,
+          isAdmin: comment.personId == facebookAccountId,
+          parentId: comment.parentId || comment.entryId,
+        },
+      }
+    );
+
     // Update adminReplied if comment does not have it already
     if (data.hasOwnProperty("adminReplied")) {
       Comments.update(
         {
           _id: data.comment_id,
-          adminReplied: { $ne: true }
+          adminReplied: { $ne: true },
         },
         { $set: { adminReplied: data.adminReplied } }
       );
@@ -137,7 +159,7 @@ const CommentsHelpers = {
       try {
         EntriesHelpers.updateInteractionCount({
           entryId: data.post_id,
-          facebookAccountId
+          facebookAccountId,
         });
       } catch (e) {
         logger.debug("Entry update failed", e);
@@ -147,28 +169,28 @@ const CommentsHelpers = {
     // Upsert person
     if (comment.personId) {
       const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
-        facebookId: facebookAccountId
+        facebookId: facebookAccountId,
       });
       const query = {
         personId: comment.personId,
-        facebookAccountId
+        facebookAccountId,
       };
       const hasPrivateReply = !!Comments.findOne({
         ...query,
-        can_reply_privately: true
+        can_reply_privately: true,
       });
       let set = {
         lastValidation: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
       set["counts"] = PeopleHelpers.getInteractionCount({
         facebookId: comment.personId,
-        facebookAccountId
+        facebookAccountId,
       });
       set["facebookAccountId"] = facebookAccountId;
 
       let addToSet = {
-        facebookAccounts: facebookAccountId
+        facebookAccounts: facebookAccountId,
       };
       let pull = {};
 
@@ -183,14 +205,14 @@ const CommentsHelpers = {
         $setOnInsert: {
           createdAt: new Date(),
           source: "facebook",
-          name: from.name
+          name: from.name,
         },
-        $set: set
+        $set: set,
       };
 
       if (comment.created_time) {
         updateObj.$max = {
-          lastInteractionDate: new Date(comment.created_time)
+          lastInteractionDate: new Date(comment.created_time),
         };
       }
       if (Object.keys(addToSet).length) {
@@ -202,25 +224,39 @@ const CommentsHelpers = {
 
       const PeopleRawCollection = People.rawCollection();
       for (const campaign of accountCampaigns) {
-        const _id = Random.id();
-        PeopleRawCollection.update(
-          {
-            campaignId: campaign._id,
-            facebookId: comment.personId
-          },
-          {
-            ...updateObj,
-            $setOnInsert: {
-              ...updateObj.$setOnInsert,
-              _id,
-              formId: PeopleHelpers.generateFormId(_id)
+        const person = People.findOne({
+          campaignId: campaign._id,
+          facebookId: comment.personId,
+        });
+        if (person) {
+          PeopleRawCollection.update({ _id: person._id }, updateObj);
+        } else {
+          const _id = Random.id();
+          PeopleRawCollection.update(
+            {
+              campaignId: campaign._id,
+              facebookId: comment.personId,
+            },
+            {
+              ...updateObj,
+              $setOnInsert: {
+                ...updateObj.$setOnInsert,
+                _id,
+                formId: PeopleHelpers.generateFormId(_id),
+              },
+            },
+            {
+              multi: false,
+              upsert: true,
             }
-          },
-          {
-            upsert: true,
-            multi: false
-          }
-        );
+          );
+          AccountsLogs.insert({
+            type: "people.new",
+            accountId: facebookAccountId,
+            personId: comment.personId,
+            timestamp: new Date(comment.created_time).getTime(),
+          });
+        }
       }
     }
 
@@ -252,15 +288,30 @@ const CommentsHelpers = {
               post_id: reply.entryId,
               from: {
                 id: reply.personId,
-                name: reply.name
-              }
-            }
+                name: reply.name,
+              },
+            },
           });
         }
       }
     }
 
     Comments.remove(comment._id);
+
+    AccountsLogs.upsert(
+      {
+        type: "comments.remove",
+        objectId: comment._id,
+        personId: comment.personId,
+      },
+      {
+        $setOnInsert: {
+          accountId: comment.facebookAccountId,
+          objectType: "comment",
+          timestamp: data.created_time * 1000,
+        },
+      }
+    );
 
     // Update entry
     try {
@@ -271,21 +322,21 @@ const CommentsHelpers = {
 
     // Update person
     const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
-      facebookId: facebookAccountId
+      facebookId: facebookAccountId,
     });
     for (const campaign of accountCampaigns) {
       People.update(
         {
           campaignId: campaign._id,
-          facebookId: comment.personId
+          facebookId: comment.personId,
         },
         {
           $set: {
             counts: PeopleHelpers.getInteractionCount({
               facebookId: comment.personId,
-              facebookAccountId
-            })
-          }
+              facebookAccountId,
+            }),
+          },
         }
       );
     }
@@ -296,18 +347,18 @@ const CommentsHelpers = {
 
     const commentedPeople = Comments.find({
       facebookAccountId,
-      entryId
-    }).map(comment => {
+      entryId,
+    }).map((comment) => {
       return {
         id: comment.personId,
-        name: comment.name
+        name: comment.name,
       };
     });
 
     if (commentedPeople.length) {
       this.updatePeopleCommentsCount({
         facebookAccountId,
-        commentedPeople
+        commentedPeople,
       });
     }
   },
@@ -315,31 +366,46 @@ const CommentsHelpers = {
     check(facebookAccountId, String);
 
     const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
-      facebookId: facebookAccountId
+      facebookId: facebookAccountId,
     });
+
+    const people = {};
+    for (const person of commentedPeople) {
+      if (!people[person.id]) {
+        people[person.id] = {
+          name: person.name,
+          latestComment: 0,
+        };
+      }
+      people[person.id].latestComment = Math.max(
+        person.comment.created_time || 0,
+        people[person.id].latestComment
+      );
+    }
 
     if (commentedPeople.length) {
       const peopleBulk = People.rawCollection().initializeUnorderedBulkOp();
-      for (const commentedPerson of commentedPeople) {
+      for (const personId in people) {
+        const commentedPerson = people[personId];
         const query = {
-          personId: commentedPerson.id,
-          facebookAccountId: facebookAccountId
+          personId: personId,
+          facebookAccountId: facebookAccountId,
         };
         const commentsCount = Comments.find(query).count();
         const hasPrivateReply = !!Comments.findOne({
           ...query,
-          can_reply_privately: true
+          can_reply_privately: true,
         });
         let set = {
           lastValidation: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
         set["name"] = commentedPerson.name;
         set["counts.comments"] = commentsCount;
         set["facebookAccountId"] = facebookAccountId;
 
         let addToSet = {
-          facebookAccounts: facebookAccountId
+          facebookAccounts: facebookAccountId,
         };
         let pull = {};
 
@@ -353,16 +419,14 @@ const CommentsHelpers = {
         let updateObj = {
           $setOnInsert: {
             createdAt: new Date(),
-            source: "facebook"
+            source: "facebook",
           },
-          $set: set
+          $set: set,
         };
 
-        if (commentedPerson.comment.created_time) {
+        if (commentedPerson.latestComment) {
           updateObj.$max = {
-            lastInteractionDate: new Date(
-              commentedPerson.comment.created_time || 0
-            )
+            lastInteractionDate: new Date(commentedPerson.latestComment),
           };
         }
         if (Object.keys(addToSet).length) {
@@ -377,7 +441,7 @@ const CommentsHelpers = {
           peopleBulk
             .find({
               campaignId: campaign._id,
-              facebookId: commentedPerson.id
+              facebookId: personId,
             })
             .upsert()
             .update({
@@ -385,8 +449,8 @@ const CommentsHelpers = {
               $setOnInsert: {
                 ...updateObj.$setOnInsert,
                 _id,
-                formId: PeopleHelpers.generateFormId(_id)
-              }
+                formId: PeopleHelpers.generateFormId(_id),
+              },
             });
         }
       }
@@ -401,7 +465,7 @@ const CommentsHelpers = {
         FB.api(`${commentId}/comments`, {
           fields: commentsFields,
           limit: 1000,
-          access_token: accessToken
+          access_token: accessToken,
         })
       );
     } catch (error) {
@@ -423,13 +487,15 @@ const CommentsHelpers = {
   getReactionCountFromFBData({ comment }) {
     return {
       like: comment.like ? comment.like.summary.total_count : 0,
+      care: comment.care ? comment.care.summary.total_count : 0,
+      pride: comment.pride ? comment.pride.summary.total_count : 0,
       love: comment.love ? comment.love.summary.total_count : 0,
       wow: comment.wow ? comment.wow.summary.total_count : 0,
       haha: comment.haha ? comment.haha.summary.total_count : 0,
       sad: comment.sad ? comment.sad.summary.total_count : 0,
       angry: comment.angry ? comment.angry.summary.total_count : 0,
       thankful: comment.thankful ? comment.thankful.summary.total_count : 0,
-      reaction: comment.reaction ? comment.reaction.summary.total_count : 0
+      reaction: comment.reaction ? comment.reaction.summary.total_count : 0,
     };
   },
   getEntryComments({ facebookAccountId, entryId, accessToken }) {
@@ -438,7 +504,7 @@ const CommentsHelpers = {
     check(accessToken, String);
 
     logger.debug("CommentsHelpers.getEntryComments called", {
-      entryId
+      entryId,
     });
 
     let commentedPeople = [];
@@ -457,6 +523,8 @@ const CommentsHelpers = {
       // Remove raw reaction count
       delete comment.reaction;
       delete comment.like;
+      delete comment.care;
+      delete comment.pride;
       delete comment.love;
       delete comment.wow;
       delete comment.haha;
@@ -468,15 +536,12 @@ const CommentsHelpers = {
           facebookAccountId,
           entryId,
           commentId,
-          accessToken
+          accessToken,
         });
       }
-      bulk
-        .find({ _id: commentId })
-        .upsert()
-        .update({
-          $set: comment
-        });
+      bulk.find({ _id: commentId }).upsert().update({
+        $set: comment,
+      });
     };
 
     const _insertBulk = ({ data }) => {
@@ -485,19 +550,19 @@ const CommentsHelpers = {
         if (comment.from && comment.comment_count > 0) {
           const replies = this.getCommentReplies({
             commentId: comment.id,
-            accessToken
+            accessToken,
           });
           comment.adminReplied =
-            replies.findIndex(c =>
+            replies.findIndex((c) =>
               c.from ? c.from.id == facebookAccountId : false
             ) != -1;
           for (const reply of replies) {
             addCommentToBulk({
               comment: {
                 ...reply,
-                parentId: comment.id
+                parentId: comment.id,
               },
-              bulk
+              bulk,
             });
           }
         }
@@ -509,7 +574,7 @@ const CommentsHelpers = {
           Meteor.bindEnvironment((e, result) => {
             this.updatePeopleCommentsCount({
               facebookAccountId,
-              commentedPeople
+              commentedPeople,
             });
           })
         );
@@ -522,7 +587,7 @@ const CommentsHelpers = {
         FB.api(`${entryId}/comments`, {
           fields: commentsFields,
           limit: 1000,
-          access_token: accessToken
+          access_token: accessToken,
         })
       );
     } catch (error) {
@@ -542,7 +607,7 @@ const CommentsHelpers = {
     }
 
     return;
-  }
+  },
 };
 
 exports.CommentsHelpers = CommentsHelpers;

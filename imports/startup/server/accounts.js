@@ -40,7 +40,6 @@ Accounts.onLogin(function (data) {
 });
 
 Accounts.onCreateUser(function (options, user) {
-  console.log({ options, user });
   const userProperties = { profile: {} };
 
   const hasUser = !!Meteor.users.findOne();

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 
 import Grid from "../components/Grid.jsx";
 import Intro from "../components/Intro.jsx";
@@ -9,17 +10,17 @@ class DefaultEmail extends Component {
     const { title, data } = this.props;
     return (
       <Grid>
-        {data.user ? (
-          <Intro>
-            <FormattedMessage
-              id="app.email.intro"
-              defaultMessage="Hello, {name}!"
-              values={{ name: data.user.name }}
-            />
-          </Intro>
-        ) : null}
+        <Intro>
+          <FormattedMessage
+            id="app.email.intro"
+            defaultMessage="Hello, {name}!"
+            values={{ name: data.user ? data.user.name : "%NAME%" }}
+          />
+        </Intro>
         {title ? <Title>{title}</Title> : null}
-        <p>{data.text}</p>
+        <Grid>
+          <div dangerouslySetInnerHTML={{ __html: data.content }} />
+        </Grid>
       </Grid>
     );
   }

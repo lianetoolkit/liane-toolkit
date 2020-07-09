@@ -12,10 +12,11 @@ const CampaignsJobs = {
       let errored = false;
       try {
         CampaignsHelpers.refreshCampaignAccountToken({
-          campaignId
+          campaignId,
         });
       } catch (error) {
         errored = true;
+        CampaignsHelpers.disconnectAccount({ campaignId });
         return job.fail(error.message);
       } finally {
         if (!errored) {
@@ -27,23 +28,23 @@ const CampaignsJobs = {
 
     workerOptions: {
       concurrency: 2,
-      pollInterval: 2500
+      pollInterval: 2500,
     },
 
     jobOptions() {
       const options = {
         retry: {
-          retries: 3,
-          wait: 5 * 60 * 1000
+          retries: 1,
+          wait: 5 * 60 * 1000,
         },
         repeat: {
-          wait: 2 * 60 * 60 * 1000
+          wait: 2 * 60 * 60 * 1000,
           // schedule: "0 0 12 * * *"
-        }
+        },
       };
       return options;
-    }
-  }
+    },
+  },
 };
 
 exports.CampaignsJobs = CampaignsJobs;

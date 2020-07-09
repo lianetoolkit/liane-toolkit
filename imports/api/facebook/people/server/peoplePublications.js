@@ -132,7 +132,7 @@ Meteor.publish("people.exportJobCount", function ({ campaignId }) {
   logger.debug("people.exportJobCount called", { campaignId });
   const userId = this.userId;
   if (
-    Meteor.call("campaigns.userCan", {
+    Meteor.call("campaigns.isUserTeam", {
       campaignId,
       userId,
       feature: "people",
@@ -158,7 +158,7 @@ Meteor.publish("people.importJobCount", function ({ campaignId }) {
   logger.debug("people.importJobCount called", { campaignId });
   const userId = this.userId;
   if (
-    Meteor.call("campaigns.userCan", {
+    Meteor.call("campaigns.isUserTeam", {
       campaignId,
       userId,
       feature: "people",

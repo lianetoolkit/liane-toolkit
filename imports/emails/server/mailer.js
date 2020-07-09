@@ -16,18 +16,17 @@ export const sendMail = async ({
     return;
   }
 
-  language = language || (data.user ? data.user.userLanguage : "en");
-
   let emailData;
   if (!subject && !body) {
-    const emailData = createEmail(type, language, data);
+    language = language || (data.user ? data.user.userLanguage : "en");
+    emailData = createEmail(type, language, data);
   }
 
   JobsHelpers.addJob({
     jobType: "emails.sendMail",
     jobData: {
       from: `"Liane" <${Meteor.settings.public.appEmail}>`,
-      to: recipient || data.user.emails[0].address,
+      to: recipient || `"${data.user.name}" <${data.user.emails[0].address}>`,
       subject: subject || emailData.subject,
       html: body || emailData.body,
     },

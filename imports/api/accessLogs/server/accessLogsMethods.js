@@ -5,20 +5,21 @@ export const accessLog = new ValidatedMethod({
   name: "log",
   validate: new SimpleSchema({
     type: {
-      type: String
+      type: String,
     },
     path: {
       type: String,
-      optional: true
+      optional: true,
     },
     campaignId: {
-      type: String
+      type: String,
+      optional: true,
     },
     data: {
       type: Object,
       blackbox: true,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ type, path, campaignId, data }) {
     this.unblock();
@@ -28,16 +29,18 @@ export const accessLog = new ValidatedMethod({
       connectionId: this.connection.id,
       ip: this.connection.clientAddress,
       userId: this.userId,
-      campaignId,
-      type
+      type,
     };
     if (path) {
       doc.path = path;
     }
-    if(data) {
+    if (data) {
       doc.data = data;
+    }
+    if (campaignId) {
+      doc.campaignId = campaignId;
     }
     AccessLogs.insert(doc);
     // }
-  }
+  },
 });

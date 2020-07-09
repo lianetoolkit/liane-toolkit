@@ -64,15 +64,26 @@ Campaigns.schema = new SimpleSchema({
   name: {
     type: String,
   },
+  type: {
+    type: String,
+    allowedValues: ["electoral", "mandate", "mobilization", "marketing"],
+  },
   party: {
     type: String,
+    optional: true,
   },
   candidate: {
     type: String,
+    optional: true,
   },
   office: {
     type: String,
+    optional: true,
     index: true,
+  },
+  cause: {
+    type: String,
+    optional: true,
   },
   creatorId: {
     type: String,
@@ -177,8 +188,17 @@ Invites.schema = new SimpleSchema({
       }
     },
   },
-  designated: {
+  name: {
     type: String,
+    optional: true,
+  },
+  email: {
+    type: String,
+    optional: true,
+  },
+  sent: {
+    type: Boolean,
+    defaultValue: false,
     optional: true,
   },
   used: {

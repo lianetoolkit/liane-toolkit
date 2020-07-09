@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import { get, set } from "lodash";
 
@@ -16,42 +16,51 @@ import Table from "../../../components/Table.jsx";
 import Form from "../../../components/Form.jsx";
 import PersonFormInfo from "../../../components/PersonFormInfo.jsx";
 import { messages as officeMessages } from "../../../components/OfficeField.jsx";
+import { messages as campaignTypeMessages } from "../../../components/CampaignTypeSelect.jsx";
 
 import { languages } from "/locales";
 
 const messages = defineMessages({
   nameLabel: {
     id: "app.campaign_settings.name_label",
-    defaultMessage: "Campaign name"
+    defaultMessage: "Campaign name",
+  },
+  typeLabel: {
+    id: "app.campaign_settings.type_label",
+    defaultMessage: "Type",
   },
   candidateLabel: {
     id: "app.campaign_settings.candidate_label",
-    defaultMessage: "Candidate"
+    defaultMessage: "Candidate",
   },
   partyLabel: {
     id: "app.campaign_settings.party_label",
-    defaultMessage: "Party/movement/coalition"
+    defaultMessage: "Party/movement/coalition",
   },
   officeLabel: {
     id: "app.campaign_settings.office_label",
-    defaultMessage: "Office"
+    defaultMessage: "Office",
+  },
+  causeLabel: {
+    id: "app.campaign_settings.cause_label",
+    defaultMessage: "Cause",
   },
   countryLabel: {
     id: "app.campaign_settings.country_label",
-    defaultMessage: "Country"
+    defaultMessage: "Country",
   },
   regionLabel: {
     id: "app.campaign_settings.region_label",
-    defaultMessage: "Region"
+    defaultMessage: "Region",
   },
   locationLabel: {
     id: "app.campaign_settings.location_label",
-    defaultMessage: "Location"
+    defaultMessage: "Location",
   },
   saveLabel: {
     id: "app.campaign_settings.save",
-    defaultMessage: "Save"
-  }
+    defaultMessage: "Save",
+  },
 });
 
 class CampaignSettingsPage extends Component {
@@ -60,8 +69,8 @@ class CampaignSettingsPage extends Component {
     this.state = {
       formData: {
         campaignId: "",
-        name: ""
-      }
+        name: "",
+      },
     };
   }
   static getDerivedStateFromProps({ campaign }, { formData }) {
@@ -71,8 +80,9 @@ class CampaignSettingsPage extends Component {
           campaignId: "",
           name: "",
           candidate: "",
-          party: ""
-        }
+          party: "",
+          cause: "",
+        },
       };
     } else if (campaign._id !== formData.campaignId) {
       return {
@@ -80,8 +90,9 @@ class CampaignSettingsPage extends Component {
           campaignId: campaign._id,
           name: campaign.name,
           candidate: campaign.candidate,
-          party: campaign.party
-        }
+          party: campaign.party,
+          cause: campaign.cause,
+        },
       };
     }
     return null;
@@ -94,10 +105,10 @@ class CampaignSettingsPage extends Component {
     const newFormData = { ...this.state.formData };
     set(newFormData, target.name, target.value);
     this.setState({
-      formData: newFormData
+      formData: newFormData,
     });
   };
-  _handleSubmit = ev => {
+  _handleSubmit = (ev) => {
     ev.preventDefault();
     if (this._filledForm()) {
       const { formData } = this.state;
@@ -110,15 +121,21 @@ class CampaignSettingsPage extends Component {
       });
     }
   };
-  getValue = key => {
+  getValue = (key) => {
     const { formData } = this.state;
     return get(formData, key);
   };
-  _officeLabel = office => {
+  _officeLabel = (office) => {
     const { intl } = this.props;
     if (officeMessages[office])
       return intl.formatMessage(officeMessages[office]);
     return office;
+  };
+  _typeLabel = (type) => {
+    const { intl } = this.props;
+    if (campaignTypeMessages[type])
+      return intl.formatMessage(campaignTypeMessages[type]);
+    return type;
   };
   render() {
     const { intl, campaign } = this.props;
@@ -131,15 +148,23 @@ class CampaignSettingsPage extends Component {
             <Table>
               <tbody>
                 <tr>
+                  <th>{intl.formatMessage(messages.typeLabel)}</th>
+                  <td className="fill">{this._typeLabel(campaign.type)}</td>
+                </tr>
+                <tr>
                   <th>{intl.formatMessage(messages.locationLabel)}</th>
                   <td className="fill">
                     {campaign.geolocation.name} - {campaign.country}
                   </td>
                 </tr>
-                <tr>
-                  <th>{intl.formatMessage(messages.officeLabel)}</th>
-                  <td className="fill">{this._officeLabel(campaign.office)}</td>
-                </tr>
+                {campaign.type.match(/electoral|mandate/) ? (
+                  <tr>
+                    <th>{intl.formatMessage(messages.officeLabel)}</th>
+                    <td className="fill">
+                      {this._officeLabel(campaign.office)}
+                    </td>
+                  </tr>
+                ) : null}
               </tbody>
             </Table>
             <hr />
@@ -152,22 +177,36 @@ class CampaignSettingsPage extends Component {
                 onChange={this._handleChange}
               />
             </Form.Field>
-            <Form.Field label={intl.formatMessage(messages.candidateLabel)}>
-              <input
-                type="text"
-                name="candidate"
-                value={formData.candidate}
-                onChange={this._handleChange}
-              />
-            </Form.Field>
-            <Form.Field label={intl.formatMessage(messages.partyLabel)}>
-              <input
-                type="text"
-                name="party"
-                value={formData.party}
-                onChange={this._handleChange}
-              />
-            </Form.Field>
+            {campaign.type.match(/electoral|mandate/) ? (
+              <>
+                <Form.Field label={intl.formatMessage(messages.candidateLabel)}>
+                  <input
+                    type="text"
+                    name="candidate"
+                    value={formData.candidate}
+                    onChange={this._handleChange}
+                  />
+                </Form.Field>
+                <Form.Field label={intl.formatMessage(messages.partyLabel)}>
+                  <input
+                    type="text"
+                    name="party"
+                    value={formData.party}
+                    onChange={this._handleChange}
+                  />
+                </Form.Field>
+              </>
+            ) : null}
+            {campaign.type.match(/mobilization/) ? (
+              <Form.Field label={intl.formatMessage(messages.causeLabel)}>
+                <input
+                  type="text"
+                  name="cause"
+                  value={formData.cause}
+                  onChange={this._handleChange}
+                />
+              </Form.Field>
+            ) : null}
           </Form.Content>
           <Form.Actions>
             <input
@@ -183,7 +222,7 @@ class CampaignSettingsPage extends Component {
 }
 
 CampaignSettingsPage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(CampaignSettingsPage);

@@ -34,16 +34,17 @@ export const webhookUpdate = new ValidatedMethod({
     if (WEBHOOK_TOKEN !== token) {
       throw new Meteor.Error("Invalid token");
     }
-    logger.debug("facebook.accounts.webhook.update called", {
-      facebookAccountId,
-      data,
-    });
     // Validate facebook account
     const account = FacebookAccounts.findOne({ facebookId: facebookAccountId });
     if (!account) {
       // TODO Unsuscribe from `subscribed_apps`
       logger.debug("webhookUpdate received unknown Facebook Account ID");
       return true;
+    } else {
+      logger.debug("facebook.accounts.webhook.update called", {
+        facebookAccountId,
+        data,
+      });
     }
     data.entry.forEach((entry) => {
       if (entry.changes) {
@@ -59,6 +60,7 @@ export const webhookUpdate = new ValidatedMethod({
               LikesHelpers.handleWebhook({
                 facebookAccountId,
                 data: item.value,
+                time: entry.time,
               });
               break;
             case "album":

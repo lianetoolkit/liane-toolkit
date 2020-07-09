@@ -184,9 +184,9 @@ class PeopleForm extends Component {
         volunteer: get(nextProps.person, "campaignMeta.volunteer")
       };
       merge(formData, personData);
-      const contribute =
-        formData.donor || formData.mobilizer || formData.supporter;
-      this.setState({ formData, contribute });
+      // const contribute =
+      //   formData.donor || formData.mobilizer || formData.supporter;
+      this.setState({ formData, contribute: false });
     }
   }
   _handleChange = ({ target }) => {
@@ -445,7 +445,14 @@ class PeopleForm extends Component {
                     value={formData.address}
                     onChange={target => this._handleChange({ target })}
                   />
-                  {this._displayParticipateButton() ? (
+                  <Form.Field label={intl.formatMessage(messages.skillsLabel)}>
+                    <SkillsField
+                      name="skills"
+                      value={formData.skills || []}
+                      onChange={this._handleChange}
+                    />
+                  </Form.Field>
+                  {/* {this._displayParticipateButton() ? (
                     <Button
                       onClick={ev => {
                         ev.preventDefault();
@@ -457,18 +464,9 @@ class PeopleForm extends Component {
                         defaultMessage="I'd like to participate"
                       />
                     </Button>
-                  ) : null}
+                  ) : null} */}
                   {contribute ? (
                     <div className="contribute">
-                      <Form.Field
-                        label={intl.formatMessage(messages.skillsLabel)}
-                      >
-                        <SkillsField
-                          name="skills"
-                          value={formData.skills || []}
-                          onChange={this._handleChange}
-                        />
-                      </Form.Field>
                       <label>
                         <input
                           type="checkbox"

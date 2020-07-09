@@ -10,6 +10,7 @@ import { Jobs } from "/imports/api/jobs/jobs.js";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { GeolocationsHelpers } from "/imports/api/geolocations/server/geolocationsHelpers.js";
 // DDPRateLimiter = require('meteor/ddp-rate-limiter').DDPRateLimiter;
+import { Geolocations } from "/imports/api/geolocations/geolocations";
 import { Notifications } from "/imports/api/notifications/notifications";
 import { NotificationsHelpers } from "/imports/api/notifications/server/notificationsHelpers";
 import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
@@ -18,6 +19,15 @@ import _ from "underscore";
 import { People } from "/imports/api/facebook/people/people.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
+
+import MarkdownIt from "markdown-it";
+import createEmail from "/imports/emails/server/createEmail";
+
+const markdown = new MarkdownIt({
+  html: true,
+  breaks: true,
+  linkify: true,
+});
 
 import {
   FEATURES,
@@ -28,7 +38,7 @@ import {
 const PRIVATE = Meteor.settings.private;
 
 export const canManageCampaign = new ValidatedMethod({
-  name: "campaigns.canManage",
+  name: "campaigns.isUserTeam",
   validate: new SimpleSchema({
     campaignId: {
       type: String,
@@ -161,14 +171,24 @@ export const campaignsCreate = new ValidatedMethod({
     name: {
       type: String,
     },
+    type: {
+      type: String,
+    },
     party: {
       type: String,
+      optional: true,
     },
     candidate: {
       type: String,
+      optional: true,
     },
     office: {
       type: String,
+      optional: true,
+    },
+    cause: {
+      type: String,
+      optional: true,
     },
     country: {
       type: String,
@@ -197,10 +217,12 @@ export const campaignsCreate = new ValidatedMethod({
   }).validator(),
   run({
     name,
+    type,
     country,
     party,
     candidate,
     office,
+    cause,
     geolocation,
     facebookAccountId,
     invite,
@@ -209,9 +231,7 @@ export const campaignsCreate = new ValidatedMethod({
 
     logger.debug("campaigns.create called", {
       name,
-      country,
-      party,
-      office,
+      type,
       country,
       geolocation,
       facebookAccountId,
@@ -244,12 +264,26 @@ export const campaignsCreate = new ValidatedMethod({
     let insertDoc = {
       users,
       name,
-      candidate,
-      party,
-      office,
+      type,
       country,
       creatorId: userId,
     };
+
+    if (type.match(/electoral|mandate/)) {
+      if (!party) throw new Meteor.Error(400, "You must define a party");
+      if (!candidate)
+        throw new Meteor.Error(400, "You must define a candidacy name");
+      if (!office)
+        throw new Meteor.Error(400, "You must define an office position");
+      insertDoc.party = party;
+      insertDoc.candidate = candidate;
+      insertDoc.office = office;
+    }
+
+    if (type.match(/mobilization/)) {
+      if (!cause) throw new Meteor.Error(400, "You must define a cause");
+      insertDoc.cause = cause;
+    }
 
     const user = Meteor.users.findOne(userId);
     const token = user.services.facebook.accessToken;
@@ -298,10 +332,27 @@ export const campaignsCreate = new ValidatedMethod({
       );
     }
 
+    const geolocationData = Geolocations.findOne(geolocationId);
+    const creatorData = Meteor.users.findOne(userId);
     Meteor.call("log", {
       type: "campaigns.add",
       campaignId,
-      data: { name },
+      data: {
+        name,
+        type,
+        geolocationId,
+        candidate,
+        party,
+        office,
+        cause,
+        country,
+        userName: creatorData.name,
+        geolocationName: geolocationData.name,
+        geolocationType: geolocationData.regionType,
+        accountId: account.id,
+        accountName: account.name,
+        invite: hasInvite ? invite : false,
+      },
     });
 
     return { result: campaignId };
@@ -501,6 +552,12 @@ export const campaignsFormUpdate = new ValidatedMethod({
       },
       { $set }
     );
+
+    Meteor.call("log", {
+      type: "campaigns.formUpdate",
+      campaignId,
+      data,
+    });
   },
 });
 
@@ -516,9 +573,15 @@ export const campaignsUpdate = new ValidatedMethod({
     },
     candidate: {
       type: String,
+      optional: true,
     },
     party: {
       type: String,
+      optional: true,
+    },
+    cause: {
+      type: String,
+      optional: true,
     },
   }).validator(),
   run({ campaignId, ...data }) {
@@ -548,12 +611,43 @@ export const campaignsUpdate = new ValidatedMethod({
       throw new Meteor.Error(401, "Not allowed");
     }
 
+    if (!data.name) {
+      throw new Meteor.Error(400, "You must have a name");
+    }
+
+    const $set = {
+      name: data.name,
+    };
+
+    if (campaign.type.match(/electoral|mandate/)) {
+      if (!data.candidate) {
+        throw new Meteor.Error(400, "You must have a candidacy name");
+      }
+      if (!data.party) {
+        throw new Meteor.Error(400, "You must have a party");
+      }
+      $set.candidate = data.candidate;
+      $set.party = data.party;
+    }
+
+    if (campaign.type.match(/mobilization/)) {
+      if (!data.cause) {
+        throw new Meteor.Error(400, "You must have a cause");
+      }
+      $set.cause = data.cause;
+    }
+
     Campaigns.update(
       {
         _id: campaignId,
       },
-      { $set: data }
+      { $set }
     );
+    Meteor.call("log", {
+      type: "campaigns.update",
+      campaignId,
+      data,
+    });
   },
 });
 
@@ -594,7 +688,6 @@ export const campaignsRemove = new ValidatedMethod({
     Meteor.call("log", {
       type: "campaigns.remove",
       campaignId,
-      data: { name: campaign.name },
     });
 
     return res;
@@ -629,11 +722,18 @@ export const campaignsSuspend = new ValidatedMethod({
       throw new Meteor.Error(403, "Permission denied");
     }
 
+    let logType;
     if (suspend) {
-      return CampaignsHelpers.suspendCampaign({ campaignId });
+      logType = "suspended";
+      CampaignsHelpers.suspendCampaign({ campaignId });
     } else {
-      return CampaignsHelpers.activateCampaign({ campaignId });
+      logType = "activated";
+      CampaignsHelpers.activateCampaign({ campaignId });
     }
+    Meteor.call("log", {
+      type: `campaigns.${logType}`,
+      campaignId,
+    });
   },
 });
 
@@ -690,12 +790,14 @@ export const campaignRefreshHealthCheck = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.userCan", {
-        campaignId,
-        userId,
-        feature: "admin",
-      }) ||
-      Roles.userIsInRole(userId, ["admin"])
+      !(
+        Roles.userIsInRole(userId, ["admin"]) ||
+        Meteor.call("campaigns.userCan", {
+          campaignId,
+          userId,
+          feature: "admin",
+        })
+      )
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
@@ -757,14 +859,17 @@ export const campaignUpdateFacebook = new ValidatedMethod({
       },
     });
 
-    const job = Jobs.findOne({
-      "data.campaignId": campaignId,
-      type: "campaigns.healthCheck",
+    FacebookAccountsHelpers.updateFBSubscription({
+      facebookAccountId: campaign.facebookAccount.facebookId,
+      token: accountToken.result,
     });
 
-    if (job) {
-      Jobs.getJob(job._id).restart();
-    }
+    CampaignsHelpers.refreshHealthCheck({ campaignId });
+
+    Meteor.call("log", {
+      type: "campaigns.facebook.token.update",
+      campaignId,
+    });
   },
 });
 
@@ -811,9 +916,11 @@ export const campaignInviteData = new ValidatedMethod({
       {
         fields: {
           name: 1,
+          type: 1,
           office: 1,
           party: 1,
           candidate: 1,
+          cause: 1,
         },
       }
     );
@@ -866,6 +973,14 @@ export const acceptInvite = new ValidatedMethod({
       userId,
       dataRef: campaignId,
       category: "campaignInvite",
+    });
+
+    Meteor.call("log", {
+      type: "campaigns.users.invite.accepted",
+      campaignId,
+      data: {
+        name: currentUser.name,
+      },
     });
   },
 });
@@ -924,6 +1039,11 @@ export const declineInvite = new ValidatedMethod({
       userId,
       dataRef: campaignId,
       category: "campaignInvite",
+    });
+
+    Meteor.call("log", {
+      type: "campaigns.users.invite.declined",
+      campaignId,
     });
   },
 });
@@ -1314,6 +1434,14 @@ export const applyInvitation = new ValidatedMethod({
       });
     });
 
+    Meteor.call("log", {
+      type: "campaigns.users.invite.accepted",
+      campaignId,
+      data: {
+        name: user.name,
+      },
+    });
+
     return { campaignId };
   },
 });
@@ -1375,10 +1503,9 @@ export const campaignCounts = new ValidatedMethod({
     }
 
     if (
-      !Meteor.call("campaigns.userCan", {
+      !Meteor.call("campaigns.isUserTeam", {
         userId,
         campaignId,
-        feature: "admin",
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -1447,21 +1574,63 @@ export const inviteQueryCount = new ValidatedMethod({
   },
 });
 
-export const createInvite = new ValidatedMethod({
-  name: "invites.new",
+export const inviteUnsentCount = new ValidatedMethod({
+  name: "invites.unsentCount",
   validate() {},
   run() {
-    this.unblock();
-    logger.debug("invites.new called");
+    logger.debug("invites.unsentCount called");
 
     const userId = Meteor.userId();
     if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
       throw new Meteor.Error(401, "You are not allowed to perform this action");
     }
 
-    return Invites.insert({});
+    return Invites.find({
+      name: { $exists: true },
+      email: { $exists: true },
+      sent: { $ne: true },
+    }).count();
   },
 });
+
+export const createInvite = new ValidatedMethod({
+  name: "invites.new",
+  validate: new SimpleSchema({
+    name: {
+      type: String,
+      optional: true,
+    },
+    email: {
+      type: String,
+      optional: true,
+    },
+  }).validator(),
+  run({ name, email }) {
+    this.unblock();
+    logger.debug("invites.new called", { name, email });
+
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+
+    if (email && !validateEmail(email)) {
+      throw new Meteor.Error(400, "Invalid email");
+    }
+
+    const insertDoc = {};
+
+    if (name) insertDoc.name = name;
+    if (email) insertDoc.email = email;
+
+    return Invites.insert(insertDoc);
+  },
+});
+
+const validateEmail = (email) => {
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+};
 
 export const designateInvite = new ValidatedMethod({
   name: "invites.designate",
@@ -1469,13 +1638,22 @@ export const designateInvite = new ValidatedMethod({
     inviteId: {
       type: String,
     },
-    designated: {
+    name: {
       type: String,
+      optional: true,
+    },
+    email: {
+      type: String,
+      optional: true,
     },
   }).validator(),
-  run({ inviteId, designated }) {
+  run({ inviteId, name, email }) {
     this.unblock();
     logger.debug("invites.designate called", { inviteId });
+
+    if (email && !validateEmail(email)) {
+      throw new Meteor.Error(400, "Invalid email");
+    }
 
     const userId = Meteor.userId();
     if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
@@ -1488,7 +1666,7 @@ export const designateInvite = new ValidatedMethod({
       throw new Meteor.Error(404, "Invite not found");
     }
 
-    Invites.update(inviteId, { $set: { designated } });
+    Invites.update(inviteId, { $set: { name, email } });
 
     return;
   },
@@ -1519,5 +1697,118 @@ export const removeInvite = new ValidatedMethod({
     Invites.remove(inviteId);
 
     return;
+  },
+});
+
+export const emailInvite = new ValidatedMethod({
+  name: "invites.emailInvite",
+  validate: new SimpleSchema({
+    inviteId: {
+      type: String,
+    },
+    title: {
+      type: String,
+    },
+    message: {
+      type: String,
+    },
+    language: {
+      type: String,
+    },
+  }).validator(),
+  run({ inviteId, title, message, language }) {
+    logger.debug("invites.emailInvite called", { inviteId });
+
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+
+    if (!title) throw new Meteor.Error(400, "You must define a title");
+    if (!message) throw new Meteor.Error(400, "You must define a message");
+    if (!language) throw new Meteor.Error(400, "You must select a language");
+
+    const invite = Invites.findOne(inviteId);
+
+    if (!invite) {
+      throw new Meteor.Error(404, "Invite not found");
+    }
+
+    const email = createEmail(
+      "default",
+      language,
+      { title, content: markdown.render(message) },
+      title
+    );
+    const url = Meteor.absoluteUrl() + "?invite=" + invite.key;
+    email.body = email.body.replace("%NAME%", invite.name);
+    email.body = email.body.replace(
+      "{link}",
+      `<a href="${url}" rel="external" target="_blank">${url}</a>`
+    );
+    sendMail({
+      subject: title,
+      body: email.body,
+      recipient: `"${invite.name}" <${invite.email}>`,
+    });
+
+    Invites.update(invite._id, { $set: { sent: true } });
+  },
+});
+
+export const emailPending = new ValidatedMethod({
+  name: "invites.emailPending",
+  validate: new SimpleSchema({
+    title: {
+      type: String,
+    },
+    message: {
+      type: String,
+    },
+    language: {
+      type: String,
+    },
+  }).validator(),
+  run({ title, message, language }) {
+    logger.debug("invites.emailPending called");
+
+    const userId = Meteor.userId();
+    if (!userId || !Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to perform this action");
+    }
+
+    if (!title) throw new Meteor.Error(400, "You must define a title");
+    if (!message) throw new Meteor.Error(400, "You must define a message");
+    if (!language) throw new Meteor.Error(400, "You must select a language");
+
+    const invites = Invites.find({
+      name: { $exists: true },
+      email: { $exists: true },
+      sent: { $ne: true },
+    });
+
+    if (invites.count()) {
+      const template = createEmail(
+        "default",
+        language,
+        { title, content: markdown.render(message) },
+        title
+      );
+      invites.forEach((invite) => {
+        const email = { ...template };
+        const url = Meteor.absoluteUrl() + "?invite=" + invite.key;
+        email.body = email.body.replace("%NAME%", invite.name);
+        email.body = email.body.replace(
+          "{link}",
+          `<a href="${url}" rel="external" target="_blank">${url}</a>`
+        );
+        sendMail({
+          subject: title,
+          body: email.body,
+          recipient: `"${invite.name}" <${invite.email}>`,
+        });
+        Invites.update(invite._id, { $set: { sent: true } });
+      });
+    }
   },
 });
