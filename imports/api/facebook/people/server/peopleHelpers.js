@@ -522,9 +522,11 @@ const PeopleHelpers = {
   registerDuplicates({ personId }) {
     res = this.findDuplicates({ personId });
 
-
     if (res.none) {
       const persons = res.none;
+      if (persons.length > 0) {
+        this.markUnresolve({ personId })
+      }
       let ids = [];
       // get the ids 
       persons.map((person, index) => {

@@ -19,7 +19,6 @@ import redisClient from "/imports/startup/server/redis";
 import crypto from "crypto";
 
 const recaptchaSecret = Meteor.settings.recaptcha;
-
 export const peopleDetail = new ValidatedMethod({
   name: "people.detail",
   validate: new SimpleSchema({
@@ -1774,6 +1773,8 @@ export const peopleFormSubmit = new ValidatedMethod({
       });
       personId = id;
     }
+    // ! Check for extra Duplicates
+    PeopleHelpers.registerDuplicates({ personId });
 
     NotificationsHelpers.add({
       campaignId,
