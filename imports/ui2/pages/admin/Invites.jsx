@@ -373,7 +373,7 @@ class InvitesPage extends Component {
     modalStore.reset(true);
     this.setState({ importing: true });
     const nameRegex = /name|nome|fullname/;
-    const emailRegex = /email|e-mail/;
+    const emailRegex = /email|e-mail|mail/;
     let promises = [];
     for (const entry of data) {
       const nameKey = Object.keys(entry).find((k) =>
@@ -398,6 +398,12 @@ class InvitesPage extends Component {
         });
         promises.push(promise);
       }
+    }
+    if (!promises.length) {
+      alertStore.add(
+        'No imports were made. Make sure you have the right "name" and "email" headers',
+        "error"
+      );
     }
     Promise.all(promises)
       .then(() => {
