@@ -22,6 +22,7 @@ export default class UserUpgrade extends Component {
       "email",
       "pages_manage_posts",
       "pages_manage_engagement",
+      "pages_manage_metadata",
       "pages_show_list",
       // "ads_management",
       // "ads_read",
