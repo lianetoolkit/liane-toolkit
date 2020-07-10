@@ -128,7 +128,7 @@ const CommentsHelpers = {
 
     AccountsLogs.upsert(
       {
-        type: `comments.${data.verb}`,
+        type: `comments.${data.verb || "add"}`,
         personId: comment.personId,
         objectId: data.comment_id,
         timestamp: new Date(comment.created_time).getTime(),
