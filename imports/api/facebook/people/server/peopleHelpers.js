@@ -702,7 +702,11 @@ const PeopleHelpers = {
 
     if (foundMatch) {
       _upsertAddToSet();
+    } else {
+      //! Check for duplicate 
+      this.registerDuplicates({ personId: selector._id })
     }
+
 
     People.upsert(
       selector,
