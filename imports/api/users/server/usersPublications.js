@@ -15,7 +15,7 @@ Meteor.publish("users.data", function() {
         // "services.facebook": 1,
         country: 1,
         region: 1,
-        language: 1,
+        userLanguage: 1,
         createdAt: 1
       }
     });

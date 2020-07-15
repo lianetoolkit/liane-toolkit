@@ -49,6 +49,7 @@ class FacebookButton extends Component {
       data.requestPermissions = data.requestPermissions.concat([
         "pages_manage_posts",
         "pages_manage_engagement",
+        "pages_manage_metadata",
         "pages_show_list",
         "pages_messaging",
         "pages_messaging_phone_number",

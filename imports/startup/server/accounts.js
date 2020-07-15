@@ -26,6 +26,14 @@ Accounts.onLogin(function (data) {
         },
       ];
     }
+    if (facebookData.accessToken && !facebookData.id) {
+      const debugToken = UsersHelpers.debugFBToken({
+        token: facebookData.accessToken,
+      });
+      if (debugToken.is_valid) {
+        set["services.facebook.id"] = debugToken.user_id;
+      }
+    }
     if (Object.keys(set).length) {
       Meteor.users.update(
         {
