@@ -1110,7 +1110,6 @@ export const addUser = new ValidatedMethod({
       if (_.findWhere(campaign.users, { email })) {
         throw new Meteor.Error(401, "User already invited.");
       }
-      throw new Meteor.Error("Mailer not found, unable to invite user");
       inviteId = Random.id();
       const url = Meteor.absoluteUrl(
         `/register?campaignInvite=${inviteId}|${campaign._id}`
