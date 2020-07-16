@@ -1203,6 +1203,9 @@ export const importPeople = new ValidatedMethod({
       type: String,
     },
     data: {
+      type: Array,
+    },
+    "data.$": {
       type: Object,
       blackbox: true,
     },
@@ -1253,6 +1256,13 @@ export const importPeople = new ValidatedMethod({
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    if (data.length > 1000) {
+      throw new Meteor.Error(
+        401,
+        "You can't import more than 1000 people at once"
+      );
     }
 
     const res = PeopleHelpers.import({
