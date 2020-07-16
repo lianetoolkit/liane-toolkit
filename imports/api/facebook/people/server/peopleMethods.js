@@ -277,10 +277,12 @@ export const peopleSearch = new ValidatedMethod({
     const cursor = People.find(searchQuery.query, {
       ...searchQuery.options,
       transform: (person) => {
-        person.latestComment = Comments.findOne(
-          { personId: person.facebookId },
-          { sort: { created_time: -1 } }
-        );
+        if (person.facebookId) {
+          person.latestComment = Comments.findOne(
+            { personId: person.facebookId },
+            { sort: { created_time: -1 } }
+          );
+        }
         return person;
       },
     });
