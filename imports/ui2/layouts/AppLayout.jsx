@@ -79,6 +79,7 @@ export default class AppLayout extends Component {
     this.setState({
       locale,
     });
+    updateDepsLocales(locale);
   };
   componentWillReceiveProps({ isLoggedIn, connected, routeName }) {
     FlowRouter.withReplaceState(function () {
@@ -101,7 +102,6 @@ export default class AppLayout extends Component {
     } else {
       content = this.props.content;
     }
-    updateDepsLocales(locale);
     if (connected && ready) {
       return (
         <IntlProvider locale={locale} messages={messages}>

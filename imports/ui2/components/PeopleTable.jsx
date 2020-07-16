@@ -318,7 +318,7 @@ class PeopleTable extends Component {
       const { people } = this.props;
       const newPeople = people.map((p) => {
         if (p._id == person._id) {
-          return {...p, ...person};
+          return { ...p, ...person };
         }
         return p;
       });
@@ -339,6 +339,8 @@ class PeopleTable extends Component {
     if (ev.target.nodeName == "A" || ev.target.closest("a")) {
       return false;
     }
+    ev.preventDefault();
+    ev.stopPropagation();
     const { expanded } = this.state;
     if (expanded && expanded._id == person._id) {
       this.setState({
