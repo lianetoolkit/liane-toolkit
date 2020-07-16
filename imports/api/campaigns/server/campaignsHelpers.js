@@ -471,6 +471,7 @@ const CampaignsHelpers = {
   suspendCampaign({ campaignId }) {
     check(campaignId, String);
     Campaigns.update({ _id: campaignId }, { $set: { status: "suspended" } });
+    this.disconnectAccount({ campaignId });
     this.clearCampaignJobs({ campaignId });
   },
   activateCampaign({ campaignId }) {
