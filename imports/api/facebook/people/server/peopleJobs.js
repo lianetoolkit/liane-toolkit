@@ -150,6 +150,7 @@ const PeopleJobs = {
         });
       } catch (error) {
         errored = true;
+        logger.error(error);
         return job.fail(error.message);
       } finally {
         if (!errored) {

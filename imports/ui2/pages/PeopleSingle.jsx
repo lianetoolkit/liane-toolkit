@@ -153,6 +153,9 @@ const InformationContainer = styled.section`
       &:first-child {
         font-size: 1.1em;
       }
+      .select-search__control .select-search__multi-value__label {
+        color: #333;
+      }
     }
   }
   .interactions {

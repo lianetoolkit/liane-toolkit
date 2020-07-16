@@ -8,7 +8,7 @@ import {
 import styled from "styled-components";
 import { uniq } from "lodash";
 
-import CreatableSelect from "react-select/lib/Creatable";
+import CreatableSelect from "react-select/creatable";
 
 const messages = defineMessages({
   placeholder: {

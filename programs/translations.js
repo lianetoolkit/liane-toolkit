@@ -69,21 +69,22 @@ if (typeof Meteor == "undefined") {
       files.map((fileName) => extractFromFile(fileName))
     );
     extractTask.then(() => {
-      mkdirp("./locales/messages");
-      fs.writeFileSync(
-        "./locales/messages/messages.json",
-        JSON.stringify(Object.values(messageMap))
-      );
+      mkdirp("./locales/messages").then(() => {
+        fs.writeFileSync(
+          "./locales/messages/messages.json",
+          JSON.stringify(Object.values(messageMap))
+        );
 
-      const {
-        default: manageTranslations,
-      } = require("react-intl-translations-manager");
+        const {
+          default: manageTranslations,
+        } = require("react-intl-translations-manager");
 
-      manageTranslations({
-        messagesDirectory: "./locales/messages",
-        translationsDirectory: "./locales/",
-        languages: ["en", "es", "pt-BR"],
-        singleMessagesFile: true,
+        manageTranslations({
+          messagesDirectory: "./locales/messages",
+          translationsDirectory: "./locales/",
+          languages: ["en", "es", "pt-BR"],
+          singleMessagesFile: true,
+        });
       });
     });
   });
