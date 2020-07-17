@@ -144,6 +144,7 @@ class CampaignConnectionsPage extends Component {
       "email",
       "pages_manage_posts",
       "pages_manage_engagement",
+      "pages_manage_metadata",
       "pages_show_list",
       "pages_messaging",
       "pages_messaging_phone_number",
@@ -156,7 +157,6 @@ class CampaignConnectionsPage extends Component {
       },
       (token) => {
         const secret = OAuth._retrieveCredentialSecret(token) || null;
-        console.log(token, secret);
         Meteor.call(
           "campaigns.updateFacebook",
           { campaignId: campaign._id, token, secret },

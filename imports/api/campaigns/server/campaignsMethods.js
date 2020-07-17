@@ -673,11 +673,12 @@ export const campaignsRemove = new ValidatedMethod({
     }
 
     const allowed =
+      Roles.userIsInRole(userId, ["admin"]) ||
       Meteor.call("campaigns.userCan", {
         userId,
         campaignId: campaign._id,
         feature: "admin",
-      }) || Roles.userIsInRole(userId, ["admin"]);
+      });
 
     if (!allowed) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -1109,7 +1110,6 @@ export const addUser = new ValidatedMethod({
       if (_.findWhere(campaign.users, { email })) {
         throw new Meteor.Error(401, "User already invited.");
       }
-      throw new Meteor.Error("Mailer not found, unable to invite user");
       inviteId = Random.id();
       const url = Meteor.absoluteUrl(
         `/register?campaignInvite=${inviteId}|${campaign._id}`

@@ -22,7 +22,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   height: 1px;
-  border-bottom: 1px solid #eee
+  border-bottom: 1px solid #eee;
   margin: 1rem 0;
   .or-text {
     font-size: 0.8em;

@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,24 +16,24 @@ import { alertStore } from "../containers/Alerts.jsx";
 const messages = defineMessages({
   filledFormLabel: {
     id: "app.form_info.filled_form_label",
-    defaultMessage: "Filled form"
+    defaultMessage: "Filled form",
   },
   hasntFilledFormLabel: {
     id: "app.form_info.has_filled_form_label",
-    defaultMessage: "Hasn't filled form"
+    defaultMessage: "Hasn't filled form",
   },
   copy: {
     id: "app.form_info.copy_link_label",
-    defaultMessage: "Copy link"
+    defaultMessage: "Copy link",
   },
   view: {
     id: "app.form_info.view_label",
-    defaultMessage: "View form"
+    defaultMessage: "View form",
   },
   generate: {
     id: "app.form_info.generate_label",
-    defaultMessage: "Generate new URL"
-  }
+    defaultMessage: "Generate new URL",
+  },
 });
 
 const Container = styled.div`
@@ -82,7 +82,7 @@ const Container = styled.div`
       }
     }
   }
-  ${props =>
+  ${(props) =>
     props.simple &&
     css`
       font-size: 0.8em;
@@ -97,13 +97,13 @@ const Container = styled.div`
         padding: 0.25rem 0.5rem;
       }
     `}
-  ${props =>
+  ${(props) =>
     props.filled &&
     css`
       background: #f5911e;
       color: #fff;
     `}
-  ${props =>
+  ${(props) =>
     props.loading &&
     css`
       input {
@@ -116,21 +116,21 @@ class PersonFormInfo extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false
+      loading: false,
     };
   }
-  _handleRegenerateClick = ev => {
+  _handleRegenerateClick = (ev) => {
     ev.preventDefault();
     const { person } = this.props;
     this.setState({
-      loading: true
+      loading: true,
     });
     Meteor.call(
       "people.formId",
       { personId: person._id, regenerate: true },
       (err, res) => {
         this.setState({
-          loading: false
+          loading: false,
         });
         if (err) {
           alertStore.add(err);
@@ -153,7 +153,7 @@ class PersonFormInfo extends Component {
         className="form-info"
         simple={simple}
         filled={!!filled}
-        loading={loading}
+        loading={loading ? 1 : 0}
       >
         <label>
           <FontAwesomeIcon icon="align-left" />
@@ -200,7 +200,7 @@ class PersonFormInfo extends Component {
 }
 
 PersonFormInfo.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(PersonFormInfo);

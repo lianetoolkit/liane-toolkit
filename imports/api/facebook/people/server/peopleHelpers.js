@@ -319,21 +319,16 @@ const PeopleHelpers = {
 
     Promise.await(
       new Promise((resolve, reject) => {
-        mkdirp(fileDir, (err) => {
-          if (err) {
-            reject(err);
-          } else {
-            fs.writeFile(
-              filePath,
-              header.join(",") + "\r\n",
-              "utf-8",
-              (err) => {
-                if (err) reject(err);
-                else resolve();
-              }
-            );
-          }
-        });
+        mkdirp(fileDir)
+          .then(() => {
+            fs.writeFile(filePath, header.join(",") + "\r\n", (err) => {
+              if (err) reject(err);
+              else resolve();
+            });
+          })
+          .catch((err) => {
+            throw new Meteor.Error(err);
+          });
       })
     );
 
@@ -383,8 +378,7 @@ const PeopleHelpers = {
                       {
                         header: false,
                       }
-                    ) + "\r\n",
-                    "utf-8"
+                    ) + "\r\n"
                   );
                   resolve();
                 }

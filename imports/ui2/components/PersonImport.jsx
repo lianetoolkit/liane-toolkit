@@ -4,7 +4,7 @@ import {
   intlShape,
   defineMessages,
   FormattedMessage,
-  FormattedHTMLMessage
+  FormattedHTMLMessage,
 } from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,64 +23,64 @@ import RegionSelect from "./RegionSelect.jsx";
 const fields = {
   name: {
     label: "Name",
-    suggestions: ["name", "fullname", "full name", "nome"]
+    suggestions: ["name", "fullname", "full name", "nome"],
   },
   "campaignMeta.contact.email": {
     label: "Email",
-    suggestions: ["email", "e mail", "email address", "e mail address"]
+    suggestions: ["email", "e mail", "email address", "e mail address"],
   },
   "campaignMeta.contact.cellphone": {
     label: "Phone",
-    suggestions: ["phone", "cellphone", "celular"]
+    suggestions: ["phone", "cellphone", "celular"],
   },
   "campaignMeta.social_networks.twitter": {
     label: "Twitter",
-    suggestions: ["twitter"]
+    suggestions: ["twitter"],
   },
   "campaignMeta.social_networks.instagram": {
     label: "Instagram",
-    suggestions: ["instagram"]
+    suggestions: ["instagram"],
   },
   "campaignMeta.basic_info.gender": {
     label: "Gender",
-    suggestions: ["gender"]
+    suggestions: ["gender"],
   },
   "campaignMeta.basic_info.occupation": {
     label: "Job/Occupation",
-    suggestions: ["job", "occupation"]
+    suggestions: ["job", "occupation"],
   },
   "campaignMeta.basic_info.address.zipcode": {
     label: "Address - Zipcode",
-    suggestions: ["zipcode", "cep"]
+    suggestions: ["zipcode", "cep"],
   },
   "campaignMeta.basic_info.address.country": {
     label: "Address - Country",
-    suggestions: ["country", "país", "pais"]
+    suggestions: ["country", "país", "pais"],
   },
   "campaignMeta.basic_info.address.region": {
     label: "Address - Region/State",
-    suggestions: ["state", "region", "estado", "uf"]
+    suggestions: ["state", "region", "estado", "uf"],
   },
   "campaignMeta.basic_info.address.city": {
     label: "Address - City",
-    suggestions: ["city", "cidade", "municipio", "município"]
+    suggestions: ["city", "cidade", "municipio", "município"],
   },
   "campaignMeta.basic_info.address.street": {
     label: "Address - Street",
-    suggestions: ["address", "street", "rua", "endereço"]
+    suggestions: ["address", "street", "rua", "endereço"],
   },
   "campaignMeta.basic_info.address.neighbourhood": {
     label: "Address - Neighbourhood",
-    suggestions: ["neighbourhood", "neighborhood", "bairro"]
+    suggestions: ["neighbourhood", "neighborhood", "bairro"],
   },
   "campaignMeta.basic_info.address.number": {
     label: "Address - Number",
-    suggestions: ["number", "número", "numero"]
+    suggestions: ["number", "número", "numero"],
   },
   "campaignMeta.basic_info.address.complement": {
     label: "Address - Complement",
-    suggestions: ["complement", "complemento"]
-  }
+    suggestions: ["complement", "complemento"],
+  },
 };
 
 const ItemConfigContainer = styled.div`
@@ -123,61 +123,62 @@ const ItemConfigContainer = styled.div`
 const messages = defineMessages({
   importButton: {
     id: "app.people.import.importing_label",
-    defaultMessage: "Importing {filename}..."
+    defaultMessage: "Importing {filename}...",
   },
   started: {
     id: "app.people.import.started_label",
-    defaultMessage: "Import started"
+    defaultMessage: "Import started",
   },
   unexpectedError: {
     id: "app.unexpected_error",
-    defaultMessage: "An unexpected error occurred."
+    defaultMessage: "An unexpected error occurred.",
   },
   confirm: {
     id: "app.confirm",
-    defaultMessage: "Are you sure?"
+    defaultMessage: "Are you sure?",
   },
   selectTags: {
     id: "app.people.import.select_tags",
-    defaultMessage: "Select default tags for all entries from this import"
+    defaultMessage: "Select default tags for all entries from this import",
   },
   selectTagsLabel: {
     id: "app.people.import.select_tags_label",
-    defaultMessage: "Default tags for this import"
+    defaultMessage: "Default tags for this import",
   },
   selectCategories: {
     id: "app.people.import.select_categories",
-    defaultMessage: "Select default categories for all entries from this import"
+    defaultMessage:
+      "Select default categories for all entries from this import",
   },
   startImport: {
     id: "app.people.import.start_label",
-    defaultMessage: "Start import"
+    defaultMessage: "Start import",
   },
   defaultFieldsAdd: {
     id: "app.people.import.default_location.add_label",
-    defaultMessage: "Add extra location information for this import"
+    defaultMessage: "Add extra location information for this import",
   },
   defaultFieldsCancel: {
     id: "app.people.import.default_location.cancel_label",
-    defaultMessage: "Cancel location information"
+    defaultMessage: "Cancel location information",
   },
   defaultFieldsTip: {
     id: "app.people.import.default_location.tip",
     defaultMessage:
-      "Adding extra location data will help the import geocoding accuracy. The provided data will be applied for every entry."
+      "Adding extra location data will help the import geocoding accuracy. The provided data will be applied for every entry.",
   },
   defaultFieldsCountryLabel: {
     id: "app.people.import.default_location.country_label",
-    defaultMessage: "Country"
+    defaultMessage: "Country",
   },
   defaultFieldsRegionLabel: {
     id: "app.people.import.default_location.region_label",
-    defaultMessage: "Region (optional)"
+    defaultMessage: "Region (optional)",
   },
   defaultFieldsCityLabel: {
     id: "app.people.import.default_location.city_label",
-    defaultMessage: "City (optional)"
-  }
+    defaultMessage: "City (optional)",
+  },
 });
 
 class ImportButton extends React.Component {
@@ -186,7 +187,7 @@ class ImportButton extends React.Component {
     this.state = {
       loading: false,
       importData: null,
-      importFilename: ""
+      importFilename: "",
     };
   }
   componentDidUpdate(prevProps, prevState) {
@@ -210,14 +211,14 @@ class ImportButton extends React.Component {
       alertStore.add("Import finished", "success", { verbose: true });
     }
   }
-  _handleImportClick = ev => {
+  _handleImportClick = (ev) => {
     ev.preventDefault();
     const { importCount } = this.props;
     if (!importCount) {
       this.importInput.click();
     }
   };
-  _handleImport = ev => {
+  _handleImport = (ev) => {
     const campaign = ClientStorage.get("campaign");
     this.setState({ loading: true });
     let file = ev.currentTarget.files[0];
@@ -227,7 +228,16 @@ class ImportButton extends React.Component {
       const wb = XLSX.read(bytes, { type: "array" });
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(sheet);
-      this.setState({ importData: json, importFilename: file.name });
+      if (json.length > 1000) {
+        alertStore.add(
+          "You can't import more than 1000 people at once.",
+          "error"
+        );
+        this.setState({ importData: null, importFilename: "" });
+        modalStore.reset(true);
+      } else {
+        this.setState({ importData: json, importFilename: file.name });
+      }
       this.importInput.value = null;
       this.importInput.dispatchEvent(new Event("input", { bubbles: true }));
     };
@@ -261,7 +271,7 @@ class ImportButton extends React.Component {
           type="file"
           onChange={this._handleImport}
           style={{ display: "none" }}
-          ref={input => (this.importInput = input)}
+          ref={(input) => (this.importInput = input)}
         />
         <a
           {...this.props}
@@ -288,7 +298,7 @@ class ImportButton extends React.Component {
 }
 
 ImportButton.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export const PersonImportButton = injectIntl(ImportButton);
@@ -298,13 +308,13 @@ class ItemConfig extends React.Component {
     super(props);
     this.state = {
       value: null,
-      customField: null
+      customField: null,
     };
   }
   componentDidMount() {
     const { header } = this.props;
     this.setState({
-      value: this._getSuggestion()
+      value: this._getSuggestion(),
     });
   }
   componentDidUpdate(prevProps, prevState) {
@@ -323,11 +333,7 @@ class ItemConfig extends React.Component {
       for (const key in fields) {
         if (
           fields[key].suggestions.indexOf(
-            header
-              .trim()
-              .toLowerCase()
-              .replace("-", " ")
-              .replace("_", " ")
+            header.trim().toLowerCase().replace("-", " ").replace("_", " ")
           ) !== -1
         ) {
           field = key;
@@ -336,7 +342,7 @@ class ItemConfig extends React.Component {
     }
     return field;
   }
-  _handleSelectChange = selected => {
+  _handleSelectChange = (selected) => {
     let value = null;
     if (selected && selected.value) {
       value = selected.value;
@@ -348,19 +354,19 @@ class ItemConfig extends React.Component {
   };
   _getOptions() {
     let keys = Object.keys(fields);
-    let options = keys.map(k => {
+    let options = keys.map((k) => {
       return {
         label: fields[k].label,
-        value: k
+        value: k,
       };
     });
     options.unshift({
       label: "Custom field",
-      value: "custom"
+      value: "custom",
     });
     options.unshift({
       label: "Skip field",
-      value: "skip"
+      value: "skip",
     });
     return options;
   }
@@ -369,7 +375,7 @@ class ItemConfig extends React.Component {
     const suggestion = this._getSuggestion();
     const options = this._getOptions();
     return options.find(
-      option => option.value == (value || suggestion || "skip")
+      (option) => option.value == (value || suggestion || "skip")
     );
   };
   render() {
@@ -438,9 +444,9 @@ class ImportDefaultFields extends React.Component {
       formData: {
         country: "",
         region: "",
-        city: ""
+        city: "",
       },
-      enabled: false
+      enabled: false,
     };
   }
   componentDidUpdate(prevProps, prevState) {
@@ -457,7 +463,7 @@ class ImportDefaultFields extends React.Component {
       onChange && onChange({});
     }
   }
-  _handleClick = ev => {
+  _handleClick = (ev) => {
     ev.preventDefault();
     const { enabled } = this.state;
     this.setState({ enabled: !enabled });
@@ -466,8 +472,8 @@ class ImportDefaultFields extends React.Component {
     this.setState({
       formData: {
         ...this.state.formData,
-        [target.name]: target.value
-      }
+        [target.name]: target.value,
+      },
     });
   };
   render() {
@@ -525,7 +531,7 @@ class ImportDefaultFields extends React.Component {
 }
 
 ImportDefaultFields.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 const ImportDefaultFieldsIntl = injectIntl(ImportDefaultFields);
@@ -541,7 +547,7 @@ class PeopleImport extends React.Component {
     super(props);
     this.state = {
       tags: [],
-      labels: {}
+      labels: {},
     };
     this._handleModalOpen = this._handleModalOpen.bind(this);
     this._handleModalClose = this._handleModalClose.bind(this);
@@ -552,8 +558,8 @@ class PeopleImport extends React.Component {
     this.setState({
       [name]: {
         value,
-        customField
-      }
+        customField,
+      },
     });
   };
   _handleModalOpen() {}
@@ -561,7 +567,7 @@ class PeopleImport extends React.Component {
     const { intl } = this.props;
     if (confirm(intl.formatMessage(messages.confirm))) {
       this.setState({
-        data: []
+        data: [],
       });
     }
   }
@@ -574,18 +580,18 @@ class PeopleImport extends React.Component {
   }
   _handleTagChange = ({ target }) => {
     this.setState({
-      tags: target.value
+      tags: target.value,
     });
   };
-  _handleMetaButtons = key => {
+  _handleMetaButtons = (key) => {
     this.setState({
       labels: {
         ...this.state.labels,
-        [key]: !this.state.labels[key]
-      }
+        [key]: !this.state.labels[key],
+      },
     });
   };
-  _handleDefaultFieldsChange = data => {
+  _handleDefaultFieldsChange = (data) => {
     this.setState({ defaultValues: data });
   };
   _handleSubmit(ev) {
@@ -593,7 +599,7 @@ class PeopleImport extends React.Component {
     const { data, campaignId, filename, onSubmit } = this.props;
     const { tags, labels, defaultValues, ...config } = this.state;
     this.setState({
-      loading: true
+      loading: true,
     });
     Meteor.call(
       "people.import",
@@ -605,12 +611,12 @@ class PeopleImport extends React.Component {
         defaultValues: {
           tags,
           labels,
-          ...defaultValues
-        }
+          ...defaultValues,
+        },
       },
       (err, res) => {
         this.setState({
-          loading: false
+          loading: false,
         });
         if (onSubmit) {
           onSubmit(err, res);
@@ -684,7 +690,7 @@ class PeopleImport extends React.Component {
 }
 
 PeopleImport.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 const PeopleImportIntl = injectIntl(PeopleImport);

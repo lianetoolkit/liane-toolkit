@@ -128,7 +128,7 @@ const CommentsHelpers = {
 
     AccountsLogs.upsert(
       {
-        type: `comments.${data.verb}`,
+        type: `comments.${data.verb || "add"}`,
         personId: comment.personId,
         objectId: data.comment_id,
         timestamp: new Date(comment.created_time).getTime(),
@@ -424,11 +424,6 @@ const CommentsHelpers = {
           $set: set,
         };
 
-        if (commentedPerson.latestComment) {
-          updateObj.$max = {
-            lastInteractionDate: new Date(commentedPerson.latestComment),
-          };
-        }
         if (Object.keys(addToSet).length) {
           updateObj.$addToSet = addToSet;
         }

@@ -4,7 +4,6 @@ import { IntlProvider, addLocaleData } from "react-intl";
 import en from "react-intl/locale-data/en";
 import es from "react-intl/locale-data/es";
 import pt from "react-intl/locale-data/pt";
-
 addLocaleData([...en, ...es, ...pt]);
 
 import localeData from "/locales";
@@ -15,7 +14,7 @@ import Footer from "./Footer.jsx";
 import Body from "./Body.jsx";
 import Title from "./Title.jsx";
 
-const findLocale = language => {
+const findLocale = (language) => {
   let locale = false;
   const languageWRC = language.toLowerCase().split(/[_-]+/)[0];
   for (const key in localeData) {
@@ -37,13 +36,13 @@ const style = {
   container: {
     backgroundColor: "#efefef",
     padding: "40px 20px",
-    fontFamily: "sans-serif"
+    fontFamily: "sans-serif",
   },
 
   main: {
     maxWidth: "550px",
-    width: "100%"
-  }
+    width: "100%",
+  },
 };
 
 class Email extends Component {
@@ -58,9 +57,7 @@ class Email extends Component {
         <center style={style.container}>
           <Grid style={style.main}>
             <Header />
-            <Body>
-              {children}
-            </Body>
+            <Body>{children}</Body>
             <Footer />
           </Grid>
         </center>

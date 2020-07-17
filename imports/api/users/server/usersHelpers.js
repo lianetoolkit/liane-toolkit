@@ -40,11 +40,17 @@ const UsersHelpers = {
       longToken = UsersHelpers.exchangeFBToken({
         token: credential.serviceData.accessToken,
       });
-      Meteor.users.update(userId, {
-        $set: {
-          "services.facebook.accessToken": longToken.result,
-        },
-      });
+      const debugToken = this.debugFBToken({ token: longToken.result });
+      if (debugToken.is_valid) {
+        Meteor.users.update(userId, {
+          $set: {
+            "services.facebook.id": debugToken.user_id,
+            "services.facebook.accessToken": longToken.result,
+          },
+        });
+      } else {
+        throw new Meteor.Error(400, "Token not valid");
+      }
     } else {
       throw new Meteor.Error(500, "Error retrieving Facebook credentials.");
     }

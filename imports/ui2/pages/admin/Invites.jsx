@@ -373,7 +373,7 @@ class InvitesPage extends Component {
     modalStore.reset(true);
     this.setState({ importing: true });
     const nameRegex = /name|nome|fullname/;
-    const emailRegex = /email|e-mail/;
+    const emailRegex = /email|e-mail|mail/;
     let promises = [];
     for (const entry of data) {
       const nameKey = Object.keys(entry).find((k) =>
@@ -384,23 +384,34 @@ class InvitesPage extends Component {
       );
       if (nameKey && emailKey && entry[nameKey] && entry[emailKey]) {
         const promise = new Promise((resolve, reject) => {
-          this.createInvite(entry[nameKey], entry[emailKey], (err, res) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(res);
+          this.createInvite(
+            entry[nameKey],
+            entry[emailKey].trim().toLowerCase(),
+            (err, res) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(res);
+              }
             }
-          });
+          );
         });
         promises.push(promise);
       }
+    }
+    if (!promises.length) {
+      alertStore.add(
+        'No imports were made. Make sure you have the right "name" and "email" headers',
+        "error"
+      );
     }
     Promise.all(promises)
       .then(() => {
         this.setState({ importing: false });
       })
       .catch((err) => {
-        console.log(err);
+        this.setState({ importing: false });
+        alertStore.add(err);
       });
   };
   _handleClose = () => {

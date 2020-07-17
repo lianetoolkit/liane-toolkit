@@ -94,7 +94,6 @@ class DashboardPage extends Component {
   };
   isLoading = () => {
     const { campaignId, entriesJob } = this.props;
-    console.log(entriesJob);
     return;
     !campaignId ||
       !entriesJob ||

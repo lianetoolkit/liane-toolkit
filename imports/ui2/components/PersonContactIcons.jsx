@@ -65,8 +65,11 @@ class PersonContactIcons extends Component {
       copied: false,
     };
   }
-  componentDidUpdate() {
-    ReactTooltip.rebuild();
+  componentDidUpdate(prevProps) {
+    const { person } = this.props;
+    if (JSON.stringify(person) != JSON.stringify(prevProps.person)) {
+      ReactTooltip.rebuild();
+    }
   }
   getMeta(key) {
     const { person } = this.props;
