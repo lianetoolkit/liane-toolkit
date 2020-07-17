@@ -48,7 +48,7 @@ export default class PersonReactions extends Component {
     const val = this.reactionVal(reaction);
     if (val) {
       return (
-        <li>
+        <li key={reaction}>
           <Reaction reaction={reaction} /> {val}
         </li>
       );

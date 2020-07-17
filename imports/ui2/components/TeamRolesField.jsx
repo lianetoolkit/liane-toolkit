@@ -7,7 +7,7 @@ import {
 } from "react-intl";
 import styled from "styled-components";
 
-import CreatableSelect from "react-select/lib/Creatable";
+import CreatableSelect from "react-select/creatable";
 
 const messages = defineMessages({
   placeholder: {

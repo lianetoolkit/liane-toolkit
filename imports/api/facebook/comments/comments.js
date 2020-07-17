@@ -5,107 +5,110 @@ const Comments = new Mongo.Collection("comments");
 Comments.schema = new SimpleSchema({
   personId: {
     type: String,
-    index: true
+    index: true,
   },
   entryId: {
     type: String,
-    index: true
+    index: true,
   },
   parentId: {
     type: String,
     optional: true,
-    index: true
+    index: true,
   },
   facebookAccountId: {
     type: String,
-    index: true
+    index: true,
   },
   lastValidation: {
     type: Date,
     index: true,
-    optional: true
+    optional: true,
   },
   adminReplied: {
     type: Boolean,
     index: true,
-    optional: true
+    optional: true,
   },
   can_comment: {
     type: Boolean,
     optional: true,
-    index: true
+    index: true,
   },
   can_hide: {
     type: Boolean,
     optional: true,
-    index: true
+    index: true,
   },
   can_remove: {
     type: Boolean,
     optional: true,
-    index: true
+    index: true,
   },
   can_reply_privately: {
     type: Boolean,
     optional: true,
-    index: true
+    index: true,
   },
   is_hidden: {
     type: Boolean,
     optional: true,
-    index: true
+    index: true,
   },
   is_private: {
     type: Boolean,
     optional: true,
-    index: true
+    index: true,
   },
   message: {
     type: String,
-    optional: true
+    optional: true,
   },
   attachment: {
     type: Object,
     blackbox: true,
-    optional: true
+    optional: true,
   },
   message_tags: {
+    type: Array,
+    optional: true,
+  },
+  "message_tags.$": {
     type: Object,
     blackbox: true,
-    optional: true
   },
   created_time: {
     type: Date,
-    index: true
+    index: true,
   },
   comment_count: {
     type: Number,
-    optional: true
+    optional: true,
   },
   comments: {
     type: Object,
     blackbox: true,
-    optional: true
+    optional: true,
   },
   reaction_count: {
     type: Object,
     blackbox: true,
-    optional: true
+    optional: true,
   },
   resolved: {
     type: Boolean,
     optional: true,
-    index: true
+    index: true,
   },
   categories: {
     type: Array,
     index: true,
-    optional: true
+    optional: true,
   },
   "categories.$": {
     type: String,
-    allowedValues: ["question", "vote"]
-  }
+    allowedValues: ["question", "vote"],
+  },
 });
 
 Comments.attachSchema(Comments.schema);
@@ -113,7 +116,7 @@ Comments.attachSchema(Comments.schema);
 Meteor.startup(() => {
   if (Meteor.isServer) {
     Comments.rawCollection().createIndex({
-      message: "text"
+      message: "text",
     });
     Comments.rawCollection().createIndex(
       { message_tags: 1 },

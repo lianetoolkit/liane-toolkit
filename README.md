@@ -1,8 +1,6 @@
 # Liane
 
-## An Electoral Toolkit for Activist Campaigns
-
-**This version is under development and going through constant changes. For a stable version, checkout v0.1 tag.**
+## Technology for Political Innovation
 
 Liane is a free software using [Meteor](https://meteor.com), [MongoDB](https://www.mongodb.com/), [React](https://reactjs.org/), [Redis](https://redis.io/) and the [Facebook API](https://developers.facebook.com/docs).
 
@@ -94,10 +92,6 @@ client/
 server/
   main.js
 ```
-
-## On startup
-
-At `/imports/startup/server/fixtures.js` by default on start up the system adds some examples of Contexts, Geolocations and Audience Categories. You can also customize as you like.
 
 ## Cron jobs
 

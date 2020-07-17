@@ -84,21 +84,19 @@ Meteor.users.attachSchema(Meteor.users.schema);
 // Create text index for users (search)
 Meteor.startup(() => {
   if (Meteor.isServer) {
-    setTimeout(() => {
-      Meteor.users.rawCollection().createIndex(
-        {
-          name: "text",
-          "emails.address": "text",
+    Meteor.users.rawCollection().createIndex(
+      {
+        name: "text",
+        "emails.address": "text",
+      },
+      {
+        background: true,
+        weights: {
+          name: 5,
+          "emails.address": 3,
         },
-        {
-          background: true,
-          weights: {
-            name: 5,
-            "emails.address": 3,
-          },
-        }
-      );
-    }, 2000);
+      }
+    );
   }
 });
 

@@ -21,10 +21,6 @@ import InviteNotification from "../components/InviteNotification.jsx";
 
 import { FeedbackButton } from "../components/Feedback.jsx";
 
-import moment from "moment";
-require("moment/locale/es");
-require("moment/locale/pt-br");
-
 let language =
   (navigator.languages && navigator.languages[0]) ||
   navigator.language ||
@@ -83,6 +79,7 @@ export default class AppLayout extends Component {
     this.setState({
       locale,
     });
+    updateDepsLocales(locale);
   };
   componentWillReceiveProps({ isLoggedIn, connected, routeName }) {
     FlowRouter.withReplaceState(function () {
@@ -105,7 +102,6 @@ export default class AppLayout extends Component {
     } else {
       content = this.props.content;
     }
-    moment.locale(locale.toLowerCase());
     if (connected && ready) {
       return (
         <IntlProvider locale={locale} messages={messages}>

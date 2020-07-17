@@ -266,7 +266,7 @@ class PersonEdit extends Component {
     const { formData } = this.state;
     const value = get(formData, "basic_info.birthday");
     if (value) {
-      return moment(value);
+      return value;
     }
     return null;
   }
@@ -333,12 +333,13 @@ class PersonEdit extends Component {
                     this._handleChange({
                       target: {
                         name: "basic_info.birthday",
-                        value: date.toDate(),
+                        value: date,
                       },
                     });
                   }}
                   selected={this.getBirthdayValue()}
                   dateFormatCalendar="MMMM"
+                  dateFormat="P"
                   showMonthDropdown
                   showYearDropdown
                   dropdownMode="select"

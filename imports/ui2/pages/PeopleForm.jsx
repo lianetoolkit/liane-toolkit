@@ -12,7 +12,7 @@ import {
   intlShape,
   defineMessages,
   FormattedMessage,
-  FormattedHTMLMessage
+  FormattedHTMLMessage,
 } from "react-intl";
 
 import en from "react-intl/locale-data/en";
@@ -42,44 +42,44 @@ const recaptchaSiteKey = Meteor.settings.public.recaptcha;
 const messages = defineMessages({
   requiredName: {
     id: "app.people_form.name_required",
-    defaultMessage: "Name is required"
+    defaultMessage: "Name is required",
   },
   requiredEmail: {
     id: "app.people_form.email_required",
-    defaultMessage: "Email is required"
+    defaultMessage: "Email is required",
   },
   requiredEmailOrPhone: {
     id: "app.people_form.email_phone_required",
-    defaultMessage: "Email or phone is required"
+    defaultMessage: "Email or phone is required",
   },
   thankYou: {
     id: "app.people_form.thank_you",
-    defaultMessage: "Thank you!"
+    defaultMessage: "Thank you!",
   },
   nameLabel: {
     id: "app.people_form.name_label",
-    defaultMessage: "Name"
+    defaultMessage: "Name",
   },
   emailLabel: {
     id: "app.people_form.email_label",
-    defaultMessage: "Email"
+    defaultMessage: "Email",
   },
   phoneLabel: {
     id: "app.people_form.phone_label",
-    defaultMessage: "Phone"
+    defaultMessage: "Phone",
   },
   birthdayLabel: {
     id: "app.people_form.birthday_label",
-    defaultMessage: "Birthday"
+    defaultMessage: "Birthday",
   },
   skillsLabel: {
     id: "app.people_form.skills_label",
-    defaultMessage: "What can you do?"
+    defaultMessage: "What can you do?",
   },
   sendLabel: {
     id: "app.people_form.submit_label",
-    defaultMessage: "Send"
-  }
+    defaultMessage: "Send",
+  },
 });
 
 const Header = styled.header`
@@ -160,7 +160,7 @@ class PeopleForm extends Component {
       formData: {},
       loading: false,
       sent: false,
-      contribute: false
+      contribute: false,
     };
     this._handleFacebookClick = this._handleFacebookClick.bind(this);
     this._handleRecaptcha = this._handleRecaptcha.bind(this);
@@ -181,7 +181,7 @@ class PeopleForm extends Component {
         supporter: get(nextProps.person, "campaignMeta.supporter"),
         mobilizer: get(nextProps.person, "campaignMeta.mobilizer"),
         donor: get(nextProps.person, "campaignMeta.donor"),
-        volunteer: get(nextProps.person, "campaignMeta.volunteer")
+        volunteer: get(nextProps.person, "campaignMeta.volunteer"),
       };
       merge(formData, personData);
       // const contribute =
@@ -193,17 +193,18 @@ class PeopleForm extends Component {
     this.setState({
       formData: {
         ...this.state.formData,
-        [target.name]: target.type == "checkbox" ? target.checked : target.value
-      }
+        [target.name]:
+          target.type == "checkbox" ? target.checked : target.value,
+      },
     });
   };
   _handleFacebookClick() {
     const { campaign } = this.props;
     Facebook.requestCredential(
       {
-        requestPermissions: ["public_profile", "email"]
+        requestPermissions: ["public_profile", "email"],
       },
-      token => {
+      (token) => {
         const secret = OAuth._retrieveCredentialSecret(token) || null;
         Meteor.call(
           "peopleForm.connectFacebook",
@@ -223,13 +224,13 @@ class PeopleForm extends Component {
     this.setState({
       formData: {
         ...this.state.formData,
-        recaptcha: res
-      }
+        recaptcha: res,
+      },
     });
   }
   _handleDeleteDataClick() {
     Facebook.requestCredential({
-      requestPermissions: []
+      requestPermissions: [],
     });
   }
   _displayParticipateButton = () => {
@@ -282,7 +283,7 @@ class PeopleForm extends Component {
     const { formData } = this.state;
     const value = get(formData, "birthday");
     if (value) {
-      return moment(value);
+      return value;
     }
     return null;
   }
@@ -424,16 +425,17 @@ class PeopleForm extends Component {
                     label={intl.formatMessage(messages.birthdayLabel)}
                   >
                     <DatePicker
-                      onChange={date => {
+                      onChange={(date) => {
                         this._handleChange({
                           target: {
                             name: "birthday",
-                            value: date.toDate()
-                          }
+                            value: date,
+                          },
                         });
                       }}
                       selected={this.getBirthdayValue()}
                       dateFormatCalendar="MMMM"
+                      dateFormat="P"
                       showMonthDropdown
                       showYearDropdown
                       dropdownMode="select"
@@ -443,7 +445,7 @@ class PeopleForm extends Component {
                     name="address"
                     country={campaign.country}
                     value={formData.address}
-                    onChange={target => this._handleChange({ target })}
+                    onChange={(target) => this._handleChange({ target })}
                   />
                   <Form.Field label={intl.formatMessage(messages.skillsLabel)}>
                     <SkillsField
@@ -569,7 +571,7 @@ class PeopleForm extends Component {
 }
 
 PeopleForm.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 const PeopleFormIntl = injectIntl(PeopleForm);
@@ -582,7 +584,7 @@ class IntlContainer extends Component {
       navigator.language ||
       navigator.userLanguage;
 
-    const findLocale = language => {
+    const findLocale = (language) => {
       let locale = false;
       const languageWRC = language.toLowerCase().split(/[_-]+/)[0];
       for (const key in localeData) {
@@ -599,7 +601,9 @@ class IntlContainer extends Component {
       }
       return locale;
     };
-    const localeMessages = localeData[findLocale(language)] || localeData.en;
+    const locale = findLocale(language);
+    updateDepsLocales(locale);
+    const localeMessages = localeData[locale] || localeData.en;
     return (
       <IntlProvider locale={language} messages={localeMessages}>
         <PeopleFormIntl {...this.props} />

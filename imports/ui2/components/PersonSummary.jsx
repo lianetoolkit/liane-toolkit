@@ -108,7 +108,7 @@ class PersonSummary extends Component {
     this._fetch();
   }
   componentDidUpdate() {
-    ReactTooltip.rebuild();
+    // ReactTooltip.rebuild();
   }
   value(key) {
     const person = this.state.person || this.props.person;
@@ -193,7 +193,6 @@ class PersonSummary extends Component {
           this._fetch().then((person) => {
             this.props.onUpdate && this.props.onUpdate(person);
           });
-          console.log(res);
         }
       }
     );

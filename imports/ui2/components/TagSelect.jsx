@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
-import CreatableSelect from "react-select/lib/Creatable";
+import CreatableSelect from "react-select/creatable";
 
 export default class TagSelect extends Component {
   constructor(props) {
