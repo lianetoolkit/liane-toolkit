@@ -6,9 +6,6 @@ import {
   FormattedMessage,
 } from "react-intl";
 import styled, { css } from "styled-components";
-import moment from "moment";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Select from "react-select";
 
 import { Meta } from "../utils/people";
 import { alertStore } from "../containers/Alerts.jsx";
@@ -88,8 +85,7 @@ const FilterMenuGroup = styled.div`
 `;
 
 const UnresolvedPage = ({ campaignId, people, peopleCounter }) => {
-  const [loading, setLoading] = useState(true);
-
+  console.log('people', people)
   const options = {
     skip: 0,
     limit: 20,
@@ -110,25 +106,24 @@ const UnresolvedPage = ({ campaignId, people, peopleCounter }) => {
                   People List
                 </Button>
                 <Button onClick={() => { }} active={true}>
-                  Unresolved <Badge>{peopleCounter}</Badge>
+                  Unresolved {peopleCounter !== 0 ? <Badge>{peopleCounter}</Badge> : ``}
                 </Button>
               </Button.Group>
             </FilterMenuGroup>
           </div>
         </PageFilters>
       </Page.Nav>
-      <PeopleContent loading={loading}>
-        {people.length > 0 ? (
-          <PagePaging
-            skip={options.skip}
-            limit={options.limit}
-            count={people.length}
-            loading={people.length}
-            onNext={() => { }}
-            onPrev={() => { }}
-          />
-        ) : null}
-        {!loading && (!people || !people.length) ? (
+      <PeopleContent >
+        {/* {people.length > 0 ? ( */}
+        <PagePaging
+          skip={options.skip}
+          limit={options.limit}
+          count={people.length}
+          onNext={() => { }}
+          onPrev={() => { }}
+        />
+        {/* ) : null} */}
+        {(people.length == 0) ? (
           <p className="not-found">No results found.</p>
         ) : (
             <UnresolvedTable people={people} campaignId={campaignId} ></UnresolvedTable>
@@ -692,10 +687,10 @@ const UnresolvedTable = ({ people, campaignId }) => {
               >
                 <td>{person.name}</td>
                 <td>
-                  {person.campaignMeta && person.campaignMeta.contact.cellphone}
+                  {person.campaignMeta && person.campaignMeta.contact && person.campaignMeta.contact.cellphone}
                 </td>
                 <td>
-                  {person.campaignMeta && person.campaignMeta.contact.email}
+                  {person.campaignMeta && person.campaignMeta.contact && person.campaignMeta.contact.email}
                 </td>
                 <td>{person.source && person.source}</td>
                 <td> {person.related && person.related.length + 1} </td>

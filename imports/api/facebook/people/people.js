@@ -72,6 +72,9 @@ People.schema = new SimpleSchema({
     type: Array,
     optional: true,
   },
+  "related.$": {
+    type: String,
+  },
   listId: {
     type: String,
     optional: true,

@@ -19,7 +19,6 @@ import redisClient from "/imports/startup/server/redis";
 import crypto from "crypto";
 
 const recaptchaSecret = Meteor.settings.recaptcha;
-
 export const peopleDetail = new ValidatedMethod({
   name: "people.detail",
   validate: new SimpleSchema({
@@ -937,6 +936,7 @@ export const peopleFormId = new ValidatedMethod({
   },
 });
 
+
 export const peopleCreate = new ValidatedMethod({
   name: "people.create",
   validate: new SimpleSchema({
@@ -946,6 +946,7 @@ export const peopleCreate = new ValidatedMethod({
     name: {
       type: String,
     },
+
   }).validator(),
   run({ campaignId, name }) {
     logger.debug("people.create called", { campaignId, name });
@@ -1088,6 +1089,8 @@ export const peopleMetaUpdate = new ValidatedMethod({
       data: { personId },
     });
 
+    //! Once its created or updated tries to find a duplicate
+    PeopleHelpers.registerDuplicates({ personId });
     return People.findOne(personId);
   },
 });
@@ -1279,49 +1282,6 @@ export const importPeople = new ValidatedMethod({
       type: "people.import.add",
       campaignId,
       data: { defaultValues, importSize: data.length },
-    });
-
-    return res;
-  },
-});
-
-export const findDuplicates = new ValidatedMethod({
-  name: "people.findDuplicates",
-  validate: new SimpleSchema({
-    personId: {
-      type: String,
-    },
-  }).validator(),
-  run({ personId }) {
-    logger.debug("people.findDuplicates called", { personId });
-
-    const userId = Meteor.userId();
-    if (!userId) {
-      throw new Meteor.Error(401, "You need to login");
-    }
-
-    const person = People.findOne(personId);
-    if (!person) {
-      throw new Meteor.Error(404, "Person not found");
-    }
-
-    if (
-      !Meteor.call("campaigns.userCan", {
-        campaignId: person.campaignId,
-        userId,
-        feature: "people",
-        permission: "edit",
-      })
-    ) {
-      throw new Meteor.Error(401, "You are not allowed to do this action");
-    }
-
-    const res = PeopleHelpers.findDuplicates({ personId });
-
-    Meteor.call("log", {
-      type: "people.findDuplicates",
-      campaignId: person.campaignId,
-      data: { personId },
     });
 
     return res;
@@ -1825,6 +1785,8 @@ export const peopleFormSubmit = new ValidatedMethod({
       });
       personId = id;
     }
+    // ! Check for extra Duplicates
+    PeopleHelpers.registerDuplicates({ personId });
 
     NotificationsHelpers.add({
       campaignId,
