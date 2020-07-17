@@ -135,8 +135,6 @@ Meteor.publish("people.exportJobCount", function ({ campaignId }) {
     Meteor.call("campaigns.isUserTeam", {
       campaignId,
       userId,
-      feature: "people",
-      permission: "view",
     })
   ) {
     Counts.publish(
@@ -161,8 +159,6 @@ Meteor.publish("people.importJobCount", function ({ campaignId }) {
     Meteor.call("campaigns.isUserTeam", {
       campaignId,
       userId,
-      feature: "people",
-      permission: "view",
     })
   ) {
     Counts.publish(

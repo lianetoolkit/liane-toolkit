@@ -687,10 +687,10 @@ const UnresolvedTable = ({ people, campaignId }) => {
               >
                 <td>{person.name}</td>
                 <td>
-                  {person.campaignMeta && person.campaignMeta.contact.cellphone}
+                  {person.campaignMeta && person.campaignMeta.contact && person.campaignMeta.contact.cellphone}
                 </td>
                 <td>
-                  {person.campaignMeta && person.campaignMeta.contact.email}
+                  {person.campaignMeta && person.campaignMeta.contact && person.campaignMeta.contact.email}
                 </td>
                 <td>{person.source && person.source}</td>
                 <td> {person.related && person.related.length + 1} </td>
