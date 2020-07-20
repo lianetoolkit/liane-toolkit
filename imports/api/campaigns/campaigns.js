@@ -44,6 +44,7 @@ Campaigns.usersSchema = new SimpleSchema({
   },
   permissions: {
     type: Object,
+    optional: true,
   },
   ...userFeaturePermissions,
 });
