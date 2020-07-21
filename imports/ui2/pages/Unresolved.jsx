@@ -35,6 +35,36 @@ Object.byString = function (o, s) {
   }
   return o;
 };
+
+const messages = defineMessages({
+  peopleListTitle: {
+    id: "app.people.list.title",
+    defaultMessage: "People List",
+  },
+  namePlaceholder: {
+    id: "app.extra_fields.name.placeholder",
+    defaultMessage: "Name"
+  },
+  sourceLabel: {
+    id: "app.extra_fields.name.placeholder",
+    defaultMessage: "Source"
+  },
+  phoneLabel: {
+    id: "app.people.meta.phone_label",
+    defaultMessage: "Phone",
+  },
+  emailLabel: {
+    id: "app.people_form.email_label",
+    defaultMessage: "Email",
+  },
+  unresolvedLabel: {
+    id: "app.extra_fields.unresolved.label",
+    defaultMessage: "Unresolved",
+  },
+
+});
+
+
 const PeopleContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -84,8 +114,7 @@ const FilterMenuGroup = styled.div`
   }
 `;
 
-const UnresolvedPage = ({ campaignId, people, peopleCounter }) => {
-  console.log('people', people)
+const UnresolvedPage = ({ campaignId, people, peopleCounter, intl }) => {
   const options = {
     skip: 0,
     limit: 20,
@@ -103,10 +132,10 @@ const UnresolvedPage = ({ campaignId, people, peopleCounter }) => {
                   }}
                   active={false}
                 >
-                  People List
+                  {intl.formatMessage(messages.peopleListTitle)}
                 </Button>
                 <Button onClick={() => { }} active={true}>
-                  Unresolved {peopleCounter !== 0 ? <Badge>{peopleCounter}</Badge> : ``}
+                  {intl.formatMessage(messages.unresolvedLabel)} {peopleCounter !== 0 ? <Badge>{peopleCounter}</Badge> : ``}
                 </Button>
               </Button.Group>
             </FilterMenuGroup>
@@ -126,7 +155,7 @@ const UnresolvedPage = ({ campaignId, people, peopleCounter }) => {
         {(people.length == 0) ? (
           <p className="not-found">No results found.</p>
         ) : (
-            <UnresolvedTable people={people} campaignId={campaignId} ></UnresolvedTable>
+            <UnresolvedTable people={people} campaignId={campaignId} intl={intl}></UnresolvedTable>
           )}
       </PeopleContent>
     </>
@@ -652,7 +681,8 @@ const MergeModal = ({ person, campaignId }) => {
     </Container>
   );
 };
-const UnresolvedTable = ({ people, campaignId }) => {
+
+const UnresolvedTable = ({ people, campaignId, intl }) => {
   const [selected, setSelected] = useState(null);
 
   const displayPerson = (person) => {
@@ -667,11 +697,11 @@ const UnresolvedTable = ({ people, campaignId }) => {
         <Table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Phone</th>
-              <th>Email</th>
-              <th>Source</th>
-              <th>Unresolved</th>
+              <th>{intl.formatMessage(messages.namePlaceholder)}</th>
+              <th>{intl.formatMessage(messages.phoneLabel)}</th>
+              <th>{intl.formatMessage(messages.emailLabel)}</th>
+              <th>{intl.formatMessage(messages.sourceLabel)}</th>
+              <th>{intl.formatMessage(messages.unresolvedLabel)}</th>
             </tr>
           </thead>
 
@@ -707,4 +737,4 @@ UnresolvedPage.propTypes = {
   intl: intlShape.isRequired,
 };
 
-export default UnresolvedPage;
+export default injectIntl(UnresolvedPage);
