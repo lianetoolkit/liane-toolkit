@@ -513,8 +513,8 @@ const PeopleHelpers = {
     }
     People.update(personId, { $set, $addToSet });
   },
-  registerDuplicates({ personId }) {
-    res = this.findDuplicates({ personId });
+  registerDuplicates({ personId, source }) {
+    res = this.findDuplicates({ personId, source });
 
     if (res.none) {
       const persons = res.none;
@@ -538,59 +538,97 @@ const PeopleHelpers = {
       })
     }
   },
-  findDuplicates({ personId }) {
+  findDuplicates({ personId, source }) {
 
     const person = People.findOne(personId);
-    console.log('>>  peopleHelpers > findDuplicates ')
-    // ! Check Phone Number 
     let matches = [];
-    const _queries = () => {
-      let queries = [];
-      let defaultQuery = {
-        _id: { $ne: person._id },
-        campaignId: person.campaignId,
-        $or: [],
-      };
-      // avoid matching person with different facebookId
-      if (person.facebookId) {
-        defaultQuery.$and = [
-          {
-            $or: [
-              { facebookId: { $exists: false } },
-              { facebookId: person.facebookId },
-            ],
-          },
+    let _queries = null;
+
+    if (source) {
+      _queries = () => {
+        let queries = [];
+        let defaultQuery = {
+          _id: { $ne: person._id },
+          campaignId: person.campaignId,
+          $or: [],
+        };
+        // sorted by uniqueness importance
+        const fieldGroups = [
+          ["name"]
         ];
-      }
-      // sorted by uniqueness importance
-      const fieldGroups = [
-        ["name"],
-        [
-          "campaignMeta.contact.email",
-          "campaignMeta.social_networks.twitter",
-          "campaignMeta.social_networks.instagram",
-        ],
-      ];
-      for (const fieldGroup of fieldGroups) {
-        let query = { ...defaultQuery };
-        query.$or = [];
-        for (const field of fieldGroup) {
-          const fieldVal = get(person, field);
-          // clear previous value
-          if (fieldVal) {
-            query.$or.push({ [field]: fieldVal });
+        for (const fieldGroup of fieldGroups) {
+          let query = { ...defaultQuery };
+          query.$or = [];
+          for (const field of fieldGroup) {
+            const fieldVal = get(person, field);
+            // clear previous value
+            if (fieldVal) {
+              query.$or.push({ [field]: fieldVal });
+            }
+          }
+          if (query.$or.length) {
+            queries.push(query);
           }
         }
-        if (query.$or.length) {
-          queries.push(query);
+        if (!queries.length) {
+          return false;
         }
-      }
-      if (!queries.length) {
-        return false;
-      }
-      return queries;
-    };
+        return queries;
+      };
+    } else {
+      _queries = () => {
+        let queries = [];
+        let defaultQuery = {
+          _id: { $ne: person._id },
+          campaignId: person.campaignId,
+          $or: [],
+        };
+        // avoid matching person with different facebookId
+        if (person.facebookId) {
+          defaultQuery.$and = [
+            {
+              $or: [
+                { facebookId: { $exists: false } },
+                { facebookId: person.facebookId },
+              ],
+            },
+          ];
+        }
+        // sorted by uniqueness importance
+        const fieldGroups = [
+          ["name"],
+          [
+            "campaignMeta.contact.email",
+            //? @miguelpeixe would it be good to add this?
+            //? "campaignMeta.contact.cellphone",
+            "campaignMeta.social_networks.twitter",
+            "campaignMeta.social_networks.instagram",
+          ],
+        ];
+        for (const fieldGroup of fieldGroups) {
+          let query = { ...defaultQuery };
+          query.$or = [];
+          for (const field of fieldGroup) {
+            const fieldVal = get(person, field);
+            // clear previous value
+            if (fieldVal) {
+              query.$or.push({ [field]: fieldVal });
+            }
+          }
+          if (query.$or.length) {
+            queries.push(query);
+          }
+        }
+        if (!queries.length) {
+          return false;
+        }
+        return queries;
+      };
+    }
+
+
     const queries = _queries();
+    // console.log(JSON.stringify(queries, null, 5));
     if (queries && queries.length) {
       for (const query of queries) {
         matches.push(People.find(query).fetch());
