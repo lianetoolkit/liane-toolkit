@@ -143,33 +143,44 @@ const LikesHelpers = {
       }
 
       const PeopleRawCollection = People.rawCollection();
+
       for (const campaign of accountCampaigns) {
         const person = People.findOne({
           campaignId: campaign._id,
           facebookId: reaction.personId,
         });
+
+        let _id = null;
+
         if (person) {
-          PeopleRawCollection.update({ _id: person._id }, updateObj);
+          _id = person._id
+          PeopleRawCollection.update({ _id }, updateObj);
         } else {
-          const _id = Random.id();
-          PeopleRawCollection.update(
-            {
-              campaignId: campaign._id,
-              facebookId: reaction.personId,
-            },
-            {
-              ...updateObj,
-              $setOnInsert: {
-                ...updateObj.$setOnInsert,
-                _id,
-                formId: PeopleHelpers.generateFormId(_id),
+
+          _id = Random.id();
+          Promise.await(
+            PeopleRawCollection.update(
+              {
+                campaignId: campaign._id,
+                facebookId: reaction.personId,
               },
-            },
-            {
-              multi: false,
-              upsert: true,
-            }
-          );
+              {
+                ...updateObj,
+                $setOnInsert: {
+                  ...updateObj.$setOnInsert,
+                  _id,
+                  formId: PeopleHelpers.generateFormId(_id),
+                },
+              },
+              {
+                multi: false,
+                upsert: true,
+              }
+            )
+          )
+          //! Check Duplicates 
+          PeopleHelpers.registerDuplicates({ personId: _id, source: 'likes' });
+
           AccountsLogs.insert({
             type: "people.new",
             accountId: facebookAccountId,
@@ -177,6 +188,8 @@ const LikesHelpers = {
             timestamp: reaction.created_time,
           });
         }
+
+
       }
     }
   },
@@ -349,10 +362,13 @@ const LikesHelpers = {
               ...updateObj,
               $setOnInsert: {
                 ...updateObj.$setOnInsert,
-                _id: Random.id(),
+                _id: _id,
                 formId: PeopleHelpers.generateFormId(_id),
               },
             });
+
+
+
         }
       }
       peopleBulk.execute();
