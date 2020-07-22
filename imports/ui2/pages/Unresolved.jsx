@@ -6,18 +6,13 @@ import {
   FormattedMessage,
 } from "react-intl";
 import styled, { css } from "styled-components";
-
 import { Meta } from "../utils/people";
 import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
-
 import Button from "../components/Button.jsx";
 import Table from "../components/Table.jsx";
-
 import Badge from "../components/Badge.jsx";
-
 import Page from "../components/Page.jsx";
-
 import PageFilters from "../components/PageFilters.jsx";
 import PagePaging from "../components/PagePaging.jsx";
 
@@ -41,6 +36,22 @@ const messages = defineMessages({
     id: "app.people.list.title",
     defaultMessage: "People List",
   },
+  unresolvedLabel: {
+    id: "app.people.unresolved.label",
+    defaultMessage: "Unresolved",
+  },
+  continueLabel: {
+    id: "app.people.unresolved.continue",
+    defaultMessage: "Continue",
+  },
+  backLabel: {
+    id: "app.people.unresolved.back",
+    defaultMessage: "Back",
+  },
+  resolveLabel: {
+    id: "app.people.unresolved.resolve",
+    defaultMessage: "Resolve Conflicts with ",
+  },
   namePlaceholder: {
     id: "app.extra_fields.name.placeholder",
     defaultMessage: "Name"
@@ -57,10 +68,16 @@ const messages = defineMessages({
     id: "app.people_form.email_label",
     defaultMessage: "Email",
   },
-  unresolvedLabel: {
-    id: "app.extra_fields.unresolved.label",
-    defaultMessage: "Unresolved",
+  confirmLabel: {
+    id: "app.account_select.submit",
+    defaultMessage: "Confirm",
   },
+  backLabel: {
+    id: "app.reply.back_to_selection",
+    defaultMessage: "Back",
+  },
+
+
 
 });
 
@@ -335,7 +352,7 @@ const Container = styled.div`
   }
 `;
 
-const MergeModal = ({ person, campaignId }) => {
+const MergeModal = ({ person, campaignId, intl }) => {
   // To force the render
   const [, updateState] = useState();
   const forceUpdate = useCallback(() => updateState({}), []);
@@ -369,7 +386,15 @@ const MergeModal = ({ person, campaignId }) => {
         let newValue = (value = Object.byString(el, key));
         if (newValue && newField.length == 0) {
           newField.push(newValue);
-          labels[key] = Meta.getLabel(section, name).defaultMessage;
+          // console.log(Meta.getLabel(section, name))
+          if (Meta.getLabel(section, name).id) {
+            console.log(Meta.getLabel(section, name).id)
+            // labels[key] = intl.formatMessage(Meta.getLabel(section, name).id);
+            labels[key] = (Meta.getLabel(section, name).defaultMessage);
+          } else {
+            labels[key] = (Meta.getLabel(section, name).defaultMessage);
+          }
+
           initialValues[key] = {
             person: index,
             value: newValue,
@@ -514,7 +539,7 @@ const MergeModal = ({ person, campaignId }) => {
             style={{ textAlign: "center" }}
             onClick={() => setView("list")}
           >
-            Back
+            {intl.formatMessage(messages.backLabel)}
           </a>
           <a
             href="#"
@@ -522,7 +547,7 @@ const MergeModal = ({ person, campaignId }) => {
             style={{ textAlign: "center" }}
             onClick={confirm}
           >
-            Confirm
+            {intl.formatMessage(messages.confirmLabel)}
           </a>
         </div>
       </Container>
@@ -572,7 +597,7 @@ const MergeModal = ({ person, campaignId }) => {
                     forceUpdate();
                   }}
                 >
-                  Unresolved #{i + 1} &nbsp;
+                  {intl.formatMessage(messages.unresolvedLabel)} #{i + 1} &nbsp;
                   {!activePersons[i] ? <Badge>Resolved</Badge> : ``}
                 </a>
               </div>
@@ -675,7 +700,7 @@ const MergeModal = ({ person, campaignId }) => {
           style={{ textAlign: "center" }}
           onClick={() => setView("confirm")}
         >
-          Continue
+          {intl.formatMessage(messages.continueLabel)}
         </a>
       </div>
     </Container>
@@ -687,8 +712,8 @@ const UnresolvedTable = ({ people, campaignId, intl }) => {
 
   const displayPerson = (person) => {
     setSelected(person._id);
-    modalStore.setTitle(`Resolve Conflicts with ${person.name}`);
-    modalStore.set(<MergeModal person={person} campaignId={campaignId} />);
+    modalStore.setTitle(`${intl.formatMessage(messages.resolveLabel)} ${person.name}`);
+    modalStore.set(<MergeModal person={person} intl={intl} campaignId={campaignId} />);
   };
 
   return (
