@@ -599,8 +599,7 @@ const PeopleHelpers = {
           ["name"],
           [
             "campaignMeta.contact.email",
-            //? @miguelpeixe would it be good to add this?
-            //? "campaignMeta.contact.cellphone",
+            "campaignMeta.contact.cellphone",
             "campaignMeta.social_networks.twitter",
             "campaignMeta.social_networks.instagram",
           ],

@@ -42,6 +42,14 @@ import PersonMetaButtons, {
 import Reaction from "../components/Reaction.jsx";
 
 const messages = defineMessages({
+  peopleListTitle: {
+    id: "app.people.list.title",
+    defaultMessage: "People List",
+  },
+  unresolvedLabel: {
+    id: "app.extra_fields.unresolved.label",
+    defaultMessage: "Unresolved",
+  },
   manualLabel: {
     id: "app.people.source.manual.label",
     defaultMessage: "Manual",
@@ -559,7 +567,7 @@ class PeoplePage extends Component {
               <FilterMenuGroup>
                 <Button.Group toggler className="people-tab-menu">
                   <Button onClick={() => { }} active={true}>
-                    People List
+                    {intl.formatMessage(messages.peopleListTitle)}
                   </Button>
                   <Button
                     onClick={() => {
@@ -567,7 +575,7 @@ class PeoplePage extends Component {
                     }}
                     active={false}
                   >
-                    Unresolved {peopleCounter !== 0 ? <Badge>{peopleCounter}</Badge> : ``}
+                    {intl.formatMessage(messages.unresolvedLabel)} {peopleCounter !== 0 ? <Badge>{peopleCounter}</Badge> : ``}
                   </Button>
                 </Button.Group>
               </FilterMenuGroup>
