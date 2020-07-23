@@ -505,17 +505,22 @@ const PeopleHelpers = {
       jobType: "people.import",
       jobData: { campaignId, count: importData.length, listId },
     });
-    for (let person of importData) {
-      JobsHelpers.addJob({
-        jobType: "people.importPerson",
-        jobData: {
-          campaignId,
-          jobId: job,
-          listId,
-          person: JSON.stringify(person),
-        },
-      });
-    }
+    setTimeout(
+      Meteor.bindEnvironment(() => {
+        for (let person of importData) {
+          JobsHelpers.addJob({
+            jobType: "people.importPerson",
+            jobData: {
+              campaignId,
+              jobId: job,
+              listId,
+              person: JSON.stringify(person),
+            },
+          });
+        }
+      }),
+      10
+    );
 
     return;
   },
@@ -592,7 +597,7 @@ const PeopleHelpers = {
       let defaultQuery = { campaignId, $or: [] };
       // sorted by reversed uniqueness importance
       const fieldGroups = [
-        ["name"],
+        // ["name"],
         [
           "campaignMeta.contact.email",
           "campaignMeta.contact.cellphone",
