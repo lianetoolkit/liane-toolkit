@@ -3,6 +3,7 @@ import axios from "axios";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import {
   People,
+  PeopleTags,
   PeopleLists,
   PeopleExports,
 } from "/imports/api/facebook/people/people.js";
@@ -247,6 +248,8 @@ const PeopleHelpers = {
 
     const batchInterval = 10000;
 
+    const tags = PeopleTags.find({ campaignId }).fetch();
+
     const totalCount = Promise.await(
       People.rawCollection()
         .find(query.query, {
@@ -265,6 +268,29 @@ const PeopleHelpers = {
     );
 
     const batchAmount = Math.ceil(totalCount / batchInterval);
+
+    const processPerson = (person) => {
+      if (person.campaignMeta) {
+        for (let key in person.campaignMeta) {
+          person[key] = person.campaignMeta[key];
+        }
+        delete person.campaignMeta;
+        // Parse tags
+        if (person.basic_info && person.basic_info.tags) {
+          person.tags = person.basic_info.tags
+            .map((tagId) => {
+              const tagObj = tags.find((t) => t._id == tagId);
+              return tagObj ? tagObj.name : null;
+            })
+            .join(",");
+          delete person.basic_info.tags;
+        }
+        if (!Object.keys(person.basic_info).length) {
+          delete person.basic_info;
+        }
+      }
+      return person;
+    };
 
     // first batch run get all headers
     for (let i = 0; i < batchAmount; i++) {
@@ -288,13 +314,7 @@ const PeopleHelpers = {
             })
             .forEach(
               (person) => {
-                if (person.campaignMeta) {
-                  for (let key in person.campaignMeta) {
-                    person[key] = person.campaignMeta[key];
-                  }
-                  delete person.campaignMeta;
-                }
-                const flattenedPerson = flattenObject(person);
+                const flattenedPerson = flattenObject(processPerson(person));
                 for (let key in flattenedPerson) {
                   header[key] = true;
                 }
@@ -357,13 +377,7 @@ const PeopleHelpers = {
             })
             .forEach(
               (person) => {
-                if (person.campaignMeta) {
-                  for (let key in person.campaignMeta) {
-                    person[key] = person.campaignMeta[key];
-                  }
-                  delete person.campaignMeta;
-                }
-                flattened.push(flattenObject(person));
+                flattened.push(flattenObject(processPerson(person)));
               },
               (err) => {
                 if (err) {
