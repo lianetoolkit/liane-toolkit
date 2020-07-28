@@ -37,7 +37,7 @@ const messages = defineMessages({
     defaultMessage: "People List",
   },
   unresolvedLabel: {
-    id: "app.people.unresolved.label",
+    id: "app.extra_fields.unresolved.label",
     defaultMessage: "Unresolved",
   },
   continueLabel: {
@@ -76,8 +76,18 @@ const messages = defineMessages({
     id: "app.reply.back_to_selection",
     defaultMessage: "Back",
   },
-
-
+  updatedLabel: {
+    id: "app.people.unresolved.updated",
+    defaultMessage: "updated",
+  },
+  deletedLabel: {
+    id: "app.people.unresolved.deleted",
+    defaultMessage: "updated",
+  },
+  willBeLabel: {
+    id: "app.people.unresolved.updated",
+    defaultMessage: "will be ",
+  },
 
 });
 
@@ -388,9 +398,7 @@ const MergeModal = ({ person, campaignId, intl }) => {
           newField.push(newValue);
           // console.log(Meta.getLabel(section, name))
           if (Meta.getLabel(section, name).id) {
-            console.log(Meta.getLabel(section, name).id)
-            // labels[key] = intl.formatMessage(Meta.getLabel(section, name).id);
-            labels[key] = (Meta.getLabel(section, name).defaultMessage);
+            labels[key] = intl.formatMessage(Meta.getLabel(section, name));
           } else {
             labels[key] = (Meta.getLabel(section, name).defaultMessage);
           }
@@ -610,7 +618,7 @@ const MergeModal = ({ person, campaignId, intl }) => {
           return (
             <>
               <h3 key={`section-${i}`}>
-                {Meta.getSectionLabel(section).defaultMessage}
+                {intl.formatMessage(Meta.getSectionLabel(section))}
               </h3>
 
               {fields.map((field) => {
