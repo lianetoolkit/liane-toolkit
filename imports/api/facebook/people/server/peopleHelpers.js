@@ -544,45 +544,21 @@ const PeopleHelpers = {
     let matches = [];
     let _queries = null;
 
-    if (source) {
-      _queries = () => {
-        let queries = [];
-        let defaultQuery = {
-          _id: { $ne: person._id },
-          campaignId: person.campaignId,
-          $or: [],
-        };
-        // sorted by uniqueness importance
-        const fieldGroups = [
+    _queries = () => {
+      let queries = [];
+      let fieldGroups;
+      let defaultQuery = {
+        _id: { $ne: person._id },
+        campaignId: person.campaignId,
+        $or: [],
+      };
+
+
+      if (source) {
+        fieldGroups = [
           ["name"]
         ];
-        for (const fieldGroup of fieldGroups) {
-          let query = { ...defaultQuery };
-          query.$or = [];
-          for (const field of fieldGroup) {
-            const fieldVal = get(person, field);
-            // clear previous value
-            if (fieldVal) {
-              query.$or.push({ [field]: fieldVal });
-            }
-          }
-          if (query.$or.length) {
-            queries.push(query);
-          }
-        }
-        if (!queries.length) {
-          return false;
-        }
-        return queries;
-      };
-    } else {
-      _queries = () => {
-        let queries = [];
-        let defaultQuery = {
-          _id: { $ne: person._id },
-          campaignId: person.campaignId,
-          $or: [],
-        };
+      } else {
         // avoid matching person with different facebookId
         if (person.facebookId) {
           defaultQuery.$and = [
@@ -594,8 +570,7 @@ const PeopleHelpers = {
             },
           ];
         }
-        // sorted by uniqueness importance
-        const fieldGroups = [
+        fieldGroups = [
           ["name"],
           [
             "campaignMeta.contact.email",
@@ -604,26 +579,29 @@ const PeopleHelpers = {
             "campaignMeta.social_networks.instagram",
           ],
         ];
-        for (const fieldGroup of fieldGroups) {
-          let query = { ...defaultQuery };
-          query.$or = [];
-          for (const field of fieldGroup) {
-            const fieldVal = get(person, field);
-            // clear previous value
-            if (fieldVal) {
-              query.$or.push({ [field]: fieldVal });
-            }
-          }
-          if (query.$or.length) {
-            queries.push(query);
+
+      }
+      // sorted by uniqueness importance
+
+      for (const fieldGroup of fieldGroups) {
+        let query = { ...defaultQuery };
+        query.$or = [];
+        for (const field of fieldGroup) {
+          const fieldVal = get(person, field);
+          // clear previous value
+          if (fieldVal) {
+            query.$or.push({ [field]: fieldVal });
           }
         }
-        if (!queries.length) {
-          return false;
+        if (query.$or.length) {
+          queries.push(query);
         }
-        return queries;
-      };
-    }
+      }
+      if (!queries.length) {
+        return false;
+      }
+      return queries;
+    };
 
 
     const queries = _queries();
@@ -646,12 +624,13 @@ const PeopleHelpers = {
     });
   },
   importPerson({ campaignId, listId, person }) {
+    console.log('CALLING IMPORT PERSON', person)
     const _queries = () => {
       let queries = [];
       let defaultQuery = { campaignId, $or: [] };
       // sorted by reversed uniqueness importance
       const fieldGroups = [
-        ["name"],
+        // ["name"],
         [
           "campaignMeta.contact.email",
           "campaignMeta.contact.cellphone",
