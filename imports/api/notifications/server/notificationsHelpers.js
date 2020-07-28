@@ -93,7 +93,6 @@ const NotificationsHelpers = {
         .fetch();
     }
     for (const user of users) {
-      console.log("clearing notif", user);
       Notifications.remove({ userId: user._id, category, dataRef });
     }
   },
