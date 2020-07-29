@@ -17,6 +17,7 @@ import Form from "./Form.jsx";
 import TagSelect from "./TagSelect.jsx";
 import PersonMetaButtons from "./PersonMetaButtons.jsx";
 import Button from "./Button.jsx";
+import Loading from "./Loading.jsx";
 import CountrySelect from "./CountrySelect.jsx";
 import RegionSelect from "./RegionSelect.jsx";
 
@@ -228,9 +229,9 @@ class ImportButton extends React.Component {
       const wb = XLSX.read(bytes, { type: "array" });
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(sheet);
-      if (json.length > 1000) {
+      if (json.length > 10000) {
         alertStore.add(
-          "You can't import more than 1000 people at once.",
+          "You can't import more than 10,000 people at once.",
           "error"
         );
         this.setState({ importData: null, importFilename: "" });
@@ -546,6 +547,7 @@ class PeopleImport extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       tags: [],
       labels: {},
     };
@@ -596,6 +598,7 @@ class PeopleImport extends React.Component {
   };
   _handleSubmit(ev) {
     ev.preventDefault();
+    if (this.state.loading) return false;
     const { data, campaignId, filename, onSubmit } = this.props;
     const { tags, labels, defaultValues, ...config } = this.state;
     this.setState({
@@ -626,8 +629,11 @@ class PeopleImport extends React.Component {
   }
   render() {
     const { intl, data } = this.props;
-    const { tags, labels, loading } = this.state;
+    const { loading, tags, labels } = this.state;
     const headers = this._getHeaders();
+    if (loading) {
+      return <Loading />;
+    }
     return (
       <Container>
         <Form onSubmit={this._handleSubmit}>
@@ -680,6 +686,7 @@ class PeopleImport extends React.Component {
             />
           </Form.Field>
           <input
+            disabled={loading}
             type="submit"
             value={intl.formatMessage(messages.startImport)}
           />

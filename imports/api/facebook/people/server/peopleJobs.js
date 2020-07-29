@@ -10,12 +10,12 @@ import { Promise } from "meteor/promise";
 
 let importJobs = {};
 const updateImportJob = (job, personJobId) => {
+  if (!job || !job._doc) return;
   const id = job._doc._id;
   if (!importJobs[id]) importJobs[id] = {};
   importJobs[id][personJobId] = true;
   const completed = Object.keys(importJobs[id]).length;
   const jobData = job._doc.data;
-  console.log(jobData);
   if (completed == jobData.count) {
     delete importJobs[id];
     job.done();
@@ -252,11 +252,12 @@ const PeopleJobs = {
         });
       } catch (error) {
         errored = true;
-        return job.fail(error.message);
+        logger.error(error);
+        job.fail(error.message);
       } finally {
+        const parentJob = Jobs.getJob(job.data.jobId);
+        updateImportJob(parentJob, job._doc._id);
         if (!errored) {
-          const parentJob = Jobs.getJob(job.data.jobId);
-          updateImportJob(parentJob, job._doc._id);
           job.done();
           return job.remove();
         }
@@ -264,7 +265,7 @@ const PeopleJobs = {
     },
 
     workerOptions: {
-      concurrency: 10,
+      concurrency: 100,
       pollInterval: 2500,
     },
 

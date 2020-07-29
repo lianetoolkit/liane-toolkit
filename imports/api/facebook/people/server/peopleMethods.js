@@ -1244,7 +1244,6 @@ export const importPeople = new ValidatedMethod({
     logger.debug("people.import called", {
       campaignId,
       config,
-      data,
       defaultValues,
     });
 
@@ -1260,20 +1259,25 @@ export const importPeople = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    if (data.length > 1000) {
+    if (data.length > 10000) {
       throw new Meteor.Error(
         401,
-        "You can't import more than 1000 people at once"
+        "You can't import more than 10,000 people at once"
       );
     }
 
-    const res = PeopleHelpers.import({
-      campaignId,
-      config,
-      filename,
-      data,
-      defaultValues,
-    });
+    setTimeout(
+      Meteor.bindEnvironment(() => {
+        PeopleHelpers.import({
+          campaignId,
+          config,
+          filename,
+          data,
+          defaultValues,
+        });
+      }),
+      10
+    );
 
     Meteor.call("log", {
       type: "people.import.add",
@@ -1281,7 +1285,7 @@ export const importPeople = new ValidatedMethod({
       data: { defaultValues, importSize: data.length },
     });
 
-    return res;
+    return true;
   },
 });
 
