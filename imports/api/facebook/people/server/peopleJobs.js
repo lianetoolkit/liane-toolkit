@@ -10,6 +10,7 @@ import { Promise } from "meteor/promise";
 
 let importJobs = {};
 const updateImportJob = (job, personJobId) => {
+  if (!job || !job._doc) return;
   const id = job._doc._id;
   if (!importJobs[id]) importJobs[id] = {};
   importJobs[id][personJobId] = true;
@@ -251,6 +252,7 @@ const PeopleJobs = {
         });
       } catch (error) {
         errored = true;
+        logger.error(error);
         job.fail(error.message);
       } finally {
         const parentJob = Jobs.getJob(job.data.jobId);
