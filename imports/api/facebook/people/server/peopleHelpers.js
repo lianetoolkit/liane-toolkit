@@ -592,129 +592,34 @@ const PeopleHelpers = {
     });
   },
   importPerson({ campaignId, listId, person }) {
-    const _queries = () => {
-      let queries = [];
-      let defaultQuery = { campaignId, $or: [] };
-      // sorted by reversed uniqueness importance
-      const fieldGroups = [
-        // ["name"],
-        [
-          "campaignMeta.contact.email",
-          "campaignMeta.contact.cellphone",
-          "campaignMeta.social_networks.twitter",
-          "campaignMeta.social_networks.instagram",
-        ],
-      ];
-      for (const fieldGroup of fieldGroups) {
-        let query = { ...defaultQuery };
-        query.$or = [];
-        for (const field of fieldGroup) {
-          const fieldVal = person.$set[field];
-          // clear previous value
-          if (fieldVal) {
-            query.$or.push({ [field]: fieldVal.trim() });
-          }
-        }
-        if (query.$or.length) {
-          queries.push(query);
-        }
-      }
-      if (!queries.length) {
-        return false;
-      }
-      return queries;
-    };
-
-    const _upsertAddToSet = () => {
-      const keys = Object.keys(person.$addToSet);
-      if (keys.length) {
-        for (const key of keys) {
-          for (const value of person.$addToSet[key].$each) {
-            switch (key) {
-              // Extra values
-              case "campaignMeta.extra.extra":
-                People.update(
-                  {
-                    ...selector,
-                    [`${key}.key`]: value.key,
-                  },
-                  {
-                    $set: {
-                      ...person.$set,
-                      [`${key}.$.val`]: value.val,
-                    },
-                    $setOnInsert: {
-                      source: "import",
-                      formId: this.generateFormId(_id),
-                      listId,
-                    },
-                  },
-                  { multi: false }
-                );
-                break;
-              default:
-            }
-          }
-        }
-      }
-    };
-
+    // Generating new ID
     const _id = Random.id();
-    let selector = { _id, campaignId };
-    let foundMatch = false;
 
-    const queries = _queries();
-    let matches = [];
-    if (queries) {
-      for (const query of queries) {
-        matches.push(People.find(query).fetch());
-      }
-    }
-    for (const match of matches) {
-      if (match && match.length == 1) {
-        foundMatch = true;
-        selector._id = match[0]._id;
-      }
-    }
-
-    if (foundMatch) {
-      _upsertAddToSet();
-    }
-
+    // Using upsert because `person` object contain modifiers ($set)
+    // This will always be inserted (new person)
     People.upsert(
-      selector,
+      { _id, campaignId },
       {
         ...person,
         $setOnInsert: {
+          listId,
           source: "import",
           formId: this.generateFormId(_id),
-          listId,
         },
-      },
-      { multi: false }
+      }
     );
 
-    People.upsert(
-      { ...selector, listId: { $exists: true } },
-      {
-        $set: {
-          listId,
-        },
-      },
-      { multi: false }
-    );
-
-    this.geocodePerson({ personId: selector._id });
+    this.geocodePerson({ personId: _id });
 
     // Clear empty campaign lists
-    const campaignLists = PeopleLists.find({ campaignId }).fetch();
-    for (let list of campaignLists) {
-      if (!People.find({ listId: list._id }).count()) {
-        PeopleLists.remove(list._id);
-      }
-    }
+    // const campaignLists = PeopleLists.find({ campaignId }).fetch();
+    // for (let list of campaignLists) {
+    //   if (!People.find({ listId: list._id }).count()) {
+    //     PeopleLists.remove(list._id);
+    //   }
+    // }
 
-    return;
+    return _id;
   },
   expireExport({ exportId }) {
     const item = PeopleExports.findOne(exportId);
