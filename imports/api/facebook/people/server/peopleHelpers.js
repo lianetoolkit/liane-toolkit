@@ -556,6 +556,7 @@ const PeopleHelpers = {
         personId
       })
     }
+    // The the one thatt will hold the rest
     this.markUnresolve({
       personId: parentID,
       related: IDs
@@ -576,16 +577,12 @@ const PeopleHelpers = {
         campaignId: person.campaignId,
         $or: [],
       };
-
-
       if (source) {
         fieldGroups = [
           ["name"]
         ];
       } else {
-
         // avoid matching person with different facebookId
-
         if (person.facebookId) {
           defaultQuery.$and = [
             {
@@ -596,7 +593,6 @@ const PeopleHelpers = {
             },
           ];
         }
-
         fieldGroups = [
           ["name"],
           [
@@ -677,6 +673,7 @@ const PeopleHelpers = {
     //   }
     // }
 
+    this.registerDuplicates({ personId: { _id } })
     return _id;
   },
   expireExport({ exportId }) {

@@ -739,7 +739,7 @@ const UnresolvedTable = ({ people, campaignId, intl }) => {
           </thead>
 
           {people.map((person) => (
-            <tbody
+            person.related.length ? <tbody
               key={person._id}
               className={selected == person._id ? "active" : ""}
             >
@@ -758,7 +758,7 @@ const UnresolvedTable = ({ people, campaignId, intl }) => {
                 <td>{person.source && person.source}</td>
                 <td> {person.related && person.related.length + 1} </td>
               </tr>
-            </tbody>
+            </tbody> : ``
           ))}
         </Table>
       ) : null}

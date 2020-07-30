@@ -23,7 +23,7 @@ export default withTracker((props) => {
     },
     transform: (person) => {
       person.children = [];
-      if (person.related && person.related.length) {
+      if (person.related && person.related.length > 0) {
         person.children = People.find({ _id: { $in: person.related } }).fetch();
       }
       return person;
