@@ -1361,7 +1361,6 @@ export const mergeUnresolvedPeople = new ValidatedMethod({
     // Update
     let $updateSet = {
       unresolved: false,
-      related: []
     }
     update.fields.map(({ field, id }) => {
       if (id != update.id) {
@@ -1375,6 +1374,7 @@ export const mergeUnresolvedPeople = new ValidatedMethod({
       },
       {
         $set: $updateSet,
+        $unset: { related: [] }
       }
     );
     // Delete
