@@ -4,50 +4,52 @@ const Geolocations = new Mongo.Collection("geolocations");
 
 Geolocations.schema = new SimpleSchema({
   name: {
-    type: String
+    type: String,
   },
   type: {
     type: String,
     allowedValues: ["location", "center"],
-    index: true
+    index: true,
   },
   regionType: {
     type: String,
     allowedValues: ["country", "state", "city"],
     index: true,
-    optional: true
+    optional: true,
   },
   parentId: {
     type: String,
     optional: true,
-    index: true
+    index: true,
   },
   facebook: {
     type: Array,
-    optional: true
+    optional: true,
   },
   "facebook.$": {
     type: Object,
-    blackbox: true
+    blackbox: true,
   },
   osm: {
     type: Object,
     blackbox: true,
-    optional: true
+    optional: true,
   },
   geoId: {
     type: String,
-    optional: true
+    optional: true,
   },
   center: {
-    type: Object,
-    blackbox: true,
-    optional: true
+    type: Array,
+    optional: true,
+  },
+  "center.$": {
+    type: String,
   },
   geojson: {
     type: Object,
     optional: true,
-    blackbox: true
+    blackbox: true,
   },
   createdAt: {
     type: Date,
@@ -59,8 +61,8 @@ Geolocations.schema = new SimpleSchema({
       } else {
         return this.unset();
       }
-    }
-  }
+    },
+  },
 });
 
 Geolocations.attachSchema(Geolocations.schema);
