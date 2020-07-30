@@ -533,30 +533,35 @@ const PeopleHelpers = {
     People.update(personId, { $set, $addToSet });
   },
   registerDuplicates({ personId, source }) {
-    res = this.findDuplicates({ personId, source });
 
-    if (res.none) {
-      const persons = res.none;
-      if (persons.length > 0) {
-        this.markUnresolve({ personId })
-      }
-      let ids = [];
-      // get the ids 
-      persons.map((person, index) => {
-        if (index != 0) {
-          ids.push(person._id)
-          this.markUnresolve({
-            personId: person._id
-          })
-        }
-      });
-      ids.push(personId);
+    let parentID = personId;
+    let IDs = [];
+    //  Call to find duplicctes
+    res = this.findDuplicates({ personId, source });
+    /* Get list of all the duplicates found  */
+    Object.keys(res).map(key => {
+      res[key].map(person => {
+        this.markUnresolve({
+          personId: person._id
+        })
+        IDs.push(person._id)
+        if (person.facebookAccountId) parentID = person._id
+      })
+    })
+    // In case we dont find anyone with a facebookAcccountId we set the new one asa the parent.
+    if (personId != parentID) {
+      IDs = IDs.filter(e => e != parentID)
+      IDs.push(personId)
       this.markUnresolve({
-        personId: persons[0]._id,
-        related: ids
+        personId
       })
     }
+    this.markUnresolve({
+      personId: parentID,
+      related: IDs
+    })
   },
+  // perdonId from just created, source [ comments|likes ]
   findDuplicates({ personId, source }) {
 
     const person = People.findOne(personId);
@@ -578,7 +583,9 @@ const PeopleHelpers = {
           ["name"]
         ];
       } else {
+
         // avoid matching person with different facebookId
+
         if (person.facebookId) {
           defaultQuery.$and = [
             {
@@ -589,6 +596,7 @@ const PeopleHelpers = {
             },
           ];
         }
+
         fieldGroups = [
           ["name"],
           [
@@ -632,7 +640,6 @@ const PeopleHelpers = {
     }
 
     let grouped = groupBy(uniqBy(flatten(matches), "_id"), "facebookId");
-
     return mapKeys(grouped, (value, key) => {
       if (person.facebookId && key == person.facebookId) {
         return "same";
