@@ -478,7 +478,7 @@ class FAQPage extends Component {
       return <Loading full />;
     }
     return (
-      <Page.Content>
+      <Page.Content plain>
         <Container>
           <Page.Title>
             <FormattedMessage
@@ -495,7 +495,10 @@ class FAQPage extends Component {
                 />
               </p>
               {userCan("edit", "faq") ? (
-                <Button className="primary button" onClick={this._handleNewClick}>
+                <Button
+                  className="primary button"
+                  onClick={this._handleNewClick}
+                >
                   <FormattedMessage
                     id="app.faq.create_first"
                     defaultMessage="Create your first answer"
