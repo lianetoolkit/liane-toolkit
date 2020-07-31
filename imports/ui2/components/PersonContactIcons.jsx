@@ -91,7 +91,7 @@ class PersonContactIcons extends Component {
     const phone = this.getMeta("contact.cellphone");
     const country = ClientStorage.get("country");
     if (phone && country) {
-      const parsed = parsePhoneNumberFromString(phone, country);
+      const parsed = parsePhoneNumberFromString(phone.toString(), country);
       if (parsed) {
         return `https://wa.me/${parsed.number.replace("+", "")}`;
       }
