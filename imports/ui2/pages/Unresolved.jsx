@@ -33,11 +33,11 @@ Object.byString = function (o, s) {
 
 const messages = defineMessages({
   peopleListTitle: {
-    id: "app.people.list.title",
-    defaultMessage: "People List",
+    id: "app.people.unresolved.directory_label",
+    defaultMessage: "People directory",
   },
-  unresolvedLabel: {
-    id: "app.extra_fields.unresolved.label",
+  unresolvedCountLabel: {
+    id: "app.people.unresolved.count_label",
     defaultMessage: "Unresolved",
   },
   continueLabel: {
@@ -53,27 +53,27 @@ const messages = defineMessages({
     defaultMessage: "Resolve Conflicts with ",
   },
   namePlaceholder: {
-    id: "app.extra_fields.name.placeholder",
-    defaultMessage: "Name"
+    id: "app.people.unresolved.name.placeholder",
+    defaultMessage: "Name",
   },
   sourceLabel: {
-    id: "app.extra_fields.name.placeholder",
-    defaultMessage: "Source"
+    id: "app.people.unresolved.source.placeholder",
+    defaultMessage: "Source",
   },
   phoneLabel: {
-    id: "app.people.meta.phone_label",
+    id: "app.people.unresolved.meta.phone_label",
     defaultMessage: "Phone",
   },
   emailLabel: {
-    id: "app.people_form.email_label",
+    id: "app.people.unresolved.email_label",
     defaultMessage: "Email",
   },
   confirmLabel: {
-    id: "app.account_select.submit",
+    id: "app.people.unresolved.submit_label",
     defaultMessage: "Confirm",
   },
   backLabel: {
-    id: "app.reply.back_to_selection",
+    id: "app.people.unresolved.back_label",
     defaultMessage: "Back",
   },
   updatedLabel: {
@@ -85,12 +85,10 @@ const messages = defineMessages({
     defaultMessage: "updated",
   },
   willBeLabel: {
-    id: "app.people.unresolved.updated",
+    id: "app.people.unresolved.will_be",
     defaultMessage: "will be ",
   },
-
 });
-
 
 const PeopleContent = styled.div`
   display: flex;
@@ -107,8 +105,6 @@ const PeopleContent = styled.div`
     overflow-x: hidden;
     overflow-y: auto;
     transition: opacity 0.1s linear;
-    padding-bottom: 4rem;
-
     tbody.active {
       border-radius: 0 !important;
       td {
@@ -148,42 +144,48 @@ const UnresolvedPage = ({ campaignId, people, peopleCounter, intl }) => {
   };
   return (
     <>
-      <Page.Nav full plain>
-        <PageFilters>
-          <div className="filters">
-            <FilterMenuGroup>
-              <Button.Group toggler className="people-tab-menu">
-                <Button
-                  onClick={() => {
-                    FlowRouter.go("App.people");
-                  }}
-                  active={false}
-                >
-                  {intl.formatMessage(messages.peopleListTitle)}
-                </Button>
-                <Button onClick={() => { }} active={true}>
-                  {intl.formatMessage(messages.unresolvedLabel)} {peopleCounter !== 0 ? <Badge>{peopleCounter}</Badge> : ``}
-                </Button>
-              </Button.Group>
-            </FilterMenuGroup>
-          </div>
-        </PageFilters>
+      <Page.Nav padded>
+        <p>
+          <FormattedMessage
+            id="app.people.unresolved.description_01"
+            defaultMessage="We've detected entries that could be duplicated in your database!"
+          />
+        </p>
+        <p>
+          <FormattedMessage
+            id="app.people.unresolved.description_02"
+            defaultMessage="You can merge this data by selecting people and choosing the fields you'd like to keep."
+          />
+        </p>
       </Page.Nav>
-      <PeopleContent >
+      <PeopleContent>
         {/* {people.length > 0 ? ( */}
         <PagePaging
           skip={options.skip}
           limit={options.limit}
           count={people.length}
-          onNext={() => { }}
-          onPrev={() => { }}
-        />
+          onNext={() => {}}
+          onPrev={() => {}}
+        >
+          <Button
+            onClick={() => {
+              FlowRouter.go("App.people");
+            }}
+            active={false}
+          >
+            {intl.formatMessage(messages.peopleListTitle)}
+          </Button>
+        </PagePaging>
         {/* ) : null} */}
-        {(people.length == 0) ? (
+        {people.length == 0 ? (
           <p className="not-found">No results found.</p>
         ) : (
-            <UnresolvedTable people={people} campaignId={campaignId} intl={intl}></UnresolvedTable>
-          )}
+          <UnresolvedTable
+            people={people}
+            campaignId={campaignId}
+            intl={intl}
+          ></UnresolvedTable>
+        )}
       </PeopleContent>
     </>
   );
@@ -306,7 +308,7 @@ const Container = styled.div`
     display: block;
     font-size: 0.8em;
     margin-bottom: 0.25rem;
-    .idbadge{
+    .idbadge {
       font-weight: normal;
       background-color: #ddd;
       border-radius: 7px;
@@ -400,7 +402,7 @@ const MergeModal = ({ person, campaignId, intl }) => {
           if (Meta.getLabel(section, name).id) {
             labels[key] = intl.formatMessage(Meta.getLabel(section, name));
           } else {
-            labels[key] = (Meta.getLabel(section, name).defaultMessage);
+            labels[key] = Meta.getLabel(section, name).defaultMessage;
           }
 
           initialValues[key] = {
@@ -422,31 +424,34 @@ const MergeModal = ({ person, campaignId, intl }) => {
       campaignId,
       remove: [],
       resolve: [],
-      update: null
-    }
+      update: null,
+    };
 
-    // Process 
+    // Process
     activePersons.map((state, index) => {
       if (state == false) {
         // Mark as Resolved
         data.resolve.push(persons[index]._id);
       } else {
-        // Process to delete or update  
+        // Process to delete or update
         if (!data.update) {
           oldRelated = persons[index]._id;
           data.update = {
             id: persons[index]._id,
-            fields: []
+            fields: [],
           };
           Object.keys(selectedValues).map((key) => {
             if (selectedValues[key].value == null) return;
-            data.update.fields.push({ field: key, id: persons[selectedValues[key].person]._id })
-          })
+            data.update.fields.push({
+              field: key,
+              id: persons[selectedValues[key].person]._id,
+            });
+          });
         } else {
           data.remove.push(persons[index]._id);
         }
       }
-    })
+    });
 
     // Send
 
@@ -458,8 +463,6 @@ const MergeModal = ({ person, campaignId, intl }) => {
         modalStore.reset();
       }
     });
-
-
   };
 
   const [selectedValues, setSelectedValues] = useState(initialValues);
@@ -478,10 +481,10 @@ const MergeModal = ({ person, campaignId, intl }) => {
                   style={{ marginTop: 10, marginBottom: 10 }}
                 >
                   <b>
-                    {persons[index].name} <span className="idbadge">#{persons[index]._id}</span>
+                    {persons[index].name}{" "}
+                    <span className="idbadge">#{persons[index]._id}</span>
                   </b>{" "}
-                  will be{" "}
-                  <Badge>Resolved</Badge>
+                  will be <Badge>Resolved</Badge>
                 </div>
               </>
             );
@@ -495,7 +498,8 @@ const MergeModal = ({ person, campaignId, intl }) => {
                     style={{ marginTop: 10, marginBottom: 10 }}
                   >
                     <b>
-                      {persons[index].name} <span className="idbadge">#{persons[index]._id}</span>
+                      {persons[index].name}{" "}
+                      <span className="idbadge">#{persons[index]._id}</span>
                     </b>{" "}
                     will be <Badge>Updated</Badge> final data
                   </div>
@@ -508,8 +512,8 @@ const MergeModal = ({ person, campaignId, intl }) => {
                           <td>
                             {typeof selectedValues[key].value == "object"
                               ? Object.values(selectedValues[key].value).join(
-                                ", "
-                              )
+                                  ", "
+                                )
                               : selectedValues[key].value}
                           </td>
                         </tr>
@@ -527,7 +531,8 @@ const MergeModal = ({ person, campaignId, intl }) => {
                     style={{ marginTop: 10, marginBottom: 10 }}
                   >
                     <b>
-                      {persons[index].name} <span className="idbadge">#{persons[index]._id}</span>
+                      {persons[index].name}{" "}
+                      <span className="idbadge">#{persons[index]._id}</span>
                     </b>{" "}
                     will be&nbsp;<Badge>Deleted</Badge>
                   </div>
@@ -605,8 +610,9 @@ const MergeModal = ({ person, campaignId, intl }) => {
                     forceUpdate();
                   }}
                 >
-                  {intl.formatMessage(messages.unresolvedLabel)} #{i + 1} &nbsp;
-                  {!activePersons[i] ? <Badge>Resolved</Badge> : ``}
+                  {intl.formatMessage(messages.unresolvedCountLabel)} #{i + 1}{" "}
+                  &nbsp;
+                  {!activePersons[i] ? <Badge>Resolved</Badge> : null}
                 </a>
               </div>
             );
@@ -720,46 +726,56 @@ const UnresolvedTable = ({ people, campaignId, intl }) => {
 
   const displayPerson = (person) => {
     setSelected(person._id);
-    modalStore.setTitle(`${intl.formatMessage(messages.resolveLabel)} ${person.name}`);
-    modalStore.set(<MergeModal person={person} intl={intl} campaignId={campaignId} />);
+    modalStore.setTitle(
+      `${intl.formatMessage(messages.resolveLabel)} ${person.name}`
+    );
+    modalStore.set(
+      <MergeModal person={person} intl={intl} campaignId={campaignId} />
+    );
   };
 
   return (
     <Container className="people-table">
       {people && people.length ? (
-        <Table>
+        <Table compact scrollable>
           <thead>
             <tr>
               <th>{intl.formatMessage(messages.namePlaceholder)}</th>
               <th>{intl.formatMessage(messages.phoneLabel)}</th>
               <th>{intl.formatMessage(messages.emailLabel)}</th>
               <th>{intl.formatMessage(messages.sourceLabel)}</th>
-              <th>{intl.formatMessage(messages.unresolvedLabel)}</th>
+              <th>{intl.formatMessage(messages.unresolvedCountLabel)}</th>
             </tr>
           </thead>
 
-          {people.map((person) => (
-            person.related.length ? <tbody
-              key={person._id}
-              className={selected == person._id ? "active" : ""}
-            >
-              <tr
-                id={`table-person-${person._id}`}
-                className="interactive"
-                onClick={() => displayPerson(person)}
+          {people.map((person) =>
+            person.related.length ? (
+              <tbody
+                key={person._id}
+                className={selected == person._id ? "active" : ""}
               >
-                <td>{person.name}</td>
-                <td>
-                  {person.campaignMeta && person.campaignMeta.contact && person.campaignMeta.contact.cellphone}
-                </td>
-                <td>
-                  {person.campaignMeta && person.campaignMeta.contact && person.campaignMeta.contact.email}
-                </td>
-                <td>{person.source && person.source}</td>
-                <td> {person.related && person.related.length + 1} </td>
-              </tr>
-            </tbody> : ``
-          ))}
+                <tr
+                  id={`table-person-${person._id}`}
+                  className="interactive"
+                  onClick={() => displayPerson(person)}
+                >
+                  <td>{person.name}</td>
+                  <td>
+                    {person.campaignMeta &&
+                      person.campaignMeta.contact &&
+                      person.campaignMeta.contact.cellphone}
+                  </td>
+                  <td>
+                    {person.campaignMeta &&
+                      person.campaignMeta.contact &&
+                      person.campaignMeta.contact.email}
+                  </td>
+                  <td>{person.source && person.source}</td>
+                  <td> {person.related && person.related.length + 1} </td>
+                </tr>
+              </tbody>
+            ) : null
+          )}
         </Table>
       ) : null}
     </Container>
