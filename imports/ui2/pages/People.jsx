@@ -47,8 +47,8 @@ const messages = defineMessages({
     defaultMessage: "People List",
   },
   unresolvedLabel: {
-    id: "app.extra_fields.unresolved.label",
-    defaultMessage: "Unresolved",
+    id: "app.people.unresolved.label",
+    defaultMessage: "Verify duplicates",
   },
   manualLabel: {
     id: "app.people.source.manual.label",
@@ -119,7 +119,6 @@ const PeopleContent = styled.div`
     overflow-x: hidden;
     overflow-y: auto;
     transition: opacity 0.1s linear;
-    padding-bottom: 4rem;
   }
   .not-found {
     font-size: 1.5em;
@@ -135,23 +134,6 @@ const PeopleContent = styled.div`
         opacity: 0.25;
       }
     `}
-  .new-person {
-    position: absolute;
-    bottom: 1rem;
-    right: 2rem;
-
-    .button {
-      background: #f5911e;
-      border: 0;
-      color: #fff;
-      margin: 0;
-      &:hover,
-      &:active,
-      &:focus {
-        background: #333;
-      }
-    }
-  }
 `;
 
 const Message = styled.p`
@@ -545,7 +527,7 @@ class PeoplePage extends Component {
       importCount,
       exportCount,
       peopleExports,
-      peopleCounter
+      peopleCounter,
     } = this.props;
     const {
       loading,
@@ -564,21 +546,6 @@ class PeoplePage extends Component {
         <Page.Nav full plain>
           <PageFilters>
             <div className="filters">
-              <FilterMenuGroup>
-                <Button.Group toggler className="people-tab-menu">
-                  <Button onClick={() => { }} active={true}>
-                    {intl.formatMessage(messages.peopleListTitle)}
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      FlowRouter.go("App.peopleUnresolved");
-                    }}
-                    active={false}
-                  >
-                    {intl.formatMessage(messages.unresolvedLabel)} {peopleCounter !== 0 ? <Badge>{peopleCounter}</Badge> : ``}
-                  </Button>
-                </Button.Group>
-              </FilterMenuGroup>
               <form onSubmit={(ev) => ev.preventDefault()}>
                 <input
                   type="text"
@@ -828,31 +795,41 @@ class PeoplePage extends Component {
             loading={loadingCount}
             onNext={this._handleNext}
             onPrev={this._handlePrev}
-          />
+          >
+            {userCan("edit", "people") ? (
+              <>
+                <Button
+                  onClick={() => {
+                    FlowRouter.go("App.peopleUnresolved");
+                  }}
+                  active={false}
+                >
+                  {intl.formatMessage(messages.unresolvedLabel)}{" "}
+                  {peopleCounter !== 0 ? <Badge>{peopleCounter}</Badge> : ``}
+                </Button>
+              </>
+            ) : null}
+            <Button primary onClick={this._handleNewClick}>
+              +{" "}
+              <FormattedMessage
+                id="app.people.new_person_label"
+                defaultMessage="New person"
+              />
+            </Button>
+          </PagePaging>
           {!loading && (!people || !people.length) ? (
             <p className="not-found">No results found.</p>
           ) : (
-              <PeopleTable
-                tags={this.props.tags}
-                people={people}
-                options={options}
-                onChange={this._handlePeopleChange}
-                onSort={this._handleTableSort}
-                compact
-                scrollable
-              />
-            )}
-          {userCan("edit", "people") ? (
-            <div className="new-person">
-              <Button onClick={this._handleNewClick}>
-                +{" "}
-                <FormattedMessage
-                  id="app.people.new_person_label"
-                  defaultMessage="New person"
-                />
-              </Button>
-            </div>
-          ) : null}
+            <PeopleTable
+              tags={this.props.tags}
+              people={people}
+              options={options}
+              onChange={this._handlePeopleChange}
+              onSort={this._handleTableSort}
+              compact
+              scrollable
+            />
+          )}
         </PeopleContent>
       </>
     );

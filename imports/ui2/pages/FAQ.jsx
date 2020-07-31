@@ -146,17 +146,20 @@ class FAQView extends Component {
         <aside>
           <CopyToClipboard text={item.answer}>
             <FontAwesomeIcon icon="copy" />{" "}
-            <FormattedMessage id="app.faq.copy" />
+            <FormattedMessage
+              id="app.faq.copy"
+              defaultMessage="Copy to clipboard"
+            />
           </CopyToClipboard>
           {userCan("edit", "faq") ? (
             <>
               <a href="javascript:void(0);" onClick={this._handleEditClick}>
                 <FontAwesomeIcon icon="edit" />{" "}
-                <FormattedMessage id="app.faq.edit" />
+                <FormattedMessage id="app.faq.edit" defaultMessage="Edit" />
               </a>
               <a href="javascript:void(0);" onClick={this._handleRemoveClick}>
                 <FontAwesomeIcon icon="times" />{" "}
-                <FormattedMessage id="app.faq.remove" />
+                <FormattedMessage id="app.faq.remove" defaultMessage="Remove" />
               </a>
             </>
           ) : null}
@@ -495,7 +498,10 @@ class FAQPage extends Component {
                 />
               </p>
               {userCan("edit", "faq") ? (
-                <Button className="primary button" onClick={this._handleNewClick}>
+                <Button
+                  className="primary button"
+                  onClick={this._handleNewClick}
+                >
                   <FormattedMessage
                     id="app.faq.create_first"
                     defaultMessage="Create your first answer"

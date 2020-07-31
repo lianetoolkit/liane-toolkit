@@ -21,7 +21,7 @@ const NavContainer = styled.div`
   background: #f7f7f7;
   position: relative;
   z-index: 10;
-  ${props =>
+  ${(props) =>
     !props.plain &&
     css`
       padding: 2rem 0 2rem 2rem;
@@ -79,7 +79,12 @@ const NavContainer = styled.div`
       margin-bottom: 1rem;
     }
   }
-  ${props =>
+  ${(props) =>
+    props.padded &&
+    css`
+      padding-right: 1rem;
+    `}
+  ${(props) =>
     !props.full &&
     css`
       @media (min-width: 1280px) {
@@ -89,14 +94,14 @@ const NavContainer = styled.div`
         bottom: 0;
       }
     `}
-  ${props =>
+  ${(props) =>
     props.large &&
     css`
       .nav-content {
         max-width: 400px;
       }
     `}
-  ${props =>
+  ${(props) =>
     props.padded &&
     css`
       .nav-content {
@@ -131,14 +136,14 @@ const ContentContainer = styled.div`
   flex: 1 1 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  ${props =>
+  ${(props) =>
     props.full &&
     css`
       .content-body {
         max-width: none;
       }
     `}
-  ${props =>
+  ${(props) =>
     props.compact &&
     css`
       .content-body {
