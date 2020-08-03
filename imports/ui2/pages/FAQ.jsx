@@ -481,7 +481,7 @@ class FAQPage extends Component {
       return <Loading full />;
     }
     return (
-      <Page.Content>
+      <Page.Content plain>
         <Container>
           <Page.Title>
             <FormattedMessage

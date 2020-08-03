@@ -151,6 +151,14 @@ const ContentContainer = styled.div`
         padding: 0;
       }
     `}
+  ${(props) =>
+    props.plain &&
+    css`
+      .content-body {
+        margin-left: auto;
+        margin-right: auto;
+      }
+    `}
 `;
 
 const ContentBody = styled.div`
