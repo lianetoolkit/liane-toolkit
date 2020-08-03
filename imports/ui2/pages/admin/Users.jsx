@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import styled from "styled-components";
 import moment from "moment";
@@ -21,24 +21,24 @@ import PagePaging from "/imports/ui2/components/PagePaging.jsx";
 const messages = defineMessages({
   refetchFBToken: {
     id: "app.admin.campaigns.refetch_fb_token",
-    defaultMessage: "Refetch Facebook Token"
+    defaultMessage: "Refetch Facebook Token",
   },
   fbTokenHealthy: {
     id: "app.admin.campaigns.fb_token_label.healthy",
-    defaultMessage: "Healthy"
+    defaultMessage: "Healthy",
   },
   fbTokenPending: {
     id: "app.admin.campaigns.fb_token_label.pending",
-    defaultMessage: "Verifying"
+    defaultMessage: "Verifying",
   },
   fbTokenUnhealthy: {
     id: "app.admin.campaigns.fb_token_label.unhealthy",
-    defaultMessage: "Not valid"
+    defaultMessage: "Not valid",
   },
   fbTokenUndefined: {
     id: "app.admin.campaigns.fb_token_label.undefined",
-    defaultMessage: "Not available"
-  }
+    defaultMessage: "Not available",
+  },
 });
 
 const Container = styled.div`
@@ -128,7 +128,7 @@ class UsersPage extends Component {
     this.state = {
       loadingCount: false,
       ticket: null,
-      count: 0
+      count: 0,
     };
   }
   componentDidUpdate(prevProps) {}
@@ -151,6 +151,9 @@ class UsersPage extends Component {
       FlowRouter.setQueryParams({ page: page - 1 });
     }
   };
+  _getEmail(user) {
+    return user.emails && user.emails.length ? user.emails[0].address : "";
+  }
   render() {
     const { intl, users, page, limit } = this.props;
     const { loadingCount, count } = this.state;
@@ -195,11 +198,11 @@ class UsersPage extends Component {
                 </th>
               </tr>
             </thead>
-            {users.map(user => (
+            {users.map((user) => (
               <tbody key={user._id}>
                 <tr>
                   <td className="fill">{user.name}</td>
-                  <td className="fill">{user.emails[0].address}</td>
+                  <td className="fill">{this._getEmail(user)}</td>
                   <td>{user.type}</td>
                   <td className="small">
                     {moment(user.createdAt).format("L")}
@@ -215,7 +218,7 @@ class UsersPage extends Component {
 }
 
 UsersPage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(UsersPage);
