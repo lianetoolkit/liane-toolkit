@@ -100,7 +100,6 @@ const PeopleContent = styled.div`
   .people-nav {
     flex: 0 0 auto;
   }
-
   .people-table {
     flex: 1 1 100%;
     overflow-x: hidden;
@@ -145,7 +144,7 @@ const UnresolvedPage = ({ campaignId, people, peopleCounter, intl, tags }) => {
   };
   return (
     <>
-      <Page.Nav padded>
+      <Page.Nav padded full>
         <p>
           <FormattedMessage
             id="app.people.unresolved.description_01"
