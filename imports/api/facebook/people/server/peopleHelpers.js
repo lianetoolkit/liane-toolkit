@@ -524,43 +524,64 @@ const PeopleHelpers = {
 
     return;
   },
-  markUnresolve({ personId, related = [] }) {
+  markUnresolve({ personId, related = null }) {
+    console.log(' >> markUnresolve', personId, related)
     let $set = { unresolved: true }
+    let $unset = {};
     let $addToSet = {}
-    if (related.length > 0) {
+    if (related && related.length > 0) {
       $set.related = related;
+    } else {
+      $unset = { related: [] }
     }
-    People.update(personId, { $set, $addToSet });
+
+    People.update(personId, { $set, $addToSet, $unset });
   },
   registerDuplicates({ personId, source }) {
 
-    let parentID = personId;
+    let parentID = null;
     let IDs = [];
     //  Call to find duplicctes
     res = this.findDuplicates({ personId, source });
-    /* Get list of all the duplicates found  */
+    let persons = []
     Object.keys(res).map(key => {
       res[key].map(person => {
-        this.markUnresolve({
-          personId: person._id
-        })
-        IDs.push(person._id)
-        if (person.facebookAccountId) parentID = person._id
+        persons.push(person)
       })
     })
-    // In case we dont find anyone with a facebookAcccountId we set the new one asa the parent.
-    if (personId != parentID) {
-      IDs = IDs.filter(e => e != parentID)
-      IDs.push(personId)
-      this.markUnresolve({
-        personId
-      })
+
+    if (persons.length == 0) {
+      return;
     }
+    /* Get list of all the duplicates found  */
+    persons.map(person => {
+      if (person.related && person.related.length > 0 || (parentID === null && person.facebookAccountId)) {
+        parentID = person._id
+      }
+      IDs.push(person._id)
+    })
+    // If we found a parent we keep it as it is
+    if (!parentID) {
+      parentID = persons[0]._id
+    }
+    console.log('registerDuplicates >> parentID', parentID)
+    console.log(' >> PREV ID', IDs)
+    IDs = IDs.filter(e => e != parentID)
+    IDs.push(personId._id)
+
+    IDs.map(id => {
+      this.markUnresolve({
+        personId: id,
+        related: null
+      })
+    })
     // The the one thatt will hold the rest
+    console.log(' >> POST ID', IDs)
     this.markUnresolve({
       personId: parentID,
       related: IDs
     })
+
   },
   // perdonId from just created, source [ comments|likes ]
   findDuplicates({ personId, source }) {

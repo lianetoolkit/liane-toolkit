@@ -5,6 +5,7 @@ import {
   defineMessages,
   FormattedMessage,
 } from "react-intl";
+import moment from "moment";
 import styled, { css } from "styled-components";
 import { Meta } from "../utils/people";
 import { alertStore } from "../containers/Alerts.jsx";
@@ -136,7 +137,7 @@ const FilterMenuGroup = styled.div`
   }
 `;
 
-const UnresolvedPage = ({ campaignId, people, peopleCounter, intl }) => {
+const UnresolvedPage = ({ campaignId, people, peopleCounter, intl, tags }) => {
   const options = {
     skip: 0,
     limit: 20,
@@ -163,8 +164,8 @@ const UnresolvedPage = ({ campaignId, people, peopleCounter, intl }) => {
           skip={options.skip}
           limit={options.limit}
           count={people.length}
-          onNext={() => {}}
-          onPrev={() => {}}
+          onNext={() => { }}
+          onPrev={() => { }}
         >
           <Button
             onClick={() => {
@@ -179,12 +180,13 @@ const UnresolvedPage = ({ campaignId, people, peopleCounter, intl }) => {
         {people.length == 0 ? (
           <p className="not-found">No results found.</p>
         ) : (
-          <UnresolvedTable
-            people={people}
-            campaignId={campaignId}
-            intl={intl}
-          ></UnresolvedTable>
-        )}
+            <UnresolvedTable
+              tags={tags}
+              people={people}
+              campaignId={campaignId}
+              intl={intl}
+            ></UnresolvedTable>
+          )}
       </PeopleContent>
     </>
   );
@@ -362,8 +364,20 @@ const Container = styled.div`
     }
   }
 `;
-
-const MergeModal = ({ person, campaignId, intl }) => {
+const showValue = (key, val, tags) => {
+  if (key == 'campaignMeta.basic_info.tags') {
+    let newtags = tags
+      .filter(tag => val.indexOf(tag._id) !== -1)
+      .map(tag => tag.name);
+    return newtags.join(',');
+  }
+  if (key == 'campaignMeta.basic_info.birthday') {
+    return moment(val).format("DD/MM/YYYY")
+  }
+  if (typeof val === "object") return Object.values(val).join(", ")
+  return val;
+}
+const MergeModal = ({ person, campaignId, intl, tags }) => {
   // To force the render
   const [, updateState] = useState();
   const forceUpdate = useCallback(() => updateState({}), []);
@@ -450,6 +464,7 @@ const MergeModal = ({ person, campaignId, intl }) => {
           data.remove.push(persons[index]._id);
         }
       }
+
     });
 
     // Send
@@ -511,8 +526,8 @@ const MergeModal = ({ person, campaignId, intl }) => {
                           <td>
                             {typeof selectedValues[key].value == "object"
                               ? Object.values(selectedValues[key].value).join(
-                                  ", "
-                                )
+                                ", "
+                              )
                               : selectedValues[key].value}
                           </td>
                         </tr>
@@ -680,9 +695,9 @@ const MergeModal = ({ person, campaignId, intl }) => {
                                   }}
                                   className="value-checkbox"
                                 />
-                                {typeof value === "object"
-                                  ? Object.values(value).join(", ")
-                                  : value}
+                                {showValue(key, value, tags)}
+
+
                               </div>
                             </label>
                           );
@@ -720,7 +735,7 @@ const MergeModal = ({ person, campaignId, intl }) => {
   );
 };
 
-const UnresolvedTable = ({ people, campaignId, intl }) => {
+const UnresolvedTable = ({ people, campaignId, intl, tags }) => {
   const [selected, setSelected] = useState(null);
 
   const displayPerson = (person) => {
@@ -729,7 +744,7 @@ const UnresolvedTable = ({ people, campaignId, intl }) => {
       `${intl.formatMessage(messages.resolveLabel)} ${person.name}`
     );
     modalStore.set(
-      <MergeModal person={person} intl={intl} campaignId={campaignId} />
+      <MergeModal person={person} intl={intl} tags={tags} campaignId={campaignId} />
     );
   };
 
