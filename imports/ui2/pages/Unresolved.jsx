@@ -6,7 +6,7 @@ import {
   FormattedMessage,
 } from "react-intl";
 import moment from "moment";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { Meta } from "../utils/people";
 import { alertStore } from "../containers/Alerts.jsx";
 import { modalStore } from "../containers/Modal.jsx";
@@ -14,7 +14,6 @@ import Button from "../components/Button.jsx";
 import Table from "../components/Table.jsx";
 import Badge from "../components/Badge.jsx";
 import Page from "../components/Page.jsx";
-import PageFilters from "../components/PageFilters.jsx";
 import PagePaging from "../components/PagePaging.jsx";
 
 Object.byString = function (o, s) {
@@ -524,11 +523,7 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
                         <tr>
                           <td>{labels[key]}</td>
                           <td>
-                            {typeof selectedValues[key].value == "object"
-                              ? Object.values(selectedValues[key].value).join(
-                                ", "
-                              )
-                              : selectedValues[key].value}
+                            {showValue(key, selectedValues[key].value, tags)}
                           </td>
                         </tr>
                       );
