@@ -525,7 +525,6 @@ const PeopleHelpers = {
     return;
   },
   markUnresolve({ personId, related = null }) {
-    console.log(' >> markUnresolve', personId, related)
     let $set = { unresolved: true }
     let $unset = {};
     let $addToSet = {}
@@ -534,10 +533,12 @@ const PeopleHelpers = {
     } else {
       $unset = { related: [] }
     }
-
     People.update(personId, { $set, $addToSet, $unset });
   },
-  registerDuplicates({ personId, source }) {
+  registerDuplicates({ personId, source = '' }) {
+
+    check(personId, String);
+    check(source, String);
 
     let parentID = null;
     let IDs = [];
@@ -549,7 +550,6 @@ const PeopleHelpers = {
         persons.push(person)
       })
     })
-
     if (persons.length == 0) {
       return;
     }
@@ -564,10 +564,8 @@ const PeopleHelpers = {
     if (!parentID) {
       parentID = persons[0]._id
     }
-    console.log('registerDuplicates >> parentID', parentID)
-    console.log(' >> PREV ID', IDs)
     IDs = IDs.filter(e => e != parentID)
-    IDs.push(personId._id)
+    IDs.push(personId)
 
     IDs.map(id => {
       this.markUnresolve({
@@ -576,7 +574,6 @@ const PeopleHelpers = {
       })
     })
     // The the one thatt will hold the rest
-    console.log(' >> POST ID', IDs)
     this.markUnresolve({
       personId: parentID,
       related: IDs
@@ -589,15 +586,20 @@ const PeopleHelpers = {
     const person = People.findOne(personId);
     let matches = [];
     let _queries = null;
-
+    let options = {
+      fields: { score: { $meta: "textScore" } },
+      sort: { score: { $meta: "textScore" } }
+    };
     _queries = () => {
       let queries = [];
       let fieldGroups;
       let defaultQuery = {
         _id: { $ne: person._id },
         campaignId: person.campaignId,
-        $or: [],
+
+
       };
+
       if (source) {
         fieldGroups = [
           ["name"]
@@ -629,7 +631,10 @@ const PeopleHelpers = {
 
       for (const fieldGroup of fieldGroups) {
         let query = { ...defaultQuery };
-        query.$or = [];
+        // query.$or = [];
+        query.$or = [
+          { $text: { $search: person.name } },
+        ];
         for (const field of fieldGroup) {
           const fieldVal = get(person, field);
           // clear previous value
@@ -649,14 +654,18 @@ const PeopleHelpers = {
 
 
     const queries = _queries();
-    // console.log(JSON.stringify(queries, null, 5));
+
     if (queries && queries.length) {
       for (const query of queries) {
-        matches.push(People.find(query).fetch());
+        matches.push(People.find(query, options).fetch());
       }
     }
 
-    let grouped = groupBy(uniqBy(flatten(matches), "_id"), "facebookId");
+    matches = flatten(matches).filter(person => {
+      return person.score ? person.score >= 1 : true;
+    })
+    let grouped = groupBy(uniqBy(matches, "_id"), "facebookId");
+
     return mapKeys(grouped, (value, key) => {
       if (person.facebookId && key == person.facebookId) {
         return "same";
@@ -694,7 +703,8 @@ const PeopleHelpers = {
     //   }
     // }
 
-    this.registerDuplicates({ personId: { _id } })
+    // this.registerDuplicates({ personId: { _id } })
+    this.registerDuplicates({ personId: _id, source: 'import' })
     return _id;
   },
   expireExport({ exportId }) {
