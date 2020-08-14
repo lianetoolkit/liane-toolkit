@@ -662,7 +662,7 @@ const PeopleHelpers = {
     }
 
     matches = flatten(matches).filter(person => {
-      return person.score ? person.score >= 1 : true;
+      return person.score ? person.score >= 1.2 : true;
     })
     let grouped = groupBy(uniqBy(matches, "_id"), "facebookId");
 
