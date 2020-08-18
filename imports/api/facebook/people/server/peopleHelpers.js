@@ -11,7 +11,16 @@ import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
 import { Random } from "meteor/random";
-import { uniqBy, groupBy, mapKeys, flatten, get, set, cloneDeep, pick } from "lodash";
+import {
+  uniqBy,
+  groupBy,
+  mapKeys,
+  flatten,
+  get,
+  set,
+  cloneDeep,
+  pick,
+} from "lodash";
 import Papa from "papaparse";
 import crypto from "crypto";
 import fs from "fs";
@@ -119,7 +128,7 @@ const PeopleHelpers = {
           address: get(person, "campaignMeta.basic_info.address"),
         })
       );
-    } catch (err) { }
+    } catch (err) {}
     People.update(personId, { $set: { location } });
   },
   geocode({ address }) {
@@ -525,18 +534,17 @@ const PeopleHelpers = {
     return;
   },
   markUnresolve({ personId, related = null }) {
-    let $set = { unresolved: true }
+    let $set = { unresolved: true };
     let $unset = {};
-    let $addToSet = {}
+    let $addToSet = {};
     if (related && related.length > 0) {
       $set.related = related;
     } else {
-      $unset = { related: [] }
+      $unset = { related: [] };
     }
     People.update(personId, { $set, $addToSet, $unset });
   },
-  registerDuplicates({ personId, source = '' }) {
-
+  registerDuplicates({ personId, source = "" }) {
     check(personId, String);
     check(source, String);
 
@@ -544,97 +552,96 @@ const PeopleHelpers = {
     let IDs = [];
     //  Call to find duplicctes
     res = this.findDuplicates({ personId, source });
-    let persons = []
-    Object.keys(res).map(key => {
-      res[key].map(person => {
-        persons.push(person)
-      })
-    })
+    let persons = [];
+    Object.keys(res).map((key) => {
+      res[key].map((person) => {
+        persons.push(person);
+      });
+    });
     if (persons.length == 0) {
       return;
     }
     /* Get list of all the duplicates found  */
-    persons.map(person => {
-      if (person.related && person.related.length > 0 || (parentID === null && person.facebookAccountId)) {
-        parentID = person._id
+    persons.map((person) => {
+      if (
+        (person.related && person.related.length > 0) ||
+        (parentID === null && person.facebookAccountId)
+      ) {
+        parentID = person._id;
       }
-      IDs.push(person._id)
-    })
+      IDs.push(person._id);
+    });
     // If we found a parent we keep it as it is
     if (!parentID) {
-      parentID = persons[0]._id
+      parentID = persons[0]._id;
     }
-    IDs = IDs.filter(e => e != parentID)
-    IDs.push(personId)
+    IDs = IDs.filter((e) => e != parentID);
+    IDs.push(personId);
 
-    IDs.map(id => {
+    IDs.map((id) => {
       this.markUnresolve({
         personId: id,
-        related: null
-      })
-    })
+        related: null,
+      });
+    });
     // The the one thatt will hold the rest
     this.markUnresolve({
       personId: parentID,
-      related: IDs
-    })
-
+      related: IDs,
+    });
   },
   // perdonId from just created, source [ comments|likes ]
   findDuplicates({ personId, source }) {
-
     const person = People.findOne(personId);
     let matches = [];
     let _queries = null;
-    let options = {
-      fields: { score: { $meta: "textScore" } },
-      sort: { score: { $meta: "textScore" } }
-    };
     _queries = () => {
       let queries = [];
       let fieldGroups;
       let defaultQuery = {
         _id: { $ne: person._id },
         campaignId: person.campaignId,
-
-
       };
-
-      if (source) {
-        fieldGroups = [
-          ["name"]
+      // avoid matching person with different facebookId
+      if (person.facebookId) {
+        defaultQuery.$and = [
+          {
+            $or: [
+              { facebookId: { $exists: false } },
+              { facebookId: person.facebookId },
+            ],
+          },
         ];
-      } else {
-        // avoid matching person with different facebookId
-        if (person.facebookId) {
-          defaultQuery.$and = [
-            {
-              $or: [
-                { facebookId: { $exists: false } },
-                { facebookId: person.facebookId },
-              ],
-            },
-          ];
-        }
-        fieldGroups = [
-          ["name"],
-          [
-            "campaignMeta.contact.email",
-            "campaignMeta.contact.cellphone",
-            "campaignMeta.social_networks.twitter",
-            "campaignMeta.social_networks.instagram",
-          ],
-        ];
-
       }
-      // sorted by uniqueness importance
 
+      // Search query (for score parsing later)
+      queries.push({
+        ...defaultQuery,
+        $text: { $search: person.name },
+      });
+
+      // Regex query (for case-insensitive exact match)
+      queries.push({
+        ...defaultQuery,
+        name: {
+          $regex: new RegExp(`^${person.name}$`, "i"),
+        },
+      });
+
+      // Grouping fields for $or operator query
+      // Sorted by uniqueness importance
+      fieldGroups = [
+        ["name"],
+        [
+          "campaignMeta.contact.email",
+          "campaignMeta.contact.cellphone",
+          "campaignMeta.social_networks.twitter",
+          "campaignMeta.social_networks.instagram",
+        ],
+      ];
       for (const fieldGroup of fieldGroups) {
         let query = { ...defaultQuery };
-        // query.$or = [];
-        query.$or = [
-          { $text: { $search: person.name } },
-        ];
+        if (!query.$or) query.$or = [];
         for (const field of fieldGroup) {
           const fieldVal = get(person, field);
           // clear previous value
@@ -646,24 +653,31 @@ const PeopleHelpers = {
           queries.push(query);
         }
       }
+
       if (!queries.length) {
         return false;
       }
       return queries;
     };
 
-
     const queries = _queries();
 
     if (queries && queries.length) {
       for (const query of queries) {
+        let options = {};
+        if (query.$text) {
+          options = {
+            fields: { score: { $meta: "textScore" } },
+            sort: { score: { $meta: "textScore" } },
+          };
+        }
         matches.push(People.find(query, options).fetch());
       }
     }
 
-    matches = flatten(matches).filter(person => {
-      return person.score ? person.score >= 1.2 : true;
-    })
+    matches = flatten(matches).filter((person) => {
+      return person.score ? person.score > 1.5 : true;
+    });
     let grouped = groupBy(uniqBy(matches, "_id"), "facebookId");
 
     return mapKeys(grouped, (value, key) => {
@@ -704,7 +718,7 @@ const PeopleHelpers = {
     // }
 
     // this.registerDuplicates({ personId: { _id } })
-    this.registerDuplicates({ personId: _id, source: 'import' })
+    this.registerDuplicates({ personId: _id, source: "import" });
     return _id;
   },
   expireExport({ exportId }) {
