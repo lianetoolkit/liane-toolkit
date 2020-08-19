@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import ReactTooltip from "react-tooltip";
 import styled, { css } from "styled-components";
@@ -20,6 +20,7 @@ import { modalStore } from "../containers/Modal.jsx";
 import PeopleExport from "../components/PeopleExport.jsx";
 import { PersonImportButton } from "../components/PersonImport.jsx";
 import Button from "../components/Button.jsx";
+import Badge from "../components/Badge.jsx";
 import More from "../components/More.jsx";
 import Form from "../components/Form.jsx";
 import Page from "../components/Page.jsx";
@@ -36,63 +37,71 @@ import PeopleExports from "../components/PeopleExports.jsx";
 
 import TagFilter from "../components/TagFilter.jsx";
 import PersonMetaButtons, {
-  labels as categoriesLabels
+  labels as categoriesLabels,
 } from "../components/PersonMetaButtons.jsx";
 import Reaction from "../components/Reaction.jsx";
 
 const messages = defineMessages({
+  peopleListTitle: {
+    id: "app.people.list.title",
+    defaultMessage: "People List",
+  },
+  unresolvedLabel: {
+    id: "app.people.unresolved.label",
+    defaultMessage: "Verify duplicates",
+  },
   manualLabel: {
     id: "app.people.source.manual.label",
-    defaultMessage: "Manual"
+    defaultMessage: "Manual",
   },
   formLabel: {
     id: "app.people.source.form.label",
-    defaultMessage: "Form"
+    defaultMessage: "Form",
   },
   importLabel: {
     id: "app.people.source.import.label",
-    defaultMessage: "Import"
+    defaultMessage: "Import",
   },
   anyImportLabel: {
     id: "app.people.source.any_import.label",
-    defaultMessage: "Any import"
+    defaultMessage: "Any import",
   },
   manageImports: {
     id: "app.people.imports.manage.title",
-    defaultMessage: "Manage imports"
+    defaultMessage: "Manage imports",
   },
   manageExports: {
     id: "app.people.exports.manage.title",
-    defaultMessage: "Manage exports"
+    defaultMessage: "Manage exports",
   },
   newPersonTitle: {
     id: "app.people.new.title",
-    defaultMessage: "Creating new profile"
+    defaultMessage: "Creating new profile",
   },
   editingPersonTitle: {
     id: "app.people.edit.title",
-    defaultMessage: "Editing {name}"
+    defaultMessage: "Editing {name}",
   },
   searchPlaceholder: {
     id: "app.people.filters.text.placeholder",
-    defaultMessage: "Search by name"
+    defaultMessage: "Search by name",
   },
   categoryPlaceholder: {
     id: "app.people.filters.category.placeholder",
-    defaultMessage: "Filter by category"
+    defaultMessage: "Filter by category",
   },
   sourcePlaceholder: {
     id: "app.people.filters.source.placeholder",
-    defaultMessage: "Filter by source"
+    defaultMessage: "Filter by source",
   },
   tagPlaceholder: {
     id: "app.people.filters.tag.placeholder",
-    defaultMessage: "Filter by tag"
+    defaultMessage: "Filter by tag",
   },
   reactionAmount: {
     id: "app.people.filters.reactions.amount",
-    defaultMessage: "Amount"
-  }
+    defaultMessage: "Amount",
+  },
 });
 
 const PeopleContent = styled.div`
@@ -104,12 +113,12 @@ const PeopleContent = styled.div`
   .people-nav {
     flex: 0 0 auto;
   }
+
   .people-table {
     flex: 1 1 100%;
     overflow-x: hidden;
     overflow-y: auto;
     transition: opacity 0.1s linear;
-    padding-bottom: 4rem;
   }
   .not-found {
     font-size: 1.5em;
@@ -125,22 +134,6 @@ const PeopleContent = styled.div`
         opacity: 0.25;
       }
     `}
-  .new-person {
-    position: absolute;
-    bottom: 1rem;
-    right: 2rem;
-    .button {
-      background: #f5911e;
-      border: 0;
-      color: #fff;
-      margin: 0;
-      &:hover,
-      &:active,
-      &:focus {
-        background: #333;
-      }
-    }
-  }
 `;
 
 const Message = styled.p`
@@ -150,6 +143,21 @@ const Message = styled.p`
   font-size: 0.8em;
 `;
 
+const FilterMenuGroup = styled.div`
+  .people-tab-menu {
+    padding-right: 1rem;
+    margin-bottom: 1rem;
+    .button:hover,
+    .button:focus {
+      background-color: rgba(51, 0, 102, 0.5);
+      color: #fff;
+    }
+    .button.active {
+      background-color: #330066 !important;
+      color: #fff;
+    }
+  }
+`;
 class PeoplePage extends Component {
   constructor(props) {
     super(props);
@@ -161,12 +169,12 @@ class PeoplePage extends Component {
         q: "",
         form: false,
         commented: false,
-        private_reply: false
+        private_reply: false,
       },
       options: {
         skip: 0,
-        limit: 20
-      }
+        limit: 20,
+      },
     };
   }
   componentDidMount() {
@@ -177,11 +185,11 @@ class PeoplePage extends Component {
         starred: false,
         form: false,
         commented: false,
-        private_reply: false
+        private_reply: false,
       }),
       options: defaultsDeep(this.props.options, {
         limit: 20,
-        skip: 0
+        skip: 0,
       }),
     });
     this.fetchHistory();
@@ -233,13 +241,13 @@ class PeoplePage extends Component {
     () => {
       this.setState({
         loading: true,
-        loadingCount: true
+        loadingCount: true,
       });
     },
     200,
     {
       leading: true,
-      trailing: false
+      trailing: false,
     }
   );
   fetchPeople = debounce(() => {
@@ -519,6 +527,7 @@ class PeoplePage extends Component {
       importCount,
       exportCount,
       peopleExports,
+      peopleCounter,
     } = this.props;
     const {
       loading,
@@ -786,7 +795,28 @@ class PeoplePage extends Component {
             loading={loadingCount}
             onNext={this._handleNext}
             onPrev={this._handlePrev}
-          />
+          >
+            {userCan("edit", "people") && peopleCounter > 0 ? (
+              <>
+                <Button
+                  onClick={() => {
+                    FlowRouter.go("App.peopleUnresolved");
+                  }}
+                  active={false}
+                >
+                  {intl.formatMessage(messages.unresolvedLabel)}{" "}
+                  {peopleCounter !== 0 ? <Badge>{peopleCounter}</Badge> : ``}
+                </Button>
+              </>
+            ) : null}
+            <Button primary onClick={this._handleNewClick}>
+              +{" "}
+              <FormattedMessage
+                id="app.people.new_person_label"
+                defaultMessage="New person"
+              />
+            </Button>
+          </PagePaging>
           {!loading && (!people || !people.length) ? (
             <p className="not-found">No results found.</p>
           ) : (
@@ -800,17 +830,6 @@ class PeoplePage extends Component {
               scrollable
             />
           )}
-          {userCan("edit", "people") ? (
-            <div className="new-person">
-              <Button onClick={this._handleNewClick}>
-                +{" "}
-                <FormattedMessage
-                  id="app.people.new_person_label"
-                  defaultMessage="New person"
-                />
-              </Button>
-            </div>
-          ) : null}
         </PeopleContent>
       </>
     );

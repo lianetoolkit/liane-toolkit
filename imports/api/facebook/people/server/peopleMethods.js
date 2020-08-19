@@ -19,7 +19,6 @@ import redisClient from "/imports/startup/server/redis";
 import crypto from "crypto";
 
 const recaptchaSecret = Meteor.settings.recaptcha;
-
 export const peopleDetail = new ValidatedMethod({
   name: "people.detail",
   validate: new SimpleSchema({
@@ -937,6 +936,7 @@ export const peopleFormId = new ValidatedMethod({
   },
 });
 
+
 export const peopleCreate = new ValidatedMethod({
   name: "people.create",
   validate: new SimpleSchema({
@@ -946,6 +946,7 @@ export const peopleCreate = new ValidatedMethod({
     name: {
       type: String,
     },
+
   }).validator(),
   run({ campaignId, name }) {
     logger.debug("people.create called", { campaignId, name });
@@ -1088,6 +1089,8 @@ export const peopleMetaUpdate = new ValidatedMethod({
       data: { personId },
     });
 
+    //! Once its created or updated tries to find a duplicate
+    PeopleHelpers.registerDuplicates({ personId });
     return People.findOne(personId);
   },
 });
@@ -1289,29 +1292,51 @@ export const importPeople = new ValidatedMethod({
   },
 });
 
-export const findDuplicates = new ValidatedMethod({
-  name: "people.findDuplicates",
+Object.byString = function (o, s) {
+  s = s.replace(/\[(\w+)\]/g, ".$1"); // convert indexes to properties
+  s = s.replace(/^\./, ""); // strip a leading dot
+  var a = s.split(".");
+  for (var i = 0, n = a.length; i < n; ++i) {
+    var k = a[i];
+    if (k in o) {
+      o = o[k];
+    } else {
+      return;
+    }
+  }
+  return o;
+};
+
+export const mergeUnresolvedPeople = new ValidatedMethod({
+  name: "people.merge.unresolved",
   validate: new SimpleSchema({
-    personId: {
+    campaignId: {
+      type: String,
+    },
+    update: {
+      type: Object,
+      blackbox: true,
+    },
+    remove: {
+      type: Array,
+    },
+    "remove.$": {
+      type: String,
+    },
+    resolve: {
+      type: Array,
+    },
+    "resolve.$": {
       type: String,
     },
   }).validator(),
-  run({ personId }) {
-    logger.debug("people.findDuplicates called", { personId });
+  run({ campaignId, update, remove, resolve }) {
+    logger.debug("people.merge.unresolved", { campaignId, update, remove, resolve });
 
     const userId = Meteor.userId();
-    if (!userId) {
-      throw new Meteor.Error(401, "You need to login");
-    }
-
-    const person = People.findOne(personId);
-    if (!person) {
-      throw new Meteor.Error(404, "Person not found");
-    }
-
     if (
       !Meteor.call("campaigns.userCan", {
-        campaignId: person.campaignId,
+        campaignId: campaignId,
         userId,
         feature: "people",
         permission: "edit",
@@ -1319,16 +1344,47 @@ export const findDuplicates = new ValidatedMethod({
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
+    // Update Resolve
+    const $set = {
+      unresolved: false
+    }
+    resolve.map(personId => {
+      People.update(
+        {
+          _id: personId,
+        },
+        {
+          $set,
+        }
+      );
+    })
+    // Update
+    let $updateSet = {
+      unresolved: false,
+    }
+    update.fields.map(({ field, id }) => {
+      if (id != update.id) {
+        const valueFrom = People.findOne(id);
+        $updateSet[field] = Object.byString(valueFrom, field);
+      }
+    })
+    People.update(
+      {
+        _id: update.id
+      },
+      {
+        $set: $updateSet,
+        $unset: { related: [] }
+      }
+    );
+    // Delete
+    const removeObj = {
+      campaignId: campaignId,
+      _id: { $in: remove },
+    };
+    People.remove(removeObj);
 
-    const res = PeopleHelpers.findDuplicates({ personId });
-
-    Meteor.call("log", {
-      type: "people.findDuplicates",
-      campaignId: person.campaignId,
-      data: { personId },
-    });
-
-    return res;
+    return;
   },
 });
 
@@ -1733,6 +1789,8 @@ export const peopleFormSubmit = new ValidatedMethod({
       });
       personId = id;
     }
+    // ! Check for extra Duplicates
+    PeopleHelpers.registerDuplicates({ personId });
 
     NotificationsHelpers.add({
       campaignId,
