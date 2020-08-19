@@ -82,7 +82,7 @@ const messages = defineMessages({
   },
   deletedLabel: {
     id: "app.people.unresolved.deleted",
-    defaultMessage: "updated",
+    defaultMessage: "deleted",
   },
   willBeLabel: {
     id: "app.people.unresolved.will_be",
@@ -163,8 +163,8 @@ const UnresolvedPage = ({ campaignId, people, peopleCounter, intl, tags }) => {
           skip={options.skip}
           limit={options.limit}
           count={people.length}
-          onNext={() => { }}
-          onPrev={() => { }}
+          onNext={() => {}}
+          onPrev={() => {}}
         >
           <Button
             onClick={() => {
@@ -179,13 +179,13 @@ const UnresolvedPage = ({ campaignId, people, peopleCounter, intl, tags }) => {
         {people.length == 0 ? (
           <p className="not-found">No results found.</p>
         ) : (
-            <UnresolvedTable
-              tags={tags}
-              people={people}
-              campaignId={campaignId}
-              intl={intl}
-            ></UnresolvedTable>
-          )}
+          <UnresolvedTable
+            tags={tags}
+            people={people}
+            campaignId={campaignId}
+            intl={intl}
+          ></UnresolvedTable>
+        )}
       </PeopleContent>
     </>
   );
@@ -312,8 +312,9 @@ const Container = styled.div`
       font-weight: normal;
       background-color: #ddd;
       border-radius: 7px;
-      padding: 4px 7px;
-      font-size: 85%;
+      padding: 0.2rem 0.3rem;
+      font-size: 0.8em;
+      color: #666;
     }
   }
   .final-value {
@@ -331,20 +332,8 @@ const Container = styled.div`
     border: 1px solid #ccc;
     text-align: center;
   }
-  .confirm-table {
-    width: 100%;
-    background: #fff;
-    border-spacing: 0;
-    border: 1px solid #ddd;
-    border-radius: 7px;
-    border-collapse: collapse;
-    color: #444;
-    td {
-      border: 1px solid #ddd;
-      font-size: 13px;
-      text-align: left;
-      padding: 5px;
-    }
+  .table {
+    margin-bottom: 2rem;
   }
   .field-option {
     word-break: break-all;
@@ -364,18 +353,18 @@ const Container = styled.div`
   }
 `;
 const showValue = (key, val, tags) => {
-  if (key == 'campaignMeta.basic_info.tags') {
+  if (key == "campaignMeta.basic_info.tags") {
     let newtags = tags
-      .filter(tag => val.indexOf(tag._id) !== -1)
-      .map(tag => tag.name);
-    return newtags.join(',');
+      .filter((tag) => val.indexOf(tag._id) !== -1)
+      .map((tag) => tag.name);
+    return newtags.join(",");
   }
-  if (key == 'campaignMeta.basic_info.birthday') {
-    return moment(val).format("DD/MM/YYYY")
+  if (key == "campaignMeta.basic_info.birthday") {
+    return moment(val).format("DD/MM/YYYY");
   }
-  if (typeof val === "object") return Object.values(val).join(", ")
+  if (typeof val === "object") return Object.values(val).join(", ");
   return val;
-}
+};
 const MergeModal = ({ person, campaignId, intl, tags }) => {
   // To force the render
   const [, updateState] = useState();
@@ -463,7 +452,6 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
           data.remove.push(persons[index]._id);
         }
       }
-
     });
 
     // Send
@@ -494,10 +482,11 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
                   style={{ marginTop: 10, marginBottom: 10 }}
                 >
                   <b>
-                    {persons[index].name}{" "}
-                    <span className="idbadge">#{persons[index]._id}</span>
+                    <span className="idbadge">{persons[index]._id}</span>{" "}
+                    {persons[index].name}
                   </b>{" "}
-                  will be <Badge>Resolved</Badge>
+                  {intl.formatMessage(messages.willBeLabel)}{" "}
+                  <Badge>Resolved</Badge>
                 </div>
               </>
             );
@@ -511,41 +500,49 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
                     style={{ marginTop: 10, marginBottom: 10 }}
                   >
                     <b>
-                      {persons[index].name}{" "}
-                      <span className="idbadge">#{persons[index]._id}</span>
+                      <span className="idbadge">{persons[index]._id}</span>{" "}
+                      {persons[index].name}
                     </b>{" "}
-                    will be <Badge>Updated</Badge> final data
+                    {intl.formatMessage(messages.willBeLabel)}{" "}
+                    <Badge>{intl.formatMessage(messages.updatedLabel)}</Badge>
                   </div>
-                  <table className="confirm-table">
-                    {Object.keys(selectedValues).map((key) => {
-                      if (selectedValues[key].value == null) return;
-                      return (
-                        <tr>
-                          <td>{labels[key]}</td>
-                          <td>
-                            {showValue(key, selectedValues[key].value, tags)}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                    <tr></tr>
-                  </table>
+                  <h3>
+                    <FormattedMessage
+                      id="app.people.unresolved.result_label"
+                      defaultMessage="Result"
+                    />
+                  </h3>
+                  <Table>
+                    <tbody>
+                      {Object.keys(selectedValues).map((key) => {
+                        if (selectedValues[key].value == null) return;
+                        return (
+                          <tr>
+                            <td>{labels[key]}</td>
+                            <td>
+                              {showValue(key, selectedValues[key].value, tags)}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      <tr></tr>
+                    </tbody>
+                  </Table>
                 </>
               );
             } else {
               return (
-                <>
-                  <div
-                    className="label"
-                    style={{ marginTop: 10, marginBottom: 10 }}
-                  >
-                    <b>
-                      {persons[index].name}{" "}
-                      <span className="idbadge">#{persons[index]._id}</span>
-                    </b>{" "}
-                    will be&nbsp;<Badge>Deleted</Badge>
-                  </div>
-                </>
+                <div
+                  className="label"
+                  style={{ marginTop: 10, marginBottom: 10 }}
+                >
+                  <b>
+                    <span className="idbadge">{persons[index]._id}</span>{" "}
+                    {persons[index].name}
+                  </b>{" "}
+                  {intl.formatMessage(messages.willBeLabel)}{" "}
+                  <Badge>{intl.formatMessage(messages.deletedLabel)}</Badge>
+                </div>
               );
             }
           }
@@ -691,8 +688,6 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
                                   className="value-checkbox"
                                 />
                                 {showValue(key, value, tags)}
-
-
                               </div>
                             </label>
                           );
@@ -739,7 +734,12 @@ const UnresolvedTable = ({ people, campaignId, intl, tags }) => {
       `${intl.formatMessage(messages.resolveLabel)} ${person.name}`
     );
     modalStore.set(
-      <MergeModal person={person} intl={intl} tags={tags} campaignId={campaignId} />
+      <MergeModal
+        person={person}
+        intl={intl}
+        tags={tags}
+        campaignId={campaignId}
+      />
     );
   };
 

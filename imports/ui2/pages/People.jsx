@@ -796,7 +796,7 @@ class PeoplePage extends Component {
             onNext={this._handleNext}
             onPrev={this._handlePrev}
           >
-            {userCan("edit", "people") ? (
+            {userCan("edit", "people") && peopleCounter > 0 ? (
               <>
                 <Button
                   onClick={() => {

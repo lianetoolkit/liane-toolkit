@@ -587,6 +587,7 @@
   "app.people.unresolved.meta.phone_label": "Phone",
   "app.people.unresolved.name.placeholder": "Name",
   "app.people.unresolved.resolve": "Resolve Conflicts with ",
+  "app.people.unresolved.result_label": "Result",
   "app.people.unresolved.source.placeholder": "Source",
   "app.people.unresolved.submit_label": "Confirm",
   "app.people.unresolved.updated": "updated",
