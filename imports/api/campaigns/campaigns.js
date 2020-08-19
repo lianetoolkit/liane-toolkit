@@ -149,6 +149,10 @@ Campaigns.schema = new SimpleSchema({
     type: String,
     optional: true,
   },
+  "forms.crm.donation": {
+    type: String,
+    optional: true,
+  },
   createdAt: {
     type: Date,
     autoValue() {

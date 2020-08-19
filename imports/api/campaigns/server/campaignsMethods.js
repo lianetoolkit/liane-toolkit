@@ -479,6 +479,10 @@ export const campaignsFormUpdate = new ValidatedMethod({
       type: String,
       optional: true,
     },
+    "crm.donation": {
+      type: String,
+      optional: true,
+    },
   }).validator(),
   run({ campaignId, ...data }) {
     logger.debug("campaigns.formUpdate called", {

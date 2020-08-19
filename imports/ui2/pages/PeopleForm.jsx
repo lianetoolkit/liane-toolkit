@@ -290,6 +290,7 @@ class PeopleForm extends Component {
   render() {
     const { intl, loading, person, campaign } = this.props;
     const { sent, formData, contribute } = this.state;
+    console.log(campaign);
     if (loading || this.state.loading) {
       return <Loading full />;
     } else if (!loading && !campaign) {
@@ -447,16 +448,9 @@ class PeopleForm extends Component {
                     value={formData.address}
                     onChange={(target) => this._handleChange({ target })}
                   />
-                  <Form.Field label={intl.formatMessage(messages.skillsLabel)}>
-                    <SkillsField
-                      name="skills"
-                      value={formData.skills || []}
-                      onChange={this._handleChange}
-                    />
-                  </Form.Field>
-                  {/* {this._displayParticipateButton() ? (
+                  {this._displayParticipateButton() ? (
                     <Button
-                      onClick={ev => {
+                      onClick={(ev) => {
                         ev.preventDefault();
                         this.setState({ contribute: !contribute });
                       }}
@@ -466,9 +460,18 @@ class PeopleForm extends Component {
                         defaultMessage="I'd like to participate"
                       />
                     </Button>
-                  ) : null} */}
+                  ) : null}
                   {contribute ? (
                     <div className="contribute">
+                      <Form.Field
+                        label={intl.formatMessage(messages.skillsLabel)}
+                      >
+                        <SkillsField
+                          name="skills"
+                          value={formData.skills || []}
+                          onChange={this._handleChange}
+                        />
+                      </Form.Field>
                       <label>
                         <input
                           type="checkbox"
