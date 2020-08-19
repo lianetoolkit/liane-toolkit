@@ -43,6 +43,7 @@ const Container = styled.div`
       cursor: pointer;
       position: relative;
       background: #fff;
+      overflow: hidden;
       h3 {
         font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
         margin: 0 0 0.25rem;

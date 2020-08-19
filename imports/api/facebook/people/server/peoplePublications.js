@@ -320,12 +320,7 @@ Meteor.publishComposite("people.form.detail", function ({ formId, psid }) {
       return People.find(selector, {
         fields: {
           name: 1,
-          facebookId: 1,
-          "campaignMeta.contact": 1,
-          "campaignMeta.basic_info": 1,
-          "campaignMeta.donor": 1,
-          "campaignMeta.supporter": 1,
-          "campaignMeta.mobilizer": 1,
+          facebookId: 1
         },
       });
     },
