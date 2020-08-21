@@ -699,12 +699,23 @@ export const peopleSendPrivateReply = new ValidatedMethod({
 
     try {
       response = Promise.await(
-        FB.api(`${comment._id}/private_replies`, "POST", {
+        FB.api("me/messages", "POST", {
           access_token: campaignAccount.accessToken,
-          id: comment._id,
-          message: parseMessage(message),
+          recipient: {
+            comment_id: comment._id,
+          },
+          message: {
+            text: parseMessage(message),
+          },
         })
       );
+      // response = Promise.await(
+      //   FB.api(`${comment._id}/private_replies`, "POST", {
+      //     access_token: campaignAccount.accessToken,
+      //     id: comment._id,
+      //     message: parseMessage(message),
+      //   })
+      // );
     } catch (error) {
       if (error instanceof Meteor.Error) {
         throw error;
@@ -936,7 +947,6 @@ export const peopleFormId = new ValidatedMethod({
   },
 });
 
-
 export const peopleCreate = new ValidatedMethod({
   name: "people.create",
   validate: new SimpleSchema({
@@ -946,7 +956,6 @@ export const peopleCreate = new ValidatedMethod({
     name: {
       type: String,
     },
-
   }).validator(),
   run({ campaignId, name }) {
     logger.debug("people.create called", { campaignId, name });
@@ -1331,7 +1340,12 @@ export const mergeUnresolvedPeople = new ValidatedMethod({
     },
   }).validator(),
   run({ campaignId, update, remove, resolve }) {
-    logger.debug("people.merge.unresolved", { campaignId, update, remove, resolve });
+    logger.debug("people.merge.unresolved", {
+      campaignId,
+      update,
+      remove,
+      resolve,
+    });
 
     const userId = Meteor.userId();
     if (
@@ -1346,9 +1360,9 @@ export const mergeUnresolvedPeople = new ValidatedMethod({
     }
     // Update Resolve
     const $set = {
-      unresolved: false
-    }
-    resolve.map(personId => {
+      unresolved: false,
+    };
+    resolve.map((personId) => {
       People.update(
         {
           _id: personId,
@@ -1357,24 +1371,24 @@ export const mergeUnresolvedPeople = new ValidatedMethod({
           $set,
         }
       );
-    })
+    });
     // Update
     let $updateSet = {
       unresolved: false,
-    }
+    };
     update.fields.map(({ field, id }) => {
       if (id != update.id) {
         const valueFrom = People.findOne(id);
         $updateSet[field] = Object.byString(valueFrom, field);
       }
-    })
+    });
     People.update(
       {
-        _id: update.id
+        _id: update.id,
       },
       {
         $set: $updateSet,
-        $unset: { related: [] }
+        $unset: { related: [] },
       }
     );
     // Delete
