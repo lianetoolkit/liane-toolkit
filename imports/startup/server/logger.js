@@ -1,5 +1,6 @@
 import os from "os";
 import winston from "winston";
+import Sentry from "@sentry/node";
 
 const { deployMode } = Meteor.settings.public;
 
@@ -19,3 +20,7 @@ logger = winston.createLogger({
   ],
   exceptionHandlers: [new winston.transports.Console()],
 });
+
+if (Meteor.settings.sentry) {
+  Sentry.init({ dsn: Meteor.settings.sentry });
+}

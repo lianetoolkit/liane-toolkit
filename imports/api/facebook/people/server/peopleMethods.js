@@ -709,13 +709,6 @@ export const peopleSendPrivateReply = new ValidatedMethod({
           },
         })
       );
-      // response = Promise.await(
-      //   FB.api(`${comment._id}/private_replies`, "POST", {
-      //     access_token: campaignAccount.accessToken,
-      //     id: comment._id,
-      //     message: parseMessage(message),
-      //   })
-      // );
     } catch (error) {
       if (error instanceof Meteor.Error) {
         throw error;

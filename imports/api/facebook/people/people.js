@@ -226,9 +226,6 @@ Meteor.startup(() => {
       name: "text",
       "campaignMeta.contact.email": "text",
     });
-    People.rawCollection().createIndex({
-      facebookAccounts: 1,
-    });
     People.rawCollection().createIndex(
       {
         campaignId: 1,
