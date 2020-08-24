@@ -28,32 +28,43 @@ export const summaryData = new ValidatedMethod({
         ) {
             throw new Meteor.Error(401, "You are not allowed to do this action");
         }
-
         // Queries
-        // Total people in people directory
         const rawPeople = People.rawCollection();
+
+        // 1 -  Total people in people directory
+
         const toCount = rawPeople.find({
             campaignId
         });
+
+        const totalPeople = Promise.await(
+            toCount.count()
+        )
+        // 2 - Total positive reactions(like, love and wow)
+        // 3 - Total comments
+        let comments = 0
+        let positiveReactions = 0
+        toCount.forEach(person => {
+            if (person.counts) {
+                if (person.counts.comments) comments += person.counts.comments;
+                if (person.counts.likes) positiveReactions += person.counts.likes;
+            }
+        })
+
+
+        // 4 - Total people with canReceivePrivateReply
         const toPM = rawPeople.find({
             campaignId,
             receivedAutoPrivateReply: true
         });
-        const totalPeople = Promise.await(
-            toCount.count()
-        )
-        // Total positive reactions(like, love and wow)
-
-        // Total comments
-
-        // Total people with canReceivePrivateReply
         const peoplePM = Promise.await(
             toPM.count()
         )
+
         return {
             totalPeople,
-            positiveReactions: 122,
-            comments: 1232,
+            positiveReactions,
+            comments,
             peoplePM
         }
         // return 

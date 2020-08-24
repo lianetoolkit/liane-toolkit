@@ -35,8 +35,7 @@ class DashboardDemoPage extends React.Component {
     }
     return (
       <Page.Content>
-        <h2>{campaign.name} Demo Dashboard</h2>
-        <pre>ID:{JSON.stringify(campaign._id)}</pre>
+        <h2>#{campaign._id} - {campaign.name}  Demo Dashboard</h2>
         <pre>summaryData: {JSON.stringify(summaryData)}</pre>
       </Page.Content>
     );
