@@ -1,6 +1,8 @@
 import SimpleSchema from "simpl-schema";
 import moment from "moment";
-
+import {
+    People
+} from "/imports/api/facebook/people/people.js";
 
 export const summaryData = new ValidatedMethod({
     name: "dashboard.summary",
@@ -15,7 +17,6 @@ export const summaryData = new ValidatedMethod({
         const userId = Meteor.userId();
 
         //TODO Define permission  feature
-
         if (
             !Meteor.call("campaigns.userCan", {
                 campaignId,
@@ -29,11 +30,22 @@ export const summaryData = new ValidatedMethod({
 
         // Queries
         // Total people in people directory
+        const rawPeople = People.rawCollection();
+        const totalPeople = Promise.await(
+            rawPeople.find({
+                campaignId
+            }).count()
+        )
         // Total positive reactions(like, love and wow)
         // Total comments
         // Total people with canReceivePrivateReply
-        const totalPeople = People.rawCollection().count(query.query)
 
+        return {
+            totalPeople,
+            positiveReactions: 122,
+            comments: 1232,
+            peoplePM: 876
+        }
         // return 
     },
 });
