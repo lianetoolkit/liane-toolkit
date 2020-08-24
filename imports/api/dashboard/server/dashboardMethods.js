@@ -3,6 +3,7 @@ import moment from "moment";
 import {
     People
 } from "/imports/api/facebook/people/people.js";
+import { Likes } from "/imports/api/facebook/likes/likes.js";
 
 export const summaryData = new ValidatedMethod({
     name: "dashboard.summary",
@@ -31,20 +32,29 @@ export const summaryData = new ValidatedMethod({
         // Queries
         // Total people in people directory
         const rawPeople = People.rawCollection();
+        const toCount = rawPeople.find({
+            campaignId
+        });
+        const toPM = rawPeople.find({
+            campaignId,
+            receivedAutoPrivateReply: true
+        });
         const totalPeople = Promise.await(
-            rawPeople.find({
-                campaignId
-            }).count()
+            toCount.count()
         )
         // Total positive reactions(like, love and wow)
-        // Total comments
-        // Total people with canReceivePrivateReply
 
+        // Total comments
+
+        // Total people with canReceivePrivateReply
+        const peoplePM = Promise.await(
+            toPM.count()
+        )
         return {
             totalPeople,
             positiveReactions: 122,
             comments: 1232,
-            peoplePM: 876
+            peoplePM
         }
         // return 
     },
