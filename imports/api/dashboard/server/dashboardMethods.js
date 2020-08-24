@@ -28,6 +28,11 @@ export const summaryData = new ValidatedMethod({
         }
 
         // Queries
+        // Total people in people directory
+        // Total positive reactions(like, love and wow)
+        // Total comments
+        // Total people with canReceivePrivateReply
+        const totalPeople = People.rawCollection().count(query.query)
 
         // return 
     },
