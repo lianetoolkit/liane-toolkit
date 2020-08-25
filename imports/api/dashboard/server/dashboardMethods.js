@@ -28,20 +28,19 @@ export const summaryData = new ValidatedMethod({
 
         const redisKey = `dashboard.${facebookAccountId}.dataSummary`;
 
+        if (
+            !userId ||
+            !Meteor.call("campaigns.isUserTeam", {
+                campaignId,
+                userId,
+            })
+        ) {
+            throw new Meteor.Error(401, "You are not allowed to do this action");
+        }
         let dataSummary = redisClient.getSync(redisKey);
 
         if (!dataSummary) {
-            //? TODO Define permission  feature
-            if (
-                !Meteor.call("campaigns.userCan", {
-                    campaignId,
-                    userId,
-                    feature: "dashboard",
-                    permission: "view",
-                })
-            ) {
-                throw new Meteor.Error(401, "You are not allowed to do this action");
-            }
+
             // 1 -  Total people in people directory
             const toCount = People.find({
                 campaignId
@@ -53,7 +52,7 @@ export const summaryData = new ValidatedMethod({
             let positiveReactions = 0;
             positiveReactions = Promise.await(Likes.find({
                 facebookAccountId,
-                "type": { "$in": ['LIKE', 'CARE', 'PRIDE', 'LOVE', 'WOW'] }
+                "type": { "$in": ['LIKE', 'CARE', 'PRIDE', 'LOVE', 'WOW', 'THANKFUL'] }
             }).count())
 
             // 3 - Total comments
@@ -85,6 +84,7 @@ export const summaryData = new ValidatedMethod({
                 60 * 60 // 1 hour
             );
         }
+
         return JSON.parse(dataSummary);
     },
 });
