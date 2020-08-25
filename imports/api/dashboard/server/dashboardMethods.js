@@ -2,7 +2,6 @@ import SimpleSchema from "simpl-schema";
 import moment from "moment";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
-import { Likes } from "/imports/api/facebook/likes/likes.js";
 import {
     People
 } from "/imports/api/facebook/people/people.js";
