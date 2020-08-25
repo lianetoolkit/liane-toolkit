@@ -1,8 +1,6 @@
 import React from "react";
 import Page from "/imports/ui2/components/Page.jsx";
 import Loading from "/imports/ui2/components/Loading.jsx";
-// import { summaryData } from '../../api/dashboard/server/dashboardMethods';
-
 class DashboardDemoPage extends React.Component {
   constructor(props) {
     super(props);
