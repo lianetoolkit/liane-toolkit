@@ -23,10 +23,6 @@ export const summaryData = new ValidatedMethod({
         logger.debug("dashboard.summary", { campaignId });
         const userId = Meteor.userId();
 
-        const campaign = Campaigns.findOne(campaignId);
-        const facebookAccountId = campaign.facebookAccount.facebookId;
-
-        const redisKey = `dashboard.${facebookAccountId}.dataSummary`;
 
         if (
             !userId ||
@@ -37,6 +33,11 @@ export const summaryData = new ValidatedMethod({
         ) {
             throw new Meteor.Error(401, "You are not allowed to do this action");
         }
+
+        const campaign = Campaigns.findOne(campaignId);
+        const facebookAccountId = campaign.facebookAccount.facebookId;
+        const redisKey = `dashboard.${facebookAccountId}.dataSummary`;
+
         let dataSummary = redisClient.getSync(redisKey);
 
         if (!dataSummary) {
@@ -97,23 +98,52 @@ export const achievements = new ValidatedMethod({
     }).validator(),
     run({ campaignId }) {
 
-        logger.debug("dashboard.summary", { campaignId });
+        logger.debug("dashboard.achievements", { campaignId });
         const userId = Meteor.userId();
 
-        //TODO Define permission feature
+
         if (
-            !Meteor.call("campaigns.userCan", {
+            !userId ||
+            !Meteor.call("campaigns.isUserTeam", {
                 campaignId,
                 userId,
-                feature: "dashboard",
-                permission: "view",
             })
         ) {
             throw new Meteor.Error(401, "You are not allowed to do this action");
         }
-        // Queries
+        const campaign = Campaigns.findOne(campaignId);
+        const facebookAccountId = campaign.facebookAccount.facebookId;
+        const redisKey = `dashboard.${facebookAccountId}.achievements`;
 
+        let achievements = redisClient.getSync(redisKey);
+
+        if (!achievements) {
+            // 1  - Total forms filled
+            const filledForms = Promise.await(
+                People.find({
+                    campaignId,
+                    source: 'form'
+                }).count()
+            )
+            // 2 - Total people with geolocation
+            const geolocated = Promise.await(
+                People.find({
+                    campaignId,
+                    location: { $exists: true },
+                }).count()
+            )
+            // 3 - Total comments replied by the page account
+
+            achievements = JSON.stringify({ filledForms, geolocated });
+            redisClient.setSync(
+                redisKey,
+                achievements,
+                "EX",
+                60 * 60 // 1 hour
+            );
+        }
         // return 
+        return JSON.parse(achievements);
     },
 });
 
