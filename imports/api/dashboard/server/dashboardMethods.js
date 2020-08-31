@@ -51,26 +51,22 @@ export const summaryData = new ValidatedMethod({
             )
             // 2 - Total positive reactions(like, love and wow)
             let positiveReactions = 0;
-            positiveReactions = Promise.await(Likes.find({
+            positiveReactions = Likes.find({
                 facebookAccountId,
                 "type": { "$in": ['LIKE', 'CARE', 'PRIDE', 'LOVE', 'WOW', 'THANKFUL'] }
-            }).count())
+            }).count()
 
             // 3 - Total comments
             let comments = 0;
-            comments = Promise.await(
-                Comments.find({
-                    facebookAccountId
-                }).count()
-            )
+            comments = Comments.find({
+                facebookAccountId
+            }).count()
             // 4 - Total people with canReceivePrivateReply
-            const toPM = People.find({
+            const peoplePM = People.find({
                 campaignId,
                 receivedAutoPrivateReply: true
-            });
-            const peoplePM = Promise.await(
-                toPM.count()
-            )
+            }).count();
+
             // redis update
             dataSummary = JSON.stringify({
                 totalPeople,
@@ -119,22 +115,20 @@ export const achievements = new ValidatedMethod({
 
         if (!achievements) {
             // 1  - Total forms filled
-            const filledForms = Promise.await(
-                People.find({
-                    campaignId,
-                    source: 'form'
-                }).count()
-            )
+            const filledForms = People.find({
+                campaignId,
+                filledForm: true
+            }).count();
             // 2 - Total people with geolocation
-            const geolocated = Promise.await(
-                People.find({
-                    campaignId,
-                    location: { $exists: true },
-                }).count()
-            )
-            // 3 - Total comments replied by the page account
+            const geolocated = People.find({
+                campaignId,
+                location: { $exists: true },
+            }).count();
 
-            achievements = JSON.stringify({ filledForms, geolocated });
+            // 3 - Total comments replied by the page account
+            let commentsReplied = 0;
+
+            achievements = JSON.stringify({ filledForms, geolocated, commentsReplied });
             redisClient.setSync(
                 redisKey,
                 achievements,
