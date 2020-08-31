@@ -335,6 +335,7 @@
   "app.forms.save": "Save",
   "app.forms.title": "Title",
   "app.geolocation_select.city.label": "City",
+  "app.geolocation_select.placeholder": "Select a geolocation...",
   "app.geolocation_select.search.placeholder": "Search for a location...",
   "app.geolocation_select.state.label": "State/Province",
   "app.jobs.labels.campaigns.healthCheck": "Facebook Connection Health Check",

@@ -17,7 +17,7 @@ import SelectAccount from "../../components/facebook/SelectAccount.jsx";
 import CampaignTypeSelect from "../../components/CampaignTypeSelect.jsx";
 import OfficeField from "../../components/OfficeField.jsx";
 import CountrySelect from "../../components/CountrySelect.jsx";
-import GeolocationSelect from "../../components/GeolocationSelect.jsx";
+import GeolocationSearch from "../../components/GeolocationSearch.jsx";
 import UserUpgrade from "../../components/UserUpgrade.jsx";
 
 const messages = defineMessages({
@@ -303,7 +303,7 @@ class NewCampaignPage extends Component {
             </Form.Field>
           ) : null}
           {formData.country ? (
-            <GeolocationSelect
+            <GeolocationSearch
               country={formData.country}
               onChange={this._handleGeolocationChange}
             />
