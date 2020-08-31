@@ -23,10 +23,6 @@ export const summaryData = new ValidatedMethod({
         logger.debug("dashboard.summary", { campaignId });
         const userId = Meteor.userId();
 
-        const campaign = Campaigns.findOne(campaignId);
-        const facebookAccountId = campaign.facebookAccount.facebookId;
-
-        const redisKey = `dashboard.${facebookAccountId}.dataSummary`;
 
         if (
             !userId ||
@@ -37,6 +33,11 @@ export const summaryData = new ValidatedMethod({
         ) {
             throw new Meteor.Error(401, "You are not allowed to do this action");
         }
+
+        const campaign = Campaigns.findOne(campaignId);
+        const facebookAccountId = campaign.facebookAccount.facebookId;
+        const redisKey = `dashboard.${facebookAccountId}.dataSummary`;
+
         let dataSummary = redisClient.getSync(redisKey);
 
         if (!dataSummary) {
@@ -50,26 +51,22 @@ export const summaryData = new ValidatedMethod({
             )
             // 2 - Total positive reactions(like, love and wow)
             let positiveReactions = 0;
-            positiveReactions = Promise.await(Likes.find({
+            positiveReactions = Likes.find({
                 facebookAccountId,
                 "type": { "$in": ['LIKE', 'CARE', 'PRIDE', 'LOVE', 'WOW', 'THANKFUL'] }
-            }).count())
+            }).count()
 
             // 3 - Total comments
             let comments = 0;
-            comments = Promise.await(
-                Comments.find({
-                    facebookAccountId
-                }).count()
-            )
+            comments = Comments.find({
+                facebookAccountId
+            }).count()
             // 4 - Total people with canReceivePrivateReply
-            const toPM = People.find({
+            const peoplePM = People.find({
                 campaignId,
                 receivedAutoPrivateReply: true
-            });
-            const peoplePM = Promise.await(
-                toPM.count()
-            )
+            }).count();
+
             // redis update
             dataSummary = JSON.stringify({
                 totalPeople,
@@ -97,23 +94,54 @@ export const achievements = new ValidatedMethod({
     }).validator(),
     run({ campaignId }) {
 
-        logger.debug("dashboard.summary", { campaignId });
+        logger.debug("dashboard.achievements", { campaignId });
         const userId = Meteor.userId();
 
-        //TODO Define permission feature
+
         if (
-            !Meteor.call("campaigns.userCan", {
+            !userId ||
+            !Meteor.call("campaigns.isUserTeam", {
                 campaignId,
                 userId,
-                feature: "dashboard",
-                permission: "view",
             })
         ) {
             throw new Meteor.Error(401, "You are not allowed to do this action");
         }
-        // Queries
+        const campaign = Campaigns.findOne(campaignId);
+        const facebookAccountId = campaign.facebookAccount.facebookId;
+        const redisKey = `dashboard.${facebookAccountId}.achievements`;
 
+        let achievements = redisClient.getSync(redisKey);
+
+        if (!achievements) {
+            // 1  - Total forms filled
+            const filledForms = People.find({
+                campaignId,
+                filledForm: true
+            }).count();
+            // 2 - Total people with geolocation
+            const geolocated = People.find({
+                campaignId,
+                location: { $exists: true },
+            }).count();
+
+            // 3 - Total comments replied by the page account
+            let commentsReplies = Comments.find({
+                facebookAccountId,
+                personId: facebookAccountId,
+                parentId: { $exists: true },
+            }).count();
+
+            achievements = JSON.stringify({ filledForms, geolocated, commentsReplies });
+            redisClient.setSync(
+                redisKey,
+                achievements,
+                "EX",
+                60 * 60 // 1 hour
+            );
+        }
         // return 
+        return JSON.parse(achievements);
     },
 });
 
