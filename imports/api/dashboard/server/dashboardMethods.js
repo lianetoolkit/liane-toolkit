@@ -126,9 +126,13 @@ export const achievements = new ValidatedMethod({
             }).count();
 
             // 3 - Total comments replied by the page account
-            let commentsReplied = 0;
+            let commentsReplies = Comments.find({
+                facebookAccountId,
+                personId: facebookAccountId,
+                parentId: { $exists: true },
+            }).count();
 
-            achievements = JSON.stringify({ filledForms, geolocated, commentsReplied });
+            achievements = JSON.stringify({ filledForms, geolocated, commentsReplies });
             redisClient.setSync(
                 redisKey,
                 achievements,
