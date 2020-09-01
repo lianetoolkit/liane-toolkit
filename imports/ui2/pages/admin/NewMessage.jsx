@@ -367,6 +367,7 @@ class NewMessagePage extends Component {
               <Form.Field label="Campaign type">
                 <CampaignTypeSelect
                   name="campaignType"
+                  clearable={true}
                   value={filters.campaignType}
                   onChange={this._handleChange}
                 />
