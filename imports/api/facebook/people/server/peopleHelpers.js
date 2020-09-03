@@ -294,7 +294,7 @@ const PeopleHelpers = {
             .join(",");
           delete person.basic_info.tags;
         }
-        if (!Object.keys(person.basic_info).length) {
+        if (person.basic_info && !Object.keys(person.basic_info).length) {
           delete person.basic_info;
         }
       }
