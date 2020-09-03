@@ -9,6 +9,9 @@ import { Likes } from "/imports/api/facebook/likes/likes.js";
 
 import redisClient from "/imports/startup/server/redis";
 
+const rawLikes = Likes.rawCollection();
+rawLikes.distinctAsync = Meteor.wrapAsync(rawLikes.distinct);
+// rawLikes.aggregateAsync = Meteor.wrapAsync(rawLikes.aggregate);
 
 export const summaryData = new ValidatedMethod({
     name: "dashboard.summary",
@@ -169,16 +172,19 @@ export const funnelData = new ValidatedMethod({
 
         let funnelData = redisClient.getSync(redisKey);
 
-        if (!funnelData) {
+        if (!funnelData || true) {
 
             const totalPeople = People.find({
                 campaignId
             }).count();
-            const positivePeople = 0;
+            let positivePeople = 0;
+            positivePeople = Promise.await(rawLikes.distinct('personId', {
+                facebookAccountId,
+                "type": { "$in": ['LIKE', 'CARE', 'PRIDE', 'LOVE', 'WOW', 'THANKFUL'] }
+            })).length
+
             const commetingPeople = 0;
             const campaignFormPeople = 0;
-
-
 
             funnelData = JSON.stringify({ totalPeople, positivePeople, commetingPeople, campaignFormPeople });
             redisClient.setSync(
