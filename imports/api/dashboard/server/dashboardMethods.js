@@ -144,5 +144,54 @@ export const achievements = new ValidatedMethod({
         return JSON.parse(achievements);
     },
 });
+export const funnelData = new ValidatedMethod({
+    name: "dashboard.funnelData",
+    validate: new SimpleSchema({
+        campaignId: {
+            type: String,
+        },
+    }).validator(),
+    run({ campaignId }) {
+
+        logger.debug("dashboard.funnelData", { campaignId });
+        const userId = Meteor.userId();
+
+
+        if (
+            !userId ||
+            !Meteor.call("campaigns.isUserTeam", {
+                campaignId,
+                userId,
+            })
+        ) {
+            throw new Meteor.Error(401, "You are not allowed to do this action");
+        }
+        const campaign = Campaigns.findOne(campaignId);
+        const facebookAccountId = campaign.facebookAccount.facebookId;
+        const redisKey = `dashboard.${facebookAccountId}.funnelData`;
+
+        let funnelData = redisClient.getSync(redisKey);
+
+        if (!funnelData) {
+
+            const totalPeople = 0;
+            const positivePeople = 0;
+            const commetingPeople = 0;
+            const campaignFormPeople = 0;
+
+
+
+            funnelData = JSON.stringify({ totalPeople, positivePeople, commetingPeople, campaignFormPeople });
+            redisClient.setSync(
+                redisKey,
+                funnelData,
+                "EX",
+                60 * 1 // 1 hour
+            );
+        }
+        // return 
+        return JSON.parse(funnelData);
+    },
+});
 
 

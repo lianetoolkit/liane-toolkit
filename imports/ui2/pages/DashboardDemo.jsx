@@ -7,7 +7,8 @@ class DashboardDemoPage extends React.Component {
     this.state = {
       loading: false,
       summaryData: null,
-      achievements: null
+      achievements: null,
+      funnelData: null
     };
   }
   componentDidMount() {
@@ -42,11 +43,24 @@ class DashboardDemoPage extends React.Component {
       }
     });
 
+    // funnel data
+    Meteor.call("dashboard.funnelData", { campaignId: campaign._id }, (err, data) => {
+      if (err) {
+        console.log("dashboard.funnel error ", err)
+        this.setState({
+          loading: false,
+        });
+      } else {
+        console.log("dashboard.achievements getting funnelData ", data)
+        this.setState({ funnelData: data });
+      }
+    });
+
 
   }
   render() {
     const { campaign } = this.props;
-    const { loading, summaryData, achievements } = this.state;
+    const { loading, summaryData, achievements, funnelData } = this.state;
     if (loading) {
       return <Loading full />;
     }
@@ -55,6 +69,7 @@ class DashboardDemoPage extends React.Component {
         <h2>#{campaign._id} - {campaign.name}  Demo Dashboard</h2>
         <pre>summaryData: {JSON.stringify(summaryData)}</pre>
         <pre>achievements: {JSON.stringify(achievements)}</pre>
+        <pre>funnelData: {JSON.stringify(funnelData)}</pre>
       </Page.Content>
     );
   }
