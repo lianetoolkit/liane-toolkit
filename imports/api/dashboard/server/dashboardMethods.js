@@ -43,12 +43,9 @@ export const summaryData = new ValidatedMethod({
         if (!dataSummary) {
 
             // 1 -  Total people in people directory
-            const toCount = People.find({
+            const totalPeople = People.find({
                 campaignId
-            });
-            const totalPeople = Promise.await(
-                toCount.count()
-            )
+            }).count()
             // 2 - Total positive reactions(like, love and wow)
             let positiveReactions = 0;
             positiveReactions = Likes.find({
@@ -174,7 +171,9 @@ export const funnelData = new ValidatedMethod({
 
         if (!funnelData) {
 
-            const totalPeople = 0;
+            const totalPeople = People.find({
+                campaignId
+            }).count();
             const positivePeople = 0;
             const commetingPeople = 0;
             const campaignFormPeople = 0;
