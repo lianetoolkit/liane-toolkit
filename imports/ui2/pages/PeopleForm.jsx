@@ -160,6 +160,7 @@ class PeopleForm extends Component {
       formData: {},
       loading: false,
       sent: false,
+      donor: false,
       contribute: false,
     };
     this._handleFacebookClick = this._handleFacebookClick.bind(this);
@@ -273,12 +274,21 @@ class PeopleForm extends Component {
       }
       if (res) {
         FlowRouter.go("/f/" + res);
-        this.setState({ sent: true, loading: false });
+        this.setState({ sent: true, loading: false, donor: formData.donor });
+        if (formData.donor) {
+          setTimeout(() => {
+            window.location = campaign.forms.crm.donation;
+          }, 5000);
+        }
       } else {
         this.setState({ loading: false });
       }
     });
   }
+  _hasDonationUrl = () => {
+    const { campaign } = this.props;
+    return !!get(campaign, "forms.crm.donation");
+  };
   getBirthdayValue() {
     const { formData } = this.state;
     const value = get(formData, "birthday");
@@ -289,8 +299,8 @@ class PeopleForm extends Component {
   }
   render() {
     const { intl, loading, person, campaign } = this.props;
-    const { sent, formData, contribute } = this.state;
-    console.log(campaign);
+    const { sent, formData, donor, contribute } = this.state;
+    console.log(campaign, formData);
     if (loading || this.state.loading) {
       return <Loading full />;
     } else if (!loading && !campaign) {
@@ -326,6 +336,17 @@ class PeopleForm extends Component {
                     />
                   )}
                 </p>
+                {donor ? (
+                  <p>
+                    <FormattedHTMLMessage
+                      id="app.people_form.donation_redirect_text"
+                      defaultMessage="You are being redirected to the donation page. <a href='{url}'>Click here to access directly</a>."
+                      values={{
+                        url: campaign.forms.crm.donation,
+                      }}
+                    />
+                  </p>
+                ) : null}
               </>
             ) : (
               <>
@@ -448,6 +469,20 @@ class PeopleForm extends Component {
                     value={formData.address}
                     onChange={(target) => this._handleChange({ target })}
                   />
+                  {this._hasDonationUrl() ? (
+                    <label>
+                      <input
+                        name="donor"
+                        checked={formData.donor}
+                        onChange={this._handleChange}
+                        type="checkbox"
+                      />
+                      <FormattedMessage
+                        id="app.people_form.donation_label"
+                        defaultMessage="I'd like do donate"
+                      />
+                    </label>
+                  ) : null}
                   {this._displayParticipateButton() ? (
                     <Button
                       onClick={(ev) => {
@@ -494,18 +529,6 @@ class PeopleForm extends Component {
                         <FormattedMessage
                           id="app.people_form.mobilizer_label"
                           defaultMessage="Would you produce en event in your neighborhood or workplace?"
-                        />
-                      </label>
-                      <label>
-                        <input
-                          type="checkbox"
-                          name="donor"
-                          checked={formData.donor}
-                          onChange={this._handleChange}
-                        />
-                        <FormattedMessage
-                          id="app.people_form.donor_label"
-                          defaultMessage="Would you donate money to the campaign?"
                         />
                       </label>
                     </div>
