@@ -5,9 +5,10 @@ import {
   intlShape,
   defineMessages,
   FormattedMessage,
-  FormattedHTMLMessage
+  FormattedHTMLMessage,
 } from "react-intl";
 import styled from "styled-components";
+import { ClientStorage } from "meteor/ostrio:cstorage";
 import { alertStore } from "../containers/Alerts.jsx";
 
 import Page from "../components/Page.jsx";
@@ -21,51 +22,51 @@ import Loading from "../components/Loading.jsx";
 const messages = defineMessages({
   nameLabel: {
     id: "app.registration.name_label",
-    defaultMessage: "Name"
+    defaultMessage: "Name",
   },
   emailLabel: {
     id: "app.registration.email_label",
-    defaultMessage: "Email"
+    defaultMessage: "Email",
   },
   countryLabel: {
     id: "app.registration.country_label",
-    defaultMessage: "Country"
+    defaultMessage: "Country",
   },
   regionLabel: {
     id: "app.registration.region_label",
-    defaultMessage: "Region"
+    defaultMessage: "Region",
   },
   passwordLabel: {
     id: "app.registration.password_label",
-    defaultMessage: "Password"
+    defaultMessage: "Password",
   },
   passwordRptLabel: {
     id: "app.registration.password_repeat_label",
-    defaultMessage: "Repeat password"
+    defaultMessage: "Repeat password",
   },
   createAccountLabel: {
     id: "app.registration.create_account_label",
-    defaultMessage: "Create account"
-  }
+    defaultMessage: "Create account",
+  },
 });
 
 const alertsMessages = defineMessages({
   name: {
     id: "app.registration.alerts.name",
-    defaultMessage: "You must set a name"
+    defaultMessage: "You must set a name",
   },
   email: {
     id: "app.registration.alerts.email",
-    defaultMessage: "You must set an email"
+    defaultMessage: "You must set an email",
   },
   password: {
     id: "app.registration.alerts.password",
-    defaultMessage: "You must set a password"
+    defaultMessage: "You must set a password",
   },
   passwordMatch: {
     id: "app.registration.alerts.password_match",
-    defaultMessage: "Passwords do not match"
-  }
+    defaultMessage: "Passwords do not match",
+  },
 });
 
 class RegisterPage extends Component {
@@ -73,7 +74,7 @@ class RegisterPage extends Component {
     super(props);
     this.state = {
       loading: false,
-      formData: {}
+      formData: {},
     };
   }
   componentDidMount = () => {
@@ -87,11 +88,11 @@ class RegisterPage extends Component {
           if (err) {
             alertStore.add(err);
             this.setState({
-              loading: false
+              loading: false,
             });
           } else if (res) {
             this.setState({
-              email: res.email
+              email: res.email,
             });
             if (Meteor.userId()) {
               Meteor.call(
@@ -105,7 +106,7 @@ class RegisterPage extends Component {
               );
             } else {
               this.setState({
-                loading: false
+                loading: false,
               });
             }
           }
@@ -115,10 +116,11 @@ class RegisterPage extends Component {
       FlowRouter.go("/");
     }
   };
-  _handleSubmit = ev => {
+  _handleSubmit = (ev) => {
     ev.preventDefault();
     const { intl, campaignInvite, invite } = this.props;
     const { email, formData } = this.state;
+    const language = ClientStorage.get("language");
     if (!formData.name) {
       alertStore.add(intl.formatMessage(alertsMessages.name), "error");
       return;
@@ -135,13 +137,16 @@ class RegisterPage extends Component {
       alertStore.add(intl.formatMessage(alertsMessages.passwordMatch), "error");
       return;
     }
-    let data = {
+    const data = {
       name: formData.name,
       email: email || formData.email,
       country: formData.country,
       region: formData.region,
-      password: formData.password
+      password: formData.password,
     };
+    if (language) {
+      data.userLanguage = language;
+    }
     if (!email) {
       data.email = formData.email;
     }
@@ -152,7 +157,7 @@ class RegisterPage extends Component {
       data.type = "campaigner";
     }
     this.setState({ loading: true });
-    Accounts.createUser(data, err => {
+    Accounts.createUser(data, (err) => {
       if (err) {
         alertStore.add(err);
         this.setState({ loading: false });
@@ -166,8 +171,8 @@ class RegisterPage extends Component {
     this.setState({
       formData: {
         ...this.state.formData,
-        [target.name]: target.value
-      }
+        [target.name]: target.value,
+      },
     });
   };
   _filledForm = () => {
@@ -251,7 +256,7 @@ class RegisterPage extends Component {
 }
 
 RegisterPage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(RegisterPage);

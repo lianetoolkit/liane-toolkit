@@ -23,10 +23,10 @@ if (settings && settings.mail) {
  */
 Accounts.emailTemplates.siteName = Meteor.settings.public.appName;
 Accounts.emailTemplates.from = `${Meteor.settings.public.appName} <${Meteor.settings.public.appEmail}>`;
-Accounts.urls.verifyEmail = function(token) {
+Accounts.urls.verifyEmail = function (token) {
   return Meteor.absoluteUrl("verify-email/" + token);
 };
-Accounts.urls.resetPassword = function(token) {
+Accounts.urls.resetPassword = function (token) {
   return Meteor.absoluteUrl("reset-password/" + token);
 };
 
@@ -49,7 +49,7 @@ Accounts.emailTemplates.resetPassword = {
     body = body.replace("%NAME%", user.name);
     body = body.replace("%URL%", url);
     return body;
-  }
+  },
 };
 
 /*
@@ -71,5 +71,5 @@ Accounts.emailTemplates.verifyEmail = {
     body = body.replace("%NAME%", user.name);
     body = body.replace("%URL%", url);
     return body;
-  }
+  },
 };
