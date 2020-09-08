@@ -14,6 +14,7 @@ import Select from "react-select";
 import Page from "../components/Page.jsx";
 import Form from "../components/Form.jsx";
 import PersonFormInfo from "../components/PersonFormInfo.jsx";
+import SkillsConfig from "../components/SkillsConfig.jsx";
 
 import { languages } from "/locales";
 
@@ -232,6 +233,7 @@ class FormSettingsPage extends Component {
               onChange={this._handleChange}
             />
           </Form.Field>
+          <SkillsConfig />
         </Form.Content>
         <Form.Actions>
           <input
