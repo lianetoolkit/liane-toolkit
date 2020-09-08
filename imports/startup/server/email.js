@@ -60,14 +60,17 @@ for (const locale in languages) {
   verifyEmail[locale] = createEmail("verifyEmail", locale);
 }
 
+const getTemplate = (locale) => {
+  locale = locale || "en";
+  return verifyEmail[locale] || verifyEmail["en"];
+};
+
 Accounts.emailTemplates.verifyEmail = {
   subject(user) {
-    const locale = user.userLanguage || "en";
-    return verifyEmail[locale].subject;
+    return getTemplate(user.userLanguage).subject;
   },
   html(user, url) {
-    const locale = user.userLanguage || "en";
-    let body = verifyEmail[locale].body;
+    let body = getTemplate(user.userLanguage).body;
     body = body.replace("%NAME%", user.name);
     body = body.replace("%URL%", url);
     return body;
