@@ -1329,6 +1329,7 @@ export const removeUser = new ValidatedMethod({
     }
 
     if (
+      userId &&
       Meteor.call("campaigns.userCan", {
         campaignId,
         userId,
