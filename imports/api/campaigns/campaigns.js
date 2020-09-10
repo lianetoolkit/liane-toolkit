@@ -153,6 +153,13 @@ Campaigns.schema = new SimpleSchema({
     type: String,
     optional: true,
   },
+  "forms.skills": {
+    type: Array,
+    optional: true,
+  },
+  "forms.skills.$": {
+    type: String,
+  },
   createdAt: {
     type: Date,
     autoValue() {

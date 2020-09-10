@@ -483,6 +483,13 @@ export const campaignsFormUpdate = new ValidatedMethod({
       type: String,
       optional: true,
     },
+    skills: {
+      type: Array,
+      optional: true,
+    },
+    "skills.$": {
+      type: String,
+    },
   }).validator(),
   run({ campaignId, ...data }) {
     logger.debug("campaigns.formUpdate called", {
@@ -527,6 +534,12 @@ export const campaignsFormUpdate = new ValidatedMethod({
         "settings",
         "help",
         "support",
+        "transparency",
+        "form_settings",
+        "faq",
+        "comments",
+        "account",
+        "messages",
       ];
       if (
         data.slug.length < minimumLength ||
@@ -548,6 +561,10 @@ export const campaignsFormUpdate = new ValidatedMethod({
     }
     if (data.crm) {
       $set["forms.crm"] = data.crm;
+    }
+
+    if (data.skills) {
+      $set["forms.skills"] = data.skills;
     }
 
     Campaigns.update(

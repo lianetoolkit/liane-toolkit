@@ -51,6 +51,10 @@ const messages = defineMessages({
     id: "app.form_settings.form_donation_label",
     defaultMessage: "Donation page URL",
   },
+  skillsLabel: {
+    id: "app.form_Settings.form_skills_label",
+    defaultMessage: "Desired skills",
+  },
   saveLabel: {
     id: "app.form_settings.save",
     defaultMessage: "Save",
@@ -83,6 +87,7 @@ class FormSettingsPage extends Component {
           campaignId: campaign._id,
           slug: campaign.forms ? campaign.forms.slug : "",
           crm: campaign.forms ? campaign.forms.crm : {},
+          skills: campaign.forms ? campaign.forms.skills : null,
         },
       };
     }
@@ -233,7 +238,21 @@ class FormSettingsPage extends Component {
               onChange={this._handleChange}
             />
           </Form.Field>
-          <SkillsConfig />
+          <Form.Field
+            label={intl.formatMessage(messages.skillsLabel)}
+            description={
+              <FormattedMessage
+                id="app.form_settings.form_skills_description"
+                defaultMessage="Customize the desired volunteer skills to appear in your form"
+              />
+            }
+          >
+            <SkillsConfig
+              name="skills"
+              value={this.getValue("skills")}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
         </Form.Content>
         <Form.Actions>
           <input

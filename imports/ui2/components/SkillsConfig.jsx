@@ -114,10 +114,20 @@ class SkillsConfig extends Component {
       newValue: "",
     };
   }
+  componentDidUpdate(prevProps, prevState) {
+    const { name } = this.props;
+    const { options } = this.state;
+    if (JSON.stringify(prevState.options) != JSON.stringify(options)) {
+      this.props.onChange &&
+        this.props.onChange({
+          target: { name, value: options.map((opt) => opt.value) },
+        });
+    }
+  }
   getOptions = () => {
-    const { intl, options } = this.props;
+    const { intl, value } = this.props;
     let configOptions = [];
-    for (const option of options || SkillsConfig.defaultOptions) {
+    for (const option of value || SkillsConfig.defaultOptions) {
       configOptions.push({
         label: defaultSkillsLabels[option]
           ? intl.formatMessage(defaultSkillsLabels[option])
@@ -127,8 +137,11 @@ class SkillsConfig extends Component {
     }
     return sortBy(configOptions, (opt) => opt.label);
   };
-  _removeOption = (value) => (ev) => {
+  _handleRemove = (value) => (ev) => {
     ev.preventDefault();
+    const { options } = this.state;
+    const newOptions = options.filter((opt) => opt.value != value);
+    this.setState({ options: newOptions });
   };
   _handleChange = ({ target }) => {
     this.setState({
@@ -137,19 +150,25 @@ class SkillsConfig extends Component {
   };
   _handleAdd = (ev) => {
     ev.preventDefault();
-    const { newValue } = this.state;
-    console.log(newValue);
+    const { options, newValue } = this.state;
+    if (options.find((option) => option.value == newValue)) return false;
+    const newOptions = [...options, { value: newValue, label: newValue }];
+    this.setState({
+      newValue: "",
+      options: sortBy(newOptions, (opt) => opt.label),
+    });
   };
   render() {
+    const { newValue, options } = this.state;
     return (
       <Container>
         <ul>
-          {this.getOptions().map((option) => (
+          {options.map((option) => (
             <li>
               <a
                 href="#"
                 title="Remove"
-                onClick={this._removeOption(option.value)}
+                onClick={this._handleRemove(option.value)}
               >
                 <span className="label">{option.label}</span>
                 <span className="close">x</span>
@@ -161,6 +180,10 @@ class SkillsConfig extends Component {
           <input
             type="text"
             placeholder="Type a new skill to add"
+            value={newValue}
+            onKeyPress={(ev) => {
+              ev.key == "Enter" && ev.preventDefault();
+            }}
             onChange={this._handleChange}
           />
           <Button href="#" secondary onClick={this._handleAdd}>
