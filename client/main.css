@@ -78,7 +78,8 @@ label input[type="password"] {
 
 textarea {
   resize: none;
-  min-height: 125px;
+  min-height: 150px;
+  line-height: 1.4;
 }
 
 textarea,
