@@ -373,15 +373,31 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
   const [, updateState] = useState();
   const forceUpdate = useCallback(() => updateState({}), []);
 
+  const parse = (person) => {
+    // Transform extra fields
+    if (
+      person.campaignMeta &&
+      person.campaignMeta.extra &&
+      Array.isArray(person.campaignMeta.extra)
+    ) {
+      const extra = {};
+      for (const extraItem of person.campaignMeta.extra) {
+        extra[extraItem.key] = extraItem.val;
+      }
+      person.campaignMeta.extra = extra;
+    }
+    return person;
+  };
+
   //
   const [view, setView] = useState("list");
 
   const sections = Meta.getSections();
   //Join the person and its related ones
   let persons = [];
-  persons.push(person);
+  persons.push(parse(person));
   person.children.map((child) => {
-    persons.push(child);
+    persons.push(parse(child));
   });
   const counter = persons.length;
   // Adding an extra person for the final column
@@ -394,15 +410,14 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
   const labels = {};
   /* Loop on Sections > Fields > Persons  */
   sections.map((section, i) => {
-    const fields = Meta.getList(section);
+    const fields = Meta.getList(section, persons);
     fields.map((field) => {
       const { key, name } = Meta.get(section, field);
       let newField = [];
       persons.map((el, index) => {
-        let newValue = (value = Object.byString(el, key));
+        let newValue = Object.byString(el, key);
         if (newValue && newField.length == 0) {
           newField.push(newValue);
-          // console.log(Meta.getLabel(section, name))
           if (Meta.getLabel(section, name).id) {
             labels[key] = intl.formatMessage(Meta.getLabel(section, name));
           } else {
@@ -458,7 +473,6 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
     });
 
     // Send
-
     Meteor.call("people.merge.unresolved", data, (err, res) => {
       if (err) {
         alertStore.add(err);
@@ -629,7 +643,7 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
         </div>
         {sections.map((section, i) => {
           if (!sectionsToShow.includes(section)) return null;
-          const fields = Meta.getList(section);
+          const fields = Meta.getList(section, persons);
           return (
             <>
               <h3 key={`section-${i}`}>
@@ -638,10 +652,11 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
 
               {fields.map((field) => {
                 const { key, name, type } = Meta.get(section, field);
-                if (!fieldsToShow.includes(key)) return null;
+                if (!fieldsToShow.includes(key) && section != "extra")
+                  return null;
                 return (
                   <>
-                    <div className="label">{labels[key]}</div>
+                    <div className="label">{labels[key] || name}</div>
                     <div
                       className="row-container"
                       style={{

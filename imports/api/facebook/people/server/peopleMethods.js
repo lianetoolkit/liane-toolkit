@@ -1369,18 +1369,36 @@ export const mergeUnresolvedPeople = new ValidatedMethod({
     let $updateSet = {
       unresolved: false,
     };
+    let $updatePush = {};
+    const extra = [];
     update.fields.map(({ field, id }) => {
       if (id != update.id) {
         const valueFrom = People.findOne(id);
-        $updateSet[field] = Object.byString(valueFrom, field);
+        if (field.indexOf("campaignMeta.extra") == 0) {
+          const extraKey = field.split("campaignMeta.extra.")[1];
+          extra.push({
+            key: extraKey,
+            val: valueFrom.campaignMeta.extra.find(
+              (item) => item.key == extraKey
+            ).val,
+          });
+        } else {
+          $updateSet[field] = Object.byString(valueFrom, field);
+        }
       }
     });
+    if (extra.length) {
+      $updatePush["campaignMeta.extra"] = {
+        $each: extra,
+      };
+    }
     People.update(
       {
         _id: update.id,
       },
       {
         $set: $updateSet,
+        $push: $updatePush,
         $unset: { related: [] },
       }
     );
