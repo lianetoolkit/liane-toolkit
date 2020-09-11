@@ -64,7 +64,6 @@ class SkillsField extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { name, onChange } = this.props;
     const { value } = this.state;
-    console.log(value);
     if (JSON.stringify(value) != JSON.stringify(prevState.value) && onChange) {
       onChange({ target: { name, value } });
     }

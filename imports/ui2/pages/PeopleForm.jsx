@@ -300,7 +300,6 @@ class PeopleForm extends Component {
   render() {
     const { intl, loading, person, campaign } = this.props;
     const { sent, formData, donor, contribute } = this.state;
-    console.log(campaign, formData);
     if (loading || this.state.loading) {
       return <Loading full />;
     } else if (!loading && !campaign) {
@@ -508,7 +507,7 @@ class PeopleForm extends Component {
                           onChange={this._handleChange}
                         />
                       </Form.Field>
-                      <label>
+                      {/* <label>
                         <input
                           type="checkbox"
                           name="supporter"
@@ -531,7 +530,7 @@ class PeopleForm extends Component {
                           id="app.people_form.mobilizer_label"
                           defaultMessage="Would you produce en event in your neighborhood or workplace?"
                         />
-                      </label>
+                      </label> */}
                     </div>
                   ) : null}
                   {/* <Divider /> */}
