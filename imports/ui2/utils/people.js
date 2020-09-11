@@ -132,8 +132,8 @@ export const Meta = {
     if (meta && messages[meta.localeKey]) {
       return messages[meta.localeKey];
     }
-    throw `${section} ${key} label not found`;
     return "";
+    return key;
   },
   getSections() {
     return Object.keys(this.meta);

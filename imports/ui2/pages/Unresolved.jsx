@@ -362,6 +362,9 @@ const showValue = (key, val, tags) => {
   if (key == "campaignMeta.basic_info.birthday") {
     return moment(val).format("DD/MM/YYYY");
   }
+  if (key == "campaignMeta.extra") {
+    return val.map((item) => `${item.key}: ${item.val}`).join(", ");
+  }
   if (typeof val === "object") return Object.values(val).join(", ");
   return val;
 };
