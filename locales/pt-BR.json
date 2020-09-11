@@ -327,6 +327,8 @@
   "app.form_settings.form_presentation_label": "Texto de apresentação",
   "app.form_settings.form_settings_description": "Use o formulário para convidar sua audiência para sua campanha! Além do link abaixo, há também um link exclusivo para cada pessoa do seu diretório, melhorando a integração dos dados.",
   "app.form_settings.form_settings_title": "Configurações do Formulário",
+  "app.form_settings.form_skills_description": "Modifique as habilidades de voluntariado desejadas para aparecer no seu formulário",
+  "app.form_settings.form_skills_label": "Habilidades desejadas",
   "app.form_settings.form_thanks_label": "Texto de agradecimento (após envio do formulário)",
   "app.form_settings.form_title_label": "Título do formulário",
   "app.form_settings.form_url_path_label": "Caminho da url do formulário",

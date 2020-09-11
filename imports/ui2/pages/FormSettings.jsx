@@ -52,7 +52,7 @@ const messages = defineMessages({
     defaultMessage: "Donation page URL",
   },
   skillsLabel: {
-    id: "app.form_Settings.form_skills_label",
+    id: "app.form_settings.form_skills_label",
     defaultMessage: "Desired skills",
   },
   saveLabel: {

@@ -327,6 +327,8 @@
   "app.form_settings.form_presentation_label": "Form presentation text",
   "app.form_settings.form_settings_description": "Use the form to invite your audience to your campaign! Besides the link below, there's also an exclusive link for each person in your directory, improving data integration.",
   "app.form_settings.form_settings_title": "Form settings",
+  "app.form_settings.form_skills_description": "Customize the desired volunteer skills to appear in your form",
+  "app.form_settings.form_skills_label": "Desired skills",
   "app.form_settings.form_thanks_label": "After form submission text",
   "app.form_settings.form_title_label": "Form title",
   "app.form_settings.form_url_path_label": "Set form url path",
