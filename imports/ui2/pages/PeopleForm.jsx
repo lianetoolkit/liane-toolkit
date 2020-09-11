@@ -503,6 +503,7 @@ class PeopleForm extends Component {
                       >
                         <SkillsField
                           name="skills"
+                          options={campaign.forms.skills}
                           value={formData.skills || []}
                           onChange={this._handleChange}
                         />

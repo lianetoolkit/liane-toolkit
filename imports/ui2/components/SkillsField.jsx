@@ -6,7 +6,7 @@ import {
   FormattedMessage,
 } from "react-intl";
 import styled from "styled-components";
-import { uniq } from "lodash";
+import { uniq, sortBy } from "lodash";
 
 import SkillsConfig, { defaultSkillsLabels } from "./SkillsConfig.jsx";
 import CreatableSelect from "react-select/creatable";
@@ -18,6 +18,22 @@ const messages = defineMessages({
   },
 });
 
+const Container = styled.div`
+  padding: 0;
+  font-size: 0.9em;
+  label {
+    font-weight: normal;
+    padding: 0.5rem 1rem;
+    margin: 0;
+    &:last-child {
+      margin: 0;
+    }
+  }
+  input[type="checkbox"] {
+    margin-right: 1rem;
+  }
+`;
+
 class SkillsField extends Component {
   constructor(props) {
     super(props);
@@ -27,17 +43,17 @@ class SkillsField extends Component {
     };
   }
   getOptions = () => {
-    const { intl } = this.props;
-    let options = [];
-    for (const option of SkillsConfig.defaultOptions) {
-      options.push({
+    const { intl, options } = this.props;
+    let configOptions = [];
+    for (const option of options || SkillsConfig.defaultOptions) {
+      configOptions.push({
         label: defaultSkillsLabels[option]
           ? intl.formatMessage(defaultSkillsLabels[option])
           : option,
         value: option,
       });
     }
-    return options;
+    return sortBy(configOptions, (opt) => opt.label);
   };
   componentDidMount() {
     const { value } = this.props;
@@ -48,26 +64,22 @@ class SkillsField extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { name, onChange } = this.props;
     const { value } = this.state;
+    console.log(value);
     if (JSON.stringify(value) != JSON.stringify(prevState.value) && onChange) {
       onChange({ target: { name, value } });
     }
   }
-  _handleCreateOption = (option) => {
-    this.setState({
-      options: [
-        {
-          value: option,
-          label: option,
-        },
-        ...this.state.options,
-      ],
-      value: uniq([...this.state.value, option]),
-    });
-  };
-  _handleChange = (options) => {
-    const { name, onChange } = this.props;
-    const value = options.map((option) => option.value);
-    this.setState({ value });
+  _handleChange = ({ target }) => {
+    const { value } = this.state;
+    if (target.checked && value.indexOf(target.value) == -1) {
+      this.setState({
+        value: [...value, target.value],
+      });
+    } else if (!target.checked && value.indexOf(target.value) !== -1) {
+      this.setState({
+        value: value.filter((val) => val !== target.value),
+      });
+    }
   };
   _buildValue = () => {
     const { value } = this.state;
@@ -86,9 +98,31 @@ class SkillsField extends Component {
     }
     return builtValue;
   };
+  _isChecked = (value) => {
+    return (
+      this.state.value &&
+      this.state.value.length &&
+      this.state.value.indexOf(value) !== -1
+    );
+  };
   render() {
     const { intl, name } = this.props;
     const { options } = this.state;
+    return (
+      <Container>
+        {options.map((option) => (
+          <label key={option.value}>
+            <input
+              type="checkbox"
+              value={option.value}
+              checked={this._isChecked(option.value)}
+              onChange={this._handleChange}
+            />
+            {option.label}
+          </label>
+        ))}
+      </Container>
+    );
     return (
       <CreatableSelect
         classNamePrefix="select-search"

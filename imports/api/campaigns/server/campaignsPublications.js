@@ -117,6 +117,7 @@ Meteor.publishComposite("campaigns.publicDetail", function ({
           country: 1,
           "forms.slug": 1,
           "forms.crm": 1,
+          "forms.skills": 1,
         },
       });
     },
