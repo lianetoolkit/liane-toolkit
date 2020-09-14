@@ -325,6 +325,8 @@
   "app.form_settings.form_donation_label": "URL da página de doação",
   "app.form_settings.form_language_label": "Idioma do formulário",
   "app.form_settings.form_presentation_label": "Texto de apresentação",
+  "app.form_settings.form_redirect_description": "URL para redirecionamento padrão após envio do formulário. Será utilizado quando não houver URL de doação ou a pessoa não selecionar a opção de doação. Em caso de não preenchimento, o redirecionamento será para a página da campanha no Facebook.",
+  "app.form_settings.form_redirect_label": "URL padrão de redirecionamento",
   "app.form_settings.form_settings_description": "Use o formulário para convidar sua audiência para sua campanha! Além do link abaixo, há também um link exclusivo para cada pessoa do seu diretório, melhorando a integração dos dados.",
   "app.form_settings.form_settings_title": "Configurações do Formulário",
   "app.form_settings.form_skills_description": "Modifique as habilidades de voluntariado desejadas para aparecer no seu formulário",

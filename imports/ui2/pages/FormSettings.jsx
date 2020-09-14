@@ -51,6 +51,10 @@ const messages = defineMessages({
     id: "app.form_settings.form_donation_label",
     defaultMessage: "Donation page URL",
   },
+  redirectLabel: {
+    id: "app.form_settings.form_redirect_label",
+    defaultMessage: "Default redirect URL",
+  },
   skillsLabel: {
     id: "app.form_settings.form_skills_label",
     defaultMessage: "Desired skills",
@@ -108,7 +112,6 @@ class FormSettingsPage extends Component {
     ev.preventDefault();
     if (this._filledForm()) {
       const { formData } = this.state;
-      console.log(formData);
       Meteor.call("campaigns.formUpdate", formData, (err, data) => {
         if (!err) {
           alertStore.add("Updated", "success");
@@ -236,6 +239,23 @@ class FormSettingsPage extends Component {
               type="text"
               name="crm.donation"
               value={this.getValue("crm.donation")}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+          <Form.Field
+            label={intl.formatMessage(messages.redirectLabel)}
+            description={
+              <FormattedMessage
+                id="app.form_settings.form_redirect_description"
+                defaultMessage="URL for default redirection after form submission. This will be used if no donation URL is provided or the user does not select the donation checkbox. If no URL is provided, it will be redirected to your Facebook page."
+              />
+            }
+          >
+            <input
+              type="text"
+              name="crm.redirect"
+              placeholder={`https://facebook.com/${campaign.facebookAccount.facebookId}`}
+              value={this.getValue("crm.redirect")}
               onChange={this._handleChange}
             />
           </Form.Field>

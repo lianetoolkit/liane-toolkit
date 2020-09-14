@@ -275,11 +275,15 @@ class PeopleForm extends Component {
       if (res) {
         FlowRouter.go("/f/" + res);
         this.setState({ sent: true, loading: false, donor: formData.donor });
-        if (formData.donor) {
-          setTimeout(() => {
+        setTimeout(() => {
+          if (formData.donor) {
             window.location = campaign.forms.crm.donation;
-          }, 5000);
-        }
+          } else {
+            window.location =
+              campaign.forms.crm.redirect ||
+              `https://facebook.com/${campaign.facebookAccount.facebookId}`;
+          }
+        }, 5000);
       } else {
         this.setState({ loading: false });
       }

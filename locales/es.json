@@ -325,6 +325,8 @@
   "app.form_settings.form_donation_label": "Donation page URL",
   "app.form_settings.form_language_label": "Idioma del formulario",
   "app.form_settings.form_presentation_label": "Texto de presentación del formulario",
+  "app.form_settings.form_redirect_description": "URL for default redirection after form submission. This will be used if no donation URL is provided or the user does not select the donation checkbox. If no URL is provided, it will be redirected to your Facebook page.",
+  "app.form_settings.form_redirect_label": "Default redirect URL",
   "app.form_settings.form_settings_description": "Usa el formulario para invitar a la audiencia a tu campaña! Además del siguiente enlace, tambien tenemos un enlace para cada persona en tu directorio, facilitando la integración de datos.",
   "app.form_settings.form_settings_title": "Configuración del formulario",
   "app.form_settings.form_skills_description": "Customize the desired volunteer skills to appear in your form",

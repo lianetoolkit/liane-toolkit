@@ -483,6 +483,10 @@ export const campaignsFormUpdate = new ValidatedMethod({
       type: String,
       optional: true,
     },
+    "crm.redirect": {
+      type: String,
+      optional: true,
+    },
     skills: {
       type: Array,
       optional: true,
