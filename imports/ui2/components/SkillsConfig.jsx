@@ -193,6 +193,9 @@ class SkillsConfig extends Component {
   _handleAdd = (ev) => {
     ev.preventDefault();
     const { options, newValue } = this.state;
+    if (!newValue) {
+      return;
+    }
     if (options.find((option) => option.value == newValue)) return false;
     const newOptions = [
       ...options,
