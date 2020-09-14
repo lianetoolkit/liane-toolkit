@@ -108,6 +108,7 @@ class FormSettingsPage extends Component {
     ev.preventDefault();
     if (this._filledForm()) {
       const { formData } = this.state;
+      console.log(formData);
       Meteor.call("campaigns.formUpdate", formData, (err, data) => {
         if (!err) {
           alertStore.add("Updated", "success");

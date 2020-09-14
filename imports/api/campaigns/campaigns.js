@@ -158,7 +158,16 @@ Campaigns.schema = new SimpleSchema({
     optional: true,
   },
   "forms.skills.$": {
+    type: Object,
+  },
+  "forms.skills.$.label": {
     type: String,
+  },
+  "forms.skills.$.value": {
+    type: String,
+  },
+  "forms.skills.$.active": {
+    type: Boolean,
   },
   createdAt: {
     type: Date,

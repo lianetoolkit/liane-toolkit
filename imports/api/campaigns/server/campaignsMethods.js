@@ -488,7 +488,16 @@ export const campaignsFormUpdate = new ValidatedMethod({
       optional: true,
     },
     "skills.$": {
+      type: Object,
+    },
+    "skills.$.label": {
       type: String,
+    },
+    "skills.$.value": {
+      type: String,
+    },
+    "skills.$.active": {
+      type: Boolean,
     },
   }).validator(),
   run({ campaignId, ...data }) {
