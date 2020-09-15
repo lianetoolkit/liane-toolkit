@@ -34,7 +34,15 @@ const filtersSchema = new SimpleSchema({
     defaultValue: false,
     optional: true,
   },
+  campaignType: {
+    type: String,
+    optional: true,
+  },
   campaignCountry: {
+    type: String,
+    optional: true,
+  },
+  campaignGeolocation: {
     type: String,
     optional: true,
   },
@@ -69,6 +77,12 @@ const MessagesHelpers = {
     }
     if (filters.campaignCountry) {
       campaignsQuery.country = filters.campaignCountry;
+    }
+    if (filters.campaignType) {
+      campaignsQuery.type = filters.campaignType;
+    }
+    if (filters.campaignGeolocation) {
+      campaignsQuery.geolocationId = filters.campaignGeolocation;
     }
     if (filters.campaignOffice) {
       campaignsQuery.office = filters.campaignOffice;

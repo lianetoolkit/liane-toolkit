@@ -36,19 +36,19 @@ const FormContent = styled.div`
 const FieldContainer = styled.label`
   display: block;
   font-weight: normal;
-  margin: 0 0 1rem;
-  .label {
+  margin: 0 0 1.5rem;
+  .field-label {
     color: #333;
     display: block;
     font-size: 0.8em;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
   }
-  .description {
+  .field-description {
     color: #888;
     display: block;
     font-size: 0.8em;
-    margin-top: -0.25rem;
-    margin-bottom: 0.25rem;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
     font-style: italic;
   }
   .input-container {
@@ -67,6 +67,9 @@ const FieldContainer = styled.label`
     .select__control {
       border: 0;
       margin: 0;
+    }
+    textarea {
+      line-height: 1.4;
     }
     .prefix {
       flex: 0 0 auto;
@@ -223,7 +226,7 @@ const FiltersHeader = styled.div`
   flex: 1 1 100%;
   display: flex;
   align-items: center;
-    width: 100%;
+  width: 100%;
   .content {
     flex: 1 1 100%;
     h3,
@@ -281,9 +284,9 @@ class Field extends Component {
     const { label, description, children, prefix, ...props } = this.props;
     return (
       <FieldContainer {...props}>
-        <span className="label">{label}</span>
+        <span className="field-label">{label}</span>
         {description ? (
-          <span className="description">{description}</span>
+          <span className="field-description">{description}</span>
         ) : null}
         <div className="input-container">
           {prefix ? <span className="prefix">{prefix}</span> : null}

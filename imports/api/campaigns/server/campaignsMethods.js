@@ -479,6 +479,30 @@ export const campaignsFormUpdate = new ValidatedMethod({
       type: String,
       optional: true,
     },
+    "crm.donation": {
+      type: String,
+      optional: true,
+    },
+    "crm.redirect": {
+      type: String,
+      optional: true,
+    },
+    skills: {
+      type: Array,
+      optional: true,
+    },
+    "skills.$": {
+      type: Object,
+    },
+    "skills.$.label": {
+      type: String,
+    },
+    "skills.$.value": {
+      type: String,
+    },
+    "skills.$.active": {
+      type: Boolean,
+    },
   }).validator(),
   run({ campaignId, ...data }) {
     logger.debug("campaigns.formUpdate called", {
@@ -523,6 +547,12 @@ export const campaignsFormUpdate = new ValidatedMethod({
         "settings",
         "help",
         "support",
+        "transparency",
+        "form_settings",
+        "faq",
+        "comments",
+        "account",
+        "messages",
       ];
       if (
         data.slug.length < minimumLength ||
@@ -544,6 +574,10 @@ export const campaignsFormUpdate = new ValidatedMethod({
     }
     if (data.crm) {
       $set["forms.crm"] = data.crm;
+    }
+
+    if (data.skills) {
+      $set["forms.skills"] = data.skills;
     }
 
     Campaigns.update(
@@ -1325,6 +1359,7 @@ export const removeUser = new ValidatedMethod({
     }
 
     if (
+      userId &&
       Meteor.call("campaigns.userCan", {
         campaignId,
         userId,

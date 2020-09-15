@@ -1,257 +1,144 @@
 import React, { Component } from "react";
-import {
-  injectIntl,
-  intlShape,
-  defineMessages,
-  FormattedMessage
-} from "react-intl";
+import { injectIntl, intlShape, defineMessages } from "react-intl";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { debounce } from "lodash";
-
-import { alertStore } from "../containers/Alerts.jsx";
-
-import Form from "./Form.jsx";
-import Loading from "./Loading.jsx";
+import Select from "react-select";
+import moment from "moment";
+import { debounce, uniqBy } from "lodash";
 
 const messages = defineMessages({
-  searchPlaceholder: {
-    id: "app.geolocation_select.search.placeholder",
-    defaultMessage: "Search for a location..."
-  }
+  placeholder: {
+    id: "app.geolocation_select.placeholder",
+    defaultMessage: "Select a geolocation...",
+  },
 });
 
 const Container = styled.div`
-  margin: 0 0 1rem;
-  border-radius: 7px;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  .select-type {
-    display: flex;
-    justify-content: space-around;
-    label {
-      margin: 0;
+  .entry-item {
+    .message,
+    .date {
+      display: block;
     }
-  }
-  input[type="text"] {
-    margin: 1rem 0 0;
-  }
-  .results {
-    list-style: none;
-    margin: 1rem 0 0;
-    padding: 0;
-    li {
-      margin: 0 0 1px;
-      cursor: pointer;
-      outline: none;
+    .message {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-  }
-  .selected {
-    margin: -1rem;
+    .date {
+      font-size: 0.8em;
+      color: #666;
+    }
   }
 `;
 
-const GeolocationItem = styled.div`
-  padding: 1rem;
-  background: #fff;
-  border-radius: 7px;
-  .reset {
-    float: right;
-    color: #999;
-    &:hover {
-      color: #333;
-    }
-  }
-  p {
-    margin: 0;
-    &.display-name {
-      color: #999;
-      font-style: italic;
-      font-size: 0.8em;
-    }
-  }
-`;
+import { alertStore } from "../containers/Alerts.jsx";
 
 class GeolocationSelect extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      results: [],
-      search: "",
-      loading: false
+      loading: false,
+      geolocations: [],
+      options: [],
     };
   }
-  search = debounce(() => {
-    const { country } = this.props;
-    const { region, search } = this.state;
-    const query = {
-      country,
-      [region]: search
-    };
+  componentDidMount() {
     this.setState({ loading: true });
-    Meteor.call("geolocations.searchNominatim", query, (err, res) => {
-      this.setState({ loading: false });
+    Meteor.call("geolocations.search", {}, (err, res) => {
       if (err) {
         alertStore.add(err);
       } else {
         this.setState({
-          results: res.filter(
-            item => !item.address.village && !item.address.city_district
-          )
+          geolocations: res,
+          options: this._buildOptions(res),
         });
       }
+      this.setState({ loading: false });
+    });
+  }
+  _getId = (entry) => {
+    return entry._id.split("_")[1];
+  };
+  _handleInputChange = (search, { action }) => {
+    if (action == "input-change") {
+      this._fetchSearch(search);
+    }
+  };
+  _fetchSearch = debounce((search) => {
+    this.setState({ loading: true });
+    Meteor.call("geolocations.search", { search }, (err, res) => {
+      if (err) {
+        alertStore.add(err);
+      } else {
+        this.setState({
+          geolocations: res,
+          options: this._buildOptions(res),
+        });
+      }
+      this.setState({ loading: false });
     });
   }, 300);
-  matchGeolocation = (id, type, cb) => {
-    const { region } = this.state;
-    this.setState({
-      loading: true
+  _buildOptions = (geolocations) => {
+    return uniqBy(geolocations, "_id").map((geolocation) => {
+      return {
+        label: `${geolocation.name} (${geolocation.regionType})`,
+        value: geolocation._id,
+      };
     });
-    Meteor.call(
-      "geolocations.matchFromOSM",
-      { id, type, regionType: region },
-      (err, res) => {
-        this.setState({
-          loading: false
-        });
-        if (err) {
-          console.log(err);
-          alertStore.add(err);
+  };
+  _handleChange = (value) => {
+    const { onChange, name } = this.props;
+    if (onChange) {
+      onChange({ target: { name, value: value ? value.value : null } });
+    }
+  };
+  _buildValue = () => {
+    const { options } = this.state;
+    const { value } = this.props;
+    let option = null;
+    if (value && options.length) {
+      option = options.find((option) => option.value == value);
+    }
+    if (!option && value) {
+      Meteor.call(
+        "geolocations.selectGet",
+        { geolocationId: value },
+        (err, res) => {
+          if (res) {
+            this.setState({
+              geolocations: [res, ...this.state.geolocations],
+              options: this._buildOptions([res, ...this.state.geolocations]),
+            });
+          }
         }
-        if (cb && typeof cb == "function") {
-          cb(err, res);
-        }
-      }
-    );
-  };
-  _handleChange = ({ target }) => {
-    this.setState({
-      loading: true,
-      search: target.value
-    });
-    if (target.value) {
-      this.search();
-    } else {
-      this.setState({ results: [], loading: false });
+      );
     }
-  };
-  _handleRegionChange = ({ target }) => {
-    this.setState({
-      region: target.value,
-      results: []
-    });
-    if (this.state.search) {
-      this.search();
-    }
-  };
-  _handleSelect = geolocation => ev => {
-    ev.preventDefault();
-    const { onChange } = this.props;
-    const { region } = this.state;
-    this.setState({
-      selected: geolocation
-    });
-    if (onChange && typeof onChange == "function") {
-      onChange({ geolocation, type: region });
-    }
-  };
-  _handleReset = () => {
-    const { onChange } = this.props;
-    this.setState({
-      selected: null
-    });
-    if (onChange && typeof onChange == "function") {
-      onChange({ geolocation: null, type: null });
-    }
+    return option;
   };
   render() {
-    const { intl } = this.props;
-    const { loading, selected, results, region, search } = this.state;
+    const { loading, options } = this.state;
+    const { intl, name, value, placeholder } = this.props;
     return (
       <Container>
-        {selected ? (
-          <GeolocationItem className="selected">
-            <a
-              href="javascript:void(0);"
-              className="reset"
-              onClick={this._handleReset}
-            >
-              <FontAwesomeIcon icon="times" />
-            </a>
-            <p className="name">
-              {selected.namedetails.name}
-              {region == "city" ? ", " + selected.address.state : ""}
-            </p>
-            <p className="display-name">{selected.display_name}</p>
-          </GeolocationItem>
-        ) : (
-          <>
-            <div className="select-type">
-              <label>
-                <input
-                  type="radio"
-                  name="regionType"
-                  value="state"
-                  onChange={this._handleRegionChange}
-                  checked={region == "state" ? true : false}
-                />{" "}
-                <FormattedMessage
-                  id="app.geolocation_select.state.label"
-                  defaultMessage="State/Province"
-                />
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="regionType"
-                  value="city"
-                  onChange={this._handleRegionChange}
-                  checked={region == "city" ? true : false}
-                />{" "}
-                <FormattedMessage
-                  id="app.geolocation_select.city.label"
-                  defaultMessage="City"
-                />
-              </label>
-            </div>
-            {region ? (
-              <input
-                type="text"
-                placeholder={intl.formatMessage(messages.searchPlaceholder)}
-                value={search}
-                onChange={this._handleChange}
-              />
-            ) : null}
-            {results.length ? (
-              <ul className="results">
-                {results.map(item => (
-                  <li
-                    className="geolocation-item"
-                    key={item.place_id}
-                    tabIndex="-1"
-                    onClick={this._handleSelect(item)}
-                  >
-                    <GeolocationItem>
-                      <p className="name">
-                        {item.namedetails.name}
-                        {region == "city" ? ", " + item.address.state : ""}
-                      </p>
-                      <p className="display-name">{item.display_name}</p>
-                    </GeolocationItem>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-            {loading ? <Loading /> : null}
-          </>
-        )}
+        <Select
+          isLoading={loading}
+          classNamePrefix="select-search"
+          cacheOptions
+          isClearable={true}
+          placeholder={placeholder || intl.formatMessage(messages.placeholder)}
+          options={options}
+          onChange={this._handleChange}
+          onInputChange={this._handleInputChange}
+          filterOption={() => true}
+          name={name}
+          value={this._buildValue()}
+        />
       </Container>
     );
   }
 }
 
 GeolocationSelect.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(GeolocationSelect);

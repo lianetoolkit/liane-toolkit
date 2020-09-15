@@ -149,6 +149,30 @@ Campaigns.schema = new SimpleSchema({
     type: String,
     optional: true,
   },
+  "forms.crm.donation": {
+    type: String,
+    optional: true,
+  },
+  "forms.crm.redirect": {
+    type: String,
+    optional: true,
+  },
+  "forms.skills": {
+    type: Array,
+    optional: true,
+  },
+  "forms.skills.$": {
+    type: Object,
+  },
+  "forms.skills.$.label": {
+    type: String,
+  },
+  "forms.skills.$.value": {
+    type: String,
+  },
+  "forms.skills.$.active": {
+    type: Boolean,
+  },
   createdAt: {
     type: Date,
     autoValue() {

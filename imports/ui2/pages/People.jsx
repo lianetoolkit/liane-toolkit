@@ -502,12 +502,14 @@ class PeoplePage extends Component {
     modalStore.set(<PeopleExports peopleExports={peopleExports} />);
   };
   _handleNewClick = (ev) => {
-    const { intl } = this.props;
+    const { intl, campaign } = this.props;
     ev.preventDefault();
+    console.log(campaign);
     modalStore.setTitle(intl.formatMessage(messages.newPersonTitle));
     modalStore.set(
       <PersonEdit
         person={{}}
+        campaign={campaign}
         onSuccess={(res, type, data) => {
           if (type == "created") {
             modalStore.setTitle(
@@ -821,6 +823,7 @@ class PeoplePage extends Component {
             <p className="not-found">No results found.</p>
           ) : (
             <PeopleTable
+              campaign={campaign}
               tags={this.props.tags}
               people={people}
               options={options}

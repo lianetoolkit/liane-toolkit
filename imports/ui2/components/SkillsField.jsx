@@ -3,85 +3,61 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import styled from "styled-components";
-import { uniq } from "lodash";
+import { uniq, sortBy } from "lodash";
 
+import SkillsConfig, { defaultSkillsLabels } from "./SkillsConfig.jsx";
 import CreatableSelect from "react-select/creatable";
 
 const messages = defineMessages({
   placeholder: {
     id: "app.skills.placeholder",
-    defaultMessage: "Skills..."
-  }
+    defaultMessage: "Skills...",
+  },
 });
 
-export const skillsLabels = defineMessages({
-  design: {
-    id: "app.skills.design_label",
-    defaultMessage: "Design"
-  },
-  video: {
-    id: "app.skills.video_label",
-    defaultMessage: "Video"
-  },
-  event_production: {
-    id: "app.skills.event_production_label",
-    defaultMessage: "Event production"
-  },
-  editor: {
-    id: "app.skills.editor_label",
-    defaultMessage: "Writing/editing"
-  },
-  photographer: {
-    id: "app.skills.photographer_label",
-    defaultMessage: "Photography"
-  },
-  social_media: {
-    id: "app.skills.social_media_label",
-    defaultMessage: "Social media"
-  },
-  web: {
-    id: "app.skills.web_label",
-    defaultMessage: "Web development"
-  },
-  panflation: {
-    id: "app.skills.panflation_label",
-    defaultMessage: "Panflation"
+const Container = styled.div`
+  padding: 0;
+  font-size: 0.9em;
+  label {
+    font-weight: normal;
+    padding: 0.5rem 1rem;
+    margin: 0;
+    &:last-child {
+      margin: 0;
+    }
   }
-});
+  input[type="checkbox"] {
+    margin-right: 1rem;
+  }
+`;
 
 class SkillsField extends Component {
-  static defaultOptions = [
-    "design",
-    "video",
-    "event_production",
-    "editor",
-    "photographer",
-    "social_media",
-    "web",
-    "panflation"
-  ];
   constructor(props) {
     super(props);
     this.state = {
       options: [...this.getOptions()],
-      value: []
+      value: [],
     };
   }
   getOptions = () => {
-    const { intl } = this.props;
-    let options = [];
-    for (const option of SkillsField.defaultOptions) {
-      options.push({
-        label: skillsLabels[option]
-          ? intl.formatMessage(skillsLabels[option])
-          : option,
-        value: option
-      });
+    const { intl, options } = this.props;
+    let configOptions = [];
+    for (const option of options || SkillsConfig.defaultOptions) {
+      if (typeof option == "string") {
+        configOptions.push({
+          label: defaultSkillsLabels[option]
+            ? intl.formatMessage(defaultSkillsLabels[option])
+            : option,
+          value: option,
+        });
+      } else if (option.active) {
+        configOptions.push({ label: option.label, value: option.value });
+      }
     }
-    return options;
+    return sortBy(configOptions, (opt) => opt.label);
   };
   componentDidMount() {
     const { value } = this.props;
@@ -96,22 +72,17 @@ class SkillsField extends Component {
       onChange({ target: { name, value } });
     }
   }
-  _handleCreateOption = option => {
-    this.setState({
-      options: [
-        {
-          value: option,
-          label: option
-        },
-        ...this.state.options
-      ],
-      value: uniq([...this.state.value, option])
-    });
-  };
-  _handleChange = options => {
-    const { name, onChange } = this.props;
-    const value = options.map(option => option.value);
-    this.setState({ value });
+  _handleChange = ({ target }) => {
+    const { value } = this.state;
+    if (target.checked && value.indexOf(target.value) == -1) {
+      this.setState({
+        value: [...value, target.value],
+      });
+    } else if (!target.checked && value.indexOf(target.value) !== -1) {
+      this.setState({
+        value: value.filter((val) => val !== target.value),
+      });
+    }
   };
   _buildValue = () => {
     const { value } = this.state;
@@ -119,18 +90,42 @@ class SkillsField extends Component {
     const defaultOptions = this.getOptions();
     if (value && value.length) {
       for (let val of value) {
-        const fromDefault = defaultOptions.find(option => option.value == val);
+        const fromDefault = defaultOptions.find(
+          (option) => option.value == val
+        );
         builtValue.push({
           value: val,
-          label: fromDefault ? fromDefault.label : val
+          label: fromDefault ? fromDefault.label : val,
         });
       }
     }
     return builtValue;
   };
+  _isChecked = (value) => {
+    return (
+      this.state.value &&
+      this.state.value.length &&
+      this.state.value.indexOf(value) !== -1
+    );
+  };
   render() {
     const { intl, name } = this.props;
     const { options } = this.state;
+    return (
+      <Container>
+        {options.map((option) => (
+          <label key={option.value}>
+            <input
+              type="checkbox"
+              value={option.value}
+              checked={this._isChecked(option.value)}
+              onChange={this._handleChange}
+            />
+            {option.label}
+          </label>
+        ))}
+      </Container>
+    );
     return (
       <CreatableSelect
         classNamePrefix="select-search"
@@ -148,7 +143,7 @@ class SkillsField extends Component {
 }
 
 SkillsField.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(SkillsField);

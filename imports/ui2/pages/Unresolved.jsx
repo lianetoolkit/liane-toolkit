@@ -36,9 +36,13 @@ const messages = defineMessages({
     id: "app.people.unresolved.directory_label",
     defaultMessage: "People directory",
   },
+  resolvedCountLabel: {
+    id: "app.people.unresolved.resolved_count_label",
+    defaultMessage: "Do not merge",
+  },
   unresolvedCountLabel: {
     id: "app.people.unresolved.count_label",
-    defaultMessage: "Unresolved",
+    defaultMessage: "Merge",
   },
   continueLabel: {
     id: "app.people.unresolved.continue",
@@ -283,10 +287,23 @@ const Container = styled.div`
       }
     }
   }
+  .merge-options {
+    overflow: auto;
+  }
   .row-container {
     flex-direction: row;
     display: flex;
     justify-content: space-between;
+    > * {
+      min-width: 130px;
+      margin-right: 0.5rem;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+  .person-row {
+    margin: 0 0 1rem;
   }
   .unresolved-btn {
     border: 1px solid rgba(51, 0, 102, 0.25);
@@ -362,6 +379,9 @@ const showValue = (key, val, tags) => {
   if (key == "campaignMeta.basic_info.birthday") {
     return moment(val).format("DD/MM/YYYY");
   }
+  if (key == "campaignMeta.extra") {
+    return val.map((item) => `${item.key}: ${item.val}`).join(", ");
+  }
   if (typeof val === "object") return Object.values(val).join(", ");
   return val;
 };
@@ -370,15 +390,31 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
   const [, updateState] = useState();
   const forceUpdate = useCallback(() => updateState({}), []);
 
+  const parse = (person) => {
+    // Transform extra fields
+    if (
+      person.campaignMeta &&
+      person.campaignMeta.extra &&
+      Array.isArray(person.campaignMeta.extra)
+    ) {
+      const extra = {};
+      for (const extraItem of person.campaignMeta.extra) {
+        extra[extraItem.key] = extraItem.val;
+      }
+      person.campaignMeta.extra = extra;
+    }
+    return person;
+  };
+
   //
   const [view, setView] = useState("list");
 
   const sections = Meta.getSections();
   //Join the person and its related ones
   let persons = [];
-  persons.push(person);
+  persons.push(parse(person));
   person.children.map((child) => {
-    persons.push(child);
+    persons.push(parse(child));
   });
   const counter = persons.length;
   // Adding an extra person for the final column
@@ -391,15 +427,14 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
   const labels = {};
   /* Loop on Sections > Fields > Persons  */
   sections.map((section, i) => {
-    const fields = Meta.getList(section);
+    const fields = Meta.getList(section, persons);
     fields.map((field) => {
       const { key, name } = Meta.get(section, field);
       let newField = [];
       persons.map((el, index) => {
-        let newValue = (value = Object.byString(el, key));
+        let newValue = Object.byString(el, key);
         if (newValue && newField.length == 0) {
           newField.push(newValue);
-          // console.log(Meta.getLabel(section, name))
           if (Meta.getLabel(section, name).id) {
             labels[key] = intl.formatMessage(Meta.getLabel(section, name));
           } else {
@@ -455,7 +490,6 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
     });
 
     // Send
-
     Meteor.call("people.merge.unresolved", data, (err, res) => {
       if (err) {
         alertStore.add(err);
@@ -549,7 +583,7 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
         })}
 
         <div
-          className=" row-container"
+          className="row-container"
           style={{ flex: 2, borderTop: "1px solid #ddd", paddingTop: 10 }}
         >
           <a
@@ -574,9 +608,9 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
   }
   return (
     <Container>
-      <div>
+      <div className="merge-options">
         <div
-          className="row-container"
+          className="row-container person-row"
           style={{
             flex: counter,
           }}
@@ -616,17 +650,31 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
                     forceUpdate();
                   }}
                 >
-                  {intl.formatMessage(messages.unresolvedCountLabel)} #{i + 1}{" "}
-                  &nbsp;
-                  {!activePersons[i] ? <Badge>Resolved</Badge> : null}
+                  {!activePersons[i]
+                    ? intl.formatMessage(messages.resolvedCountLabel)
+                    : intl.formatMessage(messages.unresolvedCountLabel)}{" "}
+                  #{i + 1}
                 </a>
               </div>
             );
           })}
         </div>
+        <p>
+          <FormattedMessage
+            id="app.people.unresolved.instruction_01"
+            defaultMessage="If a person does not belong in this merge, click on the respective
+          button above to preserve their data and exclude them from this action."
+          />
+        </p>
+        <p>
+          <FormattedMessage
+            id="app.people.unresolved.instruction_02"
+            defaultMessage="Select the fields below to choose which data should be unified."
+          />
+        </p>
         {sections.map((section, i) => {
           if (!sectionsToShow.includes(section)) return null;
-          const fields = Meta.getList(section);
+          const fields = Meta.getList(section, persons);
           return (
             <>
               <h3 key={`section-${i}`}>
@@ -635,10 +683,11 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
 
               {fields.map((field) => {
                 const { key, name, type } = Meta.get(section, field);
-                if (!fieldsToShow.includes(key)) return null;
+                if (!fieldsToShow.includes(key) && section != "extra")
+                  return null;
                 return (
                   <>
-                    <div className="label">{labels[key]}</div>
+                    <div className="label">{labels[key] || name}</div>
                     <div
                       className="row-container"
                       style={{

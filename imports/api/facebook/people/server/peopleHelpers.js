@@ -294,7 +294,7 @@ const PeopleHelpers = {
             .join(",");
           delete person.basic_info.tags;
         }
-        if (!Object.keys(person.basic_info).length) {
+        if (person.basic_info && !Object.keys(person.basic_info).length) {
           delete person.basic_info;
         }
       }
@@ -516,16 +516,19 @@ const PeopleHelpers = {
     });
     setTimeout(
       Meteor.bindEnvironment(() => {
+        let i = 0;
         for (let person of importData) {
           JobsHelpers.addJob({
             jobType: "people.importPerson",
             jobData: {
+              idx: i,
               campaignId,
               jobId: job,
               listId,
               person: JSON.stringify(person),
             },
           });
+          i++;
         }
       }),
       10

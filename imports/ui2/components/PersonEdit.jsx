@@ -174,6 +174,10 @@ class PersonEdit extends Component {
       },
     });
   };
+  _getSkillsOptions = () => {
+    const { campaign } = this.props;
+    return get(campaign, "forms.skills");
+  };
   _handleSubmit = (ev) => {
     ev.preventDefault();
     const { onSuccess, onError } = this.props;
@@ -376,6 +380,7 @@ class PersonEdit extends Component {
                 <SkillsField
                   name="basic_info.skills"
                   onChange={this._handleChange}
+                  options={this._getSkillsOptions()}
                   value={formData.basic_info.skills}
                 />
               </Form.Field>

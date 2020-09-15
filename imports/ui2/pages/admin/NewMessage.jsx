@@ -13,9 +13,12 @@ import Select from "react-select";
 import { languages } from "/locales";
 import OrLine from "/imports/ui2/components/OrLine.jsx";
 import CountrySelect from "/imports/ui2/components/CountrySelect.jsx";
+import GeolocationSelect from "/imports/ui2/components/GeolocationSelect.jsx";
 import CampaignSelect from "/imports/ui2/components/CampaignSelect.jsx";
+import CampaignTypeSelect from "/imports/ui2/components/CampaignTypeSelect.jsx";
 import UserSelect from "/imports/ui2/components/UserSelect.jsx";
 import OfficeField from "/imports/ui2/components/OfficeField.jsx";
+import RegionSelect from "/imports/ui2/components/RegionSelect.jsx";
 import Loading from "/imports/ui2/components/Loading.jsx";
 
 import { alertStore } from "/imports/ui2/containers/Alerts.jsx";
@@ -361,11 +364,27 @@ class NewMessagePage extends Component {
                   Send to campaign admins only
                 </label>
               </Form.Field>
+              <Form.Field label="Campaign type">
+                <CampaignTypeSelect
+                  name="campaignType"
+                  clearable={true}
+                  value={filters.campaignType}
+                  onChange={this._handleChange}
+                />
+              </Form.Field>
               <Form.Field label="Country">
                 <CountrySelect
                   name="campaignCountry"
                   clearable={true}
                   value={filters.campaignCountry}
+                  onChange={this._handleChange}
+                />
+              </Form.Field>
+              <Form.Field label="Geolocation">
+                <GeolocationSelect
+                  name="campaignGeolocation"
+                  clearable={true}
+                  value={filters.campaignGeolocation}
                   onChange={this._handleChange}
                 />
               </Form.Field>

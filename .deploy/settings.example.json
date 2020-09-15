@@ -27,5 +27,6 @@
       "admins": ["contact@example.com"]
     },
     "admins": ["contact@example.com"]
-  }
+  },
+  "sentry": "<OPTIONAL SENTRY DSN URL>"
 }

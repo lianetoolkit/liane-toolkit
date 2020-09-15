@@ -115,8 +115,10 @@ Meteor.publishComposite("campaigns.publicDetail", function ({
           office: 1,
           cause: 1,
           country: 1,
+          "facebookAccount.facebookId": 1,
           "forms.slug": 1,
           "forms.crm": 1,
+          "forms.skills": 1,
         },
       });
     },

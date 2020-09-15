@@ -699,10 +699,14 @@ export const peopleSendPrivateReply = new ValidatedMethod({
 
     try {
       response = Promise.await(
-        FB.api(`${comment._id}/private_replies`, "POST", {
+        FB.api("me/messages", "POST", {
           access_token: campaignAccount.accessToken,
-          id: comment._id,
-          message: parseMessage(message),
+          recipient: {
+            comment_id: comment._id,
+          },
+          message: {
+            text: parseMessage(message),
+          },
         })
       );
     } catch (error) {
@@ -936,7 +940,6 @@ export const peopleFormId = new ValidatedMethod({
   },
 });
 
-
 export const peopleCreate = new ValidatedMethod({
   name: "people.create",
   validate: new SimpleSchema({
@@ -946,7 +949,6 @@ export const peopleCreate = new ValidatedMethod({
     name: {
       type: String,
     },
-
   }).validator(),
   run({ campaignId, name }) {
     logger.debug("people.create called", { campaignId, name });
@@ -1331,7 +1333,12 @@ export const mergeUnresolvedPeople = new ValidatedMethod({
     },
   }).validator(),
   run({ campaignId, update, remove, resolve }) {
-    logger.debug("people.merge.unresolved", { campaignId, update, remove, resolve });
+    logger.debug("people.merge.unresolved", {
+      campaignId,
+      update,
+      remove,
+      resolve,
+    });
 
     const userId = Meteor.userId();
     if (
@@ -1346,9 +1353,9 @@ export const mergeUnresolvedPeople = new ValidatedMethod({
     }
     // Update Resolve
     const $set = {
-      unresolved: false
-    }
-    resolve.map(personId => {
+      unresolved: false,
+    };
+    resolve.map((personId) => {
       People.update(
         {
           _id: personId,
@@ -1357,24 +1364,42 @@ export const mergeUnresolvedPeople = new ValidatedMethod({
           $set,
         }
       );
-    })
+    });
     // Update
     let $updateSet = {
       unresolved: false,
-    }
+    };
+    let $updatePush = {};
+    const extra = [];
     update.fields.map(({ field, id }) => {
       if (id != update.id) {
         const valueFrom = People.findOne(id);
-        $updateSet[field] = Object.byString(valueFrom, field);
+        if (field.indexOf("campaignMeta.extra") == 0) {
+          const extraKey = field.split("campaignMeta.extra.")[1];
+          extra.push({
+            key: extraKey,
+            val: valueFrom.campaignMeta.extra.find(
+              (item) => item.key == extraKey
+            ).val,
+          });
+        } else {
+          $updateSet[field] = Object.byString(valueFrom, field);
+        }
       }
-    })
+    });
+    if (extra.length) {
+      $updatePush["campaignMeta.extra"] = {
+        $each: extra,
+      };
+    }
     People.update(
       {
-        _id: update.id
+        _id: update.id,
       },
       {
         $set: $updateSet,
-        $unset: { related: [] }
+        $push: $updatePush,
+        $unset: { related: [] },
       }
     );
     // Delete
