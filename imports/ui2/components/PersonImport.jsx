@@ -224,9 +224,22 @@ class ImportButton extends React.Component {
     this.setState({ loading: true });
     let file = ev.currentTarget.files[0];
     const reader = new FileReader();
+    const fileExtension = file.name.replace(/^.*\./, "");
+    let readType;
+    if (fileExtension.match(/csv|txt/)) {
+      readType = "text";
+      reader.readAsText(file);
+    } else {
+      readType = "arrayBuffer";
+      reader.readAsArrayBuffer(file);
+    }
     reader.onload = () => {
-      let bytes = new Uint8Array(reader.result);
-      const wb = XLSX.read(bytes, { type: "array" });
+      let wb;
+      if (readType == "arrayBuffer") {
+        wb = XLSX.read(new Uint8Array(reader.result), { type: "array" });
+      } else if (readType == "text") {
+        wb = XLSX.read(reader.result, { type: "string" });
+      }
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(sheet);
       if (json.length > 10000) {
@@ -242,7 +255,6 @@ class ImportButton extends React.Component {
       this.importInput.value = null;
       this.importInput.dispatchEvent(new Event("input", { bubbles: true }));
     };
-    reader.readAsArrayBuffer(file);
   };
   _handleImportSubmit = (err, res) => {
     const { intl } = this.props;
