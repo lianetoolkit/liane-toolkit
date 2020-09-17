@@ -97,6 +97,9 @@ const Header = styled.header`
       }
     }
   }
+  @media (max-width: 770px) {
+    padding: 1rem;
+  }
 `;
 
 const Container = styled.div`
@@ -150,6 +153,16 @@ const Container = styled.div`
   }
   .button {
     margin: 0;
+  }
+  @media (max-width: 770px) {
+    margin: 4rem 1rem 0;
+    form {
+      padding: 1rem;
+      margin: 2rem -1rem 0;
+      border-left: 0;
+      border-right: 0;
+      border-radius: 0;
+    }
   }
 `;
 

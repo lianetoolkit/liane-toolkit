@@ -255,7 +255,6 @@ const PeopleJobs = {
         logger.error(error);
         job.fail(error.message);
       } finally {
-        console.log("final", person);
         const parentJob = Jobs.getJob(job.data.jobId);
         updateImportJob(parentJob, job._doc._id);
         if (!errored) {
