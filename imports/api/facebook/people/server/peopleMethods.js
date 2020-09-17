@@ -1650,26 +1650,26 @@ export const peopleFormSubmit = new ValidatedMethod({
       }
     }
 
-    // if (!(formId || facebookId) && recaptchaSecret) {
-    //   // if (recaptcha) {
-    //   const res = Promise.await(
-    //     axios.request({
-    //       url: "https://www.google.com/recaptcha/api/siteverify",
-    //       headers: { "content-type": "application/x-www-form-urlencoded" },
-    //       method: "post",
-    //       params: {
-    //         secret: recaptchaSecret,
-    //         response: recaptcha,
-    //       },
-    //     })
-    //   );
-    //   if (!res.data.success) {
-    //     throw new Meteor.Error(400, "Invalid recaptcha");
-    //   }
-    //   // } else {
-    //   //   throw new Meteor.Error(400, "Make sure you are not a robot");
-    //   // }
-    // }
+    if (!(formId || facebookId) && recaptchaSecret) {
+      if (recaptcha) {
+        const res = Promise.await(
+          axios.request({
+            url: "https://www.google.com/recaptcha/api/siteverify",
+            headers: { "content-type": "application/x-www-form-urlencoded" },
+            method: "post",
+            params: {
+              secret: recaptchaSecret,
+              response: recaptcha,
+            },
+          })
+        );
+        if (!res.data.success) {
+          throw new Meteor.Error(400, "Invalid recaptcha");
+        }
+      } else {
+        throw new Meteor.Error(400, "Make sure you are not a robot");
+      }
+    }
 
     if (data.address) {
       let location;
