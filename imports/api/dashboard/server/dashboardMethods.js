@@ -172,7 +172,7 @@ export const funnelData = new ValidatedMethod({
 
         let funnelData = redisClient.getSync(redisKey);
 
-        if (!funnelData || true) {
+        if (!funnelData) {
 
             const totalPeople = People.find({
                 campaignId
@@ -228,74 +228,150 @@ export const chartsData = new ValidatedMethod({
         }
         const campaign = Campaigns.findOne(campaignId);
         const facebookAccountId = campaign.facebookAccount.facebookId;
-        // const redisKey = `dashboard.${facebookAccountId}.chartsData`;
-        let chartsData = {};
+        const redisKey = `dashboard.${facebookAccountId}.chartsData`;
 
-        // 1 Top reactioners 
-        let topReactioners = Promise.await(
-            rawLikes
-                .aggregate([
-                    {
-                        $match: {
-                            facebookAccountId: facebookAccountId,
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: "$personId",
-                            name: { $first: "$name" },
-                            counts: { $sum: 1 },
+        let chartsData = redisClient.getSync(redisKey);
+
+        if (!chartsData) {
+
+            const oneDay = 24 * 60 * 60 * 1000;
+            let fromDatePeople = new Date(campaign.createdAt);
+            let fromDateReactions = new Date(campaign.createdAt);
+            fromDatePeople.setDate(fromDatePeople.getDate() + 1);
+            fromDateReactions.setDate(fromDateReactions.getDate() + 1);
+
+            let toDate = new Date();
+            toDate.setDate(toDate.getDate() - 1);
+
+            const diffDays = Math.ceil(
+                Math.abs((fromDatePeople.getTime() - toDate.getTime()) / oneDay)
+            );
+            if (diffDays <= 4) {
+                return { total, history };
+            }
+            //? Do we add a fixed amount of days or we give start and end as params?
+            // if (diffDays > 14) {
+            //     fromDate = new Date();
+            //     fromDate.setDate(fromDate.getDate() - 15);
+            // }
+
+            // 1 Top reactioners 
+            let topReactioners = Promise.await(
+                rawLikes
+                    .aggregate([
+                        {
+                            $match: {
+                                facebookAccountId: facebookAccountId,
+                            }
                         },
-                    },
-                    {
-                        $project: {
-                            name: "$name",
-                            total: "$counts",
+                        {
+                            $group: {
+                                _id: "$personId",
+                                name: { $first: "$name" },
+                                counts: { $sum: 1 },
+                            },
                         },
-                    },
-                    { $sort: { total: -1 } }
-                ])
-                .toArray()
-        );
-        topReactioners = topReactioners.filter(e => e._id !== facebookAccountId)
-
-        // 2 Top Commentes 
-
-        let topCommenters = Promise.await(
-            rawComments
-                .aggregate([
-                    {
-                        $match: {
-                            facebookAccountId: facebookAccountId,
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: "$personId",
-                            name: { $first: "$name" },
-                            counts: { $sum: 1 },
+                        {
+                            $project: {
+                                name: "$name",
+                                total: "$counts",
+                            },
                         },
-                    },
-                    {
-                        $project: {
-                            name: "$name",
-                            total: "$counts",
+                        { $sort: { total: -1 } }
+                    ])
+                    .toArray()
+            );
+            topReactioners = topReactioners.filter(e => e._id !== facebookAccountId)
+
+            // 2 Top Commentes 
+
+            let topCommenters = Promise.await(
+                rawComments
+                    .aggregate([
+                        {
+                            $match: {
+                                facebookAccountId: facebookAccountId,
+                            }
                         },
-                    },
-                    { $sort: { total: -1 } }
-                ])
-                .toArray()
-        );
-        topCommenters = topCommenters.filter(e => e._id !== facebookAccountId)
+                        {
+                            $group: {
+                                _id: "$personId",
+                                name: { $first: "$name" },
+                                counts: { $sum: 1 },
+                            },
+                        },
+                        {
+                            $project: {
+                                name: "$name",
+                                total: "$counts",
+                            },
+                        },
+                        { $sort: { total: -1 } }
+                    ])
+                    .toArray()
+            );
+            topCommenters = topCommenters.filter(e => e._id !== facebookAccountId)
 
-        // 3 Data Incoming from Facebook by date
+            // 3 Data Incoming from Facebook by date
 
-        // 4 Reactions + Comments on Facebook by Date
+            let peopleHistory = {};
+            let total = 0;
 
-        return {
-            topReactioners,
-            topCommenters
-        };
+            for (let d = fromDatePeople; d <= toDate; d.setDate(d.getDate() + 1)) {
+                const formattedDate = moment(d).format("YYYY-MM-DD");
+                if (!peopleHistory.hasOwnProperty(formattedDate)) {
+                    peopleHistory[formattedDate] = People.find({
+                        campaignId,
+                        source: "facebook",
+                        createdAt: {
+                            $gte: moment(formattedDate).toDate(),
+                            $lte: moment(formattedDate).add(1, "day").toDate(),
+                        },
+                    }).count();
+                }
+            }
+
+            ;        // 4 Reactions + Comments on Facebook by Date
+            let interactionHistory = {};
+            console.log('interactionHistory >> ', fromDateReactions, toDate)
+            for (let i = fromDateReactions; i <= toDate; i.setDate(i.getDate() + 1)) {
+
+                const formattedDate = moment(i).format("YYYY-MM-DD");
+                if (!interactionHistory.hasOwnProperty(formattedDate)) {
+                    interactionHistory[formattedDate] = {};
+                    // Comments
+                    interactionHistory[formattedDate]['comments'] = Comments.find({
+                        facebookAccountId,
+                        createdAt: {
+                            $gte: moment(formattedDate).toDate(),
+                            $lte: moment(formattedDate).add(1, "day").toDate(),
+                        },
+                    }).count();
+
+                    // Reactions
+                    interactionHistory[formattedDate]['reactions'] = { total: 0 }
+                    const reactions = Likes.find({
+                        facebookAccountId,
+                        createdAt: {
+                            $gte: moment(formattedDate).toDate(),
+                            $lte: moment(formattedDate).add(1, "day").toDate(),
+                        },
+                    });
+
+                    interactionHistory[formattedDate]['reactions'].total = reactions.count()
+                    reactions.map(e => {
+                        interactionHistory[formattedDate]['reactions'][e.type] ? interactionHistory[formattedDate]['reactions'][e.type]++ : interactionHistory[formattedDate]['reactions'][e.type] = 1
+                    })
+                }
+            }
+            chartsData = {
+                topReactioners,
+                topCommenters,
+                peopleHistory,
+                interactionHistory
+            }
+        }
+        return chartsData;
     },
 });
 
