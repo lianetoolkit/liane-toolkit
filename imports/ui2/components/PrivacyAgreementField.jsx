@@ -5,6 +5,7 @@ import {
   intlShape,
   defineMessages,
   FormattedMessage,
+  FormattedHTMLMessage,
 } from "react-intl";
 
 const Container = styled.div`
@@ -19,7 +20,7 @@ const Container = styled.div`
       margin: 0;
     }
   }
-  span {
+  > span {
     display: block;
     padding: 1rem 0;
   }
@@ -43,7 +44,16 @@ class PrivacyAgreementField extends Component {
         <label>
           <input type="checkbox" />
         </label>
-        <span>I have read and agree with the privacy policy and the terms of use.</span>
+        <span>
+          <FormattedHTMLMessage
+            id="app.privacy_field.label"
+            defaultMessage="I have read and agree with the <a href='{privacyUrl}' rel='external' target='_blank'>privacy policy</a> and the <a href='{termsUrl}' target='_blank' rel='external'>terms of use</a>."
+            values={{
+              privacyUrl: Meteor.settings.public.privacyUrl,
+              termsUrl: Meteor.settings.public.termsUrl,
+            }}
+          />
+        </span>
       </Container>
     );
   }

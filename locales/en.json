@@ -628,6 +628,7 @@
   "app.people_form.welcome_anonymous": "Hi!",
   "app.people_form.welcome_logged_in": "Hi {name}!",
   "app.person_not_found": "Person not found",
+  "app.privacy_field.label": "I have read and agree with the <a href='{privacyUrl}' rel='external' target='_blank'>privacy policy</a> and the <a href='{termsUrl}' target='_blank' rel='external'>terms of use</a>.",
   "app.privacy_policy": "Privacy Policy",
   "app.refresh_message": "Click here to refresh the page",
   "app.registration.alerts.email": "You must set an email",
