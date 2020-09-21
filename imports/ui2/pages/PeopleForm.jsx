@@ -36,6 +36,8 @@ import Loading from "../components/Loading.jsx";
 import Button from "../components/Button.jsx";
 import Form from "../components/Form.jsx";
 import CountryExclusive from "../components/CountryExclusive.jsx";
+import Disclaimer from "../components/Disclaimer.jsx";
+import PrivacyAgreementField from "../components/PrivacyAgreementField.jsx";
 
 const recaptchaSiteKey = Meteor.settings.public.recaptcha;
 
@@ -561,7 +563,7 @@ class PeopleForm extends Component {
                       {/* <Divider hidden /> */}
                     </div>
                   ) : null}
-                  <p className="policy">
+                  {/* <p className="policy">
                     <CountryExclusive
                       country="CO"
                       defaultContent={
@@ -586,7 +588,39 @@ class PeopleForm extends Component {
                         </a>
                       </span>
                     </CountryExclusive>
-                  </p>
+                  </p> */}
+                  <div className="policy">
+                    <PrivacyAgreementField />
+                    <Disclaimer type="security">
+                      <p>
+                        <strong>
+                          <FormattedMessage
+                            id="app.people_form.disclaimer"
+                            defaultMessage="The data sent through this form is for exclusive use by {campaign} campaign and its authorized team."
+                            values={{
+                              campaign: campaign.name,
+                            }}
+                          />
+                        </strong>
+                      </p>
+                      <p>
+                        For more information contact the campaign at{" "}
+                        <strong>{campaign.contact.email}</strong> or our support
+                        team at{" "}
+                        <strong>{Meteor.settings.public.contactEmail}</strong>.
+                        We also invite you to visit{" "}
+                        <a
+                          href="https://www.liane.voto/faqs/"
+                          target="_blank"
+                          rel="external"
+                        >
+                          this page
+                        </a>{" "}
+                        for further details regarding our views and practices
+                        for data security and privacy.
+                      </p>
+                    </Disclaimer>
+                  </div>
                   <input
                     type="submit"
                     value={intl.formatMessage(messages.sendLabel)}

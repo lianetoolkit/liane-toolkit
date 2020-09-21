@@ -70,6 +70,7 @@ class CampaignSettingsPage extends Component {
       formData: {
         campaignId: "",
         name: "",
+        contact: {},
       },
     };
   }
@@ -82,9 +83,11 @@ class CampaignSettingsPage extends Component {
           candidate: "",
           party: "",
           cause: "",
+          contact: {},
         },
       };
     } else if (campaign._id !== formData.campaignId) {
+      console.log(campaign);
       return {
         formData: {
           campaignId: campaign._id,
@@ -92,6 +95,7 @@ class CampaignSettingsPage extends Component {
           candidate: campaign.candidate,
           party: campaign.party,
           cause: campaign.cause,
+          contact: campaign.contact,
         },
       };
     }
@@ -207,6 +211,23 @@ class CampaignSettingsPage extends Component {
                 />
               </Form.Field>
             ) : null}
+            <h3>Contact information</h3>
+            <Form.Field label="Public email">
+              <input
+                type="text"
+                name="contact.email"
+                value={this.getValue("contact.email")}
+                onChange={this._handleChange}
+              />
+            </Form.Field>
+            <Form.Field label="Public phone number" optional>
+              <input
+                type="text"
+                name="contact.phone"
+                value={this.getValue("contact.phone")}
+                onChange={this._handleChange}
+              />
+            </Form.Field>
           </Form.Content>
           <Form.Actions>
             <input

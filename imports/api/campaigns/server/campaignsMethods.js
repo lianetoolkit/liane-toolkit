@@ -617,6 +617,9 @@ export const campaignsUpdate = new ValidatedMethod({
       type: String,
       optional: true,
     },
+    contact: {
+      type: Campaigns.contactSchema,
+    },
   }).validator(),
   run({ campaignId, ...data }) {
     logger.debug("campaigns.update called", {
@@ -669,6 +672,10 @@ export const campaignsUpdate = new ValidatedMethod({
         throw new Meteor.Error(400, "You must have a cause");
       }
       $set.cause = data.cause;
+    }
+
+    if (data.contact) {
+      $set["contact"] = data.contact;
     }
 
     Campaigns.update(
