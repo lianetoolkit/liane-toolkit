@@ -81,6 +81,7 @@ export const createMessage = new ValidatedMethod({
         subject: email.subject,
         body: email.body,
         data: { user },
+        tag: "message",
       });
     });
 

@@ -253,6 +253,7 @@
   "app.email.footer.contact_us": "no dudes en contactatarnos en {email}!",
   "app.email.footer.do_not_reply": "No conteste este email",
   "app.email.intro": "Hola, {name}!",
+  "app.email.message_link_text": "Click here to access this message in Liane",
   "app.email.notification.title": "Tienes una nueva notificación",
   "app.email.notification_button_label": "Ver más",
   "app.email.reset_password.button_label": "Solicitud de recuperación de contraseña",
