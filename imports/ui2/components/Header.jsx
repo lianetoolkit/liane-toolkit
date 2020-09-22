@@ -95,7 +95,7 @@ const TopNav = styled.nav`
       }
     }
   }
-  ${props =>
+  ${(props) =>
     props.full &&
     css`
       font-size: 0.8em;
@@ -109,7 +109,7 @@ const TopNav = styled.nav`
 `;
 
 export default class Header extends Component {
-  _handleLanguageClick = language => ev => {
+  _handleLanguageClick = (language) => (ev) => {
     ev.preventDefault();
     const user = Meteor.user();
     ClientStorage.set("language", language);
@@ -136,7 +136,9 @@ export default class Header extends Component {
               <a href={FlowRouter.path("App.dashboard")}>
                 <img
                   src={
-                    campaign ? "/images/logo_icon_44.png" : "/images/logo_w_44.png"
+                    campaign
+                      ? "/images/logo_icon_44.png"
+                      : "/images/logo_w_44.png"
                   }
                   alt="Liane"
                 />
@@ -150,6 +152,9 @@ export default class Header extends Component {
               rel="external"
             >
               Instituto Update
+            </a>
+            <a href="https://support.liane.voto" target="_blank" rel="external">
+              <FormattedMessage id="app.support" defaultMessage="Support" />
             </a>
             <a
               href="https://files.liane.cc/legal/terms_of_use_v1_pt-br.pdf"
