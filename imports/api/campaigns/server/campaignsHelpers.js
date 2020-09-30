@@ -144,6 +144,11 @@ const CampaignsHelpers = {
       token: token.result,
     });
 
+    FacebookAccountsHelpers.updateInstagramBusinessAccountId({
+      facebookId: account.id,
+      token: token.result,
+    });
+
     Campaigns.update(
       { _id: campaignId },
       { $set: { facebookAccount: updateObj } }
@@ -200,6 +205,11 @@ const CampaignsHelpers = {
     // Facebook subscription
     FacebookAccountsHelpers.updateFBSubscription({
       facebookAccountId: account.id,
+      token: token.result,
+    });
+
+    FacebookAccountsHelpers.updateInstagramBusinessAccountId({
+      facebookId: account.id,
       token: token.result,
     });
 

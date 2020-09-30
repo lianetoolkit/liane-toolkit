@@ -8,6 +8,14 @@ FacebookAccounts.schema = new SimpleSchema({
     index: true,
     unique: true
   },
+  instagramBusinessAccountId: {
+    type: String,
+    optional: true
+  },
+  instagramHandle: {
+    type: String,
+    optional: true
+  },
   name: {
     type: String
   },

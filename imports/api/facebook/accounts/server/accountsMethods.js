@@ -34,68 +34,109 @@ export const webhookUpdate = new ValidatedMethod({
     if (WEBHOOK_TOKEN !== token) {
       throw new Meteor.Error("Invalid token");
     }
-    // Validate facebook account
-    const account = FacebookAccounts.findOne({ facebookId: facebookAccountId });
-    if (!account) {
-      // TODO Unsuscribe from `subscribed_apps`
-      logger.debug("webhookUpdate received unknown Facebook Account ID");
-      return true;
-    } else {
-      logger.debug("facebook.accounts.webhook.update called", {
-        facebookAccountId,
-        data,
-      });
-    }
-    data.entry.forEach((entry) => {
-      if (entry.changes) {
-        entry.changes.forEach((item) => {
-          switch (item.value.item) {
-            case "comment":
-              CommentsHelpers.handleWebhook({
-                facebookAccountId,
-                data: item.value,
-              });
-              break;
-            case "reaction":
-              LikesHelpers.handleWebhook({
-                facebookAccountId,
-                data: item.value,
-                time: entry.time,
-              });
-              break;
-            case "album":
-            case "address":
-            case "coupon":
-            case "event":
-            case "experience":
-            case "group":
-            case "group_message":
-            case "interest":
-            case "link":
-            case "milestone":
-            case "note":
-            case "page":
-            case "picture":
-            case "platform-story":
-            case "photo":
-            case "photo-album":
-            case "post":
-            case "question":
-            case "share":
-            case "status":
-            case "story":
-            case "tag":
-            case "video":
-              EntriesHelpers.handleWebhook({
-                facebookAccountId,
-                data: item.value,
-              });
-              break;
-            default:
+    let account;
+    switch (data.object) {
+      case 'instagram':
+        logger.debug("webhookUpdate called with instagram data.object", {
+          facebookAccountId,
+          data,
+        });
+        
+        // Validate account
+        account = FacebookAccounts.findOne({ instagramBusinessAccountId: facebookAccountId });
+        if (!account) {
+          logger.debug("webhookUpdate received an unknown instagramBusinessAccountId", {
+            facebookAccountId
+          });
+          return true;
+        }
+        data.entry.forEach((entry) => {
+          if (entry.changes) {
+            entry.changes.forEach((item) => {
+              switch (item.field) {
+                case "comments":
+                  logger.debug("webhookUpdate processing comments");
+                  CommentsHelpers.handleInstagramWebhook({
+                    instagramBusinessAccountId: facebookAccountId,
+                    data: item.value,
+                  });
+                  break;
+                case "story_insights":
+                  logger.debug("webhookUpdate processing story_insights");
+                  // WHAT SHOULD WE DO HERE ??
+                  break;
+                default:
+                  logger.debug("webhookUpdate received an unknown field");
+                  break;
+              }
+            });
           }
         });
-      }
-    });
+        break;
+      default: // By default is "page"
+        logger.debug("webhookUpdate called with facebook data.object", {
+          facebookAccountId,
+          data,
+        });
+        // Validate facebook account
+        account = FacebookAccounts.findOne({ facebookId: facebookAccountId });
+        if (!account) {
+          // TODO Unsuscribe from `subscribed_apps`
+          logger.debug("webhookUpdate received unknown Facebook Account ID");
+          return true;
+        }
+        data.entry.forEach((entry) => {
+          if (entry.changes) {
+            entry.changes.forEach((item) => {
+              switch (item.value.item) {
+                case "comment":
+                  CommentsHelpers.handleWebhook({
+                    facebookAccountId,
+                    data: item.value,
+                  });
+                  break;
+                case "reaction":
+                  LikesHelpers.handleWebhook({
+                    facebookAccountId,
+                    data: item.value,
+                    time: entry.time,
+                  });
+                  break;
+                case "album":
+                case "address":
+                case "coupon":
+                case "event":
+                case "experience":
+                case "group":
+                case "group_message":
+                case "interest":
+                case "link":
+                case "milestone":
+                case "note":
+                case "page":
+                case "picture":
+                case "platform-story":
+                case "photo":
+                case "photo-album":
+                case "post":
+                case "question":
+                case "share":
+                case "status":
+                case "story":
+                case "tag":
+                case "video":
+                  EntriesHelpers.handleWebhook({
+                    facebookAccountId,
+                    data: item.value,
+                  });
+                  break;
+                default:
+              }
+            });
+          }
+        });
+        break;
+    }
     return true;
   },
 });

@@ -430,6 +430,10 @@ class PeoplePage extends Component {
         label: "Facebook",
       },
       {
+        value: "instagram",
+        label: "Instagram",
+      },
+      {
         value: "manual",
         label: intl.formatMessage(messages.manualLabel),
       },
@@ -468,6 +472,9 @@ class PeoplePage extends Component {
       switch (true) {
         case /facebook/.test(query.source):
           value.label = "Facebook";
+          break;
+        case /instagram/.test(query.source):
+          value.label = "Instagram";
           break;
         case /import/.test(query.source):
           value.label = intl.formatMessage(messages.anyImportLabel);

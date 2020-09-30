@@ -17,6 +17,7 @@ import PageFilters from "../components/PageFilters.jsx";
 import PagePaging from "../components/PagePaging.jsx";
 import Button from "../components/Button.jsx";
 import EntrySelect from "../components/EntrySelect.jsx";
+import CommentSourceSelect from "../components/CommentSourceSelect.jsx";
 import CommentList from "../components/CommentList.jsx";
 
 const messages = defineMessages({
@@ -27,6 +28,10 @@ const messages = defineMessages({
   postFilter: {
     id: "app.comments.entry_select_placeholder",
     defaultMessage: "Filter by post..."
+  },
+  commentSourceFilter: {
+    id: "app.comments.entry_select_placeholder",
+    defaultMessage: "Filter by source..."
   }
 });
 
@@ -219,6 +224,14 @@ class CommentsPage extends Component {
                     onChange={this._handleChange}
                     value={FlowRouter.getQueryParam("entry")}
                     placeholder={intl.formatMessage(messages.postFilter)}
+                  />
+                </Form.Field>
+                <Form.Field>
+                  <CommentSourceSelect
+                    name="source"
+                    onChange={this._handleChange}
+                    value={FlowRouter.getQueryParam("source")}
+                    placeholder={intl.formatMessage(messages.commentSourceFilter)}
                   />
                 </Form.Field>
                 <PageFilters.Category hiddenInput>

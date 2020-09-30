@@ -27,6 +27,7 @@ import PersonMetaButtons, {
 import PersonSummary from "./PersonSummary.jsx";
 import PersonReactions from "./PersonReactions.jsx";
 import PersonEdit from "./PersonEdit.jsx";
+import PersonSocialNetworkIcons from "./PersonSocialNetworkIcons.jsx";
 import PersonContactIcons from "./PersonContactIcons.jsx";
 import PersonTags from "./PersonTags.jsx";
 import Reply from "./Reply.jsx";
@@ -459,6 +460,12 @@ class PeopleTable extends Component {
                 </Table.SortableHead>
                 <th>
                   <FormattedMessage
+                    id="app.people.table_header.social_networks"
+                    defaultMessage="Social Networks"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
                     id="app.people.table_header.contact"
                     defaultMessage="Contact"
                   />
@@ -571,6 +578,9 @@ class PeopleTable extends Component {
                   <td className="small icon-number">
                     <FontAwesomeIcon icon="comment" />
                     <span className="number">{this._getComments(person)}</span>
+                  </td>
+                  <td>
+                    <PersonSocialNetworkIcons person={person} />
                   </td>
                   <td>
                     <PersonContactIcons person={person} />

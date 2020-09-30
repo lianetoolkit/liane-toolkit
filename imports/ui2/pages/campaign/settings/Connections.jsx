@@ -149,6 +149,8 @@ class CampaignConnectionsPage extends Component {
       "pages_messaging",
       "pages_messaging_phone_number",
       "pages_messaging_subscriptions",
+      "instagram_manage_insights",
+      "instagram_manage_comments"
     ];
     this.setState({ loading: true });
     Facebook.requestCredential(

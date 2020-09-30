@@ -886,6 +886,11 @@ export const campaignUpdateFacebook = new ValidatedMethod({
       token: accountToken.result,
     });
 
+    FacebookAccountsHelpers.updateInstagramBusinessAccountId({
+      facebookId: campaign.facebookAccount.facebookId,
+      token: accountToken.result,
+    });
+
     CampaignsHelpers.refreshHealthCheck({ campaignId });
 
     Meteor.call("log", {

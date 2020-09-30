@@ -374,6 +374,23 @@ const LikesHelpers = {
       peopleBulk.execute();
     }
   },
+  getInstagramObjectReactions({
+    facebookAccountId,
+    entryId,
+    objectId,
+    likeDateEstimate,
+    accessToken,
+  }) {
+    logger.debug("LikesHelpers.getInstagramObjectReactions called", {
+      facebookAccountId,
+      entryId,
+      objectId,
+      likeDateEstimate,
+      accessToken,
+    });
+    //PENDING
+    return;
+  },
   getObjectReactions({
     facebookAccountId,
     entryId,
@@ -393,6 +410,20 @@ const LikesHelpers = {
       objectId,
     });
 
+    switch (EntriesHelpers.getEntrySource({entryId})) {
+      case 'instagram':
+        return this.getInstagramObjectReactions({
+          facebookAccountId,
+          entryId,
+          objectId,
+          likeDateEstimate,
+          accessToken,
+        });
+      default: // Facebook
+        // do nothing here, facebook is the default behaviour of this function
+        break;
+    }
+
     let response;
     try {
       response = Promise.await(
@@ -404,8 +435,6 @@ const LikesHelpers = {
     } catch (error) {
       throw new Meteor.Error(error);
     }
-
-    logger.debug("LikesHelpers.getObjectReactions response", { response });
 
     const _insertBulk = ({ data }) => {
       const bulk = Likes.rawCollection().initializeUnorderedBulkOp();

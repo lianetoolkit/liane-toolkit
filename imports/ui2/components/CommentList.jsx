@@ -64,6 +64,7 @@ const CommentContainer = styled.article`
   }
   .comment-reply,
   .comment-actions,
+  .comment-source,
   .comment-resolve {
     flex: 0 0 auto;
     padding: 1rem;
@@ -160,6 +161,10 @@ const CommentContainer = styled.article`
     }
   }
   .action-label {
+    font-size: 0.8em;
+    color: #999;
+  }
+  .comment-source-label {
     font-size: 0.8em;
     color: #999;
   }
@@ -276,6 +281,14 @@ class CommentList extends Component {
       );
     }
   };
+  _getSourceIcon = (comment) => {
+    switch(comment.source) {
+      case 'instagram':
+        return ["fab", "instagram"];
+      default:
+        return ["fab", "facebook-square"];
+    }
+  };
   render() {
     const { intl, comments } = this.props;
     if (!comments || !comments.length) return null;
@@ -325,6 +338,23 @@ class CommentList extends Component {
                       onClick={this._handleTrollClick(comment)}
                     >
                       <FontAwesomeIcon icon="ban" />
+                    </a>
+                  </div>
+                </div>
+                <div className="comment-source">
+                  <p className="comment-source-label">
+                    <FormattedMessage
+                      id="app.comment.comment_source_title"
+                      defaultMessage="Source"
+                    />
+                  </p>
+                  <div className="commnet-source-icons">
+                    <a
+                      href="javascript:void(0);"
+                      className="active"
+                      data-tip={comment.source ? comment.source : 'facebook'}
+                    >
+                      <FontAwesomeIcon icon={this._getSourceIcon(comment)} />
                     </a>
                   </div>
                 </div>
