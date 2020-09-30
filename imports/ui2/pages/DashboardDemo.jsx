@@ -48,7 +48,7 @@ class DashboardDemoPage extends React.Component {
         this.setState({ funnelData: data });
       }
     });
-    Meteor.call("dashboard.chartsData", { campaignId: campaign._id }, (err, data) => {
+    Meteor.call("dashboard.chartsData", { campaignId: campaign._id, startDate: '2020-09-01', endDate: '2020-09-15' }, (err, data) => {
       if (err) {
         console.log("dashboard.chartsData error ", err)
         this.setState({

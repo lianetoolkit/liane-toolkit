@@ -211,6 +211,12 @@ export const chartsData = new ValidatedMethod({
         campaignId: {
             type: String,
         },
+        startDate: {
+            type: String
+        },
+        endDate: {
+            type: String
+        }
     }).validator(),
     run({ campaignId }) {
 
@@ -228,64 +234,18 @@ export const chartsData = new ValidatedMethod({
         }
         const campaign = Campaigns.findOne(campaignId);
         const facebookAccountId = campaign.facebookAccount.facebookId;
-        const redisKey = `dashboard.${facebookAccountId}.chartsData`;
 
-        let chartsData = redisClient.getSync(redisKey);
 
-        if (!chartsData) {
 
-            const oneDay = 24 * 60 * 60 * 1000;
-            let fromDatePeople = new Date(campaign.createdAt);
-            let fromDateReactions = new Date(campaign.createdAt);
-            fromDatePeople.setDate(fromDatePeople.getDate() + 1);
-            fromDateReactions.setDate(fromDateReactions.getDate() + 1);
 
-            let toDate = new Date();
-            toDate.setDate(toDate.getDate() - 1);
+        // Top Comments
+        const commentersKey = `dashboard.${facebookAccountId}.topCommenters`;
+        let commentersData = redisClient.getSync(commentersKey);
+        let topCommenters = null;
+        if (!commentersData) {
 
-            const diffDays = Math.ceil(
-                Math.abs((fromDatePeople.getTime() - toDate.getTime()) / oneDay)
-            );
-            if (diffDays <= 4) {
-                return { total, history };
-            }
-            //? Do we add a fixed amount of days or we give start and end as params?
-            // if (diffDays > 14) {
-            //     fromDate = new Date();
-            //     fromDate.setDate(fromDate.getDate() - 15);
-            // }
 
-            // 1 Top reactioners 
-            let topReactioners = Promise.await(
-                rawLikes
-                    .aggregate([
-                        {
-                            $match: {
-                                facebookAccountId: facebookAccountId,
-                            }
-                        },
-                        {
-                            $group: {
-                                _id: "$personId",
-                                name: { $first: "$name" },
-                                counts: { $sum: 1 },
-                            },
-                        },
-                        {
-                            $project: {
-                                name: "$name",
-                                total: "$counts",
-                            },
-                        },
-                        { $sort: { total: -1 } }
-                    ])
-                    .toArray()
-            );
-            topReactioners = topReactioners.filter(e => e._id !== facebookAccountId)
-
-            // 2 Top Commentes 
-
-            let topCommenters = Promise.await(
+            topCommenters = Promise.await(
                 rawComments
                     .aggregate([
                         {
@@ -312,6 +272,79 @@ export const chartsData = new ValidatedMethod({
             );
             topCommenters = topCommenters.filter(e => e._id !== facebookAccountId)
 
+            // return 
+            redisClient.setSync(
+                commentersKey,
+                JSON.stringify(topCommenters),
+                "EX",
+                60 * 60 * 12// 12 hour
+            );
+
+        } else {
+            topCommenters = JSON.parse(commentersData)
+        }
+
+        const reactionersKey = `dashboard.${facebookAccountId}.topReactioners`;
+        let reactionersData = redisClient.getSync(reactionersKey);
+        let topReactioners = null;
+        // Top Reactions 
+        if (!reactionersData) {
+            topReactioners = Promise.await(
+                rawLikes
+                    .aggregate([
+                        {
+                            $match: {
+                                facebookAccountId: facebookAccountId,
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$personId",
+                                name: { $first: "$name" },
+                                counts: { $sum: 1 },
+                            },
+                        },
+                        {
+                            $project: {
+                                name: "$name",
+                                total: "$counts",
+                            },
+                        },
+                        { $sort: { total: -1 } }
+                    ])
+                    .toArray()
+            );
+            topReactioners = topReactioners.filter(e => e._id !== facebookAccountId)
+
+        } else {
+            topReactioners = JSON.parse(reactionersData)
+        }
+
+        // Charts 
+        const redisKey = `dashboard.${facebookAccountId}.chartData`
+        let chartsData = redisClient.getSync(redisKey);
+
+        if (!chartsData) {
+            const oneDay = 24 * 60 * 60 * 1000;
+            let fromDatePeople = new Date(campaign.createdAt);
+            let fromDateReactions = new Date(campaign.createdAt);
+            fromDatePeople.setDate(fromDatePeople.getDate() + 1);
+            fromDateReactions.setDate(fromDateReactions.getDate() + 1);
+
+            let toDate = new Date();
+            toDate.setDate(toDate.getDate() - 1);
+
+            const diffDays = Math.ceil(
+                Math.abs((fromDatePeople.getTime() - toDate.getTime()) / oneDay)
+            );
+            if (diffDays <= 4) {
+                return { total, history };
+            }
+            //? Do we add a fixed amount of days or we give start and end as params?
+            // if (diffDays > 14) {
+            //     fromDate = new Date();
+            //     fromDate.setDate(fromDate.getDate() - 15);
+            // }
             // 3 Data Incoming from Facebook by date
 
             let peopleHistory = {};
@@ -367,8 +400,8 @@ export const chartsData = new ValidatedMethod({
             chartsData = {
                 topReactioners,
                 topCommenters,
-                peopleHistory,
-                interactionHistory
+                // peopleHistory,
+                // interactionHistory
             }
         }
         return chartsData;
