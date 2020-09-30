@@ -7,6 +7,7 @@ import {
 } from "/imports/api/facebook/people/people.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import redisClient from "/imports/startup/server/redis";
+import { peopleHistory } from '../../facebook/people/server/peopleMethods';
 
 const rawLikes = Likes.rawCollection();
 rawLikes.distinctAsync = Meteor.wrapAsync(rawLikes.distinct);
@@ -215,10 +216,11 @@ export const chartsData = new ValidatedMethod({
             type: String
         },
         endDate: {
-            type: String
+            type: String,
+            optional: true
         }
     }).validator(),
-    run({ campaignId }) {
+    run({ campaignId, startDate, endDate }) {
 
         logger.debug("dashboard.chartsData", { campaignId });
         const userId = Meteor.userId();
@@ -315,42 +317,50 @@ export const chartsData = new ValidatedMethod({
                     .toArray()
             );
             topReactioners = topReactioners.filter(e => e._id !== facebookAccountId)
+            redisClient.setSync(
+                reactionersKey,
+                JSON.stringify(topReactioners),
+                "EX",
+                60 * 60 * 12// 12 hour
+            );
 
         } else {
             topReactioners = JSON.parse(reactionersData)
         }
 
         // Charts 
-        const redisKey = `dashboard.${facebookAccountId}.chartData`
-        let chartsData = redisClient.getSync(redisKey);
+        const redisChartsKey = `dashboard.${facebookAccountId}.chartData`
+        let chartsData = redisClient.getSync(redisChartsKey);
+
+        let peopleHistory = {};
+        let interactionHistory = {};
 
         if (!chartsData) {
-            const oneDay = 24 * 60 * 60 * 1000;
-            let fromDatePeople = new Date(campaign.createdAt);
-            let fromDateReactions = new Date(campaign.createdAt);
-            fromDatePeople.setDate(fromDatePeople.getDate() + 1);
-            fromDateReactions.setDate(fromDateReactions.getDate() + 1);
 
-            let toDate = new Date();
-            toDate.setDate(toDate.getDate() - 1);
+            const oneDay = 24 * 60 * 60 * 1000;
+            let campaignStart = new Date(campaign.createdAt);
+            let start = new Date(startDate);
+            start = start < campaignStart ? campaignStart : start;
+            let end = new Date(endDate ?? moment().subtract(1).format("YYYY-MM-DD"))
+
 
             const diffDays = Math.ceil(
-                Math.abs((fromDatePeople.getTime() - toDate.getTime()) / oneDay)
+                Math.abs((start.getTime() - end.getTime()) / oneDay)
             );
-            if (diffDays <= 4) {
-                return { total, history };
+
+            if (diffDays > 90) {
+                // start = end.getDate() - 90
+                start = new Date(moment(end).subtract(90).format("YYYY-MM-DD"))
             }
-            //? Do we add a fixed amount of days or we give start and end as params?
-            // if (diffDays > 14) {
-            //     fromDate = new Date();
-            //     fromDate.setDate(fromDate.getDate() - 15);
-            // }
+
+            let startHistory = new Date(JSON.parse(JSON.stringify(start)));
+            let startInteraction = new Date(JSON.parse(JSON.stringify(start)));
             // 3 Data Incoming from Facebook by date
 
-            let peopleHistory = {};
             let total = 0;
 
-            for (let d = fromDatePeople; d <= toDate; d.setDate(d.getDate() + 1)) {
+            for (let d = startHistory; d <= end; d.setDate(d.getDate() + 1)) {
+
                 const formattedDate = moment(d).format("YYYY-MM-DD");
                 if (!peopleHistory.hasOwnProperty(formattedDate)) {
                     peopleHistory[formattedDate] = People.find({
@@ -361,13 +371,12 @@ export const chartsData = new ValidatedMethod({
                             $lte: moment(formattedDate).add(1, "day").toDate(),
                         },
                     }).count();
+
                 }
             }
+            // 4 Reactions + Comments on Facebook by Date
 
-            ;        // 4 Reactions + Comments on Facebook by Date
-            let interactionHistory = {};
-            console.log('interactionHistory >> ', fromDateReactions, toDate)
-            for (let i = fromDateReactions; i <= toDate; i.setDate(i.getDate() + 1)) {
+            for (let i = startInteraction; i <= end; i.setDate(i.getDate() + 1)) {
 
                 const formattedDate = moment(i).format("YYYY-MM-DD");
                 if (!interactionHistory.hasOwnProperty(formattedDate)) {
@@ -397,13 +406,29 @@ export const chartsData = new ValidatedMethod({
                     })
                 }
             }
-            chartsData = {
-                topReactioners,
-                topCommenters,
-                // peopleHistory,
-                // interactionHistory
-            }
+            redisClient.setSync(
+                redisChartsKey,
+                JSON.stringify({
+                    peopleHistory,
+                    interactionHistory
+                }),
+                "EX",
+                60 * 60 * 12// 12 hour
+            );
+
+        } else {
+            chartsData = JSON.parse(chartsData)
+            peopleHistory = chartsData.peopleHistory;
+            interactionHistory = chartsData.interactionHistory
         }
+
+        chartsData = {
+            topReactioners,
+            topCommenters,
+            peopleHistory,
+            interactionHistory
+        }
+
         return chartsData;
     },
 });
