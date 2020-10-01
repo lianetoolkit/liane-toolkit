@@ -33,16 +33,19 @@ class PrivacyAgreementField extends Component {
     privacy: true,
     terms: true,
   };
+  _handleChange = ({ target }) => {
+    const { onChange } = this.props;
+    onChange && onChange(target.checked);
+  };
   render() {
     const { privacy, terms } = this.props;
     if (!privacy && !terms) {
       return null;
     }
-
     return (
       <Container>
         <label>
-          <input type="checkbox" />
+          <input type="checkbox" onChange={this._handleChange} />
         </label>
         <span>
           <FormattedHTMLMessage

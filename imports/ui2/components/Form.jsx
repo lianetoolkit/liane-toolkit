@@ -13,6 +13,9 @@ const Container = styled.form`
   width: 100%;
   display: flex;
   flex-direction: column;
+  .button.primary {
+    margin: 0;
+  }
 `;
 
 const ContentContainer = styled.div`

@@ -20,6 +20,7 @@ import Button from "./Button.jsx";
 import Loading from "./Loading.jsx";
 import CountrySelect from "./CountrySelect.jsx";
 import RegionSelect from "./RegionSelect.jsx";
+import PrivacyAgreementField from "./PrivacyAgreementField.jsx";
 
 const fields = {
   name: {
@@ -182,6 +183,76 @@ const messages = defineMessages({
   },
 });
 
+const ConfirmLegalContainer = styled.div`
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  padding: 1rem 1.5rem;
+  margin: 0 0 1rem;
+  label {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    margin: 0;
+    input {
+      margin: 0 1.5rem 0 0;
+      padding: 0;
+    }
+  }
+`;
+
+class ConfirmLegal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      confirm: false,
+      privacy: false,
+    };
+  }
+  render() {
+    const { importInput } = this.props;
+    const { confirm, privacy } = this.state;
+    return (
+      <Form>
+        <ConfirmLegalContainer>
+          <label>
+            <input
+              type="checkbox"
+              onChange={({ target }) => {
+                this.setState({ confirm: !!target.checked });
+              }}
+            />
+            <FormattedMessage
+              id="app.people.import.confirm_legal_text"
+              defaultMessage="I declare that all data contained in this file were donated by the holders themselves and obtained with their consent, without abusing or violating any type of law."
+            />
+            {/* Declaro que todos os dados contidos neste formulário foram doados
+            pelos próprios titulares e obtidos com o seu consentimento, sem
+            abusar ou violar qualquer tipo de lei, especialmente a Lei General
+            de Proteção de Dados, a Lei Eleitoral e o Marco Civil da Internet. */}
+          </label>
+        </ConfirmLegalContainer>
+        <PrivacyAgreementField
+          onChange={(checked) => {
+            this.setState({ privacy: !!checked });
+          }}
+        />
+        <Button
+          primary
+          onClick={() => {
+            importInput.click();
+          }}
+          disabled={!confirm || !privacy}
+        >
+          <FormattedMessage
+            id="app.people.import.select_file"
+            defaultMessage="Select file"
+          />
+        </Button>
+      </Form>
+    );
+  }
+}
+
 class ImportButton extends React.Component {
   constructor(props) {
     super(props);
@@ -216,7 +287,8 @@ class ImportButton extends React.Component {
     ev.preventDefault();
     const { importCount } = this.props;
     if (!importCount) {
-      this.importInput.click();
+      // this.importInput.click();
+      modalStore.set(<ConfirmLegal importInput={this.importInput} />);
     }
   };
   _handleImport = (ev) => {
