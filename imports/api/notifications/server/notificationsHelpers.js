@@ -72,6 +72,7 @@ const NotificationsHelpers = {
             text,
             path,
           },
+          tag: category,
         });
       }
     }
