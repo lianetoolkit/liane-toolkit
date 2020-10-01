@@ -36,6 +36,8 @@ import Loading from "../components/Loading.jsx";
 import Button from "../components/Button.jsx";
 import Form from "../components/Form.jsx";
 import CountryExclusive from "../components/CountryExclusive.jsx";
+import Disclaimer from "../components/Disclaimer.jsx";
+import PrivacyAgreementField from "../components/PrivacyAgreementField.jsx";
 
 const recaptchaSiteKey = Meteor.settings.public.recaptcha;
 
@@ -561,7 +563,7 @@ class PeopleForm extends Component {
                       {/* <Divider hidden /> */}
                     </div>
                   ) : null}
-                  <p className="policy">
+                  {/* <p className="policy">
                     <CountryExclusive
                       country="CO"
                       defaultContent={
@@ -586,7 +588,50 @@ class PeopleForm extends Component {
                         </a>
                       </span>
                     </CountryExclusive>
-                  </p>
+                  </p> */}
+                  <div className="policy">
+                    <PrivacyAgreementField />
+                    <Disclaimer type="security">
+                      <p>
+                        <strong>
+                          <FormattedMessage
+                            id="app.people_form.disclaimer"
+                            defaultMessage="The data sent through this form is for exclusive use by {campaign} authorized team."
+                            values={{
+                              campaign: campaign.name,
+                            }}
+                          />
+                        </strong>
+                      </p>
+                      <p>
+                        {campaign.contact ? (
+                          <FormattedHTMLMessage
+                            id="app.people_form.contact_info_01"
+                            defaultMessage="For more information contact the campaign at <strong>{campaignEmail}</strong> or our support team at <strong>{appEmail}</strong>."
+                            values={{
+                              campaignEmail: campaign.contact.email,
+                              appEmail: Meteor.settings.public.contactEmail,
+                            }}
+                          />
+                        ) : (
+                          <FormattedHTMLMessage
+                            id="app.people_form.contact_info_02"
+                            defaultMessage="For more information contact our support team at <strong>{appEmail}</strong>."
+                            values={{
+                              appEmail: Meteor.settings.public.contactEmail,
+                            }}
+                          />
+                        )}{" "}
+                        <FormattedHTMLMessage
+                          id="app.people_form.more_info"
+                          defaultMessage="We also invite you to visit <a href='{url}' target='_blank' rel='external'>this page</a> for further details regarding our views and practices for data security and privacy."
+                          values={{
+                            url: "https://liane.voto/faqs",
+                          }}
+                        />
+                      </p>
+                    </Disclaimer>
+                  </div>
                   <input
                     type="submit"
                     value={intl.formatMessage(messages.sendLabel)}

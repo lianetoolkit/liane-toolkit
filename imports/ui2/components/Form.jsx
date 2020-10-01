@@ -2,10 +2,20 @@ import React, { Component } from "react";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+} from "react-intl";
+
 const Container = styled.form`
   width: 100%;
   display: flex;
   flex-direction: column;
+  .button.primary {
+    margin: 0;
+  }
 `;
 
 const ContentContainer = styled.div`
@@ -42,6 +52,9 @@ const FieldContainer = styled.label`
     display: block;
     font-size: 0.8em;
     margin-bottom: 0.5rem;
+  }
+  .optional-label {
+    color: #999;
   }
   .field-description {
     color: #888;
@@ -281,10 +294,27 @@ const ButtonGroup = styled.div`
 
 class Field extends Component {
   render() {
-    const { label, description, children, prefix, ...props } = this.props;
+    const {
+      label,
+      description,
+      optional,
+      children,
+      prefix,
+      ...props
+    } = this.props;
     return (
       <FieldContainer {...props}>
-        <span className="field-label">{label}</span>
+        <span className="field-label">
+          {label}{" "}
+          {optional ? (
+            <span className="optional-label">
+              <FormattedMessage
+                id="app.form.optional_label"
+                defaultMessage="(optional)"
+              />
+            </span>
+          ) : null}
+        </span>
         {description ? (
           <span className="field-description">{description}</span>
         ) : null}

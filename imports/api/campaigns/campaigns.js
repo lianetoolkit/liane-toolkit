@@ -61,6 +61,16 @@ Campaigns.accountsSchema = new SimpleSchema({
   },
 });
 
+Campaigns.contactSchema = new SimpleSchema({
+  email: {
+    type: String,
+  },
+  phone: {
+    type: String,
+    optional: true,
+  },
+});
+
 Campaigns.schema = new SimpleSchema({
   name: {
     type: String,
@@ -85,6 +95,9 @@ Campaigns.schema = new SimpleSchema({
   cause: {
     type: String,
     optional: true,
+  },
+  contact: {
+    type: Campaigns.contactSchema,
   },
   creatorId: {
     type: String,

@@ -119,6 +119,7 @@ Meteor.publishComposite("campaigns.publicDetail", function ({
           "forms.slug": 1,
           "forms.crm": 1,
           "forms.skills": 1,
+          contact: 1,
         },
       });
     },
@@ -144,6 +145,7 @@ Meteor.publishComposite("campaigns.detail", function ({ campaignId }) {
     status: 1,
     forms: 1,
     createdAt: 1,
+    contact: 1,
   };
   let children = [
     {
