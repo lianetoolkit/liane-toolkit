@@ -22,7 +22,10 @@ class DefaultEmail extends Component {
           <div dangerouslySetInnerHTML={{ __html: data.content }} />
           <p>
             <a href={Meteor.absoluteUrl(`/messages/${data.messageId}`)}>
-              Click here to access this message in Liane
+              <FormattedMessage
+                id="app.email.message_link_text"
+                defaultMessage="Click here to access this message in Liane"
+              />
             </a>
           </p>
         </Grid>
