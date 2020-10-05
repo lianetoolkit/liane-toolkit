@@ -339,25 +339,24 @@ export const chartsData = new ValidatedMethod({
 
             const oneDay = 24 * 60 * 60 * 1000;
             let campaignStart = new Date(campaign.createdAt);
+
             let start = new Date(startDate);
             start = start < campaignStart ? campaignStart : start;
+            
             let end = new Date(endDate ?? moment().subtract(1).format("YYYY-MM-DD"))
-
-
             const diffDays = Math.ceil(
                 Math.abs((start.getTime() - end.getTime()) / oneDay)
             );
 
             if (diffDays > 90) {
-                // start = end.getDate() - 90
                 start = new Date(moment(end).subtract(90).format("YYYY-MM-DD"))
             }
+            // counters for people and reactions 
 
             let startHistory = new Date(JSON.parse(JSON.stringify(start)));
             let startInteraction = new Date(JSON.parse(JSON.stringify(start)));
-            // 3 Data Incoming from Facebook by date
 
-            let total = 0;
+            // 3 Data Incoming from Facebook by date
 
             for (let d = startHistory; d <= end; d.setDate(d.getDate() + 1)) {
 
@@ -374,6 +373,18 @@ export const chartsData = new ValidatedMethod({
 
                 }
             }
+            // Clean
+            const peopleKeys = Object.keys(peopleHistory);
+            if (peopleKeys.length > 90) {
+                peopleKeys.forEach(key => {
+                    let d = new Date(key);
+                    if (d.getTime() < start || d.getTime() > end) {
+                        delete peopleHistory[key];
+                    }
+                }
+                )
+            }
+
             // 4 Reactions + Comments on Facebook by Date
 
             for (let i = startInteraction; i <= end; i.setDate(i.getDate() + 1)) {
@@ -406,6 +417,18 @@ export const chartsData = new ValidatedMethod({
                     })
                 }
             }
+
+            const reactionKeys = Object.keys(interactionHistory);
+            if (reactionKeys.length > 90) {
+                reactionKeys.forEach(key => {
+                    let d = new Date(key);
+                    if (d.getTime() < start || d.getTime() > end) {
+                        delete interactionHistory[key];
+                    }
+                }
+                )
+            }
+
             redisClient.setSync(
                 redisChartsKey,
                 JSON.stringify({
