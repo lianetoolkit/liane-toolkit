@@ -7,6 +7,7 @@ import {
   FormattedHTMLMessage,
 } from "react-intl";
 import { ClientStorage } from "meteor/ostrio:cstorage";
+import { set, get } from "lodash";
 
 import { alertStore } from "../../containers/Alerts.jsx";
 
@@ -56,6 +57,14 @@ const messages = defineMessages({
   partyPlaceholder: {
     id: "app.campaign.form.party.placeholder",
     defaultMessage: "Party/movement/coalition",
+  },
+  emailLabel: {
+    id: "app.campaign.form.email.label",
+    defaultMessage: "Public email",
+  },
+  phoneLabel: {
+    id: "app.campaign.form.phone.label",
+    defaultMessage: "Public phone number",
   },
   countryLabel: {
     id: "app.campaign.form.country.label",
@@ -109,12 +118,15 @@ class NewCampaignPage extends Component {
     });
   };
   _handleChange = ({ target }) => {
+    const newFormData = { ...this.state.formData };
+    set(newFormData, target.name, target.value);
     this.setState({
-      formData: {
-        ...this.state.formData,
-        [target.name]: target.value,
-      },
+      formData: newFormData,
     });
+  };
+  getValue = (key) => {
+    const { formData } = this.state;
+    return get(formData, key);
   };
   _filledForm = () => {
     const { formData } = this.state;
@@ -124,7 +136,9 @@ class NewCampaignPage extends Component {
       formData.country &&
       formData.facebookAccountId &&
       formData.geolocation &&
-      formData.geolocation.osm_id;
+      formData.geolocation.osm_id &&
+      formData.contact &&
+      formData.contact.email;
 
     if (formData.type.match(/electoral|mandate/)) {
       return (
@@ -286,6 +300,34 @@ class NewCampaignPage extends Component {
               />
             </Form.Field>
           ) : null}
+          <h3>
+            <FormattedMessage
+              id="app.campaign.form.section_title.contact"
+              defaultMessage="Contact information"
+            />
+          </h3>
+          <Form.Field label={intl.formatMessage(messages.emailLabel)}>
+            <input
+              type="text"
+              name="contact.email"
+              value={this.getValue("contact.email")}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+          <Form.Field label={intl.formatMessage(messages.phoneLabel)} optional>
+            <input
+              type="text"
+              name="contact.phone"
+              value={this.getValue("contact.phone")}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+          <h3>
+            <FormattedMessage
+              id="app.campaign.form.section_title.geolocation"
+              defaultMessage="Geolocation"
+            />
+          </h3>
           <Form.Field label={intl.formatMessage(messages.countryLabel)}>
             <CountrySelect
               name="country"
@@ -308,6 +350,12 @@ class NewCampaignPage extends Component {
               onChange={this._handleGeolocationChange}
             />
           ) : null}
+          <h3>
+            <FormattedMessage
+              id="app.campaign.form.section_title.facebook"
+              defaultMessage="Facebook Page"
+            />
+          </h3>
           <p>
             <FormattedMessage
               id="app.campaign.form.select_account"
