@@ -632,6 +632,7 @@
   "app.people_form.not_you": "Not you?",
   "app.people_form.participate_label": "I'd like to participate",
   "app.people_form.phone_label": "Phone",
+  "app.people_form.policy_required": "You must agree with our privacy policy and terms of use",
   "app.people_form.skills_label": "What can you do?",
   "app.people_form.submit_label": "Send",
   "app.people_form.thank_you": "Thank you!",
