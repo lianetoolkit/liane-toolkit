@@ -18,6 +18,7 @@ import RegionSelect from "../components/RegionSelect.jsx";
 import OrLine from "../components/OrLine.jsx";
 import FacebookButton from "../components/FacebookButton.jsx";
 import Loading from "../components/Loading.jsx";
+import PrivacyAgreementField from "../components/PrivacyAgreementField.jsx";
 
 const messages = defineMessages({
   nameLabel: {
@@ -176,8 +177,9 @@ class RegisterPage extends Component {
     });
   };
   _filledForm = () => {
-    const { formData } = this.state;
+    const { agreed, formData } = this.state;
     return (
+      agreed &&
       formData.name &&
       formData.country &&
       formData.region &&
@@ -242,6 +244,11 @@ class RegisterPage extends Component {
               onChange={this._handleChange}
             />
           </Form.Field>
+          <PrivacyAgreementField
+            onChange={(checked) => {
+              this.setState({ agreed: checked });
+            }}
+          />
         </Form.Content>
         <Form.Actions>
           <input

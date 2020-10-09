@@ -54,6 +54,10 @@ const messages = defineMessages({
     id: "app.people_form.email_phone_required",
     defaultMessage: "Email or phone is required",
   },
+  requiredPolicy: {
+    id: "app.people_form.policy_required",
+    defaultMessage: "You must agree with our privacy policy and terms of use",
+  },
   thankYou: {
     id: "app.people_form.thank_you",
     defaultMessage: "Thank you!",
@@ -173,6 +177,7 @@ class PeopleForm extends Component {
     super(props);
     this.state = {
       formData: {},
+      agreed: false,
       loading: false,
       sent: false,
       donor: false,
@@ -261,7 +266,11 @@ class PeopleForm extends Component {
   _handleSubmit(ev) {
     ev.preventDefault();
     const { intl, formId, person, campaign } = this.props;
-    const { formData } = this.state;
+    const { agreed, formData } = this.state;
+    if (!agreed) {
+      alertStore.add(intl.formatMessage(messages.requiredPolicy), "error");
+      return;
+    }
     let data = { ...formData, campaignId: campaign._id };
     if (formId) {
       data.formId = formId;
@@ -590,7 +599,11 @@ class PeopleForm extends Component {
                     </CountryExclusive>
                   </p> */}
                   <div className="policy">
-                    <PrivacyAgreementField />
+                    <PrivacyAgreementField
+                      onChange={(checked) => {
+                        this.setState({ agreed: checked });
+                      }}
+                    />
                     <Disclaimer type="security">
                       <p>
                         <strong>
