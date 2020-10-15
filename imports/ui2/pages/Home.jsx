@@ -68,6 +68,7 @@ const Content = styled.div`
       max-width: 960px;
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
     `}
 `;
 
@@ -347,18 +348,18 @@ class Home extends Component {
           <Content centered={this._showForm()}>
             {this._showForm() ? (
               <ClosedContainer>
-                <h3>
-                  <FormattedMessage
-                    id="app.mail_subscription.disabled_message"
-                    defaultMessage="The creation of new campaigns is currently disabled."
-                  />
-                </h3>
                 {!subscribed ? (
                   <>
+                    <h3>
+                      <FormattedMessage
+                        id="app.mail_subscription.form_title"
+                        defaultMessage="Liane is currently a product under testing for a limited number of users."
+                      />
+                    </h3>
                     <p>
                       <FormattedMessage
                         id="app.mail_subscription.form_text"
-                        defaultMessage="Liane is currently a product under testing for a limited number of users. Please complete this form to request an invitation."
+                        defaultMessage="Please complete this form to request an invitation."
                       />
                     </p>
                     <Form onSubmit={this._handleSubscribeSubmit}>
