@@ -43,7 +43,7 @@ class PrivacyAgreementField extends Component {
       return null;
     }
     return (
-      <Container>
+      <Container className="privacy-consent">
         <label>
           <input type="checkbox" onChange={this._handleChange} />
         </label>
