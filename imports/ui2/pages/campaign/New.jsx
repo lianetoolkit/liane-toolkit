@@ -20,6 +20,7 @@ import OfficeField from "../../components/OfficeField.jsx";
 import CountrySelect from "../../components/CountrySelect.jsx";
 import GeolocationSearch from "../../components/GeolocationSearch.jsx";
 import UserUpgrade from "../../components/UserUpgrade.jsx";
+import Disclaimer from "../../components/Disclaimer.jsx";
 
 const messages = defineMessages({
   nameLabel: {
@@ -82,12 +83,17 @@ const messages = defineMessages({
     id: "app.campaign.form.required_fields_warning",
     defaultMessage: "You must fill all the required fields",
   },
+  consentText: {
+    id: "app.campaign.form.consent",
+    defaultMessage: "I agree and wish to create my campaign",
+  },
 });
 
 class NewCampaignPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      agreed: false,
       ready: false,
       validation: false,
       loading: false,
@@ -124,13 +130,19 @@ class NewCampaignPage extends Component {
       formData: newFormData,
     });
   };
+  _handleConsentChange = (checked) => {
+    this.setState({
+      agreed: !!checked,
+    });
+  };
   getValue = (key) => {
     const { formData } = this.state;
     return get(formData, key);
   };
   _filledForm = () => {
-    const { formData } = this.state;
+    const { agreed, formData } = this.state;
     const defaultValidation =
+      agreed &&
       formData.name &&
       formData.type &&
       formData.country &&
@@ -367,6 +379,24 @@ class NewCampaignPage extends Component {
             onChange={this._handleChange}
             value={formData.facebookAccountId}
           />
+          <Disclaimer
+            type="security"
+            consent={intl.formatMessage(messages.consentText)}
+            onChange={this._handleConsentChange}
+          >
+            <p>
+              <FormattedMessage
+                id="app.campaign.form.disclaimer_01"
+                defaultMessage="We guarantee that only people who have the permissions provided by Facebook or the campaign's team can access public data of user interactions in the campaign's social networks, and we make sure that the use of such data by the campaigns is in good faith, non-malicious and in accordance with the law."
+              />
+            </p>
+            <p>
+              <FormattedMessage
+                id="app.campaign.form.disclaimer_02"
+                defaultMessage="Any type of behavior contrary to these principles detected by Liane's team, may be grounds for deletion of the campaign and its data."
+              />
+            </p>
+          </Disclaimer>
         </Form.Content>
         <Form.Actions>
           <input

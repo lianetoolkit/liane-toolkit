@@ -148,7 +148,6 @@ const Container = styled.div`
   }
   .policy {
     margin: 2rem 0 1rem;
-    font-size: 0.8em;
     color: #666;
   }
   .recaptcha-container {
