@@ -304,17 +304,19 @@ class Field extends Component {
     } = this.props;
     return (
       <FieldContainer {...props}>
-        <span className="field-label">
-          {label}{" "}
-          {optional ? (
-            <span className="optional-label">
-              <FormattedMessage
-                id="app.form.optional_label"
-                defaultMessage="(optional)"
-              />
-            </span>
-          ) : null}
-        </span>
+        {label ? (
+          <span className="field-label">
+            {label}{" "}
+            {optional ? (
+              <span className="optional-label">
+                <FormattedMessage
+                  id="app.form.optional_label"
+                  defaultMessage="(optional)"
+                />
+              </span>
+            ) : null}
+          </span>
+        ) : null}
         {description ? (
           <span className="field-description">{description}</span>
         ) : null}

@@ -18,11 +18,24 @@ const Container = styled.div`
   }
   .disclaimer-content {
     flex: 1 1 100%;
+    font-size: 0.8em;
     p {
       margin: 0 0 0.35rem;
     }
     p:last-child {
       margin: 0;
+    }
+    .disclaimer-consent {
+      label {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        font-size: 1.1em;
+        input {
+          flex: 0 0 auto;
+          margin: 0 0.5rem 0 0;
+        }
+      }
     }
   }
   ${(props) =>
@@ -39,7 +52,7 @@ export default class Disclaimer extends Component {
     type: "info",
   };
   render() {
-    const { type } = this.props;
+    const { type, consent } = this.props;
     let icon = "info-circle";
     if (type == "security") {
       icon = "shield-alt";
@@ -49,7 +62,22 @@ export default class Disclaimer extends Component {
         <div className="disclaimer-icon">
           <FontAwesomeIcon icon={icon} />
         </div>
-        <div className="disclaimer-content">{this.props.children}</div>
+        <div className="disclaimer-content">
+          {this.props.children}
+          {consent ? (
+            <div className="disclaimer-consent">
+              <label>
+                <input
+                  type="checkbox"
+                  onChange={({ target }) => {
+                    this.props.onChange && this.props.onChange(target.checked);
+                  }}
+                />
+                {consent}
+              </label>
+            </div>
+          ) : null}
+        </div>
       </Container>
     );
   }
