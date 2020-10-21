@@ -8,17 +8,14 @@ class DashboardDemoPage extends React.Component {
       loading: false,
       summaryData: null,
       achievements: null,
-      funnelData: null
+      funnelData: null,
+      chartsData: null
     };
   }
   componentDidMount() {
     // Call methods here
     const { campaign } = this.props;
-
-
-
     //  Summary Data 
-
     Meteor.call("dashboard.summary", { campaignId: campaign._id }, (err, data) => {
       if (err) {
         console.log("dashboard.summary error ", err)
@@ -26,7 +23,6 @@ class DashboardDemoPage extends React.Component {
           loading: false,
         });
       } else {
-        console.log("dashboard.summary getting summaryData ", data)
         this.setState({ summaryData: data });
       }
     });
@@ -38,11 +34,9 @@ class DashboardDemoPage extends React.Component {
           loading: false,
         });
       } else {
-        console.log("dashboard.achievements getting achievements ", data)
         this.setState({ achievements: data });
       }
     });
-
     // funnel data
     Meteor.call("dashboard.funnelData", { campaignId: campaign._id }, (err, data) => {
       if (err) {
@@ -51,8 +45,18 @@ class DashboardDemoPage extends React.Component {
           loading: false,
         });
       } else {
-        console.log("dashboard.achievements getting funnelData ", data)
         this.setState({ funnelData: data });
+      }
+    });
+    Meteor.call("dashboard.chartsData", { campaignId: campaign._id, startDate: '2020-08-24', endDate: '2020-09-15' }, (err, data) => {
+      if (err) {
+        console.log("dashboard.chartsData error ", err)
+        this.setState({
+          loading: false,
+        });
+      } else {
+        console.log("dashboard.chartsData getting funnelData ", data)
+        this.setState({ chartsData: data });
       }
     });
 
@@ -60,7 +64,7 @@ class DashboardDemoPage extends React.Component {
   }
   render() {
     const { campaign } = this.props;
-    const { loading, summaryData, achievements, funnelData } = this.state;
+    const { loading, summaryData, achievements, funnelData, chartsData } = this.state;
     if (loading) {
       return <Loading full />;
     }
@@ -70,6 +74,8 @@ class DashboardDemoPage extends React.Component {
         <pre>summaryData: {JSON.stringify(summaryData)}</pre>
         <pre>achievements: {JSON.stringify(achievements)}</pre>
         <pre>funnelData: {JSON.stringify(funnelData)}</pre>
+        <pre>chartsData: {JSON.stringify(chartsData)}</pre>
+
       </Page.Content>
     );
   }
