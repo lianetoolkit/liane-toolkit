@@ -30,7 +30,7 @@ const messages = defineMessages({
     defaultMessage: "Filter by post..."
   },
   commentSourceFilter: {
-    id: "app.comments.entry_select_placeholder",
+    id: "app.comments.source_select_placeholder",
     defaultMessage: "Filter by source..."
   }
 });

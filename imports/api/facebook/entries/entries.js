@@ -79,31 +79,8 @@ Entries.schema = new SimpleSchema({
   },
   source_data: {
     type: Object,
-    optional: true
-  },
-  "source_data.ig_id": {
-    type: String,
-    optional: true
-  },
-  "source_data.media_type": {
-    type: String,
-    optional: true
-  },
-  "source_data.media_url": {
-    type: String,
-    optional: true
-  },
-  "source_data.permalink": {
-    type: String,
-    optional: true
-  },
-  "source_data.username": {
-    type: String,
-    optional: true
-  },
-  "source_data.is_comment_enabled": {
-    type: Boolean,
-    optional: true
+    blackbox: true,
+    optional: true,
   }
 });
 

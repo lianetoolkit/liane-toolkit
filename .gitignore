@@ -1,3 +1,4 @@
+node_modules/
 .deploy/local/
 .meteor/local/
 package-lock.json

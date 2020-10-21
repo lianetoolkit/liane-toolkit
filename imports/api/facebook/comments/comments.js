@@ -115,20 +115,9 @@ Comments.schema = new SimpleSchema({
   },
   source_data: {
     type: Object,
-    optional: true
-  },
-  "source_data.username": { 
-    type: String,
-    optional: true
-  },
-  "source_data.media_id": { 
-    type: String,
-    optional: true
-  },
-  "source_data.user_id": { 
-    type: String,
-    optional: true
-  },
+    blackbox: true,
+    optional: true,
+  }
 });
 
 Comments.attachSchema(Comments.schema);
