@@ -10,6 +10,7 @@ export const sendMail = async ({
   language,
   subject,
   body,
+  tag,
 }) => {
   if (!recipient && !data.user) {
     console.log("Email not sent. Missing recipient");
@@ -29,6 +30,7 @@ export const sendMail = async ({
       to: recipient || `"${data.user.name}" <${data.user.emails[0].address}>`,
       subject: subject || emailData.subject,
       html: body || emailData.body,
+      tag: tag || "",
     },
   });
 };

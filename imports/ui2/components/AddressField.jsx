@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import styled, { css } from "styled-components";
 import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
@@ -14,40 +14,40 @@ import Form from "./Form.jsx";
 const messages = defineMessages({
   countryLabel: {
     id: "app.address.country.label",
-    defaultMessage: "Country"
+    defaultMessage: "Country",
   },
   zipcodeLabel: {
     id: "app.address.zipcode.label",
-    defaultMessage: "Zipcode"
+    defaultMessage: "Zipcode",
   },
   zipcodePlaceholder: {
     id: "app.address.zipcode.placeholder",
-    defaultMessage: "Type a zipcode"
+    defaultMessage: "Type a zipcode",
   },
   regionLabel: {
     id: "app.address.region.label",
-    defaultMessage: "Region"
+    defaultMessage: "Region",
   },
   cityLabel: {
     id: "app.address.city.label",
-    defaultMessage: "City"
+    defaultMessage: "City",
   },
   neighbourhoodLabel: {
     id: "app.address.neighbourhood.label",
-    defaultMessage: "Neighbourhood"
+    defaultMessage: "Neighbourhood",
   },
   streetAddressLabel: {
     id: "app.address.street_address.label",
-    defaultMessage: "Street address"
+    defaultMessage: "Street address",
   },
   numberLabel: {
     id: "app.address.number.label",
-    defaultMessage: "Number"
+    defaultMessage: "Number",
   },
   complementLabel: {
     id: "app.address.complement.label",
-    defaultMessage: "Complement"
-  }
+    defaultMessage: "Complement",
+  },
 });
 
 const Container = styled.div``;
@@ -64,18 +64,27 @@ const Group = styled.div`
       flex: 2 1 0;
     }
   }
-  ${props =>
+  ${(props) =>
     props.secondary &&
     css`
       font-size: 0.9em;
     `}
+  @media (max-width: 620px) {
+    padding: 1rem;
+    flex-wrap: wrap;
+    > label {
+      flex: 1 1 100%;
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
 `;
 
 class AddressField extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      formData: {}
+      formData: {},
     };
   }
   componentDidMount() {
@@ -84,7 +93,7 @@ class AddressField extends Component {
     if (value) {
       formData = {
         ...formData,
-        ...value
+        ...value,
       };
     }
     if (value) {
@@ -109,7 +118,7 @@ class AddressField extends Component {
       "people.resolveZipcode",
       {
         country,
-        zipcode
+        zipcode,
       },
       (err, res) => {
         if (res) {
@@ -119,8 +128,8 @@ class AddressField extends Component {
               region: res.state,
               city: res.city,
               neighbourhood: res.neighborhood,
-              street: res.street
-            }
+              street: res.street,
+            },
           });
         }
       }
@@ -133,8 +142,8 @@ class AddressField extends Component {
     this.setState({
       formData: {
         ...formData,
-        zipcode
-      }
+        zipcode,
+      },
     });
     this._updateFromZipcodeData(formData.country || country, zipcode);
   };
@@ -142,8 +151,8 @@ class AddressField extends Component {
     this.setState({
       formData: {
         ...this.state.formData,
-        [target.name]: target.value
-      }
+        [target.name]: target.value,
+      },
     });
   };
   render() {
@@ -239,7 +248,7 @@ class AddressField extends Component {
 }
 
 AddressField.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(AddressField);

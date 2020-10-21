@@ -7,6 +7,7 @@ import {
   FormattedHTMLMessage,
 } from "react-intl";
 import { ClientStorage } from "meteor/ostrio:cstorage";
+import { set, get } from "lodash";
 
 import { alertStore } from "../../containers/Alerts.jsx";
 
@@ -17,8 +18,9 @@ import SelectAccount from "../../components/facebook/SelectAccount.jsx";
 import CampaignTypeSelect from "../../components/CampaignTypeSelect.jsx";
 import OfficeField from "../../components/OfficeField.jsx";
 import CountrySelect from "../../components/CountrySelect.jsx";
-import GeolocationSelect from "../../components/GeolocationSelect.jsx";
+import GeolocationSearch from "../../components/GeolocationSearch.jsx";
 import UserUpgrade from "../../components/UserUpgrade.jsx";
+import Disclaimer from "../../components/Disclaimer.jsx";
 
 const messages = defineMessages({
   nameLabel: {
@@ -57,6 +59,14 @@ const messages = defineMessages({
     id: "app.campaign.form.party.placeholder",
     defaultMessage: "Party/movement/coalition",
   },
+  emailLabel: {
+    id: "app.campaign.form.email.label",
+    defaultMessage: "Public email",
+  },
+  phoneLabel: {
+    id: "app.campaign.form.phone.label",
+    defaultMessage: "Public phone number",
+  },
   countryLabel: {
     id: "app.campaign.form.country.label",
     defaultMessage: "Select the country for your campaign",
@@ -73,12 +83,17 @@ const messages = defineMessages({
     id: "app.campaign.form.required_fields_warning",
     defaultMessage: "You must fill all the required fields",
   },
+  consentText: {
+    id: "app.campaign.form.consent",
+    defaultMessage: "I agree and wish to create my campaign",
+  },
 });
 
 class NewCampaignPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      agreed: false,
       ready: false,
       validation: false,
       loading: false,
@@ -109,22 +124,33 @@ class NewCampaignPage extends Component {
     });
   };
   _handleChange = ({ target }) => {
+    const newFormData = { ...this.state.formData };
+    set(newFormData, target.name, target.value);
     this.setState({
-      formData: {
-        ...this.state.formData,
-        [target.name]: target.value,
-      },
+      formData: newFormData,
     });
   };
-  _filledForm = () => {
+  _handleConsentChange = (checked) => {
+    this.setState({
+      agreed: !!checked,
+    });
+  };
+  getValue = (key) => {
     const { formData } = this.state;
+    return get(formData, key);
+  };
+  _filledForm = () => {
+    const { agreed, formData } = this.state;
     const defaultValidation =
+      agreed &&
       formData.name &&
       formData.type &&
       formData.country &&
       formData.facebookAccountId &&
       formData.geolocation &&
-      formData.geolocation.osm_id;
+      formData.geolocation.osm_id &&
+      formData.contact &&
+      formData.contact.email;
 
     if (formData.type.match(/electoral|mandate/)) {
       return (
@@ -286,6 +312,34 @@ class NewCampaignPage extends Component {
               />
             </Form.Field>
           ) : null}
+          <h3>
+            <FormattedMessage
+              id="app.campaign.form.section_title.contact"
+              defaultMessage="Contact information"
+            />
+          </h3>
+          <Form.Field label={intl.formatMessage(messages.emailLabel)}>
+            <input
+              type="text"
+              name="contact.email"
+              value={this.getValue("contact.email")}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+          <Form.Field label={intl.formatMessage(messages.phoneLabel)} optional>
+            <input
+              type="text"
+              name="contact.phone"
+              value={this.getValue("contact.phone")}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+          <h3>
+            <FormattedMessage
+              id="app.campaign.form.section_title.geolocation"
+              defaultMessage="Geolocation"
+            />
+          </h3>
           <Form.Field label={intl.formatMessage(messages.countryLabel)}>
             <CountrySelect
               name="country"
@@ -303,11 +357,17 @@ class NewCampaignPage extends Component {
             </Form.Field>
           ) : null}
           {formData.country ? (
-            <GeolocationSelect
+            <GeolocationSearch
               country={formData.country}
               onChange={this._handleGeolocationChange}
             />
           ) : null}
+          <h3>
+            <FormattedMessage
+              id="app.campaign.form.section_title.facebook"
+              defaultMessage="Facebook Page"
+            />
+          </h3>
           <p>
             <FormattedMessage
               id="app.campaign.form.select_account"
@@ -319,6 +379,24 @@ class NewCampaignPage extends Component {
             onChange={this._handleChange}
             value={formData.facebookAccountId}
           />
+          <Disclaimer
+            type="security"
+            consent={intl.formatMessage(messages.consentText)}
+            onChange={this._handleConsentChange}
+          >
+            <p>
+              <FormattedMessage
+                id="app.campaign.form.disclaimer_01"
+                defaultMessage="We guarantee that only people who have the permissions provided by Facebook or the campaign's team can access public data of user interactions in the campaign's social networks, and we make sure that the use of such data by the campaigns is in good faith, non-malicious and in accordance with the law."
+              />
+            </p>
+            <p>
+              <FormattedMessage
+                id="app.campaign.form.disclaimer_02"
+                defaultMessage="Any type of behavior contrary to these principles detected by Liane's team, may be grounds for deletion of the campaign and its data."
+              />
+            </p>
+          </Disclaimer>
         </Form.Content>
         <Form.Actions>
           <input

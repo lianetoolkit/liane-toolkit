@@ -232,24 +232,31 @@ const CommentsHelpers = {
           PeopleRawCollection.update({ _id: person._id }, updateObj);
         } else {
           const _id = Random.id();
-          PeopleRawCollection.update(
-            {
-              campaignId: campaign._id,
-              facebookId: comment.personId,
-            },
-            {
-              ...updateObj,
-              $setOnInsert: {
-                ...updateObj.$setOnInsert,
-                _id,
-                formId: PeopleHelpers.generateFormId(_id),
+
+          Promise.await(
+            PeopleRawCollection.update(
+              {
+                campaignId: campaign._id,
+                facebookId: comment.personId,
               },
-            },
-            {
-              multi: false,
-              upsert: true,
-            }
+              {
+                ...updateObj,
+                $setOnInsert: {
+                  ...updateObj.$setOnInsert,
+                  _id,
+                  formId: PeopleHelpers.generateFormId(_id),
+                },
+              },
+              {
+                multi: false,
+                upsert: true,
+              }
+            )
           );
+          PeopleHelpers.registerDuplicates({
+            personId: _id,
+            source: "comments",
+          });
           AccountsLogs.insert({
             type: "people.new",
             accountId: facebookAccountId,
@@ -308,7 +315,7 @@ const CommentsHelpers = {
         $setOnInsert: {
           accountId: comment.facebookAccountId,
           objectType: "comment",
-          timestamp: data.created_time * 1000,
+          timestamp: data.created_time ? data.created_time * 1000 : Date.now(),
         },
       }
     );

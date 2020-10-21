@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import { get, set } from "lodash";
 
@@ -14,42 +14,55 @@ import Select from "react-select";
 import Page from "../components/Page.jsx";
 import Form from "../components/Form.jsx";
 import PersonFormInfo from "../components/PersonFormInfo.jsx";
+import SkillsConfig from "../components/SkillsConfig.jsx";
 
 import { languages } from "/locales";
 
 const messages = defineMessages({
   urlPathLabel: {
     id: "app.form_settings.form_url_path_label",
-    defaultMessage: "Set form url path"
+    defaultMessage: "Set form url path",
   },
   urlPathPlaceholder: {
     id: "app.form_settings.form_url_path_placeholder",
-    defaultMessage: "MyCampaign"
+    defaultMessage: "MyCampaign",
   },
   formLanguageLabel: {
     id: "app.form_settings.form_language_label",
-    defaultMessage: "Form language"
+    defaultMessage: "Form language",
   },
   defaultLanguageLabel: {
     id: "app.form_settings.form_default_language_Label",
-    defaultMessage: "Default (browser language)"
+    defaultMessage: "Default (browser language)",
   },
   formTitleLabel: {
     id: "app.form_settings.form_title_label",
-    defaultMessage: "Form title"
+    defaultMessage: "Form title",
   },
   formPresentationLabel: {
     id: "app.form_settings.form_presentation_label",
-    defaultMessage: "Form presentation text"
+    defaultMessage: "Form presentation text",
   },
   formThanksLabel: {
     id: "app.form_settings.form_thanks_label",
-    defaultMessage: "After form submission text"
+    defaultMessage: "After form submission text",
+  },
+  donationLabel: {
+    id: "app.form_settings.form_donation_label",
+    defaultMessage: "Donation page URL",
+  },
+  redirectLabel: {
+    id: "app.form_settings.form_redirect_label",
+    defaultMessage: "Default redirect URL",
+  },
+  skillsLabel: {
+    id: "app.form_settings.form_skills_label",
+    defaultMessage: "Desired skills",
   },
   saveLabel: {
     id: "app.form_settings.save",
-    defaultMessage: "Save"
-  }
+    defaultMessage: "Save",
+  },
 });
 
 class FormSettingsPage extends Component {
@@ -59,8 +72,8 @@ class FormSettingsPage extends Component {
       formData: {
         campaignId: "",
         slug: "",
-        crm: {}
-      }
+        crm: {},
+      },
     };
   }
   static getDerivedStateFromProps({ campaign }, { formData }) {
@@ -69,16 +82,17 @@ class FormSettingsPage extends Component {
         formData: {
           campaignId: "",
           slug: "",
-          crm: {}
-        }
+          crm: {},
+        },
       };
     } else if (campaign._id !== formData.campaignId) {
       return {
         formData: {
           campaignId: campaign._id,
           slug: campaign.forms ? campaign.forms.slug : "",
-          crm: campaign.forms ? campaign.forms.crm : {}
-        }
+          crm: campaign.forms ? campaign.forms.crm : {},
+          skills: campaign.forms ? campaign.forms.skills : null,
+        },
       };
     }
     return null;
@@ -91,10 +105,10 @@ class FormSettingsPage extends Component {
     const newFormData = { ...this.state.formData };
     set(newFormData, target.name, target.value);
     this.setState({
-      formData: newFormData
+      formData: newFormData,
     });
   };
-  _handleSubmit = ev => {
+  _handleSubmit = (ev) => {
     ev.preventDefault();
     if (this._filledForm()) {
       const { formData } = this.state;
@@ -107,7 +121,7 @@ class FormSettingsPage extends Component {
       });
     }
   };
-  getValue = key => {
+  getValue = (key) => {
     const { formData } = this.state;
     return get(formData, key);
   };
@@ -116,13 +130,13 @@ class FormSettingsPage extends Component {
     return [
       {
         label: intl.formatMessage(messages.defaultLanguageLabel),
-        value: ""
-      }
+        value: "",
+      },
     ].concat(
-      Object.keys(languages).map(key => {
+      Object.keys(languages).map((key) => {
         return {
           label: languages[key],
-          value: key
+          value: key,
         };
       })
     );
@@ -133,7 +147,7 @@ class FormSettingsPage extends Component {
     if (key) {
       return {
         label: languages[key],
-        value: key
+        value: key,
       };
     }
     return null;
@@ -176,12 +190,12 @@ class FormSettingsPage extends Component {
               isSearchable={true}
               placeholder={intl.formatMessage(messages.defaultLanguageLabel)}
               options={this._getFormLanguageOptions()}
-              onChange={selected => {
+              onChange={(selected) => {
                 this._handleChange({
                   target: {
                     name: "crm.language",
-                    value: selected.value
-                  }
+                    value: selected.value,
+                  },
                 });
               }}
               name="crm.language"
@@ -212,6 +226,54 @@ class FormSettingsPage extends Component {
               onChange={this._handleChange}
             />
           </Form.Field>
+          <Form.Field
+            label={intl.formatMessage(messages.donationLabel)}
+            description={
+              <FormattedMessage
+                id="app.form_settings.form_donation_description"
+                defaultMessage="By filling this URL field the form will provide a donation checkbox which, if selected, will redirect them to the donation page after submission."
+              />
+            }
+          >
+            <input
+              type="text"
+              name="crm.donation"
+              value={this.getValue("crm.donation")}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+          <Form.Field
+            label={intl.formatMessage(messages.redirectLabel)}
+            description={
+              <FormattedMessage
+                id="app.form_settings.form_redirect_description"
+                defaultMessage="URL for default redirection after form submission. This will be used if no donation URL is provided or the user does not select the donation checkbox. If no URL is provided, it will be redirected to your Facebook page."
+              />
+            }
+          >
+            <input
+              type="text"
+              name="crm.redirect"
+              placeholder={`https://facebook.com/${campaign.facebookAccount.facebookId}`}
+              value={this.getValue("crm.redirect")}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+          <Form.Field
+            label={intl.formatMessage(messages.skillsLabel)}
+            description={
+              <FormattedMessage
+                id="app.form_settings.form_skills_description"
+                defaultMessage="Customize the desired volunteer skills to appear in your form"
+              />
+            }
+          >
+            <SkillsConfig
+              name="skills"
+              value={this.getValue("skills")}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
         </Form.Content>
         <Form.Actions>
           <input
@@ -226,7 +288,7 @@ class FormSettingsPage extends Component {
 }
 
 FormSettingsPage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(FormSettingsPage);

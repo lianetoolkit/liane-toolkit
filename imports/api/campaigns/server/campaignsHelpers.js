@@ -10,6 +10,7 @@ import {
 import { PeopleHelpers } from "/imports/api/facebook/people/server/peopleHelpers.js";
 import { MapFeatures } from "/imports/api/mapFeatures/mapFeatures";
 import { FAQ } from "/imports/api/faq/faq.js";
+import { Notifications } from "/imports/api/notifications/notifications.js";
 import { Jobs } from "/imports/api/jobs/jobs.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
@@ -436,6 +437,7 @@ const CampaignsHelpers = {
     PeopleLists.remove({ campaignId });
     PeopleTags.remove({ campaignId });
     MapFeatures.remove({ campaignId });
+    Notifications.remove({ campaignId });
 
     // Facebook accounts to delete
     let accountsIds = _.pluck(campaign.accounts, "facebookId");

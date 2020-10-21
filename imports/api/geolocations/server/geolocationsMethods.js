@@ -6,34 +6,34 @@ import { GeolocationsHelpers } from "./geolocationsHelpers.js";
 
 const schemaConfig = {
   name: {
-    type: String
+    type: String,
   },
   parentId: {
     type: String,
-    optional: true
+    optional: true,
   },
   type: {
     type: String,
-    allowedValues: ["location", "center"]
+    allowedValues: ["location", "center"],
   },
   facebook: {
     type: Array,
-    optional: true
+    optional: true,
   },
   "facebook.$": {
     type: Object,
-    blackbox: true
+    blackbox: true,
   },
   osm: {
     type: Object,
     blackbox: true,
-    optional: true
+    optional: true,
   },
   center: {
     type: Object,
     blackbox: true,
-    optional: true
-  }
+    optional: true,
+  },
 };
 
 const validateCreate = new SimpleSchema(schemaConfig).validator();
@@ -68,19 +68,19 @@ export const createGeolocation = new ValidatedMethod({
       facebook,
       osm,
       type,
-      center
+      center,
     });
 
     return Geolocations.insert(insertDoc);
-  }
+  },
 });
 
 export const removeGeolocation = new ValidatedMethod({
   name: "geolocations.remove",
   validate: new SimpleSchema({
     geolocationId: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ geolocationId }) {
     logger.debug("geolocations.remove called", { geolocationId });
@@ -95,7 +95,7 @@ export const removeGeolocation = new ValidatedMethod({
     }
 
     return Geolocations.remove(geolocationId);
-  }
+  },
 });
 
 export const updateGeolocation = new ValidatedMethod({
@@ -126,35 +126,102 @@ export const updateGeolocation = new ValidatedMethod({
       facebook,
       osm,
       type,
-      center
+      center,
     });
 
     Geolocations.upsert({ _id }, { $set: insertDoc });
     return;
-  }
+  },
+});
+
+export const geolocationsSearch = new ValidatedMethod({
+  name: "geolocations.search",
+  validate: new SimpleSchema({
+    search: {
+      type: String,
+      optional: true,
+    },
+  }).validator(),
+  run({ search }) {
+    this.unblock();
+    logger.debug("geolocations.search called", { search });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    let selector = {};
+    let options = {
+      limit: 30,
+      sort: { createdAt: -1 },
+      fields: {
+        name: 1,
+        regionType: 1,
+      },
+    };
+
+    if (search) {
+      selector.name = {
+        $regex: new RegExp(`^${search}$`, "i"),
+      };
+    }
+
+    return Geolocations.find(selector, options).fetch();
+  },
+});
+
+export const geolocationsSelectGet = new ValidatedMethod({
+  name: "geolocations.selectGet",
+  validate: new SimpleSchema({
+    geolocationId: {
+      type: String,
+    },
+  }).validator(),
+  run({ geolocationId }) {
+    this.unblock();
+    logger.debug("geolocations.selectGet called", { geolocationId });
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    let selector = { _id: geolocationId };
+    let options = {
+      fields: {
+        name: 1,
+        regionType: 1,
+      },
+    };
+
+    const geolocation = Geolocations.findOne(selector, options);
+
+    return geolocation;
+  },
 });
 
 export const searchAdGeolocations = new ValidatedMethod({
   name: "geolocations.searchAdGeolocations",
   validate: new SimpleSchema({
     q: {
-      type: String
+      type: String,
     },
     location_types: {
       type: Array,
-      optional: true
+      optional: true,
     },
     "location_types.$": {
-      type: String
+      type: String,
     },
     country_code: {
       type: String,
-      optional: true
+      optional: true,
     },
     region_id: {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run(query) {
     this.unblock();
@@ -174,9 +241,9 @@ export const searchAdGeolocations = new ValidatedMethod({
     return GeolocationsHelpers.facebookSearch({
       ...query,
       type: "adgeolocation",
-      access_token: user.services.facebook.accessToken
+      access_token: user.services.facebook.accessToken,
     });
-  }
+  },
 });
 
 export const searchNominatim = new ValidatedMethod({
@@ -184,20 +251,20 @@ export const searchNominatim = new ValidatedMethod({
   validate: new SimpleSchema({
     q: {
       type: String,
-      optional: true
+      optional: true,
     },
     city: {
       type: String,
-      optional: true
+      optional: true,
     },
     state: {
       type: String,
-      optional: true
+      optional: true,
     },
     country: {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run(query) {
     this.unblock();
@@ -213,21 +280,21 @@ export const searchNominatim = new ValidatedMethod({
     // }
 
     return GeolocationsHelpers.nominatimSearch(query);
-  }
+  },
 });
 
 export const matchFromOSM = new ValidatedMethod({
   name: "geolocations.matchFromOSM",
   validate: new SimpleSchema({
     id: {
-      type: Number
+      type: Number,
     },
     type: {
-      type: String
+      type: String,
     },
     regionType: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run({ id, type, regionType }) {
     this.unblock();
@@ -246,7 +313,7 @@ export const matchFromOSM = new ValidatedMethod({
       const facebookData = GeolocationsHelpers.findFacebookFromNominatim({
         data: osm,
         regionType,
-        accessToken: user.services.facebook.accessToken
+        accessToken: user.services.facebook.accessToken,
       });
       // return facebookData;
     }
@@ -254,7 +321,7 @@ export const matchFromOSM = new ValidatedMethod({
     return true;
 
     // return localData;
-  }
+  },
 });
 
 export const geolocationsQueryCount = new ValidatedMethod({
@@ -263,8 +330,8 @@ export const geolocationsQueryCount = new ValidatedMethod({
     query: {
       type: Object,
       blackbox: true,
-      optional: true
-    }
+      optional: true,
+    },
   }).validator(),
   run({ query }) {
     const userId = Meteor.userId();
@@ -272,5 +339,5 @@ export const geolocationsQueryCount = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to perform this action");
     }
     return Geolocations.find(query || {}).count();
-  }
+  },
 });

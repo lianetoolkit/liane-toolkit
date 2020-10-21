@@ -190,6 +190,16 @@ export const campaignsCreate = new ValidatedMethod({
       type: String,
       optional: true,
     },
+    contact: {
+      type: Object,
+    },
+    "contact.email": {
+      type: String,
+    },
+    "contact.phone": {
+      type: String,
+      optional: true,
+    },
     country: {
       type: String,
     },
@@ -223,6 +233,7 @@ export const campaignsCreate = new ValidatedMethod({
     candidate,
     office,
     cause,
+    contact,
     geolocation,
     facebookAccountId,
     invite,
@@ -265,6 +276,7 @@ export const campaignsCreate = new ValidatedMethod({
       users,
       name,
       type,
+      contact,
       country,
       creatorId: userId,
     };
@@ -479,6 +491,30 @@ export const campaignsFormUpdate = new ValidatedMethod({
       type: String,
       optional: true,
     },
+    "crm.donation": {
+      type: String,
+      optional: true,
+    },
+    "crm.redirect": {
+      type: String,
+      optional: true,
+    },
+    skills: {
+      type: Array,
+      optional: true,
+    },
+    "skills.$": {
+      type: Object,
+    },
+    "skills.$.label": {
+      type: String,
+    },
+    "skills.$.value": {
+      type: String,
+    },
+    "skills.$.active": {
+      type: Boolean,
+    },
   }).validator(),
   run({ campaignId, ...data }) {
     logger.debug("campaigns.formUpdate called", {
@@ -523,6 +559,12 @@ export const campaignsFormUpdate = new ValidatedMethod({
         "settings",
         "help",
         "support",
+        "transparency",
+        "form_settings",
+        "faq",
+        "comments",
+        "account",
+        "messages",
       ];
       if (
         data.slug.length < minimumLength ||
@@ -544,6 +586,10 @@ export const campaignsFormUpdate = new ValidatedMethod({
     }
     if (data.crm) {
       $set["forms.crm"] = data.crm;
+    }
+
+    if (data.skills) {
+      $set["forms.skills"] = data.skills;
     }
 
     Campaigns.update(
@@ -582,6 +628,9 @@ export const campaignsUpdate = new ValidatedMethod({
     cause: {
       type: String,
       optional: true,
+    },
+    contact: {
+      type: Campaigns.contactSchema,
     },
   }).validator(),
   run({ campaignId, ...data }) {
@@ -635,6 +684,10 @@ export const campaignsUpdate = new ValidatedMethod({
         throw new Meteor.Error(400, "You must have a cause");
       }
       $set.cause = data.cause;
+    }
+
+    if (data.contact) {
+      $set["contact"] = data.contact;
     }
 
     Campaigns.update(
@@ -1325,6 +1378,7 @@ export const removeUser = new ValidatedMethod({
     }
 
     if (
+      userId &&
       Meteor.call("campaigns.userCan", {
         campaignId,
         userId,

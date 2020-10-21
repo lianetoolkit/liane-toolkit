@@ -326,13 +326,17 @@ class PeopleTable extends Component {
     }
   };
   _handleEditClick = (person) => (ev) => {
-    const { intl } = this.props;
+    const { intl, campaign } = this.props;
     ev.preventDefault();
     modalStore.setTitle(
       intl.formatMessage(messages.editingPersonTitle, { name: person.name })
     );
     modalStore.set(
-      <PersonEdit person={person} onSuccess={this._handleEditSuccess} />
+      <PersonEdit
+        campaign={campaign}
+        person={person}
+        onSuccess={this._handleEditSuccess}
+      />
     );
   };
   expand = (person) => (ev) => {

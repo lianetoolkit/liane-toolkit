@@ -128,6 +128,7 @@ export default withTracker((props) => {
         geolocationId: 1,
         forms: 1,
         createdAt: 1,
+        contact: 1,
       },
       transform: function (campaign) {
         let accountsMap = {};

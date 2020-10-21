@@ -25,6 +25,40 @@ Meteor.publish("people.map", function ({ campaignId }) {
   return this.ready();
 });
 
+Meteor.publishComposite("people.unresolved", function ({ campaignId }) {
+  logger.debug("people.unresolved called", { campaignId });
+  check(campaignId, String);
+  const userId = this.userId;
+  if (userId && campaignId) {
+    // Permission check
+    const allowed = Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "people",
+      permission: "edit",
+    });
+    if (allowed) {
+      return {
+        find: function () {
+          return People.find({
+            campaignId,
+            unresolved: true,
+            // related: { $exists: true },
+          });
+        },
+        children(person) {
+          let children = [];
+          // if (person.related && person.related.length) {
+          //   children.push(People.find({ _id: { $in: person.related } }));
+          // }
+          return children;
+        },
+      };
+    }
+  }
+  return this.ready();
+});
+
 Meteor.publish("people.search", function ({ search, options }) {
   logger.debug("people.search called", {
     search,
@@ -134,6 +168,31 @@ Meteor.publish("people.importJobCount", function ({ campaignId }) {
         type: "people.importPerson",
         "data.campaignId": campaignId,
         status: { $ne: "failed" },
+      })
+    );
+    return;
+  }
+  return this.ready();
+});
+
+Meteor.publish("people.unresolved.count", function ({ campaignId }) {
+  this.unblock();
+  logger.debug("people.unresolved.count called", { campaignId });
+  const userId = this.userId;
+  if (
+    Meteor.call("campaigns.userCan", {
+      campaignId,
+      userId,
+      feature: "people",
+      permission: "view",
+    })
+  ) {
+    Counts.publish(
+      this,
+      "people.unresolved.count",
+      People.find({
+        campaignId,
+        unresolved: true,
       })
     );
     return;
@@ -261,12 +320,7 @@ Meteor.publishComposite("people.form.detail", function ({ formId, psid }) {
       return People.find(selector, {
         fields: {
           name: 1,
-          facebookId: 1,
-          "campaignMeta.contact": 1,
-          "campaignMeta.basic_info": 1,
-          "campaignMeta.donor": 1,
-          "campaignMeta.supporter": 1,
-          "campaignMeta.mobilizer": 1,
+          facebookId: 1
         },
       });
     },

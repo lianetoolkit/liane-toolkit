@@ -12,7 +12,7 @@ body {
   width: 100%;
   margin: 0;
   padding: 0;
-  font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
   line-height: 1.5;
 }
 
@@ -78,7 +78,8 @@ label input[type="password"] {
 
 textarea {
   resize: none;
-  min-height: 125px;
+  min-height: 150px;
+  line-height: 1.4;
 }
 
 textarea,

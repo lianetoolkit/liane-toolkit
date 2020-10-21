@@ -115,8 +115,11 @@ Meteor.publishComposite("campaigns.publicDetail", function ({
           office: 1,
           cause: 1,
           country: 1,
+          "facebookAccount.facebookId": 1,
           "forms.slug": 1,
           "forms.crm": 1,
+          "forms.skills": 1,
+          contact: 1,
         },
       });
     },
@@ -142,6 +145,7 @@ Meteor.publishComposite("campaigns.detail", function ({ campaignId }) {
     status: 1,
     forms: 1,
     createdAt: 1,
+    contact: 1,
   };
   let children = [
     {

@@ -2,10 +2,20 @@ import React, { Component } from "react";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+} from "react-intl";
+
 const Container = styled.form`
   width: 100%;
   display: flex;
   flex-direction: column;
+  .button.primary {
+    margin: 0;
+  }
 `;
 
 const ContentContainer = styled.div`
@@ -36,19 +46,22 @@ const FormContent = styled.div`
 const FieldContainer = styled.label`
   display: block;
   font-weight: normal;
-  margin: 0 0 1rem;
-  .label {
+  margin: 0 0 1.5rem;
+  .field-label {
     color: #333;
     display: block;
     font-size: 0.8em;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
   }
-  .description {
+  .optional-label {
+    color: #999;
+  }
+  .field-description {
     color: #888;
     display: block;
     font-size: 0.8em;
-    margin-top: -0.25rem;
-    margin-bottom: 0.25rem;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
     font-style: italic;
   }
   .input-container {
@@ -67,6 +80,9 @@ const FieldContainer = styled.label`
     .select__control {
       border: 0;
       margin: 0;
+    }
+    textarea {
+      line-height: 1.4;
     }
     .prefix {
       flex: 0 0 auto;
@@ -223,7 +239,7 @@ const FiltersHeader = styled.div`
   flex: 1 1 100%;
   display: flex;
   align-items: center;
-    width: 100%;
+  width: 100%;
   .content {
     flex: 1 1 100%;
     h3,
@@ -278,12 +294,31 @@ const ButtonGroup = styled.div`
 
 class Field extends Component {
   render() {
-    const { label, description, children, prefix, ...props } = this.props;
+    const {
+      label,
+      description,
+      optional,
+      children,
+      prefix,
+      ...props
+    } = this.props;
     return (
       <FieldContainer {...props}>
-        <span className="label">{label}</span>
+        {label ? (
+          <span className="field-label">
+            {label}{" "}
+            {optional ? (
+              <span className="optional-label">
+                <FormattedMessage
+                  id="app.form.optional_label"
+                  defaultMessage="(optional)"
+                />
+              </span>
+            ) : null}
+          </span>
+        ) : null}
         {description ? (
-          <span className="description">{description}</span>
+          <span className="field-description">{description}</span>
         ) : null}
         <div className="input-container">
           {prefix ? <span className="prefix">{prefix}</span> : null}

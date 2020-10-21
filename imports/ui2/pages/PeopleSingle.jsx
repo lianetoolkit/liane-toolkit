@@ -265,20 +265,22 @@ class Comments extends Component {
 
 class PeopleSingle extends Component {
   _handleEditClick = (ev) => {
-    const { person } = this.props;
+    const { campaign, person } = this.props;
     ev.preventDefault();
     modalStore.setTitle(`Editing ${person.name}`);
     modalStore.set(
-      <PersonEdit person={person} onSuccess={this._handleEditSuccess} />
+      <PersonEdit
+        campaign={campaign}
+        person={person}
+        onSuccess={this._handleEditSuccess}
+      />
     );
   };
   _handleRemoveClick = (ev) => {
     ev.preventDefault();
     const { intl, person } = this.props;
     if (
-      confirm(
-        intl.formatMessage(messages.removeConfirm, { name: person.name })
-      )
+      confirm(intl.formatMessage(messages.removeConfirm, { name: person.name }))
     ) {
       Meteor.call("people.remove", { personId: person._id }, (err, res) => {
         if (err) {

@@ -3,6 +3,7 @@ import { Random } from "meteor/random";
 import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
 import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
 import { NotificationsHelpers } from "/imports/api/notifications/server/notificationsHelpers.js";
+import { languages } from "/locales";
 
 // http://docs.meteor.com/api/accounts-multi.html#AccountsCommon-config
 Accounts.config({
@@ -68,6 +69,10 @@ Accounts.onCreateUser(function (options, user) {
 
   if (options.type) {
     user.type = options.type;
+  }
+
+  if (options.userLanguage && languages[options.userLanguage]) {
+    user.userLanguage = options.userLanguage;
   }
 
   // Validate invitation

@@ -117,23 +117,53 @@ export const Meta = {
         name: "extra",
         localeKey: "extraLabel",
         type: "array",
-        filedType: "extra",
+        fieldType: "extra",
       },
     ],
   },
   get(section, name) {
+    if (section == "extra") {
+      return {
+        key: `campaignMeta.extra.${name}`,
+        name: name,
+        type: "string",
+        fieldType: "text",
+      };
+    }
     return this.meta[section].find((m) => m.name == name);
   },
-  getList(section) {
-    return this.meta[section].map((m) => m.name);
+  getList(section, people) {
+    if (section == "extra") {
+      const listMap = {};
+      for (const person of people) {
+        if (person.campaignMeta && person.campaignMeta.extra) {
+          if (Array.isArray(person.campaignMeta.extra)) {
+            for (const extraItem of person.campaignMeta.extra) {
+              listMap[extraItem.key] = true;
+            }
+          } else {
+            const keys = Object.keys(person.campaignMeta.extra);
+            for (const key of keys) {
+              listMap[key] = true;
+            }
+          }
+        }
+      }
+      return Object.keys(listMap);
+    } else {
+      const list = this.meta[section].map((m) => m.name);
+      return list;
+    }
   },
   getLabel(section, key) {
     const meta = this.get(section, key);
     if (meta && messages[meta.localeKey]) {
       return messages[meta.localeKey];
+    } else if (meta) {
+      return { defaultMessage: meta.name };
     }
-    throw `${section} ${key} label not found`;
     return "";
+    return key;
   },
   getSections() {
     return Object.keys(this.meta);

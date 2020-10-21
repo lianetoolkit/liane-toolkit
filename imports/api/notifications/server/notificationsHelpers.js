@@ -35,6 +35,9 @@ const NotificationsHelpers = {
         .fetch();
     }
     let insert = {};
+    if (campaignId) {
+      insert.campaignId = campaignId;
+    }
     if (text) {
       insert.text = text;
     }
@@ -69,6 +72,7 @@ const NotificationsHelpers = {
             text,
             path,
           },
+          tag: category,
         });
       }
     }

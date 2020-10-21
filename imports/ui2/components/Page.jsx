@@ -80,6 +80,11 @@ const NavContainer = styled.div`
     }
   }
   ${(props) =>
+    props.padded &&
+    css`
+      padding-right: 1rem;
+    `}
+  ${(props) =>
     !props.full &&
     css`
       @media (min-width: 1280px) {
