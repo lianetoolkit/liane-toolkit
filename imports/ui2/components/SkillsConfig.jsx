@@ -10,6 +10,17 @@ import {
 
 import Button from "./Button.jsx";
 
+const messages = defineMessages({
+  addSkillPlaceholder: {
+    id: "app.skills_config.add_placeholder",
+    defaultMessage: "Type a new skill to add",
+  },
+  removeSkillLabel: {
+    id: "app.skills_config.remove_label",
+    defaultMessage: "Remove skill",
+  },
+});
+
 export const defaultSkillsLabels = defineMessages({
   design: {
     id: "app.skills.design_label",
@@ -55,14 +66,21 @@ const Container = styled.div`
     li {
       margin: 0;
       padding: 0;
-      a {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      align-items: center;
+      justify-content: center;
+      label {
+        flex: 1 1 100%;
+        margin: 0;
         padding: 0.6rem 1rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-bottom: 1px solid #ddd;
-        text-decoration: none;
         color: #333;
+        input[type="checkbox"] {
+          margin-right: 1rem;
+        }
         &:hover {
           background: #eee;
         }
@@ -71,6 +89,24 @@ const Container = styled.div`
         }
         .close {
           font-size: 0.8em;
+        }
+      }
+      a {
+        flex: 0 0 auto;
+        padding: 0.6rem 1rem;
+        text-decoration: none;
+        color: #cc0000;
+        &:hover {
+          background: #cc0000;
+          color: #fff;
+        }
+      }
+      &:first-child {
+        label {
+          border-radius: 7px 0 0 0;
+        }
+        a {
+          border-radius: 0 7px 0 0;
         }
       }
     }
@@ -84,10 +120,11 @@ const Container = styled.div`
       border: 0;
       margin: 0;
       padding: 0.8rem 1rem;
+      border-radius: 0 0 0 7px;
     }
     a {
       flex: 0 0 auto;
-      border-radius: 0 7px 7px 0;
+      border-radius: 0 0 7px 0;
       padding: 1rem;
       margin: 0;
       border: 0;
@@ -120,7 +157,7 @@ class SkillsConfig extends Component {
     if (JSON.stringify(prevState.options) != JSON.stringify(options)) {
       this.props.onChange &&
         this.props.onChange({
-          target: { name, value: options.map((opt) => opt.value) },
+          target: { name, value: options },
         });
     }
   }
@@ -128,12 +165,17 @@ class SkillsConfig extends Component {
     const { intl, value } = this.props;
     let configOptions = [];
     for (const option of value || SkillsConfig.defaultOptions) {
-      configOptions.push({
-        label: defaultSkillsLabels[option]
-          ? intl.formatMessage(defaultSkillsLabels[option])
-          : option,
-        value: option,
-      });
+      if (typeof option == "string") {
+        configOptions.push({
+          label: defaultSkillsLabels[option]
+            ? intl.formatMessage(defaultSkillsLabels[option])
+            : option,
+          value: option,
+          active: true,
+        });
+      } else {
+        configOptions.push(option);
+      }
     }
     return sortBy(configOptions, (opt) => opt.label);
   };
@@ -151,27 +193,53 @@ class SkillsConfig extends Component {
   _handleAdd = (ev) => {
     ev.preventDefault();
     const { options, newValue } = this.state;
+    if (!newValue) {
+      return;
+    }
     if (options.find((option) => option.value == newValue)) return false;
-    const newOptions = [...options, { value: newValue, label: newValue }];
+    const newOptions = [
+      ...options,
+      { value: newValue, label: newValue, active: true },
+    ];
     this.setState({
       newValue: "",
       options: sortBy(newOptions, (opt) => opt.label),
     });
   };
+  _handleActivation = ({ target }) => {
+    const { options } = this.state;
+    const newOptions = options.map((option) => {
+      if (option.value == target.value) {
+        option = { ...option, active: !option.active };
+      }
+      return option;
+    });
+    this.setState({ options: newOptions });
+  };
   render() {
+    const { intl } = this.props;
     const { newValue, options } = this.state;
     return (
       <Container>
         <ul>
           {options.map((option) => (
             <li>
+              <label>
+                <input
+                  type="checkbox"
+                  onChange={this._handleActivation}
+                  value={option.value}
+                  checked={option.active}
+                />
+                <span className="label">{option.label}</span>
+              </label>
               <a
                 href="#"
-                title="Remove"
+                className="close"
+                title={intl.formatMessage(messages.removeSkillLabel)}
                 onClick={this._handleRemove(option.value)}
               >
-                <span className="label">{option.label}</span>
-                <span className="close">x</span>
+                x
               </a>
             </li>
           ))}
@@ -179,7 +247,7 @@ class SkillsConfig extends Component {
         <div>
           <input
             type="text"
-            placeholder="Type a new skill to add"
+            placeholder={intl.formatMessage(messages.addSkillPlaceholder)}
             value={newValue}
             onKeyPress={(ev) => {
               ev.key == "Enter" && ev.preventDefault();
@@ -187,7 +255,10 @@ class SkillsConfig extends Component {
             onChange={this._handleChange}
           />
           <Button href="#" secondary onClick={this._handleAdd}>
-            Add skill
+            <FormattedMessage
+              id="app.skills_config.add_label"
+              defaultMessage="Add skill"
+            />
           </Button>
         </div>
       </Container>

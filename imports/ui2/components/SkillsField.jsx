@@ -46,12 +46,16 @@ class SkillsField extends Component {
     const { intl, options } = this.props;
     let configOptions = [];
     for (const option of options || SkillsConfig.defaultOptions) {
-      configOptions.push({
-        label: defaultSkillsLabels[option]
-          ? intl.formatMessage(defaultSkillsLabels[option])
-          : option,
-        value: option,
-      });
+      if (typeof option == "string") {
+        configOptions.push({
+          label: defaultSkillsLabels[option]
+            ? intl.formatMessage(defaultSkillsLabels[option])
+            : option,
+          value: option,
+        });
+      } else if (option.active) {
+        configOptions.push({ label: option.label, value: option.value });
+      }
     }
     return sortBy(configOptions, (opt) => opt.label);
   };

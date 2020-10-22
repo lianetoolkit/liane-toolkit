@@ -67,8 +67,14 @@ export const createMessage = new ValidatedMethod({
       filters,
     });
 
+    const getEmailData = (language) => {
+      language = language || "en";
+      const email = emails[language] || emails["en"];
+      return { ...email };
+    };
+
     cursor.forEach((user) => {
-      const email = { ...emails[user.userLanguage || "en"] };
+      const email = getEmailData(user.userLanguage);
       email.body = email.body.replace("%NAME%", user.name);
       NotificationsHelpers.add({
         userId: user._id,
@@ -81,6 +87,7 @@ export const createMessage = new ValidatedMethod({
         subject: email.subject,
         body: email.body,
         data: { user },
+        tag: "message",
       });
     });
 

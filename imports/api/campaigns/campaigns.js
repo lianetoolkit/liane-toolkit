@@ -61,6 +61,16 @@ Campaigns.accountsSchema = new SimpleSchema({
   },
 });
 
+Campaigns.contactSchema = new SimpleSchema({
+  email: {
+    type: String,
+  },
+  phone: {
+    type: String,
+    optional: true,
+  },
+});
+
 Campaigns.schema = new SimpleSchema({
   name: {
     type: String,
@@ -85,6 +95,9 @@ Campaigns.schema = new SimpleSchema({
   cause: {
     type: String,
     optional: true,
+  },
+  contact: {
+    type: Campaigns.contactSchema,
   },
   creatorId: {
     type: String,
@@ -153,12 +166,25 @@ Campaigns.schema = new SimpleSchema({
     type: String,
     optional: true,
   },
+  "forms.crm.redirect": {
+    type: String,
+    optional: true,
+  },
   "forms.skills": {
     type: Array,
     optional: true,
   },
   "forms.skills.$": {
+    type: Object,
+  },
+  "forms.skills.$.label": {
     type: String,
+  },
+  "forms.skills.$.value": {
+    type: String,
+  },
+  "forms.skills.$.active": {
+    type: Boolean,
   },
   createdAt: {
     type: Date,

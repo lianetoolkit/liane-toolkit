@@ -36,9 +36,13 @@ const messages = defineMessages({
     id: "app.people.unresolved.directory_label",
     defaultMessage: "People directory",
   },
+  resolvedCountLabel: {
+    id: "app.people.unresolved.resolved_count_label",
+    defaultMessage: "Do not merge",
+  },
   unresolvedCountLabel: {
     id: "app.people.unresolved.count_label",
-    defaultMessage: "Unresolved",
+    defaultMessage: "Merge",
   },
   continueLabel: {
     id: "app.people.unresolved.continue",
@@ -283,10 +287,23 @@ const Container = styled.div`
       }
     }
   }
+  .merge-options {
+    overflow: auto;
+  }
   .row-container {
     flex-direction: row;
     display: flex;
     justify-content: space-between;
+    > * {
+      min-width: 130px;
+      margin-right: 0.5rem;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+  .person-row {
+    margin: 0 0 1rem;
   }
   .unresolved-btn {
     border: 1px solid rgba(51, 0, 102, 0.25);
@@ -566,7 +583,7 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
         })}
 
         <div
-          className=" row-container"
+          className="row-container"
           style={{ flex: 2, borderTop: "1px solid #ddd", paddingTop: 10 }}
         >
           <a
@@ -591,9 +608,9 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
   }
   return (
     <Container>
-      <div>
+      <div className="merge-options">
         <div
-          className="row-container"
+          className="row-container person-row"
           style={{
             flex: counter,
           }}
@@ -633,14 +650,28 @@ const MergeModal = ({ person, campaignId, intl, tags }) => {
                     forceUpdate();
                   }}
                 >
-                  {intl.formatMessage(messages.unresolvedCountLabel)} #{i + 1}{" "}
-                  &nbsp;
-                  {!activePersons[i] ? <Badge>Resolved</Badge> : null}
+                  {!activePersons[i]
+                    ? intl.formatMessage(messages.resolvedCountLabel)
+                    : intl.formatMessage(messages.unresolvedCountLabel)}{" "}
+                  #{i + 1}
                 </a>
               </div>
             );
           })}
         </div>
+        <p>
+          <FormattedMessage
+            id="app.people.unresolved.instruction_01"
+            defaultMessage="If a person does not belong in this merge, click on the respective
+          button above to preserve their data and exclude them from this action."
+          />
+        </p>
+        <p>
+          <FormattedMessage
+            id="app.people.unresolved.instruction_02"
+            defaultMessage="Select the fields below to choose which data should be unified."
+          />
+        </p>
         {sections.map((section, i) => {
           if (!sectionsToShow.includes(section)) return null;
           const fields = Meta.getList(section, persons);

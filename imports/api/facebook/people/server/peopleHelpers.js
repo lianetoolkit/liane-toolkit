@@ -518,16 +518,19 @@ const PeopleHelpers = {
     });
     setTimeout(
       Meteor.bindEnvironment(() => {
+        let i = 0;
         for (let person of importData) {
           JobsHelpers.addJob({
             jobType: "people.importPerson",
             jobData: {
+              idx: i,
               campaignId,
               jobId: job,
               listId,
               person: JSON.stringify(person),
             },
           });
+          i++;
         }
       }),
       10

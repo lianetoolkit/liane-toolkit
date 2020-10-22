@@ -8,7 +8,6 @@ Messages.schema = new SimpleSchema({
   },
   content: {
     type: String,
-    index: true,
   },
   type: {
     type: String,

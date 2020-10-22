@@ -19,6 +19,7 @@ import OrLine from "../components/OrLine.jsx";
 import Form from "../components/Form.jsx";
 import CountrySelect from "../components/CountrySelect.jsx";
 import FacebookButton from "../components/FacebookButton.jsx";
+import PrivacyAgreementField from "../components/PrivacyAgreementField.jsx";
 
 import ForgotPassword from "../components/ForgotPassword.jsx";
 
@@ -67,6 +68,7 @@ const Content = styled.div`
       max-width: 960px;
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
     `}
 `;
 
@@ -193,6 +195,23 @@ const ClosedContainer = styled.div`
     font-size: 0.8em;
     color: #777;
   }
+  form {
+    font-size: 0.9em;
+    > label {
+      margin: 0 0 0.5rem;
+    }
+    .privacy-consent {
+      margin: 0.5rem 0 1rem;
+      border: 0;
+      label {
+        padding: 0rem 0.5rem 0rem 0rem;
+      }
+      > span {
+        font-size: 0.9em;
+        padding: 0;
+      }
+    }
+  }
 `;
 
 const messages = defineMessages({
@@ -212,12 +231,18 @@ const messages = defineMessages({
     id: "app.auth.forgot_password_title",
     defaultMessage: "Forgot my password",
   },
+  subscriptionValidation: {
+    id: "app.subscription_validation",
+    defaultMessage:
+      "You must provide an email and agree with the privacy policy and terms of use",
+  },
 });
 
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      agreed: false,
       loading: false,
       subscribeFormData: { name: "", email: "" },
       subscribed: false,
@@ -247,17 +272,26 @@ class Home extends Component {
   };
   _handleSubscribeSubmit = (ev) => {
     ev.preventDefault();
-    Meteor.call(
-      "users.mailSubscribe",
-      this.state.subscribeFormData,
-      (err, res) => {
-        if (err) {
-          alertStore.add(err);
-        } else {
-          this.setState({ subscribed: true });
+    const { intl } = this.props;
+    const { subscribeFormData, agreed } = this.state;
+    if (agreed && subscribeFormData.email) {
+      Meteor.call(
+        "users.mailSubscribe",
+        this.state.subscribeFormData,
+        (err, res) => {
+          if (err) {
+            alertStore.add(err);
+          } else {
+            this.setState({ subscribed: true });
+          }
         }
-      }
-    );
+      );
+    } else {
+      alertStore.add(
+        intl.formatMessage(messages.subscriptionValidation),
+        "error"
+      );
+    }
   };
   _handlePasswordLoginSubmit = (ev) => {
     ev.preventDefault();
@@ -314,18 +348,18 @@ class Home extends Component {
           <Content centered={this._showForm()}>
             {this._showForm() ? (
               <ClosedContainer>
-                <h3>
-                  <FormattedMessage
-                    id="app.mail_subscription.disabled_message"
-                    defaultMessage="The creation of new campaigns is currently disabled."
-                  />
-                </h3>
                 {!subscribed ? (
                   <>
+                    <h3>
+                      <FormattedMessage
+                        id="app.mail_subscription.form_title"
+                        defaultMessage="Liane is currently a product under testing for a limited number of users."
+                      />
+                    </h3>
                     <p>
                       <FormattedMessage
                         id="app.mail_subscription.form_text"
-                        defaultMessage="If you'd like to receive updates, subscribe below:"
+                        defaultMessage="Please complete this form to request an invitation."
                       />
                     </p>
                     <Form onSubmit={this._handleSubscribeSubmit}>
@@ -351,16 +385,11 @@ class Home extends Component {
                           onChange={this._handleSubscribeChange}
                         />
                       </Form.Field>
-                      <p className="privacy-text">
-                        <FormattedHTMLMessage
-                          id="app.mail_subscription.privacy_text"
-                          defaultMessage="By submitting this form you agree with our <a href='{url}' target='_blank'>privacy policy</a>."
-                          values={{
-                            url:
-                              "https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf",
-                          }}
-                        />
-                      </p>
+                      <PrivacyAgreementField
+                        onChange={(checked) => {
+                          this.setState({ agreed: !!checked });
+                        }}
+                      />
                       <input type="submit" value="Submit" />
                     </Form>
                   </>

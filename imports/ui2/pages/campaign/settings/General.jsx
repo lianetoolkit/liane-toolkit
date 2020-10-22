@@ -57,6 +57,14 @@ const messages = defineMessages({
     id: "app.campaign_settings.location_label",
     defaultMessage: "Location",
   },
+  emailLabel: {
+    id: "app.campaign_settings.email_label",
+    defaultMessage: "Public email",
+  },
+  phoneLabel: {
+    id: "app.campaign_settings.phone_label",
+    defaultMessage: "Public phone number",
+  },
   saveLabel: {
     id: "app.campaign_settings.save",
     defaultMessage: "Save",
@@ -70,6 +78,7 @@ class CampaignSettingsPage extends Component {
       formData: {
         campaignId: "",
         name: "",
+        contact: {},
       },
     };
   }
@@ -82,6 +91,7 @@ class CampaignSettingsPage extends Component {
           candidate: "",
           party: "",
           cause: "",
+          contact: {},
         },
       };
     } else if (campaign._id !== formData.campaignId) {
@@ -92,6 +102,7 @@ class CampaignSettingsPage extends Component {
           candidate: campaign.candidate,
           party: campaign.party,
           cause: campaign.cause,
+          contact: campaign.contact,
         },
       };
     }
@@ -207,6 +218,31 @@ class CampaignSettingsPage extends Component {
                 />
               </Form.Field>
             ) : null}
+            <h3>
+              <FormattedMessage
+                id="app.campaign_settings.contact_title"
+                defaultMessage="Contact information"
+              />
+            </h3>
+            <Form.Field label={intl.formatMessage(messages.emailLabel)}>
+              <input
+                type="text"
+                name="contact.email"
+                value={this.getValue("contact.email")}
+                onChange={this._handleChange}
+              />
+            </Form.Field>
+            <Form.Field
+              label={intl.formatMessage(messages.phoneLabel)}
+              optional
+            >
+              <input
+                type="text"
+                name="contact.phone"
+                value={this.getValue("contact.phone")}
+                onChange={this._handleChange}
+              />
+            </Form.Field>
           </Form.Content>
           <Form.Actions>
             <input

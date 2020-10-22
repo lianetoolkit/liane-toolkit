@@ -49,6 +49,8 @@ import {
   faSync,
   faMarker,
   faLink,
+  faInfoCircle,
+  faShieldAlt,
   faGlobeAmericas,
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
@@ -108,6 +110,8 @@ library.add(faEye);
 library.add(faSync);
 library.add(faMarker);
 library.add(faLink);
+library.add(faInfoCircle);
+library.add(faShieldAlt);
 library.add(faGlobeAmericas);
 library.add(faThLarge);
 library.add(faFacebookSquare);

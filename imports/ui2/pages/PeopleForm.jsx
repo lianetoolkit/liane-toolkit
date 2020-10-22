@@ -36,6 +36,8 @@ import Loading from "../components/Loading.jsx";
 import Button from "../components/Button.jsx";
 import Form from "../components/Form.jsx";
 import CountryExclusive from "../components/CountryExclusive.jsx";
+import Disclaimer from "../components/Disclaimer.jsx";
+import PrivacyAgreementField from "../components/PrivacyAgreementField.jsx";
 
 const recaptchaSiteKey = Meteor.settings.public.recaptcha;
 
@@ -51,6 +53,10 @@ const messages = defineMessages({
   requiredEmailOrPhone: {
     id: "app.people_form.email_phone_required",
     defaultMessage: "Email or phone is required",
+  },
+  requiredPolicy: {
+    id: "app.people_form.policy_required",
+    defaultMessage: "You must agree with our privacy policy and terms of use",
   },
   thankYou: {
     id: "app.people_form.thank_you",
@@ -97,6 +103,9 @@ const Header = styled.header`
       }
     }
   }
+  @media (max-width: 770px) {
+    padding: 1rem;
+  }
 `;
 
 const Container = styled.div`
@@ -139,7 +148,6 @@ const Container = styled.div`
   }
   .policy {
     margin: 2rem 0 1rem;
-    font-size: 0.8em;
     color: #666;
   }
   .recaptcha-container {
@@ -151,6 +159,16 @@ const Container = styled.div`
   .button {
     margin: 0;
   }
+  @media (max-width: 770px) {
+    margin: 4rem 1rem 0;
+    form {
+      padding: 1rem;
+      margin: 2rem -1rem 0;
+      border-left: 0;
+      border-right: 0;
+      border-radius: 0;
+    }
+  }
 `;
 
 class PeopleForm extends Component {
@@ -158,6 +176,7 @@ class PeopleForm extends Component {
     super(props);
     this.state = {
       formData: {},
+      agreed: false,
       loading: false,
       sent: false,
       donor: false,
@@ -246,7 +265,11 @@ class PeopleForm extends Component {
   _handleSubmit(ev) {
     ev.preventDefault();
     const { intl, formId, person, campaign } = this.props;
-    const { formData } = this.state;
+    const { agreed, formData } = this.state;
+    if (!agreed) {
+      alertStore.add(intl.formatMessage(messages.requiredPolicy), "error");
+      return;
+    }
     let data = { ...formData, campaignId: campaign._id };
     if (formId) {
       data.formId = formId;
@@ -275,11 +298,15 @@ class PeopleForm extends Component {
       if (res) {
         FlowRouter.go("/f/" + res);
         this.setState({ sent: true, loading: false, donor: formData.donor });
-        if (formData.donor) {
-          setTimeout(() => {
+        setTimeout(() => {
+          if (formData.donor) {
             window.location = campaign.forms.crm.donation;
-          }, 5000);
-        }
+          } else {
+            window.location =
+              campaign.forms.crm.redirect ||
+              `https://facebook.com/${campaign.facebookAccount.facebookId}`;
+          }
+        }, 5000);
       } else {
         this.setState({ loading: false });
       }
@@ -544,7 +571,7 @@ class PeopleForm extends Component {
                       {/* <Divider hidden /> */}
                     </div>
                   ) : null}
-                  <p className="policy">
+                  {/* <p className="policy">
                     <CountryExclusive
                       country="CO"
                       defaultContent={
@@ -569,7 +596,54 @@ class PeopleForm extends Component {
                         </a>
                       </span>
                     </CountryExclusive>
-                  </p>
+                  </p> */}
+                  <div className="policy">
+                    <PrivacyAgreementField
+                      onChange={(checked) => {
+                        this.setState({ agreed: checked });
+                      }}
+                    />
+                    <Disclaimer type="security">
+                      <p>
+                        <strong>
+                          <FormattedMessage
+                            id="app.people_form.disclaimer"
+                            defaultMessage="The data sent through this form is for exclusive use by {campaign} authorized team."
+                            values={{
+                              campaign: campaign.name,
+                            }}
+                          />
+                        </strong>
+                      </p>
+                      <p>
+                        {campaign.contact ? (
+                          <FormattedHTMLMessage
+                            id="app.people_form.contact_info_01"
+                            defaultMessage="For more information contact the campaign at <strong>{campaignEmail}</strong> or our support team at <strong>{appEmail}</strong>."
+                            values={{
+                              campaignEmail: campaign.contact.email,
+                              appEmail: Meteor.settings.public.contactEmail,
+                            }}
+                          />
+                        ) : (
+                          <FormattedHTMLMessage
+                            id="app.people_form.contact_info_02"
+                            defaultMessage="For more information contact our support team at <strong>{appEmail}</strong>."
+                            values={{
+                              appEmail: Meteor.settings.public.contactEmail,
+                            }}
+                          />
+                        )}{" "}
+                        <FormattedHTMLMessage
+                          id="app.people_form.more_info"
+                          defaultMessage="We also invite you to visit <a href='{url}' target='_blank' rel='external'>this page</a> for further details regarding our views and practices for data security and privacy."
+                          values={{
+                            url: "https://liane.voto/faqs",
+                          }}
+                        />
+                      </p>
+                    </Disclaimer>
+                  </div>
                   <input
                     type="submit"
                     value={intl.formatMessage(messages.sendLabel)}

@@ -5,11 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "../Loading.jsx";
 
 const Container = styled.ul`
-  margin: 0;
+  margin: 0 0 2rem;
   padding: 0 0 2px;
   list-style: none;
   border-radius: 7px;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   li {
     margin: 2px 2px 0;
     padding: 0;
