@@ -141,7 +141,7 @@ export const achievements = new ValidatedMethod({
                 60 * 60 // 1 hour
             );
         }
-        // return 
+        // return
         return JSON.parse(achievements);
     },
 });
@@ -184,7 +184,7 @@ export const funnelData = new ValidatedMethod({
                 "type": { "$in": ['LIKE', 'CARE', 'PRIDE', 'LOVE', 'WOW', 'THANKFUL'] }
             })).length
 
-            const commetingPeople = Promise.await(rawComments.distinct('personId', {
+            const commentingPeople = Promise.await(rawComments.distinct('personId', {
                 facebookAccountId,
             })).length;
 
@@ -193,7 +193,7 @@ export const funnelData = new ValidatedMethod({
                 filledForm: true
             }).count();;
 
-            funnelData = JSON.stringify({ totalPeople, positivePeople, commetingPeople, campaignFormPeople });
+            funnelData = JSON.stringify({ totalPeople, positivePeople, commentingPeople, campaignFormPeople });
             redisClient.setSync(
                 redisKey,
                 funnelData,
@@ -201,7 +201,7 @@ export const funnelData = new ValidatedMethod({
                 60 * 1 // 1 hour
             );
         }
-        // return 
+        // return
         return JSON.parse(funnelData);
     },
 });
@@ -274,7 +274,7 @@ export const chartsData = new ValidatedMethod({
             );
             topCommenters = topCommenters.filter(e => e._id !== facebookAccountId)
 
-            // return 
+            // return
             redisClient.setSync(
                 commentersKey,
                 JSON.stringify(topCommenters),
@@ -289,7 +289,7 @@ export const chartsData = new ValidatedMethod({
         const reactionersKey = `dashboard.${facebookAccountId}.topReactioners`;
         let reactionersData = redisClient.getSync(reactionersKey);
         let topReactioners = null;
-        // Top Reactions 
+        // Top Reactions
         if (!reactionersData) {
             topReactioners = Promise.await(
                 rawLikes
@@ -328,7 +328,7 @@ export const chartsData = new ValidatedMethod({
             topReactioners = JSON.parse(reactionersData)
         }
 
-        // Charts 
+        // Charts
         const redisChartsKey = `dashboard.${facebookAccountId}.chartData`
         let chartsData = redisClient.getSync(redisChartsKey);
 
@@ -342,7 +342,7 @@ export const chartsData = new ValidatedMethod({
 
             let start = new Date(startDate);
             start = start < campaignStart ? campaignStart : start;
-            
+
             let end = new Date(endDate ?? moment().subtract(1).format("YYYY-MM-DD"))
             const diffDays = Math.ceil(
                 Math.abs((start.getTime() - end.getTime()) / oneDay)
@@ -351,7 +351,7 @@ export const chartsData = new ValidatedMethod({
             if (diffDays > 90) {
                 start = new Date(moment(end).subtract(90).format("YYYY-MM-DD"))
             }
-            // counters for people and reactions 
+            // counters for people and reactions
 
             let startHistory = new Date(JSON.parse(JSON.stringify(start)));
             let startInteraction = new Date(JSON.parse(JSON.stringify(start)));
@@ -455,6 +455,3 @@ export const chartsData = new ValidatedMethod({
         return chartsData;
     },
 });
-
-
-

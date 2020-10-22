@@ -11,7 +11,7 @@ window.locales = ["en-US", "es", "pt-BR"];
 import localeData from "/locales";
 
 import Home from "/imports/ui2/pages/Home.jsx";
-import DashboardPage from "/imports/ui2/pages/Dashboard.jsx";
+import DashboardDemoPage from "/imports/ui2/pages/DashboardDemo.jsx";
 
 import Modal from "../containers/Modal.jsx";
 import Alerts from "../containers/Alerts.jsx";
@@ -95,7 +95,7 @@ export default class AppLayout extends Component {
     let content;
     if (!this.props.content) {
       if (campaign) {
-        content = { component: DashboardPage };
+        content = { component: DashboardDemoPage };
       } else {
         content = { component: Home };
       }

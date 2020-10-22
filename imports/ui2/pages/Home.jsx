@@ -50,7 +50,7 @@ const HighlightContainer = styled.div`
   background-size: cover;
   color: #fff;
   h2 {
-    max-width: 960px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 0;
     text-transform: uppercase;
@@ -65,7 +65,7 @@ const Content = styled.div`
   ${(props) =>
     props.centered &&
     css`
-      max-width: 960px;
+      max-width: 1000px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;

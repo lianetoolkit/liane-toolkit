@@ -14,7 +14,7 @@ const Container = styled.header`
   flex: 0;
   border-bottom: 1px solid #111;
   .header-content {
-    max-width: 960px;
+    max-width: 1000px;
     padding: 0 2rem;
     margin: 0 auto;
     line-height: 1;
