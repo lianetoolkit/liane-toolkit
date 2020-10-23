@@ -911,13 +911,13 @@ export const campaignUpdateFacebook = new ValidatedMethod({
       },
     });
 
-    FacebookAccountsHelpers.updateFBSubscription({
-      facebookAccountId: campaign.facebookAccount.facebookId,
+    FacebookAccountsHelpers.updateInstagramBusinessAccountId({
+      facebookId: campaign.facebookAccount.facebookId,
       token: accountToken.result,
     });
 
-    FacebookAccountsHelpers.updateInstagramBusinessAccountId({
-      facebookId: campaign.facebookAccount.facebookId,
+    FacebookAccountsHelpers.updateFBSubscription({
+      facebookAccountId: campaign.facebookAccount.facebookId,
       token: accountToken.result,
     });
 
@@ -957,8 +957,13 @@ export const campaignUpdateInstagram = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    return FacebookAccountsHelpers.updateInstagramBusinessAccountId({
+    FacebookAccountsHelpers.updateInstagramBusinessAccountId({
       facebookId: campaign.facebookAccount.facebookId,
+      token: campaign.facebookAccount.accessToken,
+    });
+
+    FacebookAccountsHelpers.updateFBSubscription({
+      facebookAccountId: campaign.facebookAccount.facebookId,
       token: campaign.facebookAccount.accessToken,
     });
   },

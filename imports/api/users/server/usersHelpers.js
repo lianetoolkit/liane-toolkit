@@ -36,7 +36,6 @@ const UsersHelpers = {
   updateFBToken({ userId, token, secret }) {
     const credential = Facebook.retrieveCredential(token, secret);
     let longToken;
-    console.log(credential);
     if (credential && credential.serviceData.accessToken) {
       longToken = UsersHelpers.exchangeFBToken({
         token: credential.serviceData.accessToken,
