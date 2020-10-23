@@ -893,8 +893,6 @@ export const campaignUpdateFacebook = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    UsersHelpers.updateFBToken({ userId, token, secret });
-
     const account = FacebookAccountsHelpers.getUserAccount({
       userId,
       facebookAccountId: campaign.facebookAccount.facebookId,
@@ -928,6 +926,40 @@ export const campaignUpdateFacebook = new ValidatedMethod({
     Meteor.call("log", {
       type: "campaigns.facebook.token.update",
       campaignId,
+    });
+  },
+});
+
+export const campaignUpdateInstagram = new ValidatedMethod({
+  name: "campaigns.updateInstagram",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String,
+    },
+  }).validator(),
+  run({ campaignId }) {
+    logger.debug("campaigns.updateFacebook called", { campaignId });
+
+    const userId = Meteor.userId();
+
+    if (!campaignId) {
+      throw new Meteor.Error(401, "Campaign ID not found");
+    }
+    const campaign = Campaigns.findOne(campaignId);
+
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "admin",
+      })
+    ) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    return FacebookAccountsHelpers.updateInstagramBusinessAccountId({
+      facebookId: campaign.facebookAccount.facebookId,
+      token: campaign.facebookAccount.accessToken,
     });
   },
 });

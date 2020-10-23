@@ -41,7 +41,7 @@ export default class CopyToClipboard extends Component {
     }
     return (
       <a
-        href="javascript:void(0);"
+        href="#"
         onClick={this._handleClick}
         {...props}
         style={style}

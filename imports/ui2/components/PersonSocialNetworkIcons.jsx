@@ -8,8 +8,16 @@ import CopyToClipboard from "./CopyToClipboard.jsx";
 
 const messages = defineMessages({
   copy: {
-    id: "app.people.contact_icons.data_copy",
+    id: "app.people.social_icons.data_copy",
     defaultMessage: "{data} (copy)",
+  },
+  instagramLink: {
+    id: "app.people.social_icons.instagram_link_text",
+    defaultMessage: "View Instagram",
+  },
+  twitterLink: {
+    id: "app.people.social_icons.twitter_link_text",
+    defaultMessage: "View Twitter",
   },
 });
 
@@ -17,13 +25,15 @@ const Container = styled.div`
   a {
     display: inline-block;
     margin: 0 0.1rem;
-    opacity: 0.2;
+    opacity: 0.15;
     width: 22px;
     height: 22px;
     line-height: 22px;
     text-align: center;
+    cursor: default;
     &.active {
       opacity: 1;
+      cursor: pointer;
       &:hover,
       &:focus {
         color: #f60;
@@ -32,6 +42,15 @@ const Container = styled.div`
         border-radius: 100%;
         color: #fff;
         background: #25d366;
+      }
+      &.facebook {
+        color: #3b5998;
+      }
+      &.instagram {
+        color: #dd2a7b;
+      }
+      &.twitter {
+        color: #1da1f2;
       }
     }
   }
@@ -46,58 +65,67 @@ class PersonSocialNetworkIcons extends Component {
   }
   getMeta(key) {
     const { person } = this.props;
-    switch(key) {
-      case 'social_networks.facebook':
-        return person.facebookId.match(/^[0-9]*$/) && person.facebookId;
+    switch (key) {
+      case "social_networks.facebook":
+        return person.facebookId;
       default:
         return person.campaignMeta && get(person.campaignMeta, key);
     }
   }
   render() {
-    const { intl, person } = this.props;
+    const { intl, hideMissing, person } = this.props;
     const { copied } = this.state;
     if (person) {
       const facebook = this.getMeta("social_networks.facebook");
       const instagram = this.getMeta("social_networks.instagram");
       const twitter = this.getMeta("social_networks.twitter");
-      console.log('facebook: ' + facebook);
-      console.log('instagram: ' + instagram);
-      console.log('twitter: ' + twitter);
+      const instagramProps = {};
+      const twitterProps = {};
+      if (instagram) {
+        instagramProps.href = `https://instagram.com/${instagram.replace(
+          "@",
+          ""
+        )}`;
+        instagramProps.rel = "external";
+        instagramProps.target = "_blank";
+      }
+      if (twitter) {
+        twitterProps.href = `https://twitter.com/${instagram.replace("@", "")}`;
+        twitterProps.rel = "external";
+        twitterProps.target = "_blank";
+      }
       return (
         <Container>
           <CopyToClipboard
-            disabled={!facebook}
-            text={facebook}
-            className={facebook ? "active" : ""}
-            data-tip={
-              facebook ? intl.formatMessage(messages.copy, { data: facebook }) : null
-            }
+            disabled={true}
+            className={facebook ? "facebook active" : "facebook"}
+            data-tip={null}
             data-for={`person-contact-icons-${person._id}`}
           >
             <FontAwesomeIcon icon={["fab", "facebook-square"]} />
           </CopyToClipboard>
-          <CopyToClipboard
-            disabled={!instagram}
+          <a
+            {...instagramProps}
             text={instagram}
-            className={instagram ? "active" : ""}
+            className={instagram ? "instagram active" : "instagram"}
             data-tip={
-              instagram ? intl.formatMessage(messages.copy, { data: instagram }) : null
+              instagram ? intl.formatMessage(messages.instagramLink) : null
             }
             data-for={`person-contact-icons-${person._id}`}
           >
             <FontAwesomeIcon icon={["fab", "instagram"]} />
-          </CopyToClipboard>
-          <CopyToClipboard
-            disabled={!twitter}
+          </a>
+          <a
+            {...twitterProps}
             text={twitter}
-            className={twitter ? "active" : ""}
+            className={twitter ? "twitter active" : "twitter"}
             data-tip={
-              twitter ? intl.formatMessage(messages.copy, { data: twitter }) : null
+              twitter ? intl.formatMessage(messages.twitterLink) : null
             }
             data-for={`person-contact-icons-${person._id}`}
           >
             <FontAwesomeIcon icon={["fab", "twitter"]} />
-          </CopyToClipboard>
+          </a>
         </Container>
       );
     } else {

@@ -258,7 +258,6 @@ const validatePermissions = (scopes) => {
     // "business_management",
     "pages_messaging",
     "instagram_basic",
-    "instagram_manage_insights",
     "instagram_manage_comments"
   ];
   return !difference(permissions, scopes || []).length;

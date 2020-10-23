@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import styled from "styled-components";
 import moment from "moment";
@@ -11,30 +11,30 @@ import { get } from "lodash";
 
 import Table from "../components/Table.jsx";
 
-import { skillsLabels } from "./SkillsField.jsx";
+import { defaultSkillsLabels } from "./SkillsConfig.jsx";
 import { profileLabels, genderLabels } from "./PersonEdit.jsx";
 
 const dataMap = [
   {
     label: "birthday",
-    data: "campaignMeta.basic_info.birthday"
+    data: "campaignMeta.basic_info.birthday",
   },
   {
     label: "gender",
-    data: "campaignMeta.basic_info.gender"
+    data: "campaignMeta.basic_info.gender",
   },
   {
     label: "address",
-    data: "location.formattedAddress"
+    data: "location.formattedAddress",
   },
   {
     label: "skills",
-    data: "campaignMeta.basic_info.skills"
+    data: "campaignMeta.basic_info.skills",
   },
   {
     label: "job",
-    data: "campaignMeta.basic_info.occupation"
-  }
+    data: "campaignMeta.basic_info.occupation",
+  },
 ];
 
 const Container = styled.div`
@@ -63,7 +63,7 @@ const Container = styled.div`
 `;
 
 class PersonInfoTable extends Component {
-  getValue = key => {
+  getValue = (key) => {
     const { intl, person } = this.props;
     const data = get(person, key);
     if (!data) {
@@ -83,7 +83,7 @@ class PersonInfoTable extends Component {
           defaultMessage="{date} ({age} years old)"
           values={{
             date: moment(data).format("L"),
-            age: moment().diff(data, "years")
+            age: moment().diff(data, "years"),
           }}
         />
       );
@@ -95,7 +95,9 @@ class PersonInfoTable extends Component {
       let skills = [];
       for (const skill of data) {
         skills.push(
-          skillsLabels[skill] ? intl.formatMessage(skillsLabels[skill]) : skill
+          defaultSkillsLabels[skill]
+            ? intl.formatMessage(defaultSkillsLabels[skill])
+            : skill
         );
       }
       return skills.join(", ");
@@ -154,7 +156,7 @@ class PersonInfoTable extends Component {
 }
 
 PersonInfoTable.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(PersonInfoTable);

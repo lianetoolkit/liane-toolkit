@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
@@ -20,37 +20,37 @@ import Reaction from "../components/Reaction.jsx";
 const messages = defineMessages({
   personNotFound: {
     id: "app.person_not_found",
-    defaultMessage: "Person not found"
+    defaultMessage: "Person not found",
   },
   commentResolved: {
     id: "app.comment.resolved",
-    defaultMessage: "resolved"
+    defaultMessage: "resolved",
   },
   commentUnresolved: {
     id: "app.comment.unresolved",
-    defaultMessage: "unresolved"
+    defaultMessage: "unresolved",
   },
   confirmResolution: {
     id: "app.comment.confirm_resolution",
     defaultMessage:
-      "Are you sure you'd like to mark this comment as {resolution}"
+      "Are you sure you'd like to mark this comment as {resolution}",
   },
   tagQuestion: {
     id: "app.comment.tag_as.question",
-    defaultMessage: "Mark as question"
+    defaultMessage: "Mark as question",
   },
   tagVote: {
     id: "app.comment.tag_as.vote",
-    defaultMessage: "Mark as vote declaration"
+    defaultMessage: "Mark as vote declaration",
   },
   tagTroll: {
     id: "app.comment.tag_as.troll",
-    defaultMessage: "Mark this person as troll"
+    defaultMessage: "Mark this person as troll",
   },
   tagAs: {
     id: "app.comment.tag_as",
-    defaultMessage: "Mark as"
-  }
+    defaultMessage: "Mark as",
+  },
 });
 
 const CommentContainer = styled.article`
@@ -69,8 +69,6 @@ const CommentContainer = styled.article`
     flex: 0 0 auto;
     padding: 1rem;
     border-left: 1px solid #eee;
-    ${"" /* background: #f7f7f7;
-    border-left: 1px solid #eee; */}
   }
   .comment-reply {
     .reaction-filter {
@@ -164,23 +162,19 @@ const CommentContainer = styled.article`
     font-size: 0.8em;
     color: #999;
   }
-  .comment-source-label {
-    font-size: 0.8em;
-    color: #999;
-  }
 `;
 
 class CommentList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      personMeta: {}
+      personMeta: {},
     };
   }
   hasCategory = (comment, category) => {
     return comment.categories && comment.categories.indexOf(category) != -1;
   };
-  isTroll = comment => {
+  isTroll = (comment) => {
     const { personMeta } = this.state;
     if (
       personMeta[comment.personId] &&
@@ -198,14 +192,14 @@ class CommentList extends Component {
     if (!this.hasCategory(comment, category)) {
       categories.push(category);
     } else {
-      categories = categories.filter(cat => cat != category);
+      categories = categories.filter((cat) => cat != category);
     }
     Meteor.call(
       "comments.updateCategories",
       {
         campaignId,
         commentId: comment._id,
-        categories
+        categories,
       },
       (err, res) => {
         if (err) {
@@ -214,7 +208,7 @@ class CommentList extends Component {
       }
     );
   };
-  _handleTrollClick = comment => () => {
+  _handleTrollClick = (comment) => () => {
     const { intl } = this.props;
     const { personMeta } = this.state;
     const isTroll = this.isTroll(comment);
@@ -227,7 +221,7 @@ class CommentList extends Component {
       {
         personId: comment.person._id,
         metaKey: "troll",
-        metaValue: !isTroll
+        metaValue: !isTroll,
       },
       (err, res) => {
         if (err) {
@@ -236,14 +230,14 @@ class CommentList extends Component {
           this.setState({
             personMeta: {
               ...personMeta,
-              [comment.personId]: { troll: !isTroll }
-            }
+              [comment.personId]: { troll: !isTroll },
+            },
           });
         }
       }
     );
   };
-  _handleReactionChange = commentId => reaction => {
+  _handleReactionChange = (commentId) => (reaction) => {
     const { campaignId } = this.props;
     Meteor.call(
       "comments.react",
@@ -257,7 +251,7 @@ class CommentList extends Component {
       }
     );
   };
-  _handleResolveClick = comment => () => {
+  _handleResolveClick = (comment) => () => {
     const { intl, campaignId } = this.props;
     const resolve = !comment.resolved;
     const label = resolve
@@ -282,8 +276,8 @@ class CommentList extends Component {
     }
   };
   _getSourceIcon = (comment) => {
-    switch(comment.source) {
-      case 'instagram':
+    switch (comment.source) {
+      case "instagram":
         return ["fab", "instagram"];
       default:
         return ["fab", "facebook-square"];
@@ -341,23 +335,6 @@ class CommentList extends Component {
                     </a>
                   </div>
                 </div>
-                <div className="comment-source">
-                  <p className="comment-source-label">
-                    <FormattedMessage
-                      id="app.comment.comment_source_title"
-                      defaultMessage="Source"
-                    />
-                  </p>
-                  <div className="commnet-source-icons">
-                    <a
-                      href="javascript:void(0);"
-                      className="active"
-                      data-tip={comment.source ? comment.source : 'facebook'}
-                    >
-                      <FontAwesomeIcon icon={this._getSourceIcon(comment)} />
-                    </a>
-                  </div>
-                </div>
                 <div
                   className={
                     "comment-resolve " + (comment.resolved ? "resolved" : "")
@@ -390,7 +367,7 @@ class CommentList extends Component {
 }
 
 CommentList.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(CommentList);

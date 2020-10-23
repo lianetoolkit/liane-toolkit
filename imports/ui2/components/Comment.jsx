@@ -9,6 +9,8 @@ import {
 import styled from "styled-components";
 import moment from "moment";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { userCan } from "/imports/ui2/utils/permissions";
 
 import { modalStore } from "../containers/Modal.jsx";
@@ -61,6 +63,14 @@ const Container = styled.article`
       margin: 0 0 1rem;
       font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
       font-size: 1em;
+      .icon {
+        font-size: 1.2em;
+        color: #3b5998;
+        margin-right: 0.5rem;
+        &.instagram {
+          color: #dd2a7b;
+        }
+      }
       .name {
         color: #333;
         font-weight: 600;
@@ -98,7 +108,7 @@ const Container = styled.article`
       position: absolute;
       width: 10px;
       height: 10px;
-      left: 1rem;
+      left: 2rem;
       top: -5px;
       transform: rotate(45deg);
     }
@@ -254,6 +264,16 @@ class Comment extends Component {
     modalStore.setTitle(title);
     modalStore.set(<Reply comment={comment} defaultSendAs="comment" />);
   };
+
+  _getSourceIcon = () => {
+    const { comment } = this.props;
+    switch (comment.source) {
+      case "instagram":
+        return ["fab", "instagram"];
+      default:
+        return ["fab", "facebook-square"];
+    }
+  };
   render() {
     const { intl, comment, actions } = this.props;
     if (comment) {
@@ -261,6 +281,9 @@ class Comment extends Component {
         <Container>
           <header>
             <h3>
+              <span className={`icon ${comment.source}`}>
+                <FontAwesomeIcon icon={this._getSourceIcon(comment)} />
+              </span>
               {comment.person ? (
                 <PersonNamePopup
                   name={comment.person.name}

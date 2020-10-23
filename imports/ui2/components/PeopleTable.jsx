@@ -66,6 +66,15 @@ const Container = styled.div`
       margin-right: 0.25rem;
     }
   }
+  .name-cell {
+    display: flex;
+    > .person-name {
+      flex: 1 1 100%;
+    }
+    > * {
+      flex: 0 0 auto;
+    }
+  }
   .extra-actions {
     position: absolute;
     top: 0;
@@ -434,6 +443,7 @@ class PeopleTable extends Component {
                   className="fill"
                   onClick={this._handleSortClick("name", "asc")}
                   sorted={this.getSort("name")}
+                  colSpan="2"
                 >
                   <FormattedMessage
                     id="app.people.table_header.name"
@@ -458,12 +468,6 @@ class PeopleTable extends Component {
                     defaultMessage="Comments"
                   />
                 </Table.SortableHead>
-                <th>
-                  <FormattedMessage
-                    id="app.people.table_header.social_networks"
-                    defaultMessage="Social Networks"
-                  />
-                </th>
                 <th>
                   <FormattedMessage
                     id="app.people.table_header.contact"
@@ -540,7 +544,7 @@ class PeopleTable extends Component {
                       </ReactTooltip>
                     ) : null}
                   </td>
-                  <td className="fill highlight">
+                  <td className="fill highlight" style={{ borderRight: 0 }}>
                     <p className="extra-actions show-on-hover">
                       <a
                         href={FlowRouter.path("App.people.detail", {
@@ -571,6 +575,9 @@ class PeopleTable extends Component {
                       ) : null}
                     </span>
                   </td>
+                  <td>
+                    <PersonSocialNetworkIcons person={person} />
+                  </td>
                   <td className="small icon-number">
                     <FontAwesomeIcon icon="dot-circle" />
                     <span className="number">{this._getReactions(person)}</span>
@@ -578,9 +585,6 @@ class PeopleTable extends Component {
                   <td className="small icon-number">
                     <FontAwesomeIcon icon="comment" />
                     <span className="number">{this._getComments(person)}</span>
-                  </td>
-                  <td>
-                    <PersonSocialNetworkIcons person={person} />
                   </td>
                   <td>
                     <PersonContactIcons person={person} />
@@ -608,7 +612,7 @@ class PeopleTable extends Component {
                         onUpdate={this._handleEditSuccess}
                       />
                     </td>
-                    <td className="extra" colSpan="4">
+                    <td className="extra" colSpan="5">
                       <div className="person-reactions">
                         <PersonReactions person={person} />
                       </div>

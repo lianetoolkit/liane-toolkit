@@ -55,7 +55,6 @@ class FacebookButton extends Component {
         "pages_messaging_phone_number",
         "pages_messaging_subscriptions",
         "instagram_basic",
-        "instagram_manage_insights",
         "instagram_manage_comments"
       ]);
     }

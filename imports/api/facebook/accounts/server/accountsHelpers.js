@@ -45,7 +45,10 @@ const FacebookAccountsHelpers = {
     check(facebookId, String);
     check(token, String);
 
-    logger.debug("FacebookAccountsHelpers.updateInstagramBusinessAccountId: called", { facebookId });
+    logger.debug(
+      "FacebookAccountsHelpers.updateInstagramBusinessAccountId: called",
+      { facebookId }
+    );
 
     const response = Promise.await(
       FB.api(facebookId, {
@@ -55,8 +58,8 @@ const FacebookAccountsHelpers = {
     );
 
     if (response.instagram_business_account) {
-      const facebookAccount = FacebookAccounts.findOne({facebookId});  
-      
+      const facebookAccount = FacebookAccounts.findOne({ facebookId });
+
       const response_ig = Promise.await(
         FB.api(response.instagram_business_account.id, {
           fields: ["username"],
@@ -65,25 +68,21 @@ const FacebookAccountsHelpers = {
       );
 
       let upsertObj;
-      if (response_ig.username) {
+      if (response_ig && response_ig.username) {
         upsertObj = {
           $set: {
             name: facebookAccount.name,
             instagramBusinessAccountId: response.instagram_business_account.id,
-            instagramHandle: response_ig.username
-          }
+            instagramHandle: response_ig.username,
+          },
         };
-      }
-      else {
-        upsertObj = {
-          $set: {
-            name: facebookAccount.name,
-            instagramBusinessAccountId: response.instagram_business_account.id
-          }
-        };
+      } else {
+        throw new Meteor.Error(404, "Instagram Business Account not found");
       }
 
       FacebookAccounts.upsert({ facebookId }, upsertObj);
+    } else {
+      throw new Meteor.Error(404, "Instagram Business Account not found");
     }
   },
   getUserAccounts({ userId }) {
@@ -207,12 +206,16 @@ const FacebookAccountsHelpers = {
     }).fetch();
   },
   getFacebookAccount({ facebookId }) {
-    logger.debug("FacebookAccountsHelpers.getFacebookAccount called", {facebookId});
-    return FacebookAccounts.findOne({facebookId});
+    logger.debug("FacebookAccountsHelpers.getFacebookAccount called", {
+      facebookId,
+    });
+    return FacebookAccounts.findOne({ facebookId });
   },
   getInstagramAccount({ instagramBusinessAccountId }) {
-    logger.debug("FacebookAccountsHelpers.getInstagramAccount called", {instagramBusinessAccountId});
-    return FacebookAccounts.findOne({instagramBusinessAccountId});
+    logger.debug("FacebookAccountsHelpers.getInstagramAccount called", {
+      instagramBusinessAccountId,
+    });
+    return FacebookAccounts.findOne({ instagramBusinessAccountId });
   },
   fetchFBAccount({ userId, address }) {
     check(userId, String);

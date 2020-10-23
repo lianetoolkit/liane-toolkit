@@ -41,7 +41,7 @@ export const webhookUpdate = new ValidatedMethod({
           facebookAccountId,
           data,
         });
-        
+
         // Validate account
         account = FacebookAccounts.findOne({ instagramBusinessAccountId: facebookAccountId });
         if (!account) {
@@ -63,7 +63,7 @@ export const webhookUpdate = new ValidatedMethod({
                   break;
                 case "story_insights":
                   logger.debug("webhookUpdate processing story_insights");
-                  // WHAT SHOULD WE DO HERE ??
+                  // skip for now
                   break;
                 default:
                   logger.debug("webhookUpdate received an unknown field");
