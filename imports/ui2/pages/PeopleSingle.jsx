@@ -297,6 +297,8 @@ class PeopleSingle extends Component {
     switch (person.source) {
       case "facebook":
         return "Facebook";
+      case "instagram":
+        return "Instagram";
       case "form":
         return intl.formatMessage(messages.formSource);
       case "import":

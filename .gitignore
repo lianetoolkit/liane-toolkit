@@ -8,3 +8,4 @@ docker-compose.dev.yml
 .data/
 *.rdb
 generated-files/*
+.vscode

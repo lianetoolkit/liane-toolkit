@@ -36,7 +36,8 @@ const Container = styled.table`
     border-radius: 7px;
     td {
       border-color: rgba(255, 255, 255, 0.4);
-      background: #fc0;
+      background: #f0f0f0;
+      border-top: 1px solid #ddd;
     }
     tr td .show-on-hover {
       display: block;

@@ -41,6 +41,50 @@ const FacebookAccountsHelpers = {
       throw new Meteor.Error(500, "Error trying to subscribe");
     }
   },
+  updateInstagramBusinessAccountId({ facebookId, token }) {
+    check(facebookId, String);
+    check(token, String);
+
+    logger.debug(
+      "FacebookAccountsHelpers.updateInstagramBusinessAccountId: called",
+      { facebookId }
+    );
+
+    const response = Promise.await(
+      FB.api(facebookId, {
+        fields: ["instagram_business_account"],
+        access_token: token,
+      })
+    );
+
+    if (response.instagram_business_account) {
+      const facebookAccount = FacebookAccounts.findOne({ facebookId });
+
+      const response_ig = Promise.await(
+        FB.api(response.instagram_business_account.id, {
+          fields: ["username"],
+          access_token: token,
+        })
+      );
+
+      let upsertObj;
+      if (response_ig && response_ig.username) {
+        upsertObj = {
+          $set: {
+            name: facebookAccount.name,
+            instagramBusinessAccountId: response.instagram_business_account.id,
+            instagramHandle: response_ig.username,
+          },
+        };
+      } else {
+        throw new Meteor.Error(404, "Instagram Business Account not found");
+      }
+
+      FacebookAccounts.upsert({ facebookId }, upsertObj);
+    } else {
+      throw new Meteor.Error(404, "Instagram Business Account not found");
+    }
+  },
   getUserAccounts({ userId }) {
     check(userId, String);
 
@@ -160,6 +204,18 @@ const FacebookAccountsHelpers = {
       status: { $ne: "suspended" },
       "facebookAccount.facebookId": facebookId,
     }).fetch();
+  },
+  getFacebookAccount({ facebookId }) {
+    logger.debug("FacebookAccountsHelpers.getFacebookAccount called", {
+      facebookId,
+    });
+    return FacebookAccounts.findOne({ facebookId });
+  },
+  getInstagramAccount({ instagramBusinessAccountId }) {
+    logger.debug("FacebookAccountsHelpers.getInstagramAccount called", {
+      instagramBusinessAccountId,
+    });
+    return FacebookAccounts.findOne({ instagramBusinessAccountId });
   },
   fetchFBAccount({ userId, address }) {
     check(userId, String);

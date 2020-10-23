@@ -26,6 +26,8 @@ import crypto from "crypto";
 import fs from "fs";
 import mkdirp from "mkdirp";
 import { flattenObject } from "/imports/utils/common.js";
+import { data } from "jquery";
+import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 
 const googleMapsKey = Meteor.settings.googleMaps;
 
@@ -735,6 +737,68 @@ const PeopleHelpers = {
     );
     // Update doc
     return PeopleExports.update(exportId, { $set: { expired: true } });
+  },
+  getPersonId({ campaignId, instagramHandle }) {
+    check(campaignId, String);
+    check(instagramHandle, String);
+
+    const pattern = '^@?' + instagramHandle + '$';
+    let personId;
+  
+    const facebookAccount = FacebookAccounts.findOne({
+      'instagramHandle': { $regex: new RegExp(pattern) }
+    });
+    if (facebookAccount) {
+      personId = facebookAccount.facebookId;
+    }
+    else {
+      const person = People.findOne({
+        $and:  [
+          { campaignId },
+          { 'campaignMeta.social_networks.instagram': { $regex: new RegExp(pattern) }}
+        ]
+      });
+      
+      if (person) {
+        personId = person.facebookId;
+      }
+      else {
+        personId = instagramHandle;
+      }
+    }
+    
+    return personId;
+  },
+  getPersonName({ campaignId, instagramHandle }) {
+    check(campaignId, String);
+    check(instagramHandle, String);
+
+    const pattern = '^@?' + instagramHandle + '$';
+    let personName;
+  
+    const facebookAccount = FacebookAccounts.findOne({
+      'instagramHandle': { $regex: new RegExp(pattern) }
+    });
+    if (facebookAccount) {
+      personName = facebookAccount.name;
+    }
+    else {
+      const person = People.findOne({
+        $and:  [
+          { campaignId },
+          { 'campaignMeta.social_networks.instagram': { $regex: new RegExp(pattern) }}
+        ]
+      });
+      
+      if (person) {
+        personName = person.name;
+      }
+      else {
+        personName = instagramHandle;
+      }
+    }
+    
+    return personName;
   },
 };
 

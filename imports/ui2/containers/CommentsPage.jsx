@@ -52,6 +52,15 @@ export default withTracker(props => {
     query.entryId = queryParams.entry;
   }
 
+  if (queryParams.source) {
+    if (queryParams.source != 'facebook') {
+      query.source = queryParams.source;  
+    }
+    else {
+      query.source = undefined;
+    }
+  }
+
   let commentsHandle, loading;
   let comments = [];
 
