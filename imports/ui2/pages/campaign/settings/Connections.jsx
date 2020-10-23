@@ -169,8 +169,8 @@ class CampaignConnectionsPage extends Component {
     this.setState({ loading: true });
     updatePermissions(({ token, secret }) => {
       Meteor.call(
-        "campaigns.updateInstagram",
-        { campaignId: campaign._id },
+        "campaigns.updateFacebook",
+        { campaignId: campaign._id, token, secret },
         (err, res) => {
           if (err) {
             alertStore.add(err);
