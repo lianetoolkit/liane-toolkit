@@ -76,13 +76,9 @@ const FacebookAccountsHelpers = {
             instagramHandle: response_ig.username,
           },
         };
-      } else {
-        throw new Meteor.Error(404, "Instagram Business Account not found");
       }
 
       FacebookAccounts.upsert({ facebookId }, upsertObj);
-    } else {
-      throw new Meteor.Error(404, "Instagram Business Account not found");
     }
   },
   getUserAccounts({ userId }) {
