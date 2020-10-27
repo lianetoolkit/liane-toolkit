@@ -95,7 +95,7 @@ const CommentsHelpers = {
     let comment;
     try {
       comment = Promise.await(
-        FB.api(data.comment_id, {
+        FB.api(data.id, {
           fields: ["id", "media", "text", "username"],
           access_token: campaign.facebookAccount.accessToken,
         })
