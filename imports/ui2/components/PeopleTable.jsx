@@ -406,7 +406,11 @@ class PeopleTable extends Component {
   _handlePrivateReplyClick = (person) => (ev) => {
     const { intl } = this.props;
     ev.preventDefault();
-    modalStore.setTitle(intl.formatMessage(messages.sendingPrivateReplyTitle));
+    modalStore.setTitle(
+      intl.formatMessage(messages.sendingPrivateReplyTitle, {
+        name: person.name,
+      })
+    );
     modalStore.set(<Reply personId={person._id} messageOnly={true} />);
   };
   getTags(person) {
