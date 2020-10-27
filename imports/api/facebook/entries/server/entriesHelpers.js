@@ -36,7 +36,7 @@ const EntriesHelpers = {
   },
   upsertEntry({ facebookAccountId, data }) {
     const campaignWithToken = Campaigns.findOne({
-      "facebookAccount.facebookId": facebookAccountId
+      "facebookAccount.facebookId": facebookAccountId,
     });
     if (!campaignWithToken || !campaignWithToken.facebookAccount.accessToken) {
       throw new Meteor.Error(400, "Facebook account not available");
@@ -64,9 +64,9 @@ const EntriesHelpers = {
             "reactions.type(HAHA).limit(0).summary(true).as(haha)",
             "reactions.type(SAD).limit(0).summary(true).as(sad)",
             "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
-            "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
+            "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)",
           ],
-          access_token: campaignWithToken.facebookAccount.accessToken
+          access_token: campaignWithToken.facebookAccount.accessToken,
         })
       );
     } catch (error) {
@@ -75,7 +75,7 @@ const EntriesHelpers = {
 
     return Entries.upsert(
       {
-        _id: entry.id
+        _id: entry.id,
       },
       this.getUpdateObjFromFBData({ facebookAccountId, entry })
     );
@@ -90,14 +90,14 @@ const EntriesHelpers = {
     counts.comment = Comments.find({ entryId }).count();
     counts.reaction = Likes.find({
       entryId,
-      parentId: { $exists: false }
+      parentId: { $exists: false },
     }).count();
     const reactionTypes = LikesHelpers.getReactionTypes();
     for (const reactionType of reactionTypes) {
       counts[reactionType.toLowerCase()] = Likes.find({
         entryId,
         type: reactionType,
-        parentId: { $exists: false }
+        parentId: { $exists: false },
       }).count();
     }
     let $set = {};
@@ -114,12 +114,12 @@ const EntriesHelpers = {
     LikesHelpers.updatePeopleLikesCountByEntry({
       campaignId,
       facebookAccountId: facebookId,
-      entryId
+      entryId,
     });
     CommentsHelpers.updatePeopleCommentsCountByEntry({
       campaignId,
       facebookAccountId: facebookId,
-      entryId
+      entryId,
     });
   },
   getUpdateObjFromFBData({ facebookAccountId, entry, source }) {
@@ -132,7 +132,7 @@ const EntriesHelpers = {
     let counts;
 
     switch (source) {
-      case 'instagram':
+      case "instagram":
         counts = {
           share: 0,
           like: entry.like_count ? entry.like_count : 0,
@@ -143,8 +143,8 @@ const EntriesHelpers = {
           sad: 0,
           angry: 0,
           thankful: 0,
-          reaction: entry.insights ? entry.insights.data[0].values[0].value : 0,
-          comment: entry.comments_count ? entry.comments_count : 0
+          reaction: entry.like_count ? entry.like_count : 0,
+          comment: entry.comments_count ? entry.comments_count : 0,
         };
 
         entry_source = source;
@@ -158,10 +158,11 @@ const EntriesHelpers = {
           media_url: entry.media_url,
           permalink: entry.permalink,
           username: entry.username,
-          is_comment_enabled: entry.is_comment_enabled
-        }
+          is_comment_enabled: entry.is_comment_enabled,
+        };
         break;
-      default: // Facebook
+      default:
+        // Facebook
         counts = {
           share: entry.shares ? entry.shares.count : 0,
           like: entry.like ? entry.like.summary.total_count : 0,
@@ -173,10 +174,10 @@ const EntriesHelpers = {
           angry: entry.angry ? entry.angry.summary.total_count : 0,
           thankful: entry.thankful ? entry.thankful.summary.total_count : 0,
           reaction: entry.reaction ? entry.reaction.summary.total_count : 0,
-          comment: entry.comments ? entry.comments.summary.total_count : 0
+          comment: entry.comments ? entry.comments.summary.total_count : 0,
         };
 
-        entry_source = 'facebook';
+        entry_source = "facebook";
         entry_message = entry.message;
         entry_createdTime = entry.created_time;
         entry_updatedTime = entry.updated_time;
@@ -190,15 +191,15 @@ const EntriesHelpers = {
         _id: entry.id,
         source: entry_source,
         facebookAccountId,
-        createdTime: entry_createdTime
+        createdTime: entry_createdTime,
       },
       $set: {
         message: entry_message,
         parentId: entry_parentId,
         updatedTime: entry_updatedTime,
         counts,
-        source_data
-      }
+        source_data,
+      },
     };
   },
   updateInstagramAccountEntries({
@@ -207,7 +208,7 @@ const EntriesHelpers = {
     accessToken,
     forceUpdate,
     campaignId,
-    likeDateEstimate
+    likeDateEstimate,
   }) {
     check(facebookId, String);
     check(instagramId, String);
@@ -217,8 +218,8 @@ const EntriesHelpers = {
 
     logger.debug("EntriesHelpers.updateInstagramAccountEntries called", {
       facebookId,
-      instagramId
-      });
+      instagramId,
+    });
 
     const _insertWithInteractions = ({ data }) => {
       for (const entry of data) {
@@ -226,7 +227,7 @@ const EntriesHelpers = {
         const updateObj = this.getUpdateObjFromFBData({
           facebookAccountId: facebookId,
           entry,
-          source: 'instagram'
+          source: "instagram",
         });
         const vals = updateObj.$set;
         let updateInteractions = [];
@@ -251,15 +252,18 @@ const EntriesHelpers = {
 
         Entries.upsert(
           {
-            _id: entry.id
+            _id: entry.id,
           },
           updateObj
         );
         if (updateInteractions.length) {
-          logger.debug("EntriesHelpers.updateInstagramAccountEntries need to update interactions", {
-            entry: entry.caption,
-            updateInteractions
-          });
+          logger.debug(
+            "EntriesHelpers.updateInstagramAccountEntries need to update interactions",
+            {
+              entry: entry.caption,
+              updateInteractions,
+            }
+          );
 
           JobsHelpers.addJob({
             jobType: "entries.updateEntryInteractions",
@@ -269,8 +273,8 @@ const EntriesHelpers = {
               facebookAccountId: facebookId,
               accessToken: accessToken,
               entryId: entry.id,
-              campaignId: campaignId
-            }
+              campaignId: campaignId,
+            },
           });
         }
       }
@@ -297,7 +301,7 @@ const EntriesHelpers = {
         FB.api(`${instagramId}/media`, {
           fields,
           limit: 100,
-          access_token: accessToken
+          access_token: accessToken,
         })
       );
     } catch (error) {
@@ -316,42 +320,42 @@ const EntriesHelpers = {
       }
     }
 
-    fields = [
-      "caption",
-      "comments_count",
-      "id",
-      "owner",
-      "like_count",
-      "media_type",
-      "media_url",
-      "permalink",
-      "thumbnail_url",
-      "timestamp"
-    ];
-    // Then we search for "stories"
-    try {
-      response = Promise.await(
-        FB.api(`${instagramId}/stories`, {
-          fields,
-          limit: 100,
-          access_token: accessToken
-        })
-      );
-    } catch (error) {
-      throw new Meteor.Error(error);
-    }
-
-    if (response.data.length) {
-      _insertWithInteractions({ data: response.data });
-      let next = response.paging.next;
-      while (next !== undefined) {
-        let nextPage = _fetchFacebookPageData({ url: next });
-        next = nextPage.data.paging ? nextPage.data.paging.next : undefined;
-        if (nextPage.statusCode == 200 && nextPage.data.data.length) {
-          _insertWithInteractions({ data: nextPage.data.data });
-        }
-      }
-    }
+    // fields = [
+    //   "caption",
+    //   "comments_count",
+    //   "id",
+    //   "owner",
+    //   "like_count",
+    //   "media_type",
+    //   "media_url",
+    //   "permalink",
+    //   "thumbnail_url",
+    //   "timestamp",
+    // ];
+    // // Then we search for "stories"
+    // try {
+    //   response = Promise.await(
+    //     FB.api(`${instagramId}/stories`, {
+    //       fields,
+    //       limit: 100,
+    //       access_token: accessToken,
+    //     })
+    //   );
+    // } catch (error) {
+    //   throw new Meteor.Error(error);
+    // }
+    //
+    // if (response.data.length) {
+    //   _insertWithInteractions({ data: response.data });
+    //   let next = response.paging.next;
+    //   while (next !== undefined) {
+    //     let nextPage = _fetchFacebookPageData({ url: next });
+    //     next = nextPage.data.paging ? nextPage.data.paging.next : undefined;
+    //     if (nextPage.statusCode == 200 && nextPage.data.data.length) {
+    //       _insertWithInteractions({ data: nextPage.data.data });
+    //     }
+    //   }
+    // }
 
     return;
   },
@@ -359,7 +363,7 @@ const EntriesHelpers = {
     campaignId,
     facebookId,
     likeDateEstimate,
-    forceUpdate
+    forceUpdate,
   }) {
     check(campaignId, String);
     check(facebookId, String);
@@ -378,7 +382,9 @@ const EntriesHelpers = {
     const accessToken = campaign.facebookAccount.accessToken;
 
     // If configured, we first update instagram entries
-    const facebookAccount = FacebookAccountsHelpers.getFacebookAccount({facebookId});
+    const facebookAccount = FacebookAccountsHelpers.getFacebookAccount({
+      facebookId,
+    });
     if (facebookAccount.instagramBusinessAccountId) {
       this.updateInstagramAccountEntries({
         facebookId,
@@ -386,7 +392,7 @@ const EntriesHelpers = {
         accessToken: accessToken,
         forceUpdate,
         campaignId,
-        likeDateEstimate
+        likeDateEstimate,
       });
     }
 
@@ -412,10 +418,10 @@ const EntriesHelpers = {
             "reactions.type(HAHA).limit(0).summary(true).as(haha)",
             "reactions.type(SAD).limit(0).summary(true).as(sad)",
             "reactions.type(ANGRY).limit(0).summary(true).as(angry)",
-            "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)"
+            "reactions.type(THANKFUL).limit(0).summary(true).as(thankful)",
           ],
           limit: 100,
-          access_token: accessToken
+          access_token: accessToken,
         })
       );
     } catch (error) {
@@ -427,7 +433,7 @@ const EntriesHelpers = {
         const currentEntry = Entries.findOne(entry.id);
         const updateObj = this.getUpdateObjFromFBData({
           facebookAccountId: facebookId,
-          entry
+          entry,
         });
         const vals = updateObj.$set;
         let updateInteractions = [];
@@ -451,7 +457,7 @@ const EntriesHelpers = {
         }
         Entries.upsert(
           {
-            _id: entry.id
+            _id: entry.id,
           },
           updateObj
         );
@@ -464,8 +470,8 @@ const EntriesHelpers = {
               facebookAccountId: facebookId,
               accessToken: accessToken,
               entryId: entry.id,
-              campaignId: campaignId
-            }
+              campaignId: campaignId,
+            },
           });
         }
       }
@@ -476,13 +482,13 @@ const EntriesHelpers = {
       for (const entry of data) {
         bulk
           .find({
-            _id: entry.id
+            _id: entry.id,
           })
           .upsert()
           .update(
             this.getUpdateObjFromFBData({
               facebookAccountId: facebookId,
-              entry
+              entry,
             })
           );
       }
@@ -521,7 +527,7 @@ const EntriesHelpers = {
     facebookAccountId,
     entryId,
     accessToken,
-    likeDateEstimate
+    likeDateEstimate,
   }) {
     check(campaignId, String);
     check(facebookAccountId, String);
@@ -533,7 +539,7 @@ const EntriesHelpers = {
 
     logger.debug("EntriesHelpers.updateEntryInteractions called", {
       interactionTypes,
-      entryId
+      entryId,
     });
 
     if (interactionTypes.indexOf("comments") !== -1) {
@@ -541,7 +547,7 @@ const EntriesHelpers = {
         facebookAccountId,
         entryId,
         accessToken,
-        campaignId
+        campaignId,
       });
     }
     if (interactionTypes.indexOf("likes") !== -1) {
@@ -549,20 +555,20 @@ const EntriesHelpers = {
         facebookAccountId,
         entryId,
         accessToken,
-        likeDateEstimate
+        likeDateEstimate,
       });
     }
   },
-  getEntrySource({entryId}) {
+  getEntrySource({ entryId }) {
     check(entryId, String);
     let entry = Entries.findOne(entryId);
     return entry.source;
   },
-  getEntryData({entryId}) {
+  getEntryData({ entryId }) {
     check(entryId, String);
     let entry = Entries.findOne(entryId);
     return entry;
-  }
+  },
 };
 
 exports.EntriesHelpers = EntriesHelpers;
