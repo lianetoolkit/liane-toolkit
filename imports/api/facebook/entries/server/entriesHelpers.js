@@ -159,7 +159,7 @@ const EntriesHelpers = {
           permalink: entry.permalink,
           username: entry.username,
           is_comment_enabled: entry.is_comment_enabled
-        }    
+        }
         break;
       default: // Facebook
         counts = {
@@ -182,9 +182,9 @@ const EntriesHelpers = {
         entry_updatedTime = entry.updated_time;
         entry_parentId = entry.parent_id;
         source_data = null;
-        break;      
+        break;
     }
-    
+
     return {
       $setOnInsert: {
         _id: entry.id,
@@ -248,7 +248,7 @@ const EntriesHelpers = {
           if (vals.counts.reaction) updateInteractions.push("likes");
           if (vals.counts.comment) updateInteractions.push("comments");
         }
-  
+
         Entries.upsert(
           {
             _id: entry.id
@@ -260,7 +260,7 @@ const EntriesHelpers = {
             entry: entry.caption,
             updateInteractions
           });
-    
+
           JobsHelpers.addJob({
             jobType: "entries.updateEntryInteractions",
             jobData: {
@@ -289,7 +289,6 @@ const EntriesHelpers = {
       "thumbnail_url",
       "timestamp",
       "is_comment_enabled",
-      "insights.period(lifetime).metric(engagement)"
     ];
 
     // First we search for "media"
@@ -316,7 +315,7 @@ const EntriesHelpers = {
         }
       }
     }
-    
+
     fields = [
       "caption",
       "comments_count",
@@ -379,12 +378,12 @@ const EntriesHelpers = {
     const accessToken = campaign.facebookAccount.accessToken;
 
     // If configured, we first update instagram entries
-    const facebookAccount = FacebookAccountsHelpers.getFacebookAccount({facebookId}); 
+    const facebookAccount = FacebookAccountsHelpers.getFacebookAccount({facebookId});
     if (facebookAccount.instagramBusinessAccountId) {
       this.updateInstagramAccountEntries({
-        facebookId, 
-        instagramId: facebookAccount.instagramBusinessAccountId, 
-        accessToken: accessToken, 
+        facebookId,
+        instagramId: facebookAccount.instagramBusinessAccountId,
+        accessToken: accessToken,
         forceUpdate,
         campaignId,
         likeDateEstimate
@@ -392,7 +391,7 @@ const EntriesHelpers = {
     }
 
     const accountPath = isCampaignAccount ? "me" : facebookId;
-    
+
     let response;
     try {
       response = Promise.await(
