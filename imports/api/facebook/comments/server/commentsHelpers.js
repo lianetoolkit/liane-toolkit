@@ -92,12 +92,37 @@ const CommentsHelpers = {
       return true;
     }
 
-    //
-    // FACEBOOK Webhook TEST message is not sending media ID, but according to the documentation this id will be coming
-    //
+    let comment;
+    try {
+      comment = Promise.await(
+        FB.api(data.comment_id, {
+          fields: ["id", "media", "text", "username"],
+          access_token: campaign.facebookAccount.accessToken,
+        })
+      );
+    } catch (error) {
+      throw new Meteor.Error(error);
+    }
+
+    AccountsLogs.upsert(
+      {
+        type: "comments.add",
+        personId: comment.username,
+        objectId: comment.media.id,
+        timestamp: new Date().getTime(),
+      },
+      {
+        $setOnInsert: {
+          objectType: "comment",
+          accountId: facebookAccountId,
+          isAdmin: false,
+        },
+      }
+    );
+
     this.getInstagramEntryComments({
       facebookAccountId: account.facebookId,
-      entryId: data.media,
+      entryId: comment.media.id,
       accessToken: campaign.facebookAccount.accessToken,
       campaignId: campaign._id,
     });
