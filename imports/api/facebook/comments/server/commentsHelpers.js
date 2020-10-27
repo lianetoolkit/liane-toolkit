@@ -116,6 +116,7 @@ const CommentsHelpers = {
           objectType: "comment",
           accountId: facebookAccountId,
           isAdmin: false,
+          parentId: data.id,
         },
       }
     );
