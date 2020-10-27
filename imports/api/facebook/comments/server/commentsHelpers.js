@@ -114,7 +114,7 @@ const CommentsHelpers = {
       {
         $setOnInsert: {
           objectType: "comment",
-          accountId: facebookAccountId,
+          accountId: account.facebookId,
           isAdmin: false,
           parentId: data.id,
         },
