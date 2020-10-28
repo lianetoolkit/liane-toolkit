@@ -6,6 +6,8 @@ import Button from "/imports/ui2/components/Button.jsx";
 // import "@nivo/core";
 import { ResponsiveFunnel } from "@nivo/funnel";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 const Container = styled.section`
   width: 100%;
   background: #306;
@@ -32,11 +34,12 @@ const Container = styled.section`
       flex: 0 0 auto;
     }
     .intro {
-      width: 25%;
+      width: 20%;
       flex: 0 0 auto;
       margin: 0 8rem 0 0;
+      font-size: 0.8em;
       h1 {
-        font-size: 1.2em;
+        font-size: 1.4em;
       }
     }
     .data {
@@ -75,14 +78,136 @@ const Container = styled.section`
   .dashboard-sections {
     margin: 0 auto 4rem;
     max-width: 1000px;
-    padding: 2rem;
     border-radius: 7px;
     background: #fff;
     color: #333;
     box-sizing: border-box;
     overflow: hidden;
     .funnel {
-      height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      width: 100%;
+      .funnel-chart {
+        box-sizing: border-box;
+        flex: 1;
+        background: #eee;
+        position: relative;
+        margin: 2rem;
+        .funnel-chart-content {
+          position: absolute;
+          left: 0;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          ul {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: space-around;
+            li {
+              flex: 1 0 auto;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #fff;
+              font-weight: 500;
+              ${"" /* &:last-child {
+                flex: 2 0 auto;
+              } */}
+            }
+          }
+        }
+        &:before {
+          content: "";
+          display: block;
+          padding-bottom: 89.625%;
+        }
+        &:after {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          background-image: url("/images/funnel-overlay.png");
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          pointer-events: none;
+        }
+      }
+      .funnel-info {
+        flex: 1;
+      }
+    }
+    .dashboard-section {
+      padding: 2rem;
+      border-bottom: 1px solid #e0e0e0;
+      &:last-child {
+        border-bottom: 0;
+      }
+      h2 {
+        text-align: center;
+        font-weight: 500;
+        letter-spacing: -0.02rem;
+        font-size: 1.8em;
+        margin: 2rem 0;
+      }
+    }
+  }
+`;
+
+const Achievements = styled.ul`
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  li {
+    flex: 1 1 auto;
+    margin: 0 2rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    cursor: default;
+    align-items: flex-start;
+    &:hover {
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
+      border-radius: 7px;
+    }
+    svg {
+      font-size: 1.8em;
+      margin: 0 0 1rem;
+      ${"" /* background: #ede7f6;
+      padding: 0.5rem;
+      border-radius: 7px; */}
+      -webkit-filter: drop-shadow(2px 2px 0 #ede7f6);
+      filter: drop-shadow(2px 2px 0 #ede7f6);
+    }
+    .number {
+      font-size: 4em;
+      margin: 0 0 0.5rem;
+    }
+    .label {
+      margin: 0 0 1.5rem;
+    }
+    .button {
+      margin: 0;
+      background: #306;
+      color: #fff;
+      border: 0;
+      flex: 0 0 auto;
+      display: inline-block;
+      &:hover,
+      &:active,
+      &:focus {
+      }
     }
   }
 `;
@@ -110,6 +235,11 @@ class DashboardDemoPage extends React.Component {
       chartsData: null,
     };
   }
+  processChart = (data) => {
+    let chart = {};
+
+    return chart;
+  };
   componentDidMount() {
     // Call methods here
     const { campaign } = this.props;
@@ -177,7 +307,7 @@ class DashboardDemoPage extends React.Component {
         if (err) {
           console.log("dashboard.chartsData error ", err);
         } else {
-          this.setState({ chartsData: data });
+          this.setState({ chartsData: this.processChart(data) });
         }
         chartsPromise.resolve();
       }
@@ -186,6 +316,10 @@ class DashboardDemoPage extends React.Component {
     Promise.all(promises).then(() => {
       this.setState({ loading: false });
     });
+  }
+  getChartItemBgColor(index, total) {
+    console.log(10 + (90 / total) * index);
+    return `rgba(51,0,102, ${(10 + (90 / total) * index) / 100})`;
   }
   render() {
     const { user, campaign } = this.props;
@@ -196,6 +330,7 @@ class DashboardDemoPage extends React.Component {
       funnelData,
       chartsData,
     } = this.state;
+    console.log({ funnelData });
     if (loading) {
       return <Loading full />;
     }
@@ -234,54 +369,91 @@ class DashboardDemoPage extends React.Component {
           </div>
         </header>
         <section className="dashboard-sections">
-          <div className="funnel">
-            <ResponsiveFunnel
-              data={[
-                {
-                  id: "total_people",
-                  value: funnelData.totalPeople,
-                  label: "Total people",
-                },
-                {
-                  id: "positivePeople",
-                  value: funnelData.positivePeople,
-                  label: "Positive people",
-                },
-                {
-                  id: "commentingPeople",
-                  value: funnelData.commentingPeople,
-                  label: "Commenting people",
-                },
-                {
-                  id: "campaignFormPeople",
-                  value: funnelData.campaignFormPeople,
-                  label: "Campaign form",
-                },
-              ]}
-              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-              spacing={1}
-              shapeBlending={0}
-              colors={{ scheme: "spectral" }}
-              borderWidth={0}
-              borderOpacity={0}
-              labelColor={{ from: "color", modifiers: [["darker", 3]] }}
-              enableBeforeSeparators={false}
-              enableAfterSeparators={true}
-              afterSeparatorLength={100}
-              afterSeparatorOffset={20}
-              isInteractive={false}
-              currentPartSizeExtension={5}
-              currentBorderWidth={40}
-              animate={false}
-            />
+          <div className="dashboard-section">
+            <h2>Conversion Funnel</h2>
+            <div className="funnel">
+              <div className="funnel-chart">
+                <div className="funnel-chart-content">
+                  <ul>
+                    <li
+                      style={{
+                        backgroundColor: this.getChartItemBgColor(1, 4),
+                      }}
+                    >
+                      {funnelData.totalPeople}
+                    </li>
+                    <li
+                      style={{
+                        backgroundColor: this.getChartItemBgColor(2, 4),
+                      }}
+                    >
+                      {funnelData.positivePeople}
+                    </li>
+                    <li
+                      style={{
+                        backgroundColor: this.getChartItemBgColor(3, 4),
+                      }}
+                    >
+                      {funnelData.commentingPeople}
+                    </li>
+                    <li
+                      style={{
+                        backgroundColor: this.getChartItemBgColor(4, 4),
+                      }}
+                    >
+                      {funnelData.campaignFormPeople}
+                    </li>
+                    <li
+                      style={{
+                        backgroundColor: this.getChartItemBgColor(4, 4),
+                      }}
+                    />
+                  </ul>
+                </div>
+              </div>
+              <div className="funnel-info">
+                <p></p>
+                <p></p>
+                <p></p>
+                <p></p>
+              </div>
+            </div>
           </div>
-          <h2>
-            #{campaign._id} - {campaign.name} Demo Dashboard
-          </h2>
-          <pre>summaryData: {JSON.stringify(summaryData)}</pre>
-          <pre>achievements: {JSON.stringify(achievements)}</pre>
-          <pre>funnelData: {JSON.stringify(funnelData)}</pre>
-          <pre>chartsData: {JSON.stringify(chartsData)}</pre>
+          <div className="dashboard-section">
+            <h2>Your achievements</h2>
+            <Achievements>
+              <li>
+                <FontAwesomeIcon icon="align-left" />
+                <span className="number">{achievements.filledForms}</span>
+                <span className="label">completed forms</span>
+                <Button>Form settings</Button>
+              </li>
+              <li>
+                <FontAwesomeIcon icon="map-marked" />
+                <span className="number">{achievements.geolocated}</span>
+                <span className="label">mapped people</span>
+                <Button>View your map</Button>
+              </li>
+              <li>
+                <FontAwesomeIcon icon="comment" />
+                <span className="number">{achievements.commentsReplies}</span>
+                <span className="label">comments replies</span>
+                <Button>Reply comments</Button>
+              </li>
+            </Achievements>
+          </div>
+          <div className="dashboard-section">
+            <h2>Interactions evolution</h2>
+          </div>
+          <div className="dashboard-section">
+            <h2>
+              #{campaign._id} - {campaign.name} Demo Dashboard
+            </h2>
+            <pre>summaryData: {JSON.stringify(summaryData)}</pre>
+            <pre>achievements: {JSON.stringify(achievements)}</pre>
+            <pre>funnelData: {JSON.stringify(funnelData)}</pre>
+            <pre>chartsData: {JSON.stringify(chartsData)}</pre>
+          </div>
         </section>
       </Container>
     );
