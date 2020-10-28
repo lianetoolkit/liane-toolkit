@@ -204,7 +204,7 @@ export const getFBUrl = (params) => {
   return `https://www.facebook.com/permalink.php?${encoded}`;
 };
 
-export const getCommentUrl = (comment) => {
+export const getFBCommentUrl = (comment) => {
   const id = comment.facebookAccountId;
   const story_fbid = comment._id.split("_")[0];
   const comment_id = comment._id.split("_")[1];
@@ -220,7 +220,7 @@ class Comment extends Component {
   static Count = CountIntl;
   action = () => {
     const { comment } = this.props;
-    const url = getCommentUrl(comment);
+    const url = this.getCommentUrl();
     if (comment.parent) {
       const parentUrl = this.getParentUrl();
       return (
@@ -241,18 +241,40 @@ class Comment extends Component {
       );
     }
   };
+  getCommentUrl = () => {
+    const { comment } = this.props;
+    if (comment.source == "instagram") {
+      let url = `${comment.entry.source_data.permalink}c/`;
+      if (comment.parentId) {
+        url += `${comment.parentId}/r/`;
+      }
+      url += comment._id;
+      return url;
+    } else {
+      return getFBCommentUrl(comment);
+    }
+  };
   getParentUrl = () => {
     const { comment } = this.props;
-    const id = comment.facebookAccountId;
-    const story_fbid = comment.parentId.split("_")[0];
-    const comment_id = comment.parentId.split("_")[1];
-    return getFBUrl({ id, story_fbid, comment_id });
+    if (comment.source == "instagram") {
+      return `${comment.entry.source_data.permalink}c/${comment.parentId}`;
+    } else {
+      const id = comment.facebookAccountId;
+      const story_fbid = comment.parentId.split("_")[0];
+      const comment_id = comment.parentId.split("_")[1];
+      return getFBUrl({ id, story_fbid, comment_id });
+    }
   };
   getPostUrl = () => {
     const { comment } = this.props;
-    const id = comment.facebookAccountId;
-    const story_fbid = comment._id.split("_")[0];
-    return getFBUrl({ id, story_fbid });
+    if (comment.source == "instagram") {
+      console.log(comment);
+      return comment.entry.source_data.permalink;
+    } else {
+      const id = comment.facebookAccountId;
+      const story_fbid = comment._id.split("_")[0];
+      return getFBUrl({ id, story_fbid });
+    }
   };
   _handleReplyClick = (ev) => {
     const { intl, comment } = this.props;
