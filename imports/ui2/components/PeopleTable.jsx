@@ -31,7 +31,7 @@ import PersonSocialNetworkIcons from "./PersonSocialNetworkIcons.jsx";
 import PersonContactIcons from "./PersonContactIcons.jsx";
 import PersonTags from "./PersonTags.jsx";
 import Reply from "./Reply.jsx";
-import { getCommentUrl } from "./Comment.jsx";
+import { getFBCommentUrl } from "./Comment.jsx";
 
 const messages = defineMessages({
   editingPersonTitle: {
@@ -644,7 +644,7 @@ class PeopleTable extends Component {
                         ) : null}
                         {person.latestComment ? (
                           <a
-                            href={getCommentUrl(person.latestComment)}
+                            href={getFBCommentUrl(person.latestComment)}
                             target="_blank"
                             rel="external"
                             className="latest-comment"
