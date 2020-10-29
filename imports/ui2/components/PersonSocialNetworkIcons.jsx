@@ -67,7 +67,10 @@ class PersonSocialNetworkIcons extends Component {
     const { person } = this.props;
     switch (key) {
       case "social_networks.facebook":
-        return person.facebookId;
+        return (
+          person.facebookId &&
+          `@${person.facebookId}` != this.getMeta("social_networks.instagram")
+        );
       default:
         return person.campaignMeta && get(person.campaignMeta, key);
     }
@@ -119,9 +122,7 @@ class PersonSocialNetworkIcons extends Component {
             {...twitterProps}
             text={twitter}
             className={twitter ? "twitter active" : "twitter"}
-            data-tip={
-              twitter ? intl.formatMessage(messages.twitterLink) : null
-            }
+            data-tip={twitter ? intl.formatMessage(messages.twitterLink) : null}
             data-for={`person-contact-icons-${person._id}`}
           >
             <FontAwesomeIcon icon={["fab", "twitter"]} />
