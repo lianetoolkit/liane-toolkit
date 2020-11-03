@@ -227,6 +227,7 @@
   "app.comments.counts.no_comments": "Nenhum comentário",
   "app.comments.counts.one_comment": "1 comentário",
   "app.comments.entry_select_placeholder": "Filtrar por publicação...",
+  "app.comments.source_select_placeholder": "Filtrar por origem...",
   "app.comments.filters.all_comments_label": "Todos os comentários",
   "app.comments.filters.hide_replies": "Não exibir respostas à comentários",
   "app.comments.filters.private_reply": "Comentários que podem receber resposta privada",

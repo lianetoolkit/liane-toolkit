@@ -66,6 +66,68 @@ const CommentsHelpers = {
       default:
     }
   },
+  handleInstagramWebhook({ instagramBusinessAccountId, data }) {
+    logger.debug("handleInstagramWebhook called", {
+      instagramBusinessAccountId,
+      data,
+    });
+
+    const account = FacebookAccountsHelpers.getInstagramAccount({
+      instagramBusinessAccountId,
+    });
+    if (!account) {
+      logger.debug(
+        "handleInstagramWebhook called with an unknown instagramBusinessAccountId"
+      );
+      return true;
+    }
+
+    const campaign = Campaigns.findOne({
+      "facebookAccount.facebookId": account.facebookId,
+    });
+    if (!campaign) {
+      logger.debug(
+        "handleInstagramWebhook called with an instagramBusinessAccountId not related to a campaign"
+      );
+      return true;
+    }
+
+    let comment;
+    try {
+      comment = Promise.await(
+        FB.api(data.id, {
+          fields: ["id", "media", "text", "username"],
+          access_token: campaign.facebookAccount.accessToken,
+        })
+      );
+    } catch (error) {
+      throw new Meteor.Error(error);
+    }
+
+    AccountsLogs.upsert(
+      {
+        type: "comments.add",
+        personId: comment.username,
+        objectId: comment.media.id,
+        timestamp: new Date().getTime(),
+      },
+      {
+        $setOnInsert: {
+          objectType: "comment",
+          accountId: account.facebookId,
+          isAdmin: false,
+          parentId: data.id,
+        },
+      }
+    );
+
+    this.getInstagramEntryComments({
+      facebookAccountId: account.facebookId,
+      entryId: comment.media.id,
+      accessToken: campaign.facebookAccount.accessToken,
+      campaignId: campaign._id,
+    });
+  },
   upsertComment({ facebookAccountId, data }) {
     const campaignWithToken = Campaigns.findOne({
       "facebookAccount.facebookId": facebookAccountId,
@@ -369,7 +431,7 @@ const CommentsHelpers = {
       });
     }
   },
-  updatePeopleCommentsCount({ facebookAccountId, commentedPeople }) {
+  updatePeopleCommentsCount({ facebookAccountId, commentedPeople, source }) {
     check(facebookAccountId, String);
 
     const accountCampaigns = FacebookAccountsHelpers.getAccountCampaigns({
@@ -381,6 +443,7 @@ const CommentsHelpers = {
       if (!people[person.id]) {
         people[person.id] = {
           name: person.name,
+          lastComment: person.comment,
           latestComment: 0,
         };
       }
@@ -398,6 +461,7 @@ const CommentsHelpers = {
           personId: personId,
           facebookAccountId: facebookAccountId,
         };
+
         const commentsCount = Comments.find(query).count();
         const hasPrivateReply = !!Comments.findOne({
           ...query,
@@ -423,13 +487,33 @@ const CommentsHelpers = {
         }
 
         // Build update obj
-        let updateObj = {
-          $setOnInsert: {
-            createdAt: new Date(),
-            source: "facebook",
-          },
-          $set: set,
-        };
+        let updateObj;
+        switch (source) {
+          case "instagram":
+            updateObj = {
+              $setOnInsert: {
+                createdAt: new Date(),
+                source: "instagram",
+                campaignMeta: {
+                  social_networks: {
+                    instagram:
+                      "@" + commentedPerson.lastComment.source_data.username,
+                  },
+                },
+              },
+              $set: set,
+            };
+            break;
+          default:
+            updateObj = {
+              $setOnInsert: {
+                createdAt: new Date(),
+                source: "facebook",
+              },
+              $set: set,
+            };
+            break;
+        }
 
         if (Object.keys(addToSet).length) {
           updateObj.$addToSet = addToSet;
@@ -459,6 +543,44 @@ const CommentsHelpers = {
       peopleBulk.execute();
     }
   },
+  getInstagramCommentReplies({ commentId, accessToken }) {
+    let instagramCommentReplyFields = [
+      "id",
+      "hidden",
+      "like_count",
+      "media",
+      "text",
+      "user",
+      "timestamp",
+      "username",
+    ];
+
+    let response,
+      replies = [];
+    try {
+      response = Promise.await(
+        FB.api(`${commentId}/replies`, {
+          fields: instagramCommentReplyFields,
+          limit: 1000,
+          access_token: accessToken,
+        })
+      );
+    } catch (error) {
+      throw new Meteor.Error(error);
+    }
+    if (response.data.length) {
+      replies = replies.concat(response.data);
+      let next = response.paging ? response.paging.next : undefined;
+      while (next !== undefined) {
+        let nextPage = _fetchFacebookPageData({ url: next });
+        next = nextPage.data.paging ? nextPage.data.paging.next : undefined;
+        if (nextPage.statusCode == 200 && nextPage.data.data.length) {
+          replies = replies.concat(nextPage.data.data);
+        }
+      }
+    }
+    return replies;
+  },
   getCommentReplies({ commentId, accessToken }) {
     let response,
       comments = [];
@@ -486,28 +608,240 @@ const CommentsHelpers = {
     }
     return comments;
   },
-  getReactionCountFromFBData({ comment }) {
-    return {
-      like: comment.like ? comment.like.summary.total_count : 0,
-      care: comment.care ? comment.care.summary.total_count : 0,
-      pride: comment.pride ? comment.pride.summary.total_count : 0,
-      love: comment.love ? comment.love.summary.total_count : 0,
-      wow: comment.wow ? comment.wow.summary.total_count : 0,
-      haha: comment.haha ? comment.haha.summary.total_count : 0,
-      sad: comment.sad ? comment.sad.summary.total_count : 0,
-      angry: comment.angry ? comment.angry.summary.total_count : 0,
-      thankful: comment.thankful ? comment.thankful.summary.total_count : 0,
-      reaction: comment.reaction ? comment.reaction.summary.total_count : 0,
-    };
+  getReactionCountFromFBData({ comment, source }) {
+    logger.debug("CommentsHelpers.getReactionCountFromFBData called", {
+      comment_id: comment.id,
+      source,
+    });
+
+    let reaction_count;
+
+    switch (source) {
+      case "instagram":
+        reaction_count = {
+          like: comment.like_count || 0,
+          care: 0,
+          pride: 0,
+          love: 0,
+          wow: 0,
+          haha: 0,
+          sad: 0,
+          angry: 0,
+          thankful: 0,
+          reaction: comment.like_count,
+        };
+        break;
+      default:
+        // Facebook
+        reaction_count = {
+          like: comment.like ? comment.like.summary.total_count : 0,
+          care: comment.care ? comment.care.summary.total_count : 0,
+          pride: comment.pride ? comment.pride.summary.total_count : 0,
+          love: comment.love ? comment.love.summary.total_count : 0,
+          wow: comment.wow ? comment.wow.summary.total_count : 0,
+          haha: comment.haha ? comment.haha.summary.total_count : 0,
+          sad: comment.sad ? comment.sad.summary.total_count : 0,
+          angry: comment.angry ? comment.angry.summary.total_count : 0,
+          thankful: comment.thankful ? comment.thankful.summary.total_count : 0,
+          reaction: comment.reaction ? comment.reaction.summary.total_count : 0,
+        };
+        break;
+    }
+
+    return reaction_count;
   },
-  getEntryComments({ facebookAccountId, entryId, accessToken }) {
+  getInstagramEntryComments({
+    facebookAccountId,
+    entryId,
+    accessToken,
+    campaignId,
+  }) {
     check(facebookAccountId, String);
     check(entryId, String);
     check(accessToken, String);
+    check(campaignId, String);
+
+    logger.debug("CommentsHelpers.getInstagramEntryComments called", {
+      entryId,
+    });
+
+    const facebookAccount = FacebookAccountsHelpers.getFacebookAccount({
+      facebookAccountId,
+    });
+    const instagramBusinessAccountId =
+      facebookAccount.instagramBusinessAccountId;
+
+    let commentedPeople = [];
+
+    const addCommentToBulk = ({ comment, bulk }) => {
+      if (!comment.username) return;
+      comment.source = "instagram";
+      comment.name = PeopleHelpers.getPersonName({
+        campaignId,
+        instagramHandle: comment.username,
+      });
+      let parentEntryData = EntriesHelpers.getEntryData({
+        entryId: comment.media.id,
+      });
+      comment.can_comment = parentEntryData.source_data
+        ? parentEntryData.source_data.is_comment_enabled
+        : false;
+      comment.personId = PeopleHelpers.getPersonId({
+        campaignId,
+        instagramHandle: comment.username,
+      });
+      comment.entryId = entryId;
+      comment.facebookAccountId = facebookAccountId;
+      comment.created_time = comment.timestamp;
+      comment.is_hidden = comment.hidden;
+      comment.comment_count = comment.replies ? comment.replies.data.length : 0;
+      comment.reaction_count = this.getReactionCountFromFBData({
+        comment,
+        source: "instagram",
+      });
+      let source_data = {};
+      source_data.username = comment.username;
+      if (comment.media) {
+        source_data.media_id = comment.media.id;
+      }
+      if (comment.user) {
+        source_data.user_id = comment.user.id;
+      }
+      comment.source_data = source_data;
+      comment.message = comment.text ? comment.text : "";
+      const commentId = comment.id;
+      delete comment.id;
+      delete comment.username;
+      delete comment.timestamp;
+      delete comment.hidden;
+      delete comment.like_count;
+      delete comment.media;
+      delete comment.user;
+      delete comment.text;
+
+      commentedPeople.push({
+        id: comment.personId,
+        name: comment.name,
+        comment,
+      });
+
+      if (comment.reaction_count && comment.reaction_count.reaction > 0) {
+        LikesHelpers.handleCommentsReactions({
+          facebookAccountId,
+          entryId,
+          commentId,
+          accessToken,
+        });
+      }
+      bulk.find({ _id: commentId }).upsert().update({
+        $set: comment,
+      });
+    };
+
+    const _insertBulk = ({ data }) => {
+      const bulk = Comments.rawCollection().initializeUnorderedBulkOp();
+      for (const comment of data) {
+        if (
+          comment.username &&
+          comment.replies &&
+          comment.replies.data.length > 0
+        ) {
+          const replies = this.getInstagramCommentReplies({
+            commentId: comment.id,
+            accessToken,
+          });
+          comment.adminReplied =
+            replies.findIndex((c) =>
+              c.user ? c.user.id == instagramBusinessAccountId : false
+            ) != -1;
+          for (const reply of replies) {
+            addCommentToBulk({
+              comment: {
+                ...reply,
+                parentId: comment.id,
+              },
+              bulk,
+            });
+          }
+        }
+        addCommentToBulk({ comment, bulk });
+      }
+
+      if (commentedPeople.length) {
+        bulk.execute(
+          Meteor.bindEnvironment((e, result) => {
+            this.updatePeopleCommentsCount({
+              facebookAccountId,
+              commentedPeople,
+              source: "instagram",
+            });
+          })
+        );
+      }
+    };
+
+    let instagramCommentFields = [
+      "id",
+      "hidden",
+      "like_count",
+      "media",
+      "text",
+      "user",
+      "timestamp",
+      "username",
+      "replies",
+    ];
+
+    let response;
+    try {
+      response = Promise.await(
+        FB.api(`${entryId}/comments`, {
+          fields: instagramCommentFields,
+          limit: 1000,
+          access_token: accessToken,
+        })
+      );
+    } catch (error) {
+      throw new Meteor.Error(error);
+    }
+
+    if (response.data.length) {
+      _insertBulk({ data: response.data });
+      let next = response.paging ? response.paging.next : undefined;
+      while (next !== undefined) {
+        let nextPage = _fetchFacebookPageData({ url: next });
+        next = nextPage.data.paging ? nextPage.data.paging.next : undefined;
+        if (nextPage.statusCode == 200 && nextPage.data.data.length) {
+          _insertBulk({ data: nextPage.data.data });
+        }
+      }
+    }
+
+    return;
+  },
+  getEntryComments({ facebookAccountId, entryId, accessToken, campaignId }) {
+    check(facebookAccountId, String);
+    check(entryId, String);
+    check(accessToken, String);
+    check(campaignId, String);
 
     logger.debug("CommentsHelpers.getEntryComments called", {
       entryId,
     });
+
+    switch (EntriesHelpers.getEntrySource({ entryId })) {
+      case "instagram":
+        return this.getInstagramEntryComments({
+          facebookAccountId,
+          entryId,
+          accessToken,
+          campaignId,
+        });
+      default:
+        // Facebook
+        // do nothing here, facebook is the default behaviour of this function
+        break;
+    }
 
     let commentedPeople = [];
 

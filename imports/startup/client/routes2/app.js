@@ -194,6 +194,7 @@ appRoutes.route("/comments", {
       query: pick(queryParams, [
         "q",
         "entry",
+        "source",
         "resolved",
         "category",
         "mention",

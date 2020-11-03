@@ -109,6 +109,15 @@ Comments.schema = new SimpleSchema({
     type: String,
     allowedValues: ["question", "vote"],
   },
+  source: {
+    type: String,
+    optional: true
+  },
+  source_data: {
+    type: Object,
+    blackbox: true,
+    optional: true,
+  }
 });
 
 Comments.attachSchema(Comments.schema);

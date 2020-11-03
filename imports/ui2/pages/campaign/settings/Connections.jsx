@@ -13,6 +13,7 @@ import { get, set } from "lodash";
 
 import { alertStore } from "../../../containers/Alerts.jsx";
 import { modalStore } from "../../../containers/Modal.jsx";
+import { updatePermissions } from "/imports/ui2/utils/facebook";
 
 import Nav from "./Nav.jsx";
 import Page from "../../../components/Page.jsx";
@@ -61,25 +62,27 @@ const ConnectionItem = styled.li`
     flex: 1 1 50%;
     font-size: 0.8em;
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
     p {
-      flex: 1 1 100%;
       margin: 0;
       color: #666;
     }
-    h3 {
-      flex: 1 1 auto;
-      margin: 0;
-      font-size: 1.2em;
+    > div {
+      flex: 1 1 100%;
+      h3 {
+        margin: 0;
+        font-size: 1.2em;
+      }
+      p.owner {
+        color: #999;
+        font-style: italic;
+      }
     }
     p.health {
       flex: 0 0 auto;
       font-weight: 600;
       font-size: 0.9em;
-    }
-    p.owner {
-      color: #999;
-      font-style: italic;
     }
   }
   &:hover,
@@ -93,6 +96,13 @@ const ConnectionItem = styled.li`
     css`
       .connection-icon {
         color: #3b5998;
+      }
+    `}
+  ${(props) =>
+    props.instagram &&
+    css`
+      .connection-icon {
+        color: #dd2a7b;
       }
     `}
 `;
@@ -118,6 +128,7 @@ class CampaignConnectionsPage extends Component {
     super(props);
     this.state = {
       loading: false,
+      account: false,
     };
   }
   componentDidUpdate() {
@@ -125,6 +136,7 @@ class CampaignConnectionsPage extends Component {
   }
   _getFacebookStatus = () => {
     const { campaign, facebookHealthJob } = this.props;
+    const account = this.state.account || campaign.facebookAccount;
     return {
       user: campaign.users.find(
         (u) =>
@@ -139,41 +151,42 @@ class CampaignConnectionsPage extends Component {
   _handleFacebookClick = (ev) => {
     ev.preventDefault();
     const { campaign } = this.props;
-    const permissions = [
-      "public_profile",
-      "email",
-      "pages_manage_posts",
-      "pages_manage_engagement",
-      "pages_manage_metadata",
-      "pages_show_list",
-      "pages_messaging",
-      "pages_messaging_phone_number",
-      "pages_messaging_subscriptions",
-    ];
     this.setState({ loading: true });
-    Facebook.requestCredential(
-      {
-        requestPermissions: permissions,
-      },
-      (token) => {
-        const secret = OAuth._retrieveCredentialSecret(token) || null;
-        Meteor.call(
-          "campaigns.updateFacebook",
-          { campaignId: campaign._id, token, secret },
-          (err, res) => {
-            if (err) {
-              alertStore.add(err);
-            }
-            this.setState({ loading: false });
+    updatePermissions(({ token, secret }) => {
+      Meteor.call(
+        "campaigns.updateFacebook",
+        { campaignId: campaign._id, token, secret },
+        (err, res) => {
+          if (err) {
+            alertStore.add(err);
           }
-        );
-      }
-    );
+          this.setState({ loading: false, account: res });
+        }
+      );
+    });
+  };
+  _handleInstagramClick = (ev) => {
+    ev.preventDefault();
+    const { campaign } = this.props;
+    this.setState({ loading: true });
+    updatePermissions(({ token, secret }) => {
+      Meteor.call(
+        "campaigns.updateFacebook",
+        { campaignId: campaign._id, token, secret },
+        (err, res) => {
+          if (err) {
+            alertStore.add(err);
+          }
+          this.setState({ loading: false, account: res });
+        }
+      );
+    });
   };
   render() {
     const { intl, campaign, user } = this.props;
     const { loading } = this.state;
     const facebook = this._getFacebookStatus();
+    const account = this.state.account || campaign.facebookAccount;
     if (loading) return <Loading />;
     return (
       <>
@@ -196,7 +209,25 @@ class CampaignConnectionsPage extends Component {
                 <FontAwesomeIcon icon={["fab", "facebook-square"]} />
               </div>
               <div className="connection-content">
-                <h3>{facebook.name}</h3>
+                <div>
+                  <h3>{facebook.name}</h3>
+                  {facebook.user ? (
+                    <p className="owner">
+                      <FormattedMessage
+                        id="app.campaign_connections.owner_label"
+                        defaultMessage="Connected by {name}"
+                        values={{ name: facebook.user.name }}
+                      />
+                    </p>
+                  ) : (
+                    <p className="owner">
+                      <FormattedMessage
+                        id="app.campaign_connections.owner_not_found_label"
+                        defaultMessage="Connection not found"
+                      />
+                    </p>
+                  )}
+                </div>
                 <p className="health">
                   <HealthStatus healthy={facebook.healthy} />
                   {facebook.healthy ? (
@@ -211,21 +242,52 @@ class CampaignConnectionsPage extends Component {
                     />
                   )}
                 </p>
-                {facebook.user ? (
-                  <p className="owner">
-                    <FormattedMessage
-                      id="app.campaign_connections.owner_label"
-                      defaultMessage="Connected by {name}"
-                      values={{ name: facebook.user.name }}
-                    />
-                  </p>
+              </div>
+            </ConnectionItem>
+            <ConnectionItem
+              instagram
+              tabIndex="-1"
+              data-tip={intl.formatMessage(messages.reconnect)}
+              onClick={this._handleInstagramClick}
+            >
+              <div className="connection-icon">
+                <FontAwesomeIcon icon={["fab", "instagram"]} />
+              </div>
+
+              <div className="connection-content">
+                {account.instagramHandle ? (
+                  <>
+                    <div>
+                      <h3>{account.instagramHandle}</h3>
+                    </div>
+                    <p className="health">
+                      <HealthStatus healthy={facebook.healthy} />
+                      {facebook.healthy ? (
+                        <FormattedMessage
+                          id="app.campaign_connections.healthy_label"
+                          defaultMessage="Healthy"
+                        />
+                      ) : (
+                        <FormattedMessage
+                          id="app.campaign_connections.unhealthy_label"
+                          defaultMessage="Not connected"
+                        />
+                      )}
+                    </p>
+                  </>
                 ) : (
-                  <p className="owner">
-                    <FormattedMessage
-                      id="app.campaign_connections.owner_not_found_label"
-                      defaultMessage="Connection not found"
-                    />
-                  </p>
+                  <>
+                    <div />
+                    <p className="health">
+                      <HealthStatus
+                        healthy={account.instagramHandle && facebook.healthy}
+                      />
+                      <FormattedMessage
+                        id="app.campaign_connections.unhealthy_label"
+                        defaultMessage="Not connected"
+                      />
+                    </p>
+                  </>
                 )}
               </div>
             </ConnectionItem>

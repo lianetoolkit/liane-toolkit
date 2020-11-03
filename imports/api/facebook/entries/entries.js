@@ -72,6 +72,15 @@ Entries.schema = new SimpleSchema({
   },
   "counts.share": {
     type: Number
+  },
+  source: {
+    type: String,
+    optional: true
+  },
+  source_data: {
+    type: Object,
+    blackbox: true,
+    optional: true,
   }
 });
 

@@ -236,16 +236,38 @@ export const sendComment = new ValidatedMethod({
 
     const access_token = campaign.facebookAccount.accessToken;
 
-    try {
-      Promise.await(
-        FB.api(`${objectId}/comments`, "POST", {
-          message,
-          access_token,
-        })
-      );
-    } catch (err) {
-      console.log(err);
-      throw new Meteor.Error(500, "Error trying to publish comment");
+    const comment = Comments.findOne({_id: objectId});
+    
+    switch (comment.source) {
+      case 'instagram':
+        try {
+          Promise.await(
+            FB.api(`${objectId}/replies`, "POST", {
+              message,
+              access_token,
+            })
+          );
+        } catch (err) {
+          console.log(err);
+          throw new Meteor.Error(500, "Error trying to publish comment");
+        }
+    
+        break;
+      default: //Facebook
+
+        try {
+          Promise.await(
+            FB.api(`${objectId}/comments`, "POST", {
+              message,
+              access_token,
+            })
+          );
+        } catch (err) {
+          console.log(err);
+          throw new Meteor.Error(500, "Error trying to publish comment");
+        }
+    
+        break;
     }
 
     Meteor.call("log", {

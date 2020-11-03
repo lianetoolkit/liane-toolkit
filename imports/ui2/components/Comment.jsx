@@ -9,6 +9,8 @@ import {
 import styled from "styled-components";
 import moment from "moment";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { userCan } from "/imports/ui2/utils/permissions";
 
 import { modalStore } from "../containers/Modal.jsx";
@@ -61,6 +63,14 @@ const Container = styled.article`
       margin: 0 0 1rem;
       font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
       font-size: 1em;
+      .icon {
+        font-size: 1.2em;
+        color: #3b5998;
+        margin-right: 0.5rem;
+        &.instagram {
+          color: #dd2a7b;
+        }
+      }
       .name {
         color: #333;
         font-weight: 600;
@@ -98,7 +108,7 @@ const Container = styled.article`
       position: absolute;
       width: 10px;
       height: 10px;
-      left: 1rem;
+      left: 2rem;
       top: -5px;
       transform: rotate(45deg);
     }
@@ -194,7 +204,7 @@ export const getFBUrl = (params) => {
   return `https://www.facebook.com/permalink.php?${encoded}`;
 };
 
-export const getCommentUrl = (comment) => {
+export const getFBCommentUrl = (comment) => {
   const id = comment.facebookAccountId;
   const story_fbid = comment._id.split("_")[0];
   const comment_id = comment._id.split("_")[1];
@@ -210,7 +220,7 @@ class Comment extends Component {
   static Count = CountIntl;
   action = () => {
     const { comment } = this.props;
-    const url = getCommentUrl(comment);
+    const url = this.getCommentUrl();
     if (comment.parent) {
       const parentUrl = this.getParentUrl();
       return (
@@ -231,18 +241,40 @@ class Comment extends Component {
       );
     }
   };
+  getCommentUrl = () => {
+    const { comment } = this.props;
+    if (comment.source == "instagram") {
+      let url = `${comment.entry.source_data.permalink}c/`;
+      if (comment.parentId) {
+        url += `${comment.parentId}/r/`;
+      }
+      url += comment._id;
+      return url;
+    } else {
+      return getFBCommentUrl(comment);
+    }
+  };
   getParentUrl = () => {
     const { comment } = this.props;
-    const id = comment.facebookAccountId;
-    const story_fbid = comment.parentId.split("_")[0];
-    const comment_id = comment.parentId.split("_")[1];
-    return getFBUrl({ id, story_fbid, comment_id });
+    if (comment.source == "instagram") {
+      return `${comment.entry.source_data.permalink}c/${comment.parentId}`;
+    } else {
+      const id = comment.facebookAccountId;
+      const story_fbid = comment.parentId.split("_")[0];
+      const comment_id = comment.parentId.split("_")[1];
+      return getFBUrl({ id, story_fbid, comment_id });
+    }
   };
   getPostUrl = () => {
     const { comment } = this.props;
-    const id = comment.facebookAccountId;
-    const story_fbid = comment._id.split("_")[0];
-    return getFBUrl({ id, story_fbid });
+    if (comment.source == "instagram") {
+      console.log(comment);
+      return comment.entry.source_data.permalink;
+    } else {
+      const id = comment.facebookAccountId;
+      const story_fbid = comment._id.split("_")[0];
+      return getFBUrl({ id, story_fbid });
+    }
   };
   _handleReplyClick = (ev) => {
     const { intl, comment } = this.props;
@@ -254,6 +286,16 @@ class Comment extends Component {
     modalStore.setTitle(title);
     modalStore.set(<Reply comment={comment} defaultSendAs="comment" />);
   };
+
+  _getSourceIcon = () => {
+    const { comment } = this.props;
+    switch (comment.source) {
+      case "instagram":
+        return ["fab", "instagram"];
+      default:
+        return ["fab", "facebook-square"];
+    }
+  };
   render() {
     const { intl, comment, actions } = this.props;
     if (comment) {
@@ -261,6 +303,9 @@ class Comment extends Component {
         <Container>
           <header>
             <h3>
+              <span className={`icon ${comment.source}`}>
+                <FontAwesomeIcon icon={this._getSourceIcon(comment)} />
+              </span>
               {comment.person ? (
                 <PersonNamePopup
                   name={comment.person.name}

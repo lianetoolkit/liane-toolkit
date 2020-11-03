@@ -27,10 +27,11 @@ import PersonMetaButtons, {
 import PersonSummary from "./PersonSummary.jsx";
 import PersonReactions from "./PersonReactions.jsx";
 import PersonEdit from "./PersonEdit.jsx";
+import PersonSocialNetworkIcons from "./PersonSocialNetworkIcons.jsx";
 import PersonContactIcons from "./PersonContactIcons.jsx";
 import PersonTags from "./PersonTags.jsx";
 import Reply from "./Reply.jsx";
-import { getCommentUrl } from "./Comment.jsx";
+import { getFBCommentUrl } from "./Comment.jsx";
 
 const messages = defineMessages({
   editingPersonTitle: {
@@ -63,6 +64,15 @@ const Container = styled.div`
       border-radius: 7px;
       padding: 0.2rem 0.4rem;
       margin-right: 0.25rem;
+    }
+  }
+  .name-cell {
+    display: flex;
+    > .person-name {
+      flex: 1 1 100%;
+    }
+    > * {
+      flex: 0 0 auto;
     }
   }
   .extra-actions {
@@ -406,7 +416,11 @@ class PeopleTable extends Component {
   _handlePrivateReplyClick = (person) => (ev) => {
     const { intl } = this.props;
     ev.preventDefault();
-    modalStore.setTitle(intl.formatMessage(messages.sendingPrivateReplyTitle));
+    modalStore.setTitle(
+      intl.formatMessage(messages.sendingPrivateReplyTitle, {
+        name: person.name,
+      })
+    );
     modalStore.set(<Reply personId={person._id} messageOnly={true} />);
   };
   getTags(person) {
@@ -433,6 +447,7 @@ class PeopleTable extends Component {
                   className="fill"
                   onClick={this._handleSortClick("name", "asc")}
                   sorted={this.getSort("name")}
+                  colSpan="2"
                 >
                   <FormattedMessage
                     id="app.people.table_header.name"
@@ -533,7 +548,7 @@ class PeopleTable extends Component {
                       </ReactTooltip>
                     ) : null}
                   </td>
-                  <td className="fill highlight">
+                  <td className="fill highlight" style={{ borderRight: 0 }}>
                     <p className="extra-actions show-on-hover">
                       <a
                         href={FlowRouter.path("App.people.detail", {
@@ -563,6 +578,9 @@ class PeopleTable extends Component {
                         <PersonTags tags={tags} person={person} />
                       ) : null}
                     </span>
+                  </td>
+                  <td>
+                    <PersonSocialNetworkIcons person={person} />
                   </td>
                   <td className="small icon-number">
                     <FontAwesomeIcon icon="dot-circle" />
@@ -598,7 +616,7 @@ class PeopleTable extends Component {
                         onUpdate={this._handleEditSuccess}
                       />
                     </td>
-                    <td className="extra" colSpan="4">
+                    <td className="extra" colSpan="5">
                       <div className="person-reactions">
                         <PersonReactions person={person} />
                       </div>
@@ -626,7 +644,7 @@ class PeopleTable extends Component {
                         ) : null}
                         {person.latestComment ? (
                           <a
-                            href={getCommentUrl(person.latestComment)}
+                            href={getFBCommentUrl(person.latestComment)}
                             target="_blank"
                             rel="external"
                             className="latest-comment"

@@ -227,6 +227,7 @@
   "app.comments.counts.no_comments": "No comments",
   "app.comments.counts.one_comment": "1 comment",
   "app.comments.entry_select_placeholder": "Filter by post...",
+  "app.comments.source_select_placeholder": "Filter by source...",
   "app.comments.filters.all_comments_label": "All comments",
   "app.comments.filters.hide_replies": "Hide comment replies",
   "app.comments.filters.private_reply": "Comments that can receive a private reply",
