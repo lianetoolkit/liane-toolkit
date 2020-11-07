@@ -3,8 +3,18 @@ import styled from "styled-components";
 import Page from "/imports/ui2/components/Page.jsx";
 import Loading from "/imports/ui2/components/Loading.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
+import moment from "moment";
 // import "@nivo/core";
-import { ResponsiveFunnel } from "@nivo/funnel";
+// import { ResponsiveFunnel } from "@nivo/funnel";
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -212,6 +222,24 @@ const Achievements = styled.ul`
   }
 `;
 
+const ChartNav = styled.nav`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0 1rem;
+  a {
+    font-weight: 500;
+    color: #306;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 500px;
+    margin: 0 0.5rem;
+    &:hover {
+      background: rgba(51, 0, 102, 0.15);
+    }
+  }
+`;
+
 const createPromise = function (handler) {
   var resolve, reject;
   var promise = new Promise(function (_resolve, _reject) {
@@ -236,9 +264,22 @@ class DashboardDemoPage extends React.Component {
     };
   }
   processChart = (data) => {
-    let chart = {};
-
-    return chart;
+    // let chart = {};
+    //
+    // return chart;
+    return data;
+  };
+  _getInteractionChartData = (data) => {
+    let response = [];
+    for (const day in data) {
+      response.push({
+        day,
+        comments: Math.floor(Math.random() * 10),
+        likes: Math.floor(Math.random() * 10),
+        love: Math.floor(Math.random() * 10),
+      });
+    }
+    return response;
   };
   componentDidMount() {
     // Call methods here
@@ -286,7 +327,6 @@ class DashboardDemoPage extends React.Component {
         if (err) {
           console.log("dashboard.funnel error ", err);
         } else {
-          console.log("funnel", data);
           this.setState({ funnelData: data });
         }
         funnelPromise.resolve();
@@ -300,8 +340,6 @@ class DashboardDemoPage extends React.Component {
       "dashboard.chartsData",
       {
         campaignId: campaign._id,
-        startDate: "2020-08-24",
-        endDate: "2020-09-15",
       },
       (err, data) => {
         if (err) {
@@ -318,7 +356,6 @@ class DashboardDemoPage extends React.Component {
     });
   }
   getChartItemBgColor(index, total) {
-    console.log(10 + (90 / total) * index);
     return `rgba(51,0,102, ${(10 + (90 / total) * index) / 100})`;
   }
   render() {
@@ -330,7 +367,7 @@ class DashboardDemoPage extends React.Component {
       funnelData,
       chartsData,
     } = this.state;
-    console.log({ funnelData });
+    console.log({ chartsData });
     if (loading) {
       return <Loading full />;
     }
@@ -444,6 +481,58 @@ class DashboardDemoPage extends React.Component {
           </div>
           <div className="dashboard-section">
             <h2>Interactions evolution</h2>
+            <ChartNav>
+              <a href="#">Last 7 days</a>
+              <a href="#">This month</a>
+              <a href="#">Last 30 days</a>
+              <a href="#">Last 3 months</a>
+            </ChartNav>
+            <ResponsiveContainer width="100%" height={450}>
+              <AreaChart
+                data={this._getInteractionChartData(
+                  chartsData.interactionHistory
+                )}
+                margin={{
+                  top: 10,
+                  right: 30,
+                  left: 0,
+                  bottom: 0,
+                }}
+              >
+                {/* <CartesianGrid strokeDasharray="3 3" /> */}
+                <XAxis
+                  dataKey="day"
+                  tickFormatter={(item) => {
+                    return moment(item)
+                      .format("L")
+                      .replace(/[,\/-/.]*\s*Y+\s*/, "");
+                  }}
+                />
+                <YAxis />
+                <Tooltip />
+                <Area
+                  type="monotone"
+                  dataKey="comments"
+                  stackId="1"
+                  stroke="#8884d8"
+                  fill="#8884d8"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="likes"
+                  stackId="1"
+                  stroke="#82ca9d"
+                  fill="#82ca9d"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="love"
+                  stackId="1"
+                  stroke="#ffc658"
+                  fill="#ffc658"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
           <div className="dashboard-section">
             <h2>
