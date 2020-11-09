@@ -921,12 +921,21 @@ export const campaignUpdateFacebook = new ValidatedMethod({
       token: accountToken.result,
     });
 
-    CampaignsHelpers.refreshHealthCheck({ campaignId });
+    CampaignsHelpers.refreshCampaignJobs({ campaignId });
 
     Meteor.call("log", {
       type: "campaigns.facebook.token.update",
       campaignId,
     });
+
+    const updatedCampaign = Campaigns.findOne(campaignId);
+
+    return {
+      ...updatedCampaign.facebookAccount,
+      ...FacebookAccounts.findOne({
+        facebookId: campaign.facebookAccount.facebookId,
+      }),
+    };
   },
 });
 
