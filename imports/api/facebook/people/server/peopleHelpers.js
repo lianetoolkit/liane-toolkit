@@ -1,5 +1,6 @@
 import { Promise } from "meteor/promise";
 import axios from "axios";
+import moment from "moment";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import {
   People,
@@ -248,6 +249,7 @@ const PeopleHelpers = {
       peopleBulk.execute();
     }
   },
+
   export({ campaignId, query }) {
     let header = {};
 
@@ -296,6 +298,13 @@ const PeopleHelpers = {
             .join(",");
           delete person.basic_info.tags;
         }
+        // Parse Birthday
+        if (person.basic_info && person.basic_info.birthday) {
+          person.basic_info.birthday = moment(
+            person.basic_info.birthday
+          ).format("YYYY-MM-DD");
+        }
+
         if (person.basic_info && !Object.keys(person.basic_info).length) {
           delete person.basic_info;
         }
@@ -742,62 +751,66 @@ const PeopleHelpers = {
     check(campaignId, String);
     check(instagramHandle, String);
 
-    const pattern = '^@?' + instagramHandle + '$';
+    const pattern = "^@?" + instagramHandle + "$";
     let personId;
-  
+
     const facebookAccount = FacebookAccounts.findOne({
-      'instagramHandle': { $regex: new RegExp(pattern) }
+      instagramHandle: { $regex: new RegExp(pattern) },
     });
     if (facebookAccount) {
       personId = facebookAccount.facebookId;
-    }
-    else {
+    } else {
       const person = People.findOne({
-        $and:  [
+        $and: [
           { campaignId },
-          { 'campaignMeta.social_networks.instagram': { $regex: new RegExp(pattern) }}
-        ]
+          {
+            "campaignMeta.social_networks.instagram": {
+              $regex: new RegExp(pattern),
+            },
+          },
+        ],
       });
-      
+
       if (person) {
         personId = person.facebookId;
-      }
-      else {
+      } else {
         personId = instagramHandle;
       }
     }
-    
+
     return personId;
   },
   getPersonName({ campaignId, instagramHandle }) {
     check(campaignId, String);
     check(instagramHandle, String);
 
-    const pattern = '^@?' + instagramHandle + '$';
+    const pattern = "^@?" + instagramHandle + "$";
     let personName;
-  
+
     const facebookAccount = FacebookAccounts.findOne({
-      'instagramHandle': { $regex: new RegExp(pattern) }
+      instagramHandle: { $regex: new RegExp(pattern) },
     });
     if (facebookAccount) {
       personName = facebookAccount.name;
-    }
-    else {
+    } else {
       const person = People.findOne({
-        $and:  [
+        $and: [
           { campaignId },
-          { 'campaignMeta.social_networks.instagram': { $regex: new RegExp(pattern) }}
-        ]
+          {
+            "campaignMeta.social_networks.instagram": {
+              $regex: new RegExp(pattern),
+            },
+          },
+        ],
       });
-      
+
       if (person) {
         personName = person.name;
-      }
-      else {
+      } else {
         personName = instagramHandle;
       }
     }
-    
+
     return personName;
   },
 };
