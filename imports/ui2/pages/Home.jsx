@@ -169,7 +169,7 @@ const UserContainer = styled.div`
 const ClosedContainer = styled.div`
   max-width: 400px;
   box-sizing: border-box;
-  margin: -4rem 2rem 0;
+  margin: -4rem 0 0;
   background: #fff;
   border-radius: 7px;
   box-shadow: 0 0 2rem rgba(0, 0, 0, 0.25);
@@ -334,7 +334,7 @@ class Home extends Component {
     const { loading, isClosed, hasMail, subscribed } = this.state;
     const user = Meteor.user();
     return (
-      <Page>
+      <>
         {loading ? <Loading full /> : null}
         <Container>
           <HighlightContainer>
@@ -530,7 +530,7 @@ class Home extends Component {
             )}
           </Content>
         </Container>
-      </Page>
+      </>
     );
   }
 }

@@ -11,8 +11,14 @@ import AppNav from "../components/AppNav.jsx";
 const Container = styled.header`
   background: #330066;
   padding: 0;
-  flex: 0;
-  border-bottom: 1px solid #111;
+  flex: 1 1 auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+  height: 62px;
   .header-content {
     max-width: 1000px;
     padding: 0 2rem;

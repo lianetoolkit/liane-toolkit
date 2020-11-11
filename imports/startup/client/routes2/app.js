@@ -19,8 +19,6 @@ import FAQPage from "/imports/ui2/containers/FAQPage.jsx";
 import CommentsPage from "/imports/ui2/containers/CommentsPage.jsx";
 import PeopleSinglePage from "/imports/ui2/containers/PeopleSinglePage.jsx";
 
-import AdsetPage from "/imports/ui2/pages/Adset.jsx";
-
 import CampaignInvitePage from "/imports/ui2/pages/campaign/Invite.jsx";
 import CampaignSettingsPage from "/imports/ui2/pages/campaign/settings/General.jsx";
 import CampaignFacebookPage from "/imports/ui2/pages/campaign/settings/Facebook.jsx";
@@ -143,6 +141,7 @@ appRoutes.route("/people", {
   action: function (params, queryParams) {
     addTitle(`${APP_NAME} | People`);
     return mount(App, {
+      contained: true,
       content: { component: PeoplePage },
       query: pick(queryParams, [
         "q",
@@ -167,6 +166,7 @@ appRoutes.route("/people/unresolved", {
   action: function (params, queryParams) {
     addTitle(`${APP_NAME} | People Unresolved `);
     return mount(App, {
+      contained: true,
       content: { component: UnresolvedPage },
       options: pick(queryParams, ["sort", "order"]),
     });
@@ -178,6 +178,7 @@ appRoutes.route("/people/:personId", {
   action: function (params, queryParams) {
     addTitle(`${APP_NAME} | People`);
     return mount(App, {
+      contained: true,
       content: { component: PeopleSinglePage },
       personId: params.personId,
       section: queryParams.section,
@@ -190,6 +191,7 @@ appRoutes.route("/comments", {
   action: function (params, queryParams) {
     addTitle(`${APP_NAME} | Gestão de comentários`);
     return mount(App, {
+      contained: true,
       content: { component: CommentsPage },
       query: pick(queryParams, [
         "q",
@@ -203,16 +205,6 @@ appRoutes.route("/comments", {
         "privateReply",
       ]),
       page: queryParams.page,
-    });
-  },
-});
-
-appRoutes.route("/adset", {
-  name: "App.adset",
-  action: function () {
-    addTitle(`${APP_NAME} | Criar adset`);
-    return mount(App, {
-      content: { component: AdsetPage },
     });
   },
 });
@@ -237,7 +229,10 @@ appRoutes.route("/form_settings", {
   name: "App.formSettings",
   action: function () {
     addTitle(`${APP_NAME} | Form Settings`);
-    return mount(App, { content: { component: FormSettingsPage } });
+    return mount(App, {
+      contained: true,
+      content: { component: FormSettingsPage },
+    });
   },
 });
 
@@ -256,6 +251,7 @@ appRoutes.route("/campaign/new", {
   action: function () {
     addTitle(`${APP_NAME} | New Campaign`);
     return mount(App, {
+      contained: true,
       content: { component: NewCampaignPage },
     });
   },
@@ -264,35 +260,50 @@ appRoutes.route("/campaign/settings", {
   name: "App.campaign.settings",
   action: function () {
     addTitle(`${APP_NAME} | Campaign Settings`);
-    return mount(App, { content: { component: CampaignSettingsPage } });
+    return mount(App, {
+      contained: true,
+      content: { component: CampaignSettingsPage },
+    });
   },
 });
 appRoutes.route("/campaign/settings/facebook", {
   name: "App.campaign.facebook",
   action: function () {
     addTitle(`${APP_NAME} | Campaign Facebook Settings`);
-    return mount(App, { content: { component: CampaignFacebookPage } });
+    return mount(App, {
+      contained: true,
+      content: { component: CampaignFacebookPage },
+    });
   },
 });
 appRoutes.route("/campaign/settings/connections", {
   name: "App.campaign.connections",
   action: function () {
     addTitle(`${APP_NAME} | Campaign Connections`);
-    return mount(App, { content: { component: CampaignConnectionsPage } });
+    return mount(App, {
+      contained: true,
+      content: { component: CampaignConnectionsPage },
+    });
   },
 });
 appRoutes.route("/campaign/settings/team", {
   name: "App.campaign.team",
   action: function () {
     addTitle(`${APP_NAME} | Campaign Team`);
-    return mount(App, { content: { component: CampaignTeamPage } });
+    return mount(App, {
+      contained: true,
+      content: { component: CampaignTeamPage },
+    });
   },
 });
 appRoutes.route("/campaign/settings/actions", {
   name: "App.campaign.actions",
   action: function () {
     addTitle(`${APP_NAME} | Campaign Actions`);
-    return mount(App, { content: { component: CampaignActionsPage } });
+    return mount(App, {
+      contained: true,
+      content: { component: CampaignActionsPage },
+    });
   },
 });
 
@@ -301,6 +312,7 @@ appRoutes.route("/admin/:section?/:subsection?", {
   action: function (params, queryParams) {
     addTitle(`${APP_NAME} | Administration`);
     return mount(App, {
+      contained: true,
       content: {
         component: AdminPage.getSection(params.section, params.subsection),
       },

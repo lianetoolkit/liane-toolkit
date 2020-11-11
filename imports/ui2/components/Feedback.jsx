@@ -70,6 +70,7 @@ const FeedbackButtonContainer = styled.a`
   border-radius: 7px 7px 0 0;
   font-size: 0.7em;
   text-decoration: none;
+  z-index: 1010;
   &:hover,
   &:focus,
   &:active {
