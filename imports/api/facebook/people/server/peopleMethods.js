@@ -836,7 +836,7 @@ export const updateTags = new ValidatedMethod({
         campaignId,
         userId,
         feature: "people",
-        permission: "edit",
+        permission: "categorize",
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
@@ -1879,7 +1879,7 @@ export const peopleCreateTag = new ValidatedMethod({
         campaignId,
         userId,
         feature: "people",
-        permission: "edit",
+        permission: "categorize",
       })
     ) {
       throw new Meteor.Error(401, "You are not allowed to do this action");
