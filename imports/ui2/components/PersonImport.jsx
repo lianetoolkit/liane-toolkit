@@ -634,6 +634,7 @@ class PeopleImport extends React.Component {
       loading: false,
       tags: [],
       labels: {},
+      isLianeChecked: false,
     };
     this._handleModalOpen = this._handleModalOpen.bind(this);
     this._handleModalClose = this._handleModalClose.bind(this);
@@ -713,11 +714,54 @@ class PeopleImport extends React.Component {
   }
   render() {
     const { intl, data } = this.props;
-    const { loading, tags, labels } = this.state;
+    const { loading, tags, labels, isLianeChecked } = this.state;
     const headers = this._getHeaders();
+
+    if (headers.indexOf("_id") >= 0 && !isLianeChecked) {
+      return (
+        <Container>
+          <p>We have noticed this file might come from a Liane Exportation.</p>
+          <p>Please choose an option:</p>
+          <p className="text-center">
+            <button
+              onClick={() => {
+                console.log("click on Yes");
+              }}
+              type="button"
+            >
+              Yes, it's from Liane
+            </button>
+            <small>
+              This option will be faster, similar records will be mark as
+              possible duplicates
+            </small>
+          </p>
+
+          <p className="text-center">
+            <button
+              type="button"
+              onClick={() => {
+                console.log("click on no");
+                this.setState({
+                  isLianeChecked: true,
+                });
+              }}
+            >
+              No, it's not from Liane
+            </button>
+            <small>
+              Evaluate the match of each column, similar records will mark as
+              possible duplicates.
+            </small>
+          </p>
+        </Container>
+      );
+    }
     if (loading) {
       return <Loading />;
     }
+
+    // Check for the _id column
     return (
       <Container>
         <Form onSubmit={this._handleSubmit}>
