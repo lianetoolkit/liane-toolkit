@@ -184,6 +184,12 @@ class PersonEdit extends Component {
     const { id, sectionKey, formData } = this.state;
     const campaignId = Session.get("campaignId");
     const update = (createdId) => {
+      let data;
+      if (Array.isArray(formData[sectionKey])) {
+        data = { [sectionKey]: formData[sectionKey] };
+      } else {
+        data = formData[sectionKey];
+      }
       Meteor.call(
         "people.metaUpdate",
         {
@@ -191,7 +197,7 @@ class PersonEdit extends Component {
           personId: id || createdId,
           name: formData.name,
           sectionKey,
-          data: formData[sectionKey],
+          data: data,
         },
         (err, res) => {
           if (!err) {
