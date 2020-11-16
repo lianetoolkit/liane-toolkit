@@ -291,6 +291,7 @@ class ImportButton extends React.Component {
       modalStore.set(<ConfirmLegal importInput={this.importInput} />);
     }
   };
+  /* This function parses the selected file  */
   _handleImport = (ev) => {
     const campaign = ClientStorage.get("campaign");
     this.setState({ loading: true });
@@ -310,10 +311,11 @@ class ImportButton extends React.Component {
       if (readType == "arrayBuffer") {
         wb = XLSX.read(new Uint8Array(reader.result), { type: "array" });
       } else if (readType == "text") {
-        wb = XLSX.read(reader.result, { type: "string" });
+        wb = XLSX.read(reader.result, { type: "string", cellDates: true });
       }
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(sheet);
+      console.log("_handleImport", sheet, json);
       if (json.length > 10000) {
         alertStore.add(
           "You can't import more than 10,000 people at once.",
@@ -640,6 +642,7 @@ class PeopleImport extends React.Component {
     this._handleModalClose = this._handleModalClose.bind(this);
     this._handleChange = this._handleChange.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
+    this._handleLianeImport = this._handleLianeImport.bind(this);
   }
   _handleChange = ({ name, value, customField }) => {
     this.setState({
@@ -681,6 +684,29 @@ class PeopleImport extends React.Component {
   _handleDefaultFieldsChange = (data) => {
     this.setState({ defaultValues: data });
   };
+  _handleLianeImport = () => {
+    const { data, campaignId, filename } = this.props;
+    console.log("_handleLianeImport >> ", filename, campaignId, data);
+    this.setState({
+      loading: true,
+    });
+    Meteor.call(
+      "people.import.liane",
+      {
+        campaignId,
+        filename,
+        data,
+      },
+      (err, res) => {
+        this.setState({
+          loading: false,
+        });
+        if (onSubmit) {
+          onSubmit(err, res);
+        }
+      }
+    );
+  };
   _handleSubmit(ev) {
     ev.preventDefault();
     if (this.state.loading) return false;
@@ -716,6 +742,11 @@ class PeopleImport extends React.Component {
     const { intl, data } = this.props;
     const { loading, tags, labels, isLianeChecked } = this.state;
     const headers = this._getHeaders();
+    console.log("data:", data);
+
+    if (loading) {
+      return <Loading />;
+    }
 
     if (headers.indexOf("_id") >= 0 && !isLianeChecked) {
       return (
@@ -725,7 +756,7 @@ class PeopleImport extends React.Component {
           <p className="text-center">
             <button
               onClick={() => {
-                console.log("click on Yes");
+                this._handleLianeImport();
               }}
               type="button"
             >
@@ -741,7 +772,6 @@ class PeopleImport extends React.Component {
             <button
               type="button"
               onClick={() => {
-                console.log("click on no");
                 this.setState({
                   isLianeChecked: true,
                 });
@@ -756,9 +786,6 @@ class PeopleImport extends React.Component {
           </p>
         </Container>
       );
-    }
-    if (loading) {
-      return <Loading />;
     }
 
     // Check for the _id column

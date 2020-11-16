@@ -67,8 +67,16 @@ export default class TagSelect extends Component {
   _buildValue = () => {
     const { options } = this.state;
     const { value } = this.props;
+
     if (value && options.length) {
-      return options.filter((option) => value.indexOf(option.value) !== -1);
+      // Attemp to prevent issue with the value type..
+      if (typeof value == "string" || Array.isArray(value)) {
+        return options.filter((option) => value.indexOf(option.value) !== -1);
+      } else {
+        return options.filter(
+          (option) => value.value.indexOf(option.value) !== -1
+        );
+      }
     }
     return [];
   };

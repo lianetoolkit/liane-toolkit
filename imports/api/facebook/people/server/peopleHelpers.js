@@ -457,6 +457,93 @@ const PeopleHelpers = {
 
     return exportId;
   },
+  lianeImport({ campaignId, data, filename }) {
+    let importData = [];
+    const listId = PeopleLists.insert({ name: filename, campaignId });
+    // Build default person
+    let defaultPerson = {
+      $set: {
+        campaignId,
+      },
+      $addToSet: {},
+    };
+
+    // BUILD META
+    //Job per person
+    /*
+    basic_info.address.country: "AR"
+    basic_info.address.region: "S"
+    basic_info.address.zipcode: 2000
+    basic_info.birthday: Fri Nov 20 2020 01:00:00 GMT+0100 (Central European Standard Time) {}
+    basic_info.gender: "cis_man"
+    basic_info.occupation: "Teacher"
+    basic_info.skills[0]: "editor"
+    contact.cellphone: 622098287
+    contact.email: "test@liane.com"
+    name: "All fields testing"
+    social_networks.instagram: "@nefertiter"
+    social_networks.twitter: "@nefertiter"
+    tags: "tag test 1,tag test 2"
+    _id: "XrrAbDBnJwMpozHCx"
+ */
+    console.log("lianeImport", data);
+    const rootAllowed = ["name"];
+    data.forEach(function (item) {
+      let obj = cloneDeep(defaultPerson);
+
+      for (let key in item) {
+        const fieldParts = key.split(".");
+        if (fieldParts.length > 1) {
+          const isArray = fieldParts[fieldParts.length - 1].indexOf("[");
+          if (isArray >= 0) {
+            //Array type
+            const newKey = key.substr(0, key.indexOf("["));
+            obj.$set["campaignMeta." + newKey] = [];
+            obj.$set["campaignMeta." + newKey].push(item[key]);
+          } else {
+            if (fieldParts[fieldParts.length - 1] === "birthday") {
+              obj.$set["campaignMeta." + key] = moment(item[key]).toDate();
+            } else {
+              obj.$set["campaignMeta." + key] = item[key];
+            }
+          }
+        } else {
+          //root
+          if (rootAllowed.includes(key)) {
+            obj.$set[key] = item[key];
+          }
+        }
+        // console.log("Key to insert ", key, item[key]);
+      }
+      importData.push(obj);
+    });
+    console.log("trying to import", JSON.stringify(importData, null, 4));
+
+    // add job per person
+    const job = JobsHelpers.addJob({
+      jobType: "people.import",
+      jobData: { campaignId, count: importData.length, listId },
+    });
+    setTimeout(
+      Meteor.bindEnvironment(() => {
+        let i = 0;
+        for (let person of importData) {
+          JobsHelpers.addJob({
+            jobType: "people.importPerson",
+            jobData: {
+              idx: i,
+              campaignId,
+              jobId: job,
+              listId,
+              person: JSON.stringify(person),
+            },
+          });
+          i++;
+        }
+      }),
+      10
+    );
+  },
   import({ campaignId, config, filename, data, defaultValues }) {
     let importData = [];
 
