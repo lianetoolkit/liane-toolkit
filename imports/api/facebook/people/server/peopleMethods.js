@@ -1064,10 +1064,17 @@ export const peopleMetaUpdate = new ValidatedMethod({
 
     let update = {};
 
-    $set = {
-      ...$set,
-      [`campaignMeta.${sectionKey}`]: data,
-    };
+    if (sectionKey == "extra") {
+      $set = {
+        ...$set,
+        [`campaignMeta.${sectionKey}`]: data.extra,
+      };
+    } else {
+      $set = {
+        ...$set,
+        [`campaignMeta.${sectionKey}`]: data,
+      };
+    }
 
     if (Object.keys($set).length) {
       update.$set = $set;
