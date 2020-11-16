@@ -95,7 +95,7 @@ const Container = styled.section`
     overflow: hidden;
     .funnel {
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: space-around;
       width: 100%;
       .funnel-chart {
@@ -121,15 +121,13 @@ const Container = styled.section`
             align-items: stretch;
             justify-content: space-around;
             li {
-              flex: 1 0 auto;
+              flex: 1;
               display: flex;
               align-items: center;
               justify-content: center;
               color: #fff;
               font-weight: 500;
-              ${"" /* &:last-child {
-                flex: 2 0 auto;
-              } */}
+              position: relative;
             }
           }
         }
@@ -154,6 +152,35 @@ const Container = styled.section`
       }
       .funnel-info {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: space-around;
+        margin: 2rem;
+        > * {
+          flex: 1;
+          margin: 0;
+        }
+        p {
+          display: flex;
+          align-items: center;
+          &:before {
+            display: block;
+            content: "";
+            height: 1px;
+            width: 60%;
+            background: rgb(51, 0, 102, 0.1);
+            margin-left: -14rem;
+            margin-right: 2rem;
+            position: relative;
+            z-index: 10;
+            pointer-events: none;
+          }
+        }
+        .highlight {
+          font-weight: 600;
+          font-size: 1.2em;
+        }
       }
     }
     .dashboard-section {
@@ -444,15 +471,18 @@ class DashboardDemoPage extends React.Component {
                       style={{
                         backgroundColor: this.getChartItemBgColor(4, 4),
                       }}
-                    />
+                    >
+                      &nbsp;
+                    </li>
                   </ul>
                 </div>
               </div>
               <div className="funnel-info">
-                <p></p>
-                <p></p>
-                <p></p>
-                <p></p>
+                <p>People in your database</p>
+                <p>With positive reactions</p>
+                <p>Are talking to us</p>
+                <p className="highlight">Filled out your campaign form</p>
+                <div>&nbsp;</div>
               </div>
             </div>
           </div>
