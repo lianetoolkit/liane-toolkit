@@ -1254,12 +1254,6 @@ export const importPeopleLiane = new ValidatedMethod({
       10
     );
 
-    // Meteor.call("log", {
-    //   type: "people.import.add",
-    //   campaignId,
-    //   data: { defaultValues, importSize: data.length },
-    // });
-
     return true;
   },
 });

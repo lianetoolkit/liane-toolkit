@@ -467,26 +467,13 @@ const PeopleHelpers = {
       },
       $addToSet: {},
     };
-
+    const peopleTags = PeopleTags.find({ campaignId }).fetch();
+    const tags = {};
+    peopleTags.map((tag) => {
+      tags[tag.name] = tag._id;
+    });
     // BUILD META
     //Job per person
-    /*
-    basic_info.address.country: "AR"
-    basic_info.address.region: "S"
-    basic_info.address.zipcode: 2000
-    basic_info.birthday: Fri Nov 20 2020 01:00:00 GMT+0100 (Central European Standard Time) {}
-    basic_info.gender: "cis_man"
-    basic_info.occupation: "Teacher"
-    basic_info.skills[0]: "editor"
-    contact.cellphone: 622098287
-    contact.email: "test@liane.com"
-    name: "All fields testing"
-    social_networks.instagram: "@nefertiter"
-    social_networks.twitter: "@nefertiter"
-    tags: "tag test 1,tag test 2"
-    _id: "XrrAbDBnJwMpozHCx"
- */
-    console.log("lianeImport", data);
     const rootAllowed = ["name"];
     data.forEach(function (item) {
       let obj = cloneDeep(defaultPerson);
@@ -494,15 +481,31 @@ const PeopleHelpers = {
       for (let key in item) {
         const fieldParts = key.split(".");
         if (fieldParts.length > 1) {
+          //If last part is Array
           const isArray = fieldParts[fieldParts.length - 1].indexOf("[");
+          const isExtraArray = fieldParts[0].indexOf("[");
           if (isArray >= 0) {
             //Array type
             const newKey = key.substr(0, key.indexOf("["));
-            obj.$set["campaignMeta." + newKey] = [];
+            if (!obj.$set["campaignMeta." + newKey]) {
+              obj.$set["campaignMeta." + newKey] = [];
+            }
+
             obj.$set["campaignMeta." + newKey].push(item[key]);
+          } else if (isExtraArray >= 0) {
+            if (!obj.$set["campaignMeta.extra"])
+              obj.$set["campaignMeta.extra"] = [];
+            const index = fieldParts[0].match(/\d+/)[0];
+            if (!obj.$set["campaignMeta.extra"][index])
+              obj.$set["campaignMeta.extra"][index] = {};
+            obj.$set["campaignMeta.extra"][index][
+              fieldParts[fieldParts.length - 1]
+            ] = item[key];
           } else {
             if (fieldParts[fieldParts.length - 1] === "birthday") {
-              obj.$set["campaignMeta." + key] = moment(item[key]).toDate();
+              obj.$set["campaignMeta." + key] = new Date(
+                moment(item[key]).toDate()
+              );
             } else {
               obj.$set["campaignMeta." + key] = item[key];
             }
@@ -512,12 +515,18 @@ const PeopleHelpers = {
           if (rootAllowed.includes(key)) {
             obj.$set[key] = item[key];
           }
+          if (key === "tags") {
+            obj.$set["campaignMeta.basic_info.tags"] = [];
+            item[key].split(",").map((tagName) => {
+              if (tags[tagName]) {
+                obj.$set["campaignMeta.basic_info.tags"].push(tags[tagName]);
+              }
+            });
+          }
         }
-        // console.log("Key to insert ", key, item[key]);
       }
       importData.push(obj);
     });
-    console.log("trying to import", JSON.stringify(importData, null, 4));
 
     // add job per person
     const job = JobsHelpers.addJob({
@@ -543,6 +552,7 @@ const PeopleHelpers = {
       }),
       10
     );
+    return;
   },
   import({ campaignId, config, filename, data, defaultValues }) {
     let importData = [];

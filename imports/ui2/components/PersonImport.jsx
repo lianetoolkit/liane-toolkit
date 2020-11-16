@@ -314,7 +314,6 @@ class ImportButton extends React.Component {
       }
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(sheet);
-      console.log("_handleImport", sheet, json);
       if (json.length > 10000) {
         alertStore.add(
           "You can't import more than 10,000 people at once.",
@@ -684,11 +683,11 @@ class PeopleImport extends React.Component {
     this.setState({ defaultValues: data });
   };
   _handleLianeImport = () => {
-    const { data, campaignId, filename } = this.props;
-    console.log("_handleLianeImport >> ", filename, campaignId, data);
+    const { data, campaignId, filename, onSubmit } = this.props;
     this.setState({
       loading: true,
     });
+
     Meteor.call(
       "people.import.liane",
       {
@@ -700,9 +699,7 @@ class PeopleImport extends React.Component {
         this.setState({
           loading: false,
         });
-        if (onSubmit) {
-          onSubmit(err, res);
-        }
+        onSubmit(err, res);
       }
     );
   };
@@ -741,7 +738,6 @@ class PeopleImport extends React.Component {
     const { intl, data } = this.props;
     const { loading, tags, labels, isLianeChecked } = this.state;
     const headers = this._getHeaders();
-    console.log("data:", data);
 
     if (loading) {
       return <Loading />;
