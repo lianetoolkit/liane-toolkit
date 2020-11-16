@@ -1014,6 +1014,30 @@
         "id": "app.people.import.spreadsheet_header"
       },
       {
+        "defaultMessage": "Please choose an option",
+        "id": "app.people.import.choose_import"
+      },
+      {
+        "defaultMessage": "We have noticed this file might come from a Liane Exportation",
+        "id": "app.people.import.liane_file_found"
+      },
+      {
+        "defaultMessage": "Yes, it's from Liane",
+        "id": "app.people.import.liane_option"
+      },
+      {
+        "defaultMessage": "No, it's not from Liane",
+        "id": "app.people.import.normal_option"
+      },
+      {
+        "defaultMessage": "This option will be faster, similar records will be mark as possible duplicates",
+        "id": "app.people.import.liane_help_text"
+      },
+      {
+        "defaultMessage": "Evaluate the match of each column, similar records will mark as possible duplicates.",
+        "id": "app.people.import.normal_help_text"
+      },
+      {
         "defaultMessage": "Field",
         "id": "app.people.import.field_label"
       },

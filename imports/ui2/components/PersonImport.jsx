@@ -4,7 +4,6 @@ import {
   intlShape,
   defineMessages,
   FormattedMessage,
-  FormattedHTMLMessage,
 } from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -751,8 +750,20 @@ class PeopleImport extends React.Component {
     if (headers.indexOf("_id") >= 0 && !isLianeChecked) {
       return (
         <Container>
-          <p>We have noticed this file might come from a Liane Exportation.</p>
-          <p>Please choose an option:</p>
+          <p>
+            <FormattedMessage
+              id="app.people.import.liane_file_found"
+              defaultMessage="We have noticed this file might come from a Liane Exportation"
+            />
+            .
+          </p>
+          <p>
+            <FormattedMessage
+              id="app.people.import.choose_import"
+              defaultMessage="Please choose an option"
+            />
+            :
+          </p>
           <p className="text-center">
             <button
               onClick={() => {
@@ -760,11 +771,16 @@ class PeopleImport extends React.Component {
               }}
               type="button"
             >
-              Yes, it's from Liane
+              <FormattedMessage
+                id="app.people.import.liane_option"
+                defaultMessage="Yes, it's from Liane"
+              />
             </button>
             <small>
-              This option will be faster, similar records will be mark as
-              possible duplicates
+              <FormattedMessage
+                id="app.people.import.liane_help_text"
+                defaultMessage="This option will be faster, similar records will be mark as possible duplicates"
+              />
             </small>
           </p>
 
@@ -777,11 +793,16 @@ class PeopleImport extends React.Component {
                 });
               }}
             >
-              No, it's not from Liane
+              <FormattedMessage
+                id="app.people.import.normal_option"
+                defaultMessage="No, it's not from Liane"
+              />
             </button>
             <small>
-              Evaluate the match of each column, similar records will mark as
-              possible duplicates.
+              <FormattedMessage
+                id="app.people.import.normal_help_text"
+                defaultMessage="Evaluate the match of each column, similar records will mark as possible duplicates."
+              />
             </small>
           </p>
         </Container>
