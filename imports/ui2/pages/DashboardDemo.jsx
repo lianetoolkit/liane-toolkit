@@ -261,6 +261,7 @@ const ChartNav = styled.nav`
     padding: 0.5rem 1rem;
     border-radius: 500px;
     margin: 0 0.5rem;
+    &.active,
     &:hover {
       background: rgba(51, 0, 102, 0.15);
     }
@@ -299,11 +300,17 @@ class DashboardDemoPage extends React.Component {
   _getInteractionChartData = (data) => {
     let response = [];
     for (const day in data) {
+      console.log(data[day]);
       response.push({
         day,
         comments: Math.floor(Math.random() * 10),
-        likes: Math.floor(Math.random() * 10),
+        like: Math.floor(Math.random() * 10),
         love: Math.floor(Math.random() * 10),
+        care: Math.floor(Math.random() * 10),
+        wow: Math.floor(Math.random() * 10),
+        haha: Math.floor(Math.random() * 10),
+        sad: Math.floor(Math.random() * 10),
+        angry: Math.floor(Math.random() * 10),
       });
     }
     return response;
@@ -360,31 +367,55 @@ class DashboardDemoPage extends React.Component {
       }
     );
 
-    // Charts data
-    const chartsPromise = createPromise();
-    promises.push(chartsPromise);
+    Promise.all(promises).then(() => {
+      this.setState({ loading: false });
+    });
+
+    this._setChart("7days");
+  }
+  getChartItemBgColor(index, total) {
+    return `rgba(51,0,102, ${(10 + (90 / total) * index) / 100})`;
+  }
+  _handleChartFilterClick = (period) => (ev) => {
+    ev.preventDefault();
+    this._setChart(period);
+  };
+  _setChart = (period) => {
+    const { campaign } = this.props;
+    let startDate;
+    switch (period) {
+      case "month":
+        startDate = moment().startOf("month");
+        break;
+      case "30days":
+        startDate = moment().subtract(30, "days");
+        break;
+      case "90days":
+        startDate = moment().subtract(90, "days");
+        break;
+      case "7days":
+      default:
+        startDate = moment().subtract(7, "days");
+        break;
+    }
     Meteor.call(
       "dashboard.chartsData",
       {
         campaignId: campaign._id,
+        startDate: startDate.format(),
       },
       (err, data) => {
         if (err) {
           console.log("dashboard.chartsData error ", err);
         } else {
-          this.setState({ chartsData: this.processChart(data) });
+          this.setState({
+            chartPeriod: period,
+            chartsData: this.processChart(data),
+          });
         }
-        chartsPromise.resolve();
       }
     );
-
-    Promise.all(promises).then(() => {
-      this.setState({ loading: false });
-    });
-  }
-  getChartItemBgColor(index, total) {
-    return `rgba(51,0,102, ${(10 + (90 / total) * index) / 100})`;
-  }
+  };
   render() {
     const { user, campaign } = this.props;
     const {
@@ -393,8 +424,39 @@ class DashboardDemoPage extends React.Component {
       achievements,
       funnelData,
       chartsData,
+      chartPeriod,
     } = this.state;
     console.log({ chartsData });
+    const chartConfig = [
+      {
+        id: "like",
+        color: "#175DEB",
+      },
+      {
+        id: "love",
+        color: "#F24A64",
+      },
+      {
+        id: "care",
+        color: "#F9AE3B",
+      },
+      {
+        id: "haha",
+        color: "#EF5A24",
+      },
+      {
+        id: "wow",
+        color: "#B98AFF",
+      },
+      {
+        id: "sad",
+        color: "#55C263",
+      },
+      {
+        id: "angry",
+        color: "#8A2E00",
+      },
+    ];
     if (loading) {
       return <Loading full />;
     }
@@ -509,61 +571,77 @@ class DashboardDemoPage extends React.Component {
               </li>
             </Achievements>
           </div>
-          <div className="dashboard-section">
-            <h2>Interactions evolution</h2>
-            <ChartNav>
-              <a href="#">Last 7 days</a>
-              <a href="#">This month</a>
-              <a href="#">Last 30 days</a>
-              <a href="#">Last 3 months</a>
-            </ChartNav>
-            <ResponsiveContainer width="100%" height={450}>
-              <AreaChart
-                data={this._getInteractionChartData(
-                  chartsData.interactionHistory
-                )}
-                margin={{
-                  top: 10,
-                  right: 30,
-                  left: 0,
-                  bottom: 0,
-                }}
-              >
-                {/* <CartesianGrid strokeDasharray="3 3" /> */}
-                <XAxis
-                  dataKey="day"
-                  tickFormatter={(item) => {
-                    return moment(item)
-                      .format("L")
-                      .replace(/[,\/-/.]*\s*Y+\s*/, "");
+          {chartsData ? (
+            <div className="dashboard-section">
+              <h2>Interactions evolution</h2>
+              <ChartNav>
+                <a
+                  href="#"
+                  className={chartPeriod == "7days" ? "active" : ""}
+                  onClick={this._handleChartFilterClick("7days")}
+                >
+                  Last 7 days
+                </a>
+                <a
+                  href="#"
+                  className={chartPeriod == "month" ? "active" : ""}
+                  onClick={this._handleChartFilterClick("month")}
+                >
+                  This month
+                </a>
+                <a
+                  href="#"
+                  className={chartPeriod == "30days" ? "active" : ""}
+                  onClick={this._handleChartFilterClick("30days")}
+                >
+                  Last 30 days
+                </a>
+                <a
+                  href="#"
+                  className={chartPeriod == "90days" ? "active" : ""}
+                  onClick={this._handleChartFilterClick("90days")}
+                >
+                  Last 90 days
+                </a>
+              </ChartNav>
+              <ResponsiveContainer width="100%" height={450}>
+                <AreaChart
+                  data={this._getInteractionChartData(
+                    chartsData.interactionHistory
+                  )}
+                  margin={{
+                    top: 10,
+                    right: 30,
+                    left: 0,
+                    bottom: 0,
                   }}
-                />
-                <YAxis />
-                <Tooltip />
-                <Area
-                  type="monotone"
-                  dataKey="comments"
-                  stackId="1"
-                  stroke="#8884d8"
-                  fill="#8884d8"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="likes"
-                  stackId="1"
-                  stroke="#82ca9d"
-                  fill="#82ca9d"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="love"
-                  stackId="1"
-                  stroke="#ffc658"
-                  fill="#ffc658"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+                >
+                  <CartesianGrid stroke="#eee" vertical={false} />
+                  <XAxis
+                    dataKey="day"
+                    tickFormatter={(item) => {
+                      return moment(item)
+                        .format("L")
+                        .replace(/[,\/-/.]*\s*Y+\s*/, "");
+                    }}
+                  />
+                  <YAxis tickSize={10} tickMargin={10} />
+                  <Tooltip />
+                  {chartConfig.map((chartItem) => (
+                    <Area
+                      stackId="interactions"
+                      type="monotone"
+                      key={chartItem.id}
+                      dataKey={chartItem.id}
+                      fill={chartItem.color}
+                      stroke={chartItem.color}
+                      fillOpacity="1"
+                    />
+                  ))}
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          ) : null}
           <div className="dashboard-section">
             <h2>
               #{campaign._id} - {campaign.name} Demo Dashboard

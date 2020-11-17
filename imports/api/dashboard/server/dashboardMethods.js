@@ -345,7 +345,6 @@ export const chartsData = new ValidatedMethod({
         Math.abs((start.getTime() - end.getTime()) / oneDay)
       );
 
-      console.log(start, end, diffDays);
       if (diffDays > 90) {
         start = new Date(moment(end).subtract(90).format("YYYY-MM-DD"));
       }
