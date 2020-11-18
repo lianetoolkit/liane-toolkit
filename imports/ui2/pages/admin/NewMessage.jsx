@@ -343,11 +343,12 @@ class NewMessagePage extends Component {
           {filters.target == "campaigns" ? (
             <div className="campaign-filters">
               <Form.Field
-                label="Single campaign"
-                description="Send to a specific campaign"
+                label="Campaigns"
+                description="Send to a specific campaigns"
               >
                 <CampaignSelect
                   name="campaignId"
+                  multiple={true}
                   value={filters.campaignId}
                   onChange={this._handleChange}
                 />

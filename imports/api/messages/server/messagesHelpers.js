@@ -26,8 +26,11 @@ const filtersSchema = new SimpleSchema({
     optional: true,
   },
   campaignId: {
-    type: String,
+    type: Array,
     optional: true,
+  },
+  "campaignId.$": {
+    type: String,
   },
   campaignAdmins: {
     type: Boolean,
@@ -73,7 +76,7 @@ const MessagesHelpers = {
     let query = {};
     const admins = filters.campaignAdmins;
     if (filters.campaignId) {
-      campaignsQuery._id = filters.campaignId;
+      campaignsQuery._id = { $in: filters.campaignId };
     }
     if (filters.campaignCountry) {
       campaignsQuery.country = filters.campaignCountry;

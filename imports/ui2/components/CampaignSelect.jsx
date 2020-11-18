@@ -8,8 +8,8 @@ import { debounce, uniqBy } from "lodash";
 const messages = defineMessages({
   placeholder: {
     id: "app.campaign_select.placeholder",
-    defaultMessage: "Select a campaign..."
-  }
+    defaultMessage: "Select a campaign...",
+  },
 });
 
 const Container = styled.div`
@@ -38,7 +38,7 @@ class CampaignSelect extends Component {
     this.state = {
       loading: false,
       campaigns: [],
-      options: []
+      options: [],
     };
   }
   componentDidMount() {
@@ -50,13 +50,13 @@ class CampaignSelect extends Component {
       } else {
         this.setState({
           campaigns: res,
-          options: this._buildOptions(res)
+          options: this._buildOptions(res),
         });
       }
       this.setState({ loading: false });
     });
   }
-  _getId = entry => {
+  _getId = (entry) => {
     return entry._id.split("_")[1];
   };
   _handleInputChange = (search, { action }) => {
@@ -64,7 +64,7 @@ class CampaignSelect extends Component {
       this._fetchSearch(search);
     }
   };
-  _fetchSearch = debounce(search => {
+  _fetchSearch = debounce((search) => {
     this.setState({ loading: true });
     Meteor.call("campaigns.search", { search }, (err, res) => {
       if (err) {
@@ -72,54 +72,69 @@ class CampaignSelect extends Component {
       } else {
         this.setState({
           campaigns: res,
-          options: this._buildOptions(res)
+          options: this._buildOptions(res),
         });
       }
       this.setState({ loading: false });
     });
   }, 300);
-  _buildOptions = campaigns => {
-    return uniqBy(campaigns, "_id").map(campaign => {
+  _buildOptions = (campaigns) => {
+    return uniqBy(campaigns, "_id").map((campaign) => {
       return {
         label: campaign.name,
-        value: campaign._id
+        value: campaign._id,
       };
     });
   };
-  _handleChange = value => {
+  _handleChange = (value) => {
     const { onChange, name } = this.props;
+    if (value && !Array.isArray(value)) {
+      value = [value];
+    }
     if (onChange) {
-      onChange({ target: { name, value: value ? value.value : null } });
+      onChange({
+        target: { name, value: value ? value.map((v) => v.value) : null },
+      });
     }
   };
   _buildValue = () => {
     const { options } = this.state;
-    const { value } = this.props;
-    let option = null;
-    if (value && options.length) {
-      option = options.find(option => option.value == value);
+    let value = [];
+    if (this.props.value) {
+      if (!Array.isArray(this.props.value)) {
+        value = [this.props.value];
+      } else {
+        value = this.props.value;
+      }
     }
-    if (!option && value) {
-      Meteor.call("campaigns.selectGet", { campaignId: value }, (err, res) => {
+    let valueOptions = [];
+    if (value.length && options.length) {
+      valueOptions = options.filter(
+        (option) => value.indexOf(option.value) !== -1
+      );
+    }
+    if (valueOptions.length != value.length && value) {
+      Meteor.call("campaigns.selectGet", { campaignIds: value }, (err, res) => {
         if (res) {
           this.setState({
             campaigns: [res, ...this.state.campaigns],
-            options: this._buildOptions([res, ...this.state.campaigns])
+            options: this._buildOptions([res, ...this.state.campaigns]),
           });
         }
       });
     }
-    return option;
+    return valueOptions;
   };
   render() {
     const { loading, options } = this.state;
-    const { intl, name, value, placeholder } = this.props;
+    const { intl, name, value, multiple, placeholder } = this.props;
     return (
       <Container>
         <Select
           isLoading={loading}
           classNamePrefix="select-search"
           cacheOptions
+          isMulti={!!multiple}
           isClearable={true}
           placeholder={placeholder || intl.formatMessage(messages.placeholder)}
           options={options}
@@ -135,7 +150,7 @@ class CampaignSelect extends Component {
 }
 
 CampaignSelect.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(CampaignSelect);
