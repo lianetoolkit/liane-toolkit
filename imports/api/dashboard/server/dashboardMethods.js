@@ -266,6 +266,7 @@ export const chartsData = new ValidatedMethod({
               },
             },
             { $sort: { total: -1 } },
+            { $limit: 10 },
           ])
           .toArray()
       );
@@ -309,6 +310,7 @@ export const chartsData = new ValidatedMethod({
               },
             },
             { $sort: { total: -1 } },
+            { $limit: 10 },
           ])
           .toArray()
       );
