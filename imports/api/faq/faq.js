@@ -13,7 +13,6 @@ FAQ.schema = new SimpleSchema({
   },
   answer: {
     type: String,
-    index: true,
   },
   lastUsedAt: {
     type: Date,

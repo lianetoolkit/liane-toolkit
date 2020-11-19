@@ -390,13 +390,16 @@ export const campaignValidateInvite = new ValidatedMethod({
 export const campaignsSelectGet = new ValidatedMethod({
   name: "campaigns.selectGet",
   validate: new SimpleSchema({
-    campaignId: {
+    campaignIds: {
+      type: Array,
+    },
+    "campaignIds.$": {
       type: String,
     },
   }).validator(),
-  run({ campaignId }) {
+  run({ campaignIds }) {
     this.unblock();
-    logger.debug("campaigns.selectGet called", { campaignId });
+    logger.debug("campaigns.selectGet called", { campaignIds });
 
     const userId = Meteor.userId();
     if (!userId) {
@@ -407,7 +410,7 @@ export const campaignsSelectGet = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to do this action");
     }
 
-    let selector = { _id: campaignId };
+    let selector = { _id: { $in: campaignIds } };
     let options = {
       fields: {
         name: 1,
@@ -921,12 +924,21 @@ export const campaignUpdateFacebook = new ValidatedMethod({
       token: accountToken.result,
     });
 
-    CampaignsHelpers.refreshHealthCheck({ campaignId });
+    CampaignsHelpers.refreshCampaignJobs({ campaignId });
 
     Meteor.call("log", {
       type: "campaigns.facebook.token.update",
       campaignId,
     });
+
+    const updatedCampaign = Campaigns.findOne(campaignId);
+
+    return {
+      ...updatedCampaign.facebookAccount,
+      ...FacebookAccounts.findOne({
+        facebookId: campaign.facebookAccount.facebookId,
+      }),
+    };
   },
 });
 

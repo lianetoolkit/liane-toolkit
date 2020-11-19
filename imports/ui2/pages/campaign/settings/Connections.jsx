@@ -128,6 +128,7 @@ class CampaignConnectionsPage extends Component {
     super(props);
     this.state = {
       loading: false,
+      account: false,
     };
   }
   componentDidUpdate() {
@@ -135,6 +136,7 @@ class CampaignConnectionsPage extends Component {
   }
   _getFacebookStatus = () => {
     const { campaign, facebookHealthJob } = this.props;
+    const account = this.state.account || campaign.facebookAccount;
     return {
       user: campaign.users.find(
         (u) =>
@@ -158,7 +160,7 @@ class CampaignConnectionsPage extends Component {
           if (err) {
             alertStore.add(err);
           }
-          this.setState({ loading: false });
+          this.setState({ loading: false, account: res });
         }
       );
     });
@@ -175,7 +177,7 @@ class CampaignConnectionsPage extends Component {
           if (err) {
             alertStore.add(err);
           }
-          this.setState({ loading: false });
+          this.setState({ loading: false, account: res });
         }
       );
     });
@@ -184,6 +186,7 @@ class CampaignConnectionsPage extends Component {
     const { intl, campaign, user } = this.props;
     const { loading } = this.state;
     const facebook = this._getFacebookStatus();
+    const account = this.state.account || campaign.facebookAccount;
     if (loading) return <Loading />;
     return (
       <>
@@ -252,10 +255,10 @@ class CampaignConnectionsPage extends Component {
               </div>
 
               <div className="connection-content">
-                {campaign.facebookAccount.instagramHandle ? (
+                {account.instagramHandle ? (
                   <>
                     <div>
-                      <h3>{campaign.facebookAccount.instagramHandle}</h3>
+                      <h3>{account.instagramHandle}</h3>
                     </div>
                     <p className="health">
                       <HealthStatus healthy={facebook.healthy} />
@@ -277,10 +280,7 @@ class CampaignConnectionsPage extends Component {
                     <div />
                     <p className="health">
                       <HealthStatus
-                        healthy={
-                          campaign.facebookAccount.instagramHandle &&
-                          facebook.healthy
-                        }
+                        healthy={account.instagramHandle && facebook.healthy}
                       />
                       <FormattedMessage
                         id="app.campaign_connections.unhealthy_label"
