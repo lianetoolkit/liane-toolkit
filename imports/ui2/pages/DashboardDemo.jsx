@@ -4,6 +4,7 @@ import Page from "/imports/ui2/components/Page.jsx";
 import Loading from "/imports/ui2/components/Loading.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
 import moment from "moment";
+import axios from "axios";
 // import "@nivo/core";
 // import { ResponsiveFunnel } from "@nivo/funnel";
 import {
@@ -268,6 +269,80 @@ const ChartNav = styled.nav`
   }
 `;
 
+const InteractionsContent = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 2rem;
+  > div {
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    margin: 1rem;
+  }
+  .chart {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 2rem;
+  }
+`;
+
+const TopPeople = styled.div`
+  flex: 1 0 auto;
+  h3 {
+    padding: 1rem 2rem;
+    margin: 0;
+    border-bottom: 1px solid #ddd;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9em;
+    li {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.7rem 2rem;
+      border-bottom: 1px solid #ddd;
+      &:last-child {
+        border-bottom: 0;
+      }
+    }
+  }
+`;
+
+const SupportMaterials = styled.ul`
+  margin: 0 3rem 2rem;
+  padding: 0;
+  list-style: none;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  font-size: 0.8em;
+  li {
+    margin: 0;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #ddd;
+    h3 {
+      font-size: 1em;
+      margin: 0;
+      flex: 1 1 100%;
+    }
+    p {
+      margin: 0 2rem 0 0;
+      flex: 0 0 auto;
+      font-size: 0.9em;
+      color: #666;
+    }
+    a.button {
+      margin: 0;
+    }
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+`;
+
 const createPromise = function (handler) {
   var resolve, reject;
   var promise = new Promise(function (_resolve, _reject) {
@@ -289,6 +364,7 @@ class DashboardDemoPage extends React.Component {
       achievements: null,
       funnelData: null,
       chartsData: null,
+      impulsaTracks: [],
     };
   }
   processChart = (data) => {
@@ -367,6 +443,8 @@ class DashboardDemoPage extends React.Component {
       }
     );
 
+    this._fetchImpulsa();
+
     Promise.all(promises).then(() => {
       this.setState({ loading: false });
     });
@@ -379,6 +457,14 @@ class DashboardDemoPage extends React.Component {
   _handleChartFilterClick = (period) => (ev) => {
     ev.preventDefault();
     this._setChart(period);
+  };
+  _fetchImpulsa = () => {
+    axios.get("https://www.impulsa.voto/wp-json/wp/v2/tracks").then((res) => {
+      console.log(res.data);
+      this.setState({
+        impulsaTracks: res.data,
+      });
+    });
   };
   _setChart = (period) => {
     const { campaign } = this.props;
@@ -405,11 +491,13 @@ class DashboardDemoPage extends React.Component {
         startDate: startDate.format(),
       },
       (err, data) => {
+        console.log(data);
         if (err) {
           console.log("dashboard.chartsData error ", err);
         } else {
           this.setState({
             chartPeriod: period,
+            ...data,
             chartsData: this.processChart(data),
           });
         }
@@ -423,10 +511,12 @@ class DashboardDemoPage extends React.Component {
       summaryData,
       achievements,
       funnelData,
-      chartsData,
       chartPeriod,
+      chartsData,
+      topReactioners,
+      topCommenters,
+      impulsaTracks,
     } = this.state;
-    console.log({ chartsData });
     const chartConfig = [
       {
         id: "like",
@@ -604,45 +694,88 @@ class DashboardDemoPage extends React.Component {
                   Last 90 days
                 </a>
               </ChartNav>
-              <ResponsiveContainer width="100%" height={450}>
-                <AreaChart
-                  data={this._getInteractionChartData(
-                    chartsData.interactionHistory
-                  )}
-                  margin={{
-                    top: 10,
-                    right: 30,
-                    left: 0,
-                    bottom: 0,
-                  }}
-                >
-                  <CartesianGrid stroke="#eee" vertical={false} />
-                  <XAxis
-                    dataKey="day"
-                    tickFormatter={(item) => {
-                      return moment(item)
-                        .format("L")
-                        .replace(/[,\/-/.]*\s*Y+\s*/, "");
-                    }}
-                  />
-                  <YAxis tickSize={10} tickMargin={10} />
-                  <Tooltip />
-                  {chartConfig.map((chartItem) => (
-                    <Area
-                      stackId="interactions"
-                      type="monotone"
-                      key={chartItem.id}
-                      dataKey={chartItem.id}
-                      fill={chartItem.color}
-                      stroke={chartItem.color}
-                      fillOpacity="1"
-                    />
-                  ))}
-                </AreaChart>
-              </ResponsiveContainer>
+              <InteractionsContent>
+                <div className="chart">
+                  <ResponsiveContainer width="100%" height={450}>
+                    <AreaChart
+                      data={this._getInteractionChartData(
+                        chartsData.interactionHistory
+                      )}
+                      margin={{
+                        top: 10,
+                        right: 30,
+                        left: 0,
+                        bottom: 0,
+                      }}
+                    >
+                      <CartesianGrid stroke="#eee" vertical={false} />
+                      <XAxis
+                        dataKey="day"
+                        tickFormatter={(item) => {
+                          return moment(item)
+                            .format("L")
+                            .replace(/[,\/-/.]*\s*Y+\s*/, "");
+                        }}
+                      />
+                      <YAxis tickSize={10} tickMargin={10} />
+                      <Tooltip />
+                      {chartConfig.map((chartItem) => (
+                        <Area
+                          stackId="interactions"
+                          type="monotone"
+                          key={chartItem.id}
+                          dataKey={chartItem.id}
+                          fill={chartItem.color}
+                          stroke={chartItem.color}
+                          fillOpacity="1"
+                        />
+                      ))}
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+                <TopPeople>
+                  <h3>More reactions</h3>
+                  <ul>
+                    {topReactioners.map((person) => (
+                      <li key={person._id}>
+                        <span>{person.name}</span>
+                        <span>{person.total}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </TopPeople>
+                <TopPeople>
+                  <h3>More comments</h3>
+                  <ul>
+                    {topCommenters.map((person) => (
+                      <li key={person._id}>
+                        <span>{person.name}</span>
+                        <span>{person.total}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </TopPeople>
+              </InteractionsContent>
             </div>
           ) : null}
-          <div className="dashboard-section">
+          {impulsaTracks ? (
+            <div className="dashboard-section">
+              <h2>Support materials from Im.Pulsa</h2>
+              <SupportMaterials>
+                {impulsaTracks.map((track) => (
+                  <li key={track.id}>
+                    <h3
+                      dangerouslySetInnerHTML={{ __html: track.title.rendered }}
+                    />
+                    <p>{track.materials_count} materials</p>
+                    <p>{track.reading_time} minutes</p>
+                    <Button>View</Button>
+                  </li>
+                ))}
+              </SupportMaterials>
+            </div>
+          ) : null}
+          {/* <div className="dashboard-section">
             <h2>
               #{campaign._id} - {campaign.name} Demo Dashboard
             </h2>
@@ -650,7 +783,7 @@ class DashboardDemoPage extends React.Component {
             <pre>achievements: {JSON.stringify(achievements)}</pre>
             <pre>funnelData: {JSON.stringify(funnelData)}</pre>
             <pre>chartsData: {JSON.stringify(chartsData)}</pre>
-          </div>
+          </div> */}
         </section>
       </Container>
     );
