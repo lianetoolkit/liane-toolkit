@@ -43,7 +43,7 @@ const Container = styled.nav`
   .nav-content {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-end;
     .features {
       flex-grow: 1;
     }
@@ -64,9 +64,9 @@ const Container = styled.nav`
     border-radius: 7px 7px 0 0;
     background: #482075;
     padding: 0 0.2rem;
-    border-top: 1px solid #111;
-    border-left: 1px solid #111;
-    border-right: 1px solid #111;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
     box-sizing: border-box;
     .icon-link {
       padding-top: 0.5rem;
@@ -113,9 +113,9 @@ const NavItemContainer = styled.li`
         display: none;
         min-width: 200px;
         background: #330066;
-        border-right: 1px solid #111;
-        border-left: 1px solid #111;
-        border-bottom: 1px solid #111;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 0.25rem 0.3rem rgba(0, 0, 0, 0.15);
         padding: 0 0 0.5rem;
         border-radius: 0 0 7px 7px;

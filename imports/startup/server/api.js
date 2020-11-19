@@ -39,6 +39,10 @@ import "/imports/api/facebook/comments/server/commentsPublications.js";
 import "/imports/api/facebook/people/server/peopleMethods.js";
 import "/imports/api/facebook/people/server/peoplePublications.js";
 
+// dashboard
+import "/imports/api/dashboard/server/dashboardMethods.js";
+// import "/imports/api/dashboard/server/dashboardPublications.js";
+
 // geolocations
 import "/imports/api/geolocations/server/geolocationsMethods.js";
 import "/imports/api/geolocations/server/geolocationsPublications.js";

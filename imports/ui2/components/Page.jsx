@@ -17,7 +17,6 @@ const NavContainer = styled.div`
   flex: 0 0 auto;
   box-sizing: border-box;
   border-right: 1px solid #ccc;
-  overflow: auto;
   background: #f7f7f7;
   position: relative;
   z-index: 10;
@@ -134,8 +133,8 @@ class Nav extends Component {
 
 const ContentContainer = styled.div`
   flex: 1 1 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
+  ${"" /* overflow-x: hidden;
+  overflow-y: auto; */}
   ${(props) =>
     props.full &&
     css`
@@ -182,23 +181,31 @@ class Content extends Component {
 }
 
 const Container = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
+  ${"" /* position: fixed; */}
+  ${"" /* top: 0;
+  left: 0; */}
+  position: relative;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
+  ${"" /* overflow: auto; */}
 `;
 
 const PageBody = styled.div`
   flex: 1 1 100%;
-  overflow: auto;
   display: flex;
   flex-direction: row;
   position: relative;
   z-index: 1;
   outline: none;
+  margin-top: 62px;
+  ${(props) =>
+    props.contained &&
+    css`
+      overflow: auto;
+    `}
+  ${"" /* overflow: auto; */}
 `;
 
 const Boxed = styled.div`
@@ -211,7 +218,7 @@ const Boxed = styled.div`
   background: #fff;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  ${"" /* overflow: auto; */}
   box-sizing: border-box;
   .info {
     flex: 1 1 100%;
@@ -246,6 +253,7 @@ export default class Page extends Component {
       campaign,
       notifications,
       children,
+      contained,
       ...props
     } = this.props;
     return (
@@ -255,7 +263,7 @@ export default class Page extends Component {
           campaign={campaign}
           notifications={notifications || []}
         />
-        <PageBody id="main" tabIndex="-1">
+        <PageBody contained={contained} id="main" tabIndex="-1">
           {children}
         </PageBody>
         <Footer />
