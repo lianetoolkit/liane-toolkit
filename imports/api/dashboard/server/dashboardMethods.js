@@ -319,9 +319,10 @@ export const chartsData = new ValidatedMethod({
           .aggregate([
             {
               $match: {
+                // Reactions are in unix timestamp
                 created_time: {
-                  $gte: start.toISOString(),
-                  $lt: end.toISOString(),
+                  $gte: start.getTime(),
+                  $lt: end.getTime(),
                 },
                 facebookAccountId: facebookAccountId,
               },
