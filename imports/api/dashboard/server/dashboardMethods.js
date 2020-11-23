@@ -239,8 +239,29 @@ export const chartsData = new ValidatedMethod({
     const campaign = Campaigns.findOne(campaignId);
     const facebookAccountId = campaign.facebookAccount.facebookId;
 
+    // Date setup
+    const oneDay = 24 * 60 * 60 * 1000;
+    let campaignStart = new Date(campaign.createdAt);
+
+    let start = new Date(startDate || campaignStart);
+    start = start < campaignStart ? campaignStart : start;
+
+    let end = new Date(endDate ?? moment().subtract(1).format("YYYY-MM-DD"));
+    const diffDays = Math.ceil(
+      Math.abs((start.getTime() - end.getTime()) / oneDay)
+    );
+
+    if (diffDays > 90) {
+      start = new Date(moment(end).subtract(90).format("YYYY-MM-DD"));
+    }
+    // counters for people and reactions
+
+    let startHistory = new Date(JSON.parse(JSON.stringify(start)));
+    let startInteraction = new Date(JSON.parse(JSON.stringify(start)));
+
     // Top Comments
-    const commentersKey = `dashboard.${facebookAccountId}.topCommenters`;
+    const commentersKey = `dashboard.${facebookAccountId}.${diffDays}days.topCommenters`;
+    // let commentersData = null;
     let commentersData = redisClient.getSync(commentersKey);
     let topCommenters = null;
     if (!commentersData) {
@@ -249,6 +270,10 @@ export const chartsData = new ValidatedMethod({
           .aggregate([
             {
               $match: {
+                created_time: {
+                  $gte: start.toISOString(),
+                  $lt: end.toISOString(),
+                },
                 facebookAccountId: facebookAccountId,
               },
             },
@@ -283,9 +308,10 @@ export const chartsData = new ValidatedMethod({
       topCommenters = JSON.parse(commentersData);
     }
 
-    const reactionersKey = `dashboard.${facebookAccountId}.topReactioners`;
-    let reactionersData = redisClient.getSync(reactionersKey);
+    const reactionersKey = `dashboard.${facebookAccountId}.${diffDays}days.topReactioners`;
     let topReactioners = null;
+    // let reactionersData = null;
+    let reactionersData = redisClient.getSync(reactionersKey);
     // Top Reactions
     if (!reactionersData) {
       topReactioners = Promise.await(
@@ -293,6 +319,10 @@ export const chartsData = new ValidatedMethod({
           .aggregate([
             {
               $match: {
+                created_time: {
+                  $gte: start.toISOString(),
+                  $lt: end.toISOString(),
+                },
                 facebookAccountId: facebookAccountId,
               },
             },
@@ -328,33 +358,15 @@ export const chartsData = new ValidatedMethod({
     }
 
     // Charts
-    const redisChartsKey = `dashboard.${facebookAccountId}.chartData`;
-    // let chartsData = redisClient.getSync(redisChartsKey);
+    const redisChartsKey = `dashboard.${facebookAccountId}.${diffDays}days.chartData`;
 
-    let chartsData = false;
+    // let chartsData = false;
+    let chartsData = redisClient.getSync(redisChartsKey);
+
     let peopleHistory = {};
     let interactionHistory = {};
 
     if (!chartsData) {
-      const oneDay = 24 * 60 * 60 * 1000;
-      let campaignStart = new Date(campaign.createdAt);
-
-      let start = new Date(startDate || campaignStart);
-      start = start < campaignStart ? campaignStart : start;
-
-      let end = new Date(endDate ?? moment().subtract(1).format("YYYY-MM-DD"));
-      const diffDays = Math.ceil(
-        Math.abs((start.getTime() - end.getTime()) / oneDay)
-      );
-
-      if (diffDays > 90) {
-        start = new Date(moment(end).subtract(90).format("YYYY-MM-DD"));
-      }
-      // counters for people and reactions
-
-      let startHistory = new Date(JSON.parse(JSON.stringify(start)));
-      let startInteraction = new Date(JSON.parse(JSON.stringify(start)));
-
       // 3 Data Incoming from Facebook by date
 
       for (let d = startHistory; d <= end; d.setDate(d.getDate() + 1)) {
