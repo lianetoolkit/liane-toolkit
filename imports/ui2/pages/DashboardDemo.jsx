@@ -53,7 +53,7 @@ const Container = styled.section`
     .intro {
       width: 20%;
       flex: 0 0 auto;
-      margin: 0 8rem 0 0;
+      margin: 0 5rem 0 0;
       font-size: 0.8em;
       h1 {
         font-size: 1.4em;
