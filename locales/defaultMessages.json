@@ -198,16 +198,16 @@
         "id": "app.email.intro"
       },
       {
+        "defaultMessage": "Click here to access this message in Liane",
+        "id": "app.email.message_link_text"
+      },
+      {
         "defaultMessage": "You have a new notification",
         "id": "app.email.notification.title"
       },
       {
         "defaultMessage": "View more",
         "id": "app.email.notification_button_label"
-      },
-      {
-        "defaultMessage": "Click here to access this message in Liane",
-        "id": "app.email.message_link_text"
       },
       {
         "defaultMessage": "Reset password",
@@ -398,8 +398,40 @@
         "id": "app.campaign_type_field.labels.marketing"
       },
       {
-        "defaultMessage": "Select souce...",
-        "id": "app.comment_source_select.placeholder"
+        "defaultMessage": "Person not found",
+        "id": "app.person_not_found"
+      },
+      {
+        "defaultMessage": "resolved",
+        "id": "app.comment.resolved"
+      },
+      {
+        "defaultMessage": "unresolved",
+        "id": "app.comment.unresolved"
+      },
+      {
+        "defaultMessage": "Are you sure you'd like to mark this comment as {resolution}",
+        "id": "app.comment.confirm_resolution"
+      },
+      {
+        "defaultMessage": "Mark as question",
+        "id": "app.comment.tag_as.question"
+      },
+      {
+        "defaultMessage": "Mark as vote declaration",
+        "id": "app.comment.tag_as.vote"
+      },
+      {
+        "defaultMessage": "Mark this person as troll",
+        "id": "app.comment.tag_as.troll"
+      },
+      {
+        "defaultMessage": "Mark as",
+        "id": "app.comment.tag_as"
+      },
+      {
+        "defaultMessage": "Actions",
+        "id": "app.comment.actions_title"
       },
       {
         "defaultMessage": "No comments",
@@ -442,40 +474,8 @@
         "id": "app.comment.reply_button"
       },
       {
-        "defaultMessage": "Person not found",
-        "id": "app.person_not_found"
-      },
-      {
-        "defaultMessage": "resolved",
-        "id": "app.comment.resolved"
-      },
-      {
-        "defaultMessage": "unresolved",
-        "id": "app.comment.unresolved"
-      },
-      {
-        "defaultMessage": "Are you sure you'd like to mark this comment as {resolution}",
-        "id": "app.comment.confirm_resolution"
-      },
-      {
-        "defaultMessage": "Mark as question",
-        "id": "app.comment.tag_as.question"
-      },
-      {
-        "defaultMessage": "Mark as vote declaration",
-        "id": "app.comment.tag_as.vote"
-      },
-      {
-        "defaultMessage": "Mark this person as troll",
-        "id": "app.comment.tag_as.troll"
-      },
-      {
-        "defaultMessage": "Mark as",
-        "id": "app.comment.tag_as"
-      },
-      {
-        "defaultMessage": "Actions",
-        "id": "app.comment.actions_title"
+        "defaultMessage": "Select souce...",
+        "id": "app.comment_source_select.placeholder"
       },
       {
         "defaultMessage": "Select a country...",
@@ -570,26 +570,6 @@
         "id": "app.facebook_login"
       },
       {
-        "defaultMessage": "Email",
-        "id": "app.auth.email_label"
-      },
-      {
-        "defaultMessage": "Reset password",
-        "id": "app.auth.reset_password_label"
-      },
-      {
-        "defaultMessage": "You'll receive a link to reset your password.",
-        "id": "app.auth.forgot_password_text"
-      },
-      {
-        "defaultMessage": "A project by Instituto Update",
-        "id": "app.footer.project_by"
-      },
-      {
-        "defaultMessage": "Select a geolocation...",
-        "id": "app.geolocation_select.placeholder"
-      },
-      {
         "defaultMessage": "Search for a location...",
         "id": "app.geolocation_select.search.placeholder"
       },
@@ -602,16 +582,28 @@
         "id": "app.geolocation_select.city.label"
       },
       {
-        "defaultMessage": "You have an active invite to create a new campaign!",
-        "id": "app.campaign.invite.text"
+        "defaultMessage": "A project by Instituto Update",
+        "id": "app.footer.project_by"
       },
       {
-        "defaultMessage": "Create campaign",
-        "id": "app.campaign.invite.button_label"
+        "defaultMessage": "(optional)",
+        "id": "app.form.optional_label"
       },
       {
-        "defaultMessage": "Sign in or register to claim your invitation.",
-        "id": "app.campaign.invite.register"
+        "defaultMessage": "Select a geolocation...",
+        "id": "app.geolocation_select.placeholder"
+      },
+      {
+        "defaultMessage": "Email",
+        "id": "app.auth.email_label"
+      },
+      {
+        "defaultMessage": "Reset password",
+        "id": "app.auth.reset_password_label"
+      },
+      {
+        "defaultMessage": "You'll receive a link to reset your password.",
+        "id": "app.auth.forgot_password_text"
       },
       {
         "defaultMessage": "Support",
@@ -626,16 +618,16 @@
         "id": "app.privacy_policy"
       },
       {
-        "defaultMessage": "Select or type to create...",
-        "id": "app.map_layer_select.placeholder"
+        "defaultMessage": "You have an active invite to create a new campaign!",
+        "id": "app.campaign.invite.text"
       },
       {
-        "defaultMessage": "No notifications for now!",
-        "id": "app.notifications.not_found"
+        "defaultMessage": "Create campaign",
+        "id": "app.campaign.invite.button_label"
       },
       {
-        "defaultMessage": "or",
-        "id": "app.or_label"
+        "defaultMessage": "Sign in or register to claim your invitation.",
+        "id": "app.campaign.invite.register"
       },
       {
         "defaultMessage": "Select your office",
@@ -666,6 +658,18 @@
         "id": "app.office_field.labels.city_council"
       },
       {
+        "defaultMessage": "Select or type to create...",
+        "id": "app.map_layer_select.placeholder"
+      },
+      {
+        "defaultMessage": "or",
+        "id": "app.or_label"
+      },
+      {
+        "defaultMessage": "No notifications for now!",
+        "id": "app.notifications.not_found"
+      },
+      {
         "defaultMessage": "No results",
         "id": "app.paging.no_results"
       },
@@ -676,6 +680,34 @@
       {
         "defaultMessage": "Calculating...",
         "id": "app.paging.loading"
+      },
+      {
+        "defaultMessage": "Date",
+        "id": "app.people.exports.table_header.date"
+      },
+      {
+        "defaultMessage": "Expiration",
+        "id": "app.people.exports.table_header.expiration"
+      },
+      {
+        "defaultMessage": "People",
+        "id": "app.people.exports.table_header.people"
+      },
+      {
+        "defaultMessage": "{count} people",
+        "id": "app.people.exports.table_body.people_count"
+      },
+      {
+        "defaultMessage": "This export file has expired",
+        "id": "app.people.exports.table_body.expired"
+      },
+      {
+        "defaultMessage": "Download",
+        "id": "app.people.exports.table_body.download"
+      },
+      {
+        "defaultMessage": "No export file found",
+        "id": "app.people.exports.table_body.not_found"
       },
       {
         "defaultMessage": "Download file",
@@ -742,86 +774,6 @@
         "id": "app.people.lists.table_body.not_found"
       },
       {
-        "defaultMessage": "Date",
-        "id": "app.people.exports.table_header.date"
-      },
-      {
-        "defaultMessage": "Expiration",
-        "id": "app.people.exports.table_header.expiration"
-      },
-      {
-        "defaultMessage": "People",
-        "id": "app.people.exports.table_header.people"
-      },
-      {
-        "defaultMessage": "{count} people",
-        "id": "app.people.exports.table_body.people_count"
-      },
-      {
-        "defaultMessage": "This export file has expired",
-        "id": "app.people.exports.table_body.expired"
-      },
-      {
-        "defaultMessage": "Download",
-        "id": "app.people.exports.table_body.download"
-      },
-      {
-        "defaultMessage": "No export file found",
-        "id": "app.people.exports.table_body.not_found"
-      },
-      {
-        "defaultMessage": "Editing {name}",
-        "id": "app.people.edit.title"
-      },
-      {
-        "defaultMessage": "Sending private reply to {name}",
-        "id": "app.people.sending_pr.title"
-      },
-      {
-        "defaultMessage": "Edit categories",
-        "id": "app.people.table_body.edit_categories"
-      },
-      {
-        "defaultMessage": "Name",
-        "id": "app.people.table_header.name"
-      },
-      {
-        "defaultMessage": "Reactions",
-        "id": "app.people.table_header.reactions"
-      },
-      {
-        "defaultMessage": "Comments",
-        "id": "app.people.table_header.comments"
-      },
-      {
-        "defaultMessage": "Contact",
-        "id": "app.people.table_header.contact"
-      },
-      {
-        "defaultMessage": "Last interaction",
-        "id": "app.people.table_header.last_interaction"
-      },
-      {
-        "defaultMessage": "Access profile",
-        "id": "app.people.table_body.access_profile"
-      },
-      {
-        "defaultMessage": "Edit",
-        "id": "app.people.table_body.edit"
-      },
-      {
-        "defaultMessage": "{amount} comments",
-        "id": "app.people.table_body.comment_count"
-      },
-      {
-        "defaultMessage": "Send private reply",
-        "id": "app.people.table_body.private_reply_button"
-      },
-      {
-        "defaultMessage": "Go to latest comment",
-        "id": "app.people.table_body.latest_comment_label"
-      },
-      {
         "defaultMessage": "Not available",
         "id": "app.people.contact_icons.not_available"
       },
@@ -840,26 +792,6 @@
       {
         "defaultMessage": "Did not filled the form (copy link)",
         "id": "app.people.contact_icons.not_filled_form"
-      },
-      {
-        "defaultMessage": "Filled form",
-        "id": "app.form_info.filled_form_label"
-      },
-      {
-        "defaultMessage": "Hasn't filled form",
-        "id": "app.form_info.has_filled_form_label"
-      },
-      {
-        "defaultMessage": "Copy link",
-        "id": "app.form_info.copy_link_label"
-      },
-      {
-        "defaultMessage": "View form",
-        "id": "app.form_info.view_label"
-      },
-      {
-        "defaultMessage": "Generate new URL",
-        "id": "app.form_info.generate_label"
       },
       {
         "defaultMessage": "Cisgender woman",
@@ -932,6 +864,78 @@
       {
         "defaultMessage": "E.g., sign: scorpio",
         "id": "app.people.edit.extra_fields.example"
+      },
+      {
+        "defaultMessage": "Filled form",
+        "id": "app.form_info.filled_form_label"
+      },
+      {
+        "defaultMessage": "Hasn't filled form",
+        "id": "app.form_info.has_filled_form_label"
+      },
+      {
+        "defaultMessage": "Copy link",
+        "id": "app.form_info.copy_link_label"
+      },
+      {
+        "defaultMessage": "View form",
+        "id": "app.form_info.view_label"
+      },
+      {
+        "defaultMessage": "Generate new URL",
+        "id": "app.form_info.generate_label"
+      },
+      {
+        "defaultMessage": "Editing {name}",
+        "id": "app.people.edit.title"
+      },
+      {
+        "defaultMessage": "Sending private reply to {name}",
+        "id": "app.people.sending_pr.title"
+      },
+      {
+        "defaultMessage": "Edit categories",
+        "id": "app.people.table_body.edit_categories"
+      },
+      {
+        "defaultMessage": "Name",
+        "id": "app.people.table_header.name"
+      },
+      {
+        "defaultMessage": "Reactions",
+        "id": "app.people.table_header.reactions"
+      },
+      {
+        "defaultMessage": "Comments",
+        "id": "app.people.table_header.comments"
+      },
+      {
+        "defaultMessage": "Contact",
+        "id": "app.people.table_header.contact"
+      },
+      {
+        "defaultMessage": "Last interaction",
+        "id": "app.people.table_header.last_interaction"
+      },
+      {
+        "defaultMessage": "Access profile",
+        "id": "app.people.table_body.access_profile"
+      },
+      {
+        "defaultMessage": "Edit",
+        "id": "app.people.table_body.edit"
+      },
+      {
+        "defaultMessage": "{amount} comments",
+        "id": "app.people.table_body.comment_count"
+      },
+      {
+        "defaultMessage": "Send private reply",
+        "id": "app.people.table_body.private_reply_button"
+      },
+      {
+        "defaultMessage": "Go to latest comment",
+        "id": "app.people.table_body.latest_comment_label"
       },
       {
         "defaultMessage": "Importing {filename}...",
@@ -1018,6 +1022,18 @@
         "id": "app.people.import.field_label"
       },
       {
+        "defaultMessage": "Information not registered",
+        "id": "app.people.profile.no_data_label"
+      },
+      {
+        "defaultMessage": "{date} ({age} years old)",
+        "id": "app.people.profile.birthday_data_text"
+      },
+      {
+        "defaultMessage": "Extra info",
+        "id": "app.people.profile.extra_info_label"
+      },
+      {
         "defaultMessage": "Supporter",
         "id": "app.people.category.supporter"
       },
@@ -1050,18 +1066,6 @@
         "id": "app.people.category.troll"
       },
       {
-        "defaultMessage": "Information not registered",
-        "id": "app.people.profile.no_data_label"
-      },
-      {
-        "defaultMessage": "{date} ({age} years old)",
-        "id": "app.people.profile.birthday_data_text"
-      },
-      {
-        "defaultMessage": "Extra info",
-        "id": "app.people.profile.extra_info_label"
-      },
-      {
         "defaultMessage": "{data} (copy)",
         "id": "app.people.social_icons.data_copy"
       },
@@ -1072,10 +1076,6 @@
       {
         "defaultMessage": "View Twitter",
         "id": "app.people.social_icons.twitter_link_text"
-      },
-      {
-        "defaultMessage": "Important",
-        "id": "app.people.starred_label"
       },
       {
         "defaultMessage": "Not registered",
@@ -1090,20 +1090,12 @@
         "id": "app.people.profile.summary.copy_label"
       },
       {
+        "defaultMessage": "Important",
+        "id": "app.people.starred_label"
+      },
+      {
         "defaultMessage": "I have read and agree with the <a href='{privacyUrl}' rel='external' target='_blank'>privacy policy</a> and the <a href='{termsUrl}' target='_blank' rel='external'>terms of use</a>.",
         "id": "app.privacy_field.label"
-      },
-      {
-        "defaultMessage": "No reaction",
-        "id": "app.facebook.no_reaction"
-      },
-      {
-        "defaultMessage": "1 reaction",
-        "id": "app.facebook.one_reaction"
-      },
-      {
-        "defaultMessage": "{count} reactions",
-        "id": "app.facebook.any_reactions"
       },
       {
         "defaultMessage": "Comment cannot receive a private reply",
@@ -1164,6 +1156,18 @@
       {
         "defaultMessage": "Send as a private reply",
         "id": "app.reply.reply_type_private_label"
+      },
+      {
+        "defaultMessage": "No reaction",
+        "id": "app.facebook.no_reaction"
+      },
+      {
+        "defaultMessage": "1 reaction",
+        "id": "app.facebook.one_reaction"
+      },
+      {
+        "defaultMessage": "{count} reactions",
+        "id": "app.facebook.any_reactions"
       },
       {
         "defaultMessage": "Skills...",
@@ -1258,6 +1262,38 @@
         "id": "app.user_upgrade.button_label"
       },
       {
+        "defaultMessage": "Administration",
+        "id": "app.admin.nav.title"
+      },
+      {
+        "defaultMessage": "Campaigns",
+        "id": "app.admin.nav.campaigns"
+      },
+      {
+        "defaultMessage": "Invites",
+        "id": "app.admin.nav.invites"
+      },
+      {
+        "defaultMessage": "Tickets",
+        "id": "app.admin.nav.tickets"
+      },
+      {
+        "defaultMessage": "Users",
+        "id": "app.admin.nav.users"
+      },
+      {
+        "defaultMessage": "Messages",
+        "id": "app.admin.nav.messages"
+      },
+      {
+        "defaultMessage": "Jobs",
+        "id": "app.admin.nav.jobs"
+      },
+      {
+        "defaultMessage": "Geolocations",
+        "id": "app.admin.nav.geolocations"
+      },
+      {
         "defaultMessage": "Refetch Facebook Token",
         "id": "app.admin.campaigns.refetch_fb_token"
       },
@@ -1314,36 +1350,8 @@
         "id": "app.admin.campaigns.remove"
       },
       {
-        "defaultMessage": "Administration",
-        "id": "app.admin.nav.title"
-      },
-      {
-        "defaultMessage": "Campaigns",
-        "id": "app.admin.nav.campaigns"
-      },
-      {
-        "defaultMessage": "Invites",
-        "id": "app.admin.nav.invites"
-      },
-      {
-        "defaultMessage": "Tickets",
-        "id": "app.admin.nav.tickets"
-      },
-      {
-        "defaultMessage": "Users",
-        "id": "app.admin.nav.users"
-      },
-      {
-        "defaultMessage": "Messages",
-        "id": "app.admin.nav.messages"
-      },
-      {
-        "defaultMessage": "Jobs",
-        "id": "app.admin.nav.jobs"
-      },
-      {
-        "defaultMessage": "Geolocations",
-        "id": "app.admin.nav.geolocations"
+        "defaultMessage": "Name",
+        "id": "app.admin.geolocations.name"
       },
       {
         "defaultMessage": "Greeting introduction is already handled by our template. You can use {markdown} to format your message",
@@ -1380,10 +1388,6 @@
       {
         "defaultMessage": "Remove",
         "id": "app.admin.invites.remove"
-      },
-      {
-        "defaultMessage": "Name",
-        "id": "app.admin.geolocations.name"
       },
       {
         "defaultMessage": "Job type...",
@@ -1570,80 +1574,20 @@
         "id": "app.admin.messages.new.no_match"
       },
       {
-        "defaultMessage": "Mark as resolved",
-        "id": "app.admin.tickets.mark_resolved"
+        "defaultMessage": "Name",
+        "id": "app.admin.users.name"
       },
       {
-        "defaultMessage": "Move to \"in progress\"",
-        "id": "app.admin.tickets.mark_progress"
+        "defaultMessage": "Email",
+        "id": "app.admin.users.email"
       },
       {
-        "defaultMessage": "New",
-        "id": "app.admin.tickets.status.new"
-      },
-      {
-        "defaultMessage": "In progress",
-        "id": "app.admin.tickets.status.in_progress"
-      },
-      {
-        "defaultMessage": "Resolved",
-        "id": "app.admin.tickets.status.resolved"
-      },
-      {
-        "defaultMessage": "Suggestion",
-        "id": "app.admin.tickets.categories.suggestion"
-      },
-      {
-        "defaultMessage": "Bug",
-        "id": "app.admin.tickets.categories.bug"
-      },
-      {
-        "defaultMessage": "Question",
-        "id": "app.admin.tickets.categories.question"
-      },
-      {
-        "defaultMessage": "Other",
-        "id": "app.admin.tickets.categories.other"
-      },
-      {
-        "defaultMessage": "URL",
-        "id": "app.admin.tickets.meta.url"
-      },
-      {
-        "defaultMessage": "Browser",
-        "id": "app.admin.tickets.meta.browser"
-      },
-      {
-        "defaultMessage": "OS",
-        "id": "app.admin.tickets.meta.os"
-      },
-      {
-        "defaultMessage": "Version",
-        "id": "app.admin.tickets.meta.version"
-      },
-      {
-        "defaultMessage": "Current status",
-        "id": "app.admin.tickets.current_status_label"
-      },
-      {
-        "defaultMessage": "Status",
-        "id": "app.admin.tickets.status_label"
-      },
-      {
-        "defaultMessage": "Category",
-        "id": "app.admin.tickets.category_label"
-      },
-      {
-        "defaultMessage": "Subject",
-        "id": "app.admin.tickets.subject_label"
-      },
-      {
-        "defaultMessage": "Author",
-        "id": "app.admin.tickets.author_label"
+        "defaultMessage": "Account type",
+        "id": "app.admin.users.type"
       },
       {
         "defaultMessage": "Created",
-        "id": "app.admin.tickets.created_label"
+        "id": "app.admin.users.created_label"
       },
       {
         "defaultMessage": "You've been invited to be a part of a campaign!",
@@ -1680,22 +1624,6 @@
       {
         "defaultMessage": "Accept",
         "id": "app.campaign_invite.accept_label"
-      },
-      {
-        "defaultMessage": "Name",
-        "id": "app.admin.users.name"
-      },
-      {
-        "defaultMessage": "Email",
-        "id": "app.admin.users.email"
-      },
-      {
-        "defaultMessage": "Account type",
-        "id": "app.admin.users.type"
-      },
-      {
-        "defaultMessage": "Created",
-        "id": "app.admin.users.created_label"
       },
       {
         "defaultMessage": "Define a title for your campaign",
@@ -1802,6 +1730,82 @@
         "id": "app.campaign.form.disclaimer_02"
       },
       {
+        "defaultMessage": "Mark as resolved",
+        "id": "app.admin.tickets.mark_resolved"
+      },
+      {
+        "defaultMessage": "Move to \"in progress\"",
+        "id": "app.admin.tickets.mark_progress"
+      },
+      {
+        "defaultMessage": "New",
+        "id": "app.admin.tickets.status.new"
+      },
+      {
+        "defaultMessage": "In progress",
+        "id": "app.admin.tickets.status.in_progress"
+      },
+      {
+        "defaultMessage": "Resolved",
+        "id": "app.admin.tickets.status.resolved"
+      },
+      {
+        "defaultMessage": "Suggestion",
+        "id": "app.admin.tickets.categories.suggestion"
+      },
+      {
+        "defaultMessage": "Bug",
+        "id": "app.admin.tickets.categories.bug"
+      },
+      {
+        "defaultMessage": "Question",
+        "id": "app.admin.tickets.categories.question"
+      },
+      {
+        "defaultMessage": "Other",
+        "id": "app.admin.tickets.categories.other"
+      },
+      {
+        "defaultMessage": "URL",
+        "id": "app.admin.tickets.meta.url"
+      },
+      {
+        "defaultMessage": "Browser",
+        "id": "app.admin.tickets.meta.browser"
+      },
+      {
+        "defaultMessage": "OS",
+        "id": "app.admin.tickets.meta.os"
+      },
+      {
+        "defaultMessage": "Version",
+        "id": "app.admin.tickets.meta.version"
+      },
+      {
+        "defaultMessage": "Current status",
+        "id": "app.admin.tickets.current_status_label"
+      },
+      {
+        "defaultMessage": "Status",
+        "id": "app.admin.tickets.status_label"
+      },
+      {
+        "defaultMessage": "Category",
+        "id": "app.admin.tickets.category_label"
+      },
+      {
+        "defaultMessage": "Subject",
+        "id": "app.admin.tickets.subject_label"
+      },
+      {
+        "defaultMessage": "Author",
+        "id": "app.admin.tickets.author_label"
+      },
+      {
+        "defaultMessage": "Created",
+        "id": "app.admin.tickets.created_label"
+      },
+      {
         "defaultMessage": "Are you sure you'd like to permanently remove your campaign?",
         "id": "app.campaign_settings.confirm_remove_label"
       },
@@ -1836,58 +1840,6 @@
       {
         "defaultMessage": "Not connected",
         "id": "app.campaign_connections.unhealthy_label"
-      },
-      {
-        "defaultMessage": "Campaign name",
-        "id": "app.campaign_settings.name_label"
-      },
-      {
-        "defaultMessage": "Type",
-        "id": "app.campaign_settings.type_label"
-      },
-      {
-        "defaultMessage": "Candidate",
-        "id": "app.campaign_settings.candidate_label"
-      },
-      {
-        "defaultMessage": "Party/movement/coalition",
-        "id": "app.campaign_settings.party_label"
-      },
-      {
-        "defaultMessage": "Office",
-        "id": "app.campaign_settings.office_label"
-      },
-      {
-        "defaultMessage": "Cause",
-        "id": "app.campaign_settings.cause_label"
-      },
-      {
-        "defaultMessage": "Country",
-        "id": "app.campaign_settings.country_label"
-      },
-      {
-        "defaultMessage": "Region",
-        "id": "app.campaign_settings.region_label"
-      },
-      {
-        "defaultMessage": "Location",
-        "id": "app.campaign_settings.location_label"
-      },
-      {
-        "defaultMessage": "Public email",
-        "id": "app.campaign_settings.email_label"
-      },
-      {
-        "defaultMessage": "Public phone number",
-        "id": "app.campaign_settings.phone_label"
-      },
-      {
-        "defaultMessage": "Save",
-        "id": "app.campaign_settings.save"
-      },
-      {
-        "defaultMessage": "Contact information",
-        "id": "app.campaign_settings.contact_title"
       },
       {
         "defaultMessage": "Campaign settings",
@@ -1954,6 +1906,106 @@
         "id": "app.campaign_settings.team_description"
       },
       {
+        "defaultMessage": "Campaign name",
+        "id": "app.campaign_settings.name_label"
+      },
+      {
+        "defaultMessage": "Type",
+        "id": "app.campaign_settings.type_label"
+      },
+      {
+        "defaultMessage": "Candidate",
+        "id": "app.campaign_settings.candidate_label"
+      },
+      {
+        "defaultMessage": "Party/movement/coalition",
+        "id": "app.campaign_settings.party_label"
+      },
+      {
+        "defaultMessage": "Office",
+        "id": "app.campaign_settings.office_label"
+      },
+      {
+        "defaultMessage": "Cause",
+        "id": "app.campaign_settings.cause_label"
+      },
+      {
+        "defaultMessage": "Country",
+        "id": "app.campaign_settings.country_label"
+      },
+      {
+        "defaultMessage": "Region",
+        "id": "app.campaign_settings.region_label"
+      },
+      {
+        "defaultMessage": "Location",
+        "id": "app.campaign_settings.location_label"
+      },
+      {
+        "defaultMessage": "Public email",
+        "id": "app.campaign_settings.email_label"
+      },
+      {
+        "defaultMessage": "Public phone number",
+        "id": "app.campaign_settings.phone_label"
+      },
+      {
+        "defaultMessage": "Save",
+        "id": "app.campaign_settings.save"
+      },
+      {
+        "defaultMessage": "Contact information",
+        "id": "app.campaign_settings.contact_title"
+      },
+      {
+        "defaultMessage": "Text search...",
+        "id": "app.comments.text_search_placeholder"
+      },
+      {
+        "defaultMessage": "Filter by post...",
+        "id": "app.comments.entry_select_placeholder"
+      },
+      {
+        "defaultMessage": "Filter by source...",
+        "id": "app.comments.source_select_placeholder"
+      },
+      {
+        "defaultMessage": "Unresolved",
+        "id": "app.comments.unresolved_label"
+      },
+      {
+        "defaultMessage": "Resolved",
+        "id": "app.comments.resolved_label"
+      },
+      {
+        "defaultMessage": "All comments",
+        "id": "app.comments.filters.all_comments_label"
+      },
+      {
+        "defaultMessage": "Marked as question",
+        "id": "app.comments.filters.question_comments"
+      },
+      {
+        "defaultMessage": "Vote declarations",
+        "id": "app.comments.filters.vote_comments"
+      },
+      {
+        "defaultMessage": "Hide comment replies",
+        "id": "app.comments.filters.hide_replies"
+      },
+      {
+        "defaultMessage": "Comments without page response",
+        "id": "app.comments.filters.without_response"
+      },
+      {
+        "defaultMessage": "Comments that can receive a private reply",
+        "id": "app.comments.filters.private_reply"
+      },
+      {
+        "defaultMessage": "Comments with mentions",
+        "id": "app.comments.filters.with_mentions"
+      },
+      {
         "defaultMessage": "Donors",
         "id": "app.dashboard.donors.title"
       },
@@ -2016,54 +2068,6 @@
       {
         "defaultMessage": "Setup your form",
         "id": "app.dashboard.form.button"
-      },
-      {
-        "defaultMessage": "Text search...",
-        "id": "app.comments.text_search_placeholder"
-      },
-      {
-        "defaultMessage": "Filter by post...",
-        "id": "app.comments.entry_select_placeholder"
-      },
-      {
-        "defaultMessage": "Filter by source...",
-        "id": "app.comments.source_select_placeholder"
-      },
-      {
-        "defaultMessage": "Unresolved",
-        "id": "app.comments.unresolved_label"
-      },
-      {
-        "defaultMessage": "Resolved",
-        "id": "app.comments.resolved_label"
-      },
-      {
-        "defaultMessage": "All comments",
-        "id": "app.comments.filters.all_comments_label"
-      },
-      {
-        "defaultMessage": "Marked as question",
-        "id": "app.comments.filters.question_comments"
-      },
-      {
-        "defaultMessage": "Vote declarations",
-        "id": "app.comments.filters.vote_comments"
-      },
-      {
-        "defaultMessage": "Hide comment replies",
-        "id": "app.comments.filters.hide_replies"
-      },
-      {
-        "defaultMessage": "Comments without page response",
-        "id": "app.comments.filters.without_response"
-      },
-      {
-        "defaultMessage": "Comments that can receive a private reply",
-        "id": "app.comments.filters.private_reply"
-      },
-      {
-        "defaultMessage": "Comments with mentions",
-        "id": "app.comments.filters.with_mentions"
       },
       {
         "defaultMessage": "Hello, {name} 🌵",
@@ -2194,82 +2198,6 @@
         "id": "app.form_settings.form_skills_description"
       },
       {
-        "defaultMessage": "New answer",
-        "id": "app.faq.new_title"
-      },
-      {
-        "defaultMessage": "Editing answer",
-        "id": "app.faq.editing_title"
-      },
-      {
-        "defaultMessage": "Are you sure you'd like to remove this answer?",
-        "id": "app.faq.confirm_remove"
-      },
-      {
-        "defaultMessage": "Removed",
-        "id": "app.faq.removed_label"
-      },
-      {
-        "defaultMessage": "Copy to clipboard",
-        "id": "app.faq.copy"
-      },
-      {
-        "defaultMessage": "Edit",
-        "id": "app.faq.edit"
-      },
-      {
-        "defaultMessage": "View",
-        "id": "app.faq.view"
-      },
-      {
-        "defaultMessage": "Remove",
-        "id": "app.faq.remove"
-      },
-      {
-        "defaultMessage": "Save",
-        "id": "app.faq.save"
-      },
-      {
-        "defaultMessage": "View as grid",
-        "id": "app.faq.view_mode.grid"
-      },
-      {
-        "defaultMessage": "View as document",
-        "id": "app.faq.view_mode.document"
-      },
-      {
-        "defaultMessage": "Question",
-        "id": "app.faq.form.question_label"
-      },
-      {
-        "defaultMessage": "Describe the question",
-        "id": "app.faq.form.question_placeholder"
-      },
-      {
-        "defaultMessage": "Answer",
-        "id": "app.faq.form.answer_label"
-      },
-      {
-        "defaultMessage": "Type the default answer for this question",
-        "id": "app.faq.form.answer_placeholder"
-      },
-      {
-        "defaultMessage": "Frequently Asked Questions",
-        "id": "app.faq.title"
-      },
-      {
-        "defaultMessage": "Create answers to frequently asked questions to optimize your campaign communication.",
-        "id": "app.faq.description"
-      },
-      {
-        "defaultMessage": "Create your first answer",
-        "id": "app.faq.create_first"
-      },
-      {
-        "defaultMessage": "+ Create new answer",
-        "id": "app.faq.create_new"
-      },
-      {
         "defaultMessage": "Email",
         "id": "app.auth.email_placeholder"
       },
@@ -2380,6 +2308,82 @@
       {
         "defaultMessage": "Remove",
         "id": "app.forms.remove"
+      },
+      {
+        "defaultMessage": "New answer",
+        "id": "app.faq.new_title"
+      },
+      {
+        "defaultMessage": "Editing answer",
+        "id": "app.faq.editing_title"
+      },
+      {
+        "defaultMessage": "Are you sure you'd like to remove this answer?",
+        "id": "app.faq.confirm_remove"
+      },
+      {
+        "defaultMessage": "Removed",
+        "id": "app.faq.removed_label"
+      },
+      {
+        "defaultMessage": "Copy to clipboard",
+        "id": "app.faq.copy"
+      },
+      {
+        "defaultMessage": "Edit",
+        "id": "app.faq.edit"
+      },
+      {
+        "defaultMessage": "View",
+        "id": "app.faq.view"
+      },
+      {
+        "defaultMessage": "Remove",
+        "id": "app.faq.remove"
+      },
+      {
+        "defaultMessage": "Save",
+        "id": "app.faq.save"
+      },
+      {
+        "defaultMessage": "View as grid",
+        "id": "app.faq.view_mode.grid"
+      },
+      {
+        "defaultMessage": "View as document",
+        "id": "app.faq.view_mode.document"
+      },
+      {
+        "defaultMessage": "Question",
+        "id": "app.faq.form.question_label"
+      },
+      {
+        "defaultMessage": "Describe the question",
+        "id": "app.faq.form.question_placeholder"
+      },
+      {
+        "defaultMessage": "Answer",
+        "id": "app.faq.form.answer_label"
+      },
+      {
+        "defaultMessage": "Type the default answer for this question",
+        "id": "app.faq.form.answer_placeholder"
+      },
+      {
+        "defaultMessage": "Frequently Asked Questions",
+        "id": "app.faq.title"
+      },
+      {
+        "defaultMessage": "Create answers to frequently asked questions to optimize your campaign communication.",
+        "id": "app.faq.description"
+      },
+      {
+        "defaultMessage": "Create your first answer",
+        "id": "app.faq.create_first"
+      },
+      {
+        "defaultMessage": "+ Create new answer",
+        "id": "app.faq.create_new"
       },
       {
         "defaultMessage": "Delete permanently",
@@ -2718,6 +2722,58 @@
         "id": "app.people_form.more_info"
       },
       {
+        "defaultMessage": "Name",
+        "id": "app.registration.name_label"
+      },
+      {
+        "defaultMessage": "Email",
+        "id": "app.registration.email_label"
+      },
+      {
+        "defaultMessage": "Country",
+        "id": "app.registration.country_label"
+      },
+      {
+        "defaultMessage": "Region",
+        "id": "app.registration.region_label"
+      },
+      {
+        "defaultMessage": "Password",
+        "id": "app.registration.password_label"
+      },
+      {
+        "defaultMessage": "Repeat password",
+        "id": "app.registration.password_repeat_label"
+      },
+      {
+        "defaultMessage": "Create account",
+        "id": "app.registration.create_account_label"
+      },
+      {
+        "defaultMessage": "You must set a name",
+        "id": "app.registration.alerts.name"
+      },
+      {
+        "defaultMessage": "You must set an email",
+        "id": "app.registration.alerts.email"
+      },
+      {
+        "defaultMessage": "You must set a password",
+        "id": "app.registration.alerts.password"
+      },
+      {
+        "defaultMessage": "Passwords do not match",
+        "id": "app.registration.alerts.password_match"
+      },
+      {
+        "defaultMessage": "New account",
+        "id": "app.registration.title"
+      },
+      {
+        "defaultMessage": "Or fill the form below",
+        "id": "app.registration.or_fill_form"
+      },
+      {
         "defaultMessage": "Form",
         "id": "app.people.profile.form_source_label"
       },
@@ -2772,58 +2828,6 @@
       {
         "defaultMessage": "Source: {source}",
         "id": "app.people.profile.source_text"
-      },
-      {
-        "defaultMessage": "Name",
-        "id": "app.registration.name_label"
-      },
-      {
-        "defaultMessage": "Email",
-        "id": "app.registration.email_label"
-      },
-      {
-        "defaultMessage": "Country",
-        "id": "app.registration.country_label"
-      },
-      {
-        "defaultMessage": "Region",
-        "id": "app.registration.region_label"
-      },
-      {
-        "defaultMessage": "Password",
-        "id": "app.registration.password_label"
-      },
-      {
-        "defaultMessage": "Repeat password",
-        "id": "app.registration.password_repeat_label"
-      },
-      {
-        "defaultMessage": "Create account",
-        "id": "app.registration.create_account_label"
-      },
-      {
-        "defaultMessage": "You must set a name",
-        "id": "app.registration.alerts.name"
-      },
-      {
-        "defaultMessage": "You must set an email",
-        "id": "app.registration.alerts.email"
-      },
-      {
-        "defaultMessage": "You must set a password",
-        "id": "app.registration.alerts.password"
-      },
-      {
-        "defaultMessage": "Passwords do not match",
-        "id": "app.registration.alerts.password_match"
-      },
-      {
-        "defaultMessage": "New account",
-        "id": "app.registration.title"
-      },
-      {
-        "defaultMessage": "Or fill the form below",
-        "id": "app.registration.or_fill_form"
       },
       {
         "defaultMessage": "New password",
@@ -2928,10 +2932,6 @@
       {
         "defaultMessage": "Select the fields below to choose which data should be unified.",
         "id": "app.people.unresolved.instruction_02"
-      },
-      {
-        "defaultMessage": "(optional)",
-        "id": "app.form.optional_label"
       }
     ],
     "path": "messages.json"
