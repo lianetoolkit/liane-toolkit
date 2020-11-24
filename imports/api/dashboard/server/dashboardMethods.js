@@ -59,7 +59,7 @@ export const summaryData = new ValidatedMethod({
       // 4 - Total people with canReceivePrivateReply
       const peoplePM = People.find({
         campaignId,
-        canReceivePrivateReply: true,
+        "canReceivePrivateReply.0": { $exists: true },
       }).count();
 
       // redis update
