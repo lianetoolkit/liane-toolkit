@@ -82,7 +82,8 @@ if (typeof Meteor == "undefined") {
         manageTranslations({
           messagesDirectory: "./locales/messages",
           translationsDirectory: "./locales/",
-          languages: [],
+          whitelistsDirectory: "./locales/whitelists",
+          languages: ["en"],
           singleMessagesFile: true,
         });
       });
