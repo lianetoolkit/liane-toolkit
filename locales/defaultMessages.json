@@ -474,7 +474,7 @@
         "id": "app.comment.reply_button"
       },
       {
-        "defaultMessage": "Select souce...",
+        "defaultMessage": "Select source...",
         "id": "app.comment_source_select.placeholder"
       },
       {

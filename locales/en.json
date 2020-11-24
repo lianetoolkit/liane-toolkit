@@ -223,7 +223,7 @@
   "app.comment.tag_as.troll": "Mark this person as troll",
   "app.comment.tag_as.vote": "Mark as vote declaration",
   "app.comment.unresolved": "unresolved",
-  "app.comment_source_select.placeholder": "Select souce...",
+  "app.comment_source_select.placeholder": "Select source...",
   "app.comments.counts.any_comments": "{count} comments",
   "app.comments.counts.no_comments": "No comments",
   "app.comments.counts.one_comment": "1 comment",

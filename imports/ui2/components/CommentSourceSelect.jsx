@@ -6,7 +6,7 @@ import Select from "react-select";
 const messages = defineMessages({
   placeholder: {
     id: "app.comment_source_select.placeholder",
-    defaultMessage: "Select souce..."
+    defaultMessage: "Select source..."
   }
 });
 
