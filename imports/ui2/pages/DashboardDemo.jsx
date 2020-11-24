@@ -5,8 +5,14 @@ import Loading from "/imports/ui2/components/Loading.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
 import moment from "moment";
 import axios from "axios";
-// import "@nivo/core";
-// import { ResponsiveFunnel } from "@nivo/funnel";
+import {
+  injectIntl,
+  intlShape,
+  defineMessages,
+  FormattedMessage,
+  FormattedHTMLMessage,
+} from "react-intl";
+
 import {
   ResponsiveContainer,
   AreaChart,
@@ -554,39 +560,90 @@ class DashboardDemoPage extends React.Component {
       <Container>
         <header className="dashboard-header">
           <div className="intro">
-            <h1>Hello, {user.name} 🌵</h1>
+            <h1>
+              <FormattedMessage
+                id="app.dashboard.greeting"
+                defaultMessage="Hello, {name} 🌵"
+                values={{ name: user.name }}
+              />
+            </h1>
             <p>
-              Welcome to Liane, we have a lot of work to do to improve
-              participation in this community
+              <FormattedMessage
+                id="app.dashboard.intro_text"
+                defaultMessage="Welcome to Liane, we have a lot of work to do to improve participation in this community."
+              />
             </p>
           </div>
           <div className="data">
             <div className="total-people main-data">
               <span className="number">{summaryData.totalPeople}</span>
               <span className="text">
-                people <br /> in your database
+                <FormattedMessage
+                  id="app.dashboard.summary.total_people_01"
+                  defaultMessage="people"
+                />
+                <br />
+                <FormattedMessage
+                  id="app.dashboard.summary.total_people_02"
+                  defaultMessage="in your database"
+                />
               </span>
             </div>
             <div className="positive-reactions secondary-data">
               <span className="number">{summaryData.positiveReactions}</span>
-              <span className="text">positive responses</span>
-              <Button>View reactions</Button>
+              <span className="text">
+                <FormattedMessage
+                  id="app.dashboard.summary.positive_responses"
+                  defaultMessage="positive responses"
+                />
+              </span>
+              <Button>
+                <FormattedMessage
+                  id="app.dashboard.summary.positive_responses_action"
+                  defaultMessage="View reactions"
+                />
+              </Button>
             </div>
             <div className="comments secondary-data">
               <span className="number">{summaryData.comments}</span>
-              <span className="text">comments</span>
-              <Button>Manage comments</Button>
+              <span className="text">
+                <FormattedMessage
+                  id="app.dashboard.summary.comments"
+                  defaultMessage="comments"
+                />
+              </span>
+              <Button>
+                <FormattedMessage
+                  id="app.dashboard.summary.comments_action"
+                  defaultMessage="Manage comments"
+                />
+              </Button>
             </div>
             <div className="people-pm secondary-data">
               <span className="number">{summaryData.peoplePM}</span>
-              <span className="text">people to send private messages</span>
-              <Button>Send messages</Button>
+              <span className="text">
+                <FormattedMessage
+                  id="app.dashboard.summary.private_replies"
+                  defaultMessage="people to send private replies"
+                />
+              </span>
+              <Button>
+                <FormattedMessage
+                  id="app.dashboard.summary.private_replies_action"
+                  defaultMessage="Send messages"
+                />
+              </Button>
             </div>
           </div>
         </header>
         <section className="dashboard-sections">
           <div className="dashboard-section">
-            <h2>Conversion Funnel</h2>
+            <h2>
+              <FormattedMessage
+                id="app.dashboard.funnel.title"
+                defaultMessage="Conversion Funnel"
+              />
+            </h2>
             <div className="funnel">
               <div className="funnel-chart">
                 <div className="funnel-chart-content">
@@ -630,16 +687,41 @@ class DashboardDemoPage extends React.Component {
                 </div>
               </div>
               <div className="funnel-info">
-                <p>People in your database</p>
-                <p>With positive reactions</p>
-                <p>Are talking to us</p>
-                <p className="highlight">Filled out your campaign form</p>
+                <p>
+                  <FormattedMessage
+                    id="app.dashboard.funnel.text_01"
+                    defaultMessage="People in your database"
+                  />
+                </p>
+                <p>
+                  <FormattedMessage
+                    id="app.dashboard.funnel.text_02"
+                    defaultMessage="With positive reactions"
+                  />
+                </p>
+                <p>
+                  <FormattedMessage
+                    id="app.dashboard.funnel.text_03"
+                    defaultMessage="Are talking to us"
+                  />
+                </p>
+                <p className="highlight">
+                  <FormattedMessage
+                    id="app.dashboard.funnel.text_04"
+                    defaultMessage="Filled out your campaign form"
+                  />
+                </p>
                 <div>&nbsp;</div>
               </div>
             </div>
           </div>
           <div className="dashboard-section">
-            <h2>Your achievements</h2>
+            <h2>
+              <FormattedMessage
+                id="app.dashboard.achievements.title"
+                defaultMessage="Your achievements"
+              />
+            </h2>
             <Achievements>
               <li>
                 <FontAwesomeIcon icon="align-left" />
