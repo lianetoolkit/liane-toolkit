@@ -39,6 +39,11 @@ if (typeof Meteor == "undefined") {
   for (let message of peopleMetaMessages) {
     messageMap[message.id] = message;
   }
+  const facebookReactionsMessages = require("../locales/features/facebookReactions")
+    .list;
+  for (let message of facebookReactionsMessages) {
+    messageMap[message.id] = message;
+  }
 
   const extractFromFile = async (filename) => {
     try {
