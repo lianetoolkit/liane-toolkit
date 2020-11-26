@@ -731,5 +731,15 @@
     "app.dashboard.summary.total_people_01": "pessoas",
     "app.dashboard.summary.total_people_02": "na sua base de dados",
     "app.people.social_icons.data_copy": "{data} (copiar)",
-    "app.people.social_icons.instagram_link_text": "Ver instagram"
+    "app.people.social_icons.instagram_link_text": "Ver instagram",
+    "app.facebook_reactions.angry": "Grr",
+    "app.facebook_reactions.care": "Força",
+    "app.facebook_reactions.comments": "Comentários",
+    "app.facebook_reactions.haha": "Haha",
+    "app.facebook_reactions.like": "Curtir",
+    "app.facebook_reactions.love": "Amei",
+    "app.facebook_reactions.pride": "Orgulho",
+    "app.facebook_reactions.sad": "Triste",
+    "app.facebook_reactions.thankful": "Gratidão",
+    "app.facebook_reactions.wow": "Uau"
 }
