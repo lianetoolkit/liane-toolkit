@@ -12,6 +12,7 @@ import {
   FormattedMessage,
   FormattedHTMLMessage,
 } from "react-intl";
+import { get } from "lodash";
 
 import {
   ResponsiveContainer,
@@ -385,14 +386,14 @@ class DashboardDemoPage extends React.Component {
       console.log(data[day]);
       response.push({
         day,
-        comments: Math.floor(Math.random() * 10),
-        like: Math.floor(Math.random() * 10),
-        love: Math.floor(Math.random() * 10),
-        care: Math.floor(Math.random() * 10),
-        wow: Math.floor(Math.random() * 10),
-        haha: Math.floor(Math.random() * 10),
-        sad: Math.floor(Math.random() * 10),
-        angry: Math.floor(Math.random() * 10),
+        comments: get(data[day], "comments") || 0,
+        like: get(data[day], "reactions.LIKE") || 0,
+        love: get(data[day], "reactions.LOVE") || 0,
+        care: get(data[day], "reactions.CARE") || 0,
+        wow: get(data[day], "reactions.WOW") || 0,
+        haha: get(data[day], "reactions.HAHA") || 0,
+        sad: get(data[day], "reactions.SAD") || 0,
+        angry: get(data[day], "reactions.ANGRY") || 0,
       });
     }
     return response;
@@ -524,6 +525,10 @@ class DashboardDemoPage extends React.Component {
       impulsaTracks,
     } = this.state;
     const chartConfig = [
+      {
+        id: "comments",
+        color: "#1ac8e7",
+      },
       {
         id: "like",
         color: "#175DEB",

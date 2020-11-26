@@ -403,9 +403,9 @@ export const chartsData = new ValidatedMethod({
           // Comments
           interactionHistory[formattedDate]["comments"] = Comments.find({
             facebookAccountId,
-            createdAt: {
-              $gte: moment(formattedDate).toDate(),
-              $lte: moment(formattedDate).add(1, "day").toDate(),
+            created_time: {
+              $gte: moment(formattedDate).toISOString(),
+              $lt: moment(formattedDate).add(1, "day").toISOString(),
             },
           }).count();
 
@@ -413,9 +413,9 @@ export const chartsData = new ValidatedMethod({
           interactionHistory[formattedDate]["reactions"] = { total: 0 };
           const reactions = Likes.find({
             facebookAccountId,
-            createdAt: {
-              $gte: moment(formattedDate).toDate(),
-              $lte: moment(formattedDate).add(1, "day").toDate(),
+            created_time: {
+              $gte: moment(formattedDate).valueOf(),
+              $lt: moment(formattedDate).add(1, "day").valueOf(),
             },
           });
 
