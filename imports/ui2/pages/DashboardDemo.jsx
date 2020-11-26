@@ -5,6 +5,7 @@ import Loading from "/imports/ui2/components/Loading.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
 import moment from "moment";
 import axios from "axios";
+import { messages as reactionsLabels } from "/locales/features/facebookReactions";
 import {
   injectIntl,
   intlShape,
@@ -288,7 +289,38 @@ const InteractionsContent = styled.div`
   .chart {
     width: 100%;
     box-sizing: border-box;
-    padding: 2rem;
+    padding: 2rem 2rem 2rem 0;
+    display: flex;
+    align-items: center;
+    .recharts-responsive-container {
+      flex: 1 1 100%;
+    }
+    nav {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      margin-left: 2rem;
+      a {
+        display: flex;
+        align-items: center;
+        margin: 0.7rem 0;
+        font-size: 25px;
+        &.disabled {
+          opacity: 0.5;
+        }
+        .color-icon {
+          width: 10px;
+          height: 10px;
+          border-radius: 7px;
+          display: block;
+          margin-right: 1rem;
+        }
+        img {
+          width: 25px;
+          height: auto;
+        }
+      }
+    }
   }
 `;
 
@@ -372,6 +404,7 @@ class DashboardDemoPage extends React.Component {
       funnelData: null,
       chartsData: null,
       impulsaTracks: [],
+      disabledChartItems: {},
     };
   }
   processChart = (data) => {
@@ -386,14 +419,14 @@ class DashboardDemoPage extends React.Component {
       console.log(data[day]);
       response.push({
         day,
-        comments: get(data[day], "comments") || 0,
-        like: get(data[day], "reactions.LIKE") || 0,
-        love: get(data[day], "reactions.LOVE") || 0,
-        care: get(data[day], "reactions.CARE") || 0,
-        wow: get(data[day], "reactions.WOW") || 0,
-        haha: get(data[day], "reactions.HAHA") || 0,
-        sad: get(data[day], "reactions.SAD") || 0,
-        angry: get(data[day], "reactions.ANGRY") || 0,
+        comments: get(data[day], "comments") || null,
+        like: get(data[day], "reactions.LIKE") || null,
+        love: get(data[day], "reactions.LOVE") || null,
+        care: get(data[day], "reactions.CARE") || null,
+        wow: get(data[day], "reactions.WOW") || null,
+        haha: get(data[day], "reactions.HAHA") || null,
+        sad: get(data[day], "reactions.SAD") || null,
+        angry: get(data[day], "reactions.ANGRY") || null,
       });
     }
     return response;
@@ -473,6 +506,15 @@ class DashboardDemoPage extends React.Component {
       });
     });
   };
+  _handleChartLegendClick = (id) => (ev) => {
+    ev.preventDefault();
+    this.setState({
+      disabledChartItems: {
+        ...this.state.disabledChartItems,
+        [id]: !this.state.disabledChartItems[id],
+      },
+    });
+  };
   _setChart = (period) => {
     const { campaign } = this.props;
     let startDate;
@@ -512,7 +554,7 @@ class DashboardDemoPage extends React.Component {
     );
   };
   render() {
-    const { user, campaign } = this.props;
+    const { intl, user, campaign } = this.props;
     const {
       loading,
       summaryData,
@@ -523,41 +565,51 @@ class DashboardDemoPage extends React.Component {
       topReactioners,
       topCommenters,
       impulsaTracks,
+      disabledChartItems,
     } = this.state;
     const chartConfig = [
       {
         id: "comments",
         color: "#1ac8e7",
+        icon: <FontAwesomeIcon icon="comment" />,
       },
       {
         id: "like",
         color: "#175DEB",
+        icon: <img src="/images/reactions/like.png" />,
       },
       {
         id: "love",
         color: "#F24A64",
+        icon: <img src="/images/reactions/love.png" />,
       },
       {
         id: "care",
         color: "#F9AE3B",
+        icon: <img src="/images/reactions/care.png" />,
       },
       {
         id: "haha",
         color: "#EF5A24",
+        icon: <img src="/images/reactions/haha.png" />,
       },
       {
         id: "wow",
         color: "#B98AFF",
+        icon: <img src="/images/reactions/wow.png" />,
       },
       {
         id: "sad",
         color: "#55C263",
+        icon: <img src="/images/reactions/sad.png" />,
       },
       {
         id: "angry",
         color: "#8A2E00",
+        icon: <img src="/images/reactions/angry.png" />,
       },
     ];
+    console.log(disabledChartItems);
     if (loading) {
       return <Loading full />;
     }
@@ -783,14 +835,14 @@ class DashboardDemoPage extends React.Component {
               </ChartNav>
               <InteractionsContent>
                 <div className="chart">
-                  <ResponsiveContainer width="100%" height={450}>
+                  <ResponsiveContainer height={450}>
                     <AreaChart
                       data={this._getInteractionChartData(
                         chartsData.interactionHistory
                       )}
                       margin={{
-                        top: 10,
-                        right: 30,
+                        top: 0,
+                        right: 0,
                         left: 0,
                         bottom: 0,
                       }}
@@ -798,14 +850,53 @@ class DashboardDemoPage extends React.Component {
                       <CartesianGrid stroke="#eee" vertical={false} />
                       <XAxis
                         dataKey="day"
+                        type="category"
+                        // hide={true}
+                        tick={{ fontSize: "0.8em", fontFamily: "Roboto Mono" }}
+                        tickSize={5}
+                        axisLine={false}
+                        tickLine={false}
+                        tickMargin={10}
                         tickFormatter={(item) => {
                           return moment(item)
                             .format("L")
-                            .replace(/[,\/-/.]*\s*Y+\s*/, "");
+                            .replace(
+                              new RegExp(
+                                "[^.]?" + moment().format("YYYY") + ".?"
+                              ),
+                              ""
+                            );
                         }}
                       />
-                      <YAxis tickSize={10} tickMargin={10} />
-                      <Tooltip />
+                      <YAxis
+                        allowDecimals={false}
+                        tick={{ fontSize: "0.8em", fontFamily: "Roboto Mono" }}
+                        tickSize={10}
+                        axisLine={false}
+                        tickLine={false}
+                        tickMargin={10}
+                      />
+                      <Tooltip
+                        contentStyle={{ borderRadius: "7px" }}
+                        labelStyle={{ fontWeight: 500 }}
+                        labelFormatter={(value) => {
+                          return moment(value)
+                            .format("L")
+                            .replace(
+                              new RegExp(
+                                "[^.]?" + moment().format("YYYY") + ".?"
+                              ),
+                              ""
+                            );
+                        }}
+                        formatter={(value, name, props) => {
+                          if (!value) return null;
+                          return [
+                            value,
+                            intl.formatMessage(reactionsLabels[name]),
+                          ];
+                        }}
+                      />
                       {chartConfig.map((chartItem) => (
                         <Area
                           stackId="interactions"
@@ -819,6 +910,24 @@ class DashboardDemoPage extends React.Component {
                       ))}
                     </AreaChart>
                   </ResponsiveContainer>
+                  <nav>
+                    {chartConfig.map((chartItem) => (
+                      <a
+                        href="#"
+                        // className={
+                        //   disabledChartItems[chartItem.id] ? "disabled" : ""
+                        // }
+                        onClick={this._handleChartLegendClick(chartItem.id)}
+                        style={{ color: chartItem.color }}
+                      >
+                        <span
+                          className="color-icon"
+                          style={{ backgroundColor: chartItem.color }}
+                        />
+                        {chartItem.icon || ""}
+                      </a>
+                    ))}
+                  </nav>
                 </div>
                 <TopPeople>
                   <h3>More reactions</h3>
@@ -877,4 +986,8 @@ class DashboardDemoPage extends React.Component {
   }
 }
 
-export default DashboardDemoPage;
+DashboardDemoPage.propTypes = {
+  intl: intlShape.isRequired,
+};
+
+export default injectIntl(DashboardDemoPage);
