@@ -842,7 +842,7 @@ class DashboardDemoPage extends React.Component {
                 </span>
                 <Button>
                   <FormattedMessage
-                    id="app.dashboard.filled_forms.action"
+                    id="app.dashboard.geolocated.action"
                     defaultMessage="View your map"
                   />
                 </Button>
