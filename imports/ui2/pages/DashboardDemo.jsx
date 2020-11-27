@@ -27,6 +27,13 @@ import {
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+const messages = defineMessages({
+  peopleChartLabel: {
+    id: "app.dashboard.interactions.new_people.chart_label",
+    defaultMessage: "Newcomers",
+  },
+});
+
 const Container = styled.section`
   width: 100%;
   background: #306;
@@ -300,6 +307,14 @@ const InteractionsContent = styled.div`
     border: 1px solid #ddd;
     border-radius: 7px;
     margin: 1rem;
+    &.fill {
+      flex: 1 1 100%;
+    }
+    h3 {
+      padding: 1rem 2rem;
+      margin: 0;
+      border-bottom: 1px solid #ddd;
+    }
   }
   .chart {
     width: 100%;
@@ -341,23 +356,28 @@ const InteractionsContent = styled.div`
 
 const TopPeople = styled.div`
   flex: 1 0 auto;
-  h3 {
-    padding: 1rem 2rem;
-    margin: 0;
-    border-bottom: 1px solid #ddd;
-  }
   ul {
     margin: 0;
     padding: 0;
     list-style: none;
     font-size: 0.9em;
     li {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.7rem 2rem;
-      border-bottom: 1px solid #ddd;
-      &:last-child {
-        border-bottom: 0;
+      margin: 0;
+      padding: 0;
+      a {
+        text-decoration: none;
+        display: flex;
+        justify-content: space-between;
+        padding: 0.7rem 2rem;
+        border-bottom: 1px solid #ddd;
+        color: #333;
+        &:last-child {
+          border-bottom: 0;
+          border-radius: 0 0 7px 7px;
+        }
+        &:hover {
+          background: #f7f7f7;
+        }
       }
     }
   }
@@ -420,6 +440,7 @@ class DashboardDemoPage extends React.Component {
       chartsData: null,
       impulsaTracks: [],
       disabledChartItems: {},
+      peopleHistory: {},
     };
   }
   processChart = (data) => {
@@ -431,17 +452,26 @@ class DashboardDemoPage extends React.Component {
   _getInteractionChartData = (data) => {
     let response = [];
     for (const day in data) {
-      console.log(data[day]);
       response.push({
         day,
-        comments: get(data[day], "comments") || null,
-        like: get(data[day], "reactions.LIKE") || null,
-        love: get(data[day], "reactions.LOVE") || null,
-        care: get(data[day], "reactions.CARE") || null,
-        wow: get(data[day], "reactions.WOW") || null,
-        haha: get(data[day], "reactions.HAHA") || null,
-        sad: get(data[day], "reactions.SAD") || null,
-        angry: get(data[day], "reactions.ANGRY") || null,
+        comments: get(data[day], "comments") || 0,
+        like: get(data[day], "reactions.LIKE") || 0,
+        love: get(data[day], "reactions.LOVE") || 0,
+        care: get(data[day], "reactions.CARE") || 0,
+        wow: get(data[day], "reactions.WOW") || 0,
+        haha: get(data[day], "reactions.HAHA") || 0,
+        sad: get(data[day], "reactions.SAD") || 0,
+        angry: get(data[day], "reactions.ANGRY") || 0,
+      });
+    }
+    return response;
+  };
+  _getPeopleHistoryChartData = (data) => {
+    let response = [];
+    for (const day in data) {
+      response.push({
+        day,
+        people_count: data[day],
       });
     }
     return response;
@@ -515,7 +545,6 @@ class DashboardDemoPage extends React.Component {
   };
   _fetchImpulsa = () => {
     axios.get("https://www.impulsa.voto/wp-json/wp/v2/tracks").then((res) => {
-      console.log(res.data);
       this.setState({
         impulsaTracks: res.data,
       });
@@ -555,14 +584,14 @@ class DashboardDemoPage extends React.Component {
         startDate: startDate.format(),
       },
       (err, data) => {
-        console.log(data);
         if (err) {
           console.log("dashboard.chartsData error ", err);
         } else {
+          console.log(data);
           this.setState({
             chartPeriod: period,
             ...data,
-            chartsData: this.processChart(data),
+            chartsData: data,
           });
         }
       }
@@ -581,11 +610,13 @@ class DashboardDemoPage extends React.Component {
       funnelData,
       chartPeriod,
       chartsData,
+      peopleHistory,
       topReactioners,
       topCommenters,
       impulsaTracks,
       disabledChartItems,
     } = this.state;
+    console.log(peopleHistory);
     const chartConfig = [
       {
         id: "comments",
@@ -976,7 +1007,6 @@ class DashboardDemoPage extends React.Component {
                             );
                         }}
                         formatter={(value, name, props) => {
-                          if (!value) return null;
                           return [
                             value,
                             intl.formatMessage(reactionsLabels[name]),
@@ -991,6 +1021,7 @@ class DashboardDemoPage extends React.Component {
                           dataKey={chartItem.id}
                           fill={chartItem.color}
                           stroke={chartItem.color}
+                          strokeWidth={0}
                           fillOpacity="1"
                         />
                       ))}
@@ -1041,12 +1072,102 @@ class DashboardDemoPage extends React.Component {
                   <ul>
                     {topCommenters.map((person) => (
                       <li key={person._id}>
-                        <span>{person.name}</span>
-                        <span>{person.total}</span>
+                        <a
+                          href={FlowRouter.path("App.people.detail", {
+                            personId: person._id,
+                          })}
+                        >
+                          <span>{person.name}</span>
+                          <span>{person.total}</span>
+                        </a>
                       </li>
                     ))}
                   </ul>
                 </TopPeople>
+                <div className="fill">
+                  <h3>
+                    <FormattedMessage
+                      id="app.dashboard.interactions.new_people"
+                      defaultMessage="New people per day"
+                    />
+                  </h3>
+                  <div className="chart">
+                    <ResponsiveContainer height={280}>
+                      <AreaChart
+                        data={this._getPeopleHistoryChartData(peopleHistory)}
+                        margin={{
+                          top: 0,
+                          right: 0,
+                          left: 0,
+                          bottom: 0,
+                        }}
+                      >
+                        <CartesianGrid stroke="#eee" vertical={false} />
+                        <XAxis
+                          dataKey="day"
+                          type="category"
+                          tick={{
+                            fontSize: "0.8em",
+                            fontFamily: "Roboto Mono",
+                          }}
+                          tickSize={5}
+                          axisLine={false}
+                          tickLine={false}
+                          tickMargin={10}
+                          tickFormatter={(item) => {
+                            return moment(item)
+                              .format("L")
+                              .replace(
+                                new RegExp(
+                                  "[^.]?" + moment().format("YYYY") + ".?"
+                                ),
+                                ""
+                              );
+                          }}
+                        />
+                        <YAxis
+                          allowDecimals={false}
+                          tick={{
+                            fontSize: "0.8em",
+                            fontFamily: "Roboto Mono",
+                          }}
+                          tickSize={10}
+                          axisLine={false}
+                          tickLine={false}
+                          tickMargin={10}
+                        />
+                        <Tooltip
+                          contentStyle={{ borderRadius: "7px" }}
+                          labelStyle={{ fontWeight: 500 }}
+                          labelFormatter={(value) => {
+                            return moment(value)
+                              .format("L")
+                              .replace(
+                                new RegExp(
+                                  "[^.]?" + moment().format("YYYY") + ".?"
+                                ),
+                                ""
+                              );
+                          }}
+                          formatter={(value, name, props) => {
+                            return [
+                              value,
+                              intl.formatMessage(messages.peopleChartLabel),
+                            ];
+                          }}
+                        />
+                        <Area
+                          type="monotone"
+                          key="people_count"
+                          dataKey="people_count"
+                          fill="#F9AE3B"
+                          strokeWidth={0}
+                          fillOpacity="1"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
               </InteractionsContent>
             </div>
           ) : null}
