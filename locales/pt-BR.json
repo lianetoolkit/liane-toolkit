@@ -758,5 +758,7 @@
     "app.dashboard.interactions.nav.90days": "Últimos 90 dias",
     "app.dashboard.interactions.nav.month": "Este mês",
     "app.dashboard.interactions.reactioners": "Mais reações",
-    "app.dashboard.interactions.title": "Evolução das interações"
+    "app.dashboard.interactions.title": "Evolução das interações",
+    "app.dashboard.interactions.new_people": "Novas pessoas por dia",
+    "app.dashboard.interactions.new_people.chart_label": "Recém-chegadas"
 }
