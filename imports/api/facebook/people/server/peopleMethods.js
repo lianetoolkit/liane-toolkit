@@ -204,7 +204,7 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
   delete query.commented;
 
   if (query.private_reply) {
-    query["canReceivePrivateReply"] = { $exists: true };
+    query["canReceivePrivateReply.0"] = { $exists: true };
   }
   delete query.private_reply;
 
