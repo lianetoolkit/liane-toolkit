@@ -51,6 +51,10 @@ const Container = styled.section`
       display: inline-block;
       border: 0;
       flex: 0 0 auto;
+      &:hover {
+        background: #f8f3ff;
+        color: #306;
+      }
     }
     .intro {
       width: 20%;
@@ -205,6 +209,17 @@ const Container = styled.section`
         font-size: 1.8em;
         margin: 2rem 0;
       }
+      &.impulsa-section {
+        h2 span {
+          display: flex;
+          justify-content: center;
+          img {
+            width: auto;
+            height: 35px;
+            margin-left: 1rem;
+          }
+        }
+      }
     }
   }
 `;
@@ -221,7 +236,7 @@ const Achievements = styled.ul`
     padding: 2rem;
     display: flex;
     flex-direction: column;
-    cursor: default;
+    cursor: pointer;
     align-items: flex-start;
     &:hover {
       box-shadow: 0 0 2px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
@@ -553,6 +568,10 @@ class DashboardDemoPage extends React.Component {
       }
     );
   };
+  _handleAchievementClick = (path, queryParams = {}) => (ev) => {
+    ev.preventDefault();
+    FlowRouter.go(path, {}, queryParams);
+  };
   render() {
     const { intl, user, campaign } = this.props;
     const {
@@ -609,7 +628,6 @@ class DashboardDemoPage extends React.Component {
         icon: <img src="/images/reactions/angry.png" />,
       },
     ];
-    console.log(disabledChartItems);
     if (loading) {
       return <Loading full />;
     }
@@ -654,7 +672,16 @@ class DashboardDemoPage extends React.Component {
                   defaultMessage="positive responses"
                 />
               </span>
-              <Button>
+              <Button
+                href={FlowRouter.path(
+                  "App.people",
+                  {},
+                  {
+                    sort: "likes",
+                    order: "desc",
+                  }
+                )}
+              >
                 <FormattedMessage
                   id="app.dashboard.summary.positive_responses_action"
                   defaultMessage="View reactions"
@@ -669,7 +696,7 @@ class DashboardDemoPage extends React.Component {
                   defaultMessage="comments"
                 />
               </span>
-              <Button>
+              <Button href={FlowRouter.path("App.comments")}>
                 <FormattedMessage
                   id="app.dashboard.summary.comments_action"
                   defaultMessage="Manage comments"
@@ -684,7 +711,15 @@ class DashboardDemoPage extends React.Component {
                   defaultMessage="people to send private replies"
                 />
               </span>
-              <Button>
+              <Button
+                href={FlowRouter.path(
+                  "App.people",
+                  {},
+                  {
+                    private_reply: true,
+                  }
+                )}
+              >
                 <FormattedMessage
                   id="app.dashboard.summary.private_replies_action"
                   defaultMessage="Send messages"
@@ -780,57 +815,108 @@ class DashboardDemoPage extends React.Component {
               />
             </h2>
             <Achievements>
-              <li>
+              <li onClick={this._handleAchievementClick("App.formSettings")}>
                 <FontAwesomeIcon icon="align-left" />
                 <span className="number">{achievements.filledForms}</span>
-                <span className="label">completed forms</span>
-                <Button>Form settings</Button>
+                <span className="label">
+                  <FormattedMessage
+                    id="app.dashboard.filled_forms.text"
+                    defaultMessage="completed forms"
+                  />
+                </span>
+                <Button>
+                  <FormattedMessage
+                    id="app.dashboard.filled_forms.action"
+                    defaultMessage="Form settings"
+                  />
+                </Button>
               </li>
-              <li>
+              <li onClick={this._handleAchievementClick("App.map")}>
                 <FontAwesomeIcon icon="map-marked" />
                 <span className="number">{achievements.geolocated}</span>
-                <span className="label">mapped people</span>
-                <Button>View your map</Button>
+                <span className="label">
+                  <FormattedMessage
+                    id="app.dashboard.geolocated.text"
+                    defaultMessage="mapped people"
+                  />
+                </span>
+                <Button>
+                  <FormattedMessage
+                    id="app.dashboard.filled_forms.action"
+                    defaultMessage="View your map"
+                  />
+                </Button>
               </li>
-              <li>
+              <li
+                onClick={this._handleAchievementClick("App.comments", {
+                  unreplied: true,
+                })}
+              >
                 <FontAwesomeIcon icon="comment" />
                 <span className="number">{achievements.commentsReplies}</span>
-                <span className="label">comments replies</span>
-                <Button>Reply comments</Button>
+                <span className="label">
+                  <FormattedMessage
+                    id="app.dashboard.comments_replies.text"
+                    defaultMessage="comments replies"
+                  />
+                </span>
+                <Button>
+                  <FormattedMessage
+                    id="app.dashboard.comments_replies.action"
+                    defaultMessage="Reply comments"
+                  />
+                </Button>
               </li>
             </Achievements>
           </div>
           {chartsData ? (
             <div className="dashboard-section">
-              <h2>Interactions evolution</h2>
+              <h2>
+                <FormattedMessage
+                  id="app.dashboard.interactions.title"
+                  defaultMessage="Interactions evolution"
+                />
+              </h2>
               <ChartNav>
                 <a
                   href="#"
                   className={chartPeriod == "7days" ? "active" : ""}
                   onClick={this._handleChartFilterClick("7days")}
                 >
-                  Last 7 days
+                  <FormattedMessage
+                    id="app.dashboard.interactions.nav.7days"
+                    defaultMessage="7 days"
+                  />
                 </a>
                 <a
                   href="#"
                   className={chartPeriod == "month" ? "active" : ""}
                   onClick={this._handleChartFilterClick("month")}
                 >
-                  This month
+                  <FormattedMessage
+                    id="app.dashboard.interactions.nav.month"
+                    defaultMessage="This month"
+                  />
                 </a>
                 <a
                   href="#"
                   className={chartPeriod == "30days" ? "active" : ""}
                   onClick={this._handleChartFilterClick("30days")}
                 >
-                  Last 30 days
+                  <FormattedMessage
+                    id="app.dashboard.interactions.nav.30days"
+                    defaultMessage="Last 30 days"
+                  />
                 </a>
                 <a
                   href="#"
                   className={chartPeriod == "90days" ? "active" : ""}
                   onClick={this._handleChartFilterClick("90days")}
                 >
-                  Last 90 days
+                  <FormattedMessage
+                    id="app.dashboard.interactions.nav.90days"
+                    defaultMessage="Last 90 days"
+                  />
                 </a>
               </ChartNav>
               <InteractionsContent>
@@ -930,7 +1016,12 @@ class DashboardDemoPage extends React.Component {
                   </nav>
                 </div>
                 <TopPeople>
-                  <h3>More reactions</h3>
+                  <h3>
+                    <FormattedMessage
+                      id="app.dashboard.interactions.reactioners"
+                      defaultMessage="More reactions"
+                    />
+                  </h3>
                   <ul>
                     {topReactioners.map((person) => (
                       <li key={person._id}>
@@ -941,7 +1032,12 @@ class DashboardDemoPage extends React.Component {
                   </ul>
                 </TopPeople>
                 <TopPeople>
-                  <h3>More comments</h3>
+                  <h3>
+                    <FormattedMessage
+                      id="app.dashboard.interactions.commenters"
+                      defaultMessage="More comments"
+                    />
+                  </h3>
                   <ul>
                     {topCommenters.map((person) => (
                       <li key={person._id}>
@@ -955,17 +1051,55 @@ class DashboardDemoPage extends React.Component {
             </div>
           ) : null}
           {impulsaTracks ? (
-            <div className="dashboard-section">
-              <h2>Support materials from Im.Pulsa</h2>
+            <div className="dashboard-section impulsa-section">
+              <h2>
+                <FormattedMessage
+                  id="app.dashboard.impulsa.title"
+                  defaultMessage="Support materials from {impulsa}"
+                  values={{
+                    impulsa: (
+                      <a
+                        href="https://www.impulsa.voto/"
+                        rel="external"
+                        title="Im.pulsa"
+                        target="_blank"
+                      >
+                        <img src="/images/impulsa.svg" alt="Im.pulsa" />
+                      </a>
+                    ),
+                  }}
+                />
+              </h2>
               <SupportMaterials>
                 {impulsaTracks.map((track) => (
                   <li key={track.id}>
                     <h3
                       dangerouslySetInnerHTML={{ __html: track.title.rendered }}
                     />
-                    <p>{track.materials_count} materials</p>
-                    <p>{track.reading_time} minutes</p>
-                    <Button>View</Button>
+                    <p>
+                      <FormattedMessage
+                        id="app.dashboard.impulsa.track.materials_count"
+                        defaultMessage="{count} materials"
+                        values={{
+                          count: track.materials_count,
+                        }}
+                      />
+                    </p>
+                    <p>
+                      <FormattedMessage
+                        id="app.dashboard.impulsa.track.minutes"
+                        defaultMessage="{time} minutes"
+                        values={{
+                          time: track.reading_time,
+                        }}
+                      />
+                    </p>
+                    <Button href={track.link} rel="external" target="_blank">
+                      <FormattedMessage
+                        id="app.dashboard.impulsa.track.link_text"
+                        defaultMessage="View"
+                      />
+                    </Button>
                   </li>
                 ))}
               </SupportMaterials>
