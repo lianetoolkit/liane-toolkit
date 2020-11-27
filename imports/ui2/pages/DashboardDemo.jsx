@@ -1056,8 +1056,14 @@ class DashboardDemoPage extends React.Component {
                   <ul>
                     {topReactioners.map((person) => (
                       <li key={person._id}>
-                        <span>{person.name}</span>
-                        <span>{person.total}</span>
+                        <a
+                          href={FlowRouter.path("App.people.detail", {
+                            personId: person._id,
+                          })}
+                        >
+                          <span>{person.name}</span>
+                          <span>{person.total}</span>
+                        </a>
                       </li>
                     ))}
                   </ul>
