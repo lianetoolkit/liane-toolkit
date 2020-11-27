@@ -741,5 +741,22 @@
     "app.facebook_reactions.pride": "Orgulho",
     "app.facebook_reactions.sad": "Triste",
     "app.facebook_reactions.thankful": "Gratidão",
-    "app.facebook_reactions.wow": "Uau"
+    "app.facebook_reactions.wow": "Uau",
+    "app.dashboard.comments_replies.action": "Responder comentários",
+    "app.dashboard.impulsa.title": "Materiais de apoio da {impulsa}",
+    "app.dashboard.comments_replies.text": "respostas em comentários",
+    "app.dashboard.filled_forms.action": "Configurações de formulário",
+    "app.dashboard.filled_forms.text": "formulários preenchidos",
+    "app.dashboard.geolocated.action": "Ver seu mapa",
+    "app.dashboard.geolocated.text": "pessoas mapeadas",
+    "app.dashboard.impulsa.track.link_text": "Ver",
+    "app.dashboard.impulsa.track.materials_count": "{count} materiais",
+    "app.dashboard.impulsa.track.minutes": "{time} minutos",
+    "app.dashboard.interactions.commenters": "Mais comentários",
+    "app.dashboard.interactions.nav.30days": "Últimos 30 dias",
+    "app.dashboard.interactions.nav.7days": "7 dias",
+    "app.dashboard.interactions.nav.90days": "Últimos 90 dias",
+    "app.dashboard.interactions.nav.month": "Este mês",
+    "app.dashboard.interactions.reactioners": "Mais reações",
+    "app.dashboard.interactions.title": "Evolução das interações"
 }
