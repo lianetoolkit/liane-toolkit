@@ -276,6 +276,8 @@
   "app.dashboard.interactions.nav.7days": "7 days",
   "app.dashboard.interactions.nav.90days": "Last 90 days",
   "app.dashboard.interactions.nav.month": "This month",
+  "app.dashboard.interactions.new_people": "New people per day",
+  "app.dashboard.interactions.new_people.chart_label": "Newcomers",
   "app.dashboard.interactions.reactioners": "More reactions",
   "app.dashboard.interactions.title": "Interactions evolution",
   "app.dashboard.intro_text": "Welcome to Liane, we have a lot of work to do to improve participation in this community.",
