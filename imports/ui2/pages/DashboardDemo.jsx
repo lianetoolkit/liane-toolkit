@@ -140,6 +140,7 @@ const Container = styled.section`
             flex-direction: column;
             align-items: stretch;
             justify-content: space-around;
+            font-size: 0.9em;
             li {
               flex: 1;
               display: flex;
@@ -602,6 +603,9 @@ class DashboardDemoPage extends React.Component {
       }
     );
   };
+  getPercentage = (amount, total) => {
+    return Math.round((amount / total) * 100) + "%";
+  };
   _handleAchievementClick = (path, queryParams = {}) => (ev) => {
     ev.preventDefault();
     FlowRouter.go(path, {}, queryParams);
@@ -789,21 +793,30 @@ class DashboardDemoPage extends React.Component {
                         backgroundColor: this.getChartItemBgColor(2, 4),
                       }}
                     >
-                      {funnelData.positivePeople}
+                      {this.getPercentage(
+                        funnelData.positivePeople,
+                        funnelData.totalPeople
+                      )}
                     </li>
                     <li
                       style={{
                         backgroundColor: this.getChartItemBgColor(3, 4),
                       }}
                     >
-                      {funnelData.commentingPeople}
+                      {this.getPercentage(
+                        funnelData.commentingPeople,
+                        funnelData.totalPeople
+                      )}
                     </li>
                     <li
                       style={{
                         backgroundColor: this.getChartItemBgColor(4, 4),
                       }}
                     >
-                      {funnelData.campaignFormPeople}
+                      {this.getPercentage(
+                        funnelData.campaignFormPeople,
+                        funnelData.totalPeople
+                      )}
                     </li>
                     <li
                       style={{
