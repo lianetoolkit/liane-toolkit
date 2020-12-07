@@ -206,6 +206,10 @@ const Container = styled.section`
     .dashboard-section {
       padding: 2rem;
       border-bottom: 1px solid #e0e0e0;
+      transition: opacity 0.2s linear;
+      &.loading {
+        opacity: 0.5;
+      }
       &:last-child {
         border-bottom: 0;
       }
@@ -438,17 +442,12 @@ class DashboardDemoPage extends React.Component {
       achievements: null,
       funnelData: null,
       chartsData: null,
-      impulsaTracks: [],
       disabledChartItems: {},
+      loadingChart: false,
+      impulsaTracks: [],
       peopleHistory: {},
     };
   }
-  processChart = (data) => {
-    // let chart = {};
-    //
-    // return chart;
-    return data;
-  };
   _getInteractionChartData = (data) => {
     let response = [];
     for (const day in data) {
@@ -577,6 +576,9 @@ class DashboardDemoPage extends React.Component {
         startDate = moment().subtract(7, "days");
         break;
     }
+    this.setState({
+      loadingChart: true,
+    });
     Meteor.call(
       "dashboard.chartsData",
       {
@@ -586,12 +588,15 @@ class DashboardDemoPage extends React.Component {
       (err, data) => {
         if (err) {
           console.log("dashboard.chartsData error ", err);
+          this.setState({
+            loadingChart: false,
+          });
         } else {
-          console.log(data);
           this.setState({
             chartPeriod: period,
             ...data,
             chartsData: data,
+            loadingChart: false,
           });
         }
       }
@@ -615,6 +620,7 @@ class DashboardDemoPage extends React.Component {
       topCommenters,
       impulsaTracks,
       disabledChartItems,
+      loadingChart,
     } = this.state;
     console.log(peopleHistory);
     const chartConfig = [
@@ -901,7 +907,9 @@ class DashboardDemoPage extends React.Component {
             </Achievements>
           </div>
           {chartsData ? (
-            <div className="dashboard-section">
+            <div
+              className={`dashboard-section ${loadingChart ? "loading" : ""}`}
+            >
               <h2>
                 <FormattedMessage
                   id="app.dashboard.interactions.title"

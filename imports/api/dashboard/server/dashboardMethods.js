@@ -274,6 +274,7 @@ export const chartsData = new ValidatedMethod({
                   $gte: start.toISOString(),
                   $lt: end.toISOString(),
                 },
+                personId: { $ne: facebookAccountId },
                 facebookAccountId: facebookAccountId,
               },
             },
@@ -286,6 +287,7 @@ export const chartsData = new ValidatedMethod({
             },
             {
               $project: {
+                personId: "$_id",
                 name: "$name",
                 total: "$counts",
               },
@@ -295,7 +297,10 @@ export const chartsData = new ValidatedMethod({
           ])
           .toArray()
       );
-      topCommenters = topCommenters.filter((e) => e._id !== facebookAccountId);
+
+      for (const person of topCommenters) {
+        person._id = People.findOne({ facebookId: person.personId })._id;
+      }
 
       // return
       redisClient.setSync(
@@ -324,6 +329,7 @@ export const chartsData = new ValidatedMethod({
                   $gte: start.getTime(),
                   $lt: end.getTime(),
                 },
+                personId: { $ne: facebookAccountId },
                 facebookAccountId: facebookAccountId,
               },
             },
@@ -336,6 +342,7 @@ export const chartsData = new ValidatedMethod({
             },
             {
               $project: {
+                personId: "$_id",
                 name: "$name",
                 total: "$counts",
               },
@@ -345,9 +352,10 @@ export const chartsData = new ValidatedMethod({
           ])
           .toArray()
       );
-      topReactioners = topReactioners.filter(
-        (e) => e._id !== facebookAccountId
-      );
+
+      for (const person of topReactioners) {
+        person._id = People.findOne({ facebookId: person.personId })._id;
+      }
       redisClient.setSync(
         reactionersKey,
         JSON.stringify(topReactioners),
