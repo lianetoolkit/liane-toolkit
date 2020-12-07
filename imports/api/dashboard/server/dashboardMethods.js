@@ -242,6 +242,7 @@ export const chartsData = new ValidatedMethod({
     // Date setup
     const oneDay = 24 * 60 * 60 * 1000;
     let campaignStart = new Date(campaign.createdAt);
+    campaignStart.setDate(campaignStart.getDate() + 1);
 
     let start = new Date(startDate || campaignStart);
     start = start < campaignStart ? campaignStart : start;
