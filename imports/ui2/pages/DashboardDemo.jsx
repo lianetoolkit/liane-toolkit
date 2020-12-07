@@ -626,7 +626,6 @@ class DashboardDemoPage extends React.Component {
       disabledChartItems,
       loadingChart,
     } = this.state;
-    console.log(peopleHistory);
     const chartConfig = [
       {
         id: "comments",
@@ -692,7 +691,9 @@ class DashboardDemoPage extends React.Component {
           </div>
           <div className="data">
             <div className="total-people main-data">
-              <span className="number">{summaryData.totalPeople}</span>
+              <span className="number">
+                {summaryData.totalPeople.toLocaleString()}
+              </span>
               <span className="text">
                 <FormattedMessage
                   id="app.dashboard.summary.total_people_01"
@@ -706,7 +707,9 @@ class DashboardDemoPage extends React.Component {
               </span>
             </div>
             <div className="positive-reactions secondary-data">
-              <span className="number">{summaryData.positiveReactions}</span>
+              <span className="number">
+                {summaryData.positiveReactions.toLocaleString()}
+              </span>
               <span className="text">
                 <FormattedMessage
                   id="app.dashboard.summary.positive_responses"
@@ -730,7 +733,9 @@ class DashboardDemoPage extends React.Component {
               </Button>
             </div>
             <div className="comments secondary-data">
-              <span className="number">{summaryData.comments}</span>
+              <span className="number">
+                {summaryData.comments.toLocaleString()}
+              </span>
               <span className="text">
                 <FormattedMessage
                   id="app.dashboard.summary.comments"
@@ -745,7 +750,9 @@ class DashboardDemoPage extends React.Component {
               </Button>
             </div>
             <div className="people-pm secondary-data">
-              <span className="number">{summaryData.peoplePM}</span>
+              <span className="number">
+                {summaryData.peoplePM.toLocaleString()}
+              </span>
               <span className="text">
                 <FormattedMessage
                   id="app.dashboard.summary.private_replies"
@@ -786,7 +793,7 @@ class DashboardDemoPage extends React.Component {
                         backgroundColor: this.getChartItemBgColor(1, 4),
                       }}
                     >
-                      {funnelData.totalPeople}
+                      {funnelData.totalPeople.toLocaleString()}
                     </li>
                     <li
                       style={{
@@ -867,7 +874,9 @@ class DashboardDemoPage extends React.Component {
             <Achievements>
               <li onClick={this._handleAchievementClick("App.formSettings")}>
                 <FontAwesomeIcon icon="align-left" />
-                <span className="number">{achievements.filledForms}</span>
+                <span className="number">
+                  {achievements.filledForms.toLocaleString()}
+                </span>
                 <span className="label">
                   <FormattedMessage
                     id="app.dashboard.filled_forms.text"
@@ -883,7 +892,9 @@ class DashboardDemoPage extends React.Component {
               </li>
               <li onClick={this._handleAchievementClick("App.map")}>
                 <FontAwesomeIcon icon="map-marked" />
-                <span className="number">{achievements.geolocated}</span>
+                <span className="number">
+                  {achievements.geolocated.toLocaleString()}
+                </span>
                 <span className="label">
                   <FormattedMessage
                     id="app.dashboard.geolocated.text"
@@ -903,7 +914,9 @@ class DashboardDemoPage extends React.Component {
                 })}
               >
                 <FontAwesomeIcon icon="comment" />
-                <span className="number">{achievements.commentsReplies}</span>
+                <span className="number">
+                  {achievements.commentsReplies.toLocaleString()}
+                </span>
                 <span className="label">
                   <FormattedMessage
                     id="app.dashboard.comments_replies.text"
@@ -1083,7 +1096,7 @@ class DashboardDemoPage extends React.Component {
                           })}
                         >
                           <span>{person.name}</span>
-                          <span>{person.total}</span>
+                          <span>{person.total.toLocaleString()}</span>
                         </a>
                       </li>
                     ))}
@@ -1105,7 +1118,7 @@ class DashboardDemoPage extends React.Component {
                           })}
                         >
                           <span>{person.name}</span>
-                          <span>{person.total}</span>
+                          <span>{person.total.toLocaleString()}</span>
                         </a>
                       </li>
                     ))}
