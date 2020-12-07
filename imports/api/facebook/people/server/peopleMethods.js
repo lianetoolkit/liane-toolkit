@@ -401,7 +401,7 @@ export const peopleHistory = new ValidatedMethod({
       if (!history.hasOwnProperty(formattedDate)) {
         history[formattedDate] = People.find({
           campaignId,
-          source: "facebook",
+          source: { $in: ["facebook", "instagram"] },
           createdAt: {
             $gte: moment(formattedDate).toDate(),
             $lte: moment(formattedDate).add(1, "day").toDate(),
