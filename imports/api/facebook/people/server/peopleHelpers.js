@@ -1,5 +1,6 @@
 import { Promise } from "meteor/promise";
 import axios from "axios";
+import moment from "moment";
 import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import {
   People,
@@ -248,6 +249,7 @@ const PeopleHelpers = {
       peopleBulk.execute();
     }
   },
+
   export({ campaignId, query }) {
     let header = {};
 
@@ -296,6 +298,13 @@ const PeopleHelpers = {
             .join(",");
           delete person.basic_info.tags;
         }
+        // Parse Birthday
+        if (person.basic_info && person.basic_info.birthday) {
+          person.basic_info.birthday = moment(
+            person.basic_info.birthday
+          ).format("YYYY-MM-DD");
+        }
+
         if (person.basic_info && !Object.keys(person.basic_info).length) {
           delete person.basic_info;
         }
@@ -447,6 +456,103 @@ const PeopleHelpers = {
     });
 
     return exportId;
+  },
+  lianeImport({ campaignId, data, filename }) {
+    let importData = [];
+    const listId = PeopleLists.insert({ name: filename, campaignId });
+    // Build default person
+    let defaultPerson = {
+      $set: {
+        campaignId,
+      },
+      $addToSet: {},
+    };
+    const peopleTags = PeopleTags.find({ campaignId }).fetch();
+    const tags = {};
+    peopleTags.map((tag) => {
+      tags[tag.name] = tag._id;
+    });
+    // BUILD META
+    //Job per person
+    const rootAllowed = ["name"];
+    data.forEach(function (item) {
+      let obj = cloneDeep(defaultPerson);
+
+      for (let key in item) {
+        const fieldParts = key.split(".");
+        if (fieldParts.length > 1) {
+          //If last part is Array
+          const isArray = fieldParts[fieldParts.length - 1].indexOf("[");
+          const isExtraArray = fieldParts[0].indexOf("[");
+          if (isArray >= 0) {
+            //Array type
+            const newKey = key.substr(0, key.indexOf("["));
+            if (!obj.$set["campaignMeta." + newKey]) {
+              obj.$set["campaignMeta." + newKey] = [];
+            }
+
+            obj.$set["campaignMeta." + newKey].push(item[key]);
+          } else if (isExtraArray >= 0) {
+            if (!obj.$set["campaignMeta.extra"])
+              obj.$set["campaignMeta.extra"] = [];
+            const index = fieldParts[0].match(/\d+/)[0];
+            if (!obj.$set["campaignMeta.extra"][index])
+              obj.$set["campaignMeta.extra"][index] = {};
+            obj.$set["campaignMeta.extra"][index][
+              fieldParts[fieldParts.length - 1]
+            ] = item[key];
+          } else {
+            if (fieldParts[fieldParts.length - 1] === "birthday") {
+              obj.$set["campaignMeta." + key] = new Date(
+                moment(item[key]).toDate()
+              );
+            } else {
+              obj.$set["campaignMeta." + key] = item[key];
+            }
+          }
+        } else {
+          //root
+          if (rootAllowed.includes(key)) {
+            obj.$set[key] = item[key];
+          }
+          if (key === "tags") {
+            obj.$set["campaignMeta.basic_info.tags"] = [];
+            item[key].split(",").map((tagName) => {
+              if (tags[tagName]) {
+                obj.$set["campaignMeta.basic_info.tags"].push(tags[tagName]);
+              }
+            });
+          }
+        }
+      }
+      importData.push(obj);
+    });
+
+    // add job per person
+    const job = JobsHelpers.addJob({
+      jobType: "people.import",
+      jobData: { campaignId, count: importData.length, listId },
+    });
+    setTimeout(
+      Meteor.bindEnvironment(() => {
+        let i = 0;
+        for (let person of importData) {
+          JobsHelpers.addJob({
+            jobType: "people.importPerson",
+            jobData: {
+              idx: i,
+              campaignId,
+              jobId: job,
+              listId,
+              person: JSON.stringify(person),
+            },
+          });
+          i++;
+        }
+      }),
+      10
+    );
+    return;
   },
   import({ campaignId, config, filename, data, defaultValues }) {
     let importData = [];
@@ -742,62 +848,66 @@ const PeopleHelpers = {
     check(campaignId, String);
     check(instagramHandle, String);
 
-    const pattern = '^@?' + instagramHandle + '$';
+    const pattern = "^@?" + instagramHandle + "$";
     let personId;
-  
+
     const facebookAccount = FacebookAccounts.findOne({
-      'instagramHandle': { $regex: new RegExp(pattern) }
+      instagramHandle: { $regex: new RegExp(pattern) },
     });
     if (facebookAccount) {
       personId = facebookAccount.facebookId;
-    }
-    else {
+    } else {
       const person = People.findOne({
-        $and:  [
+        $and: [
           { campaignId },
-          { 'campaignMeta.social_networks.instagram': { $regex: new RegExp(pattern) }}
-        ]
+          {
+            "campaignMeta.social_networks.instagram": {
+              $regex: new RegExp(pattern),
+            },
+          },
+        ],
       });
-      
+
       if (person) {
         personId = person.facebookId;
-      }
-      else {
+      } else {
         personId = instagramHandle;
       }
     }
-    
+
     return personId;
   },
   getPersonName({ campaignId, instagramHandle }) {
     check(campaignId, String);
     check(instagramHandle, String);
 
-    const pattern = '^@?' + instagramHandle + '$';
+    const pattern = "^@?" + instagramHandle + "$";
     let personName;
-  
+
     const facebookAccount = FacebookAccounts.findOne({
-      'instagramHandle': { $regex: new RegExp(pattern) }
+      instagramHandle: { $regex: new RegExp(pattern) },
     });
     if (facebookAccount) {
       personName = facebookAccount.name;
-    }
-    else {
+    } else {
       const person = People.findOne({
-        $and:  [
+        $and: [
           { campaignId },
-          { 'campaignMeta.social_networks.instagram': { $regex: new RegExp(pattern) }}
-        ]
+          {
+            "campaignMeta.social_networks.instagram": {
+              $regex: new RegExp(pattern),
+            },
+          },
+        ],
       });
-      
+
       if (person) {
         personName = person.name;
-      }
-      else {
+      } else {
         personName = instagramHandle;
       }
     }
-    
+
     return personName;
   },
 };

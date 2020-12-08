@@ -1202,6 +1202,61 @@ export const exportPeople = new ValidatedMethod({
     });
   },
 });
+export const importPeopleLiane = new ValidatedMethod({
+  name: "people.import.liane",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String,
+    },
+    filename: {
+      type: String,
+    },
+    data: {
+      type: Array,
+    },
+    "data.$": {
+      type: Object,
+      blackbox: true,
+    },
+  }).validator(),
+  run({ campaignId, filename, data }) {
+    logger.debug("people.import.liane", {
+      campaignId,
+    });
+
+    console.log("people.import.liane", campaignId, filename, data);
+
+    const userId = Meteor.userId();
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "import",
+      })
+    ) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+    if (data.length > 10000) {
+      throw new Meteor.Error(
+        401,
+        "You can't import more than 10,000 people at once"
+      );
+    }
+    setTimeout(
+      Meteor.bindEnvironment(() => {
+        PeopleHelpers.lianeImport({
+          campaignId,
+          filename,
+          data,
+        });
+      }),
+      10
+    );
+
+    return true;
+  },
+});
 
 export const importPeople = new ValidatedMethod({
   name: "people.import",
