@@ -767,5 +767,6 @@
     "app.dashboard.interactions.title": "Evolución de las interacciones",
     "app.people.import.liane_option": "Sí, es de Liane",
     "app.people.import.normal_help_text": "Evalúe la coincidencia de cada columna, registros similares serán marcados como posibles duplicados.",
-    "app.people.import.normal_option": "No, no es de Liane"
+    "app.people.import.normal_option": "No, no es de Liane",
+    "app.dashboard.comments_replies.action": "Responder comentários"
 }
