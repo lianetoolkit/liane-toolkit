@@ -5,6 +5,7 @@ import Loading from "/imports/ui2/components/Loading.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
 import moment from "moment";
 import axios from "axios";
+import { ClientStorage } from "meteor/ostrio:cstorage";
 import { messages as reactionsLabels } from "/locales/features/facebookReactions";
 import {
   injectIntl,
@@ -424,7 +425,7 @@ const SupportMaterials = styled.ul`
       flex: 1 1 100%;
     }
     p {
-      margin: 0 2rem 0 0;
+      margin: 0 1.4rem 0 0;
       flex: 0 0 auto;
       font-size: 0.9em;
       color: #666;
@@ -560,11 +561,22 @@ class DashboardDemoPage extends React.Component {
     this._setChart(period);
   };
   _fetchImpulsa = () => {
-    axios.get("https://www.impulsa.voto/wp-json/wp/v2/tracks").then((res) => {
-      this.setState({
-        impulsaTracks: res.data,
+    const lang = (ClientStorage.get("language") || "pt-BR").split("-")[0];
+    const impulsaAvailableLangs = {
+      pt: "pt",
+      es: "es",
+    };
+    axios
+      .get(
+        `https://www.impulsa.voto/wp-json/wp/v2/tracks?lang=${
+          impulsaAvailableLangs[lang] || "pt"
+        }`
+      )
+      .then((res) => {
+        this.setState({
+          impulsaTracks: res.data,
+        });
       });
-    });
   };
   _handleChartLegendClick = (id) => (ev) => {
     ev.preventDefault();
@@ -1264,7 +1276,7 @@ class DashboardDemoPage extends React.Component {
               </>
             ) : null}
           </div>
-          {impulsaTracks ? (
+          {impulsaTracks && impulsaTracks.length ? (
             <div className="dashboard-section impulsa-section">
               <h2>
                 <FormattedMessage
@@ -1290,6 +1302,7 @@ class DashboardDemoPage extends React.Component {
                     <h3
                       dangerouslySetInnerHTML={{ __html: track.title.rendered }}
                     />
+                    <p>{track.countries.join(", ")}</p>
                     <p>
                       <FormattedMessage
                         id="app.dashboard.impulsa.track.materials_count"
