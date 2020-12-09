@@ -4,7 +4,6 @@ import {
   intlShape,
   defineMessages,
   FormattedMessage,
-  FormattedHTMLMessage,
 } from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -291,6 +290,7 @@ class ImportButton extends React.Component {
       modalStore.set(<ConfirmLegal importInput={this.importInput} />);
     }
   };
+  /* This function parses the selected file  */
   _handleImport = (ev) => {
     const campaign = ClientStorage.get("campaign");
     this.setState({ loading: true });
@@ -310,7 +310,7 @@ class ImportButton extends React.Component {
       if (readType == "arrayBuffer") {
         wb = XLSX.read(new Uint8Array(reader.result), { type: "array" });
       } else if (readType == "text") {
-        wb = XLSX.read(reader.result, { type: "string" });
+        wb = XLSX.read(reader.result, { type: "string", cellDates: true });
       }
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(sheet);
@@ -634,11 +634,13 @@ class PeopleImport extends React.Component {
       loading: false,
       tags: [],
       labels: {},
+      isLianeChecked: false,
     };
     this._handleModalOpen = this._handleModalOpen.bind(this);
     this._handleModalClose = this._handleModalClose.bind(this);
     this._handleChange = this._handleChange.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
+    this._handleLianeImport = this._handleLianeImport.bind(this);
   }
   _handleChange = ({ name, value, customField }) => {
     this.setState({
@@ -680,6 +682,27 @@ class PeopleImport extends React.Component {
   _handleDefaultFieldsChange = (data) => {
     this.setState({ defaultValues: data });
   };
+  _handleLianeImport = () => {
+    const { data, campaignId, filename, onSubmit } = this.props;
+    this.setState({
+      loading: true,
+    });
+
+    Meteor.call(
+      "people.import.liane",
+      {
+        campaignId,
+        filename,
+        data,
+      },
+      (err, res) => {
+        this.setState({
+          loading: false,
+        });
+        onSubmit(err, res);
+      }
+    );
+  };
   _handleSubmit(ev) {
     ev.preventDefault();
     if (this.state.loading) return false;
@@ -713,11 +736,76 @@ class PeopleImport extends React.Component {
   }
   render() {
     const { intl, data } = this.props;
-    const { loading, tags, labels } = this.state;
+    const { loading, tags, labels, isLianeChecked } = this.state;
     const headers = this._getHeaders();
+
     if (loading) {
       return <Loading />;
     }
+
+    if (headers.indexOf("_id") >= 0 && !isLianeChecked) {
+      return (
+        <Container>
+          <p>
+            <FormattedMessage
+              id="app.people.import.liane_file_found"
+              defaultMessage="We have noticed this file might come from a Liane Exportation"
+            />
+            .
+          </p>
+          <p>
+            <FormattedMessage
+              id="app.people.import.choose_import"
+              defaultMessage="Please choose an option"
+            />
+            :
+          </p>
+          <p className="text-center">
+            <button
+              onClick={() => {
+                this._handleLianeImport();
+              }}
+              type="button"
+            >
+              <FormattedMessage
+                id="app.people.import.liane_option"
+                defaultMessage="Yes, it's from Liane"
+              />
+            </button>
+            <small>
+              <FormattedMessage
+                id="app.people.import.liane_help_text"
+                defaultMessage="This option will be faster, similar records will be mark as possible duplicates"
+              />
+            </small>
+          </p>
+
+          <p className="text-center">
+            <button
+              type="button"
+              onClick={() => {
+                this.setState({
+                  isLianeChecked: true,
+                });
+              }}
+            >
+              <FormattedMessage
+                id="app.people.import.normal_option"
+                defaultMessage="No, it's not from Liane"
+              />
+            </button>
+            <small>
+              <FormattedMessage
+                id="app.people.import.normal_help_text"
+                defaultMessage="Evaluate the match of each column, similar records will mark as possible duplicates."
+              />
+            </small>
+          </p>
+        </Container>
+      );
+    }
+
+    // Check for the _id column
     return (
       <Container>
         <Form onSubmit={this._handleSubmit}>
