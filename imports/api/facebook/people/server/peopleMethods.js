@@ -402,6 +402,7 @@ export const peopleHistory = new ValidatedMethod({
         history[formattedDate] = People.find({
           campaignId,
           source: { $in: ["facebook", "instagram"] },
+          imported: { $ne: true },
           createdAt: {
             $gte: moment(formattedDate).toDate(),
             $lte: moment(formattedDate).add(1, "day").toDate(),
@@ -1223,8 +1224,6 @@ export const importPeopleLiane = new ValidatedMethod({
     logger.debug("people.import.liane", {
       campaignId,
     });
-
-    console.log("people.import.liane", campaignId, filename, data);
 
     const userId = Meteor.userId();
     if (

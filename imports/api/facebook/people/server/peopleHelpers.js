@@ -503,9 +503,7 @@ const PeopleHelpers = {
             ] = item[key];
           } else {
             if (fieldParts[fieldParts.length - 1] === "birthday") {
-              obj.$set["campaignMeta." + key] = new Date(
-                moment(item[key]).toDate()
-              );
+              obj.$set["campaignMeta." + key] = moment(item[key]).toDate();
             } else {
               obj.$set["campaignMeta." + key] = item[key];
             }
@@ -804,6 +802,12 @@ const PeopleHelpers = {
     // Generating new ID
     const _id = Random.id();
 
+    // Transform JSON parsed string
+    const birthdayKey = "campaignMeta.basic_info.birthday";
+    if (person.$set[birthdayKey]) {
+      person.$set[birthdayKey] = new Date(person.$set[birthdayKey]);
+    }
+
     // Using upsert because `person` object contain modifiers ($set)
     // This will always be inserted (new person)
     People.upsert(
@@ -813,6 +817,7 @@ const PeopleHelpers = {
         $setOnInsert: {
           listId,
           source: "import",
+          imported: true,
           formId: this.generateFormId(_id),
         },
       }
