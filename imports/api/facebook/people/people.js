@@ -63,6 +63,12 @@ People.schema = new SimpleSchema({
     optional: true,
     index: true,
   },
+  imported: {
+    type: Boolean,
+    defaultValue: false,
+    optional: true,
+    index: true,
+  },
   unresolved: {
     type: Boolean,
     defaultValue: false,

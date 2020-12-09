@@ -252,7 +252,7 @@ export const chartsData = new ValidatedMethod({
       Math.abs((start.getTime() - end.getTime()) / oneDay)
     );
 
-    if(diffDays < 6 && start == campaignStart) {
+    if (diffDays < 6 && start == campaignStart) {
       return false;
     }
 
@@ -389,6 +389,7 @@ export const chartsData = new ValidatedMethod({
           peopleHistory[formattedDate] = People.find({
             campaignId,
             source: { $in: ["facebook", "instagram"] },
+            imported: { $ne: true },
             createdAt: {
               $gte: moment(formattedDate).toDate(),
               $lte: moment(formattedDate).add(1, "day").toDate(),

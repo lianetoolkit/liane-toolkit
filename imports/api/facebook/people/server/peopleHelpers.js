@@ -813,6 +813,7 @@ const PeopleHelpers = {
         $setOnInsert: {
           listId,
           source: "import",
+          imported: true,
           formId: this.generateFormId(_id),
         },
       }
