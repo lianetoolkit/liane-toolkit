@@ -82,15 +82,25 @@ const Container = styled.section`
         flex: 1 1 100%;
         display: flex;
         justify-content: flex-start;
-        align-items: center;
-        font-size: 1.6em;
+        align-items: flex-end;
         line-height: 1.2;
         font-weight: 500;
-        letter-spacing: -0.05rem;
-        margin: 0 0 4rem;
+        margin: 0 0 2rem;
+        padding: 0 0 3rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         .number {
-          font-size: 2.8em;
+          font-size: 4em;
           margin-right: 2rem;
+          flex: 0 0 auto;
+        }
+        .text {
+          flex: 0 0 auto;
+          font-size: 1.6em;
+          letter-spacing: -0.05rem;
+          margin-right: 2rem;
+        }
+        .button {
+          flex: 0 0 auto;
         }
       }
       .secondary-data {
@@ -220,6 +230,12 @@ const Container = styled.section`
         letter-spacing: -0.02rem;
         font-size: 1.8em;
         margin: 2rem 0;
+      }
+      .info {
+        font-size: 1.2em;
+        text-align: center;
+        color: #777;
+        margin: 4rem 0;
       }
       &.impulsa-section {
         h2 span {
@@ -593,12 +609,19 @@ class DashboardDemoPage extends React.Component {
             loadingChart: false,
           });
         } else {
-          this.setState({
-            chartPeriod: period,
-            ...data,
-            chartsData: data,
-            loadingChart: false,
-          });
+          if (!data) {
+            this.setState({
+              chartNotReady: true,
+              loadingChart: false,
+            });
+          } else {
+            this.setState({
+              chartPeriod: period,
+              ...data,
+              chartsData: data,
+              loadingChart: false,
+            });
+          }
         }
       }
     );
@@ -619,6 +642,7 @@ class DashboardDemoPage extends React.Component {
       funnelData,
       chartPeriod,
       chartsData,
+      chartNotReady,
       peopleHistory,
       topReactioners,
       topCommenters,
@@ -705,6 +729,12 @@ class DashboardDemoPage extends React.Component {
                   defaultMessage="in your database"
                 />
               </span>
+              <Button href={FlowRouter.path("App.people")}>
+                <FormattedMessage
+                  id="app.dashboard.summary.total_people_action"
+                  defaultMessage="People directory"
+                />
+              </Button>
             </div>
             <div className="positive-reactions secondary-data">
               <span className="number">
@@ -932,209 +962,81 @@ class DashboardDemoPage extends React.Component {
               </li>
             </Achievements>
           </div>
-          {chartsData ? (
-            <div
-              className={`dashboard-section ${loadingChart ? "loading" : ""}`}
-            >
-              <h2>
-                <FormattedMessage
-                  id="app.dashboard.interactions.title"
-                  defaultMessage="Interactions evolution"
-                />
-              </h2>
-              <ChartNav>
-                <a
-                  href="#"
-                  className={chartPeriod == "7days" ? "active" : ""}
-                  onClick={this._handleChartFilterClick("7days")}
-                >
+          <div className={`dashboard-section ${loadingChart ? "loading" : ""}`}>
+            <h2>
+              <FormattedMessage
+                id="app.dashboard.interactions.title"
+                defaultMessage="Interactions evolution"
+              />
+            </h2>
+            {loadingChart && !chartsData ? <Loading /> : null}
+            {chartNotReady ? (
+              <div className="info">
+                <p>
                   <FormattedMessage
-                    id="app.dashboard.interactions.nav.7days"
-                    defaultMessage="7 days"
-                  />
-                </a>
-                <a
-                  href="#"
-                  className={chartPeriod == "month" ? "active" : ""}
-                  onClick={this._handleChartFilterClick("month")}
-                >
-                  <FormattedMessage
-                    id="app.dashboard.interactions.nav.month"
-                    defaultMessage="This month"
-                  />
-                </a>
-                <a
-                  href="#"
-                  className={chartPeriod == "30days" ? "active" : ""}
-                  onClick={this._handleChartFilterClick("30days")}
-                >
-                  <FormattedMessage
-                    id="app.dashboard.interactions.nav.30days"
-                    defaultMessage="Last 30 days"
-                  />
-                </a>
-                <a
-                  href="#"
-                  className={chartPeriod == "90days" ? "active" : ""}
-                  onClick={this._handleChartFilterClick("90days")}
-                >
-                  <FormattedMessage
-                    id="app.dashboard.interactions.nav.90days"
-                    defaultMessage="Last 90 days"
-                  />
-                </a>
-              </ChartNav>
-              <InteractionsContent>
-                <div className="chart">
-                  <ResponsiveContainer height={450}>
-                    <AreaChart
-                      data={this._getInteractionChartData(
-                        chartsData.interactionHistory
-                      )}
-                      margin={{
-                        top: 0,
-                        right: 0,
-                        left: 0,
-                        bottom: 0,
-                      }}
-                    >
-                      <CartesianGrid stroke="#eee" vertical={false} />
-                      <XAxis
-                        dataKey="day"
-                        type="category"
-                        // hide={true}
-                        tick={{ fontSize: "0.8em", fontFamily: "Roboto Mono" }}
-                        tickSize={5}
-                        axisLine={false}
-                        tickLine={false}
-                        tickMargin={10}
-                        tickFormatter={(item) => {
-                          return moment(item)
-                            .format("L")
-                            .replace(
-                              new RegExp(
-                                "[^.]?" + moment().format("YYYY") + ".?"
-                              ),
-                              ""
-                            );
-                        }}
-                      />
-                      <YAxis
-                        allowDecimals={false}
-                        tick={{ fontSize: "0.8em", fontFamily: "Roboto Mono" }}
-                        tickSize={10}
-                        axisLine={false}
-                        tickLine={false}
-                        tickMargin={10}
-                      />
-                      <Tooltip
-                        contentStyle={{ borderRadius: "7px" }}
-                        labelStyle={{ fontWeight: 500 }}
-                        labelFormatter={(value) => {
-                          return moment(value)
-                            .format("L")
-                            .replace(
-                              new RegExp(
-                                "[^.]?" + moment().format("YYYY") + ".?"
-                              ),
-                              ""
-                            );
-                        }}
-                        formatter={(value, name, props) => {
-                          return [
-                            value,
-                            intl.formatMessage(reactionsLabels[name]),
-                          ];
-                        }}
-                      />
-                      {chartConfig.map((chartItem) => (
-                        <Area
-                          stackId="interactions"
-                          type="monotone"
-                          key={chartItem.id}
-                          dataKey={chartItem.id}
-                          fill={chartItem.color}
-                          stroke={chartItem.color}
-                          strokeWidth={0}
-                          fillOpacity="1"
-                        />
-                      ))}
-                    </AreaChart>
-                  </ResponsiveContainer>
-                  <nav>
-                    {chartConfig.map((chartItem) => (
-                      <a
-                        href="#"
-                        // className={
-                        //   disabledChartItems[chartItem.id] ? "disabled" : ""
-                        // }
-                        onClick={this._handleChartLegendClick(chartItem.id)}
-                        style={{ color: chartItem.color }}
-                      >
-                        <span
-                          className="color-icon"
-                          style={{ backgroundColor: chartItem.color }}
-                        />
-                        {chartItem.icon || ""}
-                      </a>
-                    ))}
-                  </nav>
-                </div>
-                <TopPeople>
-                  <h3>
+                    id="app.dashboard.interactions.not_ready"
+                    defaultMessage="We still don't have enough data to display. Get back to this section {time_from_now}."
+                    values={{
+                      time_from_now: moment(campaign.createdAt)
+                        .add(7, "days")
+                        .fromNow(),
+                    }}
+                  />{" "}
+                </p>
+                <p></p>
+              </div>
+            ) : null}
+            {chartsData ? (
+              <>
+                <ChartNav>
+                  <a
+                    href="#"
+                    className={chartPeriod == "7days" ? "active" : ""}
+                    onClick={this._handleChartFilterClick("7days")}
+                  >
                     <FormattedMessage
-                      id="app.dashboard.interactions.reactioners"
-                      defaultMessage="More reactions"
+                      id="app.dashboard.interactions.nav.7days"
+                      defaultMessage="7 days"
                     />
-                  </h3>
-                  <ul>
-                    {topReactioners.map((person) => (
-                      <li key={person._id}>
-                        <a
-                          href={FlowRouter.path("App.people.detail", {
-                            personId: person._id,
-                          })}
-                        >
-                          <span>{person.name}</span>
-                          <span>{person.total.toLocaleString()}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </TopPeople>
-                <TopPeople>
-                  <h3>
+                  </a>
+                  <a
+                    href="#"
+                    className={chartPeriod == "month" ? "active" : ""}
+                    onClick={this._handleChartFilterClick("month")}
+                  >
                     <FormattedMessage
-                      id="app.dashboard.interactions.commenters"
-                      defaultMessage="More comments"
+                      id="app.dashboard.interactions.nav.month"
+                      defaultMessage="This month"
                     />
-                  </h3>
-                  <ul>
-                    {topCommenters.map((person) => (
-                      <li key={person._id}>
-                        <a
-                          href={FlowRouter.path("App.people.detail", {
-                            personId: person._id,
-                          })}
-                        >
-                          <span>{person.name}</span>
-                          <span>{person.total.toLocaleString()}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </TopPeople>
-                <div className="fill">
-                  <h3>
+                  </a>
+                  <a
+                    href="#"
+                    className={chartPeriod == "30days" ? "active" : ""}
+                    onClick={this._handleChartFilterClick("30days")}
+                  >
                     <FormattedMessage
-                      id="app.dashboard.interactions.new_people"
-                      defaultMessage="New people per day"
+                      id="app.dashboard.interactions.nav.30days"
+                      defaultMessage="Last 30 days"
                     />
-                  </h3>
+                  </a>
+                  <a
+                    href="#"
+                    className={chartPeriod == "90days" ? "active" : ""}
+                    onClick={this._handleChartFilterClick("90days")}
+                  >
+                    <FormattedMessage
+                      id="app.dashboard.interactions.nav.90days"
+                      defaultMessage="Last 90 days"
+                    />
+                  </a>
+                </ChartNav>
+                <InteractionsContent>
                   <div className="chart">
-                    <ResponsiveContainer height={280}>
+                    <ResponsiveContainer height={450}>
                       <AreaChart
-                        data={this._getPeopleHistoryChartData(peopleHistory)}
+                        data={this._getInteractionChartData(
+                          chartsData.interactionHistory
+                        )}
                         margin={{
                           top: 0,
                           right: 0,
@@ -1146,6 +1048,7 @@ class DashboardDemoPage extends React.Component {
                         <XAxis
                           dataKey="day"
                           type="category"
+                          // hide={true}
                           tick={{
                             fontSize: "0.8em",
                             fontFamily: "Roboto Mono",
@@ -1192,25 +1095,175 @@ class DashboardDemoPage extends React.Component {
                           formatter={(value, name, props) => {
                             return [
                               value,
-                              intl.formatMessage(messages.peopleChartLabel),
+                              intl.formatMessage(reactionsLabels[name]),
                             ];
                           }}
                         />
-                        <Area
-                          type="monotone"
-                          key="people_count"
-                          dataKey="people_count"
-                          fill="#F9AE3B"
-                          strokeWidth={0}
-                          fillOpacity="1"
-                        />
+                        {chartConfig.map((chartItem) => (
+                          <Area
+                            stackId="interactions"
+                            type="monotone"
+                            key={chartItem.id}
+                            dataKey={chartItem.id}
+                            fill={chartItem.color}
+                            stroke={chartItem.color}
+                            strokeWidth={0}
+                            fillOpacity="1"
+                          />
+                        ))}
                       </AreaChart>
                     </ResponsiveContainer>
+                    <nav>
+                      {chartConfig.map((chartItem) => (
+                        <a
+                          href="#"
+                          // className={
+                          //   disabledChartItems[chartItem.id] ? "disabled" : ""
+                          // }
+                          onClick={this._handleChartLegendClick(chartItem.id)}
+                          style={{ color: chartItem.color }}
+                        >
+                          <span
+                            className="color-icon"
+                            style={{ backgroundColor: chartItem.color }}
+                          />
+                          {chartItem.icon || ""}
+                        </a>
+                      ))}
+                    </nav>
                   </div>
-                </div>
-              </InteractionsContent>
-            </div>
-          ) : null}
+                  <TopPeople>
+                    <h3>
+                      <FormattedMessage
+                        id="app.dashboard.interactions.reactioners"
+                        defaultMessage="More reactions"
+                      />
+                    </h3>
+                    <ul>
+                      {topReactioners.map((person) => (
+                        <li key={person._id}>
+                          <a
+                            href={FlowRouter.path("App.people.detail", {
+                              personId: person._id,
+                            })}
+                          >
+                            <span>{person.name}</span>
+                            <span>{person.total.toLocaleString()}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </TopPeople>
+                  <TopPeople>
+                    <h3>
+                      <FormattedMessage
+                        id="app.dashboard.interactions.commenters"
+                        defaultMessage="More comments"
+                      />
+                    </h3>
+                    <ul>
+                      {topCommenters.map((person) => (
+                        <li key={person._id}>
+                          <a
+                            href={FlowRouter.path("App.people.detail", {
+                              personId: person._id,
+                            })}
+                          >
+                            <span>{person.name}</span>
+                            <span>{person.total.toLocaleString()}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </TopPeople>
+                  <div className="fill">
+                    <h3>
+                      <FormattedMessage
+                        id="app.dashboard.interactions.new_people"
+                        defaultMessage="New people per day"
+                      />
+                    </h3>
+                    <div className="chart">
+                      <ResponsiveContainer height={280}>
+                        <AreaChart
+                          data={this._getPeopleHistoryChartData(peopleHistory)}
+                          margin={{
+                            top: 0,
+                            right: 0,
+                            left: 0,
+                            bottom: 0,
+                          }}
+                        >
+                          <CartesianGrid stroke="#eee" vertical={false} />
+                          <XAxis
+                            dataKey="day"
+                            type="category"
+                            tick={{
+                              fontSize: "0.8em",
+                              fontFamily: "Roboto Mono",
+                            }}
+                            tickSize={5}
+                            axisLine={false}
+                            tickLine={false}
+                            tickMargin={10}
+                            tickFormatter={(item) => {
+                              return moment(item)
+                                .format("L")
+                                .replace(
+                                  new RegExp(
+                                    "[^.]?" + moment().format("YYYY") + ".?"
+                                  ),
+                                  ""
+                                );
+                            }}
+                          />
+                          <YAxis
+                            allowDecimals={false}
+                            tick={{
+                              fontSize: "0.8em",
+                              fontFamily: "Roboto Mono",
+                            }}
+                            tickSize={10}
+                            axisLine={false}
+                            tickLine={false}
+                            tickMargin={10}
+                          />
+                          <Tooltip
+                            contentStyle={{ borderRadius: "7px" }}
+                            labelStyle={{ fontWeight: 500 }}
+                            labelFormatter={(value) => {
+                              return moment(value)
+                                .format("L")
+                                .replace(
+                                  new RegExp(
+                                    "[^.]?" + moment().format("YYYY") + ".?"
+                                  ),
+                                  ""
+                                );
+                            }}
+                            formatter={(value, name, props) => {
+                              return [
+                                value,
+                                intl.formatMessage(messages.peopleChartLabel),
+                              ];
+                            }}
+                          />
+                          <Area
+                            type="monotone"
+                            key="people_count"
+                            dataKey="people_count"
+                            fill="#F9AE3B"
+                            strokeWidth={0}
+                            fillOpacity="1"
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </InteractionsContent>
+              </>
+            ) : null}
+          </div>
           {impulsaTracks ? (
             <div className="dashboard-section impulsa-section">
               <h2>
@@ -1266,15 +1319,6 @@ class DashboardDemoPage extends React.Component {
               </SupportMaterials>
             </div>
           ) : null}
-          {/* <div className="dashboard-section">
-            <h2>
-              #{campaign._id} - {campaign.name} Demo Dashboard
-            </h2>
-            <pre>summaryData: {JSON.stringify(summaryData)}</pre>
-            <pre>achievements: {JSON.stringify(achievements)}</pre>
-            <pre>funnelData: {JSON.stringify(funnelData)}</pre>
-            <pre>chartsData: {JSON.stringify(chartsData)}</pre>
-          </div> */}
         </section>
       </Container>
     );
