@@ -760,5 +760,13 @@
     "app.dashboard.interactions.reactioners": "Mais reações",
     "app.dashboard.interactions.title": "Evolução das interações",
     "app.dashboard.interactions.new_people": "Novas pessoas por dia",
-    "app.dashboard.interactions.new_people.chart_label": "Recém-chegadas"
+    "app.dashboard.interactions.new_people.chart_label": "Recém-chegadas",
+    "app.dashboard.interactions.not_ready": "Ainda não temos dados suficientes para exibir. Volte para esta seção {time_from_now}.",
+    "app.people.import.liane_file_found": "Identificamos que este arquivo pode ser uma exportação de Liane",
+    "app.dashboard.summary.total_people_action": "Diretório de pessoas",
+    "app.people.import.choose_import": "Favor escolher uma opção",
+    "app.people.import.liane_help_text": "Esta opção será mais rápida, entradas similares serão marcadas como potenciais duplicados",
+    "app.people.import.liane_option": "Sim, é de Liane",
+    "app.people.import.normal_help_text": "Avaliar cada coluna, entradas similares serão marcadas como potenciais duplicados.",
+    "app.people.import.normal_option": "Não, não é de Liane"
 }
