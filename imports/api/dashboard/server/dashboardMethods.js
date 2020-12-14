@@ -303,8 +303,9 @@ export const chartsData = new ValidatedMethod({
           .toArray()
       );
 
-      for (const person of topCommenters) {
-        person._id = People.findOne({ facebookId: person.personId })._id;
+      for (const p of topCommenters) {
+        const person = People.findOne({ facebookId: p.personId });
+        if (person) p._id = person._id;
       }
 
       // return
@@ -358,8 +359,9 @@ export const chartsData = new ValidatedMethod({
           .toArray()
       );
 
-      for (const person of topReactioners) {
-        person._id = People.findOne({ facebookId: person.personId })._id;
+      for (const p of topReactioners) {
+        const person = People.findOne({ facebookId: p.personId });
+        if (person) p._id = person._id;
       }
       redisClient.setSync(
         reactionersKey,
