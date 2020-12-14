@@ -29,8 +29,6 @@ import NewCampaignPage from "/imports/ui2/containers/campaign/New.jsx";
 import RegisterPage from "/imports/ui2/pages/Register.jsx";
 import ResetPasswordPage from "/imports/ui2/pages/ResetPassword.jsx";
 
-import DashboardDemoPage from "/imports/ui2/pages/DashboardDemo.jsx";
-
 import AdminPage from "/imports/ui2/pages/admin/Admin.jsx";
 
 import { APP_NAME, addTitle, trackRouteEntry } from "./utils.js";
@@ -48,16 +46,6 @@ appRoutes.route("/", {
     return mount(App, {
       invite: queryParams.invite && queryParams.invite,
       campaignId: queryParams.campaignId,
-    });
-  },
-});
-
-appRoutes.route("/dashboard", {
-  name: "App.dashboardDemo",
-  action: function (params, queryParams) {
-    addTitle(`${APP_NAME} | Technology for Political Innovation`);
-    return mount(App, {
-      content: { component: DashboardDemoPage },
     });
   },
 });
