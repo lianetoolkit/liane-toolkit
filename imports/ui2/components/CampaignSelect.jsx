@@ -37,7 +37,7 @@ class CampaignSelect extends Component {
     super(props);
     this.state = {
       loading: false,
-      campaigns: [],
+      campaigns: {},
       options: [],
     };
   }
@@ -49,7 +49,10 @@ class CampaignSelect extends Component {
         alertStore.add(err);
       } else {
         this.setState({
-          campaigns: res,
+          campaigns: {
+            ...this.state.campaigns,
+            ...this._buildCampaignMap(res),
+          },
           options: this._buildOptions(res),
         });
       }
@@ -71,13 +74,32 @@ class CampaignSelect extends Component {
         alertStore.add(err);
       } else {
         this.setState({
-          campaigns: res,
+          campaigns: {
+            ...this.state.campaigns,
+            ...this._buildCampaignMap(res),
+          },
           options: this._buildOptions(res),
         });
       }
       this.setState({ loading: false });
     });
   }, 300);
+  _buildCampaignMap = (campaigns) => {
+    const map = {};
+    if (campaigns) {
+      for (const campaign of campaigns) {
+        map[campaign._id] = campaign;
+      }
+    }
+    return map;
+  };
+  _unMap = (campaignMap) => {
+    const campaignArr = [];
+    for (const campaignId in campaignMap) {
+      campaignArr.push(campaignMap[campaignId]);
+    }
+    return campaignArr;
+  };
   _buildOptions = (campaigns) => {
     return uniqBy(campaigns, "_id").map((campaign) => {
       return {
@@ -117,8 +139,14 @@ class CampaignSelect extends Component {
       Meteor.call("campaigns.selectGet", { campaignIds: value }, (err, res) => {
         if (res) {
           this.setState({
-            campaigns: [res, ...this.state.campaigns],
-            options: this._buildOptions([res, ...this.state.campaigns]),
+            campaigns: {
+              ...this.state.campaigns,
+              ...this._buildCampaignMap([res]),
+            },
+            options: this._buildOptions([
+              res,
+              ...this._unMap(this.state.campaigns),
+            ]),
           });
         }
       });
