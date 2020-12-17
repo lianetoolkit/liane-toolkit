@@ -34,6 +34,9 @@ class FirstRun extends Component {
   constructor(props) {
     super(props);
   }
+  componentWillUnmount() {
+    location.reload();
+  }
   render() {
     return (
       <Container>

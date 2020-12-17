@@ -69,12 +69,14 @@ export const summaryData = new ValidatedMethod({
         comments,
         peoplePM,
       });
-      redisClient.setSync(
-        redisKey,
-        dataSummary,
-        "EX",
-        60 * 60 // 1 hour
-      );
+      if (totalPeople > 0) {
+        redisClient.setSync(
+          redisKey,
+          dataSummary,
+          "EX",
+          60 * 60 // 1 hour
+        );
+      }
     }
 
     return JSON.parse(dataSummary);
@@ -130,12 +132,14 @@ export const achievements = new ValidatedMethod({
         geolocated,
         commentsReplies,
       });
-      redisClient.setSync(
-        redisKey,
-        achievements,
-        "EX",
-        60 * 60 // 1 hour
-      );
+      if (filledForms > 0 || geolocated > 0 || commentsReplies > 0) {
+        redisClient.setSync(
+          redisKey,
+          achievements,
+          "EX",
+          60 * 60 // 1 hour
+        );
+      }
     }
     // return
     return JSON.parse(achievements);
@@ -196,12 +200,14 @@ export const funnelData = new ValidatedMethod({
         commentingPeople,
         campaignFormPeople,
       });
-      redisClient.setSync(
-        redisKey,
-        funnelData,
-        "EX",
-        60 * 1 // 1 hour
-      );
+      if (totalPeople > 0) {
+        redisClient.setSync(
+          redisKey,
+          funnelData,
+          "EX",
+          60 * 1 // 1 hour
+        );
+      }
     }
     // return
     return JSON.parse(funnelData);
