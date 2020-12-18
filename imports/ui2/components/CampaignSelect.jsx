@@ -100,13 +100,26 @@ class CampaignSelect extends Component {
     }
     return campaignArr;
   };
-  _buildOptions = (campaigns) => {
-    return uniqBy(campaigns, "_id").map((campaign) => {
+  _buildOptions = (data) => {
+    const { campaigns } = this.state;
+    const { value } = this.props;
+    let valueOptions = [];
+    if (value && value.length) {
+      valueOptions = value.map((id) => {
+        const campaign = campaigns[id];
+        return {
+          label: campaign.name,
+          value: campaign._id,
+        };
+      });
+    }
+    const campaignsOptions = data.map((campaign) => {
       return {
         label: campaign.name,
         value: campaign._id,
       };
     });
+    return uniqBy([...valueOptions, ...campaignsOptions], "value");
   };
   _handleChange = (value) => {
     const { onChange, name } = this.props;
@@ -134,22 +147,6 @@ class CampaignSelect extends Component {
       valueOptions = options.filter(
         (option) => value.indexOf(option.value) !== -1
       );
-    }
-    if (valueOptions.length != value.length && value) {
-      Meteor.call("campaigns.selectGet", { campaignIds: value }, (err, res) => {
-        if (res) {
-          this.setState({
-            campaigns: {
-              ...this.state.campaigns,
-              ...this._buildCampaignMap([res]),
-            },
-            options: this._buildOptions([
-              res,
-              ...this._unMap(this.state.campaigns),
-            ]),
-          });
-        }
-      });
     }
     return valueOptions;
   };
