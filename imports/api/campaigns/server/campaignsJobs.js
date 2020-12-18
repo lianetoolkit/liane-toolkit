@@ -1,5 +1,7 @@
 import { Promise } from "meteor/promise";
-const { CampaignsHelpers } = require("./campaignsHelpers.js");
+import { Campaigns } from "../campaigns.js";
+import { CampaignsHelpers } from "./campaignsHelpers.js";
+import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 
 const CampaignsJobs = {
   "campaigns.healthCheck": {
@@ -9,10 +11,16 @@ const CampaignsJobs = {
 
       const campaignId = job.data.campaignId;
 
+      const campaign = Campaigns.findOne(campaignId);
+
       let errored = false;
       try {
         CampaignsHelpers.refreshCampaignAccountToken({
           campaignId,
+        });
+        FacebookAccountsHelpers.updateFBSubscription({
+          facebookAccountId: campaign.facebookAccount.facebookId,
+          token: campaign.facebookAccount.accessToken,
         });
       } catch (error) {
         errored = true;
