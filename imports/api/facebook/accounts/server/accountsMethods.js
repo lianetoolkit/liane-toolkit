@@ -36,18 +36,23 @@ export const webhookUpdate = new ValidatedMethod({
     }
     let account;
     switch (data.object) {
-      case 'instagram':
+      case "instagram":
         logger.debug("webhookUpdate called with instagram data.object", {
           facebookAccountId,
           data,
         });
 
         // Validate account
-        account = FacebookAccounts.findOne({ instagramBusinessAccountId: facebookAccountId });
+        account = FacebookAccounts.findOne({
+          instagramBusinessAccountId: facebookAccountId,
+        });
         if (!account) {
-          logger.debug("webhookUpdate received an unknown instagramBusinessAccountId", {
-            facebookAccountId
-          });
+          logger.debug(
+            "webhookUpdate received an unknown instagramBusinessAccountId",
+            {
+              facebookAccountId,
+            }
+          );
           return true;
         }
         data.entry.forEach((entry) => {
@@ -73,7 +78,8 @@ export const webhookUpdate = new ValidatedMethod({
           }
         });
         break;
-      default: // By default is "page"
+      default:
+        // By default is "page"
         logger.debug("webhookUpdate called with facebook data.object", {
           facebookAccountId,
           data,
@@ -233,7 +239,15 @@ export const getUserAccounts = new ValidatedMethod({
     }
     response = FacebookAccountsHelpers.getUserAccounts({ userId });
 
-    return response;
+    return {
+      result: response.result.map((acc) => {
+        return {
+          id: acc.id,
+          name: acc.name,
+          tasks: acc.tasks,
+        };
+      }),
+    };
   },
 });
 
