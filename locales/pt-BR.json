@@ -768,5 +768,6 @@
     "app.people.import.liane_help_text": "Esta opção será mais rápida, entradas similares serão marcadas como potenciais duplicados",
     "app.people.import.liane_option": "Sim, é de Liane",
     "app.people.import.normal_help_text": "Avaliar cada coluna, entradas similares serão marcadas como potenciais duplicados.",
-    "app.people.import.normal_option": "Não, não é de Liane"
+    "app.people.import.normal_option": "Não, não é de Liane",
+    "app.account_select.disabled_label": "Sem acesso administrativo"
 }
