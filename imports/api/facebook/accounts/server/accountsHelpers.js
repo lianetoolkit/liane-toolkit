@@ -121,8 +121,6 @@ const FacebookAccountsHelpers = {
       throw new Meteor.Error(500, "Error trying to fetch your accounts");
     }
 
-    data = data.filter((account) => account.tasks.indexOf("MANAGE") != -1);
-
     return { result: data };
   },
   disconnectFacebook({ facebookAccountId, token }) {
