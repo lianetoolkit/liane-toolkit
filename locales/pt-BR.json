@@ -769,5 +769,7 @@
     "app.people.import.liane_option": "Sim, é de Liane",
     "app.people.import.normal_help_text": "Avaliar cada coluna, entradas similares serão marcadas como potenciais duplicados.",
     "app.people.import.normal_option": "Não, não é de Liane",
-    "app.account_select.disabled_label": "Sem acesso administrativo"
+    "app.account_select.disabled_label": "Sem acesso administrativo",
+    "app.campaign_settings.change_label": "Clique aqui para alterar",
+    "app.campaign_settings.geolocation_title": "Localização"
 }
