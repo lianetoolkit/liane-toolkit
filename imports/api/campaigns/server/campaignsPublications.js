@@ -168,6 +168,7 @@ Meteor.publishComposite("campaigns.detail", function ({ campaignId }) {
               facebook: 1,
               name: 1,
               "osm.display_name": 1,
+              "osm.boundingbox": 1,
               regionType: 1,
               type: 1,
             },
