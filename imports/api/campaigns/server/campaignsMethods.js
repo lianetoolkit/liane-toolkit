@@ -632,6 +632,24 @@ export const campaignsUpdate = new ValidatedMethod({
       type: String,
       optional: true,
     },
+    country: {
+      type: String,
+      optional: true,
+    },
+    geolocation: {
+      type: Object,
+      optional: true,
+    },
+    "geolocation.osm_id": {
+      type: Number,
+    },
+    "geolocation.osm_type": {
+      type: String,
+    },
+    "geolocation.type": {
+      type: String,
+      allowedValues: ["state", "city"],
+    },
     contact: {
       type: Campaigns.contactSchema,
     },
@@ -691,6 +709,26 @@ export const campaignsUpdate = new ValidatedMethod({
 
     if (data.contact) {
       $set["contact"] = data.contact;
+    }
+
+    if (data.country && data.geolocation) {
+      const user = Meteor.users.findOne(userId);
+      const token = user.services.facebook.accessToken;
+      let geolocationId = false;
+      try {
+        geolocationId = GeolocationsHelpers.discoverAndStore({
+          ...data.geolocation,
+          accessToken: token,
+        });
+      } catch (e) {
+        console.log(e);
+        throw new Meteor.Error(500, "Unexpected error, please try again");
+      }
+
+      if (geolocationId) {
+        $set["country"] = data.country;
+        $set["geolocationId"] = geolocationId;
+      }
     }
 
     Campaigns.update(
