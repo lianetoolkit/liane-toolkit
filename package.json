@@ -15,7 +15,7 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@mapbox/leaflet-pip": "^1.1.0",
     "@sentry/node": "^5.21.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cep-promise": "^3.0.9",
     "circle-to-polygon": "^2.0.2",
