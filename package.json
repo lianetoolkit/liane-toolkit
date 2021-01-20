@@ -24,6 +24,7 @@
     "fb": "^2.0.0",
     "flat": "^5.0.0",
     "humanize-plus": "^1.8.2",
+    "iframe-resizer": "^4.3.1",
     "ioredis": "^4.17.3",
     "jquery": "^3.5.1",
     "leaflet": "^1.6.0",

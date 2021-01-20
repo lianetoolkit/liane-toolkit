@@ -264,5 +264,14 @@ Invites.schema = new SimpleSchema({
 
 Invites.attachSchema(Invites.schema);
 
+Meteor.startup(() => {
+  if (Meteor.isServer) {
+    Invites.rawCollection().createIndex({
+      name: "text",
+      email: "text",
+    });
+  }
+});
+
 exports.Campaigns = Campaigns;
 exports.Invites = Invites;
