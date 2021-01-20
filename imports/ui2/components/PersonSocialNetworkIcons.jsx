@@ -93,7 +93,7 @@ class PersonSocialNetworkIcons extends Component {
         instagramProps.target = "_blank";
       }
       if (twitter) {
-        twitterProps.href = `https://twitter.com/${instagram.replace("@", "")}`;
+        twitterProps.href = `https://twitter.com/${twitter.replace("@", "")}`;
         twitterProps.rel = "external";
         twitterProps.target = "_blank";
       }
