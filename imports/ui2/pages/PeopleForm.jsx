@@ -115,6 +115,7 @@ const Container = styled.div`
     }
     .form-content {
       margin: 0 auto;
+      max-width: 1000px;
     }
   }
 `;
