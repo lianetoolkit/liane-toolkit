@@ -223,7 +223,7 @@ class SkillsConfig extends Component {
       <Container>
         <ul>
           {options.map((option) => (
-            <li>
+            <li key={option.value}>
               <label>
                 <input
                   type="checkbox"
