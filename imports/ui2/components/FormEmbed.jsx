@@ -74,6 +74,7 @@ const Container = styled.section`
     display: block;
     code {
       padding: 0.5rem 1rem;
+      overflow: auto;
       display: block;
     }
   }
