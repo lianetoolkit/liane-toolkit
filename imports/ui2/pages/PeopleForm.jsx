@@ -343,6 +343,9 @@ class PeopleForm extends Component {
     const { intl, loading, person, campaign } = this.props;
     const { sent, formData, donor, contribute } = this.state;
     const containerClassName = this.iframe ? "iframe" : "";
+    if (!this.iframe && (!person || !person._id)) {
+      return null;
+    }
     if (loading || this.state.loading) {
       return <Loading full />;
     } else if (!loading && !campaign) {
