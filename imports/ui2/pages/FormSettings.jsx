@@ -185,7 +185,7 @@ class FormSettingsPage extends Component {
             description={
               <FormattedMessage
                 id="app.form_settings.form_url_path_description"
-                defaultMessage="This will only be available for the exclusive person form."
+                defaultMessage="This will only be available for the person exclusive form."
               />
             }
           >
