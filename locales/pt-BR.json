@@ -340,7 +340,7 @@
     "app.form_settings.form_presentation_label": "Texto de apresentação",
     "app.form_settings.form_redirect_description": "URL para redirecionamento padrão após envio do formulário. Será utilizado quando não houver URL de doação ou a pessoa não selecionar a opção de doação. Em caso de não preenchimento, o redirecionamento será para a página da campanha no Facebook.",
     "app.form_settings.form_redirect_label": "URL padrão de redirecionamento",
-    "app.form_settings.form_settings_description": "Use o formulário para convidar sua audiência para sua campanha! Além do link abaixo, há também um link exclusivo para cada pessoa do seu diretório, melhorando a integração dos dados.",
+    "app.form_settings.form_settings_description": "Use o formulário para convidar sua audiência para sua campanha! Além do método de incorporação abaixo, há também um link exclusivo para cada pessoa do seu diretório, melhorando a integração dos dados.",
     "app.form_settings.form_settings_title": "Configurações do Formulário",
     "app.form_settings.form_skills_description": "Modifique as habilidades de voluntariado desejadas para aparecer no seu formulário",
     "app.form_settings.form_skills_label": "Habilidades desejadas",
@@ -771,5 +771,15 @@
     "app.people.import.normal_option": "Não, não é de Liane",
     "app.account_select.disabled_label": "Sem acesso administrativo",
     "app.campaign_settings.change_label": "Clique aqui para alterar",
-    "app.campaign_settings.geolocation_title": "Localização"
+    "app.campaign_settings.geolocation_title": "Localização",
+    "app.form_embed.html.step_01": "Coloque o script uma vez dentro de {tag_01} ou pouco antes do fechamento da tag {tag_02}:",
+    "app.form_embed.html.step_02": "Insira a seguinte {tag} onde você gostaria que formulário seja exibido:",
+    "app.form_settings.form_url_path_description": "Apenas disponível para o formulário exclusivo de pessoa.",
+    "app.form_embed.html_label": "Código HTML",
+    "app.form_embed.wp.step_01": "Instale o plugin {plugin_name};",
+    "app.form_embed.wp.step_02": "No seu painel WordPress, acesse Configurações > Liane Form;",
+    "app.form_embed.wp.step_03": "Preencha o formulário com o seguinte:",
+    "app.form_embed.wp.step_04": "Utilize o shortcode {code} em qualquer página ou post do seu site WordPress!",
+    "app.form_embed.wp_plugin_label": "Plugin WordPress",
+    "app.form_settings.embed_title": "Métodos de incorporação"
 }
