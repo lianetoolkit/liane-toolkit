@@ -157,7 +157,7 @@ class FormEmbed extends Component {
               </li>
               <li>
                 <FormattedMessage
-                  id="app.form_embed.wp.step_03"
+                  id="app.form_embed.wp.step_04"
                   defaultMessage="Use {code} shortcode in any page or post inside your WordPress site!"
                   values={{ code: <code>[liane_form]</code> }}
                 />
@@ -183,7 +183,7 @@ class FormEmbed extends Component {
             <hr />
             <p>
               <FormattedMessage
-                id="app.form_embed.html.step_01"
+                id="app.form_embed.html.step_02"
                 defaultMessage="Insert the following {tag} where you'd like the form to be displayed:"
                 values={{
                   tag: <code>{"<div />"}</code>,
