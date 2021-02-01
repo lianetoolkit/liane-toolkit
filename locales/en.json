@@ -393,7 +393,7 @@
   "app.form_settings.form_skills_label": "Desired skills",
   "app.form_settings.form_thanks_label": "After form submission text",
   "app.form_settings.form_title_label": "Form title",
-  "app.form_settings.form_url_path_description": "This will only be available for the exclusive person form.",
+  "app.form_settings.form_url_path_description": "This will only be available for the person exclusive form.",
   "app.form_settings.form_url_path_label": "Set form url path",
   "app.form_settings.form_url_path_placeholder": "MyCampaign",
   "app.form_settings.save": "Save",
