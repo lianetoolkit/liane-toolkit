@@ -37,7 +37,7 @@ class CampaignSelect extends Component {
     super(props);
     this.state = {
       loading: false,
-      campaigns: [],
+      campaigns: {},
       options: [],
     };
   }
@@ -49,7 +49,10 @@ class CampaignSelect extends Component {
         alertStore.add(err);
       } else {
         this.setState({
-          campaigns: res,
+          campaigns: {
+            ...this.state.campaigns,
+            ...this._buildCampaignMap(res),
+          },
           options: this._buildOptions(res),
         });
       }
@@ -71,20 +74,52 @@ class CampaignSelect extends Component {
         alertStore.add(err);
       } else {
         this.setState({
-          campaigns: res,
+          campaigns: {
+            ...this.state.campaigns,
+            ...this._buildCampaignMap(res),
+          },
           options: this._buildOptions(res),
         });
       }
       this.setState({ loading: false });
     });
   }, 300);
-  _buildOptions = (campaigns) => {
-    return uniqBy(campaigns, "_id").map((campaign) => {
+  _buildCampaignMap = (campaigns) => {
+    const map = {};
+    if (campaigns) {
+      for (const campaign of campaigns) {
+        map[campaign._id] = campaign;
+      }
+    }
+    return map;
+  };
+  _unMap = (campaignMap) => {
+    const campaignArr = [];
+    for (const campaignId in campaignMap) {
+      campaignArr.push(campaignMap[campaignId]);
+    }
+    return campaignArr;
+  };
+  _buildOptions = (data) => {
+    const { campaigns } = this.state;
+    const { value } = this.props;
+    let valueOptions = [];
+    if (value && value.length) {
+      valueOptions = value.map((id) => {
+        const campaign = campaigns[id];
+        return {
+          label: campaign.name,
+          value: campaign._id,
+        };
+      });
+    }
+    const campaignsOptions = data.map((campaign) => {
       return {
         label: campaign.name,
         value: campaign._id,
       };
     });
+    return uniqBy([...valueOptions, ...campaignsOptions], "value");
   };
   _handleChange = (value) => {
     const { onChange, name } = this.props;
@@ -112,16 +147,6 @@ class CampaignSelect extends Component {
       valueOptions = options.filter(
         (option) => value.indexOf(option.value) !== -1
       );
-    }
-    if (valueOptions.length != value.length && value) {
-      Meteor.call("campaigns.selectGet", { campaignIds: value }, (err, res) => {
-        if (res) {
-          this.setState({
-            campaigns: [res, ...this.state.campaigns],
-            options: this._buildOptions([res, ...this.state.campaigns]),
-          });
-        }
-      });
     }
     return valueOptions;
   };

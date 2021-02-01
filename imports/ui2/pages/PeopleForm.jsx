@@ -109,6 +109,18 @@ const Header = styled.header`
 `;
 
 const Container = styled.div`
+  &.iframe {
+    form {
+      margin: 0 !important;
+    }
+    .form-content {
+      margin: 0 auto;
+      max-width: 1000px;
+    }
+  }
+`;
+
+const Content = styled.div`
   max-width: 700px;
   margin: 4rem auto;
   h2 {
@@ -122,6 +134,8 @@ const Container = styled.div`
     margin-bottom: 2rem;
   }
   form {
+    width: auto;
+    box-sizing: border-box;
     padding: 2rem;
     margin: 2rem -2rem 2rem;
     border: 1px solid #ddd;
@@ -174,6 +188,7 @@ const Container = styled.div`
 class PeopleForm extends Component {
   constructor(props) {
     super(props);
+    this.iframe = window.self !== window.top;
     this.state = {
       formData: {},
       agreed: false,
@@ -327,23 +342,29 @@ class PeopleForm extends Component {
   render() {
     const { intl, loading, person, campaign } = this.props;
     const { sent, formData, donor, contribute } = this.state;
+    const containerClassName = this.iframe ? "iframe" : "";
+    if (!this.iframe && (!person || !person._id)) {
+      return null;
+    }
     if (loading || this.state.loading) {
       return <Loading full />;
     } else if (!loading && !campaign) {
       return <h1 style={{ textAlign: "center" }}>404</h1>;
     } else if (person && campaign) {
       return (
-        <>
-          <Header>
-            <div className="header-content">
-              <h1>
-                <a href={FlowRouter.path("App.dashboard")}>
-                  <img src="/images/logo_icon.png" alt="Liane" />
-                </a>
-              </h1>
-            </div>
-          </Header>
-          <Container id="app">
+        <Container id="app" className={containerClassName}>
+          {!this.iframe ? (
+            <Header>
+              <div className="header-content">
+                <h1>
+                  <a href={FlowRouter.path("App.dashboard")}>
+                    <img src="/images/logo_icon.png" alt="Liane" />
+                  </a>
+                </h1>
+              </div>
+            </Header>
+          ) : null}
+          <Content className="form-content">
             {sent ? (
               <>
                 <h2>
@@ -376,72 +397,60 @@ class PeopleForm extends Component {
               </>
             ) : (
               <>
-                <h2>
-                  {person.name ? (
-                    <FormattedMessage
-                      id="app.people_form.welcome_logged_in"
-                      defaultMessage="Hi {name}!"
-                      values={{ name: person.name }}
-                    />
-                  ) : (
-                    <FormattedMessage
-                      id="app.people_form.welcome_anonymous"
-                      defaultMessage="Hi!"
-                    />
-                  )}
-                </h2>
-                {person._id ? (
-                  <p className="not-you">
-                    <FormattedMessage
-                      id="app.people_form.not_you"
-                      defaultMessage="Not you?"
-                    />{" "}
-                    <a href={getFormUrl(false, campaign)}>
-                      <FormattedMessage
-                        id="app.people_form.click_here"
-                        defaultMessage="Click here"
-                      />
-                    </a>
-                    .
-                  </p>
+                {!this.iframe ? (
+                  <>
+                    <h2>
+                      {person.name ? (
+                        <FormattedMessage
+                          id="app.people_form.welcome_logged_in"
+                          defaultMessage="Hi {name}!"
+                          values={{ name: person.name }}
+                        />
+                      ) : (
+                        <FormattedMessage
+                          id="app.people_form.welcome_anonymous"
+                          defaultMessage="Hi!"
+                        />
+                      )}
+                    </h2>
+                    {person._id ? (
+                      <p className="not-you">
+                        <FormattedMessage
+                          id="app.people_form.not_you"
+                          defaultMessage="Not you?"
+                        />{" "}
+                        <a href={getFormUrl(false, campaign)}>
+                          <FormattedMessage
+                            id="app.people_form.click_here"
+                            defaultMessage="Click here"
+                          />
+                        </a>
+                        .
+                      </p>
+                    ) : null}
+                    <p>
+                      {campaign.forms && campaign.forms.crm ? (
+                        <span>{campaign.forms.crm.header}</span>
+                      ) : (
+                        <FormattedMessage
+                          id="app.people_form.default_header"
+                          defaultMessage="We, from the campaign {campaign_name}, would like to ask for your help!"
+                          values={{ campaign_name: campaign.name }}
+                        />
+                      )}
+                    </p>
+                    <p>
+                      {campaign.forms && campaign.forms.crm ? (
+                        <span>{campaign.forms.crm.text}</span>
+                      ) : (
+                        <FormattedMessage
+                          id="app.people_form.default_text"
+                          defaultMessage="Fill the information below so you can know more about you."
+                        />
+                      )}
+                    </p>
+                  </>
                 ) : null}
-                <p>
-                  {campaign.forms && campaign.forms.crm ? (
-                    <span>{campaign.forms.crm.header}</span>
-                  ) : (
-                    <FormattedMessage
-                      id="app.people_form.default_header"
-                      defaultMessage="We, from the campaign {campaign_name}, would like to ask for your help!"
-                      values={{ campaign_name: campaign.name }}
-                    />
-                  )}
-                </p>
-                <p>
-                  {campaign.forms && campaign.forms.crm ? (
-                    <span>{campaign.forms.crm.text}</span>
-                  ) : (
-                    <FormattedMessage
-                      id="app.people_form.default_text"
-                      defaultMessage="Fill the information below so you can know more about you."
-                    />
-                  )}
-                </p>
-                {/* {!person.facebookId ? (
-                  <div className="facebook-connect">
-                    <Button
-                      fluid
-                      color="facebook"
-                      icon
-                      onClick={this._handleFacebookClick}
-                    >
-                      <FontAwesomeIcon icon={["fab", "facebook-square"]} />{" "}
-                      <FormattedMessage
-                        id="app.people_form.facebook_connect_label"
-                        defaultMessage="Connect your Facebook profile"
-                      />
-                    </Button>
-                  </div>
-                ) : null} */}
                 <Form onSubmit={this._handleSubmit}>
                   {!person.name ? (
                     <Form.Field label={intl.formatMessage(messages.nameLabel)}>
@@ -529,7 +538,9 @@ class PeopleForm extends Component {
                       >
                         <SkillsField
                           name="skills"
-                          options={campaign.forms.skills}
+                          options={
+                            campaign.forms ? campaign.forms.skills : null
+                          }
                           value={formData.skills || []}
                           onChange={this._handleChange}
                         />
@@ -651,13 +662,13 @@ class PeopleForm extends Component {
                 </Form>
               </>
             )}
-          </Container>
+          </Content>
           <Alerts />
-        </>
+        </Container>
       );
     } else {
       return (
-        <Container id="app">
+        <Container id="app" className={containerClassName}>
           {/* <Message
             color="red"
             icon="warning sign"

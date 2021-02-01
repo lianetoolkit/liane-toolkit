@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -21,27 +22,42 @@ const Container = styled.ul`
       display: flex;
       align-items: center;
       text-decoration: none;
-      h4 {
+      cursor: default;
+      > h4 {
         flex: 1 1 100%;
         margin: 0;
         font-size: 1em;
         font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-weight: normal;
       }
-      &:focus,
-      &:hover {
+      > span {
+        flex: 0 0 auto;
+        font-size: 0.8em;
+      }
+    }
+    &.disabled {
+      a > span {
+        color: #999;
+      }
+    }
+    &:not(.disabled) {
+      a {
+        cursor: pointer;
+      }
+      a:focus,
+      a:hover {
         background-color: #fff;
         color: #333;
       }
-      &:active {
+      a:active {
         background-color: #f9ae3b;
         color: #fff;
       }
-    }
-    &.selected {
-      a {
-        background-color: #f9ae3b;
-        color: #fff;
+      &.selected {
+        a {
+          background-color: #f9ae3b;
+          color: #fff;
+        }
       }
     }
   }
@@ -53,24 +69,59 @@ const Container = styled.ul`
   }
 `;
 
+function AccountItem({ account, selected, onClick }) {
+  const disabled = account.tasks.indexOf("MANAGE") == -1;
+  let className = "";
+  if (selected) className += " selected";
+  if (disabled) className += " disabled";
+  return (
+    <li className={className}>
+      <a
+        href="#"
+        onClick={
+          disabled
+            ? (ev) => {
+                ev.preventDefault();
+              }
+            : onClick
+        }
+      >
+        <h4>{account.name}</h4>
+        <span>
+          {selected ? <FontAwesomeIcon icon="check" /> : null}
+          {disabled ? (
+            <>
+              <FormattedMessage
+                id="app.account_select.disabled_label"
+                defaultMessage="You are not an administrator"
+              />{" "}
+              <FontAwesomeIcon icon="ban" />
+            </>
+          ) : null}
+        </span>
+      </a>
+    </li>
+  );
+}
+
 export default class SelectAccount extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
       accounts: [],
-      selected: []
+      selected: [],
     };
   }
   static getDerivedStateFromProps({ value }, { selected }) {
     if (value && value.length && !selected.length) {
       return {
-        selected: value
+        selected: value,
       };
     }
     return null;
   }
-  _handleClick = account => ev => {
+  _handleClick = (account) => (ev) => {
     const { multiple } = this.props;
     const { selected } = this.state;
     ev.preventDefault();
@@ -81,11 +132,11 @@ export default class SelectAccount extends Component {
       if (selected.indexOf(account.id) == -1) {
         newSelected = [...selected, account.id];
       } else {
-        newSelected = selected.filter(aId => aId !== account.id);
+        newSelected = selected.filter((aId) => aId !== account.id);
       }
     }
     this.setState({
-      selected: newSelected
+      selected: newSelected,
     });
   };
   componentDidMount() {
@@ -102,8 +153,8 @@ export default class SelectAccount extends Component {
       this.props.onChange({
         target: {
           name: this.props.name,
-          value: multiple ? this.state.selected : this.state.selected[0]
-        }
+          value: multiple ? this.state.selected : this.state.selected[0],
+        },
       });
     }
   }
@@ -114,13 +165,13 @@ export default class SelectAccount extends Component {
         this.props.onChange({
           target: {
             name: this.props.name,
-            value: multiple ? this.state.selected : this.state.selected[0]
-          }
+            value: multiple ? this.state.selected : this.state.selected[0],
+          },
         });
       }
     }
   }
-  _isSelected = account => {
+  _isSelected = (account) => {
     const { selected } = this.state;
     return selected.indexOf(account.id) !== -1;
   };
@@ -142,21 +193,13 @@ export default class SelectAccount extends Component {
     if (accounts.length) {
       return (
         <Container>
-          {accounts.map(account => (
-            <li
+          {accounts.map((account) => (
+            <AccountItem
               key={account.id}
-              className={this._isSelected(account) ? "selected" : ""}
-            >
-              <a
-                href="javascript:void(0);"
-                onClick={this._handleClick(account)}
-              >
-                <h4>{account.name}</h4>
-                {this._isSelected(account) ? (
-                  <FontAwesomeIcon icon="check" />
-                ) : null}
-              </a>
-            </li>
+              account={account}
+              selected={this._isSelected(account)}
+              onClick={this._handleClick(account)}
+            />
           ))}
         </Container>
       );

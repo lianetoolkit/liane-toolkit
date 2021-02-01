@@ -160,7 +160,20 @@ Meteor.publishComposite("campaigns.detail", function ({ campaignId }) {
     },
     {
       find: function (campaign) {
-        return Geolocations.find({ _id: campaign.geolocationId });
+        return Geolocations.find(
+          { _id: campaign.geolocationId },
+          {
+            fields: {
+              center: 1,
+              facebook: 1,
+              name: 1,
+              "osm.display_name": 1,
+              "osm.boundingbox": 1,
+              regionType: 1,
+              type: 1,
+            },
+          }
+        );
       },
     },
   ];

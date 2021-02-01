@@ -14,6 +14,8 @@ import Select from "react-select";
 import Nav from "./Nav.jsx";
 import Table from "../../../components/Table.jsx";
 import Form from "../../../components/Form.jsx";
+import CountrySelect from "../../../components/CountrySelect.jsx";
+import GeolocationSearch from "../../../components/GeolocationSearch.jsx";
 import PersonFormInfo from "../../../components/PersonFormInfo.jsx";
 import { messages as officeMessages } from "../../../components/OfficeField.jsx";
 import { messages as campaignTypeMessages } from "../../../components/CampaignTypeSelect.jsx";
@@ -75,6 +77,8 @@ class CampaignSettingsPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      changeGeolocation: false,
+      loading: false,
       formData: {
         campaignId: "",
         name: "",
@@ -91,6 +95,7 @@ class CampaignSettingsPage extends Component {
           candidate: "",
           party: "",
           cause: "",
+          country: "",
           contact: {},
         },
       };
@@ -102,6 +107,7 @@ class CampaignSettingsPage extends Component {
           candidate: campaign.candidate,
           party: campaign.party,
           cause: campaign.cause,
+          country: campaign.country,
           contact: campaign.contact,
         },
       };
@@ -111,6 +117,33 @@ class CampaignSettingsPage extends Component {
   _filledForm = () => {
     const { formData } = this.state;
     return formData.campaignId && formData.name;
+  };
+  _handleGeolocationChangeClick = (ev) => {
+    ev.preventDefault();
+    this.setState({
+      changeGeolocation: !this.state.changeGeolocation,
+    });
+  };
+  _handleGeolocationChange = ({ geolocation, type }) => {
+    if (geolocation) {
+      this.setState({
+        formData: {
+          ...this.state.formData,
+          geolocation: {
+            type,
+            osm_id: geolocation.osm_id,
+            osm_type: geolocation.osm_type,
+          },
+        },
+      });
+    } else {
+      this.setState({
+        formData: {
+          ...this.state.formData,
+          geolocation: {},
+        },
+      });
+    }
   };
   _handleChange = ({ target }) => {
     const newFormData = { ...this.state.formData };
@@ -123,12 +156,14 @@ class CampaignSettingsPage extends Component {
     ev.preventDefault();
     if (this._filledForm()) {
       const { formData } = this.state;
+      this.setState({ loading: true });
       Meteor.call("campaigns.update", formData, (err, data) => {
         if (!err) {
           alertStore.add("Updated", "success");
         } else {
           alertStore.add(err);
         }
+        this.setState({ loading: false });
       });
     }
   };
@@ -150,7 +185,7 @@ class CampaignSettingsPage extends Component {
   };
   render() {
     const { intl, campaign } = this.props;
-    const { active, formData } = this.state;
+    const { loading, changeGeolocation, active, formData } = this.state;
     return (
       <>
         <Nav campaign={campaign} />
@@ -243,11 +278,45 @@ class CampaignSettingsPage extends Component {
                 onChange={this._handleChange}
               />
             </Form.Field>
+            <h3>
+              <FormattedMessage
+                id="app.campaign_settings.geolocation_title"
+                defaultMessage="Geolocation"
+              />
+            </h3>
+            {!changeGeolocation ? (
+              <p>
+                {campaign.geolocation.osm.display_name}.{" "}
+                <a href="#" onClick={this._handleGeolocationChangeClick}>
+                  <FormattedMessage
+                    id="app.campaign_settings.change_label"
+                    defaultMessage="Click here to change"
+                  />
+                </a>
+                .
+              </p>
+            ) : (
+              <>
+                <Form.Field label={intl.formatMessage(messages.countryLabel)}>
+                  <CountrySelect
+                    name="country"
+                    value={formData.country}
+                    onChange={this._handleChange}
+                  />
+                </Form.Field>
+                {formData.country ? (
+                  <GeolocationSearch
+                    country={formData.country}
+                    onChange={this._handleGeolocationChange}
+                  />
+                ) : null}
+              </>
+            )}
           </Form.Content>
           <Form.Actions>
             <input
               type="submit"
-              disabled={!this._filledForm()}
+              disabled={!this._filledForm() || loading}
               value={intl.formatMessage(messages.saveLabel)}
             />
           </Form.Actions>

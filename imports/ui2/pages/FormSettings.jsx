@@ -13,6 +13,7 @@ import Select from "react-select";
 
 import Page from "../components/Page.jsx";
 import Form from "../components/Form.jsx";
+import FormEmbed from "../components/FormEmbed.jsx";
 import PersonFormInfo from "../components/PersonFormInfo.jsx";
 import SkillsConfig from "../components/SkillsConfig.jsx";
 
@@ -167,13 +168,26 @@ class FormSettingsPage extends Component {
           <p>
             <FormattedMessage
               id="app.form_settings.form_settings_description"
-              defaultMessage="Use the form to invite your audience to your campaign! Besides the link below, there's also an exclusive link for each person in your directory, improving data integration."
+              defaultMessage="Use the form to invite your audience to your campaign! Besides the embed method below, there's also an exclusive link for each person in your directory, improving data integration."
             />
           </p>
-          <PersonFormInfo />
+          <h2>
+            <FormattedMessage
+              id="app.form_settings.embed_title"
+              defaultMessage="Embed methods"
+            />
+          </h2>
+          <FormEmbed campaign={campaign} />
+          <hr />
           <Form.Field
             label={intl.formatMessage(messages.urlPathLabel)}
             prefix={FlowRouter.url("")}
+            description={
+              <FormattedMessage
+                id="app.form_settings.form_url_path_description"
+                defaultMessage="This will only be available for the exclusive person form."
+              />
+            }
           >
             <input
               type="text"
