@@ -304,6 +304,9 @@ class PeopleForm extends Component {
       return;
     }
     this.setState({ loading: true });
+    if (this.iframe && "parentIFrame" in window) {
+      parentIFrame.sendMessage({ sent: true });
+    }
     Meteor.call("peopleForm.submit", data, (err, res) => {
       if (err) {
         alertStore.add(err);
@@ -314,18 +317,34 @@ class PeopleForm extends Component {
         FlowRouter.go("/f/" + res);
         this.setState({ sent: true, loading: false, donor: formData.donor });
         setTimeout(() => {
-          if (formData.donor) {
-            window.location = campaign.forms.crm.donation;
+          if (campaign.forms && campaign.forms.crm) {
+            if (formData.donor) {
+              this._redirect(campaign.forms.crm.donation, true);
+            } else {
+              this._redirect(
+                campaign.forms.crm.redirect ||
+                  `https://facebook.com/${campaign.facebookAccount.facebookId}`
+              );
+            }
           } else {
-            window.location =
-              campaign.forms.crm.redirect ||
-              `https://facebook.com/${campaign.facebookAccount.facebookId}`;
+            this._redirect(
+              `https://facebook.com/${campaign.facebookAccount.facebookId}`
+            );
           }
         }, 5000);
       } else {
         this.setState({ loading: false });
       }
     });
+  }
+  _redirect(url, force) {
+    if (this.iframe) {
+      if (force && "parentIFrame" in window) {
+        parentIFrame.sendMessage({ redirect: url });
+      }
+    } else {
+      window.location = url;
+    }
   }
   _hasDonationUrl = () => {
     const { campaign } = this.props;
@@ -545,33 +564,8 @@ class PeopleForm extends Component {
                           onChange={this._handleChange}
                         />
                       </Form.Field>
-                      {/* <label>
-                        <input
-                          type="checkbox"
-                          name="supporter"
-                          checked={formData.supporter}
-                          onChange={this._handleChange}
-                        />
-                        <FormattedMessage
-                          id="app.people_form.supporter_label"
-                          defaultMessage="If we send you content, will you share in your social networks?"
-                        />
-                      </label>
-                      <label>
-                        <input
-                          type="checkbox"
-                          name="mobilizer"
-                          checked={formData.mobilizer}
-                          onChange={this._handleChange}
-                        />
-                        <FormattedMessage
-                          id="app.people_form.mobilizer_label"
-                          defaultMessage="Would you produce en event in your neighborhood or workplace?"
-                        />
-                      </label> */}
                     </div>
                   ) : null}
-                  {/* <Divider /> */}
                   {!person.facebookId && recaptchaSiteKey ? (
                     <div className="recaptcha-container">
                       <Recaptcha
@@ -579,35 +573,8 @@ class PeopleForm extends Component {
                         render="explicit"
                         verifyCallback={this._handleRecaptcha}
                       />
-                      {/* <Divider hidden /> */}
                     </div>
                   ) : null}
-                  {/* <p className="policy">
-                    <CountryExclusive
-                      country="CO"
-                      defaultContent={
-                        <FormattedHTMLMessage
-                          id="app.people_form.privacy_policy"
-                          defaultMessage='By submitting this form you agree with our <a href="https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf" target="_blank" rel="external">Privacy Policy</a>.'
-                        />
-                      }
-                    >
-                      <span>
-                        Al enviar este formulario autorizas a que tus datos
-                        personales sean recolectados y tratados, de conformidad
-                        con la política de protección de datos personales del
-                        Instituto Update / Extituto de Política Abierta, la cual
-                        está disponible en el siguiente enlace:{" "}
-                        <a
-                          href="https://files.liane.cc/legal/politica_privacidad_extituto_v1.pdf"
-                          target="_blank"
-                          rel="external"
-                        >
-                          https://files.liane.cc/legal/politica_privacidad_extituto_v1.pdf
-                        </a>
-                      </span>
-                    </CountryExclusive>
-                  </p> */}
                   <div className="policy">
                     <PrivacyAgreementField
                       onChange={(checked) => {
@@ -667,16 +634,7 @@ class PeopleForm extends Component {
         </Container>
       );
     } else {
-      return (
-        <Container id="app" className={containerClassName}>
-          {/* <Message
-            color="red"
-            icon="warning sign"
-            header="Invalid request"
-            content="Form is not available for this request."
-          /> */}
-        </Container>
-      );
+      return null;
     }
   }
 }
