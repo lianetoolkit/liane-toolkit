@@ -99,6 +99,7 @@ appRoutes.route("/f/:formId?", {
       formId: params.formId,
       campaignId: queryParams.c,
       psid: queryParams.psid,
+      compactForm: queryParams.compact,
       donor: queryParams.hasOwnProperty("donor"),
       volunteer: queryParams.hasOwnProperty("volunteer"),
     });
@@ -315,6 +316,7 @@ appRoutes.route("/:campaignSlug/:formId?", {
     addTitle(`${APP_NAME}`);
     return mount(PeopleFormPage, {
       campaignSlug: params.campaignSlug,
+      compactForm: queryParams.compact,
       formId: params.formId,
     });
   },

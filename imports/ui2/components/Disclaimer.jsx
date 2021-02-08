@@ -58,7 +58,7 @@ export default class Disclaimer extends Component {
       icon = "shield-alt";
     }
     return (
-      <Container type={type}>
+      <Container className="disclaimer" type={type}>
         <div className="disclaimer-icon">
           <FontAwesomeIcon icon={icon} />
         </div>

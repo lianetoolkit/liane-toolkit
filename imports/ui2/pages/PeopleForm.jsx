@@ -111,11 +111,24 @@ const Header = styled.header`
 const Container = styled.div`
   &.iframe {
     form {
+      width: auto;
       margin: 0 !important;
     }
     .form-content {
       margin: 0 auto;
       max-width: 1000px;
+    }
+  }
+  @media (max-width: 770px) {
+    &:not(.iframe) {
+      margin: 4rem 1rem 0;
+      form {
+        padding: 1rem;
+        margin: 2rem -1rem 0;
+        border-left: 0;
+        border-right: 0;
+        border-radius: 0;
+      }
     }
   }
 `;
@@ -173,14 +186,82 @@ const Content = styled.div`
   .button {
     margin: 0;
   }
-  @media (max-width: 770px) {
-    margin: 4rem 1rem 0;
-    form {
-      padding: 1rem;
-      margin: 2rem -1rem 0;
-      border-left: 0;
-      border-right: 0;
-      border-radius: 0;
+  /* Compact form */
+  form.compact {
+    font-size: 0.9em;
+    padding: 1rem;
+    .form-fields {
+      margin: 0 -0.5rem;
+      display: flex;
+      label {
+        flex: 1 1 auto;
+        margin: 0 0.5rem 1rem;
+        textarea,
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"] {
+          padding: 0.75rem;
+        }
+        .field-label {
+          margin-bottom: 0.25rem;
+        }
+      }
+    }
+    .form-bottom {
+      margin: 0 -0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      > div {
+        flex: 1 1 auto;
+        margin: 0 0.5rem;
+        input[type="submit"] {
+          display: block;
+          width: 100%;
+        }
+      }
+      .privacy-consent {
+        max-width: 230px;
+        font-size: 0.9em;
+        border: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 200px;
+        label {
+          padding: 0 0.5rem;
+        }
+        > span {
+          padding: 0 0 0 0.5rem;
+        }
+      }
+      .disclaimer {
+        max-width: 350px;
+        border: 0;
+        padding: 0;
+        .disclaimer-icon {
+          margin-right: 1rem;
+        }
+      }
+    }
+  }
+  @media (max-width: 600px) {
+    form.compact {
+      .form-fields,
+      .form-bottom {
+        flex-wrap: wrap;
+      }
+      .form-bottom {
+        > div {
+          margin-bottom: 1rem;
+          flex: 1 1 100%;
+        }
+        .privacy-consent,
+        .disclaimer {
+          max-width: none;
+        }
+      }
     }
   }
 `;
@@ -358,8 +439,215 @@ class PeopleForm extends Component {
     }
     return null;
   }
+  form() {
+    const { intl, loading, person, campaign, compactForm } = this.props;
+    const { sent, formData, donor, contribute } = this.state;
+    if (compactForm) {
+      return (
+        <Form className="compact" onSubmit={this._handleSubmit}>
+          <div className="form-fields">
+            {!person.name ? (
+              <Form.Field label={intl.formatMessage(messages.nameLabel)}>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={this._handleChange}
+                />
+              </Form.Field>
+            ) : null}
+            <Form.Field label={intl.formatMessage(messages.emailLabel)}>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={this._handleChange}
+              />
+            </Form.Field>
+          </div>
+          <div className="form-bottom">
+            <Disclaimer type="security">
+              <p>
+                <strong>
+                  <FormattedMessage
+                    id="app.people_form.disclaimer"
+                    defaultMessage="The data sent through this form is for exclusive use by {campaign} authorized team."
+                    values={{
+                      campaign: campaign.name,
+                    }}
+                  />
+                </strong>
+              </p>
+            </Disclaimer>
+            <PrivacyAgreementField
+              onChange={(checked) => {
+                this.setState({ agreed: checked });
+              }}
+            />
+            <div>
+              <input
+                type="submit"
+                value={intl.formatMessage(messages.sendLabel)}
+              />
+            </div>
+          </div>
+        </Form>
+      );
+    } else {
+      return (
+        <Form onSubmit={this._handleSubmit}>
+          {!person.name ? (
+            <Form.Field label={intl.formatMessage(messages.nameLabel)}>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={this._handleChange}
+              />
+            </Form.Field>
+          ) : null}
+          <Form.Field label={intl.formatMessage(messages.emailLabel)}>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+          <Form.Field label={intl.formatMessage(messages.phoneLabel)}>
+            <input
+              type="text"
+              name="cellphone"
+              value={formData.cellphone}
+              onChange={this._handleChange}
+            />
+          </Form.Field>
+          <Form.Field label={intl.formatMessage(messages.birthdayLabel)}>
+            <DatePicker
+              onChange={(date) => {
+                this._handleChange({
+                  target: {
+                    name: "birthday",
+                    value: date,
+                  },
+                });
+              }}
+              selected={this.getBirthdayValue()}
+              dateFormatCalendar="MMMM"
+              dateFormat="P"
+              showMonthDropdown
+              showYearDropdown
+              dropdownMode="select"
+            />
+          </Form.Field>
+          <AddressField
+            name="address"
+            country={campaign.country}
+            value={formData.address}
+            onChange={(target) => this._handleChange({ target })}
+          />
+          {this._hasDonationUrl() ? (
+            <label>
+              <input
+                name="donor"
+                checked={formData.donor}
+                onChange={this._handleChange}
+                type="checkbox"
+              />
+              <FormattedMessage
+                id="app.people_form.donation_label"
+                defaultMessage="I'd like do donate"
+              />
+            </label>
+          ) : null}
+          {this._displayParticipateButton() ? (
+            <Button
+              onClick={(ev) => {
+                ev.preventDefault();
+                this.setState({ contribute: !contribute });
+              }}
+            >
+              <FormattedMessage
+                id="app.people_form.participate_label"
+                defaultMessage="I'd like to participate"
+              />
+            </Button>
+          ) : null}
+          {contribute ? (
+            <div className="contribute">
+              <Form.Field label={intl.formatMessage(messages.skillsLabel)}>
+                <SkillsField
+                  name="skills"
+                  options={campaign.forms ? campaign.forms.skills : null}
+                  value={formData.skills || []}
+                  onChange={this._handleChange}
+                />
+              </Form.Field>
+            </div>
+          ) : null}
+          {!person.facebookId && recaptchaSiteKey ? (
+            <div className="recaptcha-container">
+              <Recaptcha
+                sitekey={recaptchaSiteKey}
+                render="explicit"
+                verifyCallback={this._handleRecaptcha}
+              />
+            </div>
+          ) : null}
+          <div className="policy">
+            <PrivacyAgreementField
+              onChange={(checked) => {
+                this.setState({ agreed: checked });
+              }}
+            />
+            <Disclaimer type="security">
+              <p>
+                <strong>
+                  <FormattedMessage
+                    id="app.people_form.disclaimer"
+                    defaultMessage="The data sent through this form is for exclusive use by {campaign} authorized team."
+                    values={{
+                      campaign: campaign.name,
+                    }}
+                  />
+                </strong>
+              </p>
+              <p>
+                {campaign.contact ? (
+                  <FormattedHTMLMessage
+                    id="app.people_form.contact_info_01"
+                    defaultMessage="For more information contact the campaign at <strong>{campaignEmail}</strong> or our support team at <strong>{appEmail}</strong>."
+                    values={{
+                      campaignEmail: campaign.contact.email,
+                      appEmail: Meteor.settings.public.contactEmail,
+                    }}
+                  />
+                ) : (
+                  <FormattedHTMLMessage
+                    id="app.people_form.contact_info_02"
+                    defaultMessage="For more information contact our support team at <strong>{appEmail}</strong>."
+                    values={{
+                      appEmail: Meteor.settings.public.contactEmail,
+                    }}
+                  />
+                )}{" "}
+                <FormattedHTMLMessage
+                  id="app.people_form.more_info"
+                  defaultMessage="We also invite you to visit <a href='{url}' target='_blank' rel='external'>this page</a> for further details regarding our views and practices for data security and privacy."
+                  values={{
+                    url: "https://liane.voto/faqs",
+                  }}
+                />
+              </p>
+            </Disclaimer>
+          </div>
+          <input type="submit" value={intl.formatMessage(messages.sendLabel)} />
+        </Form>
+      );
+    }
+  }
   render() {
-    const { intl, loading, person, campaign } = this.props;
+    const { intl, loading, person, campaign, compactForm } = this.props;
     const { sent, formData, donor, contribute } = this.state;
     const containerClassName = this.iframe ? "iframe" : "";
     if (!this.iframe && (!person || !person._id)) {
@@ -470,163 +758,7 @@ class PeopleForm extends Component {
                     </p>
                   </>
                 ) : null}
-                <Form onSubmit={this._handleSubmit}>
-                  {!person.name ? (
-                    <Form.Field label={intl.formatMessage(messages.nameLabel)}>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={this._handleChange}
-                      />
-                    </Form.Field>
-                  ) : null}
-                  <Form.Field label={intl.formatMessage(messages.emailLabel)}>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={this._handleChange}
-                    />
-                  </Form.Field>
-                  <Form.Field label={intl.formatMessage(messages.phoneLabel)}>
-                    <input
-                      type="text"
-                      name="cellphone"
-                      value={formData.cellphone}
-                      onChange={this._handleChange}
-                    />
-                  </Form.Field>
-                  <Form.Field
-                    label={intl.formatMessage(messages.birthdayLabel)}
-                  >
-                    <DatePicker
-                      onChange={(date) => {
-                        this._handleChange({
-                          target: {
-                            name: "birthday",
-                            value: date,
-                          },
-                        });
-                      }}
-                      selected={this.getBirthdayValue()}
-                      dateFormatCalendar="MMMM"
-                      dateFormat="P"
-                      showMonthDropdown
-                      showYearDropdown
-                      dropdownMode="select"
-                    />
-                  </Form.Field>
-                  <AddressField
-                    name="address"
-                    country={campaign.country}
-                    value={formData.address}
-                    onChange={(target) => this._handleChange({ target })}
-                  />
-                  {this._hasDonationUrl() ? (
-                    <label>
-                      <input
-                        name="donor"
-                        checked={formData.donor}
-                        onChange={this._handleChange}
-                        type="checkbox"
-                      />
-                      <FormattedMessage
-                        id="app.people_form.donation_label"
-                        defaultMessage="I'd like do donate"
-                      />
-                    </label>
-                  ) : null}
-                  {this._displayParticipateButton() ? (
-                    <Button
-                      onClick={(ev) => {
-                        ev.preventDefault();
-                        this.setState({ contribute: !contribute });
-                      }}
-                    >
-                      <FormattedMessage
-                        id="app.people_form.participate_label"
-                        defaultMessage="I'd like to participate"
-                      />
-                    </Button>
-                  ) : null}
-                  {contribute ? (
-                    <div className="contribute">
-                      <Form.Field
-                        label={intl.formatMessage(messages.skillsLabel)}
-                      >
-                        <SkillsField
-                          name="skills"
-                          options={
-                            campaign.forms ? campaign.forms.skills : null
-                          }
-                          value={formData.skills || []}
-                          onChange={this._handleChange}
-                        />
-                      </Form.Field>
-                    </div>
-                  ) : null}
-                  {!person.facebookId && recaptchaSiteKey ? (
-                    <div className="recaptcha-container">
-                      <Recaptcha
-                        sitekey={recaptchaSiteKey}
-                        render="explicit"
-                        verifyCallback={this._handleRecaptcha}
-                      />
-                    </div>
-                  ) : null}
-                  <div className="policy">
-                    <PrivacyAgreementField
-                      onChange={(checked) => {
-                        this.setState({ agreed: checked });
-                      }}
-                    />
-                    <Disclaimer type="security">
-                      <p>
-                        <strong>
-                          <FormattedMessage
-                            id="app.people_form.disclaimer"
-                            defaultMessage="The data sent through this form is for exclusive use by {campaign} authorized team."
-                            values={{
-                              campaign: campaign.name,
-                            }}
-                          />
-                        </strong>
-                      </p>
-                      <p>
-                        {campaign.contact ? (
-                          <FormattedHTMLMessage
-                            id="app.people_form.contact_info_01"
-                            defaultMessage="For more information contact the campaign at <strong>{campaignEmail}</strong> or our support team at <strong>{appEmail}</strong>."
-                            values={{
-                              campaignEmail: campaign.contact.email,
-                              appEmail: Meteor.settings.public.contactEmail,
-                            }}
-                          />
-                        ) : (
-                          <FormattedHTMLMessage
-                            id="app.people_form.contact_info_02"
-                            defaultMessage="For more information contact our support team at <strong>{appEmail}</strong>."
-                            values={{
-                              appEmail: Meteor.settings.public.contactEmail,
-                            }}
-                          />
-                        )}{" "}
-                        <FormattedHTMLMessage
-                          id="app.people_form.more_info"
-                          defaultMessage="We also invite you to visit <a href='{url}' target='_blank' rel='external'>this page</a> for further details regarding our views and practices for data security and privacy."
-                          values={{
-                            url: "https://liane.voto/faqs",
-                          }}
-                        />
-                      </p>
-                    </Disclaimer>
-                  </div>
-                  <input
-                    type="submit"
-                    value={intl.formatMessage(messages.sendLabel)}
-                  />
-                </Form>
+                {this.form()}
               </>
             )}
           </Content>
