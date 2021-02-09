@@ -366,6 +366,8 @@
   "app.first_run.title": "Running first data fetch",
   "app.footer.project_by": "A project by Instituto Update",
   "app.form.optional_label": "(optional)",
+  "app.form_embed.compact_form_label": "Compact version",
+  "app.form_embed.full_form_label": "All form fields",
   "app.form_embed.html.step_01": "Place the script once inside {tag_01} or right before the {tag_02} closing tag:",
   "app.form_embed.html.step_02": "Insert the following {tag} where you'd like the form to be displayed:",
   "app.form_embed.html_label": "HTML code",
