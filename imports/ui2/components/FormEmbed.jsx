@@ -15,7 +15,7 @@ const Container = styled.section`
   margin: 0 0 2rem;
   background: #fff;
   font-size: 0.9em;
-  nav {
+  nav.section-nav {
     width: 100%;
     display: flex;
     text-align: center;
@@ -45,6 +45,40 @@ const Container = styled.section`
       }
       svg {
         margin-right: 0.5rem;
+      }
+    }
+  }
+  nav.filter-nav {
+    display: flex;
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+    align-items: center;
+    justify-content: center;
+    p {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      .filter-label {
+        font-weight: 600;
+        margin-right: 1rem;
+      }
+      .filter-options {
+        display: flex;
+        ${"" /* padding: 0 0.25rem;
+        border: 1px solid #ddd;
+        border-radius: 7px; */}
+        input[type="radio"],
+        input[type="checkbox"] {
+          margin: 0 0.5rem 0 0;
+        }
+        > * {
+          margin: 0rem 0.5rem;
+        }
+      }
+      label {
+        margin: 0;
+        font-weight: 500;
       }
     }
   }
@@ -85,18 +119,53 @@ class FormEmbed extends Component {
     super(props);
     this.state = {
       section: "wordpress",
+      format: "full",
     };
   }
   _handleNavClick = (section) => (ev) => {
     ev.preventDefault();
     this.setState({ section });
   };
+  _handleFormatClick = (format) => (ev) => {
+    ev.preventDefault();
+    this.setState({ format });
+  };
+  _handleFilterChange = ({ target }) => {
+    this.setState({ [target.name]: target.value });
+  };
+  _getShortcode = () => {
+    const { format } = this.state;
+    if (format == "full") {
+      return "[liane_form]";
+    }
+    if (format == "compact") {
+      return '[liane_form compact="1"]';
+    }
+  };
+  _getHTMLCode = () => {
+    const { campaign } = this.props;
+    const { format } = this.state;
+    const attrs = {
+      class: "liane-form",
+      "data-url": Meteor.absoluteUrl(),
+      "data-campaignId": campaign._id,
+    };
+    if (format == "compact") {
+      attrs["data-compact"] = true;
+    }
+    const attrStr = Object.keys(attrs)
+      .map((attr) => {
+        return `${attr}="${attrs[attr]}"`;
+      })
+      .join("\n\t");
+    return `<div \n\t${attrStr}\n></div>`;
+  };
   render() {
     const { campaign } = this.props;
-    const { section } = this.state;
+    const { section, format } = this.state;
     return (
       <Container>
-        <nav>
+        <nav className="section-nav">
           <a
             href="#"
             className={section == "wordpress" ? "active" : ""}
@@ -120,86 +189,116 @@ class FormEmbed extends Component {
             />
           </a>
         </nav>
-        {section == "wordpress" ? (
-          <article>
-            <ol>
-              <li>
+        <section>
+          <nav className="filter-nav">
+            <p>
+              <span className="filter-options">
+                <label>
+                  <input
+                    type="radio"
+                    name="format"
+                    onChange={this._handleFilterChange}
+                    value="full"
+                    checked={format == "full"}
+                  />{" "}
+                  <FormattedMessage
+                    id="app.form_embed.full_form_label"
+                    defaultMessage="All form fields"
+                  />
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="format"
+                    onChange={this._handleFilterChange}
+                    value="compact"
+                    checked={format == "compact"}
+                  />{" "}
+                  <FormattedMessage
+                    id="app.form_embed.compact_form_label"
+                    defaultMessage="Compact version"
+                  />
+                </label>
+              </span>
+            </p>
+          </nav>
+          {section == "wordpress" ? (
+            <article>
+              <ol>
+                <li>
+                  <FormattedMessage
+                    id="app.form_embed.wp.step_01"
+                    defaultMessage="Install {plugin_name} plugin;"
+                    values={{
+                      plugin_name: (
+                        <a href="https://wordpress.org/plugins/liane-form">
+                          Liane Form
+                        </a>
+                      ),
+                    }}
+                  />
+                </li>
+                <li>
+                  <FormattedMessage
+                    id="app.form_embed.wp.step_02"
+                    defaultMessage="On your WordPress dashboard, access Settings > Liane Form;"
+                  />
+                </li>
+                <li>
+                  <FormattedMessage
+                    id="app.form_embed.wp.step_03"
+                    defaultMessage="Fill the form with the following:"
+                  />
+                  <ul>
+                    <li>
+                      Server: <code>{Meteor.absoluteUrl()}</code>
+                    </li>
+                    <li>
+                      Campaign ID: <code>{campaign._id}</code>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <FormattedMessage
+                    id="app.form_embed.wp.step_04"
+                    defaultMessage="Use {code} shortcode in any page or post inside your WordPress site!"
+                    values={{ code: <code>{this._getShortcode()}</code> }}
+                  />
+                </li>
+              </ol>
+            </article>
+          ) : null}
+          {section == "html" ? (
+            <article>
+              <p>
                 <FormattedMessage
-                  id="app.form_embed.wp.step_01"
-                  defaultMessage="Install {plugin_name} plugin;"
+                  id="app.form_embed.html.step_01"
+                  defaultMessage="Place the script once inside {tag_01} or right before the {tag_02} closing tag:"
                   values={{
-                    plugin_name: (
-                      <a href="https://wordpress.org/plugins/liane-form">
-                        Liane Form
-                      </a>
-                    ),
+                    tag_01: <code>{"<head>"}</code>,
+                    tag_02: <code>{"</body>"}</code>,
                   }}
                 />
-              </li>
-              <li>
+              </p>
+              <pre>
+                <code>{`<script type="text/javascript" src="${Meteor.absoluteUrl()}assets/liane-form.js"></script>`}</code>
+              </pre>
+              <hr />
+              <p>
                 <FormattedMessage
-                  id="app.form_embed.wp.step_02"
-                  defaultMessage="On your WordPress dashboard, access Settings > Liane Form;"
+                  id="app.form_embed.html.step_02"
+                  defaultMessage="Insert the following {tag} where you'd like the form to be displayed:"
+                  values={{
+                    tag: <code>{"<div />"}</code>,
+                  }}
                 />
-              </li>
-              <li>
-                <FormattedMessage
-                  id="app.form_embed.wp.step_03"
-                  defaultMessage="Fill the form with the following:"
-                />
-                <ul>
-                  <li>
-                    Server: <code>{Meteor.absoluteUrl()}</code>
-                  </li>
-                  <li>
-                    Campaign ID: <code>{campaign._id}</code>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <FormattedMessage
-                  id="app.form_embed.wp.step_04"
-                  defaultMessage="Use {code} shortcode in any page or post inside your WordPress site!"
-                  values={{ code: <code>[liane_form]</code> }}
-                />
-              </li>
-            </ol>
-          </article>
-        ) : null}
-        {section == "html" ? (
-          <article>
-            <p>
-              <FormattedMessage
-                id="app.form_embed.html.step_01"
-                defaultMessage="Place the script once inside {tag_01} or right before the {tag_02} closing tag:"
-                values={{
-                  tag_01: <code>{"<head>"}</code>,
-                  tag_02: <code>{"</body>"}</code>,
-                }}
-              />
-            </p>
-            <pre>
-              <code>{`<script type="text/javascript" src="${Meteor.absoluteUrl()}assets/liane-form.js"></script>`}</code>
-            </pre>
-            <hr />
-            <p>
-              <FormattedMessage
-                id="app.form_embed.html.step_02"
-                defaultMessage="Insert the following {tag} where you'd like the form to be displayed:"
-                values={{
-                  tag: <code>{"<div />"}</code>,
-                }}
-              />
-            </p>
-            <pre>
-              <code>{`<div
-  class="liane-form"
-  data-url="${Meteor.absoluteUrl()}"
-  data-campaignId="${campaign._id}"
-></div>`}</code>
-            </pre>
-          </article>
-        ) : null}
+              </p>
+              <pre>
+                <code>{this._getHTMLCode()}</code>
+              </pre>
+            </article>
+          ) : null}
+        </section>
       </Container>
     );
   }
