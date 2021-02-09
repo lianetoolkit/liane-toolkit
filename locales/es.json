@@ -768,5 +768,18 @@
     "app.people.import.liane_option": "Sí, es de Liane",
     "app.people.import.normal_help_text": "Evalúe la coincidencia de cada columna, registros similares serán marcados como posibles duplicados.",
     "app.people.import.normal_option": "No, no es de Liane",
-    "app.dashboard.comments_replies.action": "Responder comentários"
+    "app.dashboard.comments_replies.action": "Responder comentários",
+    "app.account_select.disabled_label": "No eres administrador",
+    "app.campaign_settings.change_label": "Haz clic aquí para cambiar",
+    "app.campaign_settings.geolocation_title": "Geolocalizacióm",
+    "app.form_embed.html.step_01": "Coloque la secuencia de comandos dentro de {tag_01} o justo antes de {tag_02} la etiqueta de cierre:",
+    "app.form_embed.html.step_02": "Coloque la siguiente {etiqueta} donde deseas que se muestre el formulario:",
+    "app.form_embed.html_label": "código HTML",
+    "app.form_embed.wp.step_01": "Instale el complemento {plugin_name};",
+    "app.form_embed.wp.step_02": "En tu panel de WordPress, accese Configuración> Formulario Liane;",
+    "app.form_embed.wp.step_03": "Complete el formulario con lo siguiente:",
+    "app.form_embed.wp.step_04": "¡Utilice el código corto {code} en cualquier página o publique dentro de tu sitio de WordPress!",
+    "app.form_embed.wp_plugin_label": "Plugin de WordPress",
+    "app.form_settings.embed_title": "Métodos de inserción",
+    "app.form_settings.form_url_path_description": "Apenas disponible para el formulario exlcusivo personal."
 }

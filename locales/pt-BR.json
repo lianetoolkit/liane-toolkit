@@ -781,5 +781,7 @@
     "app.form_embed.wp.step_03": "Preencha o formulário com o seguinte:",
     "app.form_embed.wp.step_04": "Utilize o shortcode {code} em qualquer página ou post do seu site WordPress!",
     "app.form_embed.wp_plugin_label": "Plugin WordPress",
-    "app.form_settings.embed_title": "Métodos de incorporação"
+    "app.form_settings.embed_title": "Métodos de incorporação",
+    "app.form_embed.compact_form_label": "Versão compacta",
+    "app.form_embed.full_form_label": "Todos os campos do formulário"
 }
