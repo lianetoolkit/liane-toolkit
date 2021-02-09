@@ -340,7 +340,7 @@
     "app.form_settings.form_presentation_label": "Texto de presentación del formulario",
     "app.form_settings.form_redirect_description": "URL para la redirección predeterminada después del envío del formulario. Esto se utilizará si no se proporciona una URL de donación o si el usuario no selecciona la casilla de verificación de donación. Si no se proporciona una URL, será redirigida a tu página de Facebook.",
     "app.form_settings.form_redirect_label": "URL de redireccionamiento predeterminada",
-    "app.form_settings.form_settings_description": "¡Usa el formulario para invitar tu audiencia a tu campaña! Además del siguiente método de inserción, también tenemos un enlace exclusivo para cada persona en tu directorio, facilitando la integración de datos.",
+    "app.form_settings.form_settings_description": "¡Usa el formulario para invitar tus seguidores a tu campaña! Además del siguiente método de inserción, también tenemos un enlace exclusivo para cada persona en tu directorio, facilitando la integración de datos.",
     "app.form_settings.form_settings_title": "Configuración del formulario",
     "app.form_settings.form_skills_description": "Personalice las habilidades de voluntariado deseadas para que aparezcan en su formulario",
     "app.form_settings.form_skills_label": "Habilidades deseadas",
@@ -781,5 +781,7 @@
     "app.form_embed.wp.step_04": "¡Utilice el código corto {code} en cualquier página o publique dentro de tu sitio de WordPress!",
     "app.form_embed.wp_plugin_label": "Plugin de WordPress",
     "app.form_settings.embed_title": "Métodos de inserción",
-    "app.form_settings.form_url_path_description": "Apenas disponible para el formulario exlcusivo personal."
+    "app.form_settings.form_url_path_description": "Apenas disponible para el formulario exlcusivo personal.",
+    "app.form_embed.compact_form_label": "Versión compacta",
+    "app.form_embed.full_form_label": "Todos los campos del formulario"
 }
