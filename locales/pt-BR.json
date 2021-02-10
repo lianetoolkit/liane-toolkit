@@ -421,7 +421,7 @@
     "app.nav.campaign_settings": "Configurações de campanha",
     "app.nav.electoral_canvas": "Canvas eleitoral",
     "app.nav.faq": "Perguntas frequentes",
-    "app.nav.form": "Configurações do formulário",
+    "app.nav.form": "Formulário",
     "app.nav.intelligence_strategy": "Inteligência e Estratégia",
     "app.nav.manage_comments": "Gerenciar comentários",
     "app.nav.people_communication": "Pessoas e Comunicação",
@@ -782,6 +782,6 @@
     "app.form_embed.wp.step_04": "Utilize o shortcode {code} em qualquer página ou post do seu site WordPress!",
     "app.form_embed.wp_plugin_label": "Plugin WordPress",
     "app.form_settings.embed_title": "Métodos de incorporação",
-    "app.form_embed.compact_form_label": "Versão compacta",
+    "app.form_embed.compact_form_label": "Versão compacta (nome e email)",
     "app.form_embed.full_form_label": "Todos os campos do formulário"
 }
