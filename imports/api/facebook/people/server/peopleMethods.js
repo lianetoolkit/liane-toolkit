@@ -1691,6 +1691,14 @@ export const peopleFormSubmit = new ValidatedMethod({
       type: String,
       optional: true,
     },
+    twitter: {
+      type: String,
+      optional: true,
+    },
+    instagram: {
+      type: String,
+      optional: true,
+    },
     cellphone: {
       type: String,
       optional: true,
@@ -1776,6 +1784,10 @@ export const peopleFormSubmit = new ValidatedMethod({
         case "email":
         case "cellphone":
           $set[`campaignMeta.contact.${key}`] = data[key];
+          break;
+        case "twitter":
+        case "instagram":
+          $set[`campaignMeta.social_networks.${key}`] = data[key];
           break;
         case "address":
         case "birthday":
