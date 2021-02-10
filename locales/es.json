@@ -421,7 +421,7 @@
     "app.nav.campaign_settings": "Configuraciones de campaña",
     "app.nav.electoral_canvas": "Canvas Electoral",
     "app.nav.faq": "Preguntas frecuentes",
-    "app.nav.form": "Configuración de formulario",
+    "app.nav.form": "Formulario",
     "app.nav.intelligence_strategy": "Inteligencia y Estrategia",
     "app.nav.manage_comments": "Gestionar comentarios",
     "app.nav.people_communication": "Personas y Comunicaciones",
@@ -782,6 +782,8 @@
     "app.form_embed.wp_plugin_label": "Plugin de WordPress",
     "app.form_settings.embed_title": "Métodos de inserción",
     "app.form_settings.form_url_path_description": "Apenas disponible para el formulario exlcusivo personal.",
-    "app.form_embed.compact_form_label": "Versión compacta",
-    "app.form_embed.full_form_label": "Todos los campos del formulario"
+    "app.form_embed.compact_form_label": "Versión compacta (nombre y email)",
+    "app.form_embed.full_form_label": "Todos los campos del formulario",
+    "app.form_settings.form_title": "Formulario",
+    "app.form_settings.settings_title": "Configuración de formulario"
 }
