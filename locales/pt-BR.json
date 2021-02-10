@@ -783,5 +783,7 @@
     "app.form_embed.wp_plugin_label": "Plugin WordPress",
     "app.form_settings.embed_title": "Métodos de incorporação",
     "app.form_embed.compact_form_label": "Versão compacta (nome e email)",
-    "app.form_embed.full_form_label": "Todos os campos do formulário"
+    "app.form_embed.full_form_label": "Todos os campos do formulário",
+    "app.form_settings.settings_title": "Configurações do formulário",
+    "app.form_settings.form_title": "Formulário"
 }
