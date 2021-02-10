@@ -216,7 +216,7 @@ class FormEmbed extends Component {
                   />{" "}
                   <FormattedMessage
                     id="app.form_embed.compact_form_label"
-                    defaultMessage="Compact version"
+                    defaultMessage="Compact version (name and email)"
                   />
                 </label>
               </span>

@@ -161,8 +161,8 @@ class FormSettingsPage extends Component {
         <Form.Content>
           <Page.Title>
             <FormattedMessage
-              id="app.form_settings.form_settings_title"
-              defaultMessage="Form settings"
+              id="app.form_settings.form_title"
+              defaultMessage="Form"
             />
           </Page.Title>
           <p>
@@ -179,6 +179,12 @@ class FormSettingsPage extends Component {
           </h2>
           <FormEmbed campaign={campaign} />
           <hr />
+          <h2>
+            <FormattedMessage
+              id="app.form_settings.settings_title"
+              defaultMessage="Form settings"
+            />
+          </h2>
           <Form.Field
             label={intl.formatMessage(messages.urlPathLabel)}
             prefix={FlowRouter.url("")}
