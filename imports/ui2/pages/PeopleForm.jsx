@@ -154,6 +154,14 @@ const Content = styled.div`
     border: 1px solid #ddd;
     border-radius: 7px;
     background: #fff;
+    .field-group {
+      display: flex;
+      margin: 0 -0.5rem 1.5rem;
+      > label {
+        margin: 0 0.5rem;
+        flex: 1 1 100%;
+      }
+    }
   }
   .facebook-connect {
     .button {
@@ -514,6 +522,24 @@ class PeopleForm extends Component {
               onChange={this._handleChange}
             />
           </Form.Field>
+          <div className="field-group">
+            <Form.Field label="Twitter">
+              <input
+                type="text"
+                name="twitter"
+                value={formData.twitter}
+                onChange={this._handleChange}
+              />
+            </Form.Field>
+            <Form.Field label="Instagram">
+              <input
+                type="text"
+                name="instagram"
+                value={formData.instagram}
+                onChange={this._handleChange}
+              />
+            </Form.Field>
+          </div>
           <Form.Field label={intl.formatMessage(messages.phoneLabel)}>
             <input
               type="text"
