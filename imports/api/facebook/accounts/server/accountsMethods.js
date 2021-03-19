@@ -147,32 +147,6 @@ export const webhookUpdate = new ValidatedMethod({
   },
 });
 
-export const getAccountsPublicData = new ValidatedMethod({
-  name: "facebook.accounts.public",
-  validate() {},
-  run() {
-    this.unblock();
-    const accounts = FacebookAccounts.find(
-      {},
-      {
-        fields: {
-          name: 1,
-          facebookId: 1,
-        },
-      },
-      {
-        sort: {
-          name: 1,
-        },
-      }
-    ).fetch();
-    return accounts.map((acc) => {
-      delete acc._id;
-      return acc;
-    });
-  },
-});
-
 export const hasSubsMessaging = new ValidatedMethod({
   name: "facebook.accounts.hasSubsMessaging",
   validate: new SimpleSchema({
