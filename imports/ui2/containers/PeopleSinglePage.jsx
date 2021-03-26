@@ -5,16 +5,16 @@ import { Comments } from "/imports/api/facebook/comments/comments";
 import { Entries } from "/imports/api/facebook/entries/entries";
 import PeopleSinglePage from "../pages/PeopleSingle.jsx";
 
-import { sortBy } from "lodash";
+import { get, sortBy } from "lodash";
 
 const PersonSubs = new SubsManager();
 
-export default withTracker(props => {
+export default withTracker((props) => {
   const { personId } = props;
   const facebookId = props.campaign.facebookAccount.facebookId;
 
   const PersonHandle = PersonSubs.subscribe("people.detail", {
-    personId
+    personId,
   });
 
   const loading = !PersonHandle.ready();
@@ -22,27 +22,38 @@ export default withTracker(props => {
   const person = PersonHandle.ready() ? People.findOne(personId) : null;
 
   if (person && person.facebookId) {
-    comments = Comments.find(
-      { personId: person.facebookId },
-      {
-        transform: comment => {
-          comment.person = person;
-          comment.entry = Entries.findOne(comment.entryId);
-          comment.parent = Comments.findOne(comment.parentId);
-          comment.adminReplies = Comments.find({
-            personId: facebookId,
-            parentId: comment._id
-          }).fetch();
-          return comment;
-        }
-      }
-    ).fetch();
-    comments = sortBy(comments, comment => -new Date(comment.created_time));
+    let selector = { personId: person.facebookId };
+    if (get(person, "campaignMeta.social_networks.instagram")) {
+      selector = {
+        $or: [
+          selector,
+          {
+            personId: person.campaignMeta.social_networks.instagram.replace(
+              "@",
+              ""
+            ),
+          },
+        ],
+      };
+    }
+    comments = Comments.find(selector, {
+      transform: (comment) => {
+        comment.person = person;
+        comment.entry = Entries.findOne(comment.entryId);
+        comment.parent = Comments.findOne(comment.parentId);
+        comment.adminReplies = Comments.find({
+          personId: facebookId,
+          parentId: comment._id,
+        }).fetch();
+        return comment;
+      },
+    }).fetch();
+    comments = sortBy(comments, (comment) => -new Date(comment.created_time));
   }
 
   return {
     loading,
     person,
-    comments
+    comments,
   };
 })(PeopleSinglePage);
