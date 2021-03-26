@@ -282,8 +282,8 @@ export const chartsData = new ValidatedMethod({
             {
               $match: {
                 created_time: {
-                  $gte: start.toISOString(),
-                  $lt: end.toISOString(),
+                  $gte: start,
+                  $lt: end,
                 },
                 personId: { $ne: facebookAccountId },
                 facebookAccountId: facebookAccountId,
