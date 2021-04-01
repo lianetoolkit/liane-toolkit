@@ -318,10 +318,17 @@ class JobsPage extends Component {
     return options;
   };
   _handleFilterChange = ({ target }) => {
-    FlowRouter.setQueryParams({ [target.name]: target.value, page: 1 });
+    let value = target.value;
+    if (Array.isArray(target.value)) {
+      value = target.value.join(",");
+    }
+    FlowRouter.setQueryParams({ [target.name]: value, page: 1 });
   };
   _handleFilterSelectChange = (name) => (ev) => {
-    const value = ev && ev.value ? ev.value : undefined;
+    let value = ev && ev.value ? ev.value : undefined;
+    if (Array.isArray(value)) {
+      value = value.join(",");
+    }
     FlowRouter.setQueryParams({ [name]: value, page: 1 });
   };
   _buildFilterTypeValue = () => {
@@ -337,6 +344,17 @@ class JobsPage extends Component {
   _handleCampaignClick = (campaignId) => (ev) => {
     ev.preventDefault();
     FlowRouter.setQueryParams({ campaign: campaignId });
+  };
+  _getCampaignValue = () => {
+    const value = FlowRouter.getQueryParam("campaign") || "";
+    if (value) {
+      if (!Array.isArray(value)) {
+        return value.split(",");
+      } else {
+        return value;
+      }
+    }
+    return null;
   };
   render() {
     const { intl, jobs, page, limit } = this.props;
@@ -372,8 +390,9 @@ class JobsPage extends Component {
             <CampaignSelect
               onChange={this._handleFilterChange}
               placeholder={intl.formatMessage(messages.filterCampaign)}
-              value={FlowRouter.getQueryParam("campaign")}
+              value={this._getCampaignValue()}
               name="campaign"
+              multiple={false}
             />
           </div>
         </Filters>

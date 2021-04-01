@@ -3,7 +3,7 @@ import { injectIntl, intlShape, defineMessages } from "react-intl";
 import styled from "styled-components";
 import Select from "react-select";
 import moment from "moment";
-import { debounce, uniqBy } from "lodash";
+import { compact, debounce, uniqBy } from "lodash";
 
 const messages = defineMessages({
   placeholder: {
@@ -107,10 +107,12 @@ class CampaignSelect extends Component {
     if (value && value.length) {
       valueOptions = value.map((id) => {
         const campaign = campaigns[id];
-        return {
-          label: campaign.name,
-          value: campaign._id,
-        };
+        if (campaign) {
+          return {
+            label: campaign.name,
+            value: campaign._id,
+          };
+        }
       });
     }
     const campaignsOptions = data.map((campaign) => {
@@ -119,7 +121,7 @@ class CampaignSelect extends Component {
         value: campaign._id,
       };
     });
-    return uniqBy([...valueOptions, ...campaignsOptions], "value");
+    return compact(uniqBy([...valueOptions, ...campaignsOptions], "value"));
   };
   _handleChange = (value) => {
     const { onChange, name } = this.props;
