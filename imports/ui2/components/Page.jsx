@@ -205,7 +205,6 @@ const PageBody = styled.div`
     css`
       overflow: auto;
     `}
-  ${"" /* overflow: auto; */}
 `;
 
 const Boxed = styled.div`

@@ -76,6 +76,7 @@ appRoutes.route("/register", {
   action: function (params, queryParams) {
     addTitle(`${APP_NAME} | Technology for Political Innovation`);
     return mount(App, {
+      contained: true,
       content: { component: RegisterPage },
       campaignInvite: queryParams.campaignInvite && queryParams.campaignInvite,
     });
