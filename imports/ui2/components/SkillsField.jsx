@@ -10,6 +10,7 @@ import { uniq, sortBy } from "lodash";
 
 import SkillsConfig, { defaultSkillsLabels } from "./SkillsConfig.jsx";
 import CreatableSelect from "react-select/creatable";
+import Form from "./Form.jsx";
 
 const messages = defineMessages({
   placeholder: {
@@ -19,19 +20,7 @@ const messages = defineMessages({
 });
 
 const Container = styled.div`
-  padding: 0;
-  font-size: 0.9em;
-  label {
-    font-weight: normal;
-    padding: 0.5rem 1rem;
-    margin: 0;
-    &:last-child {
-      margin: 0;
-    }
-  }
-  input[type="checkbox"] {
-    margin-right: 1rem;
-  }
+
 `;
 
 class SkillsField extends Component {
@@ -112,7 +101,7 @@ class SkillsField extends Component {
     const { intl, name } = this.props;
     const { options } = this.state;
     return (
-      <Container>
+      <Form.CheckboxGroup>
         {options.map((option) => (
           <label key={option.value}>
             <input
@@ -124,7 +113,7 @@ class SkillsField extends Component {
             {option.label}
           </label>
         ))}
-      </Container>
+      </Form.CheckboxGroup>
     );
     return (
       <CreatableSelect

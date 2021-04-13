@@ -140,6 +140,22 @@ const FieldContainer = styled.label`
   }
 `;
 
+const CheckboxGroup = styled.div`
+  padding: 0;
+  font-size: 0.9em;
+  label {
+    font-weight: normal;
+    padding: 0.5rem 1rem;
+    margin: 0;
+    &:last-child {
+      margin: 0;
+    }
+  }
+  input[type="checkbox"] {
+    margin-right: 1rem;
+  }
+`;
+
 class Content extends Component {
   render() {
     const { children, ...props } = this.props;
@@ -334,6 +350,7 @@ export default class Form extends Component {
   static Actions = Actions;
   static Filters = Filters;
   static ButtonGroup = ButtonGroup;
+  static CheckboxGroup = CheckboxGroup;
   static Field = Field;
   render() {
     const { children, ...props } = this.props;
