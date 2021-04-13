@@ -85,7 +85,7 @@ appRoutes.route("/register", {
 });
 
 appRoutes.route("/register_profile", {
-  name: "App.register",
+  name: "App.registerProfile",
   action: function (params, queryParams) {
     addTitle(`${APP_NAME} | Technology for Political Innovation`);
     return mount(App, {
