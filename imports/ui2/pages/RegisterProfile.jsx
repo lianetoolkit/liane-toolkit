@@ -44,22 +44,81 @@ const messages = defineMessages({
   },
 });
 
-const alertsMessages = defineMessages({
-  name: {
-    id: "app.registration.alerts.name",
-    defaultMessage: "You must set a name",
+const rolesLabels = defineMessages({
+  candidate: {
+    id: "app.registration.roles.candidate",
+    defaultMessage: "Mandatary/candidate",
+  },
+  team_coord: {
+    id: "app.registration.roles.team_coord",
+    defaultMessage: "Team Coordination",
+  },
+  advisor: {
+    id: "app.registration.roles.advisor",
+    defaultMessage: "Political advisor",
+  },
+  mobilization_coord: {
+    id: "app.registration.roles.mobilization_coord",
+    defaultMessage: "Mobilization Coordination",
+  },
+  marketing: {
+    id: "app.registration.roles.marketing",
+    defaultMessage: "Marketing",
+  },
+  social_media: {
+    id: "app.registration.roles.social_media",
+    defaultMessage: "Social media",
+  },
+  customer_service: {
+    id: "app.registration.roles.customer_service",
+    defaultMessage: "Customer service",
+  },
+  mobilizer: {
+    id: "app.registration.roles.mobilizer",
+    defaultMessage: "Mobilizer",
+  },
+  volunteer: {
+    id: "app.registration.roles.volunteer",
+    defaultMessage: "Volunteer",
+  },
+  other: {
+    id: "app.registration.roles.other",
+    defaultMessage: "Other",
+  },
+});
+
+const refsLabels = defineMessages({
+  search: {
+    id: "app.registration.refs.search",
+    defaultMessage: "Search engines (Google, Bing, etc)",
+  },
+  facebook: {
+    id: "app.registration.refs.facebook",
+    defaultMessage: "Facebook",
+  },
+  instagram: {
+    id: "app.registration.refs.instagram",
+    defaultMessage: "Instagram",
+  },
+  twitter: {
+    id: "app.registration.refs.twitter",
+    defaultMessage: "Twitter",
+  },
+  update: {
+    id: "app.registration.refs.update",
+    defaultMessage: "Update Institute or some of its projects",
   },
   email: {
-    id: "app.registration.alerts.email",
-    defaultMessage: "You must set an email",
+    id: "app.registration.refs.email",
+    defaultMessage: "Email",
   },
-  password: {
-    id: "app.registration.alerts.password",
-    defaultMessage: "You must set a password",
+  friend: {
+    id: "app.registration.refs.friend",
+    defaultMessage: "Colleague or friend",
   },
-  passwordMatch: {
-    id: "app.registration.alerts.password_match",
-    defaultMessage: "Passwords do not match",
+  other: {
+    id: "app.registration.refs.other",
+    defaultMessage: "Other",
   },
 });
 
@@ -71,57 +130,8 @@ class RegisterProfilePage extends Component {
       formData: {},
     };
   }
-  componentDidMount = () => {};
   _handleSubmit = (ev) => {
     ev.preventDefault();
-    const { intl, campaignInvite, invite } = this.props;
-    const { email, formData } = this.state;
-    const language = ClientStorage.get("language");
-    if (!formData.name) {
-      alertStore.add(intl.formatMessage(alertsMessages.name), "error");
-      return;
-    }
-    if (!email && !formData.email) {
-      alertStore.add(intl.formatMessage(alertsMessages.email), "error");
-      return;
-    }
-    if (!formData.password) {
-      alertStore.add(intl.formatMessage(alertsMessages.password), "error");
-      return;
-    }
-    if (formData.password != formData.passwordRpt) {
-      alertStore.add(intl.formatMessage(alertsMessages.passwordMatch), "error");
-      return;
-    }
-    const data = {
-      name: formData.name,
-      email: email || formData.email,
-      country: formData.country,
-      region: formData.region,
-      password: formData.password,
-    };
-    if (language) {
-      data.userLanguage = language;
-    }
-    if (!email) {
-      data.email = formData.email;
-    }
-    if (campaignInvite) {
-      data.invite = campaignInvite;
-    }
-    if (invite) {
-      data.type = "campaigner";
-    }
-    this.setState({ loading: true });
-    Accounts.createUser(data, (err) => {
-      if (err) {
-        alertStore.add(err);
-        this.setState({ loading: false });
-      } else {
-        alertStore.add(null, "success");
-        FlowRouter.go("App.dashboard");
-      }
-    });
   };
   _handleChange = ({ target }) => {
     this.setState({
@@ -143,84 +153,44 @@ class RegisterProfilePage extends Component {
     );
   };
   _getRoleOptions = () => {
-    return [
-      {
-        value: "candidate",
-        label: "Mandatary/candidate",
-      },
-      {
-        value: "coordinate",
-        label: "Team Coordination",
-      },
-      {
-        value: "advisor",
-        label: "Political advisor",
-      },
-      {
-        value: "mobilizer",
-        label: "Mobilization Coordination",
-      },
-      {
-        value: "marketing",
-        label: "Marketing",
-      },
-      {
-        value: "social_media",
-        label: "Social media",
-      },
-      {
-        value: "customer_service",
-        label: "Customer service",
-      },
-      {
-        value: "mobilizer",
-        label: "Mobilizer",
-      },
-      {
-        value: "volunteer",
-        label: "Volunteer",
-      },
-      {
-        value: "other",
-        label: "Other",
-      },
+    const { intl } = this.props;
+    let roles = [
+      "candidate",
+      "team_coord",
+      "advisor",
+      "mobilization_coord",
+      "marketing",
+      "social_media",
+      "customer_service",
+      "mobilizer",
+      "volunteer",
+      "other",
     ];
+    return roles.map((value) => {
+      return {
+        value,
+        label: intl.formatMessage(rolesLabels[value]),
+      };
+    });
   };
   _getRefOptions = () => {
-    return [
-      {
-        value: "search",
-        label: "Search engines (Google, Bing, etc)",
-      },
-      {
-        value: "facebook",
-        label: "Facebook",
-      },
-      {
-        value: "instagram",
-        label: "Instagram",
-      },
-      {
-        value: "twitter",
-        label: "Twitter",
-      },
-      {
-        value: "update",
-        label: "Update Institute or some of its projects",
-      },
-      {
-        value: "email",
-        label: "Email",
-      },
-      {
-        value: "friend",
-        label: "Colleague or friend",
-      },
-      {
-        value: "other",
-        label: "Other",
-      },
+    const { intl } = this.props;
+    let refs = [
+      "search",
+      "facebook",
+      "instagram",
+      "twitter",
+      "update",
+      "email",
+      "friend",
+      "other",
     ];
+    return refs.map((value) => {
+      return {
+        value,
+        label: intl.formatMessage(refsLabels[value]),
+      };
+    });
   };
   render() {
     const { intl, campaignInvite, invite } = this.props;
