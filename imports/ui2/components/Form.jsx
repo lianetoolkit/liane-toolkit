@@ -151,7 +151,8 @@ const CheckboxGroup = styled.div`
       margin: 0;
     }
   }
-  input[type="checkbox"] {
+  input[type="checkbox"],
+  input[type="radio"] {
     margin-right: 1rem;
   }
 `;

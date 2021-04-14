@@ -132,6 +132,8 @@ class RegisterProfilePage extends Component {
   }
   _handleSubmit = (ev) => {
     ev.preventDefault();
+    const { formData } = this.state;
+    console.log(formData);
   };
   _handleChange = ({ target }) => {
     this.setState({
@@ -142,15 +144,8 @@ class RegisterProfilePage extends Component {
     });
   };
   _filledForm = () => {
-    const { agreed, formData } = this.state;
-    return (
-      agreed &&
-      formData.name &&
-      formData.country &&
-      formData.region &&
-      formData.password &&
-      formData.passwordRpt
-    );
+    const { formData } = this.state;
+    return formData.country && formData.region;
   };
   _getRoleOptions = () => {
     const { intl } = this.props;
@@ -192,6 +187,16 @@ class RegisterProfilePage extends Component {
       };
     });
   };
+  _isChecked = (key, val) => {
+    const set = this.state.formData[key];
+    if (this.state.formData[key]) {
+      return (
+        this.state.formData[key] == val ||
+        this.state.formData[key].indexOf(val) !== -1
+      );
+    }
+    return false;
+  };
   render() {
     const { intl, campaignInvite, invite } = this.props;
     const { loading, email, formData } = this.state;
@@ -232,7 +237,13 @@ class RegisterProfilePage extends Component {
             <Form.CheckboxGroup>
               {roleOptions.map((option) => (
                 <label key={option.value}>
-                  <input type="checkbox" value={option.value} />
+                  <input
+                    type="radio"
+                    value={option.value}
+                    name="role"
+                    onChange={this._handleChange}
+                    isChecked={this._isChecked("role", option.value)}
+                  />
                   {option.label}
                 </label>
               ))}
@@ -242,7 +253,13 @@ class RegisterProfilePage extends Component {
             <Form.CheckboxGroup>
               {refOptions.map((option) => (
                 <label key={option.value}>
-                  <input type="checkbox" value={option.value} />
+                  <input
+                    type="radio"
+                    value={option.value}
+                    name="ref"
+                    onChange={this._handleChange}
+                    isChecked={this._isChecked("ref", option.value)}
+                  />
                   {option.label}
                 </label>
               ))}
