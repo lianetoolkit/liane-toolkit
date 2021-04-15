@@ -91,7 +91,7 @@ class RegisterPage extends Component {
                 { invite: campaignInvite },
                 (err, { campaignId }) => {
                   Session.set("campaignId", campaignId);
-                  FlowRouter.go("App.dashboard");
+                  FlowRouter.go("App.registerProfile");
                   window.location.reload();
                 }
               );

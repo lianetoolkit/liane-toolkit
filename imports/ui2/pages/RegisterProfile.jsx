@@ -138,6 +138,7 @@ class RegisterProfilePage extends Component {
         alertStore.add(err);
       } else {
         alertStore.add(null, "success");
+        FlowRouter.go("App.dashboard");
       }
     });
   };
@@ -226,17 +227,23 @@ class RegisterProfilePage extends Component {
           <p>
             <FormattedMessage
               id="app.registration.profile.description"
-              defaultMessage="We just need a few more information before you can start using Liane!"
+              defaultMessage="We just need a few more information before you can continue using Liane!"
             />
           </p>
           <Form.Field label={intl.formatMessage(messages.phoneLabel)} optional>
             <input type="text" name="phone" onChange={this._handleChange} />
           </Form.Field>
-          <Form.Field label={intl.formatMessage(messages.countryLabel)}>
+          <Form.Field
+            label={intl.formatMessage(messages.countryLabel)}
+            required
+          >
             <CountrySelect name="country" onChange={this._handleChange} />
           </Form.Field>
           {formData.country ? (
-            <Form.Field label={intl.formatMessage(messages.regionLabel)}>
+            <Form.Field
+              label={intl.formatMessage(messages.regionLabel)}
+              required
+            >
               <RegionSelect
                 country={formData.country}
                 name="region"
@@ -244,7 +251,7 @@ class RegisterProfilePage extends Component {
               />
             </Form.Field>
           ) : null}
-          <Form.Field label={intl.formatMessage(messages.roleLabel)}>
+          <Form.Field label={intl.formatMessage(messages.roleLabel)} required>
             <Form.CheckboxGroup>
               {roleOptions.map((option) => (
                 <label key={option.value}>
@@ -260,7 +267,7 @@ class RegisterProfilePage extends Component {
               ))}
             </Form.CheckboxGroup>
           </Form.Field>
-          <Form.Field label={intl.formatMessage(messages.refLabel)}>
+          <Form.Field label={intl.formatMessage(messages.refLabel)} required>
             <Form.CheckboxGroup>
               {refOptions.map((option) => (
                 <label key={option.value}>

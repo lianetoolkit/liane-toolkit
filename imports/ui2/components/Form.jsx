@@ -56,6 +56,9 @@ const FieldContainer = styled.label`
   .optional-label {
     color: #999;
   }
+  .required-label {
+    color: red;
+  }
   .field-description {
     color: #888;
     display: block;
@@ -315,6 +318,7 @@ class Field extends Component {
       label,
       description,
       optional,
+      required,
       children,
       prefix,
       ...props
@@ -332,6 +336,7 @@ class Field extends Component {
                 />
               </span>
             ) : null}
+            {required ? <span className="required-label">*</span> : null}
           </span>
         ) : null}
         {description ? (
