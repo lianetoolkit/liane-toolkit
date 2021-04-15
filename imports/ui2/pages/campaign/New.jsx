@@ -253,6 +253,15 @@ class NewCampaignPage extends Component {
     }
     return (
       <Form onSubmit={this._handleSubmit}>
+        <Form.Steps
+          title="New campaign"
+          steps={[
+            "Campaign type",
+            "Campaign information",
+            "Location",
+            "Facebook page",
+          ]}
+        />
         <Form.Content>
           {loading ? <Loading full /> : null}
           <Page.Title>

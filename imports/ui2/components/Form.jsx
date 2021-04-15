@@ -227,6 +227,67 @@ class Actions extends Component {
   }
 }
 
+const StepsContainer = styled.header`
+  border-bottom: 1px solid #ddd;
+  position: relative;
+  z-index: 2;
+  background: #f7f7f7;
+`;
+
+const StepsContent = styled.div`
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem 4rem 0;
+  ol {
+    width: 100%;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 1rem;
+  }
+`;
+
+const StepItem = styled.li`
+  flex: 1 1 auto;
+  ${(props) =>
+    props.active &&
+    css`
+      border-bottom: 2px solid green;
+    `}
+`;
+
+class Steps extends Component {
+  _handleClick = (stepIndex) => (ev) => {
+    ev.preventDefault();
+    this.props.onChange && this.props.onChange(stepIndex);
+  };
+  render() {
+    const { title, currentStep, steps, children } = this.props;
+    return (
+      <StepsContainer>
+        <StepsContent>
+          <h2>{title}</h2>
+          <nav>
+            <ol>
+              {steps.map((step, i) => (
+                <StepItem key={step} active={currentStep == i}>
+                  <a href="#" onClick={this._handleClick(i)}>
+                    {step}
+                  </a>
+                </StepItem>
+              ))}
+            </ol>
+          </nav>
+          {children}
+        </StepsContent>
+      </StepsContainer>
+    );
+  }
+}
+
 const FiltersContainer = styled.div`
   border-top: 1px solid #ddd;
   flex: 0 0 auto;
@@ -353,6 +414,7 @@ class Field extends Component {
 
 export default class Form extends Component {
   static Content = Content;
+  static Steps = Steps;
   static Actions = Actions;
   static Filters = Filters;
   static ButtonGroup = ButtonGroup;
