@@ -705,6 +705,7 @@
   "app.privacy_field.label": "I have read and agree with the <a href='{privacyUrl}' rel='external' target='_blank'>privacy policy</a> and the <a href='{termsUrl}' target='_blank' rel='external'>terms of use</a>.",
   "app.privacy_policy": "Privacy Policy",
   "app.refresh_message": "Click here to refresh the page",
+  "app.region_select.placeholder": "Select a region...",
   "app.registration.alerts.email": "You must set an email",
   "app.registration.alerts.name": "You must set a name",
   "app.registration.alerts.password": "You must set a password",
