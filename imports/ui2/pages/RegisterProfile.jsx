@@ -133,7 +133,13 @@ class RegisterProfilePage extends Component {
   _handleSubmit = (ev) => {
     ev.preventDefault();
     const { formData } = this.state;
-    console.log(formData);
+    Meteor.call("users.updateProfile", formData, (err, res) => {
+      if (err) {
+        alertStore.add(err);
+      } else {
+        alertStore.add(null, "success");
+      }
+    });
   };
   _handleChange = ({ target }) => {
     this.setState({
@@ -145,7 +151,12 @@ class RegisterProfilePage extends Component {
   };
   _filledForm = () => {
     const { formData } = this.state;
-    return formData.country && formData.region;
+    return (
+      formData.country &&
+      formData.region &&
+      formData.campaignRole &&
+      formData.ref
+    );
   };
   _getRoleOptions = () => {
     const { intl } = this.props;
@@ -240,7 +251,7 @@ class RegisterProfilePage extends Component {
                   <input
                     type="radio"
                     value={option.value}
-                    name="role"
+                    name="campaignRole"
                     onChange={this._handleChange}
                     isChecked={this._isChecked("role", option.value)}
                   />
