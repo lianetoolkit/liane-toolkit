@@ -229,7 +229,7 @@ class RegisterProfilePage extends Component {
               defaultMessage="We just need a few more information before you can start using Liane!"
             />
           </p>
-          <Form.Field label={intl.formatMessage(messages.phoneLabel)}>
+          <Form.Field label={intl.formatMessage(messages.phoneLabel)} optional>
             <input type="text" name="phone" onChange={this._handleChange} />
           </Form.Field>
           <Form.Field label={intl.formatMessage(messages.countryLabel)}>
