@@ -47,7 +47,6 @@ const styles = css`
   &.primary {
     background: #f5911e;
     color: #fff;
-    font-size: 1em;
     &:hover,
     &:active,
     &:focus,

@@ -194,21 +194,26 @@ const ActionsContent = styled.div`
     padding: 0;
     justify-content: flex-start;
   }
+  .button {
+    margin: 0;
+    padding: 0.5rem 1rem;
+  }
   button,
   input[type="submit"] {
     display: block;
-    border: 0;
     background: #f5911e;
-    padding: 1rem 1.5rem;
     color: #fff;
     cursor: pointer;
+    border: 1px solid #f5911e;
     margin: 0;
     &:hover,
     &:active,
     &:focus {
+      border: 1px solid #333;
       background: #333;
     }
     &:disabled {
+      border: 1px solid #bbb;
       background: #bbb;
       color: #fff;
       cursor: default;
@@ -237,7 +242,10 @@ const StepsContainer = styled.header`
 const StepsContent = styled.div`
   max-width: 700px;
   margin: 0 auto;
-  padding: 1rem 4rem 0;
+  padding: 0 4rem;
+  h1 {
+    margin: 3rem 0 0;
+  }
   ol {
     width: 100%;
     list-style: none;
@@ -245,17 +253,32 @@ const StepsContent = styled.div`
     padding: 0;
     display: flex;
     align-items: center;
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 1rem;
   }
 `;
 
 const StepItem = styled.li`
   flex: 1 1 auto;
+  padding: 1rem 0;
+  border-bottom: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  font-size: 0.8em;
+  a {
+    text-decoration: none;
+    color: #777;
+    font-weight: 600;
+    flex: 1 1 100%;
+    &:hover {
+      color: #333;
+    }
+  }
   ${(props) =>
     props.active &&
     css`
-      border-bottom: 2px solid green;
+      border-bottom: 2px solid #000;
+      a {
+        color: #333;
+      }
     `}
 `;
 
@@ -269,7 +292,7 @@ class Steps extends Component {
     return (
       <StepsContainer>
         <StepsContent>
-          <h2>{title}</h2>
+          <h1>{title}</h1>
           <nav>
             <ol>
               {steps.map((step, i) => (

@@ -232,16 +232,19 @@ input:focus {
 button,
 input[type="submit"] {
   box-sizing: border-box;
+  font-size: 0.9em;
   display: block;
   border: 0;
   background: #f5911e;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   border-radius: 7px;
   color: #fff;
   cursor: pointer;
   font-weight: 600;
   margin: 0;
   text-decoration: none;
+  border: 1px solid #f5911e;
+  line-height: 1.5;
 }
 
 .button.secondary,

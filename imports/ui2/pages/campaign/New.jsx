@@ -12,6 +12,7 @@ import { set, get } from "lodash";
 import { alertStore } from "../../containers/Alerts.jsx";
 
 import Page from "../../components/Page.jsx";
+import Button from "../../components/Button.jsx";
 import Form from "../../components/Form.jsx";
 import Loading from "../../components/Loading.jsx";
 import SelectAccount from "../../components/facebook/SelectAccount.jsx";
@@ -49,7 +50,7 @@ const messages = defineMessages({
   },
   candidatePlaceholder: {
     id: "app.campaign.form.candidate.placeholder",
-    defaultMessage: "Candidacy name",
+    defaultMessage: "Public name",
   },
   partyLabel: {
     id: "app.campaign.form.party.label",
@@ -89,10 +90,34 @@ const messages = defineMessages({
   },
 });
 
+const stepsLabels = defineMessages({
+  basic_info: {
+    id: "app.campaign.form.steps.basic_info",
+    defaultMessage: "Basic information",
+  },
+  campaign_details: {
+    id: "app.campaign.form.steps.campaign_details",
+    defaultMessage: "Campaign details",
+  },
+  location: {
+    id: "app.campaign.form.steps.location",
+    defaultMessage: "Location",
+  },
+  facebook: {
+    id: "app.campaign.form.steps.facebook",
+    defaultMessage: "Facebook page",
+  },
+  policy: {
+    id: "app.campaign.form.steps.policy",
+    defaultMessage: "Policy agreement",
+  },
+});
+
 class NewCampaignPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      currentStep: 0,
       agreed: false,
       ready: false,
       validation: false,
@@ -107,6 +132,22 @@ class NewCampaignPage extends Component {
   componentDidMount() {
     this._validate();
   }
+  _handleStepChange = (stepIndex) => {
+    this.setState({ currentStep: stepIndex });
+  };
+  _getSteps = () => {
+    const { intl } = this.props;
+    let steps = [
+      "basic_info",
+      "campaign_details",
+      "location",
+      "facebook",
+      "policy",
+    ];
+    return steps.map((step) => {
+      return { key: step, label: intl.formatMessage(stepsLabels[step]) };
+    });
+  };
   _validate = () => {
     const invite = ClientStorage.get("invite");
     this.setState({ ready: false });
@@ -215,9 +256,18 @@ class NewCampaignPage extends Component {
       alertStore.add(intl.formatMessage(messages.requiredFields), "error");
     }
   };
+  _handleNextStepClick = (ev) => {
+    ev.preventDefault();
+    this.setState({
+      currentStep: this.state.currentStep + 1,
+    });
+  };
+  _getStepLabel = (stepIndex) => {
+    return this._getSteps()[stepIndex].label;
+  };
   render() {
     const { intl } = this.props;
-    const { ready, validation, loading, formData } = this.state;
+    const { currentStep, ready, validation, loading, formData } = this.state;
     if (!ready) {
       return <Loading full />;
     }
@@ -254,165 +304,193 @@ class NewCampaignPage extends Component {
     return (
       <Form onSubmit={this._handleSubmit}>
         <Form.Steps
-          title="New campaign"
-          steps={[
-            "Campaign type",
-            "Campaign information",
-            "Location",
-            "Facebook page",
-          ]}
+          title="Create a campaign"
+          currentStep={currentStep}
+          onChange={this._handleStepChange}
+          steps={this._getSteps().map((step) => step.label)}
         />
         <Form.Content>
           {loading ? <Loading full /> : null}
-          <Page.Title>
-            <FormattedMessage
-              id="app.title.new_campaign"
-              defaultMessage="Creating new campaign"
-            />
-          </Page.Title>
-          <Form.Field label={intl.formatMessage(messages.nameLabel)}>
-            <input
-              type="text"
-              name="name"
-              placeholder={intl.formatMessage(messages.namePlaceholder)}
-              onChange={this._handleChange}
-              value={formData.name}
-            />
-          </Form.Field>
-          <Form.Field label={intl.formatMessage(messages.typeLabel)}>
-            <CampaignTypeSelect
-              name="type"
-              placeholder={intl.formatMessage(messages.typePlaceholder)}
-              onChange={this._handleChange}
-              value={formData.type}
-            />
-          </Form.Field>
-          {formData.type.match(/electoral|mandate/) ? (
+          {currentStep == 0 ? (
             <>
-              <Form.Field label={intl.formatMessage(messages.candidateLabel)}>
+              <Form.Field label={intl.formatMessage(messages.nameLabel)} big>
                 <input
                   type="text"
-                  name="candidate"
-                  placeholder={intl.formatMessage(
-                    messages.candidatePlaceholder
-                  )}
+                  name="name"
+                  placeholder={intl.formatMessage(messages.namePlaceholder)}
                   onChange={this._handleChange}
-                  value={formData.candidate}
+                  value={formData.name}
+                  big
                 />
               </Form.Field>
-              <Form.Field label={intl.formatMessage(messages.partyLabel)}>
-                <input
-                  type="text"
-                  name="party"
-                  placeholder={intl.formatMessage(messages.partyPlaceholder)}
+              <Form.Field label={intl.formatMessage(messages.typeLabel)}>
+                <CampaignTypeSelect
+                  name="type"
+                  placeholder={intl.formatMessage(messages.typePlaceholder)}
                   onChange={this._handleChange}
-                  value={formData.party}
+                  value={formData.type}
                 />
               </Form.Field>
             </>
           ) : null}
-          {formData.type.match(/mobilization/) ? (
-            <Form.Field label={intl.formatMessage(messages.causeLabel)}>
-              <input
-                type="text"
-                name="cause"
+          {currentStep == 1 ? (
+            <>
+              {formData.type.match(/electoral|mandate/) ? (
+                <>
+                  <h2>
+                    <FormattedMessage
+                      id="app.campaign.form.candidate_title"
+                      defaultMessage="Candidate"
+                    />
+                  </h2>
+                  <p>
+                    <p>
+                      You are creating an electoral campaign in Liane.
+                      Therefore, the following questions are about the
+                      candidate.
+                    </p>
+                  </p>
+                  <Form.Field
+                    label={intl.formatMessage(messages.candidateLabel)}
+                  >
+                    <input
+                      type="text"
+                      name="candidate"
+                      placeholder={intl.formatMessage(
+                        messages.candidatePlaceholder
+                      )}
+                      onChange={this._handleChange}
+                      value={formData.candidate}
+                    />
+                  </Form.Field>
+                  <Form.Field label={intl.formatMessage(messages.partyLabel)}>
+                    <input
+                      type="text"
+                      name="party"
+                      placeholder={intl.formatMessage(
+                        messages.partyPlaceholder
+                      )}
+                      onChange={this._handleChange}
+                      value={formData.party}
+                    />
+                  </Form.Field>
+                </>
+              ) : null}
+              {formData.type.match(/mobilization/) ? (
+                <Form.Field label={intl.formatMessage(messages.causeLabel)}>
+                  <input
+                    type="text"
+                    name="cause"
+                    onChange={this._handleChange}
+                    value={formData.cause}
+                  />
+                </Form.Field>
+              ) : null}
+              <h3>
+                <FormattedMessage
+                  id="app.campaign.form.section_title.contact"
+                  defaultMessage="Contact information"
+                />
+              </h3>
+              <Form.Field label={intl.formatMessage(messages.emailLabel)}>
+                <input
+                  type="text"
+                  name="contact.email"
+                  value={this.getValue("contact.email")}
+                  onChange={this._handleChange}
+                />
+              </Form.Field>
+              <Form.Field
+                label={intl.formatMessage(messages.phoneLabel)}
+                optional
+              >
+                <input
+                  type="text"
+                  name="contact.phone"
+                  value={this.getValue("contact.phone")}
+                  onChange={this._handleChange}
+                />
+              </Form.Field>
+            </>
+          ) : null}
+          {currentStep == 2 ? (
+            <>
+              <Form.Field label={intl.formatMessage(messages.countryLabel)}>
+                <CountrySelect
+                  name="country"
+                  value={formData.country}
+                  onChange={this._handleChange}
+                />
+              </Form.Field>
+              {formData.country && formData.type.match(/electoral|mandate/) ? (
+                <Form.Field label={intl.formatMessage(messages.officeLabel)}>
+                  <OfficeField
+                    country={formData.country}
+                    name="office"
+                    onChange={this._handleChange}
+                  />
+                </Form.Field>
+              ) : null}
+              {formData.country ? (
+                <GeolocationSearch
+                  country={formData.country}
+                  onChange={this._handleGeolocationChange}
+                />
+              ) : null}
+            </>
+          ) : null}
+          {currentStep == 3 ? (
+            <>
+              <p>
+                <FormattedMessage
+                  id="app.campaign.form.select_account"
+                  defaultMessage="Select the Facebook account to be used by your campaign"
+                />
+              </p>
+              <SelectAccount
+                name="facebookAccountId"
                 onChange={this._handleChange}
-                value={formData.cause}
+                value={formData.facebookAccountId}
               />
-            </Form.Field>
+            </>
           ) : null}
-          <h3>
-            <FormattedMessage
-              id="app.campaign.form.section_title.contact"
-              defaultMessage="Contact information"
-            />
-          </h3>
-          <Form.Field label={intl.formatMessage(messages.emailLabel)}>
-            <input
-              type="text"
-              name="contact.email"
-              value={this.getValue("contact.email")}
-              onChange={this._handleChange}
-            />
-          </Form.Field>
-          <Form.Field label={intl.formatMessage(messages.phoneLabel)} optional>
-            <input
-              type="text"
-              name="contact.phone"
-              value={this.getValue("contact.phone")}
-              onChange={this._handleChange}
-            />
-          </Form.Field>
-          <h3>
-            <FormattedMessage
-              id="app.campaign.form.section_title.geolocation"
-              defaultMessage="Geolocation"
-            />
-          </h3>
-          <Form.Field label={intl.formatMessage(messages.countryLabel)}>
-            <CountrySelect
-              name="country"
-              value={formData.country}
-              onChange={this._handleChange}
-            />
-          </Form.Field>
-          {formData.country && formData.type.match(/electoral|mandate/) ? (
-            <Form.Field label={intl.formatMessage(messages.officeLabel)}>
-              <OfficeField
-                country={formData.country}
-                name="office"
-                onChange={this._handleChange}
-              />
-            </Form.Field>
+          {currentStep == 4 ? (
+            <Disclaimer
+              type="security"
+              consent={intl.formatMessage(messages.consentText)}
+              onChange={this._handleConsentChange}
+            >
+              <p>
+                <FormattedMessage
+                  id="app.campaign.form.disclaimer_01"
+                  defaultMessage="We guarantee that only people who have the permissions provided by Facebook or the campaign's team can access public data of user interactions in the campaign's social networks, and we make sure that the use of such data by the campaigns is in good faith, non-malicious and in accordance with the law."
+                />
+              </p>
+              <p>
+                <FormattedMessage
+                  id="app.campaign.form.disclaimer_02"
+                  defaultMessage="Any type of behavior contrary to these principles detected by Liane's team, may be grounds for deletion of the campaign and its data."
+                />
+              </p>
+            </Disclaimer>
           ) : null}
-          {formData.country ? (
-            <GeolocationSearch
-              country={formData.country}
-              onChange={this._handleGeolocationChange}
-            />
-          ) : null}
-          <h3>
-            <FormattedMessage
-              id="app.campaign.form.section_title.facebook"
-              defaultMessage="Facebook Page"
-            />
-          </h3>
-          <p>
-            <FormattedMessage
-              id="app.campaign.form.select_account"
-              defaultMessage="Select the Facebook account to be used by your campaign"
-            />
-          </p>
-          <SelectAccount
-            name="facebookAccountId"
-            onChange={this._handleChange}
-            value={formData.facebookAccountId}
-          />
-          <Disclaimer
-            type="security"
-            consent={intl.formatMessage(messages.consentText)}
-            onChange={this._handleConsentChange}
-          >
-            <p>
-              <FormattedMessage
-                id="app.campaign.form.disclaimer_01"
-                defaultMessage="We guarantee that only people who have the permissions provided by Facebook or the campaign's team can access public data of user interactions in the campaign's social networks, and we make sure that the use of such data by the campaigns is in good faith, non-malicious and in accordance with the law."
-              />
-            </p>
-            <p>
-              <FormattedMessage
-                id="app.campaign.form.disclaimer_02"
-                defaultMessage="Any type of behavior contrary to these principles detected by Liane's team, may be grounds for deletion of the campaign and its data."
-              />
-            </p>
-          </Disclaimer>
         </Form.Content>
         <Form.Actions>
-          <input
-            type="submit"
-            disabled={!this._filledForm() || loading}
-            value={intl.formatMessage(messages.submitLabel)}
-          />
+          {currentStep == this._getSteps().length - 1 ? (
+            <input
+              type="submit"
+              disabled={!this._filledForm() || loading}
+              value={intl.formatMessage(messages.submitLabel)}
+            />
+          ) : (
+            <Button onClick={this._handleNextStepClick}>
+              <FormattedMessage
+                id="app.campaign.form.next_step.label"
+                defaultMessage="Next step:"
+              />{" "}
+              {this._getStepLabel(currentStep + 1)}
+            </Button>
+          )}
         </Form.Actions>
       </Form>
     );
