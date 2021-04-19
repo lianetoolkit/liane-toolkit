@@ -301,15 +301,21 @@ export const campaignsCreate = new ValidatedMethod({
     const token = user.services.facebook.accessToken;
 
     let geolocationId = false;
-    if (geolocation) {
-      try {
-        geolocationId = GeolocationsHelpers.discoverAndStore({
-          ...geolocation,
-          accessToken: token,
-        });
-      } catch (e) {
-        throw new Meteor.Error(500, "Unexpected error, please try again");
-      }
+    if (!geolocation) {
+      const nominatinRes = GeolocationsHelpers.nominatimSearch({ country });
+      geolocation = {
+        type: "country",
+        osm_id: nominatinRes[0].osm_id,
+        osm_type: nominatinRes[0].osm_type,
+      };
+    }
+    try {
+      geolocationId = GeolocationsHelpers.discoverAndStore({
+        ...geolocation,
+        accessToken: token,
+      });
+    } catch (e) {
+      throw new Meteor.Error(500, "Unexpected error, please try again");
     }
 
     if (geolocationId) {

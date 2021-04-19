@@ -265,7 +265,7 @@ const StepItem = styled.li`
   font-size: 0.8em;
   a {
     text-decoration: none;
-    color: #777;
+    color: #666;
     font-weight: 600;
     flex: 1 1 100%;
     &:hover {
@@ -280,15 +280,48 @@ const StepItem = styled.li`
         color: #333;
       }
     `}
+  ${(props) =>
+    props.disabled &&
+    css`
+      a {
+        cursor: default;
+        color: #999;
+        &:hover {
+          color: #999;
+        }
+      }
+    `}
 `;
 
 class Steps extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { visitedSteps: {} };
+  }
   _handleClick = (stepIndex) => (ev) => {
     ev.preventDefault();
-    this.props.onChange && this.props.onChange(stepIndex);
+    const { enableNextStep, currentStep } = this.props;
+    if (!this._isDisabled(stepIndex)) {
+      this.setState({
+        visitedSteps: {
+          ...this.state.visitedSteps,
+          [stepIndex]: true,
+        },
+      });
+      this.props.onChange && this.props.onChange(stepIndex);
+    }
+  };
+  _isDisabled = (stepIndex) => {
+    const { visitedSteps } = this.state;
+    const { enableNextStep, currentStep } = this.props;
+    return !(
+      stepIndex <= currentStep ||
+      visitedSteps[stepIndex] ||
+      (stepIndex == currentStep + 1 && enableNextStep)
+    );
   };
   render() {
-    const { title, currentStep, steps, children } = this.props;
+    const { title, currentStep, steps, children, enableNextStep } = this.props;
     return (
       <StepsContainer>
         <StepsContent>
@@ -296,7 +329,11 @@ class Steps extends Component {
           <nav>
             <ol>
               {steps.map((step, i) => (
-                <StepItem key={step} active={currentStep == i}>
+                <StepItem
+                  key={step}
+                  active={currentStep == i}
+                  disabled={this._isDisabled(i)}
+                >
                   <a href="#" onClick={this._handleClick(i)}>
                     {step}
                   </a>

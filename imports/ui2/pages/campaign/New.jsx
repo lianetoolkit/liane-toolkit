@@ -118,6 +118,7 @@ class NewCampaignPage extends Component {
     super(props);
     this.state = {
       currentStep: 0,
+      enableNextStep: false,
       agreed: false,
       ready: false,
       validation: false,
@@ -132,8 +133,25 @@ class NewCampaignPage extends Component {
   componentDidMount() {
     this._validate();
   }
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      JSON.stringify(this.state.formData) != JSON.stringify(prevState.formData)
+    ) {
+      this._validateStep();
+    }
+  }
   _handleStepChange = (stepIndex) => {
+    const { currentStep } = this.state;
+    this._validateStep(stepIndex);
     this.setState({ currentStep: stepIndex });
+  };
+  _handleNextStepClick = (ev) => {
+    ev.preventDefault();
+    const stepIndex = this.state.currentStep + 1;
+    this._validateStep(stepIndex);
+    this.setState({
+      currentStep: stepIndex,
+    });
   };
   _getSteps = () => {
     const { intl } = this.props;
@@ -147,6 +165,25 @@ class NewCampaignPage extends Component {
     return steps.map((step) => {
       return { key: step, label: intl.formatMessage(stepsLabels[step]) };
     });
+  };
+  _validateStep = (stepIndex) => {
+    const { currentStep, formData, agreed } = this.state;
+    console.log({ stepIndex, currentStep, formData });
+    const steps = {
+      0: () => formData.name && formData.type,
+      1: () =>
+        formData.candidate &&
+        formData.party &&
+        formData.contact &&
+        formData.contact.email,
+      2: () => formData.country,
+      3: () => formData.facebookAccountId,
+      4: () => agreed,
+    };
+    const step = !isNaN(stepIndex) ? stepIndex : currentStep;
+    const valid = steps[step] && steps[step]();
+    this.setState({ enableNextStep: valid });
+    return valid;
   };
   _validate = () => {
     const invite = ClientStorage.get("invite");
@@ -188,8 +225,6 @@ class NewCampaignPage extends Component {
       formData.type &&
       formData.country &&
       formData.facebookAccountId &&
-      formData.geolocation &&
-      formData.geolocation.osm_id &&
       formData.contact &&
       formData.contact.email;
 
@@ -220,10 +255,11 @@ class NewCampaignPage extends Component {
         },
       });
     } else {
+      const newFormData = { ...this.state.formData };
+      delete newFormData.geolocation;
       this.setState({
         formData: {
           ...this.state.formData,
-          geolocation: {},
         },
       });
     }
@@ -256,18 +292,19 @@ class NewCampaignPage extends Component {
       alertStore.add(intl.formatMessage(messages.requiredFields), "error");
     }
   };
-  _handleNextStepClick = (ev) => {
-    ev.preventDefault();
-    this.setState({
-      currentStep: this.state.currentStep + 1,
-    });
-  };
   _getStepLabel = (stepIndex) => {
     return this._getSteps()[stepIndex].label;
   };
   render() {
     const { intl } = this.props;
-    const { currentStep, ready, validation, loading, formData } = this.state;
+    const {
+      currentStep,
+      enableNextStep,
+      ready,
+      validation,
+      loading,
+      formData,
+    } = this.state;
     if (!ready) {
       return <Loading full />;
     }
@@ -308,6 +345,7 @@ class NewCampaignPage extends Component {
           currentStep={currentStep}
           onChange={this._handleStepChange}
           steps={this._getSteps().map((step) => step.label)}
+          enableNextStep={enableNextStep}
         />
         <Form.Content>
           {loading ? <Loading full /> : null}
@@ -426,6 +464,7 @@ class NewCampaignPage extends Component {
                 <Form.Field label={intl.formatMessage(messages.officeLabel)}>
                   <OfficeField
                     country={formData.country}
+                    value={formData.office}
                     name="office"
                     onChange={this._handleChange}
                   />
@@ -483,7 +522,10 @@ class NewCampaignPage extends Component {
               value={intl.formatMessage(messages.submitLabel)}
             />
           ) : (
-            <Button onClick={this._handleNextStepClick}>
+            <Button
+              onClick={this._handleNextStepClick}
+              disabled={!enableNextStep}
+            >
               <FormattedMessage
                 id="app.campaign.form.next_step.label"
                 defaultMessage="Next step:"

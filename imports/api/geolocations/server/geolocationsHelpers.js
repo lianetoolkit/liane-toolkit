@@ -34,7 +34,7 @@ const GeolocationsHelpers = {
           location_types: ["country"],
           q: data.address.country_code,
           match_country_code: true,
-        });
+        })[0];
         break;
       case "state":
         res = this.facebookSearch({

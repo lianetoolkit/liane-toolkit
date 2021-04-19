@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,8 +17,8 @@ import Loading from "./Loading.jsx";
 const messages = defineMessages({
   searchPlaceholder: {
     id: "app.geolocation_select.search.placeholder",
-    defaultMessage: "Search for a location..."
-  }
+    defaultMessage: "Search for a location...",
+  },
 });
 
 const Container = styled.div`
@@ -78,15 +78,16 @@ class GeolocationSearch extends Component {
     this.state = {
       results: [],
       search: "",
-      loading: false
+      loading: false,
     };
   }
   search = debounce(() => {
     const { country } = this.props;
     const { region, search } = this.state;
+    if (region == "national") return;
     const query = {
       country,
-      [region]: search
+      [region]: search,
     };
     this.setState({ loading: true });
     Meteor.call("geolocations.searchNominatim", query, (err, res) => {
@@ -96,38 +97,16 @@ class GeolocationSearch extends Component {
       } else {
         this.setState({
           results: res.filter(
-            item => !item.address.village && !item.address.city_district
-          )
+            (item) => !item.address.village && !item.address.city_district
+          ),
         });
       }
     });
   }, 300);
-  matchGeolocation = (id, type, cb) => {
-    const { region } = this.state;
-    this.setState({
-      loading: true
-    });
-    Meteor.call(
-      "geolocations.matchFromOSM",
-      { id, type, regionType: region },
-      (err, res) => {
-        this.setState({
-          loading: false
-        });
-        if (err) {
-          console.log(err);
-          alertStore.add(err);
-        }
-        if (cb && typeof cb == "function") {
-          cb(err, res);
-        }
-      }
-    );
-  };
   _handleChange = ({ target }) => {
     this.setState({
       loading: true,
-      search: target.value
+      search: target.value,
     });
     if (target.value) {
       this.search();
@@ -138,18 +117,18 @@ class GeolocationSearch extends Component {
   _handleRegionChange = ({ target }) => {
     this.setState({
       region: target.value,
-      results: []
+      results: [],
     });
     if (this.state.search) {
       this.search();
     }
   };
-  _handleSelect = geolocation => ev => {
+  _handleSelect = (geolocation) => (ev) => {
     ev.preventDefault();
     const { onChange } = this.props;
     const { region } = this.state;
     this.setState({
-      selected: geolocation
+      selected: geolocation,
     });
     if (onChange && typeof onChange == "function") {
       onChange({ geolocation, type: region });
@@ -158,7 +137,7 @@ class GeolocationSearch extends Component {
   _handleReset = () => {
     const { onChange } = this.props;
     this.setState({
-      selected: null
+      selected: null,
     });
     if (onChange && typeof onChange == "function") {
       onChange({ geolocation: null, type: null });
@@ -191,6 +170,19 @@ class GeolocationSearch extends Component {
                 <input
                   type="radio"
                   name="regionType"
+                  value="national"
+                  onChange={this._handleRegionChange}
+                  checked={region == "national" ? true : false}
+                />{" "}
+                <FormattedMessage
+                  id="app.geolocation_select.national.label"
+                  defaultMessage="National"
+                />
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="regionType"
                   value="state"
                   onChange={this._handleRegionChange}
                   checked={region == "state" ? true : false}
@@ -214,7 +206,7 @@ class GeolocationSearch extends Component {
                 />
               </label>
             </div>
-            {region ? (
+            {region && region != "national" ? (
               <input
                 type="text"
                 placeholder={intl.formatMessage(messages.searchPlaceholder)}
@@ -224,7 +216,7 @@ class GeolocationSearch extends Component {
             ) : null}
             {results.length ? (
               <ul className="results">
-                {results.map(item => (
+                {results.map((item) => (
                   <li
                     className="geolocation-item"
                     key={item.place_id}
@@ -251,7 +243,7 @@ class GeolocationSearch extends Component {
 }
 
 GeolocationSearch.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(GeolocationSearch);
