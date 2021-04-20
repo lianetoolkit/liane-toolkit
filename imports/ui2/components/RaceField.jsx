@@ -31,10 +31,14 @@ export const raceLabels = defineMessages({
     id: "app.people.race.other",
     defaultMessage: "Other",
   },
+  unknown: {
+    id: "app.people.race.unknown",
+    defaultMessage: "I'd rather not declare",
+  },
 });
 
 class RaceField extends Component {
-  options = ["white", "black", "indigenous", "other"];
+  options = ["white", "black", "indigenous", "other", "unknown"];
   _getOptions = () => {
     const { intl } = this.props;
     let options = [];
@@ -50,7 +54,6 @@ class RaceField extends Component {
   };
   _getValue = () => {
     const { value } = this.props;
-    console.log(value);
     return this._getOptions().find((option) => option.value == value);
   };
   _handleChange = (selected) => {

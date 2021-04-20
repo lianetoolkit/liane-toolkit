@@ -142,7 +142,6 @@ class CampaignTypeSelect extends Component {
   render() {
     const { intl, name, placeholder, value, clearable, spread } = this.props;
     const options = this._getOptions();
-    console.log(options, value);
     if (spread) {
       return (
         <SpreadContainer>

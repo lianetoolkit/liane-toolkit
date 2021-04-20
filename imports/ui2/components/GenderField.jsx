@@ -43,17 +43,22 @@ export const genderLabels = defineMessages({
     id: "app.people.gender.other",
     defaultMessage: "Other",
   },
+  unknown: {
+    id: "app.people.gender.unknown",
+    defaultMessage: "I'd rather not declare",
+  },
 });
 
 class GenderField extends Component {
   options = [
-    "cis_woman",
-    "cis_man",
     "trans_woman",
-    "trans_man",
     "transvestite",
+    "cis_woman",
+    "trans_man",
+    "cis_man",
     "non_binary",
     "other",
+    "unknown",
   ];
   _getOptions = () => {
     const { intl } = this.props;
@@ -70,12 +75,10 @@ class GenderField extends Component {
   };
   _getValue = () => {
     const { value } = this.props;
-    console.log(value);
     return this._getOptions().find((option) => option.value == value);
   };
   _handleChange = (selected) => {
     const { name, onChange } = this.props;
-    console.log(name, selected.value);
     onChange && onChange({ target: { name, value: selected.value } });
   };
   render() {

@@ -26,6 +26,7 @@ import RaceField from "../../components/RaceField.jsx";
 import OfficeField from "../../components/OfficeField.jsx";
 import CountrySelect from "../../components/CountrySelect.jsx";
 import GeolocationSearch from "../../components/GeolocationSearch.jsx";
+import PeriodField from "../../components/PeriodField.jsx";
 import DesireField from "../../components/DesireField.jsx";
 import UserUpgrade from "../../components/UserUpgrade.jsx";
 import Disclaimer from "../../components/Disclaimer.jsx";
@@ -67,10 +68,6 @@ const messages = defineMessages({
     id: "app.campaign.form.candidate.label",
     defaultMessage: "What is your candidacy name?",
   },
-  candidatePlaceholder: {
-    id: "app.campaign.form.candidate.placeholder",
-    defaultMessage: "Public name",
-  },
   partyLabel: {
     id: "app.campaign.form.party.label",
     defaultMessage: "Party, movement or coalition your candidacy is part of",
@@ -78,6 +75,10 @@ const messages = defineMessages({
   partyPlaceholder: {
     id: "app.campaign.form.party.placeholder",
     defaultMessage: "Party/movement/coalition",
+  },
+  periodLabel: {
+    id: "app.campaign.form.period.label",
+    defaultMessage: "Mandate period",
   },
   emailLabel: {
     id: "app.campaign.form.email.label",
@@ -232,21 +233,59 @@ class NewCampaignPage extends Component {
       return { key: step, label: intl.formatMessage(stepsLabels[step]) };
     });
   };
-  _validateStep = (stepKey) => {
+  _validateStep = (stepKey, updateState = true) => {
     const { currentStep, formData, agreed } = this.state;
     if (!currentStep) return;
     const stepsValidations = {
-      candidate: () => formData.candidate && formData.birthday,
-      campaign_details: () => formData.contact && formData.contact.email,
+      candidate: () =>
+        formData.candidate &&
+        formData.birthday &&
+        formData.gender &&
+        formData.race,
+      mandate: () =>
+        formData.candidate &&
+        formData.birthday &&
+        formData.gender &&
+        formData.race,
+      campaign_details: () => {
+        const { type } = formData;
+        const defaultFields = formData.contact && formData.contact.email;
+        if (type == "electoral") {
+          return (
+            defaultFields &&
+            formData.hasOwnProperty("independent") &&
+            formData.hasOwnProperty("first_campaign") &&
+            formData.office &&
+            formData.format
+          );
+        }
+        if (type == "mandate") {
+          return (
+            defaultFields &&
+            formData.hasOwnProperty("independent") &&
+            formData.hasOwnProperty("first_mandate") &&
+            formData.office &&
+            formData.format &&
+            formData.period &&
+            formData.period.length == 2
+          );
+        }
+        if (type == "activist") {
+          return defaultFields && formData.cause;
+        }
+        return defaultFields;
+      },
       location: () => formData.country,
       facebook: () => formData.facebookAccountId,
-      expectation: () => formData.expectation && formData.manager,
+      expectation: () =>
+        formData.expectation && formData.expectation.length && formData.manager,
       policy: () => agreed,
     };
-    const steps = this._getSteps();
     const step = stepKey || currentStep;
     const valid = stepsValidations[step] && stepsValidations[step]();
-    this.setState({ enableNextStep: valid });
+    if (updateState) {
+      this.setState({ enableNextStep: valid });
+    }
     return valid;
   };
   _validate = () => {
@@ -282,29 +321,8 @@ class NewCampaignPage extends Component {
     return get(formData, key);
   };
   _filledForm = () => {
-    const { agreed, formData } = this.state;
-    const defaultValidation =
-      agreed &&
-      formData.name &&
-      formData.type &&
-      formData.country &&
-      formData.facebookAccountId &&
-      formData.contact &&
-      formData.contact.email;
-
-    if (formData.type.match(/electoral|mandate/)) {
-      return (
-        defaultValidation &&
-        formData.party &&
-        formData.candidate &&
-        formData.office
-      );
-    }
-
-    if (formData.type.match(/mobilization/)) {
-      return defaultValidation && formData.cause;
-    }
-    return defaultValidation;
+    const steps = this._getSteps();
+    return !steps.some((step) => !this._validateStep(step.key, false));
   };
   _handleGeolocationChange = ({ geolocation, type }) => {
     if (geolocation) {
@@ -386,6 +404,7 @@ class NewCampaignPage extends Component {
       loading,
       formData,
       start,
+      agreed,
     } = this.state;
     if (!ready) {
       return <Loading full />;
@@ -472,80 +491,73 @@ class NewCampaignPage extends Component {
         />
         <Form.Content>
           {loading ? <Loading full /> : null}
-          {currentStep == "candidate" ? (
+          {currentStep == "candidate" || currentStep == "mandate" ? (
             <>
-              {formData.type.match(/electoral|mandate/) ? (
-                <>
-                  <p>
-                    <p>
-                      You are creating an electoral campaign in Liane.
-                      Therefore, the following questions are about the
-                      candidate.
-                    </p>
-                  </p>
-                  <Form.Field
-                    label={intl.formatMessage(messages.candidateLabel)}
-                    required
-                  >
-                    <input
-                      type="text"
-                      name="candidate"
-                      placeholder={intl.formatMessage(
-                        messages.candidatePlaceholder
-                      )}
-                      onChange={this._handleChange}
-                      value={formData.candidate}
-                    />
-                  </Form.Field>
-                  <Form.Field
-                    label={intl.formatMessage(messages.birthdayLabel)}
-                    required
-                  >
-                    <div>
-                      <DatePicker
-                        onChange={(date) => {
-                          this._handleChange({
-                            target: {
-                              name: "birthday",
-                              value: date,
-                            },
-                          });
-                        }}
-                        selected={this._getBirthdayValue()}
-                        dateFormatCalendar="MMMM"
-                        dateFormat="P"
-                        showMonthDropdown
-                        showYearDropdown
-                        dropdownMode="select"
-                      />
-                    </div>
-                  </Form.Field>
-                  <Form.Field label={intl.formatMessage(messages.genderLabel)}>
-                    <GenderField
-                      name="gender"
-                      onChange={this._handleChange}
-                      value={formData.gender}
-                    />
-                  </Form.Field>
-                  <Form.Field label={intl.formatMessage(messages.raceLabel)}>
-                    <RaceField
-                      name="race"
-                      onChange={this._handleChange}
-                      value={formData.race}
-                    />
-                  </Form.Field>
-                </>
-              ) : null}
-              {formData.type.match(/mobilization/) ? (
-                <Form.Field label={intl.formatMessage(messages.causeLabel)}>
-                  <input
-                    type="text"
-                    name="cause"
-                    onChange={this._handleChange}
-                    value={formData.cause}
+              {currentStep == "candidate" ? (
+                <p>
+                  You are creating an electoral campaign in Liane. Therefore,
+                  the following questions are about the candidate.
+                </p>
+              ) : (
+                <p>
+                  You are creating a mandate campaign in Liane. Therefore, the
+                  following questions are about the elected person.
+                </p>
+              )}
+              <Form.Field
+                label={intl.formatMessage(messages.candidateLabel)}
+                required
+              >
+                <input
+                  type="text"
+                  name="candidate"
+                  onChange={this._handleChange}
+                  value={formData.candidate}
+                />
+              </Form.Field>
+              <Form.Field
+                label={intl.formatMessage(messages.birthdayLabel)}
+                required
+              >
+                <div>
+                  <DatePicker
+                    onChange={(date) => {
+                      this._handleChange({
+                        target: {
+                          name: "birthday",
+                          value: date,
+                        },
+                      });
+                    }}
+                    selected={this._getBirthdayValue()}
+                    dateFormatCalendar="MMMM"
+                    dateFormat="P"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
                   />
-                </Form.Field>
-              ) : null}
+                </div>
+              </Form.Field>
+              <Form.Field
+                label={intl.formatMessage(messages.genderLabel)}
+                required
+              >
+                <GenderField
+                  name="gender"
+                  onChange={this._handleChange}
+                  value={formData.gender}
+                />
+              </Form.Field>
+              <Form.Field
+                label={intl.formatMessage(messages.raceLabel)}
+                required
+              >
+                <RaceField
+                  name="race"
+                  onChange={this._handleChange}
+                  value={formData.race}
+                />
+              </Form.Field>
             </>
           ) : null}
           {currentStep == "campaign_details" ? (
@@ -561,7 +573,6 @@ class NewCampaignPage extends Component {
                   onChange={this._handleChange}
                 />
               </Form.Field>
-
               {formData.type.match(/electoral|mandate/) ? (
                 <>
                   <Form.Field label="Is your candidacy independent?" required>
@@ -593,21 +604,31 @@ class NewCampaignPage extends Component {
                       onChange={this._handleChange}
                     />
                   </Form.Field>
-                  <Form.Field label="First campaign?" required>
-                    <BooleanRadioField
-                      name="first_campaign"
-                      value={formData.first_campaign}
-                      onChange={this._handleChange}
-                    />
-                  </Form.Field>
-                  <Form.Field label="Which format is your campaign?">
+                  {formData.type == "electoral" ? (
+                    <Form.Field label="First campaign?" required>
+                      <BooleanRadioField
+                        name="first_campaign"
+                        value={formData.first_campaign}
+                        onChange={this._handleChange}
+                      />
+                    </Form.Field>
+                  ) : (
+                    <Form.Field label="First mandate?" required>
+                      <BooleanRadioField
+                        name="first_mandate"
+                        value={formData.first_campaign}
+                        onChange={this._handleChange}
+                      />
+                    </Form.Field>
+                  )}
+                  <Form.Field label="Which format is your campaign?" required>
                     <Form.CheckboxGroup>
                       <label>
                         <input
                           type="radio"
-                          name="campaign_format"
+                          name="format"
                           value="individual"
-                          checked={formData.campaign_format == "individual"}
+                          checked={formData.format == "individual"}
                           onChange={this._handleChange}
                         />
                         Individual
@@ -615,16 +636,40 @@ class NewCampaignPage extends Component {
                       <label>
                         <input
                           type="radio"
-                          name="campaign_format"
+                          name="format"
                           value="collective"
-                          checked={formData.campaign_format == "collective"}
+                          checked={formData.format == "collective"}
                           onChange={this._handleChange}
                         />
                         Collective
                       </label>
                     </Form.CheckboxGroup>
                   </Form.Field>
+                  {formData.type == "mandate" ? (
+                    <Form.Field
+                      label={intl.formatMessage(messages.periodLabel)}
+                    >
+                      <PeriodField
+                        name="period"
+                        value={formData.period}
+                        onChange={this._handleChange}
+                      />
+                    </Form.Field>
+                  ) : null}
                 </>
+              ) : null}
+              {formData.type == "activist" ? (
+                <Form.Field
+                  label={intl.formatMessage(messages.causeLabel)}
+                  required
+                >
+                  <input
+                    type="text"
+                    name="cause"
+                    onChange={this._handleChange}
+                    value={formData.cause}
+                  />
+                </Form.Field>
               ) : null}
             </>
           ) : null}
@@ -662,17 +707,42 @@ class NewCampaignPage extends Component {
           ) : null}
           {currentStep == "expectation" ? (
             <>
-              <p>
-                Nós sabemos que você enfrenta muitos desafios no dia-a-dia.
-                Marque o que você está buscando enfrentar com Liane:
-              </p>
-              <DesireField
-                name="expectation"
-                value={formData.expectation}
-                onChange={this._handleChange}
-              />{" "}
-              <Form.Field label="Liane will be managed by:">
+              <Form.Field
+                label="Nós sabemos que você enfrenta muitos desafios no dia-a-dia. Marque o que você está buscando enfrentar com Liane:"
+                required
+              >
+                <DesireField
+                  name="expectation"
+                  value={formData.expectation}
+                  onChange={this._handleChange}
+                />
+              </Form.Field>
+              <Form.Field label="Liane will be managed by:" required>
                 <Form.CheckboxGroup>
+                  {formData.type == "electoral" ? (
+                    <label>
+                      <input
+                        type="radio"
+                        name="manager"
+                        value="candidate"
+                        checked={formData.manager == "candidate"}
+                        onChange={this._handleChange}
+                      />
+                      Candidate
+                    </label>
+                  ) : null}
+                  {formData.type == "mandate" ? (
+                    <label>
+                      <input
+                        type="radio"
+                        name="manager"
+                        value="elected"
+                        checked={formData.manager == "elected"}
+                        onChange={this._handleChange}
+                      />
+                      Elected person
+                    </label>
+                  ) : null}
                   <label>
                     <input
                       type="radio"
@@ -712,6 +782,7 @@ class NewCampaignPage extends Component {
               type="security"
               consent={intl.formatMessage(messages.consentText)}
               onChange={this._handleConsentChange}
+              checked={agreed}
             >
               <p>
                 <FormattedMessage
