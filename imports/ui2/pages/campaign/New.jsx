@@ -410,15 +410,41 @@ class NewCampaignPage extends Component {
     const { intl } = this.props;
     const { loading } = this.state;
     const invite = ClientStorage.get("invite");
+    const detailsFields = [
+      "birthday",
+      "gender",
+      "race",
+      "independent",
+      "first_campaign",
+      "first_mandate",
+      "format",
+      "period",
+      "goal",
+      "estimated_duration",
+      "organizer",
+      "expectation",
+      "manager",
+    ];
     if (this._filledForm() && !loading) {
       const { formData } = this.state;
       this.setState({
         loading: true,
       });
       let data = { ...formData };
+
       if (invite) {
         data.invite = invite;
       }
+
+      // Transform extra fields
+      data.details = {};
+      for (const key in data) {
+        if (detailsFields.indexOf(key) !== -1) {
+          data.details[key] = data[key];
+          delete data[key];
+        }
+      }
+
       Meteor.call("campaigns.create", data, (err, data) => {
         if (err) {
           alertStore.add(err);

@@ -186,6 +186,11 @@ Campaigns.schema = new SimpleSchema({
   "forms.skills.$.active": {
     type: Boolean,
   },
+  details: {
+    type: Object,
+    blackbox: true,
+    optional: true,
+  },
   createdAt: {
     type: Date,
     autoValue() {

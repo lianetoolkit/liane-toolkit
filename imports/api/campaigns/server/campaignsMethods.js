@@ -224,6 +224,11 @@ export const campaignsCreate = new ValidatedMethod({
       type: String,
       optional: true,
     },
+    details: {
+      type: Object,
+      blackbox: true,
+      optional: true,
+    },
   }).validator(),
   run({
     name,
@@ -237,6 +242,7 @@ export const campaignsCreate = new ValidatedMethod({
     geolocation,
     facebookAccountId,
     invite,
+    details,
   }) {
     this.unblock();
 
@@ -247,6 +253,7 @@ export const campaignsCreate = new ValidatedMethod({
       geolocation,
       facebookAccountId,
       invite,
+      details,
     });
 
     const userId = Meteor.userId();
@@ -278,6 +285,7 @@ export const campaignsCreate = new ValidatedMethod({
       type,
       contact,
       country,
+      details,
       creatorId: userId,
     };
 
@@ -364,6 +372,7 @@ export const campaignsCreate = new ValidatedMethod({
         office,
         cause,
         country,
+        details,
         userName: creatorData.name,
         geolocationName: geolocationData.name,
         geolocationType: geolocationData.regionType,
