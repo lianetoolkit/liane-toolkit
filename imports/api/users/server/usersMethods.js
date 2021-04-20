@@ -112,13 +112,12 @@ export const mailSubscribe = new ValidatedMethod({
       throw new Meteor.Error(400, "You must provide name and email");
     }
     if (mailTransporter) {
-      mailTransporter
-        .sendMail({
-          from: `"Liane" <${mailConfig.username}>`,
-          to: `${Meteor.settings.email.admins.join(", ")}`,
-          subject: `[New Subscription] ${name}`,
-          html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Country:</strong> ${country}</p>`,
-        });
+      mailTransporter.sendMail({
+        from: `"Liane" <${mailConfig.username}>`,
+        to: `${Meteor.settings.email.admins.join(", ")}`,
+        subject: `[New Subscription] ${name}`,
+        html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Country:</strong> ${country}</p>`,
+      });
     } else {
       throw new Meteor.Error(500, "Mailing not configured");
     }
@@ -150,6 +149,7 @@ export const updateProfile = new ValidatedMethod({
   validate: new SimpleSchema({
     name: {
       type: String,
+      optional: true,
     },
     country: {
       type: String,
@@ -159,21 +159,28 @@ export const updateProfile = new ValidatedMethod({
       type: String,
       optional: true,
     },
+    phone: {
+      type: String,
+      optional: true,
+    },
+    campaignRole: {
+      type: String,
+      optional: true,
+    },
+    ref: {
+      type: String,
+      optional: true,
+    },
   }).validator(),
-  run({ name, country, region }) {
+  run(data) {
     const userId = Meteor.userId();
-    logger.debug("users.updateProfile called", {
-      userId,
-      name,
-      country,
-      region,
-    });
+    logger.debug("users.updateProfile called", data);
 
     if (!userId) {
       throw new Meteor.Error(401, "You are not logged in");
     }
 
-    return Meteor.users.update(userId, { $set: { name, country, region } });
+    return Meteor.users.update(userId, { $set: data });
   },
 });
 
@@ -253,12 +260,9 @@ const validatePermissions = (scopes) => {
     "pages_manage_engagement",
     "pages_manage_metadata",
     "pages_show_list",
-    // "ads_management",
-    // "ads_read",
-    // "business_management",
     "pages_messaging",
     "instagram_basic",
-    "instagram_manage_comments"
+    "instagram_manage_comments",
   ];
   return !difference(permissions, scopes || []).length;
 };

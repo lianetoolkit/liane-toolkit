@@ -227,6 +227,18 @@ Meteor.startup(() => {
     });
     People.rawCollection().createIndex(
       {
+        "campaignMeta.social_networks.instagram": 1,
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "campaignMeta.social_networks.twitter": 1,
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
         campaignId: 1,
         facebookAccounts: 1,
       },

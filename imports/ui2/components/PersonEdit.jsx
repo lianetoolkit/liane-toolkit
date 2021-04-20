@@ -21,33 +21,7 @@ import TagSelect from "./TagSelect.jsx";
 import SkillsField from "./SkillsField.jsx";
 import AddressField from "./AddressField.jsx";
 import ExtraFields from "./ExtraFields.jsx";
-
-export const genderLabels = defineMessages({
-  cis_woman: {
-    id: "app.people.gender.cis_woman",
-    defaultMessage: "Cisgender woman",
-  },
-  cis_man: {
-    id: "app.people.gender.cis_man",
-    defaultMessage: "Cisgender man",
-  },
-  trans_woman: {
-    id: "app.people.gender.trans_woman",
-    defaultMessage: "Trans woman",
-  },
-  trans_man: {
-    id: "app.people.gender.trans_man",
-    defaultMessage: "Trans man",
-  },
-  transvestite: {
-    id: "app.people.gender.transvestite",
-    defaultMessage: "Transvestite",
-  },
-  non_binary: {
-    id: "app.people.gender.non_binary",
-    defaultMessage: "Non binary",
-  },
-});
+import GenderField from "./GenderField.jsx";
 
 export const profileLabels = defineMessages({
   nameLabel: {
@@ -142,6 +116,7 @@ class PersonEdit extends Component {
     const { formData } = this.state;
     const newFormData = Object.assign({}, formData);
     set(newFormData, ev.target.name, ev.target.value);
+    console.log(ev.target);
     this.setState({
       formData: newFormData,
     });
@@ -239,39 +214,6 @@ class PersonEdit extends Component {
       update();
     }
   };
-  genderOptions = [
-    "cis_woman",
-    "cis_man",
-    "trans_woman",
-    "trans_man",
-    "transvestite",
-    "non_binary",
-  ];
-  getGenderOptions = () => {
-    const { intl } = this.props;
-    let options = [];
-    for (const option of this.genderOptions) {
-      options.push({
-        value: option,
-        label: genderLabels[option]
-          ? intl.formatMessage(genderLabels[option])
-          : option,
-      });
-    }
-    return options;
-  };
-  getGenderValue = () => {
-    const { intl } = this.props;
-    const { formData } = this.state;
-    const value = get(formData, "basic_info.gender");
-    if (value && this.genderOptions.find((option) => option == value)) {
-      return {
-        value,
-        label: intl.formatMessage(genderLabels[value]),
-      };
-    }
-    return null;
-  };
   getBirthdayValue() {
     const { formData } = this.state;
     const value = get(formData, "basic_info.birthday");
@@ -358,14 +300,10 @@ class PersonEdit extends Component {
               <Form.Field
                 label={intl.formatMessage(Meta.getLabel("general", "gender"))}
               >
-                <Select
-                  classNamePrefix="select"
+                <GenderField
                   name="basic_info.gender"
-                  placeholder="Gender"
-                  isSearchable={false}
-                  value={this.getGenderValue()}
-                  onChange={this._handleSelectChange}
-                  options={this.getGenderOptions()}
+                  onChange={this._handleChange}
+                  value={formData.basic_info.gender}
                 />
               </Form.Field>
               <Form.Field

@@ -2,8 +2,9 @@ import { People, PeopleLists, PeopleTags, PeopleExports } from "../people.js";
 import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { Entries } from "/imports/api/facebook/entries/entries.js";
-const { Jobs } = require("/imports/api/jobs/jobs.js");
+import { get } from "lodash";
 import _ from "underscore";
+const { Jobs } = require("/imports/api/jobs/jobs.js");
 
 Meteor.publish("people.map", function ({ campaignId }) {
   this.unblock();
@@ -233,8 +234,22 @@ Meteor.publishComposite("people.detail", function ({ personId }) {
               children.push({
                 find(person) {
                   if (person.facebookId) {
+                    let selector = { personId: person.facebookId };
+                    if (get(person, "campaignMeta.social_networks.instagram")) {
+                      selector = {
+                        $or: [
+                          selector,
+                          {
+                            personId: person.campaignMeta.social_networks.instagram.replace(
+                              "@",
+                              ""
+                            ),
+                          },
+                        ],
+                      };
+                    }
                     return Comments.find(
-                      { personId: person.facebookId },
+                      { ...selector, facebookAccountId: facebookId },
                       {
                         sort: { created_time: -1 },
                       }
@@ -320,7 +335,7 @@ Meteor.publishComposite("people.form.detail", function ({ formId, psid }) {
       return People.find(selector, {
         fields: {
           name: 1,
-          facebookId: 1
+          facebookId: 1,
         },
       });
     },

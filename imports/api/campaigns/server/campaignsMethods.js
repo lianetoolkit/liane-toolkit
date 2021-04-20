@@ -15,6 +15,8 @@ import { Notifications } from "/imports/api/notifications/notifications";
 import { NotificationsHelpers } from "/imports/api/notifications/server/notificationsHelpers";
 import { UsersHelpers } from "/imports/api/users/server/usersHelpers.js";
 import _ from "underscore";
+import Papa from "papaparse";
+import { flattenObject } from "/imports/utils/common.js";
 
 import { People } from "/imports/api/facebook/people/people.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
@@ -224,6 +226,11 @@ export const campaignsCreate = new ValidatedMethod({
       type: String,
       optional: true,
     },
+    details: {
+      type: Object,
+      blackbox: true,
+      optional: true,
+    },
   }).validator(),
   run({
     name,
@@ -237,6 +244,7 @@ export const campaignsCreate = new ValidatedMethod({
     geolocation,
     facebookAccountId,
     invite,
+    details,
   }) {
     this.unblock();
 
@@ -247,6 +255,7 @@ export const campaignsCreate = new ValidatedMethod({
       geolocation,
       facebookAccountId,
       invite,
+      details,
     });
 
     const userId = Meteor.userId();
@@ -278,6 +287,7 @@ export const campaignsCreate = new ValidatedMethod({
       type,
       contact,
       country,
+      details,
       creatorId: userId,
     };
 
@@ -301,15 +311,21 @@ export const campaignsCreate = new ValidatedMethod({
     const token = user.services.facebook.accessToken;
 
     let geolocationId = false;
-    if (geolocation) {
-      try {
-        geolocationId = GeolocationsHelpers.discoverAndStore({
-          ...geolocation,
-          accessToken: token,
-        });
-      } catch (e) {
-        throw new Meteor.Error(500, "Unexpected error, please try again");
-      }
+    if (!geolocation) {
+      const nominatinRes = GeolocationsHelpers.nominatimSearch({ country });
+      geolocation = {
+        type: "country",
+        osm_id: nominatinRes[0].osm_id,
+        osm_type: nominatinRes[0].osm_type,
+      };
+    }
+    try {
+      geolocationId = GeolocationsHelpers.discoverAndStore({
+        ...geolocation,
+        accessToken: token,
+      });
+    } catch (e) {
+      throw new Meteor.Error(500, "Unexpected error, please try again");
     }
 
     if (geolocationId) {
@@ -358,6 +374,7 @@ export const campaignsCreate = new ValidatedMethod({
         office,
         cause,
         country,
+        details,
         userName: creatorData.name,
         geolocationName: geolocationData.name,
         geolocationType: geolocationData.regionType,
@@ -460,6 +477,59 @@ export const campaignsSearch = new ValidatedMethod({
     }
 
     return Campaigns.find(selector, options).fetch();
+  },
+});
+
+export const campaignsExport = new ValidatedMethod({
+  name: "campaigns.export",
+  validate() {},
+  run() {
+    logger.debug("campaigns.export called");
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    if (!Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    const processCampaign = (campaign) => {
+      if (campaign.details) {
+        for (const key in campaign.details) {
+          campaign[key] = campaign.details[key];
+        }
+      }
+      if (campaign.contact) {
+        campaign.email = campaign.contact.email;
+        campaign.phone = campaign.contact.phone;
+      }
+
+      // Cleanup
+      delete campaign.contact;
+      delete campaign.details;
+      delete campaign.facebookAccount;
+      delete campaign.users;
+      delete campaign.creatorId;
+      delete campaign.geolocationId;
+
+      return campaign;
+    };
+
+    const campaigns = Campaigns.find().fetch();
+
+    const flattened = [];
+    const headersMap = {};
+    for (const campaign of campaigns) {
+      const flattenedCampaign = flattenObject(processCampaign(campaign));
+      for (const header in flattenedCampaign) {
+        headersMap[header] = true;
+      }
+      flattened.push(flattenedCampaign);
+    }
+
+    return Papa.unparse({ fields: Object.keys(headersMap), data: flattened });
   },
 });
 

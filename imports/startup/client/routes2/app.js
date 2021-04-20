@@ -5,7 +5,6 @@ import { pick } from "lodash";
 
 import App from "/imports/ui2/containers/App.jsx";
 import MyAccount from "/imports/ui2/pages/MyAccount.jsx";
-import Transparency from "/imports/ui2/pages/Transparency.jsx";
 
 import MessagePage from "/imports/ui2/pages/Message.jsx";
 
@@ -27,6 +26,7 @@ import CampaignConnectionsPage from "/imports/ui2/pages/campaign/settings/Connec
 import CampaignActionsPage from "/imports/ui2/pages/campaign/settings/Actions.jsx";
 import NewCampaignPage from "/imports/ui2/containers/campaign/New.jsx";
 import RegisterPage from "/imports/ui2/pages/Register.jsx";
+import RegisterProfilePage from "/imports/ui2/pages/RegisterProfile.jsx";
 import ResetPasswordPage from "/imports/ui2/pages/ResetPassword.jsx";
 
 import AdminPage from "/imports/ui2/pages/admin/Admin.jsx";
@@ -77,17 +77,22 @@ appRoutes.route("/register", {
   action: function (params, queryParams) {
     addTitle(`${APP_NAME} | Technology for Political Innovation`);
     return mount(App, {
+      contained: true,
       content: { component: RegisterPage },
       campaignInvite: queryParams.campaignInvite && queryParams.campaignInvite,
     });
   },
 });
 
-appRoutes.route("/transparency", {
-  name: "App.transparency",
-  action: function () {
-    addTitle(`${APP_NAME} | Transparency`);
-    return mount(App, { content: { component: Transparency } });
+appRoutes.route("/register_profile", {
+  name: "App.registerProfile",
+  action: function (params, queryParams) {
+    addTitle(`${APP_NAME} | Technology for Political Innovation`);
+    return mount(App, {
+      contained: true,
+      content: { component: RegisterProfilePage },
+      campaignInvite: queryParams.campaignInvite && queryParams.campaignInvite,
+    });
   },
 });
 

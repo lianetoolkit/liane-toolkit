@@ -282,8 +282,8 @@ export const chartsData = new ValidatedMethod({
             {
               $match: {
                 created_time: {
-                  $gte: start.toISOString(),
-                  $lt: end.toISOString(),
+                  $gte: start,
+                  $lt: end,
                 },
                 personId: { $ne: facebookAccountId },
                 facebookAccountId: facebookAccountId,
@@ -426,8 +426,8 @@ export const chartsData = new ValidatedMethod({
           interactionHistory[formattedDate]["comments"] = Comments.find({
             facebookAccountId,
             created_time: {
-              $gte: moment(formattedDate).toISOString(),
-              $lt: moment(formattedDate).add(1, "day").toISOString(),
+              $gte: moment(formattedDate).toDate(),
+              $lt: moment(formattedDate).add(1, "day").toDate(),
             },
           }).count();
 

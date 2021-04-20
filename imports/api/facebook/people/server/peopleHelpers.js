@@ -711,12 +711,12 @@ const PeopleHelpers = {
         _id: { $ne: person._id },
         campaignId: person.campaignId,
       };
-      // avoid matching person with different facebookId
-      if (person.facebookId) {
+      // avoid matching person with different facebookId (which source is facebook)
+      if (person.source == "facebook") {
         defaultQuery.$and = [
           {
             $or: [
-              { facebookId: { $exists: false } },
+              { facebookId: { $exists: false }, source: { $ne: "facebook" } },
               { facebookId: person.facebookId },
             ],
           },
@@ -783,6 +783,8 @@ const PeopleHelpers = {
         matches.push(People.find(query, options).fetch());
       }
     }
+
+    console.log(matches);
 
     matches = flatten(matches).filter((person) => {
       return person.score ? person.score > 1.5 : true;
