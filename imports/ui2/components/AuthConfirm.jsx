@@ -89,7 +89,7 @@ class Confirm extends Component {
             "pages_messaging_phone_number",
             "pages_messaging_subscriptions",
             "instagram_basic",
-            "instagram_manage_comments"
+            "instagram_manage_comments",
           ],
         },
         (token) => {
@@ -309,6 +309,12 @@ class AuthConfirm extends Component {
         !prevProps.user.emails[0].verified)
     ) {
       modalStore.reset(true);
+    }
+    if (
+      !user.campaignRole &&
+      FlowRouter.getRouteName() != "App.registerProfile"
+    ) {
+      FlowRouter.go("App.registerProfile");
     }
   }
   componentDidMount() {

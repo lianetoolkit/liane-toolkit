@@ -3,7 +3,7 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import styled from "styled-components";
 import moment from "moment";
@@ -11,6 +11,7 @@ import moment from "moment";
 import ReactTooltip from "react-tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import download from "/imports/ui2/utils/download";
 import { modalStore } from "/imports/ui2/containers/Modal.jsx";
 
 import Table from "/imports/ui2/components/Table.jsx";
@@ -21,24 +22,24 @@ import PagePaging from "/imports/ui2/components/PagePaging.jsx";
 const messages = defineMessages({
   refetchFBToken: {
     id: "app.admin.campaigns.refetch_fb_token",
-    defaultMessage: "Refetch Facebook Token"
+    defaultMessage: "Refetch Facebook Token",
   },
   fbTokenHealthy: {
     id: "app.admin.campaigns.fb_token_label.healthy",
-    defaultMessage: "Healthy"
+    defaultMessage: "Healthy",
   },
   fbTokenPending: {
     id: "app.admin.campaigns.fb_token_label.pending",
-    defaultMessage: "Verifying"
+    defaultMessage: "Verifying",
   },
   fbTokenUnhealthy: {
     id: "app.admin.campaigns.fb_token_label.unhealthy",
-    defaultMessage: "Not valid"
+    defaultMessage: "Not valid",
   },
   fbTokenUndefined: {
     id: "app.admin.campaigns.fb_token_label.undefined",
-    defaultMessage: "Not available"
-  }
+    defaultMessage: "Not available",
+  },
 });
 
 const Container = styled.div`
@@ -132,7 +133,7 @@ class CampaignsPage extends Component {
     this.state = {
       loadingCount: false,
       ticket: null,
-      count: 0
+      count: 0,
     };
   }
   componentDidUpdate(prevProps) {}
@@ -155,21 +156,23 @@ class CampaignsPage extends Component {
       FlowRouter.setQueryParams({ page: page - 1 });
     }
   };
-  _handleSuspendClick = campaign => ev => {
+  _handleSuspendClick = (campaign) => (ev) => {
     ev.preventDefault();
     let suspend = !(campaign.status == "suspended");
     if (confirm("Are you sure?")) {
       Meteor.call("campaigns.suspend", { campaignId: campaign._id, suspend });
     }
   };
-  _handleRemoveClick = campaignId => ev => {
+  _handleRemoveClick = (campaignId) => (ev) => {
     ev.preventDefault();
     if (confirm("Are you sure?")) {
       Meteor.call("campaigns.remove", { campaignId });
     }
   };
-  _getHealthStatus = campaign => {
-    const job = campaign.jobs.find(job => job.type == "campaigns.healthCheck");
+  _getHealthStatus = (campaign) => {
+    const job = campaign.jobs.find(
+      (job) => job.type == "campaigns.healthCheck"
+    );
     if (!job) return false;
     switch (job.status) {
       case "waiting":
@@ -181,7 +184,7 @@ class CampaignsPage extends Component {
         return "unhealthy";
     }
   };
-  _getHealthJobIcon = campaign => {
+  _getHealthJobIcon = (campaign) => {
     const status = this._getHealthStatus(campaign);
     switch (status) {
       case "healthy":
@@ -194,7 +197,7 @@ class CampaignsPage extends Component {
         return "question";
     }
   };
-  _getHealthJobLabel = campaign => {
+  _getHealthJobLabel = (campaign) => {
     const { intl } = this.props;
     const status = this._getHealthStatus(campaign);
     switch (status) {
@@ -208,9 +211,15 @@ class CampaignsPage extends Component {
         return intl.formatMessage(messages.fbTokenUndefined);
     }
   };
-  _handleHealthCheckClick = campaignId => ev => {
+  _handleHealthCheckClick = (campaignId) => (ev) => {
     ev.preventDefault();
     Meteor.call("campaigns.refreshHealthCheck", { campaignId });
+  };
+  _handleExportClick = (ev) => {
+    ev.preventDefault();
+    Meteor.call("campaigns.export", (err, res) => {
+      download(res, "campaigns.csv");
+    });
   };
   render() {
     const { intl, campaigns, page, limit } = this.props;
@@ -224,7 +233,14 @@ class CampaignsPage extends Component {
           loading={loadingCount}
           onNext={this._handleNext}
           onPrev={this._handlePrev}
-        />
+        >
+          <Button primary onClick={this._handleExportClick}>
+            <FormattedMessage
+              id="app.admin.campaigns.export"
+              defaultMessage="Export in CSV"
+            />
+          </Button>
+        </PagePaging>
         <TableContainer>
           <Table compact>
             <thead>
@@ -268,7 +284,7 @@ class CampaignsPage extends Component {
                 </th>
               </tr>
             </thead>
-            {campaigns.map(campaign => (
+            {campaigns.map((campaign) => (
               <tbody
                 key={campaign._id}
                 className={`campaign-${campaign.status}`}
@@ -328,7 +344,7 @@ class CampaignsPage extends Component {
                   <td className="small">{campaign.country}</td>
                   <td className="small">
                     <ul>
-                      {campaign.users.map(user => (
+                      {campaign.users.map((user) => (
                         <li key={user._id}>{user.name}</li>
                       ))}
                     </ul>
@@ -347,7 +363,7 @@ class CampaignsPage extends Component {
 }
 
 CampaignsPage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(CampaignsPage);

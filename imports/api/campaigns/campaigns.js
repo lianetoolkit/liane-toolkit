@@ -77,7 +77,7 @@ Campaigns.schema = new SimpleSchema({
   },
   type: {
     type: String,
-    allowedValues: ["electoral", "mandate", "mobilization", "marketing"],
+    allowedValues: ["electoral", "mandate", "activist"],
   },
   party: {
     type: String,
@@ -185,6 +185,11 @@ Campaigns.schema = new SimpleSchema({
   },
   "forms.skills.$.active": {
     type: Boolean,
+  },
+  details: {
+    type: Object,
+    blackbox: true,
+    optional: true,
   },
   createdAt: {
     type: Date,

@@ -13,8 +13,6 @@ import { alertStore } from "../containers/Alerts.jsx";
 
 import Page from "../components/Page.jsx";
 import Form from "../components/Form.jsx";
-import CountrySelect from "../components/CountrySelect.jsx";
-import RegionSelect from "../components/RegionSelect.jsx";
 import OrLine from "../components/OrLine.jsx";
 import FacebookButton from "../components/FacebookButton.jsx";
 import Loading from "../components/Loading.jsx";
@@ -28,14 +26,6 @@ const messages = defineMessages({
   emailLabel: {
     id: "app.registration.email_label",
     defaultMessage: "Email",
-  },
-  countryLabel: {
-    id: "app.registration.country_label",
-    defaultMessage: "Country",
-  },
-  regionLabel: {
-    id: "app.registration.region_label",
-    defaultMessage: "Region",
   },
   passwordLabel: {
     id: "app.registration.password_label",
@@ -101,7 +91,7 @@ class RegisterPage extends Component {
                 { invite: campaignInvite },
                 (err, { campaignId }) => {
                   Session.set("campaignId", campaignId);
-                  FlowRouter.go("App.dashboard");
+                  FlowRouter.go("App.registerProfile");
                   window.location.reload();
                 }
               );
@@ -141,8 +131,6 @@ class RegisterPage extends Component {
     const data = {
       name: formData.name,
       email: email || formData.email,
-      country: formData.country,
-      region: formData.region,
       password: formData.password,
     };
     if (language) {
@@ -178,14 +166,7 @@ class RegisterPage extends Component {
   };
   _filledForm = () => {
     const { agreed, formData } = this.state;
-    return (
-      agreed &&
-      formData.name &&
-      formData.country &&
-      formData.region &&
-      formData.password &&
-      formData.passwordRpt
-    );
+    return agreed && formData.name && formData.password && formData.passwordRpt;
   };
   render() {
     const { intl, campaignInvite, invite } = this.props;
@@ -216,18 +197,6 @@ class RegisterPage extends Component {
           {!email ? (
             <Form.Field label={intl.formatMessage(messages.emailLabel)}>
               <input type="email" name="email" onChange={this._handleChange} />
-            </Form.Field>
-          ) : null}
-          <Form.Field label={intl.formatMessage(messages.countryLabel)}>
-            <CountrySelect name="country" onChange={this._handleChange} />
-          </Form.Field>
-          {formData.country ? (
-            <Form.Field label={intl.formatMessage(messages.regionLabel)}>
-              <RegionSelect
-                country={formData.country}
-                name="region"
-                onChange={this._handleChange}
-              />
             </Form.Field>
           ) : null}
           <Form.Field label={intl.formatMessage(messages.passwordLabel)}>

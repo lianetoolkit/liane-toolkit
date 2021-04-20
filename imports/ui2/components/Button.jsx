@@ -47,7 +47,6 @@ const styles = css`
   &.primary {
     background: #f5911e;
     color: #fff;
-    font-size: 1em;
     &:hover,
     &:active,
     &:focus,
@@ -68,7 +67,7 @@ const styles = css`
     font-size: 0.8em;
     padding: 0.4rem 0.8rem;
   }
-  ${props =>
+  ${(props) =>
     props.light &&
     css`
       border-color: rgba(255, 255, 255, 0.2);
@@ -109,7 +108,7 @@ const ButtonGroupContainer = styled.span`
       }
     }
   }
-  ${props =>
+  ${(props) =>
     !props.attached &&
     css`
       .button {
@@ -136,7 +135,7 @@ const ButtonGroupContainer = styled.span`
         border-bottom-left-radius: 7px;
       }
     `}
-  ${props =>
+  ${(props) =>
     props.vertical &&
     css`
       flex-direction: column;
@@ -146,7 +145,7 @@ const ButtonGroupContainer = styled.span`
       }
       .button:last-child {
       }
-      ${props =>
+      ${(props) =>
         !props.attached &&
         css`
           .button {
@@ -202,7 +201,7 @@ class ButtonIcon extends Component {
 export default class Button extends Component {
   static Group = ButtonGroup;
   static WithIcon = ButtonIcon;
-  _handleClick = ev => {
+  _handleClick = (ev) => {
     const { onClick, disabled } = this.props;
     if (disabled) {
       return;
@@ -218,6 +217,7 @@ export default class Button extends Component {
     if (primary) className += " primary";
     if (disabled) className += " disabled";
     if (small) className += " small";
+    if (!props.href) props.href = "#";
     return (
       <ButtonContainer
         className={className}

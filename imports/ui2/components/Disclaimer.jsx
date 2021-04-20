@@ -52,7 +52,7 @@ export default class Disclaimer extends Component {
     type: "info",
   };
   render() {
-    const { type, consent } = this.props;
+    const { type, consent, checked } = this.props;
     let icon = "info-circle";
     if (type == "security") {
       icon = "shield-alt";
@@ -69,6 +69,7 @@ export default class Disclaimer extends Component {
               <label>
                 <input
                   type="checkbox"
+                  checked={checked}
                   onChange={({ target }) => {
                     this.props.onChange && this.props.onChange(target.checked);
                   }}

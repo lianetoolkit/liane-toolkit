@@ -68,6 +68,18 @@ Meteor.users.schema = new SimpleSchema({
     type: String,
     allowedValues: ["admin", "staff", "moderator"],
   },
+  phone: {
+    type: String,
+    optional: true,
+  },
+  campaignRole: {
+    type: String,
+    optional: true,
+  },
+  ref: {
+    type: String,
+    optional: true,
+  },
 });
 
 Meteor.users.helpers({

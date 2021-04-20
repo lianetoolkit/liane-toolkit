@@ -56,6 +56,9 @@ const FieldContainer = styled.label`
   .optional-label {
     color: #999;
   }
+  .required-label {
+    color: red;
+  }
   .field-description {
     color: #888;
     display: block;
@@ -140,6 +143,23 @@ const FieldContainer = styled.label`
   }
 `;
 
+const CheckboxGroup = styled.div`
+  padding: 0;
+  font-size: 0.9em;
+  label {
+    font-weight: normal;
+    padding: 0.5rem 1rem;
+    margin: 0;
+    &:last-child {
+      margin: 0;
+    }
+  }
+  input[type="checkbox"],
+  input[type="radio"] {
+    margin-right: 1rem;
+  }
+`;
+
 class Content extends Component {
   render() {
     const { children, ...props } = this.props;
@@ -174,21 +194,26 @@ const ActionsContent = styled.div`
     padding: 0;
     justify-content: flex-start;
   }
+  .button {
+    margin: 0;
+    padding: 0.5rem 1rem;
+  }
   button,
   input[type="submit"] {
     display: block;
-    border: 0;
     background: #f5911e;
-    padding: 1rem 1.5rem;
     color: #fff;
     cursor: pointer;
+    border: 1px solid #f5911e;
     margin: 0;
     &:hover,
     &:active,
     &:focus {
+      border: 1px solid #333;
       background: #333;
     }
     &:disabled {
+      border: 1px solid #bbb;
       background: #bbb;
       color: #fff;
       cursor: default;
@@ -203,6 +228,126 @@ class Actions extends Component {
       <ActionsContainer>
         <ActionsContent>{children}</ActionsContent>
       </ActionsContainer>
+    );
+  }
+}
+
+const StepsContainer = styled.header`
+  border-bottom: 1px solid #ddd;
+  position: relative;
+  z-index: 2;
+  background: #f7f7f7;
+`;
+
+const StepsContent = styled.div`
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 4rem;
+  h1 {
+    margin: 3rem 0 0;
+  }
+  ol {
+    width: 100%;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+  }
+`;
+
+const StepItem = styled.li`
+  flex: 1 1 auto;
+  padding: 1rem 0;
+  border-bottom: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  font-size: 0.8em;
+  a {
+    text-decoration: none;
+    color: #666;
+    font-weight: 600;
+    flex: 1 1 100%;
+    &:hover {
+      color: #333;
+    }
+  }
+  ${(props) =>
+    props.active &&
+    css`
+      border-bottom: 2px solid #000;
+      a {
+        color: #333;
+      }
+    `}
+  ${(props) =>
+    props.disabled &&
+    css`
+      a {
+        cursor: default;
+        color: #999;
+        &:hover {
+          color: #999;
+        }
+      }
+    `}
+`;
+
+class Steps extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { visitedSteps: {} };
+  }
+  _handleClick = (key) => (ev) => {
+    ev.preventDefault();
+    const { steps } = this.props;
+    const step = steps.find((step) => step.key == key);
+    const { enableNextStep, currentStep } = this.props;
+    if (!this._isDisabled(step.key)) {
+      this.setState({
+        visitedSteps: {
+          ...this.state.visitedSteps,
+          [step.key]: true,
+        },
+      });
+      this.props.onChange && this.props.onChange(key);
+    }
+  };
+  _isDisabled = (key) => {
+    const { visitedSteps } = this.state;
+    const { enableNextStep, currentStep, steps } = this.props;
+    const curStepIndex = steps.findIndex((step) => step.key == currentStep);
+    const stepIndex = steps.findIndex((step) => step.key == key);
+    return !(
+      stepIndex <= curStepIndex ||
+      visitedSteps[key] ||
+      (stepIndex == curStepIndex + 1 && enableNextStep)
+    );
+  };
+  render() {
+    const { title, currentStep, steps, children, enableNextStep } = this.props;
+    return (
+      <StepsContainer>
+        <StepsContent>
+          <h1>{title}</h1>
+          <nav>
+            <ol>
+              {steps.map((step, i) => (
+                <StepItem
+                  key={step.key}
+                  active={currentStep == step.key}
+                  disabled={this._isDisabled(step.key)}
+                >
+                  <a href="#" onClick={this._handleClick(step.key)}>
+                    {step.label}
+                  </a>
+                </StepItem>
+              ))}
+            </ol>
+          </nav>
+          {children}
+        </StepsContent>
+      </StepsContainer>
     );
   }
 }
@@ -298,6 +443,7 @@ class Field extends Component {
       label,
       description,
       optional,
+      required,
       children,
       prefix,
       ...props
@@ -315,6 +461,7 @@ class Field extends Component {
                 />
               </span>
             ) : null}
+            {required ? <span className="required-label">*</span> : null}
           </span>
         ) : null}
         {description ? (
@@ -331,9 +478,11 @@ class Field extends Component {
 
 export default class Form extends Component {
   static Content = Content;
+  static Steps = Steps;
   static Actions = Actions;
   static Filters = Filters;
   static ButtonGroup = ButtonGroup;
+  static CheckboxGroup = CheckboxGroup;
   static Field = Field;
   render() {
     const { children, ...props } = this.props;
