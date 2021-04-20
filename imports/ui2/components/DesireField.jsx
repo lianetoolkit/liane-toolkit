@@ -8,6 +8,51 @@ import {
   FormattedHTMLMessage,
 } from "react-intl";
 
+const messages = defineMessages({
+  mobilize: {
+    id: "app.desire_field.mobilize.label",
+    defaultMessage: "Mobilize people",
+  },
+  mobilizeDescription: {
+    id: "app.desire_field.mobilize.description",
+    defaultMessage:
+      "Attract new supporters, meet my followers and increase the level of engagement.",
+  },
+  territory: {
+    id: "app.desire_field.territory.label",
+    defaultMessage: "Organization of actions in the territory",
+  },
+  territoryDescription: {
+    id: "app.desire_field.territory.description",
+    defaultMessage: "Plan and manage street actions with the support of a map.",
+  },
+  volunteerDonor: {
+    id: "app.desire_field.volunteer_donor.label",
+    defaultMessage: "Volunteers and Donors",
+  },
+  volunteerDonorDescription: {
+    id: "app.desire_field.volunteer_donor.description",
+    defaultMessage:
+      "Identify potential volunteers and donors among my followers and get in touch with them.",
+  },
+  crm: {
+    id: "app.desire_field.crm.label",
+    defaultMessage: "Campaign CRM",
+  },
+  crmDescription: {
+    id: "app.desire_field.crm.description",
+    defaultMessage: "Grow, centralize and manage the campaign's contact base.",
+  },
+  socialMedia: {
+    id: "app.desire_field.social_media.label",
+    defaultMessage: "Social media",
+  },
+  socialMediaDescription: {
+    id: "app.desire_field.social_media.description",
+    defaultMessage: "Monitor and respond to comments on networks more quickly.",
+  },
+});
+
 const Container = styled.ul`
   margin: 0 0 2rem;
   padding: 0 0 2px;
@@ -120,37 +165,32 @@ class DesireField extends Component {
     onChange && onChange({ target: { name, value: result } });
   };
   render() {
-    const { value } = this.props;
+    const { intl, value } = this.props;
     const options = [
       {
         key: "mobilize",
-        title: "Mobilização de pessoas",
-        description:
-          "Atrair novos apoiadores, conhecer meus seguidores e aumentar o nível de engajamento.",
+        title: intl.formatMessage(messages.mobilize),
+        description: intl.formatMessage(messages.mobilizeDescription),
       },
       {
         key: "territory",
-        title: "Organização de ações no território",
-        description:
-          "Planejar e gerenciar ações de rua com o apoio de um mapa.",
+        title: intl.formatMessage(messages.territory),
+        description: intl.formatMessage(messages.territoryDescription),
       },
       {
         key: "volunteer_donor",
-        title: "Voluntários e Doadores",
-        description:
-          "Identificar potenciais voluntários e doadores em meio aos meus seguidores e entrar em contato com eles.",
+        title: intl.formatMessage(messages.volunteerDonor),
+        description: intl.formatMessage(messages.volunteerDonorDescription),
       },
       {
         key: "crm",
-        title: "CRM da Campanha",
-        description:
-          "Crescer, centralizar e gerir a base de contatos da campanha.",
+        title: intl.formatMessage(messages.crm),
+        description: intl.formatMessage(messages.crmDescription),
       },
       {
         key: "social_media",
-        title: "Mídias sociais",
-        description:
-          "Monitorar e responder comentários nas redes de forma mais ágil.",
+        title: intl.formatMessage(messages.socialMedia),
+        description: intl.formatMessage(messages.socialMediaDescription),
       },
     ];
     return (
@@ -170,4 +210,8 @@ class DesireField extends Component {
   }
 }
 
-export default DesireField;
+DesireField.propTypes = {
+  intl: intlShape.isRequired,
+};
+
+export default injectIntl(DesireField);

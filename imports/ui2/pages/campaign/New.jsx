@@ -32,6 +32,10 @@ import UserUpgrade from "../../components/UserUpgrade.jsx";
 import Disclaimer from "../../components/Disclaimer.jsx";
 
 const messages = defineMessages({
+  title: {
+    id: "app.campaign.form.title",
+    defaultMessage: "Create a campaign",
+  },
   nameLabel: {
     id: "app.campaign.form.name.label",
     defaultMessage: "Define a title for your campaign",
@@ -60,9 +64,45 @@ const messages = defineMessages({
     id: "app.campaign.form.race.label",
     defaultMessage: "Race",
   },
+  independentCampaignLabel: {
+    id: "app.campaign.form.independent_campaign.label",
+    defaultMessage: "Is it an independent candidacy?",
+  },
+  independentMandateLabel: {
+    id: "app.campaign.form.independent_mandate.label",
+    defaultMessage: "Is it an independent mandate?",
+  },
+  formatLabel: {
+    id: "app.campaign.form.format.label",
+    defaultMessage: "Which format?",
+  },
+  firstCampaignLabel: {
+    id: "app.campaign.form.first_campaign.label",
+    defaultMessage: "First campaign?",
+  },
+  firstMandateLabel: {
+    id: "app.campaign.form.first_mandate.label",
+    defaultMessage: "First mandate?",
+  },
   causeLabel: {
     id: "app.campaign.form.cause.label",
     defaultMessage: "What is your main cause?",
+  },
+  goalLabel: {
+    id: "app.campaign.form.goal.label",
+    defaultMessage: "What do you want to achieve with the campaign?",
+  },
+  estimatedDurationLabel: {
+    id: "app.campaign.form.estimated_duration.label",
+    defaultMessage: "Estimated duration time",
+  },
+  organizerLabel: {
+    id: "app.campaign.form.organizer.label",
+    defaultMessage: "Who organizes this campaign?",
+  },
+  organizerLabel: {
+    id: "app.campaign.form.organizer.label",
+    defaultMessage: "Who organizes this campaign?",
   },
   candidateLabel: {
     id: "app.campaign.form.candidate.label",
@@ -91,6 +131,10 @@ const messages = defineMessages({
   officeLabel: {
     id: "app.campaign.form.office.label",
     defaultMessage: "Select the office you are running for",
+  },
+  managerLabel: {
+    id: "app.campaign.form.manager.label",
+    defaultMessage: "Liane will be managed by:",
   },
   submitLabel: {
     id: "app.campaign.form.submit",
@@ -271,7 +315,13 @@ class NewCampaignPage extends Component {
           );
         }
         if (type == "activist") {
-          return defaultFields && formData.cause;
+          return (
+            defaultFields &&
+            formData.cause &&
+            formData.goal &&
+            formData.estimated_duration &&
+            formData.organizer
+          );
         }
         return defaultFields;
       },
@@ -443,7 +493,7 @@ class NewCampaignPage extends Component {
       return (
         <Form>
           <Form.Content>
-            <Page.Title>Create a campaign</Page.Title>
+            <Page.Title>{intl.formatMessage(messages.title)}</Page.Title>
             <Page.Boxed>
               <Form.Field
                 label={intl.formatMessage(messages.nameLabel)}
@@ -473,7 +523,10 @@ class NewCampaignPage extends Component {
                 />
               </Form.Field>
               <Button primary onClick={this._handleStartClick}>
-                Create my campaign
+                <FormattedMessage
+                  id="app.campaign.form.start.label"
+                  defaultMessage="Create my campaign"
+                />
               </Button>
             </Page.Boxed>
           </Form.Content>
@@ -483,7 +536,7 @@ class NewCampaignPage extends Component {
     return (
       <Form onSubmit={this._handleSubmit}>
         <Form.Steps
-          title="Create a campaign"
+          title={intl.formatMessage(messages.title)}
           currentStep={currentStep}
           onChange={this._handleStepChange}
           steps={this._getSteps()}
@@ -495,13 +548,17 @@ class NewCampaignPage extends Component {
             <>
               {currentStep == "candidate" ? (
                 <p>
-                  You are creating an electoral campaign in Liane. Therefore,
-                  the following questions are about the candidate.
+                  <FormattedMessage
+                    id="app.campaign.form.candidate.description"
+                    defaultMessage="You are creating an electoral campaign in Liane. Therefore, the following questions are about the candidate."
+                  />
                 </p>
               ) : (
                 <p>
-                  You are creating a mandate campaign in Liane. Therefore, the
-                  following questions are about the elected person.
+                  <FormattedMessage
+                    id="app.campaign.form.mandate.description"
+                    defaultMessage="You are creating a mandate campaign in Liane. Therefore, the following questions are about the elected person."
+                  />
                 </p>
               )}
               <Form.Field
@@ -575,7 +632,14 @@ class NewCampaignPage extends Component {
               </Form.Field>
               {formData.type.match(/electoral|mandate/) ? (
                 <>
-                  <Form.Field label="Is your candidacy independent?" required>
+                  <Form.Field
+                    label={intl.formatMessage(
+                      formData.type == "electoral"
+                        ? messages.independentCampaignLabel
+                        : messages.independentMandateLabel
+                    )}
+                    required
+                  >
                     <BooleanRadioField
                       name="independent"
                       value={formData.independent}
@@ -605,7 +669,10 @@ class NewCampaignPage extends Component {
                     />
                   </Form.Field>
                   {formData.type == "electoral" ? (
-                    <Form.Field label="First campaign?" required>
+                    <Form.Field
+                      label={intl.formatMessage(messages.firstCampaignLabel)}
+                      required
+                    >
                       <BooleanRadioField
                         name="first_campaign"
                         value={formData.first_campaign}
@@ -613,15 +680,21 @@ class NewCampaignPage extends Component {
                       />
                     </Form.Field>
                   ) : (
-                    <Form.Field label="First mandate?" required>
+                    <Form.Field
+                      label={intl.formatMessage(messages.firstMandateLabel)}
+                      required
+                    >
                       <BooleanRadioField
                         name="first_mandate"
-                        value={formData.first_campaign}
+                        value={formData.first_mandate}
                         onChange={this._handleChange}
                       />
                     </Form.Field>
                   )}
-                  <Form.Field label="Which format is your campaign?" required>
+                  <Form.Field
+                    label={intl.formatMessage(messages.formatLabel)}
+                    required
+                  >
                     <Form.CheckboxGroup>
                       <label>
                         <input
@@ -631,7 +704,10 @@ class NewCampaignPage extends Component {
                           checked={formData.format == "individual"}
                           onChange={this._handleChange}
                         />
-                        Individual
+                        <FormattedMessage
+                          id="app.campaign.form.format.individual"
+                          defaultMessage="Individual"
+                        />
                       </label>
                       <label>
                         <input
@@ -641,7 +717,10 @@ class NewCampaignPage extends Component {
                           checked={formData.format == "collective"}
                           onChange={this._handleChange}
                         />
-                        Collective
+                        <FormattedMessage
+                          id="app.campaign.form.format.collective"
+                          defaultMessage="Collective"
+                        />
                       </label>
                     </Form.CheckboxGroup>
                   </Form.Field>
@@ -659,17 +738,128 @@ class NewCampaignPage extends Component {
                 </>
               ) : null}
               {formData.type == "activist" ? (
-                <Form.Field
-                  label={intl.formatMessage(messages.causeLabel)}
-                  required
-                >
-                  <input
-                    type="text"
-                    name="cause"
-                    onChange={this._handleChange}
-                    value={formData.cause}
-                  />
-                </Form.Field>
+                <>
+                  <Form.Field
+                    label={intl.formatMessage(messages.causeLabel)}
+                    required
+                  >
+                    <input
+                      type="text"
+                      name="cause"
+                      onChange={this._handleChange}
+                      value={formData.cause}
+                    />
+                  </Form.Field>
+                  <Form.Field
+                    label={intl.formatMessage(messages.goalLabel)}
+                    required
+                  >
+                    <input
+                      type="text"
+                      name="goal"
+                      onChange={this._handleChange}
+                      value={formData.goal}
+                    />
+                  </Form.Field>
+                  <Form.Field
+                    label={intl.formatMessage(messages.estimatedDurationLabel)}
+                    required
+                  >
+                    <input
+                      type="text"
+                      name="estimated_duration"
+                      onChange={this._handleChange}
+                      value={formData.estimated_duration}
+                    />
+                  </Form.Field>
+                  <Form.Field
+                    label={intl.formatMessage(messages.organizerLabel)}
+                    required
+                  >
+                    <Form.CheckboxGroup>
+                      <label>
+                        <input
+                          type="radio"
+                          name="organizer"
+                          value="social_movement"
+                          checked={formData.organizer == "social_movement"}
+                          onChange={this._handleChange}
+                        />
+                        <FormattedMessage
+                          id="app.campaign.form.organizer.social_movement"
+                          defaultMessage="Social movement"
+                        />
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="organizer"
+                          value="social_organization"
+                          checked={formData.organizer == "social_organization"}
+                          onChange={this._handleChange}
+                        />
+                        <FormattedMessage
+                          id="app.campaign.form.organizer.social_organization"
+                          defaultMessage="Social organization"
+                        />
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="organizer"
+                          value="collective_organizations"
+                          checked={
+                            formData.organizer == "collective_organizations"
+                          }
+                          onChange={this._handleChange}
+                        />
+                        <FormattedMessage
+                          id="app.campaign.form.organizer.collective_organizations"
+                          defaultMessage="A collective of organizations"
+                        />
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="organizer"
+                          value="ngo"
+                          checked={formData.organizer == "ngo"}
+                          onChange={this._handleChange}
+                        />
+                        <FormattedMessage
+                          id="app.campaign.form.organizer.ngo"
+                          defaultMessage="NGO/Nonprofit"
+                        />
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="organizer"
+                          value="party"
+                          checked={formData.organizer == "party"}
+                          onChange={this._handleChange}
+                        />
+                        <FormattedMessage
+                          id="app.campaign.form.organizer.party"
+                          defaultMessage="Political party"
+                        />
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="organizer"
+                          value="collective"
+                          checked={formData.organizer == "collective"}
+                          onChange={this._handleChange}
+                        />
+                        <FormattedMessage
+                          id="app.campaign.form.organizer.collective"
+                          defaultMessage="Independent collective"
+                        />
+                      </label>
+                    </Form.CheckboxGroup>
+                  </Form.Field>
+                </>
               ) : null}
             </>
           ) : null}
@@ -707,17 +897,23 @@ class NewCampaignPage extends Component {
           ) : null}
           {currentStep == "expectation" ? (
             <>
-              <Form.Field
-                label="Nós sabemos que você enfrenta muitos desafios no dia-a-dia. Marque o que você está buscando enfrentar com Liane:"
-                required
-              >
+              <p>
+                <FormattedMessage
+                  id="app.campaign.form.expectation_description"
+                  defaultMessage="We know that you face many challenges on a day-to-day basis. Tell us what you are looking to face with Liane."
+                />
+              </p>
+              <Form.Field>
                 <DesireField
                   name="expectation"
                   value={formData.expectation}
                   onChange={this._handleChange}
                 />
               </Form.Field>
-              <Form.Field label="Liane will be managed by:" required>
+              <Form.Field
+                label={intl.formatMessage(messages.managerLabel)}
+                required
+              >
                 <Form.CheckboxGroup>
                   {formData.type == "electoral" ? (
                     <label>
@@ -728,7 +924,10 @@ class NewCampaignPage extends Component {
                         checked={formData.manager == "candidate"}
                         onChange={this._handleChange}
                       />
-                      Candidate
+                      <FormattedMessage
+                        id="app.campaign.form.manager.candidate"
+                        defaultMessage="Candidate"
+                      />
                     </label>
                   ) : null}
                   {formData.type == "mandate" ? (
@@ -740,7 +939,10 @@ class NewCampaignPage extends Component {
                         checked={formData.manager == "elected"}
                         onChange={this._handleChange}
                       />
-                      Elected person
+                      <FormattedMessage
+                        id="app.campaign.form.manager.elected_person"
+                        defaultMessage="Elected person"
+                      />
                     </label>
                   ) : null}
                   <label>
@@ -751,7 +953,10 @@ class NewCampaignPage extends Component {
                       checked={formData.manager == "team"}
                       onChange={this._handleChange}
                     />
-                    Team
+                    <FormattedMessage
+                      id="app.campaign.form.manager.team"
+                      defaultMessage="Team"
+                    />
                   </label>
                   <label>
                     <input
@@ -761,7 +966,10 @@ class NewCampaignPage extends Component {
                       checked={formData.manager == "volunteer"}
                       onChange={this._handleChange}
                     />
-                    Volunteer
+                    <FormattedMessage
+                      id="app.campaign.form.manager.volunteer"
+                      defaultMessage="Volunteer"
+                    />
                   </label>
                   <label>
                     <input
@@ -771,7 +979,10 @@ class NewCampaignPage extends Component {
                       checked={formData.manager == "third_party"}
                       onChange={this._handleChange}
                     />
-                    Third party (consultant or agency)
+                    <FormattedMessage
+                      id="app.campaign.form.manager.third_party"
+                      defaultMessage="Third party (consultant or agency)"
+                    />
                   </label>
                 </Form.CheckboxGroup>
               </Form.Field>
