@@ -1,11 +1,11 @@
 import humanize from "humanize-plus";
 
-export const validateEmail = email => {
+export const validateEmail = (email) => {
   const re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
   return re.test(email);
 };
 
-export const getRandomLoremPixel = function(lastDigit) {
+export const getRandomLoremPixel = function (lastDigit) {
   const options = [
     "sports",
     "people",
@@ -16,17 +16,17 @@ export const getRandomLoremPixel = function(lastDigit) {
     "fashion",
     "transport",
     "nightlife",
-    "technics"
+    "technics",
   ];
   return `http://lorempixel.com/400/400/${options[lastDigit]}`;
 };
 
-export const roundFloat = value =>
+export const roundFloat = (value) =>
   parseFloat((Math.round(value * 100) / 100).toFixed(2));
 
-const compactNumber = value => humanize.compactInteger(value, 1);
+const compactNumber = (value) => humanize.compactInteger(value, 1);
 
-const pluralize = function(n, thing) {
+const pluralize = function (n, thing) {
   // fairly stupid pluralizer
   if (n === 0) {
     return "";
@@ -41,16 +41,24 @@ const pluralize = function(n, thing) {
   }
 };
 
-export const flattenObject = function(data) {
+export const flattenObject = function (data) {
   let result = {};
   function recurse(cur, prop) {
     let l;
-    if (Object(cur) !== cur) {
+    if (typeof cur == "boolean") {
+      result[prop] = cur ? "yes" : "no";
+    } else if (Object(cur) !== cur) {
       result[prop] = cur;
+    } else if (cur instanceof Date) {
+      result[prop] = cur.toString();
     } else if (Array.isArray(cur)) {
-      for (let i = 0, l = cur.length; i < l; i++)
-        recurse(cur[i], prop + "[" + i + "]");
-      if (l == 0) result[prop] = [];
+      if (typeof cur[0] == "string") {
+        result[prop] = cur.join(", ");
+      } else {
+        for (let i = 0, l = cur.length; i < l; i++)
+          recurse(cur[i], prop + "[" + i + "]");
+        if (l == 0) result[prop] = [];
+      }
     } else if (
       (prop.indexOf(".region") !== -1 || prop.indexOf(".city") !== -1) &&
       cur.name
