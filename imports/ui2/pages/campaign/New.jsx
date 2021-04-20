@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import styled from "styled-components";
 import {
   injectIntl,
   intlShape,
@@ -9,17 +10,23 @@ import {
 import { ClientStorage } from "meteor/ostrio:cstorage";
 import { set, get } from "lodash";
 
+import DatePicker from "react-datepicker";
+
 import { alertStore } from "../../containers/Alerts.jsx";
 
 import Page from "../../components/Page.jsx";
 import Button from "../../components/Button.jsx";
 import Form from "../../components/Form.jsx";
 import Loading from "../../components/Loading.jsx";
+import BooleanRadioField from "../../components/BooleanRadioField.jsx";
 import SelectAccount from "../../components/facebook/SelectAccount.jsx";
 import CampaignTypeSelect from "../../components/CampaignTypeSelect.jsx";
+import GenderField from "../../components/GenderField.jsx";
+import RaceField from "../../components/RaceField.jsx";
 import OfficeField from "../../components/OfficeField.jsx";
 import CountrySelect from "../../components/CountrySelect.jsx";
 import GeolocationSearch from "../../components/GeolocationSearch.jsx";
+import DesireField from "../../components/DesireField.jsx";
 import UserUpgrade from "../../components/UserUpgrade.jsx";
 import Disclaimer from "../../components/Disclaimer.jsx";
 
@@ -39,6 +46,18 @@ const messages = defineMessages({
   typePlaceholder: {
     id: "app.campaign.form.type.placeholder",
     defaultMessage: "Campaign type",
+  },
+  birthdayLabel: {
+    id: "app.campaign.form.birthday.label",
+    defaultMessage: "Birthday",
+  },
+  genderLabel: {
+    id: "app.campaign.form.gender.label",
+    defaultMessage: "Gender",
+  },
+  raceLabel: {
+    id: "app.campaign.form.race.label",
+    defaultMessage: "Race",
   },
   causeLabel: {
     id: "app.campaign.form.cause.label",
@@ -64,10 +83,6 @@ const messages = defineMessages({
     id: "app.campaign.form.email.label",
     defaultMessage: "Public email",
   },
-  phoneLabel: {
-    id: "app.campaign.form.phone.label",
-    defaultMessage: "Public phone number",
-  },
   countryLabel: {
     id: "app.campaign.form.country.label",
     defaultMessage: "Select the country for your campaign",
@@ -91,9 +106,13 @@ const messages = defineMessages({
 });
 
 const stepsLabels = defineMessages({
-  basic_info: {
-    id: "app.campaign.form.steps.basic_info",
-    defaultMessage: "Basic information",
+  candidate: {
+    id: "app.campaign.form.steps.candidate",
+    defaultMessage: "Candidate",
+  },
+  mandate: {
+    id: "app.campaign.form.steps.mandate",
+    defaultMessage: "Mandate",
   },
   campaign_details: {
     id: "app.campaign.form.steps.campaign_details",
@@ -102,6 +121,10 @@ const stepsLabels = defineMessages({
   location: {
     id: "app.campaign.form.steps.location",
     defaultMessage: "Location",
+  },
+  expectation: {
+    id: "app.campaign.form.steps.expectation",
+    defaultMessage: "Expectation",
   },
   facebook: {
     id: "app.campaign.form.steps.facebook",
@@ -113,11 +136,17 @@ const stepsLabels = defineMessages({
   },
 });
 
+const Start = styled.div`
+  background: #fff;
+  padding: 2rem;
+  border-radius: 7px;
+`;
+
 class NewCampaignPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentStep: 0,
+      currentStep: false,
       enableNextStep: false,
       agreed: false,
       ready: false,
@@ -134,54 +163,89 @@ class NewCampaignPage extends Component {
     this._validate();
   }
   componentDidUpdate(prevProps, prevState) {
-    if (
-      JSON.stringify(this.state.formData) != JSON.stringify(prevState.formData)
-    ) {
+    const { formData } = this.state;
+    if (JSON.stringify(formData) != JSON.stringify(prevState.formData)) {
       this._validateStep();
     }
+    if (formData.type != prevState.formData.type) {
+      const firstStep = this._getSteps()[0];
+      this.setState({ currentStep: firstStep.key });
+    }
   }
-  _handleStepChange = (stepIndex) => {
+  _handleStepChange = (stepKey) => {
     const { currentStep } = this.state;
-    this._validateStep(stepIndex);
-    this.setState({ currentStep: stepIndex });
+    this._validateStep(stepKey);
+    this.setState({ currentStep: stepKey });
+  };
+  _getNextStep = () => {
+    const { currentStep } = this.state;
+    const steps = this._getSteps();
+    const index = steps.findIndex((step) => step.key == currentStep);
+    return steps[index + 1];
+  };
+  _isLastStep = () => {
+    return !this._getNextStep();
   };
   _handleNextStepClick = (ev) => {
     ev.preventDefault();
-    const stepIndex = this.state.currentStep + 1;
-    this._validateStep(stepIndex);
+    const nextStep = this._getNextStep();
+    this._validateStep(nextStep.key);
     this.setState({
-      currentStep: stepIndex,
+      currentStep: nextStep.key,
     });
   };
   _getSteps = () => {
     const { intl } = this.props;
-    let steps = [
-      "basic_info",
-      "campaign_details",
-      "location",
-      "facebook",
-      "policy",
-    ];
+    const { formData } = this.state;
+    let steps;
+    switch (formData.type) {
+      case "electoral":
+        steps = [
+          "candidate",
+          "campaign_details",
+          "location",
+          "facebook",
+          "expectation",
+          "policy",
+        ];
+        break;
+      case "mandate":
+        steps = [
+          "mandate",
+          "campaign_details",
+          "location",
+          "facebook",
+          "expectation",
+          "policy",
+        ];
+        break;
+      default:
+        steps = [
+          "campaign_details",
+          "location",
+          "facebook",
+          "expectation",
+          "policy",
+        ];
+    }
     return steps.map((step) => {
       return { key: step, label: intl.formatMessage(stepsLabels[step]) };
     });
   };
-  _validateStep = (stepIndex) => {
+  _validateStep = (stepKey) => {
     const { currentStep, formData, agreed } = this.state;
-    console.log({ stepIndex, currentStep, formData });
-    const steps = {
-      0: () => formData.name && formData.type,
-      1: () =>
-        formData.candidate &&
-        formData.party &&
-        formData.contact &&
-        formData.contact.email,
-      2: () => formData.country,
-      3: () => formData.facebookAccountId,
-      4: () => agreed,
+    if (!currentStep) return;
+    const stepsValidations = {
+      candidate: () => formData.candidate && formData.birthday,
+      campaign_details: () => formData.contact && formData.contact.email,
+      location: () => formData.country,
+      facebook: () => formData.facebookAccountId,
+      expectation: () => formData.expectation && formData.manager,
+      policy: () => agreed,
     };
-    const step = !isNaN(stepIndex) ? stepIndex : currentStep;
-    const valid = steps[step] && steps[step]();
+    const steps = this._getSteps();
+    const step = stepKey || currentStep;
+    const valid = stepsValidations[step] && stepsValidations[step]();
     this.setState({ enableNextStep: valid });
     return valid;
   };
@@ -264,6 +328,15 @@ class NewCampaignPage extends Component {
       });
     }
   };
+  _handleStartClick = (ev) => {
+    ev.preventDefault();
+    const { formData } = this.state;
+    if (!formData.name || !formData.type) {
+      alertStore.add("Make sure you filled all the required fields", "error");
+    } else {
+      this.setState({ start: true });
+    }
+  };
   _handleSubmit = (ev) => {
     ev.preventDefault();
     const { intl } = this.props;
@@ -295,6 +368,14 @@ class NewCampaignPage extends Component {
   _getStepLabel = (stepIndex) => {
     return this._getSteps()[stepIndex].label;
   };
+  _getBirthdayValue() {
+    const { formData } = this.state;
+    const value = get(formData, "birthday");
+    if (value) {
+      return value;
+    }
+    return null;
+  }
   render() {
     const { intl } = this.props;
     const {
@@ -304,6 +385,7 @@ class NewCampaignPage extends Component {
       validation,
       loading,
       formData,
+      start,
     } = this.state;
     if (!ready) {
       return <Loading full />;
@@ -338,20 +420,17 @@ class NewCampaignPage extends Component {
     if (validation.enabled && !validation.validUser) {
       return <UserUpgrade onSuccess={this._validate} />;
     }
-    return (
-      <Form onSubmit={this._handleSubmit}>
-        <Form.Steps
-          title="Create a campaign"
-          currentStep={currentStep}
-          onChange={this._handleStepChange}
-          steps={this._getSteps().map((step) => step.label)}
-          enableNextStep={enableNextStep}
-        />
-        <Form.Content>
-          {loading ? <Loading full /> : null}
-          {currentStep == 0 ? (
-            <>
-              <Form.Field label={intl.formatMessage(messages.nameLabel)} big>
+    if (!start) {
+      return (
+        <Form>
+          <Form.Content>
+            <Page.Title>Create a campaign</Page.Title>
+            <Page.Boxed>
+              <Form.Field
+                label={intl.formatMessage(messages.nameLabel)}
+                big
+                required
+              >
                 <input
                   type="text"
                   name="name"
@@ -361,26 +440,42 @@ class NewCampaignPage extends Component {
                   big
                 />
               </Form.Field>
-              <Form.Field label={intl.formatMessage(messages.typeLabel)}>
+              <Form.Field
+                label={intl.formatMessage(messages.typeLabel)}
+                big
+                required
+              >
                 <CampaignTypeSelect
                   name="type"
                   placeholder={intl.formatMessage(messages.typePlaceholder)}
                   onChange={this._handleChange}
                   value={formData.type}
+                  spread
                 />
               </Form.Field>
-            </>
-          ) : null}
-          {currentStep == 1 ? (
+              <Button primary onClick={this._handleStartClick}>
+                Create my campaign
+              </Button>
+            </Page.Boxed>
+          </Form.Content>
+        </Form>
+      );
+    }
+    return (
+      <Form onSubmit={this._handleSubmit}>
+        <Form.Steps
+          title="Create a campaign"
+          currentStep={currentStep}
+          onChange={this._handleStepChange}
+          steps={this._getSteps()}
+          enableNextStep={enableNextStep}
+        />
+        <Form.Content>
+          {loading ? <Loading full /> : null}
+          {currentStep == "candidate" ? (
             <>
               {formData.type.match(/electoral|mandate/) ? (
                 <>
-                  <h2>
-                    <FormattedMessage
-                      id="app.campaign.form.candidate_title"
-                      defaultMessage="Candidate"
-                    />
-                  </h2>
                   <p>
                     <p>
                       You are creating an electoral campaign in Liane.
@@ -390,6 +485,7 @@ class NewCampaignPage extends Component {
                   </p>
                   <Form.Field
                     label={intl.formatMessage(messages.candidateLabel)}
+                    required
                   >
                     <input
                       type="text"
@@ -401,15 +497,41 @@ class NewCampaignPage extends Component {
                       value={formData.candidate}
                     />
                   </Form.Field>
-                  <Form.Field label={intl.formatMessage(messages.partyLabel)}>
-                    <input
-                      type="text"
-                      name="party"
-                      placeholder={intl.formatMessage(
-                        messages.partyPlaceholder
-                      )}
+                  <Form.Field
+                    label={intl.formatMessage(messages.birthdayLabel)}
+                    required
+                  >
+                    <div>
+                      <DatePicker
+                        onChange={(date) => {
+                          this._handleChange({
+                            target: {
+                              name: "birthday",
+                              value: date,
+                            },
+                          });
+                        }}
+                        selected={this._getBirthdayValue()}
+                        dateFormatCalendar="MMMM"
+                        dateFormat="P"
+                        showMonthDropdown
+                        showYearDropdown
+                        dropdownMode="select"
+                      />
+                    </div>
+                  </Form.Field>
+                  <Form.Field label={intl.formatMessage(messages.genderLabel)}>
+                    <GenderField
+                      name="gender"
                       onChange={this._handleChange}
-                      value={formData.party}
+                      value={formData.gender}
+                    />
+                  </Form.Field>
+                  <Form.Field label={intl.formatMessage(messages.raceLabel)}>
+                    <RaceField
+                      name="race"
+                      onChange={this._handleChange}
+                      value={formData.race}
                     />
                   </Form.Field>
                 </>
@@ -424,13 +546,14 @@ class NewCampaignPage extends Component {
                   />
                 </Form.Field>
               ) : null}
-              <h3>
-                <FormattedMessage
-                  id="app.campaign.form.section_title.contact"
-                  defaultMessage="Contact information"
-                />
-              </h3>
-              <Form.Field label={intl.formatMessage(messages.emailLabel)}>
+            </>
+          ) : null}
+          {currentStep == "campaign_details" ? (
+            <>
+              <Form.Field
+                label={intl.formatMessage(messages.emailLabel)}
+                required
+              >
                 <input
                   type="text"
                   name="contact.email"
@@ -438,20 +561,74 @@ class NewCampaignPage extends Component {
                   onChange={this._handleChange}
                 />
               </Form.Field>
-              <Form.Field
-                label={intl.formatMessage(messages.phoneLabel)}
-                optional
-              >
-                <input
-                  type="text"
-                  name="contact.phone"
-                  value={this.getValue("contact.phone")}
-                  onChange={this._handleChange}
-                />
-              </Form.Field>
+
+              {formData.type.match(/electoral|mandate/) ? (
+                <>
+                  <Form.Field label="Is your candidacy independent?" required>
+                    <BooleanRadioField
+                      name="independent"
+                      value={formData.independent}
+                      onChange={this._handleChange}
+                    />
+                  </Form.Field>
+                  <Form.Field label={intl.formatMessage(messages.partyLabel)}>
+                    <input
+                      type="text"
+                      name="party"
+                      placeholder={intl.formatMessage(
+                        messages.partyPlaceholder
+                      )}
+                      onChange={this._handleChange}
+                      value={formData.party}
+                    />
+                  </Form.Field>
+                  <Form.Field
+                    label={intl.formatMessage(messages.officeLabel)}
+                    required
+                  >
+                    <OfficeField
+                      country={formData.country}
+                      value={formData.office}
+                      name="office"
+                      onChange={this._handleChange}
+                    />
+                  </Form.Field>
+                  <Form.Field label="First campaign?" required>
+                    <BooleanRadioField
+                      name="first_campaign"
+                      value={formData.first_campaign}
+                      onChange={this._handleChange}
+                    />
+                  </Form.Field>
+                  <Form.Field label="Which format is your campaign?">
+                    <Form.CheckboxGroup>
+                      <label>
+                        <input
+                          type="radio"
+                          name="campaign_format"
+                          value="individual"
+                          checked={formData.campaign_format == "individual"}
+                          onChange={this._handleChange}
+                        />
+                        Individual
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="campaign_format"
+                          value="collective"
+                          checked={formData.campaign_format == "collective"}
+                          onChange={this._handleChange}
+                        />
+                        Collective
+                      </label>
+                    </Form.CheckboxGroup>
+                  </Form.Field>
+                </>
+              ) : null}
             </>
           ) : null}
-          {currentStep == 2 ? (
+          {currentStep == "location" ? (
             <>
               <Form.Field label={intl.formatMessage(messages.countryLabel)}>
                 <CountrySelect
@@ -460,16 +637,6 @@ class NewCampaignPage extends Component {
                   onChange={this._handleChange}
                 />
               </Form.Field>
-              {formData.country && formData.type.match(/electoral|mandate/) ? (
-                <Form.Field label={intl.formatMessage(messages.officeLabel)}>
-                  <OfficeField
-                    country={formData.country}
-                    value={formData.office}
-                    name="office"
-                    onChange={this._handleChange}
-                  />
-                </Form.Field>
-              ) : null}
               {formData.country ? (
                 <GeolocationSearch
                   country={formData.country}
@@ -478,7 +645,7 @@ class NewCampaignPage extends Component {
               ) : null}
             </>
           ) : null}
-          {currentStep == 3 ? (
+          {currentStep == "facebook" ? (
             <>
               <p>
                 <FormattedMessage
@@ -493,7 +660,54 @@ class NewCampaignPage extends Component {
               />
             </>
           ) : null}
-          {currentStep == 4 ? (
+          {currentStep == "expectation" ? (
+            <>
+              <p>
+                Nós sabemos que você enfrenta muitos desafios no dia-a-dia.
+                Marque o que você está buscando enfrentar com Liane:
+              </p>
+              <DesireField
+                name="expectation"
+                value={formData.expectation}
+                onChange={this._handleChange}
+              />{" "}
+              <Form.Field label="Liane will be managed by:">
+                <Form.CheckboxGroup>
+                  <label>
+                    <input
+                      type="radio"
+                      name="manager"
+                      value="team"
+                      checked={formData.manager == "team"}
+                      onChange={this._handleChange}
+                    />
+                    Team
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="manager"
+                      value="volunteer"
+                      checked={formData.manager == "volunteer"}
+                      onChange={this._handleChange}
+                    />
+                    Volunteer
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="manager"
+                      value="third_party"
+                      checked={formData.manager == "third_party"}
+                      onChange={this._handleChange}
+                    />
+                    Third party (consultant or agency)
+                  </label>
+                </Form.CheckboxGroup>
+              </Form.Field>
+            </>
+          ) : null}
+          {currentStep == "policy" ? (
             <Disclaimer
               type="security"
               consent={intl.formatMessage(messages.consentText)}
@@ -515,7 +729,7 @@ class NewCampaignPage extends Component {
           ) : null}
         </Form.Content>
         <Form.Actions>
-          {currentStep == this._getSteps().length - 1 ? (
+          {this._isLastStep() ? (
             <input
               type="submit"
               disabled={!this._filledForm() || loading}
@@ -530,7 +744,7 @@ class NewCampaignPage extends Component {
                 id="app.campaign.form.next_step.label"
                 defaultMessage="Next step:"
               />{" "}
-              {this._getStepLabel(currentStep + 1)}
+              {this._getNextStep().label}
             </Button>
           )}
         </Form.Actions>

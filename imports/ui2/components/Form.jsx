@@ -298,26 +298,30 @@ class Steps extends Component {
     super(props);
     this.state = { visitedSteps: {} };
   }
-  _handleClick = (stepIndex) => (ev) => {
+  _handleClick = (key) => (ev) => {
     ev.preventDefault();
+    const { steps } = this.props;
+    const step = steps.find((step) => step.key == key);
     const { enableNextStep, currentStep } = this.props;
-    if (!this._isDisabled(stepIndex)) {
+    if (!this._isDisabled(step.key)) {
       this.setState({
         visitedSteps: {
           ...this.state.visitedSteps,
-          [stepIndex]: true,
+          [step.key]: true,
         },
       });
-      this.props.onChange && this.props.onChange(stepIndex);
+      this.props.onChange && this.props.onChange(key);
     }
   };
-  _isDisabled = (stepIndex) => {
+  _isDisabled = (key) => {
     const { visitedSteps } = this.state;
-    const { enableNextStep, currentStep } = this.props;
+    const { enableNextStep, currentStep, steps } = this.props;
+    const curStepIndex = steps.findIndex((step) => step.key == currentStep);
+    const stepIndex = steps.findIndex((step) => step.key == key);
     return !(
-      stepIndex <= currentStep ||
-      visitedSteps[stepIndex] ||
-      (stepIndex == currentStep + 1 && enableNextStep)
+      stepIndex <= curStepIndex ||
+      visitedSteps[key] ||
+      (stepIndex == curStepIndex + 1 && enableNextStep)
     );
   };
   render() {
@@ -330,12 +334,12 @@ class Steps extends Component {
             <ol>
               {steps.map((step, i) => (
                 <StepItem
-                  key={step}
-                  active={currentStep == i}
-                  disabled={this._isDisabled(i)}
+                  key={step.key}
+                  active={currentStep == step.key}
+                  disabled={this._isDisabled(step.key)}
                 >
-                  <a href="#" onClick={this._handleClick(i)}>
-                    {step}
+                  <a href="#" onClick={this._handleClick(step.key)}>
+                    {step.label}
                   </a>
                 </StepItem>
               ))}

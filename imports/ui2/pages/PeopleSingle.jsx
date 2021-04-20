@@ -24,10 +24,7 @@ import PersonReactions from "../components/PersonReactions.jsx";
 import PersonSummary from "../components/PersonSummary.jsx";
 import PersonInfoTable from "../components/PersonInfoTable.jsx";
 
-import PersonEdit, {
-  profileLabels,
-  genderLabels,
-} from "../components/PersonEdit.jsx";
+import PersonEdit from "../components/PersonEdit.jsx";
 import Reply from "../components/Reply.jsx";
 
 import CommentList from "../components/CommentList.jsx";

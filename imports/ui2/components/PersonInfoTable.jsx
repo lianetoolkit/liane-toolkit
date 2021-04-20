@@ -12,7 +12,8 @@ import { get } from "lodash";
 import Table from "../components/Table.jsx";
 
 import { defaultSkillsLabels } from "./SkillsConfig.jsx";
-import { profileLabels, genderLabels } from "./PersonEdit.jsx";
+import { profileLabels } from "./PersonEdit.jsx";
+import { genderLabels } from "./GenderField.jsx";
 
 const dataMap = [
   {

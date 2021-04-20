@@ -77,7 +77,7 @@ Campaigns.schema = new SimpleSchema({
   },
   type: {
     type: String,
-    allowedValues: ["electoral", "mandate", "mobilization", "marketing"],
+    allowedValues: ["electoral", "mandate", "activist"],
   },
   party: {
     type: String,
