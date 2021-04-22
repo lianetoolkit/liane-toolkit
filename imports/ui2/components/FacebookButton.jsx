@@ -39,7 +39,7 @@ class FacebookButton extends Component {
       loading: false,
     };
   }
-  _facebookAuth = () => (ev) => {
+  _facebookAuth = (ev) => {
     ev.preventDefault();
     const { invite, type } = this.props;
     let data = {
@@ -55,7 +55,7 @@ class FacebookButton extends Component {
         "pages_messaging_phone_number",
         "pages_messaging_subscriptions",
         "instagram_basic",
-        "instagram_manage_comments"
+        "instagram_manage_comments",
       ]);
     }
     this.setState({ loading: true });
@@ -99,10 +99,11 @@ class FacebookButton extends Component {
     });
   };
   render() {
+    const { onClick } = this.props;
     return (
       <Container
         className="facebook-button button"
-        onClick={this._facebookAuth()}
+        onClick={onClick || this._facebookAuth}
       >
         <FontAwesomeIcon icon={["fab", "facebook-square"]} />
         <FormattedMessage

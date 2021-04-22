@@ -205,7 +205,7 @@ class NewCampaignPage extends Component {
     };
   }
   componentDidMount() {
-    this._validate();
+    this._validateUser();
   }
   componentDidUpdate(prevProps, prevState) {
     const { formData } = this.state;
@@ -338,7 +338,7 @@ class NewCampaignPage extends Component {
     }
     return valid;
   };
-  _validate = () => {
+  _validateUser = () => {
     const invite = ClientStorage.get("invite");
     this.setState({ ready: false });
     let data = {};
@@ -513,7 +513,7 @@ class NewCampaignPage extends Component {
       );
     }
     if (validation.enabled && !validation.validUser) {
-      return <UserUpgrade onSuccess={this._validate} />;
+      return <UserUpgrade onSuccess={this._validateUser} />;
     }
     if (!start) {
       return (
