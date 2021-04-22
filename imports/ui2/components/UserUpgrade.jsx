@@ -6,6 +6,7 @@ import { FormattedMessage } from "react-intl";
 import { alertStore } from "../containers/Alerts.jsx";
 
 import Button from "./Button.jsx";
+import FacebookButton from "./FacebookButton.jsx";
 import Loading from "./Loading.jsx";
 import Page from "./Page.jsx";
 
@@ -24,14 +25,11 @@ export default class UserUpgrade extends Component {
       "pages_manage_engagement",
       "pages_manage_metadata",
       "pages_show_list",
-      // "ads_management",
-      // "ads_read",
-      // "business_management",
       "pages_messaging",
       "pages_messaging_phone_number",
       "pages_messaging_subscriptions",
       "instagram_basic",
-      "instagram_manage_comments"
+      "instagram_manage_comments",
     ];
     this.setState({ loading: true });
     Facebook.requestCredential(
@@ -74,12 +72,7 @@ export default class UserUpgrade extends Component {
             />
           </p>
         </div>
-        <Button primary onClick={this._handleClick}>
-          <FormattedMessage
-            id="app.user_upgrade.button_label"
-            defaultMessage="Click here to became a campaigner!"
-          />
-        </Button>
+        <FacebookButton onClick={this._handleClick} />
       </Page.Boxed>
     );
   }
