@@ -81,6 +81,22 @@ class GeolocationSearch extends Component {
       loading: false,
     };
   }
+  componentDidMount() {
+    if (this.props.regionType)
+      this.setState({
+        region: this.props.regionType,
+      });
+  }
+  componentDidUpdate(prevProps, prevState) {
+    const { onChange } = this.props;
+    const { region, selected } = this.state;
+    if (prevState.region != region) {
+      onChange && onChange({ type: region, geolocation: null });
+    }
+    if (JSON.stringify(prevState.selected) != JSON.stringify(selected)) {
+      onChange && onChange({ type: region, geolocation: selected });
+    }
+  }
   search = debounce(() => {
     const { country } = this.props;
     const { region, search } = this.state;
@@ -115,8 +131,10 @@ class GeolocationSearch extends Component {
     }
   };
   _handleRegionChange = ({ target }) => {
+    const { onChange } = this.props;
     this.setState({
       region: target.value,
+      selected: null,
       results: [],
     });
     if (this.state.search) {
@@ -126,13 +144,9 @@ class GeolocationSearch extends Component {
   _handleSelect = (geolocation) => (ev) => {
     ev.preventDefault();
     const { onChange } = this.props;
-    const { region } = this.state;
     this.setState({
       selected: geolocation,
     });
-    if (onChange && typeof onChange == "function") {
-      onChange({ geolocation, type: region });
-    }
   };
   _handleReset = () => {
     const { onChange } = this.props;

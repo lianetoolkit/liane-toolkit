@@ -162,9 +162,9 @@ const CheckboxGroup = styled.div`
 
 class Content extends Component {
   render() {
-    const { children, ...props } = this.props;
+    const { children, contentRef, ...props } = this.props;
     return (
-      <ContentContainer {...props}>
+      <ContentContainer ref={contentRef} {...props}>
         <FormContent>{children}</FormContent>
       </ContentContainer>
     );

@@ -44,6 +44,10 @@ const messages = defineMessages({
     id: "app.campaign.form.name.placeholder",
     defaultMessage: "Title of your campaign",
   },
+  missingFieldsError: {
+    id: "app.campaign.form.missing_fields_error",
+    defaultMessage: "Make sure you filled all the required fields",
+  },
   typeLabel: {
     id: "app.campaign.form.type.label",
     defaultMessage: "What type of campaign are you running?",
@@ -197,24 +201,32 @@ class NewCampaignPage extends Component {
       ready: false,
       validation: false,
       loading: false,
+      geolocationType: "",
       formData: {
         name: "",
         type: "",
         facebookAccountId: "",
       },
     };
+    this.formContent = React.createRef();
   }
   componentDidMount() {
     this._validateUser();
   }
   componentDidUpdate(prevProps, prevState) {
-    const { formData } = this.state;
+    const { geolocationType, formData, currentStep } = this.state;
     if (JSON.stringify(formData) != JSON.stringify(prevState.formData)) {
+      this._validateStep();
+    }
+    if (geolocationType != prevState.geolocationType) {
       this._validateStep();
     }
     if (formData.type != prevState.formData.type) {
       const firstStep = this._getSteps()[0];
       this.setState({ currentStep: firstStep.key });
+    }
+    if (prevState.currentStep != currentStep) {
+      if (this.formContent.current) this.formContent.current.scrollTop = 0;
     }
   }
   _handleStepChange = (stepKey) => {
@@ -278,7 +290,7 @@ class NewCampaignPage extends Component {
     });
   };
   _validateStep = (stepKey, updateState = true) => {
-    const { currentStep, formData, agreed } = this.state;
+    const { currentStep, geolocationType, formData, agreed } = this.state;
     if (!currentStep) return;
     const stepsValidations = {
       candidate: () =>
@@ -323,9 +335,15 @@ class NewCampaignPage extends Component {
             formData.organizer
           );
         }
-        return defaultFields;
+        return !!defaultFields;
       },
-      location: () => formData.country,
+      location: () => {
+        const defaultFields = formData.country;
+        if (geolocationType != "national") {
+          return defaultFields && formData.geolocation;
+        }
+        return !!defaultFields;
+      },
       facebook: () => formData.facebookAccountId,
       expectation: () =>
         formData.expectation && formData.expectation.length && formData.manager,
@@ -377,6 +395,7 @@ class NewCampaignPage extends Component {
   _handleGeolocationChange = ({ geolocation, type }) => {
     if (geolocation) {
       this.setState({
+        geolocationType: type,
         formData: {
           ...this.state.formData,
           geolocation: {
@@ -390,6 +409,7 @@ class NewCampaignPage extends Component {
       const newFormData = { ...this.state.formData };
       delete newFormData.geolocation;
       this.setState({
+        geolocationType: type,
         formData: {
           ...this.state.formData,
         },
@@ -398,9 +418,10 @@ class NewCampaignPage extends Component {
   };
   _handleStartClick = (ev) => {
     ev.preventDefault();
+    const { intl } = this.props;
     const { formData } = this.state;
     if (!formData.name || !formData.type) {
-      alertStore.add("Make sure you filled all the required fields", "error");
+      alertStore.add(intl.formatMessage(messages.missingFieldsError), "error");
     } else {
       this.setState({ start: true });
     }
@@ -478,6 +499,7 @@ class NewCampaignPage extends Component {
       ready,
       validation,
       loading,
+      geolocationType,
       formData,
       start,
       agreed,
@@ -568,7 +590,7 @@ class NewCampaignPage extends Component {
           steps={this._getSteps()}
           enableNextStep={enableNextStep}
         />
-        <Form.Content>
+        <Form.Content contentRef={this.formContent}>
           {loading ? <Loading full /> : null}
           {currentStep == "candidate" || currentStep == "mandate" ? (
             <>
@@ -901,6 +923,7 @@ class NewCampaignPage extends Component {
               {formData.country ? (
                 <GeolocationSearch
                   country={formData.country}
+                  regionType={geolocationType}
                   onChange={this._handleGeolocationChange}
                 />
               ) : null}
