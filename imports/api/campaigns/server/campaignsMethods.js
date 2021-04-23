@@ -507,6 +507,7 @@ export const campaignsExport = new ValidatedMethod({
       }
 
       // Cleanup
+      delete campaign.forms;
       delete campaign.contact;
       delete campaign.details;
       delete campaign.facebookAccount;
