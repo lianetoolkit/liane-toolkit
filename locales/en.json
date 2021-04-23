@@ -140,6 +140,7 @@
   "app.campaign.form.manager.third_party": "Third party (consultant or agency)",
   "app.campaign.form.manager.volunteer": "Volunteer",
   "app.campaign.form.mandate.description": "You are creating a mandate campaign in Liane. Therefore, the following questions are about the elected person.",
+  "app.campaign.form.missing_fields_error": "Make sure you filled all the required fields",
   "app.campaign.form.name.label": "Define a name for your campaign",
   "app.campaign.form.name.placeholder": "Campaign name",
   "app.campaign.form.next_step.label": "Next step:",
@@ -847,7 +848,6 @@
   "app.terms_of_use": "Terms of Use",
   "app.unexpected_error": "An unexpected error occurred.",
   "app.user_select.placeholder": "Select a user...",
-  "app.user_upgrade.button_label": "Click here to became a campaigner!",
   "app.user_upgrade.text": "You are currently not able to create a campaign. We must ask you to connect with Facebook and provide more user permissions, required to enable all our features.",
   "app.user_upgrade.title": "Upgrade your user!",
   "app.waiting_user_type": "Waiting selection of user type."
