@@ -36,6 +36,15 @@ const messages = defineMessages({
     id: "app.admin.messages.new.submit_label",
     defaultMessage: "Send message",
   },
+  confirmLabel: {
+    id: "app.admin.messages.new.confirm_label",
+    defaultMessage: "Are you sure you'd like to send this message?",
+  },
+  confirmWithCountLabel: {
+    id: "app.admin.messages.new.confirm_with_count_label",
+    defaultMessage:
+      "Are you sure you'd like to send this message to {count} people?",
+  },
 });
 
 const Container = styled.div`
@@ -77,6 +86,7 @@ class NewMessagePage extends Component {
     if (
       JSON.stringify(prevState.filters) != JSON.stringify(this.state.filters)
     ) {
+      console.log(this.state.filters);
       this._countAudience(this.state.filters);
     }
   }
@@ -174,7 +184,18 @@ class NewMessagePage extends Component {
   };
   _handleSubmit = (ev) => {
     ev.preventDefault();
-    const { formData, filters } = this.state;
+    const { intl } = this.props;
+    const { audienceCount, formData, filters } = this.state;
+    if (
+      !confirm(
+        audienceCount > 1
+          ? intl.formatMessage(messages.confirmWithCountLabel, {
+              count: audienceCount,
+            })
+          : intl.formatMessage(messages.confirmLabel)
+      )
+    )
+      return;
     Meteor.call(
       "messages.new",
       {

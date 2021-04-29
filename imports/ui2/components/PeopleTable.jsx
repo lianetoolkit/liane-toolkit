@@ -121,6 +121,20 @@ const Container = styled.div`
       color: #000;
     }
   }
+  .person-reactions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0 1rem;
+    p {
+      margin: 0 1.5rem 0 0;
+      font-weight: 600;
+    }
+    ul {
+      width: auto;
+      margin: 0;
+    }
+  }
   .person-extra {
     .person-comment-count {
       display: flex;
@@ -433,6 +447,15 @@ class PeopleTable extends Component {
     }
     return [];
   }
+  hasReactions(person) {
+    const reactions = get(person, "counts.reactions");
+    if (!reactions) return false;
+    let total = 0;
+    for (const reaction in reactions) {
+      total += reactions[reaction];
+    }
+    return !!total;
+  }
   render() {
     const { intl, people, tags, onChange, onSort, ...props } = this.props;
     const { expanded } = this.state;
@@ -458,6 +481,10 @@ class PeopleTable extends Component {
                   onClick={this._handleSortClick("likes")}
                   sorted={this.getSort("likes")}
                 >
+                  <FontAwesomeIcon
+                    className="th-icon"
+                    icon={["fab", "facebook-square"]}
+                  />
                   <FormattedMessage
                     id="app.people.table_header.reactions"
                     defaultMessage="Reactions"
@@ -617,9 +644,17 @@ class PeopleTable extends Component {
                       />
                     </td>
                     <td className="extra" colSpan="5">
-                      <div className="person-reactions">
-                        <PersonReactions person={person} />
-                      </div>
+                      {this.hasReactions(person) ? (
+                        <div className="person-reactions">
+                          <p>
+                            <FormattedMessage
+                              id="app.people.table_body.facebook_reactions"
+                              defaultMessage="Facebook reactions:"
+                            />
+                          </p>
+                          <PersonReactions person={person} />
+                        </div>
+                      ) : null}
                       <p className="person-comment-count">
                         <span className="count-label">
                           <FontAwesomeIcon icon="comment" />{" "}
