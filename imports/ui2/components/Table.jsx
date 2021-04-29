@@ -153,6 +153,10 @@ const Container = styled.table`
         position: sticky;
         top: 0;
         z-index: 4;
+        .th-icon {
+          font-size: 1.2em;
+          margin-right: 0.5rem;
+        }
       }
     }
   }
