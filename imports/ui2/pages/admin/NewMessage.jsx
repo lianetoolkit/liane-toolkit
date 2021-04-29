@@ -86,7 +86,6 @@ class NewMessagePage extends Component {
     if (
       JSON.stringify(prevState.filters) != JSON.stringify(this.state.filters)
     ) {
-      console.log(this.state.filters);
       this._countAudience(this.state.filters);
     }
   }

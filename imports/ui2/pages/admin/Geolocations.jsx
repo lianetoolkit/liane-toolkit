@@ -131,7 +131,6 @@ class GeolocationsPage extends Component {
   render() {
     const { intl, geolocations, page, limit } = this.props;
     const { loadingCount, count } = this.state;
-    console.log(geolocations);
     return (
       <Container>
         <PagePaging

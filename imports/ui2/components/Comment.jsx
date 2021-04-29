@@ -268,7 +268,6 @@ class Comment extends Component {
   getPostUrl = () => {
     const { comment } = this.props;
     if (comment.source == "instagram") {
-      console.log(comment);
       return comment.entry.source_data.permalink;
     } else {
       const id = comment.facebookAccountId;
