@@ -683,9 +683,10 @@ const CommentsHelpers = {
       let parentEntryData = EntriesHelpers.getEntryData({
         entryId: comment.media.id,
       });
-      comment.can_comment = parentEntryData.source_data
-        ? parentEntryData.source_data.is_comment_enabled
-        : false;
+      comment.can_comment =
+        parentEntryData && parentEntryData.source_data
+          ? parentEntryData.source_data.is_comment_enabled
+          : false;
       comment.personId = PeopleHelpers.getPersonId({
         campaignId,
         instagramHandle: comment.username,
