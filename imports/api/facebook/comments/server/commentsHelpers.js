@@ -521,6 +521,9 @@ const CommentsHelpers = {
         if (Object.keys(pull).length) {
           updateObj.$pull = pull;
         }
+        updateObj.$max = {
+          lastInteractionDate: new Date(commentedPerson.lastComment.created_time),
+        };
 
         for (const campaign of accountCampaigns) {
           const _id = Random.id();
