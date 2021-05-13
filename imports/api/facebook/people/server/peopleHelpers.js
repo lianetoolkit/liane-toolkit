@@ -784,8 +784,6 @@ const PeopleHelpers = {
       }
     }
 
-    console.log(matches);
-
     matches = flatten(matches).filter((person) => {
       return person.score ? person.score > 1.5 : true;
     });
