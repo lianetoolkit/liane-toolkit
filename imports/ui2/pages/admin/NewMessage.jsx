@@ -125,6 +125,16 @@ class NewMessagePage extends Component {
   };
   _handleChange = ({ target }) => {
     const { filters } = this.state;
+    if (target.name == "target") {
+      return this.setState({
+        filters: { target: target.value },
+      });
+    }
+    if (target.name == "userId") {
+      return this.setState({
+        filters: { target: "users", userId: target.value },
+      });
+    }
     this.setState({
       filters: {
         ...filters,
@@ -213,13 +223,8 @@ class NewMessagePage extends Component {
   };
   render() {
     const { intl } = this.props;
-    const {
-      disabledFormContent,
-      formData,
-      filters,
-      audienceCount,
-      loading,
-    } = this.state;
+    const { disabledFormContent, formData, filters, audienceCount, loading } =
+      this.state;
     return (
       <Form onSubmit={this._handleSubmit}>
         <Form.Content disabled={disabledFormContent}>
@@ -325,39 +330,43 @@ class NewMessagePage extends Component {
                   value={filters.userId}
                 />
               </Form.Field>
-              <OrLine bgColor="#f7f7f7">or filter below</OrLine>
-              <Form.Field label="Language">
-                <Select
-                  classNamePrefix="select-search"
-                  isClearable={true}
-                  isSearchable={true}
-                  placeholder="Select a language..."
-                  options={this._getLanguageOptions()}
-                  onChange={this._handleSelectChange("userLanguage")}
-                  name="userLanguage"
-                  value={
-                    filters.userLanguage
-                      ? this._getLanguageOptions(filters.userLanguage)
-                      : null
-                  }
-                />
-              </Form.Field>
-              <Form.Field label="User type">
-                <Select
-                  classNamePrefix="select-search"
-                  isClearable={true}
-                  isSearchable={true}
-                  placeholder="Select a user type..."
-                  options={this._getUserTypeOptions()}
-                  onChange={this._handleSelectChange("userType")}
-                  name="userType"
-                  value={
-                    filters.userType
-                      ? this._getUserTypeOptions(filters.userType)
-                      : null
-                  }
-                />
-              </Form.Field>
+              {!filters.userId ? (
+                <>
+                  <OrLine bgColor="#f7f7f7">or filter below</OrLine>
+                  <Form.Field label="Language">
+                    <Select
+                      classNamePrefix="select-search"
+                      isClearable={true}
+                      isSearchable={true}
+                      placeholder="Select a language..."
+                      options={this._getLanguageOptions()}
+                      onChange={this._handleSelectChange("userLanguage")}
+                      name="userLanguage"
+                      value={
+                        filters.userLanguage
+                          ? this._getLanguageOptions(filters.userLanguage)
+                          : null
+                      }
+                    />
+                  </Form.Field>
+                  <Form.Field label="User type">
+                    <Select
+                      classNamePrefix="select-search"
+                      isClearable={true}
+                      isSearchable={true}
+                      placeholder="Select a user type..."
+                      options={this._getUserTypeOptions()}
+                      onChange={this._handleSelectChange("userType")}
+                      name="userType"
+                      value={
+                        filters.userType
+                          ? this._getUserTypeOptions(filters.userType)
+                          : null
+                      }
+                    />
+                  </Form.Field>
+                </>
+              ) : null}
             </div>
           ) : null}
           {filters.target == "campaigns" ? (
