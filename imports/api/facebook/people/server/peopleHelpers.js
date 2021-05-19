@@ -116,46 +116,6 @@ const PeopleHelpers = {
       comments: sumComments(),
     };
   },
-  updateInteractionCountSum({ personId }) {
-    const person = People.findOne(personId);
-    if (!person) {
-      throw new Meteor.Error(404, "Person not found");
-    }
-
-    // let counts = {
-    //   comments: 0,
-    //   likes: 0,
-    //   reactions: {
-    //     none: 0,
-    //     like: 0,
-    //     love: 0,
-    //     wow: 0,
-    //     haha: 0,
-    //     sad: 0,
-    //     angry: 0,
-    //     thankful: 0,
-    //   },
-    // };
-    if (person.counts) {
-      for (let facebookId in person.counts) {
-        if (facebookId !== "all") {
-          const personCounts = person.counts[facebookId];
-          if (!isNaN(personCounts.comments)) {
-            counts.comments += personCounts.comments;
-          }
-          if (!isNaN(personCounts.likes)) {
-            counts.likes += personCounts.likes;
-          }
-          for (let reaction in personCounts.reactions) {
-            counts.reactions[reaction] += personCounts.reactions[reaction];
-            if (!isNaN(personCounts.reactions[reaction])) {
-            }
-          }
-        }
-      }
-    }
-    return People.update(personId, { $set: { "counts.all": counts } });
-  },
   geocodePerson({ personId }) {
     if (!personId) return;
     const person = People.findOne(personId);
