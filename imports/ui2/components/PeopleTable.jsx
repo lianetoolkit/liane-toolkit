@@ -152,6 +152,11 @@ const Container = styled.div`
           margin-right: 0.5rem;
         }
       }
+      .comments-counts {
+        .count-item {
+          margin: 0 0.5rem;
+        }
+      }
       .button {
         text-align: center;
         margin: 1rem 0;
@@ -209,6 +214,66 @@ class PersonMetaCircles extends Component {
       </MetaCircles>
     );
   }
+}
+
+function PersonCommentCount({ person }) {
+  const distributed = !!person.counts?.facebook;
+  if (distributed) {
+    const facebook = person.counts?.facebook?.comments || 0;
+    const instagram = person.counts?.instagram?.comments || 0;
+    return (
+      <span className="comments-counts">
+        <a
+          href={FlowRouter.path(
+            "App.people.detail",
+            {
+              personId: person._id,
+            },
+            {
+              section: "comments",
+            }
+          )}
+        >
+          {facebook ? (
+            <span className="count-item">
+              <FontAwesomeIcon icon={["fab", "facebook-square"]} />{" "}
+              <FormattedMessage
+                id="app.people.table_body.comment_count"
+                defaultMessage="{amount} comments"
+                values={{
+                  amount: facebook,
+                }}
+              />{" "}
+            </span>
+          ) : null}
+          {instagram ? (
+            <span className="count-item">
+              <FontAwesomeIcon icon={["fab", "instagram"]} />{" "}
+              <FormattedMessage
+                id="app.people.table_body.comment_count"
+                defaultMessage="{amount} comments"
+                values={{
+                  amount: instagram,
+                }}
+              />
+            </span>
+          ) : null}
+        </a>
+      </span>
+    );
+  }
+  return (
+    <>
+      <FontAwesomeIcon icon="comment" />{" "}
+      <FormattedMessage
+        id="app.people.table_body.comment_count"
+        defaultMessage="{amount} comments"
+        values={{
+          amount: person.counts?.comments || 0,
+        }}
+      />
+    </>
+  );
 }
 
 class PeopleTable extends Component {
@@ -654,12 +719,7 @@ class PeopleTable extends Component {
                       ) : null}
                       <p className="person-comment-count">
                         <span className="count-label">
-                          <FontAwesomeIcon icon="comment" />{" "}
-                          <FormattedMessage
-                            id="app.people.table_body.comment_count"
-                            defaultMessage="{amount} comments"
-                            values={{ amount: this._getComments(person) }}
-                          />
+                          <PersonCommentCount person={person} />
                         </span>
                         {userCan("edit", "comments") &&
                         person.canReceivePrivateReply &&
