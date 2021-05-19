@@ -12,22 +12,12 @@ import { Comments } from "/imports/api/facebook/comments/comments.js";
 import { Likes } from "/imports/api/facebook/likes/likes.js";
 import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
 import { Random } from "meteor/random";
-import {
-  uniqBy,
-  groupBy,
-  mapKeys,
-  flatten,
-  get,
-  set,
-  cloneDeep,
-  pick,
-} from "lodash";
+import { uniqBy, groupBy, mapKeys, flatten, get, cloneDeep } from "lodash";
 import Papa from "papaparse";
 import crypto from "crypto";
 import fs from "fs";
 import mkdirp from "mkdirp";
 import { flattenObject } from "/imports/utils/common.js";
-import { data } from "jquery";
 import { FacebookAccounts } from "/imports/api/facebook/accounts/accounts.js";
 
 const googleMapsKey = Meteor.settings.googleMaps;
@@ -57,15 +47,21 @@ const PeopleHelpers = {
       .substr(0, 7);
   },
   getInteractionCount({ sourceId, facebookAccountId, source }) {
+    logger.debug("peopleHelpers: getInteractionCount() called", {
+      sourceId,
+      facebookAccountId,
+      source,
+    });
     let person;
     if (source == "facebook") {
-      person = People.findOne({ facebookId: sourceId });
+      person = People.findOne({ facebookId: sourceId, facebookAccountId });
     } else if (source == "instagram") {
       person = People.findOne({
         "campaignMeta.social_networks.instagram": `@${sourceId}`,
+        facebookAccountId,
       });
     } else {
-      person = People.findOne(sourceId);
+      person = People.findOne({ _id: sourceId, facebookAccountId });
     }
     let facebook = {};
     let instagram = {};
