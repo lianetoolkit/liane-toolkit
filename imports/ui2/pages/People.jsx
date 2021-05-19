@@ -511,7 +511,6 @@ class PeoplePage extends Component {
   _handleNewClick = (ev) => {
     const { intl, campaign } = this.props;
     ev.preventDefault();
-    console.log(campaign);
     modalStore.setTitle(intl.formatMessage(messages.newPersonTitle));
     modalStore.set(
       <PersonEdit

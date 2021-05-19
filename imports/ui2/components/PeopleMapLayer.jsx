@@ -70,7 +70,6 @@ export default class PeopleMapLayer extends Component {
     onMouseOut && onMouseOut(person);
   };
   _handleClick = ev => {
-    console.log(ev);
     ev.target.openPopup();
   };
   render() {

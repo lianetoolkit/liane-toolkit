@@ -157,7 +157,6 @@ class UsersPage extends Component {
   render() {
     const { intl, users, page, limit } = this.props;
     const { loadingCount, count } = this.state;
-    console.log(users);
     return (
       <Container>
         <PagePaging

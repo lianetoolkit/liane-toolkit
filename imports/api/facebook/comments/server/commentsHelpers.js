@@ -245,10 +245,16 @@ const CommentsHelpers = {
         lastValidation: new Date(),
         updatedAt: new Date(),
       };
-      set["counts"] = PeopleHelpers.getInteractionCount({
-        facebookId: comment.personId,
+
+      const counts = PeopleHelpers.getInteractionCount({
+        sourceId: comment.personId,
         facebookAccountId,
+        source: "facebook",
       });
+      set["counts.facebook"] = counts.facebook;
+      set["counts.instagram"] = counts.instagram;
+      set["counts.comments"] = counts.comments;
+
       set["facebookAccountId"] = facebookAccountId;
 
       let addToSet = {
@@ -394,18 +400,23 @@ const CommentsHelpers = {
       facebookId: facebookAccountId,
     });
     for (const campaign of accountCampaigns) {
+      const counts = PeopleHelpers.getInteractionCount({
+        sourceId: comment.personId,
+        facebookAccountId,
+        source: "facebook",
+      });
+      const set = {
+        "counts.facebook": counts.facebook,
+        "counts.instagram": counts.instagram,
+        "counts.comments": counts.comments,
+      };
       People.update(
         {
           campaignId: campaign._id,
           facebookId: comment.personId,
         },
         {
-          $set: {
-            counts: PeopleHelpers.getInteractionCount({
-              facebookId: comment.personId,
-              facebookAccountId,
-            }),
-          },
+          $set: set,
         }
       );
     }
@@ -444,13 +455,8 @@ const CommentsHelpers = {
         people[person.id] = {
           name: person.name,
           lastComment: person.comment,
-          latestComment: 0,
         };
       }
-      people[person.id].latestComment = Math.max(
-        person.comment.created_time || 0,
-        people[person.id].latestComment
-      );
     }
 
     if (commentedPeople.length) {
@@ -474,6 +480,15 @@ const CommentsHelpers = {
         set["name"] = commentedPerson.name;
         set["counts.comments"] = commentsCount;
         set["facebookAccountId"] = facebookAccountId;
+
+        const counts = PeopleHelpers.getInteractionCount({
+          sourceId: personId,
+          facebookAccountId,
+          source,
+        });
+        set["counts.facebook"] = counts.facebook;
+        set["counts.instagram"] = counts.instagram;
+        set["counts.comments"] = counts.comments;
 
         let addToSet = {
           facebookAccounts: facebookAccountId,
@@ -521,6 +536,11 @@ const CommentsHelpers = {
         if (Object.keys(pull).length) {
           updateObj.$pull = pull;
         }
+        updateObj.$max = {
+          lastInteractionDate: new Date(
+            commentedPerson.lastComment.created_time
+          ),
+        };
 
         for (const campaign of accountCampaigns) {
           const _id = Random.id();
@@ -683,9 +703,10 @@ const CommentsHelpers = {
       let parentEntryData = EntriesHelpers.getEntryData({
         entryId: comment.media.id,
       });
-      comment.can_comment = parentEntryData.source_data
-        ? parentEntryData.source_data.is_comment_enabled
-        : false;
+      comment.can_comment =
+        parentEntryData && parentEntryData.source_data
+          ? parentEntryData.source_data.is_comment_enabled
+          : false;
       comment.personId = PeopleHelpers.getPersonId({
         campaignId,
         instagramHandle: comment.username,

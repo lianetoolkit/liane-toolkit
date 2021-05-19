@@ -56,70 +56,65 @@ const PeopleHelpers = {
       .digest("hex")
       .substr(0, 7);
   },
-  getInteractionCount({ facebookId, facebookAccountId }) {
-    const commentsCount = Comments.find({
-      personId: facebookId,
-      facebookAccountId,
-    }).count();
-    const likesCount = Likes.find({
-      personId: facebookId,
-      facebookAccountId: facebookAccountId,
-      parentId: { $exists: false },
-    }).count();
-    let reactionsCount = {};
-    const reactionTypes = LikesHelpers.getReactionTypes();
-    for (const reactionType of reactionTypes) {
-      reactionsCount[reactionType.toLowerCase()] = Likes.find({
-        personId: facebookId,
-        facebookAccountId: facebookAccountId,
-        type: reactionType,
-        parentId: { $exists: false },
+  getInteractionCount({ sourceId, facebookAccountId, source }) {
+    let person;
+    if (source == "facebook") {
+      person = People.findOne({ facebookId: sourceId });
+    } else if (source == "instagram") {
+      person = People.findOne({
+        "campaignMeta.social_networks.instagram": `@${sourceId}`,
+      });
+    } else {
+      person = People.findOne(sourceId);
+    }
+    let facebook = {};
+    let instagram = {};
+    const instagramHandle = get(
+      person,
+      "campaignMeta.social_networks.instagram"
+    );
+    if (source == "instagram" || instagramHandle) {
+      instagram.comments = Comments.find({
+        personId: (instagramHandle || sourceId).replace("@", "").trim(),
+        facebookAccountId,
+        source: "instagram",
       }).count();
     }
-    return {
-      comments: commentsCount,
-      likes: likesCount,
-      reactions: reactionsCount,
-    };
-  },
-  updateInteractionCountSum({ personId }) {
-    const person = People.findOne(personId);
-    if (!person) {
-      throw new Meteor.Error(404, "Person not found");
-    }
-    let counts = {
-      comments: 0,
-      likes: 0,
-      reactions: {
-        none: 0,
-        like: 0,
-        love: 0,
-        wow: 0,
-        haha: 0,
-        sad: 0,
-        angry: 0,
-        thankful: 0,
-      },
-    };
-    if (person.counts) {
-      for (let facebookId in person.counts) {
-        if (facebookId !== "all") {
-          const personCounts = person.counts[facebookId];
-          if (!isNaN(personCounts.comments)) {
-            counts.comments += personCounts.comments;
-          }
-          if (!isNaN(personCounts.likes)) {
-            counts.likes += personCounts.likes;
-          }
-          for (let reaction in personCounts.reactions) {
-            counts.reactions[reaction] += personCounts.reactions[reaction];
-            if (!isNaN(personCounts.reactions[reaction])) {
-            }
-          }
-        }
+    if (source == "facebook" || person?.facebookId) {
+      const facebookId = person?.facebookId || sourceId;
+      facebook = {
+        comments: Comments.find({
+          personId: facebookId,
+          facebookAccountId,
+        }).count(),
+        likes: Likes.find({
+          personId: facebookId,
+          facebookAccountId: facebookAccountId,
+          parentId: { $exists: false },
+        }).count(),
+        reactions: {},
+      };
+      const reactionTypes = LikesHelpers.getReactionTypes();
+      for (const reactionType of reactionTypes) {
+        facebook.reactions[reactionType.toLowerCase()] = Likes.find({
+          personId: facebookId,
+          facebookAccountId: facebookAccountId,
+          type: reactionType,
+          parentId: { $exists: false },
+        }).count();
       }
     }
-    return People.update(personId, { $set: { "counts.all": counts } });
+    const sumComments = () => {
+      let count = 0;
+      if (facebook.comments) count += facebook.comments;
+      if (instagram.comments) count += instagram.comments;
+      return Math.max(parseInt(count, 10), 0);
+    };
+    return {
+      facebook,
+      instagram,
+      comments: sumComments(),
+    };
   },
   geocodePerson({ personId }) {
     if (!personId) return;
@@ -783,8 +778,6 @@ const PeopleHelpers = {
         matches.push(People.find(query, options).fetch());
       }
     }
-
-    console.log(matches);
 
     matches = flatten(matches).filter((person) => {
       return person.score ? person.score > 1.5 : true;

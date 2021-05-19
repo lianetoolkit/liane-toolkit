@@ -113,10 +113,16 @@ const LikesHelpers = {
       let set = {
         updatedAt: new Date(),
       };
-      set["counts"] = PeopleHelpers.getInteractionCount({
-        facebookId: reaction.personId,
+
+      const counts = PeopleHelpers.getInteractionCount({
+        sourceId: reaction.personId,
         facebookAccountId,
+        source: "facebook",
       });
+      set["counts.facebook"] = counts.facebook;
+      set["counts.instagram"] = counts.instagram;
+      set["counts.comments"] = counts.comments;
+
       set["facebookAccountId"] = facebookAccountId;
 
       let addToSet = {
@@ -153,10 +159,9 @@ const LikesHelpers = {
         let _id = null;
 
         if (person) {
-          _id = person._id
+          _id = person._id;
           PeopleRawCollection.update({ _id }, updateObj);
         } else {
-
           _id = Random.id();
           Promise.await(
             PeopleRawCollection.update(
@@ -177,9 +182,9 @@ const LikesHelpers = {
                 upsert: true,
               }
             )
-          )
-          //! Check Duplicates 
-          PeopleHelpers.registerDuplicates({ personId: _id, source: 'likes' });
+          );
+          //! Check Duplicates
+          PeopleHelpers.registerDuplicates({ personId: _id, source: "likes" });
 
           AccountsLogs.insert({
             type: "people.new",
@@ -188,8 +193,6 @@ const LikesHelpers = {
             timestamp: reaction.created_time,
           });
         }
-
-
       }
     }
   },
@@ -243,18 +246,23 @@ const LikesHelpers = {
       facebookId: facebookAccountId,
     });
     for (const campaign of accountCampaigns) {
+      const counts = PeopleHelpers.getInteractionCount({
+        sourceId: data.from.id,
+        facebookAccountId,
+        source: "facebook",
+      });
+      const set = {
+        "counts.facebook": counts.facebook,
+        "counts.instagram": counts.instagram,
+        "counts.comments": counts.comments,
+      };
       People.update(
         {
           campaignId: campaign._id,
           facebookId: data.from.id,
         },
         {
-          $set: {
-            counts: PeopleHelpers.getInteractionCount({
-              facebookId: data.from.id,
-              facebookAccountId,
-            }),
-          },
+          $set: set,
         }
       );
     }
@@ -328,10 +336,14 @@ const LikesHelpers = {
 
         set["name"] = likedPerson.name;
         set["facebookAccountId"] = facebookAccountId;
-        set["counts"] = PeopleHelpers.getInteractionCount({
+        const counts = PeopleHelpers.getInteractionCount({
           facebookAccountId,
-          facebookId: personId,
+          sourceId: personId,
+          source: "facebook",
         });
+        set["counts.facebook"] = counts.facebook;
+        set["counts.instagram"] = counts.instagram;
+        set["counts.comments"] = counts.comments;
 
         let updateObj = {
           $setOnInsert: {
@@ -366,9 +378,6 @@ const LikesHelpers = {
                 formId: PeopleHelpers.generateFormId(_id),
               },
             });
-
-
-
         }
       }
       peopleBulk.execute();
@@ -410,8 +419,8 @@ const LikesHelpers = {
       objectId,
     });
 
-    switch (EntriesHelpers.getEntrySource({entryId})) {
-      case 'instagram':
+    switch (EntriesHelpers.getEntrySource({ entryId })) {
+      case "instagram":
         return this.getInstagramObjectReactions({
           facebookAccountId,
           entryId,
@@ -419,7 +428,8 @@ const LikesHelpers = {
           likeDateEstimate,
           accessToken,
         });
-      default: // Facebook
+      default:
+        // Facebook
         // do nothing here, facebook is the default behaviour of this function
         break;
     }

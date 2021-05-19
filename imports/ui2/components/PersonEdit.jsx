@@ -116,7 +116,6 @@ class PersonEdit extends Component {
     const { formData } = this.state;
     const newFormData = Object.assign({}, formData);
     set(newFormData, ev.target.name, ev.target.value);
-    console.log(ev.target);
     this.setState({
       formData: newFormData,
     });

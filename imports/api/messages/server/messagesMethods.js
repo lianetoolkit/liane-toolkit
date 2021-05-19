@@ -47,6 +47,20 @@ export const createMessage = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to perform this action");
     }
 
+    if (filters.target == "campaigns") {
+      delete filters.userId;
+      delete filters.userLanguage;
+      delete filters.userType;
+    }
+    if (filters.target == "users") {
+      delete filters.campaignId;
+      delete filters.campaignAdmins;
+      delete filters.campaignType;
+      delete filters.campaignCountry;
+      delete filters.campaignGeolocation;
+      delete filters.campaignOffice;
+    }
+
     const cursor = MessagesHelpers.getFilterQueryCursor({ filters });
     if (!cursor)
       throw new Meteor.Error(400, "No users match the selected filters");
@@ -75,20 +89,22 @@ export const createMessage = new ValidatedMethod({
 
     cursor.forEach((user) => {
       const email = getEmailData(user.userLanguage);
-      email.body = email.body.replace("%NAME%", user.name);
-      NotificationsHelpers.add({
-        userId: user._id,
-        text: title,
-        dataRef: messageId,
-        path: `/messages/${messageId}`,
-        skipEmailNotify: true,
-      });
-      sendMail({
-        subject: email.subject,
-        body: email.body,
-        data: { user },
-        tag: "message",
-      });
+      if (email && email.body) {
+        email.body = email.body.replace("%NAME%", user.name);
+        NotificationsHelpers.add({
+          userId: user._id,
+          text: title,
+          dataRef: messageId,
+          path: `/messages/${messageId}`,
+          skipEmailNotify: true,
+        });
+        sendMail({
+          subject: email.subject,
+          body: email.body,
+          data: { user },
+          tag: "message",
+        });
+      }
     });
 
     return messageId;
