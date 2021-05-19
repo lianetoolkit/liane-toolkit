@@ -70,11 +70,20 @@ const PeopleHelpers = {
       "campaignMeta.social_networks.instagram"
     );
     if (source == "instagram" || instagramHandle) {
-      instagram.comments = Comments.find({
-        personId: (instagramHandle || sourceId).replace("@", "").trim(),
+      const instagramId = (instagramHandle || sourceId).replace("@", "").trim();
+      const instagramQuery = {
         facebookAccountId,
         source: "instagram",
-      }).count();
+      };
+      if (person?.facebookId) {
+        instagramQuery.$or = [
+          { personId: instagramId },
+          { personId: person.facebookId },
+        ];
+      } else {
+        instagramQuery.personId = instagramId;
+      }
+      instagram.comments = Comments.find(instagramQuery).count();
     }
     if (source == "facebook" || person?.facebookId) {
       const facebookId = person?.facebookId || sourceId;
@@ -82,6 +91,7 @@ const PeopleHelpers = {
         comments: Comments.find({
           personId: facebookId,
           facebookAccountId,
+          $or: [{ source: "facebook" }, { source: { $exists: false } }],
         }).count(),
         likes: Likes.find({
           personId: facebookId,
