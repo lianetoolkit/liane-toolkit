@@ -56,30 +56,64 @@ const PeopleHelpers = {
       .digest("hex")
       .substr(0, 7);
   },
-  getInteractionCount({ facebookId, facebookAccountId }) {
-    const commentsCount = Comments.find({
-      personId: facebookId,
-      facebookAccountId,
-    }).count();
-    const likesCount = Likes.find({
-      personId: facebookId,
-      facebookAccountId: facebookAccountId,
-      parentId: { $exists: false },
-    }).count();
-    let reactionsCount = {};
-    const reactionTypes = LikesHelpers.getReactionTypes();
-    for (const reactionType of reactionTypes) {
-      reactionsCount[reactionType.toLowerCase()] = Likes.find({
-        personId: facebookId,
-        facebookAccountId: facebookAccountId,
-        type: reactionType,
-        parentId: { $exists: false },
+  getInteractionCount({ sourceId, facebookAccountId, source }) {
+    let person;
+    if (source == "facebook") {
+      person = People.findOne({ facebookId: sourceId });
+    } else if (source == "instagram") {
+      person = People.findOne({
+        "campaignMeta.social_networks.instagram": `@${sourceId}`,
+      });
+    } else {
+      person = People.findOne(sourceId);
+    }
+    let facebook = {};
+    let instagram = {};
+    const instagramHandle = get(
+      person,
+      "campaignMeta.social_networks.instagram"
+    );
+    if (source == "instagram" || instagramHandle) {
+      instagram.comments = Comments.find({
+        personId: (instagramHandle || sourceId).replace("@", "").trim(),
+        facebookAccountId,
+        source: "instagram",
       }).count();
     }
+    if (source == "facebook" || person?.facebookId) {
+      const facebookId = person?.facebookId || sourceId;
+      facebook = {
+        comments: Comments.find({
+          personId: facebookId,
+          facebookAccountId,
+        }).count(),
+        likes: Likes.find({
+          personId: facebookId,
+          facebookAccountId: facebookAccountId,
+          parentId: { $exists: false },
+        }).count(),
+        reactions: {},
+      };
+      const reactionTypes = LikesHelpers.getReactionTypes();
+      for (const reactionType of reactionTypes) {
+        facebook.reactions[reactionType.toLowerCase()] = Likes.find({
+          personId: facebookId,
+          facebookAccountId: facebookAccountId,
+          type: reactionType,
+          parentId: { $exists: false },
+        }).count();
+      }
+    }
+    const sumComments = () => {
+      let count = 0;
+      if (facebook.comments) count += facebook.comments;
+      if (instagram.comments) count += instagram.comments;
+      return Math.max(parseInt(count, 10), 0);
+    };
     return {
-      comments: commentsCount,
-      likes: likesCount,
-      reactions: reactionsCount,
+      facebook,
+      instagram,
+      comments: sumComments(),
     };
   },
   updateInteractionCountSum({ personId }) {
@@ -87,20 +121,21 @@ const PeopleHelpers = {
     if (!person) {
       throw new Meteor.Error(404, "Person not found");
     }
-    let counts = {
-      comments: 0,
-      likes: 0,
-      reactions: {
-        none: 0,
-        like: 0,
-        love: 0,
-        wow: 0,
-        haha: 0,
-        sad: 0,
-        angry: 0,
-        thankful: 0,
-      },
-    };
+
+    // let counts = {
+    //   comments: 0,
+    //   likes: 0,
+    //   reactions: {
+    //     none: 0,
+    //     like: 0,
+    //     love: 0,
+    //     wow: 0,
+    //     haha: 0,
+    //     sad: 0,
+    //     angry: 0,
+    //     thankful: 0,
+    //   },
+    // };
     if (person.counts) {
       for (let facebookId in person.counts) {
         if (facebookId !== "all") {

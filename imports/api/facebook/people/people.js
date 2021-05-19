@@ -253,13 +253,25 @@ Meteor.startup(() => {
     );
     People.rawCollection().createIndex(
       {
-        "counts.likes": 1,
+        "counts.facebook.likes": 1,
       },
       { sparse: true }
     );
     People.rawCollection().createIndex(
       {
-        "counts.comments": 1,
+        "counts.facebook.comments": 1,
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "counts.instagram.comments": 1,
+      },
+      { sparse: true }
+    );
+    People.rawCollection().createIndex(
+      {
+        "counts.totalComments": 1,
       },
       { sparse: true }
     );
