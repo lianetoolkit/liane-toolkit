@@ -278,7 +278,7 @@ export const peopleSearch = new ValidatedMethod({
       transform: (person) => {
         if (person.facebookId) {
           person.latestComment = Comments.findOne(
-            { personId: person.facebookId },
+            { personId: person.facebookId, source: "facebook" },
             { sort: { created_time: -1 } }
           );
         }
@@ -1461,6 +1461,22 @@ export const mergeUnresolvedPeople = new ValidatedMethod({
         $set: $updateSet,
         $push: $updatePush,
         $unset: { related: [] },
+      }
+    );
+    // Update counts
+    const campaign = Campaigns.findOne(campaignId);
+    const counts = PeopleHelpers.getInteractionCount({
+      sourceId: update.id,
+      facebookAccountId: campaign.facebookAccount.facebookId,
+    });
+    People.update(
+      { _id: update.id },
+      {
+        $set: {
+          "counts.facebook": counts.facebook,
+          "counts.instagram": counts.instagram,
+          "counts.comments": counts.comments,
+        },
       }
     );
     // Delete
