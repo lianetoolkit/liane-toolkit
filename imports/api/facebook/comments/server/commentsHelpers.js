@@ -5,7 +5,6 @@ import { People } from "/imports/api/facebook/people/people.js";
 import { PeopleHelpers } from "/imports/api/facebook/people/server/peopleHelpers.js";
 import { LikesHelpers } from "/imports/api/facebook/likes/server/likesHelpers.js";
 import { EntriesHelpers } from "/imports/api/facebook/entries/server/entriesHelpers.js";
-import { JobsHelpers } from "/imports/api/jobs/server/jobsHelpers.js";
 import { FacebookAccountsHelpers } from "/imports/api/facebook/accounts/server/accountsHelpers.js";
 import { AccountsLogs } from "/imports/api/accountsLogs/accountsLogs";
 import { HTTP } from "meteor/http";
@@ -484,7 +483,7 @@ const CommentsHelpers = {
         const counts = PeopleHelpers.getInteractionCount({
           sourceId: personId,
           facebookAccountId,
-          source,
+          source: source || "facebook",
         });
         set["counts.facebook"] = counts.facebook;
         set["counts.instagram"] = counts.instagram;
