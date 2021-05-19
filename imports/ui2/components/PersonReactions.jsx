@@ -42,7 +42,9 @@ const Container = styled.ul`
 export default class PersonReactions extends Component {
   reactionVal(reaction) {
     const { person } = this.props;
-    return get(person, `counts.reactions.${reaction}`) || 0;
+    const reactions =
+      person.counts?.facebook?.reactions || person.counts?.reactions;
+    return reactions?.[reaction] || 0;
   }
   renderReaction(reaction) {
     const val = this.reactionVal(reaction);

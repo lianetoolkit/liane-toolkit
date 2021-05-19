@@ -311,16 +311,10 @@ class PeopleTable extends Component {
     }
   }, 100);
   _getReactions(person) {
-    if (person.counts) {
-      return person.counts.likes || 0;
-    }
-    return 0;
+    return person.counts?.facebook?.likes || person.counts?.likes || 0;
   }
   _getComments(person) {
-    if (person.counts) {
-      return person.counts.comments || 0;
-    }
-    return 0;
+    return person.counts?.comments || 0;
   }
   _handleMetaButtonsChange = (data) => {
     if (this.props.onChange) {
@@ -403,23 +397,25 @@ class PeopleTable extends Component {
     });
     return text.join(", ");
   };
-  _handleSortClick = (key, defaultOrder = "desc") => () => {
-    const { options, onSort } = this.props;
-    const currentOrder = this.getSort(key);
-    let order;
-    if (!currentOrder) {
-      order = defaultOrder;
-    } else if (currentOrder != defaultOrder) {
-      order = false;
-    } else if (currentOrder == "asc") {
-      order = "desc";
-    } else if (currentOrder == "desc") {
-      order = "asc";
-    }
-    if (onSort) {
-      onSort(key, order);
-    }
-  };
+  _handleSortClick =
+    (key, defaultOrder = "desc") =>
+    () => {
+      const { options, onSort } = this.props;
+      const currentOrder = this.getSort(key);
+      let order;
+      if (!currentOrder) {
+        order = defaultOrder;
+      } else if (currentOrder != defaultOrder) {
+        order = false;
+      } else if (currentOrder == "asc") {
+        order = "desc";
+      } else if (currentOrder == "desc") {
+        order = "asc";
+      }
+      if (onSort) {
+        onSort(key, order);
+      }
+    };
   getSort = (key) => {
     const { options } = this.props;
     if (options["sort"] == key) {
@@ -448,8 +444,10 @@ class PeopleTable extends Component {
     return [];
   }
   hasReactions(person) {
-    const reactions = get(person, "counts.reactions");
-    if (!reactions) return false;
+    if (!person.counts?.facebook?.reactions && !person.counts?.reactions)
+      return;
+    const reactions =
+      person.counts?.facebook?.reactions || person.counts?.reactions;
     let total = 0;
     for (const reaction in reactions) {
       total += reactions[reaction];
@@ -458,7 +456,6 @@ class PeopleTable extends Component {
   }
   render() {
     const { intl, people, tags, onChange, onSort, ...props } = this.props;
-    const { expanded } = this.state;
     return (
       <Container className="people-table">
         {people && people.length ? (
