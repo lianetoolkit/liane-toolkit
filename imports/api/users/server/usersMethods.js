@@ -5,6 +5,8 @@ import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { difference } from "lodash";
 import axios from "axios";
 import nodemailer from "nodemailer";
+import Papa from "papaparse";
+import { flattenObject } from "/imports/utils/common.js";
 DDPRateLimiter = require("meteor/ddp-rate-limiter").DDPRateLimiter;
 
 let mailTransporter, mailConfig;
@@ -524,5 +526,45 @@ export const usersQueryCount = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to perform this action");
     }
     return Meteor.users.find(query || {}).count();
+  },
+});
+
+export const usersExport = new ValidatedMethod({
+  name: "users.export",
+  validate() {},
+  run() {
+    logger.debug("users.export called");
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    if (!Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    const processUser = (user) => {
+      if (user.emails && Array.isArray(user.emails))
+        user.emails = user.emails.map((e) => e.address).join(",");
+      delete user.services;
+      delete user.roles;
+      return { ...user };
+    };
+
+    const users = Meteor.users.find().fetch();
+
+    const flattened = [];
+    const headersMap = {};
+    for (const user of users) {
+      console.log(processUser(user));
+      const flattenedUser = flattenObject(processUser(user));
+      for (const header in flattenedUser) {
+        headersMap[header] = true;
+      }
+      flattened.push(flattenedUser);
+    }
+
+    return Papa.unparse({ fields: Object.keys(headersMap), data: flattened });
   },
 });

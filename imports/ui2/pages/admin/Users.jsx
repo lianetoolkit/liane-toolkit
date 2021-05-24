@@ -8,14 +8,10 @@ import {
 import styled from "styled-components";
 import moment from "moment";
 
-import ReactTooltip from "react-tooltip";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { modalStore } from "/imports/ui2/containers/Modal.jsx";
+import download from "/imports/ui2/utils/download";
 
 import Table from "/imports/ui2/components/Table.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
-import Page from "/imports/ui2/components/Page.jsx";
 import PagePaging from "/imports/ui2/components/PagePaging.jsx";
 
 const messages = defineMessages({
@@ -154,6 +150,12 @@ class UsersPage extends Component {
   _getEmail(user) {
     return user.emails && user.emails.length ? user.emails[0].address : "";
   }
+  _handleExportClick = (ev) => {
+    ev.preventDefault();
+    Meteor.call("users.export", (err, res) => {
+      download(res, "users.csv");
+    });
+  };
   render() {
     const { intl, users, page, limit } = this.props;
     const { loadingCount, count } = this.state;
@@ -166,7 +168,14 @@ class UsersPage extends Component {
           loading={loadingCount}
           onNext={this._handleNext}
           onPrev={this._handlePrev}
-        />
+        >
+          <Button primary onClick={this._handleExportClick}>
+            <FormattedMessage
+              id="app.admin.users.export"
+              defaultMessage="Export in CSV"
+            />
+          </Button>
+        </PagePaging>
         <TableContainer>
           <Table compact>
             <thead>
