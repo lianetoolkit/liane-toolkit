@@ -12,11 +12,9 @@ import ReactTooltip from "react-tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import download from "/imports/ui2/utils/download";
-import { modalStore } from "/imports/ui2/containers/Modal.jsx";
 
 import Table from "/imports/ui2/components/Table.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
-import Page from "/imports/ui2/components/Page.jsx";
 import PagePaging from "/imports/ui2/components/PagePaging.jsx";
 
 const messages = defineMessages({
