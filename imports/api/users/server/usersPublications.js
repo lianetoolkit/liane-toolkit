@@ -46,7 +46,6 @@ Meteor.publishComposite("users.all", function ({ query, options }) {
       children: [
         {
           find: function (user) {
-            console.log(user);
             return Campaigns.find(
               {
                 users: { $elemMatch: { userId: user._id } },
