@@ -157,7 +157,7 @@ class UsersPage extends Component {
     });
   };
   render() {
-    const { intl, users, page, limit } = this.props;
+    const { users, page, limit } = this.props;
     const { loadingCount, count } = this.state;
     return (
       <Container>
@@ -200,6 +200,12 @@ class UsersPage extends Component {
                 </th>
                 <th>
                   <FormattedMessage
+                    id="app.admin.user.campaigns"
+                    defaultMessage="Campaigns"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
                     id="app.admin.users.created_label"
                     defaultMessage="Created"
                   />
@@ -211,7 +217,14 @@ class UsersPage extends Component {
                 <tr>
                   <td className="fill">{user.name}</td>
                   <td className="fill">{this._getEmail(user)}</td>
-                  <td>{user.type}</td>
+                  <td className="small">{user.type}</td>
+                  <td className="small">
+                    <ul>
+                      {user.campaigns.map((campaign) => (
+                        <li key={campaign._id}>{campaign.name}</li>
+                      ))}
+                    </ul>
+                  </td>
                   <td className="small">
                     {moment(user.createdAt).format("L")}
                   </td>

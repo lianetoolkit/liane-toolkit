@@ -1,8 +1,5 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
+import { Campaigns } from "/imports/api/campaigns/campaigns";
+
 Meteor.publish("users.data", function () {
   this.unblock();
   const currentUser = this.userId;
@@ -27,22 +24,39 @@ Meteor.publish("users.data", function () {
   }
 });
 
-Meteor.publish("users.all", function ({ query, options }) {
+Meteor.publishComposite("users.all", function ({ query, options }) {
   this.unblock();
   const currentUser = this.userId;
   if (currentUser && Roles.userIsInRole(currentUser, ["admin"])) {
-    return Meteor.users.find(
-      query || {},
-      options || {
-        fields: {
-          name: 1,
-          type: 1,
-          roles: 1,
-          emails: 1,
-          createdAt: 1,
+    return {
+      find: function () {
+        return Meteor.users.find(
+          query || {},
+          options || {
+            fields: {
+              name: 1,
+              type: 1,
+              roles: 1,
+              emails: 1,
+              createdAt: 1,
+            },
+          }
+        );
+      },
+      children: [
+        {
+          find: function (user) {
+            console.log(user);
+            return Campaigns.find(
+              {
+                users: { $elemMatch: { userId: user._id } },
+              },
+              { fields: { name: 1 } }
+            );
+          },
         },
-      }
-    );
+      ],
+    };
   } else {
     return this.ready();
   }
