@@ -557,6 +557,8 @@ export const usersExport = new ValidatedMethod({
         .fetch()
         .map((campaign) => campaign._id)
         .join(",");
+      delete user.profile;
+      delete user.email;
       delete user.services;
       delete user.roles;
       return { ...user };
