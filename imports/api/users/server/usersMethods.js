@@ -1,5 +1,6 @@
 import SimpleSchema from "simpl-schema";
 import { UsersHelpers } from "./usersHelpers.js";
+import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { difference } from "lodash";
@@ -547,6 +548,15 @@ export const usersExport = new ValidatedMethod({
     const processUser = (user) => {
       if (user.emails && Array.isArray(user.emails))
         user.emails = user.emails.map((e) => e.address).join(",");
+      user.campaignIds = Campaigns.find(
+        {
+          users: { $elemMatch: { userId: user._id } },
+        },
+        { fields: { name: 1 } }
+      )
+        .fetch()
+        .map((campaign) => campaign._id)
+        .join(",");
       delete user.services;
       delete user.roles;
       return { ...user };
@@ -557,7 +567,6 @@ export const usersExport = new ValidatedMethod({
     const flattened = [];
     const headersMap = {};
     for (const user of users) {
-      console.log(processUser(user));
       const flattenedUser = flattenObject(processUser(user));
       for (const header in flattenedUser) {
         headersMap[header] = true;
