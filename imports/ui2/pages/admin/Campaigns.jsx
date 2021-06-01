@@ -172,9 +172,13 @@ class CampaignsPage extends Component {
       loadingCount: true,
       filters: FlowRouter.current().queryParams,
     });
-    Meteor.call("campaigns.queryCount", { query: {} }, (err, res) => {
-      this.setState({ loadingCount: false, count: res });
-    });
+    Meteor.call(
+      "campaigns.queryCount",
+      { query: this.props.query },
+      (err, res) => {
+        this.setState({ loadingCount: false, count: res });
+      }
+    );
   }
   _handleNext = () => {
     const { page, limit } = this.props;

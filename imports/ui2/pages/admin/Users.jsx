@@ -165,7 +165,7 @@ class UsersPage extends Component {
       loadingCount: true,
       filters: FlowRouter.current().queryParams,
     });
-    Meteor.call("users.queryCount", { query: {} }, (err, res) => {
+    Meteor.call("users.queryCount", { query: this.props.query }, (err, res) => {
       this.setState({ loadingCount: false, count: res });
     });
   }

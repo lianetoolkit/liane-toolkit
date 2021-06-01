@@ -73,6 +73,7 @@ export default withTracker((props) => {
   const jobs = Jobs.find().fetch();
 
   return {
+    query,
     loading,
     page,
     limit,

@@ -61,6 +61,7 @@ export default withTracker((props) => {
     : [];
 
   return {
+    query,
     loading,
     page,
     limit,
