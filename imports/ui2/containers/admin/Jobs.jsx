@@ -12,7 +12,7 @@ export default withTracker(props => {
   const page = parseInt(queryParams.page || 1);
   const skip = (page - 1) * limit;
 
-  let query = {};
+  const query = {};
 
   if (queryParams.status) {
     query.status = queryParams.status;
