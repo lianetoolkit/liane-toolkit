@@ -13,6 +13,10 @@ export default withTracker((props) => {
 
   const query = {};
 
+  if (queryParams.q) {
+    query.$text = { $search: queryParams.q };
+  }
+
   const options = {
     fields: {
       name: 1,
@@ -40,9 +44,20 @@ export default withTracker((props) => {
     options,
   });
 
+  const getClientQuery = (query) => {
+    // Minimongo does not support $text operator
+    // https://forums.meteor.com/t/error-using-text-in-mongo-find/1667
+    if (query.$text) {
+      const search = query.$text.$search;
+      query.name = new RegExp(search, "i");
+      delete query.$text;
+    }
+    return query;
+  };
+
   const loading = !usersHandle.ready();
   const users = usersHandle.ready()
-    ? Meteor.users.find(query, options).fetch()
+    ? Meteor.users.find(getClientQuery(query), options).fetch()
     : [];
 
   return {
