@@ -879,5 +879,6 @@
     "app.admin.user.campaigns": "Campanhas",
     "app.admin.users.export": "Exportar em CSV",
     "app.campaign.form.missing_fields_error": "Verifique se preencheu todos os campos requeridos",
-    "app.people.table_body.facebook_reactions": "Reações no Facebook:"
+    "app.people.table_body.facebook_reactions": "Reações no Facebook:",
+    "app.registration.description": "Olá! Para criar sua primeira campanha na Liane, ou para fazer parte do time de uma campanha já existente, você precisa se cadastrar na plataforma. Você pode se cadastrar aqui, usando a opção \"Conectar com Facebook\" ou preenchendo o formulário abaixo."
 }
