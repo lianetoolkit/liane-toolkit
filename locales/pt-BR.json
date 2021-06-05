@@ -872,5 +872,12 @@
     "app.registration.roles.social_media": "Social media",
     "app.registration.roles.team_coord": "Coordenação de equipe",
     "app.registration.roles.volunteer": "Voluntária/o",
-    "app.registration.updateProfileLabel": "Finalizar cadastro"
+    "app.registration.updateProfileLabel": "Finalizar cadastro",
+    "app.admin.campaigns.export": "Exportar em CSV",
+    "app.admin.messages.new.confirm_label": "Tem certeza que deseja enviar esta mensagem?",
+    "app.admin.messages.new.confirm_with_count_label": "Tem certeza que deseja enviar esta mensagem para {count} pessoas?",
+    "app.admin.user.campaigns": "Campanhas",
+    "app.admin.users.export": "Exportar em CSV",
+    "app.campaign.form.missing_fields_error": "Verifique se preencheu todos os campos requeridos",
+    "app.people.table_body.facebook_reactions": "Reações no Facebook:"
 }
