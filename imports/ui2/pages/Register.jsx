@@ -181,6 +181,12 @@ class RegisterPage extends Component {
               defaultMessage="New account"
             />
           </Page.Title>
+          <p>
+            <FormattedMessage
+              id="app.registration.description"
+              defaultMessage='Hello! To create your first campaign in Liane, or to join the team of an existing campaign, you need to register on the platform. You can register here, using the "Connect with Facebook" option or by completing the form below.'
+            />
+          </p>
           <FacebookButton
             invite={campaignInvite}
             type={invite ? "campaigner" : false}
