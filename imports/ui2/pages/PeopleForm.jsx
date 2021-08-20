@@ -611,7 +611,7 @@ class PeopleForm extends Component {
               </Form.Field>
             </div>
           ) : null}
-          {!person.facebookId && recaptchaSiteKey ? (
+          {/* {!person.facebookId && recaptchaSiteKey ? (
             <div className="recaptcha-container">
               <Recaptcha
                 sitekey={recaptchaSiteKey}
@@ -619,7 +619,7 @@ class PeopleForm extends Component {
                 verifyCallback={this._handleRecaptcha}
               />
             </div>
-          ) : null}
+          ) : null} */}
           <div className="policy">
             <PrivacyAgreementField
               onChange={(checked) => {
