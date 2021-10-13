@@ -188,8 +188,8 @@ class PeoplePage extends Component {
         private_reply: false,
       }),
       options: defaultsDeep(this.props.options, {
-        limit: 20,
         skip: 0,
+        limit: 20,
       }),
     });
     this.fetchHistory();
@@ -528,6 +528,16 @@ class PeoplePage extends Component {
       />
     );
   };
+
+  handleOptionLimit = (limit) => {
+    this.setState({
+      options: {
+        skip: 0,
+        limit,
+      },
+    });
+  };
+
   render() {
     const {
       intl,
@@ -800,6 +810,7 @@ class PeoplePage extends Component {
             skip={options.skip}
             limit={options.limit}
             count={count}
+            setLimit={this.handleOptionLimit}
             loading={loadingCount}
             onNext={this._handleNext}
             onPrev={this._handlePrev}
@@ -825,49 +836,58 @@ class PeoplePage extends Component {
               />
             </Button>
           </PagePaging>
+
           {!loading && (!people || !people.length) ? (
             <p className="not-found">No results found.</p>
           ) : (
-            <PeopleTable
-              campaign={campaign}
-              tags={this.props.tags}
-              people={people}
-              options={options}
-              onChange={this._handlePeopleChange}
-              onSort={this._handleTableSort}
-              compact
-              scrollable
-            />
-          )}
-          <PagePaging
-            skip={options.skip}
-            limit={options.limit}
-            count={count}
-            loading={loadingCount}
-            onNext={this._handleNext}
-            onPrev={this._handlePrev}
-          >
-            {userCan("edit", "people") && peopleCounter > 0 ? (
-              <>
-                <Button
-                  onClick={() => {
-                    FlowRouter.go("App.peopleUnresolved");
-                  }}
-                  active={false}
-                >
-                  {intl.formatMessage(messages.unresolvedLabel)}{" "}
-                  {peopleCounter !== 0 ? <Badge>{peopleCounter}</Badge> : ``}
-                </Button>
-              </>
-            ) : null}
-            <Button primary onClick={this._handleNewClick}>
-              +{" "}
-              <FormattedMessage
-                id="app.people.new_person_label"
-                defaultMessage="New person"
+            <>
+              <PeopleTable
+                campaign={campaign}
+                tags={this.props.tags}
+                people={people}
+                options={options}
+                onChange={this._handlePeopleChange}
+                onSort={this._handleTableSort}
+                compact
+                scrollable
               />
-            </Button>
-          </PagePaging>
+
+              <PagePaging
+                skip={options.skip}
+                limit={options.limit}
+                count={count}
+                setLimit={this.handleOptionLimit}
+                loading={loadingCount}
+                onNext={this._handleNext}
+                onPrev={this._handlePrev}
+              >
+                {userCan("edit", "people") && peopleCounter > 0 ? (
+                  <>
+                    <Button
+                      onClick={() => {
+                        FlowRouter.go("App.peopleUnresolved");
+                      }}
+                      active={false}
+                    >
+                      {intl.formatMessage(messages.unresolvedLabel)}{" "}
+                      {peopleCounter !== 0 ? (
+                        <Badge>{peopleCounter}</Badge>
+                      ) : (
+                        ``
+                      )}
+                    </Button>
+                  </>
+                ) : null}
+                <Button primary onClick={this._handleNewClick}>
+                  +{" "}
+                  <FormattedMessage
+                    id="app.people.new_person_label"
+                    defaultMessage="New person"
+                  />
+                </Button>
+              </PagePaging>
+            </>
+          )}
         </PeopleContent>
       </>
     );

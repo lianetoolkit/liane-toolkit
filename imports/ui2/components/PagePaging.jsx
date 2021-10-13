@@ -59,6 +59,9 @@ const Container = styled.nav`
       padding: 0.25rem 0.7rem;
     }
   }
+  .btn-pagination {
+    margin-right: 0.4375rem;
+  }
 `;
 
 class PagePaging extends Component {
@@ -83,7 +86,7 @@ class PagePaging extends Component {
     return count && skip * limit + limit < count;
   };
   render() {
-    const { intl, skip, limit, count, loading, children } = this.props;
+    const { intl, skip, limit, count, loading, setLimit, children } = this.props;
     return (
       <Container className="page-paging">
         {isNaN(count) ? (
@@ -104,6 +107,12 @@ class PagePaging extends Component {
                 })}
           </p>
         )}
+        <div className="spacer" />
+        <div className="children">
+          <button className="btn-pagination" onClick={() => {setLimit(20)}}>20</button>
+          <button className="btn-pagination" onClick={() => {setLimit(50)}}>50</button>
+          <button className="btn-pagination" onClick={() => {setLimit(100)}}>100</button>
+        </div>
         <div className="spacer" />
         <div className="children">{children}</div>
         <div className="navigator">
