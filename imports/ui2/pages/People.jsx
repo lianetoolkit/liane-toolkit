@@ -839,6 +839,35 @@ class PeoplePage extends Component {
               scrollable
             />
           )}
+          <PagePaging
+            skip={options.skip}
+            limit={options.limit}
+            count={count}
+            loading={loadingCount}
+            onNext={this._handleNext}
+            onPrev={this._handlePrev}
+          >
+            {userCan("edit", "people") && peopleCounter > 0 ? (
+              <>
+                <Button
+                  onClick={() => {
+                    FlowRouter.go("App.peopleUnresolved");
+                  }}
+                  active={false}
+                >
+                  {intl.formatMessage(messages.unresolvedLabel)}{" "}
+                  {peopleCounter !== 0 ? <Badge>{peopleCounter}</Badge> : ``}
+                </Button>
+              </>
+            ) : null}
+            <Button primary onClick={this._handleNewClick}>
+              +{" "}
+              <FormattedMessage
+                id="app.people.new_person_label"
+                defaultMessage="New person"
+              />
+            </Button>
+          </PagePaging>
         </PeopleContent>
       </>
     );
