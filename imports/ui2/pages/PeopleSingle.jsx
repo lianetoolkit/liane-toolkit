@@ -174,6 +174,8 @@ const InformationContainer = styled.section`
       flex: 1 1 auto;
       margin-bottom: 1rem;
       font-size: 0.9em;
+      color: rgb(0,0,0);
+      text-decoration: none;
       svg {
         margin-right: 1rem;
         color: #999;
@@ -214,7 +216,14 @@ class Information extends Component {
         />
         <div className="interactions">
           <PersonReactions person={person} />
-          <p className="person-comment-count">
+          <a
+            className="person-comment-count"
+            href={FlowRouter.path(
+              "App.people.detail",
+              { personId: person._id },
+              { section: "comments" }
+            )}
+          >
             <span>
               <FontAwesomeIcon icon="comment" />{" "}
               <FormattedMessage
@@ -232,7 +241,7 @@ class Information extends Component {
                 />
               </Button>
             ) : null}
-          </p>
+          </a>
         </div>
         <PersonFormInfo person={person} />
         <PersonInfoTable person={person} />
