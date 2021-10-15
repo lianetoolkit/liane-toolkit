@@ -203,6 +203,7 @@ class Information extends Component {
     );
     modalStore.set(<Reply personId={person._id} messageOnly={true} />);
   };
+  
   render() {
     const { person, tags } = this.props;
     return (
@@ -210,9 +211,6 @@ class Information extends Component {
         <PersonSummary
           person={person}
           tags={tags}
-          hideIfEmpty={{
-            tags: true,
-          }}
         />
         <div className="interactions">
           <PersonReactions person={person} />
