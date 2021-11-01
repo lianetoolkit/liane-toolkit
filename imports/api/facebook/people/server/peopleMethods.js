@@ -228,7 +228,6 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
       break;
   }
   delete query.accountFilter;
-  console.log("FINAL QUERY", query);
   return { query, options: queryOptions };
 };
 
