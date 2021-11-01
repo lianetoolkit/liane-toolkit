@@ -10,7 +10,6 @@ People.schema = new SimpleSchema({
     type: String,
     index: true,
     optional: true,
-    unique: true,
   },
   name: {
     type: String,
@@ -118,12 +117,6 @@ People.schema = new SimpleSchema({
   },
   "location.coordinates.$": {
     type: Number,
-  },
-  chatbotStatus: {
-    type: String,
-    allowedValues: ["bot", "pending", "admin"],
-    optional: true,
-    index: true,
   },
   createdAt: {
     type: Date,
