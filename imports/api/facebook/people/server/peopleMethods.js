@@ -128,6 +128,10 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
   if (options.sort) {
     switch (options.sort) {
       case "comments":
+        queryOptions.sort = {
+          [`counts.${options.sort}`]: options.order || -1,
+        };
+        break;
       case "likes":
         queryOptions.sort = {
           [`counts.${options.sort}`]: options.order || -1,
