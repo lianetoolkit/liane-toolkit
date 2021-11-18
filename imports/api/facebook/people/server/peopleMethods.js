@@ -134,7 +134,7 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
         break;
       case "likes":
         queryOptions.sort = {
-          [`counts.${options.sort}`]: options.order || -1,
+          [`counts.facebook.${options.sort}`]: options.order || -1,
         };
         break;
       case "name":
@@ -163,11 +163,11 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
 
   if (reaction_count) {
     if (!reaction_type || reaction_type == "any" || reaction_type == "all") {
-      query[`counts.likes`] = {
+      query[`counts.facebook.likes`] = {
         $gte: parseInt(reaction_count),
       };
     } else {
-      query[`counts.reactions.${reaction_type}`] = {
+      query[`counts.facebook.reactions.${reaction_type}`] = {
         $gte: parseInt(reaction_count),
       };
     }
@@ -232,7 +232,6 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
       break;
   }
   delete query.accountFilter;
-
   return { query, options: queryOptions };
 };
 
