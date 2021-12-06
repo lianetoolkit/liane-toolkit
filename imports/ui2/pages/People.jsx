@@ -552,7 +552,9 @@ class PeoplePage extends Component {
     return (
       <>
         <Page.Nav full plain>
+          
           <PageFilters>
+            <h1  style={{display: "none"}}>Prueba</h1>
             <div className="filters">
               <form onSubmit={(ev) => ev.preventDefault()}>
                 <input
