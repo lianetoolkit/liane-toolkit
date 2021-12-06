@@ -1,10 +1,13 @@
 import SimpleSchema from "simpl-schema";
 import { UsersHelpers } from "./usersHelpers.js";
+import { Campaigns } from "/imports/api/campaigns/campaigns.js";
 import { CampaignsHelpers } from "/imports/api/campaigns/server/campaignsHelpers.js";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { difference } from "lodash";
 import axios from "axios";
 import nodemailer from "nodemailer";
+import Papa from "papaparse";
+import { flattenObject } from "/imports/utils/common.js";
 DDPRateLimiter = require("meteor/ddp-rate-limiter").DDPRateLimiter;
 
 let mailTransporter, mailConfig;
@@ -256,6 +259,8 @@ const validatePermissions = (scopes) => {
   const permissions = [
     "public_profile",
     "email",
+    "pages_read_engagement",
+    "pages_read_user_content",
     "pages_manage_posts",
     "pages_manage_engagement",
     "pages_manage_metadata",
@@ -524,5 +529,55 @@ export const usersQueryCount = new ValidatedMethod({
       throw new Meteor.Error(401, "You are not allowed to perform this action");
     }
     return Meteor.users.find(query || {}).count();
+  },
+});
+
+export const usersExport = new ValidatedMethod({
+  name: "users.export",
+  validate() {},
+  run() {
+    logger.debug("users.export called");
+
+    const userId = Meteor.userId();
+    if (!userId) {
+      throw new Meteor.Error(401, "You need to login");
+    }
+
+    if (!Roles.userIsInRole(userId, ["admin"])) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+
+    const processUser = (user) => {
+      if (user.emails && Array.isArray(user.emails))
+        user.emails = user.emails.map((e) => e.address).join(",");
+      user.campaignIds = Campaigns.find(
+        {
+          users: { $elemMatch: { userId: user._id } },
+        },
+        { fields: { name: 1 } }
+      )
+        .fetch()
+        .map((campaign) => campaign._id)
+        .join(",");
+      delete user.profile;
+      delete user.email;
+      delete user.services;
+      delete user.roles;
+      return { ...user };
+    };
+
+    const users = Meteor.users.find().fetch();
+
+    const flattened = [];
+    const headersMap = {};
+    for (const user of users) {
+      const flattenedUser = flattenObject(processUser(user));
+      for (const header in flattenedUser) {
+        headersMap[header] = true;
+      }
+      flattened.push(flattenedUser);
+    }
+
+    return Papa.unparse({ fields: Object.keys(headersMap), data: flattened });
   },
 });

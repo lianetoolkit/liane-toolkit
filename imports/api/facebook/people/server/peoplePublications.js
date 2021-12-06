@@ -349,6 +349,7 @@ Meteor.publishComposite("people.form.detail", function ({ formId, psid }) {
                 name: 1,
                 country: 1,
                 "forms.crm": 1,
+                "forms.skills": 1,
               },
             }
           );

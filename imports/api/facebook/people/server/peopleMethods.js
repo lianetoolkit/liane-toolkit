@@ -128,9 +128,13 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
   if (options.sort) {
     switch (options.sort) {
       case "comments":
-      case "likes":
         queryOptions.sort = {
           [`counts.${options.sort}`]: options.order || -1,
+        };
+        break;
+      case "likes":
+        queryOptions.sort = {
+          [`counts.facebook.${options.sort}`]: options.order || -1,
         };
         break;
       case "name":
@@ -159,11 +163,11 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
 
   if (reaction_count) {
     if (!reaction_type || reaction_type == "any" || reaction_type == "all") {
-      query[`counts.likes`] = {
+      query[`counts.facebook.likes`] = {
         $gte: parseInt(reaction_count),
       };
     } else {
-      query[`counts.reactions.${reaction_type}`] = {
+      query[`counts.facebook.reactions.${reaction_type}`] = {
         $gte: parseInt(reaction_count),
       };
     }
@@ -228,7 +232,6 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
       break;
   }
   delete query.accountFilter;
-
   return { query, options: queryOptions };
 };
 
@@ -1820,26 +1823,26 @@ export const peopleFormSubmit = new ValidatedMethod({
       }
     }
 
-    if (!(formId || facebookId) && recaptchaSecret) {
-      if (recaptcha) {
-        const res = Promise.await(
-          axios.request({
-            url: "https://www.google.com/recaptcha/api/siteverify",
-            headers: { "content-type": "application/x-www-form-urlencoded" },
-            method: "post",
-            params: {
-              secret: recaptchaSecret,
-              response: recaptcha,
-            },
-          })
-        );
-        if (!res.data.success) {
-          throw new Meteor.Error(400, "Invalid recaptcha");
-        }
-      } else {
-        throw new Meteor.Error(400, "Make sure you are not a robot");
-      }
-    }
+    // if (!(formId || facebookId) && recaptchaSecret) {
+    //   if (recaptcha) {
+    //     const res = Promise.await(
+    //       axios.request({
+    //         url: "https://www.google.com/recaptcha/api/siteverify",
+    //         headers: { "content-type": "application/x-www-form-urlencoded" },
+    //         method: "post",
+    //         params: {
+    //           secret: recaptchaSecret,
+    //           response: recaptcha,
+    //         },
+    //       })
+    //     );
+    //     if (!res.data.success) {
+    //       throw new Meteor.Error(400, "Invalid recaptcha");
+    //     }
+    //   } else {
+    //     throw new Meteor.Error(400, "Make sure you are not a robot");
+    //   }
+    // }
 
     if (data.address) {
       let location;

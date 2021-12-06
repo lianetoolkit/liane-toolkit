@@ -872,5 +872,13 @@
     "app.registration.refs.facebook": "Facebook",
     "app.registration.refs.instagram": "Instagram",
     "app.registration.refs.twitter": "Twitter",
-    "app.registration.roles.marketing": "Marketing"
+    "app.registration.roles.marketing": "Marketing",
+    "app.registration.description": "¡Hola! Para crear tu primera campaña en Liane, o para sumarte al equipo de una campaña ya existente, es necesario registrarte en la plataforma. Puedes hacerlo aquí, utilizando la opción de “Conectar con Facebook” o completando el formulario que está abajo.",
+    "app.admin.campaigns.export": "Exportar en CSV",
+    "app.admin.messages.new.confirm_label": "¿Estás seguro de que deseas enviar este mensaje?",
+    "app.admin.messages.new.confirm_with_count_label": "¿Está seguro de que desea enviar este mensaje a {count} personas?",
+    "app.admin.user.campaigns": "Campañas",
+    "app.admin.users.export": "Exportar en CSV",
+    "app.campaign.form.missing_fields_error": "Asegúrese de completar todos los campos obligatorios",
+    "app.people.table_body.facebook_reactions": "Reacciones de Facebook:"
 }
