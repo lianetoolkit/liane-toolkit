@@ -8,14 +8,10 @@ import {
 import styled from "styled-components";
 import moment from "moment";
 
-import ReactTooltip from "react-tooltip";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { modalStore } from "/imports/ui2/containers/Modal.jsx";
+import download from "/imports/ui2/utils/download";
 
 import Table from "/imports/ui2/components/Table.jsx";
 import Button from "/imports/ui2/components/Button.jsx";
-import Page from "/imports/ui2/components/Page.jsx";
 import PagePaging from "/imports/ui2/components/PagePaging.jsx";
 
 const messages = defineMessages({
@@ -122,6 +118,37 @@ const TableContainer = styled.div`
   transition: opacity 0.1s linear;
 `;
 
+const Filters = styled.form`
+  position: relative;
+  z-index: 100;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+  > div {
+    flex: 1 1 100%;
+    border-right: 1px solid #ccc;
+    &.collapse {
+      flex: 0 0 auto;
+    }
+    &.clear {
+      font-size: 0.8em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    &:last-child {
+      border: 0;
+    }
+    input {
+      margin: 0;
+      border: 0;
+    }
+  }
+`;
+
 class UsersPage extends Component {
   constructor(props) {
     super(props);
@@ -129,12 +156,16 @@ class UsersPage extends Component {
       loadingCount: false,
       ticket: null,
       count: 0,
+      filters: {},
     };
   }
   componentDidUpdate(prevProps) {}
   componentDidMount() {
-    this.setState({ loadingCount: true });
-    Meteor.call("users.queryCount", { query: {} }, (err, res) => {
+    this.setState({
+      loadingCount: true,
+      filters: FlowRouter.current().queryParams,
+    });
+    Meteor.call("users.queryCount", { query: this.props.query }, (err, res) => {
       this.setState({ loadingCount: false, count: res });
     });
   }
@@ -154,11 +185,51 @@ class UsersPage extends Component {
   _getEmail(user) {
     return user.emails && user.emails.length ? user.emails[0].address : "";
   }
+  _handleExportClick = (ev) => {
+    ev.preventDefault();
+    Meteor.call("users.export", (err, res) => {
+      download(res, "users.csv");
+    });
+  };
+  _handleFilterSubmit = (ev) => {
+    ev.preventDefault();
+    FlowRouter.setQueryParams({ ...this.state.filters, page: 1 });
+  };
+  _handleSearchChange = (ev) => {
+    this.setState({ filters: { ...this.state.filters, q: ev.target.value } });
+  };
+  _hasFilters = () => {
+    return !!Object.keys(FlowRouter.current().queryParams).filter(
+      (param) => param != "page"
+    ).length;
+  };
+  _clearFilter = (ev) => {
+    ev.preventDefault();
+    this.setState({ filters: {} });
+    FlowRouter.setQueryParams({ q: null, page: null });
+  };
   render() {
-    const { intl, users, page, limit } = this.props;
+    const { users, page, limit } = this.props;
     const { loadingCount, count } = this.state;
     return (
       <Container>
+        <Filters onSubmit={this._handleFilterSubmit}>
+          <div>
+            <input
+              type="text"
+              onChange={this._handleSearchChange}
+              placeholder="Search: type a name and press enter"
+              value={this.state.filters.q}
+            />
+          </div>
+          {this._hasFilters() ? (
+            <div className="collapse clear">
+              <a href="#" onClick={this._clearFilter}>
+                Clear filter
+              </a>
+            </div>
+          ) : null}
+        </Filters>
         <PagePaging
           skip={page - 1}
           limit={limit}
@@ -166,7 +237,14 @@ class UsersPage extends Component {
           loading={loadingCount}
           onNext={this._handleNext}
           onPrev={this._handlePrev}
-        />
+        >
+          <Button primary onClick={this._handleExportClick}>
+            <FormattedMessage
+              id="app.admin.users.export"
+              defaultMessage="Export in CSV"
+            />
+          </Button>
+        </PagePaging>
         <TableContainer>
           <Table compact>
             <thead>
@@ -191,6 +269,12 @@ class UsersPage extends Component {
                 </th>
                 <th>
                   <FormattedMessage
+                    id="app.admin.user.campaigns"
+                    defaultMessage="Campaigns"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
                     id="app.admin.users.created_label"
                     defaultMessage="Created"
                   />
@@ -202,7 +286,14 @@ class UsersPage extends Component {
                 <tr>
                   <td className="fill">{user.name}</td>
                   <td className="fill">{this._getEmail(user)}</td>
-                  <td>{user.type}</td>
+                  <td className="small">{user.type}</td>
+                  <td className="small">
+                    <ul>
+                      {user.campaigns.map((campaign) => (
+                        <li key={campaign._id}>{campaign.name}</li>
+                      ))}
+                    </ul>
+                  </td>
                   <td className="small">
                     {moment(user.createdAt).format("L")}
                   </td>

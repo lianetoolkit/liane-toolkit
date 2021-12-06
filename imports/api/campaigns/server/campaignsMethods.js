@@ -505,13 +505,15 @@ export const campaignsExport = new ValidatedMethod({
         campaign.email = campaign.contact.email;
         campaign.phone = campaign.contact.phone;
       }
+      if (campaign.users) {
+        campaign.users = campaign.users.map((user) => user.userId).join(", ");
+      }
 
       // Cleanup
       delete campaign.forms;
       delete campaign.contact;
       delete campaign.details;
       delete campaign.facebookAccount;
-      delete campaign.users;
       delete campaign.creatorId;
       delete campaign.geolocationId;
 
@@ -1845,7 +1847,8 @@ export const createInvite = new ValidatedMethod({
 });
 
 const validateEmail = (email) => {
-  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const re =
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
 };
 

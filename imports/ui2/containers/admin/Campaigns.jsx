@@ -16,6 +16,10 @@ export default withTracker((props) => {
 
   const query = {};
 
+  if (queryParams.q) {
+    query.$text = { $search: queryParams.q };
+  }
+
   const options = {
     sort: { createdAt: -1 },
     limit,
@@ -49,15 +53,27 @@ export default withTracker((props) => {
     options,
   });
 
+  const getClientQuery = (query) => {
+    // Minimongo does not support $text operator
+    // https://forums.meteor.com/t/error-using-text-in-mongo-find/1667
+    if (query.$text) {
+      const search = query.$text.$search;
+      query.name = new RegExp(search, "i");
+      delete query.$text;
+    }
+    return query;
+  };
+
   const loading = !campaignsHandle.ready();
   const campaigns = campaignsHandle.ready()
-    ? Campaigns.find(query, options).fetch()
+    ? Campaigns.find(getClientQuery(query), options).fetch()
     : [];
 
   // Fetch jobs for reactive behavior
   const jobs = Jobs.find().fetch();
 
   return {
+    query,
     loading,
     page,
     limit,
