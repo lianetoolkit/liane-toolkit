@@ -23,13 +23,14 @@ Liane is a free software using [Meteor](https://meteor.com), [MongoDB](https://w
 
 ### Dependencies
 
-- [Meteor](https://guide.meteor.com)
+- [Nodejs](https://nodejs.org/) (v14.18.1)
+- [Meteor](https://guide.meteor.com) (1.12.1)
 - [Redis](https://redis.io/) (v4.0.0 or newer)
 
 Install **Meteor** full-stack framework.
 
 ```shell
-curl https://install.meteor.com/ | sh
+curl "https://install.meteor.com/?release=1.12.1" | sh
 ```
 
 Clone this repository.
