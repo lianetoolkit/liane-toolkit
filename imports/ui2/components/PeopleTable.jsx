@@ -196,6 +196,7 @@ const MetaCircles = styled.div`
     }
   }
 `;
+
 class PersonMetaCircles extends Component {
   render() {
     const { person, ...props } = this.props;
@@ -676,8 +677,25 @@ class PeopleTable extends Component {
                     <span className="number">{this._getReactions(person)}</span>
                   </td>
                   <td className="small icon-number">
-                    <FontAwesomeIcon icon="comment" />
-                    <span className="number">{this._getComments(person)}</span>
+                    <a
+                      href={FlowRouter.path(
+                        "App.people.detail",
+                        { personId: person._id },
+                        { section: "comments" }
+                      )}
+                    >
+                      <FontAwesomeIcon icon="comment" />
+                      <a
+                        className="number"
+                        href={FlowRouter.path(
+                          "App.people.detail",
+                          { personId: person._id },
+                          { section: "comments" }
+                        )}
+                      >
+                        {this._getComments(person)}
+                      </a>
+                    </a>
                   </td>
                   <td>
                     <PersonContactIcons person={person} />
@@ -717,7 +735,14 @@ class PeopleTable extends Component {
                           <PersonReactions person={person} />
                         </div>
                       ) : null}
-                      <p className="person-comment-count">
+                      <a
+                        className="person-comment-count"
+                        href={FlowRouter.path(
+                          "App.people.detail",
+                          { personId: person._id },
+                          { section: "comments" }
+                        )}
+                      >
                         <span className="count-label">
                           <PersonCommentCount person={person} />
                         </span>
@@ -750,7 +775,7 @@ class PeopleTable extends Component {
                             />
                           </a>
                         ) : null}
-                      </p>
+                      </a>
                     </td>
                   </tr>
                 ) : null}
