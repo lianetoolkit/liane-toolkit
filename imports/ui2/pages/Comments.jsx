@@ -87,7 +87,8 @@ class CommentsPage extends Component {
     this.state = {
       loadingCount: false,
       count: 0,
-      personMeta: {}
+      personMeta: {},
+      selectedComments: new Set()
     };
   }
   componentDidMount() {
@@ -180,9 +181,20 @@ class CommentsPage extends Component {
       FlowRouter.setQueryParams({ page: page - 1 });
     }
   };
+
+  _handleSelectedComments = (comment_id) => {
+    let { selectedComments } = this.state;
+    if(selectedComments.has(comment_id)) {
+      selectedComments.delete(comment_id);
+    } else {
+      selectedComments.add(comment_id);
+    }
+    console.log(selectedComments);
+    //this.setState()
+  }
   render() {
     const { intl, campaignId, comments, limit, page } = this.props;
-    const { loadingCount, count } = this.state;
+    const { loadingCount, count, selectedComments } = this.state;
     const queryingCategory = this.queryingCategory();
     return (
       <Container>
@@ -345,7 +357,7 @@ class CommentsPage extends Component {
             onNext={this._handleNext}
             onPrev={this._handlePrev}
           />
-          <CommentList campaignId={campaignId} comments={comments} />
+          <CommentList campaignId={campaignId} comments={comments} selectedComments={selectedComments} handleSelectedComments={this._handleSelectedComments} />
         </CommentsContent>
       </Container>
     );

@@ -217,6 +217,13 @@ export const getFBCommentUrl = (comment) => {
 };
 
 class Comment extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedComment: false
+    };
+  }
+
   static Count = CountIntl;
   action = () => {
     const { comment } = this.props;
@@ -295,11 +302,40 @@ class Comment extends Component {
         return ["fab", "facebook-square"];
     }
   };
+
+  _handleModifySelectedComment = (id) => {
+    const { handleSelectedComments} = this.props;
+   handleSelectedComments(id)
+  }
+
+  _handleChecked = (selectedComments, comment_id) => {
+    this.setState({selectedComment: selectedComments.has(comment_id)});
+  }
+
   render() {
-    const { intl, comment, actions } = this.props;
+    const { intl, comment, actions, handleSelectedComments, selectedComments} = this.props;
+    //console.log(this.state.selectedComment)
+    
+
+    //const { selectedComment } = this.state;
+
+    //const selectedCommentsSet = new Set(selectedComments)
+
+    //console.log(comment)
+
+    //this._getSelectComment(selectedCommentsSet.has(comment._id));
+
+    //this.setState({selectedComment: selectedCommentsSet.has(comment._id)})
+
     if (comment) {
       return (
         <Container>
+          <div>
+        <input type="checkbox" checked={this.selectedComment} onChange={() => this._handleChecked(selectedComments, comment._id) } onClick={() => {
+          this._handleModifySelectedComment(comment._id);
+          //console.log(selectedComments);
+        }} />
+          </div>
           <header>
             <h3>
               <span className={`icon ${comment.source}`}>

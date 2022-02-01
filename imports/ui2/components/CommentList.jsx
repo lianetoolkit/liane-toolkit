@@ -284,14 +284,15 @@ class CommentList extends Component {
     }
   };
   render() {
-    const { intl, comments } = this.props;
+    const { intl, comments, selectedComments, handleSelectedComments } = this.props;
+
     if (!comments || !comments.length) return null;
     return (
       <div className="comments">
         {comments.map((comment, i) => (
           <CommentContainer key={comment._id}>
             <div className="comment-content">
-              <Comment comment={comment} actions={true} />
+              <Comment comment={comment} actions={true} selectedComments={selectedComments}  selectedComment={selectedComments.has(comment._id)} handleSelectedComments={handleSelectedComments} />
             </div>
             {userCan("categorize", "comments") ? (
               <>
