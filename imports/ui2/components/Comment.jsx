@@ -303,17 +303,19 @@ class Comment extends Component {
     }
   };
 
-  _handleModifySelectedComment = (id) => {
+  _handleModifySelectedComment = (comments) => {
     const { handleSelectedComments } = this.props;
-    handleSelectedComments(id);
+    handleSelectedComments(comments);
   };
 
-  _handleChecked = (selectedComments, comment_id) => {
-    this.setState({ selectedComment: selectedComments.has(comment_id) });
+  _handleChecked = (selectedComments, comment) => {
+    this.setState({ selectedComment: selectedComments.has(comment) });
   };
 
   render() {
     const { intl, comment, actions, selectedComments } = this.props;
+
+    //console.log(comment);
 
     if (comment) {
       return (
@@ -323,9 +325,9 @@ class Comment extends Component {
               type="checkbox"
               checked={this.selectedComment}
               onChange={() =>
-                this._handleChecked(selectedComments, comment._id)
+                this._handleChecked(selectedComments, comment)
               }
-              onClick={() => this._handleModifySelectedComment(comment._id)}
+              onClick={() => this._handleModifySelectedComment(comment)}
             />
           </div>
           <header>

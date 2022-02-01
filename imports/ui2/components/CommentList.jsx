@@ -286,13 +286,21 @@ class CommentList extends Component {
   render() {
     const { intl, comments, selectedComments, handleSelectedComments } = this.props;
 
+    //const a = new Set(comments);
+    //console.log(a)
+    //a.add(comments[0])
+    //a.add({a: "dsa"})
+    //console.log(a)
+    //console.log(a.has(comments[0]))
+    //console.log(a.keys()jjjjj)
+
     if (!comments || !comments.length) return null;
     return (
       <div className="comments">
         {comments.map((comment, i) => (
           <CommentContainer key={comment._id}>
             <div className="comment-content">
-              <Comment comment={comment} actions={true} selectedComments={selectedComments}  selectedComment={selectedComments.has(comment._id)} handleSelectedComments={handleSelectedComments} />
+              <Comment comment={comment} actions={true} selectedComments={selectedComments} handleSelectedComments={handleSelectedComments} />
             </div>
             {userCan("categorize", "comments") ? (
               <>

@@ -3,13 +3,16 @@ import {
   injectIntl,
   intlShape,
   defineMessages,
-  FormattedMessage
+  FormattedMessage,
 } from "react-intl";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import { debounce } from "lodash";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+
+import { alertStore } from "../containers/Alerts.jsx";
 
 import Form from "../components/Form.jsx";
 import Page from "../components/Page.jsx";
@@ -23,16 +26,16 @@ import CommentList from "../components/CommentList.jsx";
 const messages = defineMessages({
   textSearch: {
     id: "app.comments.text_search_placeholder",
-    defaultMessage: "Text search..."
+    defaultMessage: "Text search...",
   },
   postFilter: {
     id: "app.comments.entry_select_placeholder",
-    defaultMessage: "Filter by post..."
+    defaultMessage: "Filter by post...",
   },
   commentSourceFilter: {
     id: "app.comments.source_select_placeholder",
-    defaultMessage: "Filter by source..."
-  }
+    defaultMessage: "Filter by source...",
+  },
 });
 
 const Container = styled.div`
@@ -70,7 +73,7 @@ const CommentsContent = styled.div`
     text-align: center;
     margin: 4rem;
   }
-  ${props =>
+  ${(props) =>
     props.loading &&
     css`
       .comments {
@@ -88,7 +91,7 @@ class CommentsPage extends Component {
       loadingCount: false,
       count: 0,
       personMeta: {},
-      selectedComments: new Set()
+      selectedComments: new Set(),
     };
   }
   componentDidMount() {
@@ -107,19 +110,19 @@ class CommentsPage extends Component {
   _fetchCount = debounce(() => {
     const { campaignId, query } = this.props;
     this.setState({
-      loadingCount: true
+      loadingCount: true,
     });
     Meteor.call(
       "comments.queryCount",
       {
         campaignId,
-        query
+        query,
       },
       (err, res) => {
         if (!err) {
           this.setState({
             count: res,
-            loadingCount: false
+            loadingCount: false,
           });
         }
       }
@@ -161,10 +164,10 @@ class CommentsPage extends Component {
   _handleCheckboxChange = ({ target }) => {
     FlowRouter.setQueryParams({
       [target.name]: target.checked || null,
-      page: 1
+      page: 1,
     });
   };
-  _handleQueryResolveClick = resolved => ev => {
+  _handleQueryResolveClick = (resolved) => (ev) => {
     ev.preventDefault();
     FlowRouter.setQueryParams({ resolved: resolved ? true : null, page: 1 });
   };
@@ -184,13 +187,48 @@ class CommentsPage extends Component {
 
   _handleSelectedComments = (comment_id) => {
     let { selectedComments } = this.state;
-    if(selectedComments.has(comment_id)) {
+    if (selectedComments.has(comment_id)) {
       selectedComments.delete(comment_id);
     } else {
       selectedComments.add(comment_id);
     }
     console.log(selectedComments); // debug, remove before of pull request
-  }
+  };
+
+  // WIP
+
+  hasCategory = (comment, category) => {
+    return comment.categories && comment.categories.indexOf(category) != -1;
+  };
+
+  _handleVariousCategoryClick = (comments, category) => {
+    console.log(comments);
+    const { campaignId } = this.props;
+    console.log(campaignId)
+
+    comments.forEach((comment) => {
+      let categories = (comment.categories || []).slice(0);
+      if (!this.hasCategory(comment, category)) {
+        categories.push(category);
+      } else {
+        categories = categories.filter((cat) => cat != category);
+      }
+      Meteor.call(
+        "comments.updateCategories",
+        {
+          campaignId,
+          commentId: comment._id,
+          categories,
+        },
+        (err, res) => {
+          if (err) {
+            alertStore.add(err);
+          }
+        }
+      );
+    });
+  };
+
   render() {
     const { intl, campaignId, comments, limit, page } = this.props;
     const { loadingCount, count, selectedComments } = this.state;
@@ -200,7 +238,7 @@ class CommentsPage extends Component {
         <Page.Nav full plain>
           <PageFilters>
             <div className="filters">
-              <form onSubmit={ev => ev.preventDefault()}>
+              <form onSubmit={(ev) => ev.preventDefault()}>
                 <Button.Group toggler>
                   <Button
                     onClick={this._handleQueryResolveClick(false)}
@@ -242,7 +280,9 @@ class CommentsPage extends Component {
                     name="source"
                     onChange={this._handleChange}
                     value={FlowRouter.getQueryParam("source")}
-                    placeholder={intl.formatMessage(messages.commentSourceFilter)}
+                    placeholder={intl.formatMessage(
+                      messages.commentSourceFilter
+                    )}
                   />
                 </Form.Field>
                 <PageFilters.Category hiddenInput>
@@ -356,7 +396,19 @@ class CommentsPage extends Component {
             onNext={this._handleNext}
             onPrev={this._handlePrev}
           />
-          <CommentList campaignId={campaignId} comments={comments} selectedComments={selectedComments} handleSelectedComments={this._handleSelectedComments} />
+
+          <div>
+            Marcar os selecionados como
+            <button onClick={() => this._handleVariousCategoryClick(selectedComments, 'question')}>marcar como question</button>
+
+          </div>
+
+          <CommentList
+            campaignId={campaignId}
+            comments={comments}
+            selectedComments={selectedComments}
+            handleSelectedComments={this._handleSelectedComments}
+          />
         </CommentsContent>
       </Container>
     );
@@ -364,7 +416,7 @@ class CommentsPage extends Component {
 }
 
 CommentsPage.propTypes = {
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
 };
 
 export default injectIntl(CommentsPage);
