@@ -210,9 +210,6 @@ class Information extends Component {
         <PersonSummary
           person={person}
           tags={tags}
-          hideIfEmpty={{
-            tags: true,
-          }}
         />
         <div className="interactions">
           <PersonReactions person={person} />
