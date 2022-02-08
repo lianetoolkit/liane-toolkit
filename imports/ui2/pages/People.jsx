@@ -36,6 +36,7 @@ import PeopleLists from "../components/PeopleLists.jsx";
 import PeopleExports from "../components/PeopleExports.jsx";
 
 import TagFilter from "../components/TagFilter.jsx";
+import GenreFilter from "../components/GenreFilter.jsx";
 import PersonMetaButtons, {
   labels as categoriesLabels,
 } from "../components/PersonMetaButtons.jsx";
@@ -97,6 +98,10 @@ const messages = defineMessages({
   tagPlaceholder: {
     id: "app.people.filters.tag.placeholder",
     defaultMessage: "Filter by tag",
+  },
+  genrePlaceholder: {
+    id: "app.people.filters.genre.placeholder",
+    defaultMessage: "Filter by genre",
   },
   reactionAmount: {
     id: "app.people.filters.reactions.amount",
@@ -552,9 +557,8 @@ class PeoplePage extends Component {
     return (
       <>
         <Page.Nav full plain>
-          
           <PageFilters>
-            <h1  style={{display: "none"}}>Prueba</h1>
+            <h1 style={{ display: "none" }}>Prueba</h1>
             <div className="filters">
               <form onSubmit={(ev) => ev.preventDefault()}>
                 <input
@@ -622,6 +626,15 @@ class PeoplePage extends Component {
                     />
                   </Form.Field>
                 ) : null}
+                <Form.Field>
+                  <GenreFilter
+                    intl={intl}
+                    name="genre"
+                    value={query.gender}
+                    onChange={this._handleFormChange}
+                    placeholder={intl.formatMessage(messages.genrePlaceholder)}
+                  />
+                </Form.Field>
                 <label className="boxed">
                   <input
                     type="checkbox"

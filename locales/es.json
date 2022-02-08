@@ -880,5 +880,6 @@
     "app.admin.user.campaigns": "Campañas",
     "app.admin.users.export": "Exportar en CSV",
     "app.campaign.form.missing_fields_error": "Asegúrese de completar todos los campos obligatorios",
-    "app.people.table_body.facebook_reactions": "Reacciones de Facebook:"
+    "app.people.table_body.facebook_reactions": "Reacciones de Facebook:",
+    "app.people.filters.genre.placeholder": "Filtrar por género"
 }
