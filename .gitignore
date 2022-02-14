@@ -9,3 +9,4 @@ docker-compose.dev.yml
 *.rdb
 generated-files/*
 .vscode
+session.vim
