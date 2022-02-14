@@ -11,7 +11,6 @@ import { debounce } from "lodash";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-
 import { alertStore } from "../containers/Alerts.jsx";
 
 import Form from "../components/Form.jsx";
@@ -204,7 +203,7 @@ class CommentsPage extends Component {
   _handleVariousCategoryClick = (comments, category) => {
     console.log(comments);
     const { campaignId } = this.props;
-    console.log(campaignId)
+    console.log(campaignId);
 
     comments.forEach((comment) => {
       let categories = (comment.categories || []).slice(0);
@@ -233,6 +232,7 @@ class CommentsPage extends Component {
     const { intl, campaignId, comments, limit, page } = this.props;
     const { loadingCount, count, selectedComments } = this.state;
     const queryingCategory = this.queryingCategory();
+    console.log(FlowRouter.getQueryParam("entry"));
     return (
       <Container>
         <Page.Nav full plain>
@@ -397,11 +397,18 @@ class CommentsPage extends Component {
             onPrev={this._handlePrev}
           />
 
-          <div>
-            Marcar os selecionados como
-            <button onClick={() => this._handleVariousCategoryClick(selectedComments, 'question')}>marcar como question</button>
-
-          </div>
+          {FlowRouter.getQueryParam("entry") ? (
+            <div>
+              Marcar os selecionados como
+              <button
+                onClick={() =>
+                  this._handleVariousCategoryClick(selectedComments, "question")
+                }
+              >
+                marcar como question
+              </button>
+            </div>
+          ) : null}
 
           <CommentList
             campaignId={campaignId}

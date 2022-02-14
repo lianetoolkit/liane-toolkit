@@ -315,12 +315,11 @@ class Comment extends Component {
   render() {
     const { intl, comment, actions, selectedComments } = this.props;
 
-    //console.log(comment);
-
     if (comment) {
       return (
         <Container>
           <div>
+            {FlowRouter.getQueryParam("entry") ? (
             <input
               type="checkbox"
               checked={this.selectedComment}
@@ -329,6 +328,7 @@ class Comment extends Component {
               }
               onClick={() => this._handleModifySelectedComment(comment)}
             />
+            ) : null}
           </div>
           <header>
             <h3>
