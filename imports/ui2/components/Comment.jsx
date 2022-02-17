@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useCallback } from "react";
 import {
   injectIntl,
   intlShape,
@@ -305,6 +305,7 @@ class Comment extends Component {
 
   _handleModifySelectedComment = (comments) => {
     const { handleSelectedComments } = this.props;
+    console.log(comments)
     handleSelectedComments(comments);
   };
 
@@ -312,8 +313,16 @@ class Comment extends Component {
     this.setState({ selectedComment: selectedComments.has(comment) });
   };
 
+  //componentDidUpdate(prevProps, prevState) {
+    //console.log(prevProps);
+    //console.log(prevState);
+    //console.log("did update");
+  //}
+
   render() {
-    const { intl, comment, actions, selectedComments } = this.props;
+    const { intl, comment, actions, selectedComments, selectedComment } = this.props;
+
+    //console.log("selected comment: ", selectedComment());
 
     if (comment) {
       return (
@@ -322,7 +331,7 @@ class Comment extends Component {
             {FlowRouter.getQueryParam("entry") ? (
             <input
               type="checkbox"
-              checked={this.selectedComment}
+              checked={selectedComment}
               onChange={() =>
                 this._handleChecked(selectedComments, comment)
               }

@@ -284,91 +284,100 @@ class CommentList extends Component {
     }
   };
   render() {
-    const { intl, comments, selectedComments, handleSelectedComments } = this.props;
-
-    //const a = new Set(comments);
-    //console.log(a)
-    //a.add(comments[0])
-    //a.add({a: "dsa"})
-    //console.log(a)
-    //console.log(a.has(comments[0]))
-    //console.log(a.keys()jjjjj)
+    const { intl, comments, selectedComments, handleSelectedComments } =
+      this.props;
 
     if (!comments || !comments.length) return null;
     return (
       <div className="comments">
-        {comments.map((comment, i) => (
-          <CommentContainer key={comment._id}>
-            <div className="comment-content">
-              <Comment comment={comment} actions={true} selectedComments={selectedComments} handleSelectedComments={handleSelectedComments} />
-            </div>
-            {userCan("categorize", "comments") ? (
-              <>
-                <div className="comment-actions">
-                  <p className="action-label">
-                    <FormattedMessage
-                      id="app.comment.actions_title"
-                      defaultMessage="Actions"
-                    />
-                  </p>
-                  <div className="action-icons">
+        {comments.map((comment, i) => {
+         //const fn = () => {
+            //console.log(selectedComments.has(comment));
+            //return selectedComments.has(comment);
+          //};
+
+          console.log(selectedComments.has(comment))
+          let selected_comment = selectedComments.has(comment);
+
+          return (
+            <CommentContainer key={comment._id}>
+              <div className="comment-content">
+                <Comment
+                  comment={comment}
+                  actions={true}
+                  selectedComments={selectedComments}
+                  handleSelectedComments={handleSelectedComments}
+                  selectedComment={selected_comment}
+                />
+              </div>
+              {userCan("categorize", "comments") ? (
+                <>
+                  <div className="comment-actions">
+                    <p className="action-label">
+                      <FormattedMessage
+                        id="app.comment.actions_title"
+                        defaultMessage="Actions"
+                      />
+                    </p>
+                    <div className="action-icons">
+                      <a
+                        href="javascript:void(0);"
+                        data-tip={intl.formatMessage(messages.tagQuestion)}
+                        className={
+                          this.hasCategory(comment, "question") ? "active" : ""
+                        }
+                        onClick={this._handleCategoryClick(comment, "question")}
+                      >
+                        <FontAwesomeIcon icon="question" />
+                      </a>
+                      <a
+                        href="javascript:void(0);"
+                        data-tip={intl.formatMessage(messages.tagVote)}
+                        className={
+                          this.hasCategory(comment, "vote") ? "active" : ""
+                        }
+                        onClick={this._handleCategoryClick(comment, "vote")}
+                      >
+                        <FontAwesomeIcon icon="thumbs-up" />
+                      </a>
+                      <a
+                        href="javascript:void(0);"
+                        data-tip={intl.formatMessage(messages.tagTroll)}
+                        className={
+                          this.isTroll(comment) ? "active troll" : "troll"
+                        }
+                        onClick={this._handleTrollClick(comment)}
+                      >
+                        <FontAwesomeIcon icon="ban" />
+                      </a>
+                    </div>
+                  </div>
+                  <div
+                    className={
+                      "comment-resolve " + (comment.resolved ? "resolved" : "")
+                    }
+                  >
                     <a
                       href="javascript:void(0);"
-                      data-tip={intl.formatMessage(messages.tagQuestion)}
-                      className={
-                        this.hasCategory(comment, "question") ? "active" : ""
+                      data-tip={
+                        intl.formatMessage(messages.tagAs) +
+                        " " +
+                        (comment.resolved
+                          ? intl.formatMessage(messages.commentUnresolved)
+                          : intl.formatMessage(messages.commentResolved))
                       }
-                      onClick={this._handleCategoryClick(comment, "question")}
+                      onClick={this._handleResolveClick(comment)}
                     >
-                      <FontAwesomeIcon icon="question" />
-                    </a>
-                    <a
-                      href="javascript:void(0);"
-                      data-tip={intl.formatMessage(messages.tagVote)}
-                      className={
-                        this.hasCategory(comment, "vote") ? "active" : ""
-                      }
-                      onClick={this._handleCategoryClick(comment, "vote")}
-                    >
-                      <FontAwesomeIcon icon="thumbs-up" />
-                    </a>
-                    <a
-                      href="javascript:void(0);"
-                      data-tip={intl.formatMessage(messages.tagTroll)}
-                      className={
-                        this.isTroll(comment) ? "active troll" : "troll"
-                      }
-                      onClick={this._handleTrollClick(comment)}
-                    >
-                      <FontAwesomeIcon icon="ban" />
+                      <FontAwesomeIcon
+                        icon={comment.resolved ? "undo-alt" : "check"}
+                      />
                     </a>
                   </div>
-                </div>
-                <div
-                  className={
-                    "comment-resolve " + (comment.resolved ? "resolved" : "")
-                  }
-                >
-                  <a
-                    href="javascript:void(0);"
-                    data-tip={
-                      intl.formatMessage(messages.tagAs) +
-                      " " +
-                      (comment.resolved
-                        ? intl.formatMessage(messages.commentUnresolved)
-                        : intl.formatMessage(messages.commentResolved))
-                    }
-                    onClick={this._handleResolveClick(comment)}
-                  >
-                    <FontAwesomeIcon
-                      icon={comment.resolved ? "undo-alt" : "check"}
-                    />
-                  </a>
-                </div>
-              </>
-            ) : null}
-          </CommentContainer>
-        ))}
+                </>
+              ) : null}
+            </CommentContainer>
+          );
+        })}
         <ReactTooltip effect="solid" />
       </div>
     );
