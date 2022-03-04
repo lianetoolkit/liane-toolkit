@@ -632,7 +632,7 @@ class PeoplePage extends Component {
                 <Form.Field>
                   <GenreFilter
                     intl={intl}
-                    name="gender"
+                    name="campaignMeta.basic_info.gender"
                     value={query.gender}
                     onChange={this._handleFormChange}
                     placeholder={intl.formatMessage(messages.genrePlaceholder)}
