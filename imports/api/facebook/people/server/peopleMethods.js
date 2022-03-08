@@ -287,6 +287,8 @@ export const peopleSearch = new ValidatedMethod({
       options,
     });
 
+    console.log(searchQuery);
+
     const cursor = People.find(searchQuery.query, {
       ...searchQuery.options,
       transform: (person) => {
@@ -2061,3 +2063,31 @@ export const peopleListsRemove = new ValidatedMethod({
     return res;
   },
 });
+
+export const peopleGetCities = new ValidatedMethod({
+  name: "people.getAddress",
+  validate: new SimpleSchema({
+    campaignId: {
+      type: String,
+    },
+  }).validator(),
+  run({ campaignId }) {
+    logger.debug("people.getAddress called", { campaignId });
+    const userId = Meteor.userId();
+    if (
+      !Meteor.call("campaigns.userCan", {
+        campaignId,
+        userId,
+        feature: "people",
+        permission: "view",
+      })
+    ) {
+      throw new Meteor.Error(401, "You are not allowed to do this action");
+    }
+    //console.log("entrei no metodo");
+    return People.find({}, { fields: { 'campaignMeta.basic_info.address': '1' } }).fetch();
+
+    Users.find({}, { fields: { password: 0, hash: 0 } });
+  },
+});
+

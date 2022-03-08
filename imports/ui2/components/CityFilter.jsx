@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   injectIntl,
   intlShape,
@@ -8,8 +8,22 @@ import {
 } from "react-intl";
 import Select from "react-select";
 
-const AgeFilter = (props) => {
+const CityFilter = (props) => {
+
+  useEffect(() => {
+    Meteor.call(
+      "people.getAddress",
+      { campaignId: Session.get("campaignId") },
+      (err, res) => {
+        console.log(err)
+        console.log(res)
+      }
+    );
+
+  }, [])
+
   const _getOptions = () => {
+
     let options = ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"];
 
     let options_exact = []; // TODO: modify name of this variable
@@ -78,7 +92,7 @@ const AgeFilter = (props) => {
       isSearchable={false}
       isClearable={true}
       name={props.name}
-      placeholder={props.placeholder || "Age"}
+      placeholder={props.placeholder || "City"}
       value={_getValue()}
       onChange={_handleChange}
       options={_getOptions()}
@@ -86,8 +100,8 @@ const AgeFilter = (props) => {
   );
 };
 
-AgeFilter.propTypes = {
+CityFilter.propTypes = {
   intl: intlShape.isRequired,
 };
 
-export default AgeFilter;
+export default CityFilter;

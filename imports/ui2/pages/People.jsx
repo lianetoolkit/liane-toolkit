@@ -38,6 +38,7 @@ import PeopleExports from "../components/PeopleExports.jsx";
 import TagFilter from "../components/TagFilter.jsx";
 import GenreFilter from "../components/GenreFilter.jsx";
 import AgeFilter from "../components/AgeFilter.jsx";
+import CityFilter from "../components/CityFilter.jsx";
 import PersonMetaButtons, {
   labels as categoriesLabels,
 } from "../components/PersonMetaButtons.jsx";
@@ -107,6 +108,10 @@ const messages = defineMessages({
   agePlaceholder: {
     id: "app.people.filters.age.placeholder",
     defaultMessage: "Filter by age",
+  },
+  cityPlaceholder: {
+    id: "app.people.filters.city.placeholder",
+    defaultMessage: "Filter by city",
   },
   reactionAmount: {
     id: "app.people.filters.reactions.amount",
@@ -281,9 +286,7 @@ class PeoplePage extends Component {
             loading: false,
           });
         } else {
-          console.log(data);
           this.setState({ people: data, loading: false });
-          console.log(data)
         }
       });
       Meteor.call("people.search.count", methodParams, (err, data) => {
@@ -652,6 +655,15 @@ class PeoplePage extends Component {
                     value={query.age}
                     onChange={this._handleFormChange}
                     placeholder={intl.formatMessage(messages.agePlaceholder)}
+                  />
+                </Form.Field>
+                <Form.Field>
+                  <CityFilter
+                    intl={intl}
+                    name="campaignMeta.basic_info.address.city"
+                    value={query.city}
+                    onChange={this._handleFormChange}
+                    placeholder={intl.formatMessage(messages.cityPlaceholder)}
                   />
                 </Form.Field>
                 <label className="boxed">

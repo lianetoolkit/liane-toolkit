@@ -882,5 +882,7 @@
     "app.campaign.form.missing_fields_error": "Asegúrese de completar todos los campos obligatorios",
     "app.people.table_body.facebook_reactions": "Reacciones de Facebook:",
     "app.people.filters.genre.placeholder": "Filtrar por género",
-    "app.people.filters.age.placeholder": "Filtrar por edad"
+    "app.people.filters.age.placeholder": "Filtrar por edad",
+    "app.people.filters.city.placeholder": "Filtrar por ciudad"
+
 }
