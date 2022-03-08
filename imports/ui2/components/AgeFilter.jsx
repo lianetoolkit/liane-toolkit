@@ -79,7 +79,7 @@ const AgeFilter = (props) => {
       isSearchable={false}
       isClearable={true}
       name={props.name}
-      placeholder={props.placeholder || "Genre"}
+      placeholder={props.placeholder || "Age"}
       value={_getValue()}
       onChange={_handleChange}
       options={_getOptions()}
