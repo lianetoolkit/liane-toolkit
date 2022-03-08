@@ -66,6 +66,7 @@ const GenreFilter = (props) => {
         : option,
       });
     }
+
     return options_exact;
   };
 

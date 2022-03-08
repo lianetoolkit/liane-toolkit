@@ -37,6 +37,7 @@ import PeopleExports from "../components/PeopleExports.jsx";
 
 import TagFilter from "../components/TagFilter.jsx";
 import GenreFilter from "../components/GenreFilter.jsx";
+import AgeFilter from "../components/AgeFilter.jsx";
 import PersonMetaButtons, {
   labels as categoriesLabels,
 } from "../components/PersonMetaButtons.jsx";
@@ -102,6 +103,10 @@ const messages = defineMessages({
   genrePlaceholder: {
     id: "app.people.filters.genre.placeholder",
     defaultMessage: "Filter by genre",
+  },
+  agePlaceholder: {
+    id: "app.people.filters.age.placeholder",
+    defaultMessage: "Filter by age",
   },
   reactionAmount: {
     id: "app.people.filters.reactions.amount",
@@ -278,6 +283,7 @@ class PeoplePage extends Component {
         } else {
           console.log(data);
           this.setState({ people: data, loading: false });
+          console.log(data)
         }
       });
       Meteor.call("people.search.count", methodParams, (err, data) => {
@@ -354,6 +360,7 @@ class PeoplePage extends Component {
         skip: 0,
       },
     });
+    console.log(this.state.query)
   };
   _handleSelectChange = (selected, { name }) => {
     let value = null;
@@ -636,6 +643,15 @@ class PeoplePage extends Component {
                     value={query.gender}
                     onChange={this._handleFormChange}
                     placeholder={intl.formatMessage(messages.genrePlaceholder)}
+                  />
+                </Form.Field>
+                <Form.Field>
+                  <AgeFilter
+                    intl={intl}
+                    name="campaignMeta.basic_info.birthday"
+                    value={query.age}
+                    onChange={this._handleFormChange}
+                    placeholder={intl.formatMessage(messages.agePlaceholder)}
                   />
                 </Form.Field>
                 <label className="boxed">

@@ -232,6 +232,17 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
       break;
   }
   delete query.accountFilter;
+  
+  if(query.age) {
+    query[`campaignMeta.basic_info.birthday`] = query.age;
+  }
+
+  delete query.age;
+
+  if(query[`campaignMeta.basic_info.birthday`] == null ) {
+    delete query[`campaignMeta.basic_info.birthday`];
+  }
+
   return { query, options: queryOptions };
 };
 
