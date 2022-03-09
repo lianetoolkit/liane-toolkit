@@ -212,7 +212,6 @@ class PeoplePage extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     const { importCount } = this.props;
     const { query, options } = this.state;
-    console.log(query);
     if (
       JSON.stringify(query) != JSON.stringify(prevState.query) ||
       JSON.stringify(options) != JSON.stringify(prevState.options)
@@ -280,7 +279,7 @@ class PeoplePage extends Component {
         options: this.buildOptions(options),
       };
       Meteor.call("people.search", methodParams, (err, data) => {
-      console.log(methodParams)
+      //console.log(methodParams)
         if (err) {
           this.setState({
             loading: false,
@@ -363,7 +362,7 @@ class PeoplePage extends Component {
         skip: 0,
       },
     });
-    console.log(this.state.query)
+    // console.log(this.state.query)
   };
   _handleSelectChange = (selected, { name }) => {
     let value = null;
