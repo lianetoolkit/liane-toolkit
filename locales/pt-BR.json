@@ -883,5 +883,6 @@
     "app.registration.description": "Olá! Para criar sua primeira campanha na Liane, ou para fazer parte do time de uma campanha já existente, você precisa se cadastrar na plataforma. Você pode se cadastrar aqui, usando a opção \"Conectar com Facebook\" ou preenchendo o formulário abaixo.",
     "app.people.filters.genre.placeholder": "Filtrar por gênero",
     "app.people.filters.age.placeholder": "Filtrar por idade",
-    "app.people.filters.city.placeholder": "Filtrar por cidade"
+    "app.people.filters.city.placeholder": "Filtrar por cidade",
+    "app.people.filters.region.placeholder": "Filtrar por região"
 }

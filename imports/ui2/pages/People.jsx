@@ -115,7 +115,7 @@ const messages = defineMessages({
     defaultMessage: "Filter by city",
   },
   regionPlaceholder: {
-    id: "app.people.filters.city.placeholder",
+    id: "app.people.filters.region.placeholder",
     defaultMessage: "Filter by region",
   },
   reactionAmount: {

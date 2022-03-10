@@ -883,6 +883,6 @@
     "app.people.table_body.facebook_reactions": "Reacciones de Facebook:",
     "app.people.filters.genre.placeholder": "Filtrar por género",
     "app.people.filters.age.placeholder": "Filtrar por edad",
-    "app.people.filters.city.placeholder": "Filtrar por ciudad"
-
+    "app.people.filters.city.placeholder": "Filtrar por ciudad",
+    "app.people.filters.region.placeholder": "Filtrar por región"
 }
