@@ -239,6 +239,10 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
 
   delete query.age;
 
+  if(query[`campaignMeta.basic_info.gender`] == null ) {
+    delete query[`campaignMeta.basic_info.gender`];
+  }
+
   if(query[`campaignMeta.basic_info.birthday`] == null ) {
     delete query[`campaignMeta.basic_info.birthday`];
   }

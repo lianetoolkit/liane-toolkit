@@ -284,12 +284,12 @@ class PeoplePage extends Component {
         options: this.buildOptions(options),
       };
       Meteor.call("people.search", methodParams, (err, data) => {
-      //console.log(methodParams)
         if (err) {
           this.setState({
             loading: false,
           });
         } else {
+          console.log(data)
           this.setState({ people: data, loading: false });
         }
       });
