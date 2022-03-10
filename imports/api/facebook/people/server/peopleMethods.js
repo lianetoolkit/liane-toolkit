@@ -243,6 +243,14 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
     delete query[`campaignMeta.basic_info.birthday`];
   }
 
+  if(query[`campaignMeta.basic_info.address.region`] == null ) {
+    delete query[`campaignMeta.basic_info.address.region`];
+  }
+
+  if(query[`campaignMeta.basic_info.address.city`] == null ) {
+    delete query[`campaignMeta.basic_info.address.city`];
+  }
+
   return { query, options: queryOptions };
 };
 

@@ -8,8 +8,8 @@ import {
 } from "react-intl";
 import Select from "react-select";
 
-const CityFilter = (props) => {
-  const [cities, setCities] = useState([]);
+const RegionFilter = (props) => {
+  const [regions, setRegions] = useState([]);
 
   useEffect(() => {
     Meteor.call(
@@ -19,41 +19,36 @@ const CityFilter = (props) => {
         if (err) {
           alertStore.add(err);
         }
-        //console.log(res);
 
-        setCities(
-          new Set(
-            res.map((item) => {
-              //console.log(item.campaignMeta?.basic_info?.address?.city);
-              if (!item.campaignMeta?.basic_info?.address?.city) {
-                return "";
-              }
-              return item.campaignMeta?.basic_info?.address?.city;
-            })
-          )
-        );
+        let regions_list = res.map((item) => {
+          //console.log(item.campaignMeta?.basic_info?.address?.city);
+          if (!item.campaignMeta?.basic_info?.address?.region) {
+            return "";
+          }
+          //if (regions_list.has(item.campaignMeta?.basic_info?.address?.region))
+          return item.campaignMeta?.basic_info?.address?.region;
+        });
+
+        setRegions(new Set(regions_list));
       }
     );
   }, []);
 
   const _getOptions = () => {
-    let options = ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"];
-
     let options_exact = []; // TODO: modify name of this variable
 
-    let today = new Date();
-
-    for (option of cities) {
+    for (option of regions) {
       if (!option) {
         continue;
       }
+
       options_exact.push({
         value: option,
         label: option,
       });
     }
 
-    //console.log(options_exact);
+    console.log(options_exact);
     return options_exact;
   };
 
@@ -74,7 +69,7 @@ const CityFilter = (props) => {
       isSearchable={false}
       isClearable={true}
       name={props.name}
-      placeholder={props.placeholder || "City"}
+      placeholder={props.placeholder || "Region"}
       value={_getValue()}
       onChange={_handleChange}
       options={_getOptions()}
@@ -82,8 +77,8 @@ const CityFilter = (props) => {
   );
 };
 
-CityFilter.propTypes = {
+RegionFilter.propTypes = {
   intl: intlShape.isRequired,
 };
 
-export default CityFilter;
+export default RegionFilter;

@@ -39,6 +39,7 @@ import TagFilter from "../components/TagFilter.jsx";
 import GenreFilter from "../components/GenreFilter.jsx";
 import AgeFilter from "../components/AgeFilter.jsx";
 import CityFilter from "../components/CityFilter.jsx";
+import RegionFilter from "../components/RegionFilter.jsx";
 import PersonMetaButtons, {
   labels as categoriesLabels,
 } from "../components/PersonMetaButtons.jsx";
@@ -112,6 +113,10 @@ const messages = defineMessages({
   cityPlaceholder: {
     id: "app.people.filters.city.placeholder",
     defaultMessage: "Filter by city",
+  },
+  regionPlaceholder: {
+    id: "app.people.filters.city.placeholder",
+    defaultMessage: "Filter by region",
   },
   reactionAmount: {
     id: "app.people.filters.reactions.amount",
@@ -663,6 +668,15 @@ class PeoplePage extends Component {
                     value={query.city}
                     onChange={this._handleFormChange}
                     placeholder={intl.formatMessage(messages.cityPlaceholder)}
+                  />
+                </Form.Field>
+                <Form.Field>
+                  <RegionFilter
+                    intl={intl}
+                    name="campaignMeta.basic_info.address.region"
+                    value={query.region}
+                    onChange={this._handleFormChange}
+                    placeholder={intl.formatMessage(messages.regionPlaceholder)}
                   />
                 </Form.Field>
                 <label className="boxed">
