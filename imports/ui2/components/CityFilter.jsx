@@ -19,12 +19,9 @@ const CityFilter = (props) => {
         if (err) {
           alertStore.add(err);
         }
-        //console.log(res);
-
         setCities(
           new Set(
             res.map((item) => {
-              //console.log(item.campaignMeta?.basic_info?.address?.city);
               if (!item.campaignMeta?.basic_info?.address?.city) {
                 return "";
               }
@@ -37,24 +34,21 @@ const CityFilter = (props) => {
   }, []);
 
   const _getOptions = () => {
-    let options = ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"];
-
-    let options_exact = []; // TODO: modify name of this variable
+    let options = [];
 
     let today = new Date();
 
-    for (option of cities) {
-      if (!option) {
+    for (city of cities) {
+      if (!city) {
         continue;
       }
-      options_exact.push({
-        value: option,
-        label: option,
+      options.push({
+        value: city,
+        label: city,
       });
     }
 
-    //console.log(options_exact);
-    return options_exact;
+    return options;
   };
 
   _getValue = () => {

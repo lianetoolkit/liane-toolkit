@@ -324,25 +324,6 @@ Meteor.publish("people.getAddress", ({ campaignId }) => {
   logger.debug("people.getAddress called", { campaignId })
 
   return this.ready();
-
-  //const userId = this.userId;
-  //if (userId) {
-    //const campaign = Campaigns.findOne(campaignId);
-    //if (!campaign) {
-      //return this.ready();
-    //}
-    //const allowed = Meteor.call("campaigns.userCan", {
-      //campaignId,
-      //userId,
-      //feature: "people",
-      //permission: "view",
-    //});
-
-    //if (allowed) {
-      //return PeopleTags.find({ campaignId });
-    //}
-  //}
-  //return this.ready();
 })
 
 Meteor.publishComposite("people.form.detail", function ({ formId, psid }) {

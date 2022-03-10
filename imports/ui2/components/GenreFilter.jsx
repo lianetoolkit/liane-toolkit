@@ -45,7 +45,7 @@ export const genderLabels = defineMessages({
 
 const GenreFilter = (props) => {
  const _getOptions = () => {
-   options = [
+   genres = [
      "trans_woman",
      "transvestite",
      "cis_woman",
@@ -57,9 +57,10 @@ const GenreFilter = (props) => {
    ];
    const { intl } = props;
 
-    let options_exact = []; // TODO: modify name of this variable
-    for (option of options) {
-      options_exact.push({
+    let options = [];
+
+    for (option of genres) {
+      options.push({
         value: option,
         label: genderLabels[option]
         ? intl.formatMessage(genderLabels[option])
@@ -67,7 +68,7 @@ const GenreFilter = (props) => {
       });
     }
 
-    return options_exact;
+    return options;
   };
 
   _getValue = () => {

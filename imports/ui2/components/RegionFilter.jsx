@@ -21,11 +21,9 @@ const RegionFilter = (props) => {
         }
 
         let regions_list = res.map((item) => {
-          //console.log(item.campaignMeta?.basic_info?.address?.city);
           if (!item.campaignMeta?.basic_info?.address?.region) {
             return "";
           }
-          //if (regions_list.has(item.campaignMeta?.basic_info?.address?.region))
           return item.campaignMeta?.basic_info?.address?.region;
         });
 
@@ -35,21 +33,20 @@ const RegionFilter = (props) => {
   }, []);
 
   const _getOptions = () => {
-    let options_exact = []; // TODO: modify name of this variable
+    let options = [];
 
     for (option of regions) {
       if (!option) {
         continue;
       }
 
-      options_exact.push({
+      options.push({
         value: option,
         label: option,
       });
     }
 
-    console.log(options_exact);
-    return options_exact;
+    return options;
   };
 
   _getValue = () => {

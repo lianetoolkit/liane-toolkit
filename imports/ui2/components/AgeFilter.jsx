@@ -10,13 +10,13 @@ import Select from "react-select";
 
 const AgeFilter = (props) => {
   const _getOptions = () => {
-    let options = ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"];
+    let ages = ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"];
 
-    let options_exact = []; // TODO: modify name of this variable
+    let options = [];
 
     let today = new Date();
 
-    for (option of options) {
+    for (option of ages) {
       gt = new Date();
       lt = new Date();
 
@@ -52,13 +52,13 @@ const AgeFilter = (props) => {
           break;
       }
 
-      options_exact.push({
+      options.push({
         value: { $gt: gt, $lt: lt },
         label: option,
       });
     }
 
-    return options_exact;
+    return options;
   };
 
   _getValue = () => {

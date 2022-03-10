@@ -289,7 +289,6 @@ class PeoplePage extends Component {
             loading: false,
           });
         } else {
-          console.log(data)
           this.setState({ people: data, loading: false });
         }
       });
@@ -367,7 +366,6 @@ class PeoplePage extends Component {
         skip: 0,
       },
     });
-    // console.log(this.state.query)
   };
   _handleSelectChange = (selected, { name }) => {
     let value = null;
