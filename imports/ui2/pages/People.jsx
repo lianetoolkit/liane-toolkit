@@ -282,6 +282,7 @@ class PeoplePage extends Component {
     FlowRouter.setQueryParams(
       this.sanitizeQueryParams(options, ["sort", "order"])
     );
+    console.log();
     if (campaignId) {
       const methodParams = {
         campaignId,
@@ -664,33 +665,45 @@ class PeoplePage extends Component {
                     placeholder={intl.formatMessage(messages.agePlaceholder)}
                   />
                 </Form.Field>
-                <Form.Field>
-                  <RegionFilter
-                    intl={intl}
-                    name="campaignMeta.basic_info.address.region"
-                    value={query.region}
-                    onChange={this._handleFormChange}
-                    placeholder={intl.formatMessage(messages.regionPlaceholder)}
-                  />
-                </Form.Field>
-                <Form.Field>
-                  <CityFilter
-                    intl={intl}
-                    name="campaignMeta.basic_info.address.city"
-                    value={query.city}
-                    onChange={this._handleFormChange}
-                    placeholder={intl.formatMessage(messages.cityPlaceholder)}
-                  />
-                </Form.Field>
-                <Form.Field>
-                  <NeighbourhoodFilter
-                    intl={intl}
-                    name="campaignMeta.basic_info.address.neighbourhood"
-                    value={query.neighborhood}
-                    onChange={this._handleFormChange}
-                    placeholder={intl.formatMessage(messages.neighborhoodPlaceholder)}
-                  />
-                </Form.Field>
+                {this.props.campaign.geolocation.regionType == "state" ? (
+                  ""
+                ) : (
+                  <Form.Field>
+                    <RegionFilter
+                      intl={intl}
+                      name="campaignMeta.basic_info.address.region"
+                      value={query.region}
+                      onChange={this._handleFormChange}
+                      placeholder={intl.formatMessage(
+                        messages.regionPlaceholder
+                      )}
+                    />
+                  </Form.Field>
+                )}
+
+                {this.props.campaign.geolocation.regionType == "city" ? (
+                  <Form.Field>
+                    <NeighbourhoodFilter
+                      intl={intl}
+                      name="campaignMeta.basic_info.address.neighbourhood"
+                      value={query.neighborhood}
+                      onChange={this._handleFormChange}
+                      placeholder={intl.formatMessage(
+                        messages.neighborhoodPlaceholder
+                      )}
+                    />
+                  </Form.Field>
+                ) : (
+                  <Form.Field>
+                    <CityFilter
+                      intl={intl}
+                      name="campaignMeta.basic_info.address.city"
+                      value={query.city}
+                      onChange={this._handleFormChange}
+                      placeholder={intl.formatMessage(messages.cityPlaceholder)}
+                    />
+                  </Form.Field>
+                )}
                 <label className="boxed">
                   <input
                     type="checkbox"
