@@ -884,5 +884,6 @@
     "app.people.filters.genre.placeholder": "Filtrar por gênero",
     "app.people.filters.age.placeholder": "Filtrar por idade",
     "app.people.filters.city.placeholder": "Filtrar por cidade",
-    "app.people.filters.region.placeholder": "Filtrar por região"
+    "app.people.filters.region.placeholder": "Filtrar por região",
+    "app.people.filters.neighborhood.placeholder": "Filtrar por bairro"
 }

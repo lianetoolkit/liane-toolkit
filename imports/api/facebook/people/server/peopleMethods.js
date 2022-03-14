@@ -255,6 +255,10 @@ const buildSearchQuery = ({ campaignId, rawQuery, options }) => {
     delete query[`campaignMeta.basic_info.address.city`];
   }
 
+  if(query[`campaignMeta.basic_info.address.neighbourhood`] == null ) {
+    delete query[`campaignMeta.basic_info.address.neighbourhood`];
+  }
+
   return { query, options: queryOptions };
 };
 

@@ -8,8 +8,8 @@ import {
 } from "react-intl";
 import Select from "react-select";
 
-const CityFilter = (props) => {
-  const [cities, setCities] = useState([]);
+const NeighbourhoodFilter = (props) => {
+  const [neighbourdhoodies, setNeighbourhoodies] = useState([]);
 
   useEffect(() => {
     Meteor.call(
@@ -20,13 +20,13 @@ const CityFilter = (props) => {
           alertStore.add(err);
         }
 
-        setCities(
+        setNeighbourhoodies(
           new Set(
             res.map((item) => {
-              if (!item.campaignMeta?.basic_info?.address?.city) {
+              if (!item.campaignMeta?.basic_info?.address?.neighbourhood) {
                 return "";
               }
-              return item.campaignMeta?.basic_info?.address?.city;
+              return item.campaignMeta?.basic_info?.address?.neighbourhood;
             })
           )
         );
@@ -39,13 +39,13 @@ const CityFilter = (props) => {
 
     let today = new Date();
 
-    for (city of cities) {
-      if (!city) {
+    for (neighbourhood of neighbourdhoodies) {
+      if (!neighbourhood) {
         continue;
       }
       options.push({
-        value: city,
-        label: city,
+        value: neighbourhood,
+        label: neighbourhood,
       });
     }
 
@@ -69,7 +69,7 @@ const CityFilter = (props) => {
       isSearchable={false}
       isClearable={true}
       name={props.name}
-      placeholder={props.placeholder || "City"}
+      placeholder={props.placeholder || "Neighbourhood"}
       value={_getValue()}
       onChange={_handleChange}
       options={_getOptions()}
@@ -77,8 +77,8 @@ const CityFilter = (props) => {
   );
 };
 
-CityFilter.propTypes = {
+NeighbourhoodFilter.propTypes = {
   intl: intlShape.isRequired,
 };
 
-export default CityFilter;
+export default NeighbourhoodFilter;

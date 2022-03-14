@@ -40,6 +40,7 @@ import GenreFilter from "../components/GenreFilter.jsx";
 import AgeFilter from "../components/AgeFilter.jsx";
 import CityFilter from "../components/CityFilter.jsx";
 import RegionFilter from "../components/RegionFilter.jsx";
+import NeighbourhoodFilter from "../components/NeighbourhoodFilter.jsx";
 import PersonMetaButtons, {
   labels as categoriesLabels,
 } from "../components/PersonMetaButtons.jsx";
@@ -117,6 +118,10 @@ const messages = defineMessages({
   regionPlaceholder: {
     id: "app.people.filters.region.placeholder",
     defaultMessage: "Filter by region",
+  },
+  neighborhoodPlaceholder: {
+    id: "app.people.filters.neighborhood.placeholder",
+    defaultMessage: "Filter by neighborhood",
   },
   reactionAmount: {
     id: "app.people.filters.reactions.amount",
@@ -660,6 +665,15 @@ class PeoplePage extends Component {
                   />
                 </Form.Field>
                 <Form.Field>
+                  <RegionFilter
+                    intl={intl}
+                    name="campaignMeta.basic_info.address.region"
+                    value={query.region}
+                    onChange={this._handleFormChange}
+                    placeholder={intl.formatMessage(messages.regionPlaceholder)}
+                  />
+                </Form.Field>
+                <Form.Field>
                   <CityFilter
                     intl={intl}
                     name="campaignMeta.basic_info.address.city"
@@ -669,12 +683,12 @@ class PeoplePage extends Component {
                   />
                 </Form.Field>
                 <Form.Field>
-                  <RegionFilter
+                  <NeighbourhoodFilter
                     intl={intl}
-                    name="campaignMeta.basic_info.address.region"
-                    value={query.region}
+                    name="campaignMeta.basic_info.address.neighbourhood"
+                    value={query.neighborhood}
                     onChange={this._handleFormChange}
-                    placeholder={intl.formatMessage(messages.regionPlaceholder)}
+                    placeholder={intl.formatMessage(messages.neighborhoodPlaceholder)}
                   />
                 </Form.Field>
                 <label className="boxed">
