@@ -661,7 +661,12 @@ const PeopleHelpers = {
     let parentID = null;
     let IDs = [];
     //  Call to find duplicctes
-    res = this.findDuplicates({ personId, source });
+  
+    //
+    // Temporarily disabling this functionality until we solve the performance issue with the query
+    //
+    // res = this.findDuplicates({ personId, source });
+    res = {};
     let persons = [];
     Object.keys(res).map((key) => {
       res[key].map((person) => {
@@ -867,9 +872,10 @@ const PeopleHelpers = {
         $and: [
           { campaignId },
           {
-            "campaignMeta.social_networks.instagram": {
-              $regex: new RegExp(pattern),
-            },
+            $or: [
+              { "campaignMeta.social_networks.instagram": instagramHandle },
+              { "campaignMeta.social_networks.instagram": "@" + instagramHandle }
+            ]
           },
         ],
       });
@@ -900,9 +906,10 @@ const PeopleHelpers = {
         $and: [
           { campaignId },
           {
-            "campaignMeta.social_networks.instagram": {
-              $regex: new RegExp(pattern),
-            },
+            $or: [
+              { "campaignMeta.social_networks.instagram": instagramHandle },
+              { "campaignMeta.social_networks.instagram": "@" + instagramHandle }
+            ]
           },
         ],
       });
