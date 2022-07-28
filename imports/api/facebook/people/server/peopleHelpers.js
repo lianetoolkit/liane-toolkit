@@ -47,11 +47,11 @@ const PeopleHelpers = {
       .substr(0, 7);
   },
   getInteractionCount({ sourceId, facebookAccountId, source }) {
-    logger.debug("peopleHelpers: getInteractionCount() called", {
-      sourceId,
-      facebookAccountId,
-      source,
-    });
+    // logger.debug("peopleHelpers: getInteractionCount() called", {
+    //   sourceId,
+    //   facebookAccountId,
+    //   source,
+    // });
     let person;
     if (source == "facebook") {
       person = People.findOne({ facebookId: sourceId, facebookAccountId });
