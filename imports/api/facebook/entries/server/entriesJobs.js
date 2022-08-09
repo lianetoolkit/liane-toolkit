@@ -11,7 +11,7 @@ const EntriesJobs = {
   "entries.updateAccountEntries": {
     run({ job }) {
       logger.debug("entries.updateAccountEntries job: called");
-      logger.info("entries.updateAccountEntries job: called", JSON.stringify(job));
+      logger.info(`entries.updateAccountEntries job started: ${JSON.stringify(job)}`);
       check(job && job.data && job.data.campaignId, String);
       check(job && job.data && job.data.facebookId, String);
       const campaignId = job.data.campaignId;
@@ -34,6 +34,7 @@ const EntriesJobs = {
         errored = true;
         return job.fail(error.message);
       } finally {
+        logger.info(`entries.updateAccountEntries job finished: ${JSON.stringify(job)}`);
         if (!errored) {
           job.done();
           return job.remove();
@@ -62,7 +63,7 @@ const EntriesJobs = {
   "entries.refetchAccountEntries": {
     run({ job }) {
       logger.debug("entries.refetchAccountEntries job: called");
-      logger.info("entries.refetchAccountEntries job: called", JSON.stringify(job));
+      logger.info(`entries.refetchAccountEntries job started: ${JSON.stringify(job)}`);
       check(job && job.data && job.data.facebookId, String);
       const campaignId = job.data.campaignId;
       const facebookId = job.data.facebookId;
@@ -78,6 +79,7 @@ const EntriesJobs = {
         errored = true;
         return job.fail(error.message);
       } finally {
+        logger.info(`entries.refetchAccountEntries job finished: ${JSON.stringify(job)}`);
         if (!errored) {
           job.done();
           return job.remove();
@@ -103,7 +105,7 @@ const EntriesJobs = {
   "entries.updateEntryInteractions": {
     run({ job }) {
       logger.debug("entries.updateEntryInteractions job: called");
-      logger.info("entries.updateEntryInteractions job: called", JSON.stringify(job));
+      logger.info(`entries.updateEntryInteractions job started: ${JSON.stringify(job)}`);
       check(job && job.data && job.data.facebookAccountId, String);
       check(job && job.data && job.data.entryId, String);
       check(job && job.data && job.data.accessToken, String);
@@ -130,6 +132,7 @@ const EntriesJobs = {
         errored = true;
         job.fail(error.message);
       } finally {
+        logger.info(`entries.updateEntryInteractions job finished: ${JSON.stringify(job)}`);
         if (!errored) {
           job.done();
           return job.remove();
