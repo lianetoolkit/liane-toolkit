@@ -43,7 +43,7 @@ const EntriesJobs = {
     },
 
     workerOptions: {
-      concurrency: 2,
+      concurrency: 1,
       pollInterval: 2500,
     },
 
