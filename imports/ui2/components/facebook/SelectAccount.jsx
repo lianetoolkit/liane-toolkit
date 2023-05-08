@@ -70,7 +70,7 @@ const Container = styled.ul`
 `;
 
 function AccountItem({ account, selected, onClick }) {
-  const disabled = account.tasks.indexOf("MANAGE") == -1;
+  const disabled = account?.tasks?.indexOf("MANAGE") == -1;
   let className = "";
   if (selected) className += " selected";
   if (disabled) className += " disabled";
