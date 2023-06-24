@@ -47,11 +47,11 @@ const PeopleHelpers = {
       .substr(0, 7);
   },
   getInteractionCount({ sourceId, facebookAccountId, source }) {
-    logger.debug("peopleHelpers: getInteractionCount() called", {
-      sourceId,
-      facebookAccountId,
-      source,
-    });
+    // logger.debug("peopleHelpers: getInteractionCount() called", {
+    //   sourceId,
+    //   facebookAccountId,
+    //   source,
+    // });
     let person;
     if (source == "facebook") {
       person = People.findOne({ facebookId: sourceId, facebookAccountId });
@@ -661,7 +661,12 @@ const PeopleHelpers = {
     let parentID = null;
     let IDs = [];
     //  Call to find duplicctes
-    res = this.findDuplicates({ personId, source });
+  
+    //
+    // Temporarily disabling this functionality until we solve the performance issue with the query
+    //
+    // res = this.findDuplicates({ personId, source });
+    res = {};
     let persons = [];
     Object.keys(res).map((key) => {
       res[key].map((person) => {
@@ -867,9 +872,10 @@ const PeopleHelpers = {
         $and: [
           { campaignId },
           {
-            "campaignMeta.social_networks.instagram": {
-              $regex: new RegExp(pattern),
-            },
+            $or: [
+              { "campaignMeta.social_networks.instagram": instagramHandle },
+              { "campaignMeta.social_networks.instagram": "@" + instagramHandle }
+            ]
           },
         ],
       });
@@ -900,9 +906,10 @@ const PeopleHelpers = {
         $and: [
           { campaignId },
           {
-            "campaignMeta.social_networks.instagram": {
-              $regex: new RegExp(pattern),
-            },
+            $or: [
+              { "campaignMeta.social_networks.instagram": instagramHandle },
+              { "campaignMeta.social_networks.instagram": "@" + instagramHandle }
+            ]
           },
         ],
       });

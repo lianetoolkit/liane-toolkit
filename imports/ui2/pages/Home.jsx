@@ -484,7 +484,7 @@ class Home extends Component {
                       <>
                         <Button
                           primary
-                          href={FlowRouter.path("App.campaign.new")}
+                          href="https://docs.google.com/forms/d/1fegH_ESk3HcoMlf-RVJt3oFoSE_icIjxH05_tF_8wuU/edit?ts=64936ccd"
                         >
                           <FormattedMessage
                             id="app.create_campaign"

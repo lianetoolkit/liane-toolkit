@@ -952,7 +952,7 @@ const CommentsHelpers = {
 
     if (response.data.length) {
       _insertBulk({ data: response.data });
-      let next = response.paging.next;
+      let next = response.paging?.next;
       while (next !== undefined) {
         let nextPage = _fetchFacebookPageData({ url: next });
         next = nextPage.data.paging ? nextPage.data.paging.next : undefined;

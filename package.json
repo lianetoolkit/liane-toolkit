@@ -57,6 +57,7 @@
     "react-spinner": "^0.2.7",
     "react-tooltip": "^4.2.7",
     "recharts": "^1.8.5",
+    "resolve": "~1.20.0",
     "simpl-schema": "^1.8.0",
     "simplify-geojson": "^1.0.3",
     "styled-components": "^5.1.1",

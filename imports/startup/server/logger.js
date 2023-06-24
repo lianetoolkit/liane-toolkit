@@ -2,10 +2,10 @@ import os from "os";
 import winston from "winston";
 import Sentry from "@sentry/node";
 
-const { deployMode } = Meteor.settings.public;
-
+const { debugEnabled } = Meteor.settings.public;
+winston
 logger = winston.createLogger({
-  level: deployMode == "local" ? "debug" : "info",
+  level: debugEnabled ? "debug" : "info",
   format: winston.format.simple(),
   handleExceptions: true,
   exitOnError: false,
