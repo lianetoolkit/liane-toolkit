@@ -163,7 +163,7 @@ export default class Header extends Component {
               <FormattedMessage id="app.support" defaultMessage="Support" />
             </a>
             <a
-              href="https://files.liane.cc/legal/terms_of_use_v1_pt-br.pdf"
+              href="https://support.liane.camp/wp-content/uploads/2022/05/Espanol-25202025_1_Terminos-de-Uso_Instituto-Update_MF_140519.pdf"
               target="_blank"
               rel="external"
             >
@@ -173,7 +173,7 @@ export default class Header extends Component {
               />
             </a>
             <a
-              href="https://files.liane.cc/legal/privacy_policy_v1_pt-br.pdf"
+              href="https://support.liane.camp/wp-content/uploads/2022/05/Espanol-Politica-de-Privacidade_Instituto-Update_MF_140519-1.pdf"
               target="_blank"
               rel="external"
             >
