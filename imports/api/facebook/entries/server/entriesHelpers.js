@@ -430,6 +430,7 @@ const EntriesHelpers = {
 
     const _insertWithInteractions = ({ data }) => {
       for (const entry of data) {
+        logger.debug("entriesHelpers.updateAccountEntries._insertWithInteractions:", entry);
         const currentEntry = Entries.findOne(entry.id);
         const updateObj = this.getUpdateObjFromFBData({
           facebookAccountId: facebookId,
@@ -480,6 +481,7 @@ const EntriesHelpers = {
     const _insertBulk = ({ data }) => {
       const bulk = Entries.rawCollection().initializeUnorderedBulkOp();
       for (const entry of data) {
+        logger.debug("entriesHelpers.updateAccountEntries._insertBulk:", entry);
         bulk
           .find({
             _id: entry.id,
