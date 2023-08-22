@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useCallback } from "react";
 import {
   injectIntl,
   intlShape,
@@ -217,6 +217,13 @@ export const getFBCommentUrl = (comment) => {
 };
 
 class Comment extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedComment: false,
+    };
+  }
+
   static Count = CountIntl;
   action = () => {
     const { comment } = this.props;
@@ -295,11 +302,43 @@ class Comment extends Component {
         return ["fab", "facebook-square"];
     }
   };
+
+  _handleModifySelectedComment = (comments) => {
+    const { handleSelectedComments } = this.props;
+    console.log(comments)
+    handleSelectedComments(comments);
+  };
+
+  _handleChecked = (selectedComments, comment) => {
+    this.setState({ selectedComment: selectedComments.has(comment) });
+  };
+
+  //componentDidUpdate(prevProps, prevState) {
+    //console.log(prevProps);
+    //console.log(prevState);
+    //console.log("did update");
+  //}
+
   render() {
-    const { intl, comment, actions } = this.props;
+    const { intl, comment, actions, selectedComments, selectedComment } = this.props;
+
+    //console.log("selected comment: ", selectedComment());
+
     if (comment) {
       return (
         <Container>
+          <div>
+            {FlowRouter.getQueryParam("entry") ? (
+            <input
+              type="checkbox"
+              checked={selectedComment}
+              onChange={() =>
+                this._handleChecked(selectedComments, comment)
+              }
+              onClick={() => this._handleModifySelectedComment(comment)}
+            />
+            ) : null}
+          </div>
           <header>
             <h3>
               <span className={`icon ${comment.source}`}>
