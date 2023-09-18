@@ -92,6 +92,7 @@ class Confirm extends Component {
             "pages_messaging_subscriptions",
             "instagram_basic",
             "instagram_manage_comments",
+            "business_management",
           ],
         },
         (token) => {

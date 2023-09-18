@@ -32,6 +32,7 @@ export default class UserUpgrade extends Component {
       "pages_messaging_subscriptions",
       "instagram_basic",
       "instagram_manage_comments",
+      "business_management",
     ];
     this.setState({ loading: true });
     Facebook.requestCredential(

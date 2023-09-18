@@ -15,6 +15,7 @@ export const permissions = [
   "pages_messaging_subscriptions",
   "instagram_basic",
   "instagram_manage_comments",
+  "business_management",
 ];
 
 export const updatePermissions = (cb) => {
